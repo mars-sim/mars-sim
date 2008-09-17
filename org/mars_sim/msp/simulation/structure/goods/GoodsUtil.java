@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.85 2008-07-13
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.equipment.Barrel;
@@ -190,7 +189,7 @@ public class GoodsUtil {
 		else if (Good.ITEM_RESOURCE.equals(good.getCategory())) 
 			result = ((ItemResource) good.getObject()).getMassPerItem();
 		else if (Good.EQUIPMENT.equals(good.getCategory())) 
-			result = EquipmentFactory.getEquipment(good.getClassType(), new Coordinates(0, 0), true).getMass();
+			result = EquipmentFactory.getEquipmentMass(good.getName());
 		else if (Good.VEHICLE.equals(good.getCategory())) {
 			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 			result = config.getEmptyMass(good.getName());
