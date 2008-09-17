@@ -405,27 +405,6 @@
 		</functions>
 	</building>
 	
-	<!-- A small manufacturing workshop -->
-	<building name="Small Workshop">
-		<power-required base-power="20.0" base-power-down-power="0.0" />
-		<functions>
-			<life-support capacity="2" power-required="4.0" />
-			<manufacture tech-level="2" concurrent-processes="2" />
-			<research tech-level="2" capacity="2">
-				<research-speciality name="Materials Science" />
-			</research>
-			<storage>
-				<resource-storage resource="Regolith" capacity="500.0" />
-				<resource-storage resource="Carbon" capacity="25.0" />
-				<resource-storage resource="Iron Oxide" capacity="250.0" />
-				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
-				<resource-storage resource="Sand" capacity="500.0" />
-				<resource-storage resource="Iron Powder" capacity="50.0" />
-			</storage>
-		</functions>
-	</building>
-	
-	
 	<!-- A manufacturing workshop -->
 	<building name="Workshop">
 		<power-required base-power="50.0" base-power-down-power="0.0" />
@@ -437,7 +416,7 @@
 			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
-				<resource-storage resource="Carbon" capacity="50.0" />
+				<resource-storage resource="Carbon" capacity="500.0" />
 				<resource-storage resource="Iron Oxide" capacity="500.0" />
 				<resource-storage resource="Aluminum Oxide" capacity="50.0" />
 				<resource-storage resource="Sand" capacity="1000.0" />
@@ -449,6 +428,8 @@
 				<resource-storage resource="Lime" capacity="100.0" />
 				<resource-storage resource="Styrene" capacity="100.0" />
 				<resource-storage resource="Polyester Resin" capacity="100.0" />
+				<resource-storage resource="Cement" capacity="500.0" />
+				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
 		</functions>
 	</building>
@@ -491,6 +472,61 @@
 			<power-generation>
 				<power-source type="Solar Thermal Power Source" power="10.0" />
 			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing dry concrete. -->
+	<building name="Concrete Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Concrete" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing dry cement. -->
+	<building name="Cement Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Cement" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+		<!-- A small brick bin for storing lime. -->
+	<building name="Lime Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Lime" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small constructable manufacturing building. -->
+	<building name="Manufacturing Shed">
+		<power-required base-power="20.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<manufacture tech-level="2" concurrent-processes="2" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Materials Science" />
+			</research>
+			<storage>
+				<resource-storage resource="Regolith" capacity="500.0" />
+				<resource-storage resource="Carbon" capacity="250.0" />
+				<resource-storage resource="Iron Oxide" capacity="250.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
+				<resource-storage resource="Sand" capacity="500.0" />
+				<resource-storage resource="Iron Powder" capacity="50.0" />
+				<resource-storage resource="Gypsum" capacity="50.0" />
+				<resource-storage resource="Calcium Carbonate" capacity="50.0" />
+				<resource-storage resource="Lime" capacity="50.0" />
+				<resource-storage resource="Cement" capacity="500.0" />
+				<resource-storage resource="Concrete" capacity="500.0" />
+			</storage>
 		</functions>
 	</building>
 

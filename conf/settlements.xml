@@ -39,7 +39,8 @@
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="20" />
+			<equipment type="Bag" number="30" />
+			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="20" />
 			
 			<!-- Resources -->
@@ -72,16 +73,16 @@
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="2" />
 			<building type="Methane Power Generator" number="1" />
-			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<equipment type="EVA Suit" number="16" />
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="40" />
+			<equipment type="Large Bag" number="30" />
 			<equipment type="Specimen Box" number="40" />
 			<resource type="waste water" amount="200.0" />
-			<resource type="carbon dioxide" amount="100.0" />
+			<resource type="carbon dioxide" amount="1000.0" />
 			<part-package name="package 2" number="1" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 2" arrival-time="668.0" />
@@ -96,7 +97,6 @@
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
 			<building type="Methane Power Generator" number="1" />
-			<building type="Small Workshop" number="1" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -105,9 +105,10 @@
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="60" />
+			<equipment type="Large Bag" number="40" />
 			<equipment type="Specimen Box" number="60" />
 			<resource type="waste water" amount="300.0" />
-			<resource type="carbon dioxide" amount="200.0" />
+			<resource type="carbon dioxide" amount="2000.0" />
 			<part-package name="package 3" number="1" />
 			<resupply>
 				<resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
@@ -124,7 +125,6 @@
 			<building type="Laboratory" number="1" />
 			<building type="Garage" number="1" />
 			<building type="Workshop" number="1" />
-			<building type="Small Workshop" number="1" />
 			<building type="Lander Hab" number="3" />
 			<building type="Inflatable Greenhouse" number="3" />
 			<building type="MD1 Nuclear Reactor" number="4" />
@@ -140,9 +140,10 @@
 			<equipment type="Gas Canister" number="10" />
 			<equipment type="Barrel" number="10" />
 			<equipment type="Bag" number="100" />
+			<equipment type="Large Bag" number="50" />
 			<equipment type="Specimen Box" number="100" />
 			<resource type="waste water" amount="1000.0" />
-			<resource type="carbon dioxide" amount="500.0" />
+			<resource type="carbon dioxide" amount="5000.0" />
 			<part-package name="package 4" number="1" />
 		</template>
 	

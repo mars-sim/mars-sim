@@ -15,7 +15,6 @@
 		<building type="Inflatable Greenhouse" number="1" />
 		<building type="MD1 Nuclear Reactor" number="1" />
 		<building type="Starting ERV Base" number="1" />
-		<building type="Small Workshop" number="1" />
 		
 		<!-- A new vehicle for the settlement. -->
 		<!-- type: the type of vehicle (see vehicles.xml) -->
@@ -27,6 +26,8 @@
 		<!-- number: the number of this type of equipment. -->
 		<equipment type="EVA Suit" number="8" />
 		<equipment type="Gas Canister" number="10" />
+		<equipment type="Bag" number="10" />
+		<equipment type="Large Bag" number="10" />
 		<equipment type="Barrel" number="10" />
 		
 		<!-- New immigrants from Earth. -->
@@ -58,6 +59,7 @@
 		<equipment type="Gas Canister" number="10" />
 		<equipment type="Barrel" number="10" />
 		<equipment type="Bag" number="20" />
+		<equipment type="Large Bag" number="10" />
 		<equipment type="Specimen Box" number="20" />
 		<person number="4" />
 		<resource type="hydrogen" amount="1000.0" />
@@ -82,6 +84,9 @@
 		<equipment type="EVA Suit" number="24" />
 		<equipment type="Gas Canister" number="10" />
 		<equipment type="Barrel" number="10" />
+		<equipment type="Bag" number="40" />
+		<equipment type="Large Bag" number="10" />
+		<equipment type="Specimen Box" number="40" />
 		<person number="12" />
 		<resource type="hydrogen" amount="1000.0" />
 		<resource type="food" amount="500.0" />

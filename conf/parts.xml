@@ -476,4 +476,7 @@
 		</maintenance-entity-list>
 	</part>
 	
+	<!-- Construction brick (215mm x 102.5mm x 65mm) 2.86kg (UK Standard according to Wikipedia) -->
+	<part name="brick" mass="2.86" />
+	
 </part-list>

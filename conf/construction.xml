@@ -3,6 +3,14 @@
 <construction>
 	<foundation-list>
 
+		<foundation name="surface foundation 3m x 2m" work-time=".5" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+
 		<foundation name="surface foundation 5m x 5m" work-time="2.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
@@ -13,6 +21,16 @@
 	
 		<foundation name="surface foundation 10m x 5m" work-time="4.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="subsurface foundation 5m x 5m x 3m" work-time="20.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+			    <resource name="concrete" amount="500.0" />
+			    <resource name="water" amount="200.0" />
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
 				<attachment-part name="soil compactor" />
@@ -50,7 +68,25 @@
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
-
+		
+		<frame name="brick bin frame" work-time="5.0" skill-required="1" foundation="surface foundation 3m x 2m" >
+			<part name="brick" number="948" />
+			<resource name="cement" amount="661.0" />
+			<resource name="water" amount="220.0" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="small brick shed frame" work-time="40.0" skill-required="1" foundation="subsurface foundation 5m x 5m x 3m" >
+			<part name="brick" number="5926" />
+			<resource name="cement" amount="2982.0" />
+			<resource name="water" amount="994.0" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
 	</frame-list>
 
 	<building-list>
@@ -99,6 +135,36 @@
 			<part name="power cable" number="6" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="concrete storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
+		<building name="cement storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
+		<building name="lime storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
+		<building name="manufacturing shed" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+			<part name="steel pipe" number="3" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="10" />
+			<part name="gasket" number="10" />
+			<part name="plastic tubing" number="10" />
+			<part name="power cable" number="10" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="epoxy resin bottle" number="25" />
+			<part name="small electric motor" number="1" />
+			<part name="brick" number="100" />
+			<resource name="cement" amount="20.0" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>

@@ -52,6 +52,7 @@
 		<part type="rover windshield" number="1" />
 		<part type="rover window" number="1" />
 		<part type="winch" number="1" />
+		<part type="small electric motor" number="1" />
 		<part type="large electric motor" number="1" />
 		<part type="rover chassis panel" number="1" />
 		<part type="rover generator" number="1" />
@@ -112,6 +113,7 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="2" />
 		<part type="winch" number="2" />
+		<part type="small electric motor" number="2" />
 		<part type="large electric motor" number="2" />
 		<part type="rover chassis panel" number="2" />
 		<part type="rover generator" number="2" />
@@ -172,6 +174,7 @@
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="3" />
 		<part type="winch" number="3" />
+		<part type="small electric motor" number="3" />
 		<part type="large electric motor" number="3" />
 		<part type="rover chassis panel" number="3" />
 		<part type="rover generator" number="3" />
@@ -232,6 +235,7 @@
 		<part type="rover windshield" number="4" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="4" />
+		<part type="small electric motor" number="4" />
 		<part type="large electric motor" number="4" />
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="4" />
