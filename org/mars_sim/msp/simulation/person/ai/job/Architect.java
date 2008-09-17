@@ -72,7 +72,7 @@ public class Architect extends Job implements Serializable {
             // Based on settlement construction profit.
             double constructionProfit = settlement.getConstructionManager().getConstructionValues().
                     getSettlementConstructionProfit();
-            result = constructionProfit / 100D;
+            result = constructionProfit / 1000D;
             if (result < 0D) result = 0D;
         }
         catch (Exception e) {
