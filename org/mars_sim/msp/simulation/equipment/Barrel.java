@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Barrel.java
- * @version 2.79 2006-01-02
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -18,24 +18,23 @@ public class Barrel extends Equipment implements Container, Serializable {
 
 	// Static data members
 	public static final String TYPE = "Barrel";
-	private static final double BASE_MASS = 10D; // Empty mass of barrel (kg).
+    public static final double CAPACITY = 200D;
+    public static final double EMPTY_MASS = 10D;
 	
 	/**
 	 * Constructor
 	 * @param location the location of the barrel.
-	 * @param capacity the liquid capacity of the barrel (kg).
 	 * @throws Exception if error creating barrel.
 	 */
-	public Barrel(Coordinates location, double capacity) throws Exception {
+	public Barrel(Coordinates location) throws Exception {
 		// Use Equipment constructor
 		super(TYPE, location);
 		
 		// Sets the base mass of the barrel.
-		setBaseMass((capacity / 100D) * BASE_MASS);
+		setBaseMass(EMPTY_MASS);
 		
 		// Set the liquid capacity.
-		if (capacity < 0D) throw new Exception("Capacity cannot be less than zero.");
-		getInventory().addAmountResourcePhaseCapacity(Phase.LIQUID, capacity);
+		getInventory().addAmountResourcePhaseCapacity(Phase.LIQUID, CAPACITY);
 	}
 	
 	/**

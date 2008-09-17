@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -33,7 +33,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
 
     // Static members
 	public static final String TYPE = "EVA Suit";
-    private static final double BASE_MASS = 45D; // Unloaded mass of EVA suit (kg.)
+    public static final double EMPTY_MASS = 45D; // Unloaded mass of EVA suit (kg.)
     private static final double OXYGEN_CAPACITY = 1D; // Oxygen capacity (kg.)
     private static final double WATER_CAPACITY = 4D; // Water capacity (kg.)
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
@@ -61,7 +61,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         malfunctionManager.setMaintenanceWorkTime(500D);
 	
         // Set the empty mass of the EVA suit in kg.
-        setBaseMass(BASE_MASS);
+        setBaseMass(EMPTY_MASS);
 	
         // Set the resource capacities of the EVA suit.
         getInventory().addAmountResourceTypeCapacity(AmountResource.findAmountResource("oxygen"), 

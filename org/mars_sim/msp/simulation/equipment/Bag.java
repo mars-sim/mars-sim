@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Bag.java
- * @version 2.79 2006-01-02
+ * @version 2.85 2008-09-13
  * @author Scott Davis
  */
 
@@ -18,18 +18,23 @@ public class Bag extends Equipment implements Container, Serializable {
 	
 	// Static data members
 	public static final String TYPE = "Bag";
-	private static final double BASE_MASS = .1D; // Empty mass of bag (kg).
+    public static final double CAPACITY = 50D;
+    public static final double EMPTY_MASS = .1D;
 
-	public Bag(Coordinates location, double capacity) throws Exception {
+    /**
+     * Constructor
+     * @param location the location of the bag.
+     * @throws Exception if error creating bag.
+     */
+	public Bag(Coordinates location) throws Exception {
 		// Use Equipment constructor
 		super(TYPE, location);
 		
 		// Sets the base mass of the bag.
-		setBaseMass((capacity / 100D) * BASE_MASS);
+		setBaseMass(EMPTY_MASS);
 		
 		// Set the solid capacity.
-		if (capacity < 0D) throw new Exception("Capacity cannot be less than zero.");
-		getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, capacity);
+		getInventory().addAmountResourcePhaseCapacity(Phase.SOLID, CAPACITY);
 	}
 	
 	/**
