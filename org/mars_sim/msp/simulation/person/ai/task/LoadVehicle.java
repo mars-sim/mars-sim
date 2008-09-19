@@ -307,9 +307,13 @@ public class LoadVehicle extends Task implements Serializable {
 			if (sInv.getAmountResourceStored(resource) >= amountNeeded) {
 				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true);
 				if (remainingCapacity < amountNeeded) {
-                    endTask();
-                    throw new Exception("Not enough capacity in vehicle for loading resource " + resource + 
-                            ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
+                    // Deal with miniscule errors.
+                    if ((amountNeeded - remainingCapacity) < .00001D) amountNeeded = remainingCapacity;
+                    else {
+                        endTask();
+                        throw new Exception("Not enough capacity in vehicle for loading resource " + resource + 
+                                ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
+                    }
                 }
 				double resourceAmount = amountNeeded;
 				if (amountNeeded > amountLoading) resourceAmount = amountLoading;
