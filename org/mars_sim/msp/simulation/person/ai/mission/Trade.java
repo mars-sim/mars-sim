@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-18
  * @author Scott Davis
  */
 
@@ -285,6 +285,7 @@ public class Trade extends RoverMission implements Serializable {
 	        	
 	        	// Trade value modifier.
 	        	missionProbability = tradeProfit / 100D;
+                if (missionProbability > 100D) missionProbability = 100D;
 	            
 	            // Crowding modifier.
 	            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
