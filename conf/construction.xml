@@ -152,6 +152,18 @@
 			<resource name="concrete" amount="10.0" />
 		</building>
 		
+		<building name="carbon storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
+		<building name="regolith storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
+		<building name="sand storage bin" work-time=".5" skill-required="1" frame="small brick shed frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
 		<building name="manufacturing shed" work-time="20.0" skill-required="3" frame="small brick shed frame" >
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />

@@ -495,12 +495,42 @@
 		</functions>
 	</building>
 	
-		<!-- A small brick bin for storing lime. -->
+	<!-- A small brick bin for storing lime. -->
 	<building name="Lime Storage Bin">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
 				<resource-storage resource="Lime" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing carbon. -->
+	<building name="Carbon Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Carbon" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing regolith. -->
+	<building name="Regolith Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Regolith" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing sand. -->
+	<building name="Sand Storage Bin">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Sand" capacity="5000.0" />
 			</storage>
 		</functions>
 	</building>
