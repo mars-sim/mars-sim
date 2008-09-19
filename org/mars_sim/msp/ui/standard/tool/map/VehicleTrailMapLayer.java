@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTrailMapLayer.java
- * @version 2.81 2007-08-27
+ * @version 2.85 2008-09-18
  * @author Scott Davis
  */
 
@@ -73,13 +73,15 @@ public class VehicleTrailMapLayer implements MapLayer {
         Iterator<Coordinates> j = (new ArrayList<Coordinates>(vehicle.getTrail())).iterator();
         while (j.hasNext()) {
             Coordinates trailSpot = j.next();
-            if (mapCenter.getAngle(trailSpot) < angle) {
-                IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, mapType);
-                if ((oldSpot == null))                            
-                    g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
-                else if (!spotLocation.equals(oldSpot))
-                    g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
-                oldSpot = spotLocation;
+            if (trailSpot != null) {
+                if (mapCenter.getAngle(trailSpot) < angle) {
+                    IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, mapType);
+                    if ((oldSpot == null))                            
+                        g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
+                    else if (!spotLocation.equals(oldSpot))
+                        g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
+                    oldSpot = spotLocation;
+                }
             }
         }
     }
