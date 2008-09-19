@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-18
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
@@ -20,6 +21,9 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 
 public class Trader extends Job implements Serializable {
 
+    private static double TRADING_RANGE = 5000D;
+    private static double SETTLEMENT_MULTIPLIER = 1D;
+    
 	/**
 	 * Constructor
 	 */
@@ -71,7 +75,17 @@ public class Trader extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 		
-		// Gets total associated population with settlement.
-		return settlement.getAllAssociatedPeople().size() / 2D;
+        double result = 0D;
+        
+        Iterator<Settlement> i = settlement.getUnitManager().getSettlements().iterator();
+        while (i.hasNext()) {
+            Settlement otherSettlement = i.next();
+            if (otherSettlement != settlement) {
+                double distance = settlement.getCoordinates().getDistance(otherSettlement.getCoordinates());
+                if (distance <= TRADING_RANGE) result += SETTLEMENT_MULTIPLIER; 
+            }
+        }
+        
+		return result;
 	}
 }
