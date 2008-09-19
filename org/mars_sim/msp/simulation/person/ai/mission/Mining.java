@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-18
  * @author Scott Davis
  */
 
@@ -248,8 +248,10 @@ public class Mining extends RoverMission {
 				
 						// Find best mining site.
 						ExploredLocation miningSite = determineBestMiningSite(rover, settlement);
-						if (miningSite != null) 
+						if (miningSite != null) {
 							result = getMiningSiteValue(miningSite, settlement);
+                            if (result > 100D) result = 100D;
+                        }
 					}
 				}
 				catch (Exception e) {
