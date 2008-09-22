@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-09-15
+ * @version 2.85 2008-09-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -248,6 +248,16 @@ public class BuildingConstructionMission extends Mission implements Serializable
         }
         
         return result;
+    }
+    
+    @Override
+    protected boolean isCapableOfMission(Person person) {
+        if (super.isCapableOfMission(person)) {
+            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                if (person.getSettlement() == settlement) return true;
+            }
+        }
+        return false;
     }
     
     /**
