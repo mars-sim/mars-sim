@@ -100,10 +100,13 @@ public class Storage extends Function implements Serializable {
             double resourceStored = settlement.getInventory().getAmountResourceStored(resource);
             double resourceDemand = resourceValue * (resourceStored + 1D);
             
-            double existingStorageValue = resourceDemand / (existingStorage + 1D);
-            double totalStorageValue = resourceDemand / (existingStorage + storageAmount + 1D);
+            double currentStorageDemand = resourceDemand - existingStorage;
+            if (currentStorageDemand < 0D) currentStorageDemand = 0D;
             
-            result += existingStorageValue - totalStorageValue;
+            double buildingStorageNeeded = currentStorageDemand;
+            if (buildingStorageNeeded > storageAmount) buildingStorageNeeded = storageAmount;
+            
+            result += buildingStorageNeeded / 1000D;
         }
         
         return result;
