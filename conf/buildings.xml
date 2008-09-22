@@ -34,6 +34,7 @@
 				<research-speciality name="Areology" />
 				<research-speciality name="Medicine" />
 				<research-speciality name="Materials Science" />
+				<research-speciality name="Construction" />
 			</research>
 		
 			<!-- The building has communication capabilities. -->
@@ -389,6 +390,7 @@
 			<research tech-level="2" capacity="10">
 				<research-speciality name="Areology" />
 				<research-speciality name="Materials Science" />
+				<research-speciality name="Construction" />
 			</research>
 		</functions>
 	</building>
@@ -413,6 +415,7 @@
 			<manufacture tech-level="4" concurrent-processes="4" />
 			<research tech-level="4" capacity="4">
 				<research-speciality name="Materials Science" />
+				<research-speciality name="Construction" />
 			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
@@ -543,6 +546,7 @@
 			<manufacture tech-level="2" concurrent-processes="2" />
 			<research tech-level="2" capacity="2">
 				<research-speciality name="Materials Science" />
+				<research-speciality name="Construction" />
 			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="500.0" />
@@ -557,6 +561,15 @@
 				<resource-storage resource="Cement" capacity="500.0" />
 				<resource-storage resource="Concrete" capacity="500.0" />
 			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small building containing two living quarters. -->
+	<building name="Bunkhouse">
+		<power-required base-power="2.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="2.0" />
+			<living-accommodations beds="2" />
 		</functions>
 	</building>
 
