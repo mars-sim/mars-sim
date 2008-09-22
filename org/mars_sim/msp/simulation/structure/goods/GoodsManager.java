@@ -536,8 +536,10 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
-            if (constructionDemand > demand) demand = constructionDemand;
+            if (stageValue > 0D) {
+                double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
+                if (constructionDemand > demand) demand = constructionDemand;
+            }
         }
         
         return demand;
@@ -923,8 +925,10 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
-            if (constructionStageDemand > demand) demand = constructionStageDemand;
+            if (stageValue > 0D) {
+                double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
+                if (constructionStageDemand > demand) demand = constructionStageDemand;
+            }
         }
         
         return demand;
