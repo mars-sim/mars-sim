@@ -139,19 +139,20 @@ public class ConstructionValues implements Serializable {
                     result = getConstructionStageValue(stage.getInfo());
             }
             else {
-                if (site.getNextStageType() != null) {
-                    Map<ConstructionStageInfo, Double> stageValues = getConstructionStageProfit(
-                            site.getNextStageType(), constructionSkill, true);
-                    Iterator<ConstructionStageInfo> i = stageValues.keySet().iterator();
+                List<ConstructionStageInfo> nextStageInfos = null;
+                
+                ConstructionStage lastStage = site.getCurrentConstructionStage();
+                if (lastStage != null) nextStageInfos = ConstructionUtil.getNextPossibleStages(lastStage.getInfo());
+                else nextStageInfos = ConstructionUtil.getConstructionStageInfoList(
+                        ConstructionStageInfo.FOUNDATION, constructionSkill);
+                
+                if (nextStageInfos != null) {
+                    Iterator<ConstructionStageInfo> i = nextStageInfos.iterator();
                     while (i.hasNext()) {
-                        double profit = stageValues.get(i.next());
+                        ConstructionStageInfo stageInfo = i.next();
+                        double profit = getConstructionStageProfit(stageInfo, true);
                         if (profit > result) result = profit;
                     }
-                }
-                else {
-                    String buildingName = site.getBuildingName();
-                    if (buildingName != null) 
-                        result = getBuildingConstructionValue(site.getBuildingName());
                 }
             }
         }
@@ -204,9 +205,21 @@ public class ConstructionValues implements Serializable {
         
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
         
-        String nextStageType = site.getNextStageType();
-        if (nextStageType != null) 
-            result = getConstructionStageProfit(nextStageType, constructionSkill, true);
+        ConstructionStage lastStage = site.getCurrentConstructionStage();
+        if (lastStage != null) {
+            ConstructionStageInfo lastStageInfo = lastStage.getInfo();
+            Iterator<ConstructionStageInfo> i = 
+                ConstructionUtil.getNextPossibleStages(lastStageInfo).iterator();
+            while (i.hasNext()) {
+                ConstructionStageInfo stageInfo = i.next();
+                double profit = getConstructionStageProfit(stageInfo, true);
+                result.put(stageInfo, profit);
+            }
+        }
+        else {
+            result = getConstructionStageProfit(ConstructionStageInfo.FOUNDATION, 
+                    constructionSkill, true);
+        }
         
         return result;
     }
@@ -229,10 +242,7 @@ public class ConstructionValues implements Serializable {
         Iterator<ConstructionStageInfo> i = nextStages.iterator();
         while (i.hasNext()) {
             ConstructionStageInfo stageInfo = i.next();
-            double profit = getConstructionStageProfit(stageInfo);
-            
-            if (!hasConstructionMaterials(stageInfo)) profit = 0D;
-            
+            double profit = getConstructionStageProfit(stageInfo, checkMaterials);
             result.put(stageInfo, profit);
         }
         
@@ -294,7 +304,7 @@ public class ConstructionValues implements Serializable {
                 Iterator<ConstructionStageInfo> i = 
                         ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
                 while (i.hasNext()) {
-                    double stageValue = getConstructionStageProfit(i.next()) / 2D;
+                    double stageValue = getConstructionStageProfit(i.next(), true) / 2D;
                     if (stageValue > result) result = stageValue;
                 }
             }
@@ -343,12 +353,17 @@ public class ConstructionValues implements Serializable {
     
     /**
      * Gets the profit for a construction stage.
-     * @param stageInfo the constructino stage info.
+     * @param stageInfo the construction stage info.
+     * @param checkMaterials check availability of construction materials?
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    private double getConstructionStageProfit(ConstructionStageInfo stageInfo) throws Exception {
-        return getConstructionStageValue(stageInfo) - getConstructionStageCost(stageInfo);
+    private double getConstructionStageProfit(ConstructionStageInfo stageInfo, boolean checkMaterials) 
+            throws Exception {
+        double result = getConstructionStageValue(stageInfo) - getConstructionStageCost(stageInfo);
+        if (checkMaterials && !hasConstructionMaterials(stageInfo)) result = 0D;
+        
+        return result;
     }
     
     /**

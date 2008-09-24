@@ -136,6 +136,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     if (constructionSite.hasUnfinishedStage()) {
                         constructionStage = constructionSite.getCurrentConstructionStage(); 
                         finishingExistingStage = true;
+                        logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
                     }
                     else {
                         ConstructionStageInfo stageInfo = null;
@@ -156,6 +157,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                             constructionStage = new ConstructionStage(stageInfo);
                             constructionSite.addNewStage(constructionStage);
                             values.clearCache();
+                            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
                         }
                         else {
                             endMission("New construction stage could not be determined.");
@@ -413,6 +415,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 try {
                     constructionSite.createBuilding(settlement.getBuildingManager());
                     settlement.getConstructionManager().removeConstructionSite(constructionSite);
+                    logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
+                            " building constructed at " + settlement.getName());
                 }
                 catch (Exception e) {
                     throw new MissionException("Error constructing new building.", e);

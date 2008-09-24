@@ -383,9 +383,9 @@ public abstract class Mission implements Serializable {
     		Object p[] = people.toArray();
     		for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
     		
-    		
-    		if (logger.isLoggable(Level.FINEST)) {
-    		logger.finest(getDescription() 
+
+    		if (logger.isLoggable(Level.INFO)) {
+    		logger.info(getDescription() 
 			     + " ending at " 
 			     + getPhase() 
 			     + " due to " 
