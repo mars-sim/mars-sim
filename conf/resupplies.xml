@@ -16,11 +16,6 @@
 		<building type="MD1 Nuclear Reactor" number="1" />
 		<building type="Starting ERV Base" number="1" />
 		
-		<!-- A new vehicle for the settlement. -->
-		<!-- type: the type of vehicle (see vehicles.xml) -->
-		<!-- number: the number of these vehicles provided. -->
-		<vehicle type="Explorer Rover" number="1" />
-		
 		<!-- New equipment -->
 		<!-- type: the type of equipment. -->
 		<!-- number: the number of this type of equipment. -->
