@@ -68,7 +68,7 @@
 	</process>
 	
 	<!-- Produces 5kg iron ingot. -->
-	<process name="iron ingot casting" tech="1" skill="2" work-time="100" process-time="200">
+	<process name="iron ingot casting" tech="2" skill="2" work-time="100" process-time="200">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
 		</inputs>
@@ -99,7 +99,7 @@
 	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
 	<!-- Produces 1kg ingot of aluminum. -->
-	<process name="aluminum ingot casting" tech="1" skill="2" work-time="100" process-time="200">
+	<process name="aluminum ingot casting" tech="2" skill="2" work-time="100" process-time="200">
 		<inputs>
 			<resource name="aluminum oxide" amount="9.5" />
 			<resource name="carbon" amount="3.0" />
@@ -166,7 +166,7 @@
 	</process>
 	
 	<!-- Produces 5kg ingot of steel. -->
-	<process name="steel ingot alloying" tech="1" skill="3" work-time="100" process-time="100">
+	<process name="steel ingot alloying" tech="2" skill="3" work-time="100" process-time="100">
 		<inputs>
 			<resource name="iron powder" amount="25.0" />
 			<resource name="carbon" amount=".5" />
@@ -1541,6 +1541,17 @@
 		</inputs>
 		<outputs>
 			<part name="brick" number="100" />
+		</outputs>
+	</process>
+	
+	<!-- Melting permafrost ice and filtering the water. -->
+	<process name="melting/filtering ice" tech="1" skill="1" work-time="10.0" process-time="50" >
+		<inputs>
+			<resource name="ice" amount="100.0" />
+		</inputs>
+		<outputs>
+			<resource name="water" amount="50.0" />
+			<resource name="regolith" amount="50.0" />
 		</outputs>
 	</process>
 
