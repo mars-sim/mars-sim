@@ -32,7 +32,7 @@
 			
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
-			<vehicle type="Explorer Rover" number="1" />
+			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			
 			<!-- Equipment -->
