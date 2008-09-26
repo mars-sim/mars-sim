@@ -92,7 +92,7 @@ public class CollectIce extends CollectResourcesMission {
 				GoodsManager manager = person.getSettlement().getGoodsManager();
 				AmountResource iceResource = AmountResource.findAmountResource("ice");
 				double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(iceResource));
-				result *= value * 10D;
+				result *= value * 100D;
                 if (result > 100D) result = 100D;
 			}
 			catch (Exception e) {
