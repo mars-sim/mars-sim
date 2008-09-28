@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-08-28
  * @author Scott Davis
  */
 
@@ -121,8 +121,12 @@ public class ConstructionSite implements Serializable {
         Building newBuilding = new Building(buildingStage.getInfo().getName(), manager);
         manager.addBuilding(newBuilding);
         
+        // Record completed building name.
+        ConstructionManager constructionManager = manager.getSettlement().getConstructionManager();
+        constructionManager.addConstructedBuildingName(buildingStage.getInfo().getName());
+        
         // Clear construction value cache.
-        manager.getSettlement().getConstructionManager().getConstructionValues().clearCache();
+        constructionManager.getConstructionValues().clearCache();
         
         return newBuilding;
     }

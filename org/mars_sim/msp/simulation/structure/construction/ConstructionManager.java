@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 2.85 2008-08-24
+ * @version 2.85 2008-08-28
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ public class ConstructionManager implements Serializable {
     // Data members.
     private List<ConstructionSite> sites; // The settlement's construction sites.
     private ConstructionValues values;
+    private List<String> constructedBuildingNames; // Names of all buildings constructed at settlement.
    
     /**
      * Constructor
@@ -36,6 +37,7 @@ public class ConstructionManager implements Serializable {
     public ConstructionManager(Settlement settlement) {
         sites = new ArrayList<ConstructionSite>();
         values = new ConstructionValues(settlement);
+        constructedBuildingNames = new ArrayList<String>();
     }
     
     /**
@@ -87,5 +89,23 @@ public class ConstructionManager implements Serializable {
      */
     public ConstructionValues getConstructionValues() {
         return values;
+    }
+    
+    /**
+     * Adds a building name to the construction buildings list.
+     * @param buildingName the building name to add.
+     */
+    void addConstructedBuildingName(String buildingName) {
+        if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
+        else constructedBuildingNames.add(buildingName);
+    }
+    
+    /**
+     * Gets a list of all building names that have been constructed at the settlement.
+     * @return array of building names.
+     */
+    public String[] getConstructedBuildingNames() {
+        String[] result = new String[constructedBuildingNames.size()];
+        return constructedBuildingNames.toArray(result);
     }
 }
