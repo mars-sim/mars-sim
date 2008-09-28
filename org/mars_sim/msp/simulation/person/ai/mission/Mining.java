@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.85 2008-09-18
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -215,6 +215,9 @@ public class Mining extends RoverMission {
 			// Check if a mission-capable rover is available.
 			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement);
 			
+            // Check if available backup rover.
+            boolean backupRover = hasBackupRover(settlement);
+            
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.
 			boolean minNum = RoverMission.minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
@@ -238,7 +241,7 @@ public class Mining extends RoverMission {
 			// Check if LUV attachment parts available.
 			boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
 			
-			if (reservableRover && minNum && enoughBags && !embarkingMissions && 
+			if (reservableRover && backupRover && minNum && enoughBags && !embarkingMissions && 
 					reservableLUV && availableAttachmentParts) {
 				
 				try {

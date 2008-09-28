@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.85 2008-09-18
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -205,6 +205,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    	catch (Exception e) {}
 	    	
 	    	// Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
+            // Also check for backup rover for salvage mission.
 	    	boolean rescue = false;
 	    	if (vehicleTarget != null) {
 	    		rescue = (getRescuePeopleNum(vehicleTarget) > 0);
@@ -215,6 +216,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 					// Check if minimum number of people are available at the settlement.
 					// Plus one to hold down the fort.
 					if (!minAvailablePeopleAtSettlement(settlement, (MISSION_MIN_MEMBERS + 1))) missionPossible = false;
+                    
+                    // Check if available backup rover.
+                    if (!hasBackupRover(settlement)) missionPossible = false;
 		    	}
 	    	}
 	    	

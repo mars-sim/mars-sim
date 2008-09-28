@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -195,6 +195,9 @@ public class Exploration extends RoverMission {
 			// Check if a mission-capable rover is available.
 			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement);
 			
+            // Check if available backup rover.
+            boolean backupRover = hasBackupRover(settlement);
+            
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.
 			boolean minNum = RoverMission.minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
@@ -212,7 +215,7 @@ public class Exploration extends RoverMission {
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
 	    
-			if (reservableRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
+			if (reservableRover && backupRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();

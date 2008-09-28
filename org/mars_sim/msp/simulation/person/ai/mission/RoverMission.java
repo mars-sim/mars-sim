@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.84 2008-05-17
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -560,5 +560,21 @@ public abstract class RoverMission extends VehicleMission {
 		}
 		
 		super.endMission(reason);
-	}	
+	}
+    
+    /**
+     * Checks if there is an available backup rover at the settlement for the mission.
+     * @param settlement the settlement to check.
+     * @return true if available backup rover.
+     */
+    protected static boolean hasBackupRover(Settlement settlement) {
+        int availableVehicleNum = 0;
+        Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+        while (i.hasNext()) {
+            Vehicle vehicle = i.next();
+            if ((vehicle instanceof Rover) && !vehicle.isReservedForMission())
+                availableVehicleNum++;
+        }
+        return (availableVehicleNum >= 2);
+    }
 }

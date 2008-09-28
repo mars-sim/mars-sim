@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -165,6 +165,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    
 	    	// Check if available rover.
 	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
+            
+            // Check if available backup rover.
+            if (!hasBackupRover(settlement)) missionPossible = false;
             
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.

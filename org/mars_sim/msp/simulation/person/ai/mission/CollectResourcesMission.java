@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 
@@ -212,6 +212,9 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	    
 			// Check if a mission-capable rover is available.
 			boolean reservableRover = areVehiclesAvailable(settlement);
+            
+            // Check if available backup rover.
+            boolean backupRover = hasBackupRover(settlement);
 			
 			// Check if minimum number of people are available at the settlement.
 			// Plus one to hold down the fort.
@@ -229,7 +232,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
 	    
-			if (reservableRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
+			if (reservableRover && backupRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
