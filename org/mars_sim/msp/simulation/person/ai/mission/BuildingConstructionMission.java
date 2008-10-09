@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-09-20
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -532,7 +532,13 @@ public class BuildingConstructionMission extends Mission implements Serializable
         return result;
     }
     
-    // TODO: add comments
+    /**
+     * Checks if the settlement has enough construction materials for any new site.
+     * @param skill the construction skill.
+     * @param settlement the settlement to check.
+     * @return true if enough construction materials.
+     * @throws Exception if error checking construction materials.
+     */
     private static boolean hasAnyNewSiteConstructionMaterials(int skill, Settlement settlement) 
             throws Exception {
         boolean result = false;
@@ -546,7 +552,13 @@ public class BuildingConstructionMission extends Mission implements Serializable
         return result;
     }
     
-    // TODO: add comments
+    /**
+     * Checks if settlement has enough construction materials to work on an existing site.
+     * @param site the construction site to check.
+     * @param skill the construction skill.
+     * @return true if enough construction materials.
+     * @throws Exception if error checking site.
+     */
     private boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill) throws Exception {
         boolean result = true;
         
@@ -559,6 +571,27 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 if (hasStageConstructionMaterials(i.next(), settlement)) result = true;
             }
         }
+        
+        return result;
+    }
+    
+    @Override
+    protected boolean hasEmergency() {
+        boolean result = super.hasEmergency();
+        
+        try {
+            // Cancel construction mission if there are any beacon vehicles within range that need help.
+            Vehicle vehicleTarget = null;
+            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement);
+            if (vehicle != null) {
+                vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement, vehicle.getRange());
+                if (vehicleTarget != null) {
+                    if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) 
+                        result = true;
+                }
+            }
+        }
+        catch (Exception e) {}
         
         return result;
     }

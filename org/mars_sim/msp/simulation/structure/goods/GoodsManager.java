@@ -513,7 +513,8 @@ public class GoodsManager implements Serializable {
             
             double resourceMass = ManufactureUtil.getMass(resourceInput);
             
-            double totalInputsValue = outputsValue / 2D;
+            // double totalInputsValue = outputsValue / 2D;
+            double totalInputsValue = outputsValue * .75D;
             
             demand = (resourceMass / totalMass) * totalInputsValue;
 		}

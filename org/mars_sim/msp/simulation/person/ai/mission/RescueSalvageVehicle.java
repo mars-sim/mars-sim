@@ -467,7 +467,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
      * @param range the available range (km).
      * @return vehicle or null if none available.
      */
-    private static Vehicle findAvailableBeaconVehicle(Settlement settlement, double range) {
+    public static Vehicle findAvailableBeaconVehicle(Settlement settlement, double range) {
     	Vehicle result = null;
     	double halfRange = range / 2D;
     	
@@ -669,7 +669,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	 * @return true if this is the closest settlement.
 	 * @throws MissionException if error in checking settlements.
 	 */
-	private static boolean isClosestCapableSettlement(Settlement thisSettlement, Vehicle thisVehicle) 
+	public static boolean isClosestCapableSettlement(Settlement thisSettlement, Vehicle thisVehicle) 
 			throws MissionException {
 		boolean result = true;
 		

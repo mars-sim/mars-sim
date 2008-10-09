@@ -180,7 +180,7 @@ public class ConstructionValues implements Serializable {
             // Divide by number of existing construction sites (x 10) with this foundation.
             int numSites = 0;
             ConstructionManager manager = settlement.getConstructionManager();
-            Iterator<ConstructionSite> j = manager.getConstructionSitesNeedingMission().iterator();
+            Iterator<ConstructionSite> j = manager.getConstructionSites().iterator();
             while (j.hasNext()) {
                 if (j.next().hasStage(foundationStage)) numSites++;
             }

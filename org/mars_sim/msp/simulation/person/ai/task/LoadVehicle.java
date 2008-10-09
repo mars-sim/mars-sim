@@ -517,8 +517,8 @@ public class LoadVehicle extends Task implements Serializable {
         		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
         		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
         			double stored = inv.getAmountResourceStored((AmountResource) resource);
-        			if (logger.isLoggable(Level.FINEST)) 
-        				logger.finest(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			if (logger.isLoggable(Level.INFO)) 
+        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -529,8 +529,8 @@ public class LoadVehicle extends Task implements Serializable {
         		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
         			int stored = inv.getItemResourceNum((ItemResource) resource);
-        			if (logger.isLoggable(Level.FINEST)) 
-        				logger.finest(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
+        			if (logger.isLoggable(Level.INFO)) 
+        				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
         		}
         	}
@@ -547,8 +547,8 @@ public class LoadVehicle extends Task implements Serializable {
     		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         	if (inv.findNumEmptyUnitsOfClass(equipmentType) < totalNeeded) {
         		int stored = inv.findNumEmptyUnitsOfClass(equipmentType);
-    			if (logger.isLoggable(Level.FINEST)) 
-    				logger.finest(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
+    			if (logger.isLoggable(Level.INFO)) 
+    				logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
         		enoughSupplies = false;
         	}
         }

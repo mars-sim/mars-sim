@@ -102,6 +102,9 @@ public class ManufactureGood extends Task implements Serializable {
         			
        				// Manufacturing good value modifier.
        				result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
+                    
+                    // Add a base chance.
+                    if (result > 0D) result += 25D;
                 	
        				// If manufacturing building has process requiring work, add modifier.
        				SkillManager skillManager = person.getMind().getSkillManager();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -35,8 +35,6 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
-import org.mars_sim.msp.simulation.structure.goods.Good;
-import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
@@ -154,16 +152,7 @@ public class Areologist extends Job implements Serializable {
 				}
 			}
 		}
-		
-		try {
-			// Add ice value at settlement X 10.
-			Good iceGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("ice"));
-			double iceValue = settlement.getGoodsManager().getGoodValuePerMass(iceGood);
-			result += iceValue * 10D;
-		}
-		catch (Exception e) {
-			logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-		}
+
 		return result;	
 	}
 }

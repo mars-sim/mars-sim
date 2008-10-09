@@ -158,9 +158,10 @@ public class ConstructionSite implements Serializable {
         if (stage == null) throw new IllegalArgumentException("stage cannot be null");
         
         boolean result = false;
-        if (stage.equals(foundationStage)) result = true;
-        else if (stage.equals(frameStage)) result = true;
-        else if (stage.equals(buildingStage)) result = true;
+        if ((foundationStage != null) && foundationStage.getInfo().equals(stage)) result = true;
+        else if ((frameStage != null) && frameStage.getInfo().equals(stage)) result = true;
+        else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
+        
         return result;
     }
 }

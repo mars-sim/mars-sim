@@ -48,7 +48,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	private static final double BASE_MISSION_WEIGHT = 1D;
 	private static final double RELATIONSHIP_MODIFIER = 10D;
 	private static final double JOB_MODIFIER = 1D;
-	private static final double CROWDING_MODIFIER = 5D;
+	private static final double CROWDING_MODIFIER = 50D;
 	private static final double RANGE_BUFFER = .8D;
 	
     // Data members
@@ -178,15 +178,23 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 				missionPossible = false;
 			
 	    	// Check if there are any desirable settlements within range.
+            double topSettlementDesirability = 0D;
 	    	try {
 	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement);
 	    		if (vehicle != null) {
-	    			Map desirableSettlements = getDestinationSettlements(person, settlement, vehicle.getRange());
+	    			Map<Settlement, Double> desirableSettlements = 
+                        getDestinationSettlements(person, settlement, vehicle.getRange());
 	    			if (desirableSettlements.size() == 0) missionPossible = false;
+                    Iterator<Settlement> i = desirableSettlements.keySet().iterator();
+                    while (i.hasNext()) {
+                        Settlement desirableSettlement = i.next();
+                        double desirability = desirableSettlements.get(desirableSettlement);
+                        if (desirability > topSettlementDesirability) topSettlementDesirability = desirability;
+                    }
 	    		}
 	    	}
 	    	catch (Exception e) {
-	    	    	logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
+                logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
 	    	}
 	    	
 			// Check for embarking missions.
@@ -194,7 +202,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    	
 	    	// Determine mission probability.
 	        if (missionPossible) {
-	        	missionProbability = BASE_MISSION_WEIGHT;
+	        	missionProbability = BASE_MISSION_WEIGHT + (topSettlementDesirability / 100D);
 	            
 	            // Crowding modifier.
 	            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();

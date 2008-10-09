@@ -78,6 +78,8 @@ public class Driver extends Job implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 		
+        double result = 0D;
+        
 		// Get number of vehicles parked at a settlement.
 		double settlementVehicleNum = settlement.getParkedVehicleNum();
 		
@@ -89,6 +91,12 @@ public class Driver extends Job implements Serializable {
 			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		
-		return settlementVehicleNum * 2D;
+		result = settlementVehicleNum * 2D;
+        
+        // Add overpopulation modifier.
+        int overpop = settlement.getAllAssociatedPeople().size() - settlement.getPopulationCapacity();
+        if (overpop > 0) result += (overpop * 10D);
+        
+        return result;
 	}
 }

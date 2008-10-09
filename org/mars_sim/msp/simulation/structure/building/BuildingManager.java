@@ -472,7 +472,7 @@ public class BuildingManager implements Serializable {
                 result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
         
             // Multiply times one thousand.
-            result *= 1000D;
+            result *= 10000D;
         
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingName);

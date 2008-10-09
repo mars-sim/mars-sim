@@ -72,7 +72,7 @@ public class ResourceProcessing extends Function implements Serializable {
                 AmountResource resource = j.next();
                 if (!process.isWasteOutputResource(resource)) {
                     Good resourceGood = GoodsUtil.getResourceGood(resource);
-                    double rate = process.getMaxOutputResourceRate(resource);
+                    double rate = process.getMaxOutputResourceRate(resource) * 1000D;
                     processValue += settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
                 }
             }
@@ -82,7 +82,7 @@ public class ResourceProcessing extends Function implements Serializable {
                 AmountResource resource = k.next();
                 if (!process.isAmbientInputResource(resource)) {
                     Good resourceGood = GoodsUtil.getResourceGood(resource);
-                    double rate = process.getMaxInputResourceRate(resource);
+                    double rate = process.getMaxInputResourceRate(resource) * 1000D;
                     processValue -= settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
                 }
             }
