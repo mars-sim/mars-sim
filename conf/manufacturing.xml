@@ -413,7 +413,7 @@
 	
 	<!-- Gypsum is CaSO4 * 2H2O -->
 	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
-	<process name="extract gypsum from regolith" tech="1" skill="2" work-time="100" process-time="0">
+	<process name="extract gypsum from regolith" tech="1" skill="1" work-time="100" process-time="0">
 		<inputs>
 			<resource name="regolith" amount="50.0" />
 		</inputs>
@@ -424,7 +424,7 @@
 	
 	<!-- Gypsum is CaSO4 * 2H2O -->
 	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
-	<process name="extract gypsum from sand" tech="1" skill="2" work-time="100" process-time="0">
+	<process name="extract gypsum from sand" tech="1" skill="1" work-time="100" process-time="0">
 		<inputs>
 			<resource name="sand" amount="50.0" />
 		</inputs>
@@ -438,7 +438,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="2" work-time="100" process-time="200">
+	<process name="reduce gypsum to calcium carbonate with carbon" tech="1" skill="1" work-time="100" process-time="200">
 		<inputs>
 			<resource name="gypsum" amount="50.0" />
 			<resource name="carbon" amount="7.0" />
@@ -455,7 +455,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with carbon monoxide" tech="1" skill="2" work-time="100" process-time="200">
+	<process name="reduce gypsum to calcium carbonate with carbon monoxide" tech="1" skill="1" work-time="100" process-time="200">
 		<inputs>
 			<resource name="gypsum" amount="50.0" />
 			<resource name="carbon monoxide" amount="32.5" />
@@ -472,7 +472,7 @@
 	<!-- CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O -->
 	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
 	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
-	<process name="reduce gypsum to calcium carbonate with hydrogen" tech="1" skill="2" work-time="100" process-time="200">
+	<process name="reduce gypsum to calcium carbonate with hydrogen" tech="1" skill="1" work-time="100" process-time="200">
 		<inputs>
 			<resource name="gypsum" amount="50.0" />
 			<resource name="hydrogen" amount="2.3" />
@@ -485,7 +485,7 @@
 	</process>
 	
 	<!-- CaCO3 (calcium carbonate) -> CaO (lime) + CO2 -->
-	<process name="baking calcium carbonate to lime" tech="1" skill="2" work-time="50" process-time="400">
+	<process name="baking calcium carbonate to lime" tech="1" skill="1" work-time="50" process-time="400">
 		<inputs>
 			<resource name="calcium carbonate" amount="50.0" />
 		</inputs>
@@ -1486,7 +1486,7 @@
 		</outputs>
 	</process>
 	
-	<process name="cement manufacturing" tech="1" skill="1" work-time="50" process-time="50" >
+	<process name="cement manufacturing" tech="1" skill="1" work-time="50" process-time="0" >
 		<inputs>
 			<resource name="calcium carbonate" amount="40.0" />
 			<resource name="gypsum" amount="8.0" />
@@ -1498,12 +1498,34 @@
 		</outputs>
 	</process>
 	
-	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
-	<process name="concrete mixing" tech="1" skill="1" work-time="50" process-time="50" >
+	<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+	<process name="regolith mortar mixing" tech="1" skill="1" work-time="100" process-time="0" >
 		<inputs>
-			<resource name="cement" amount="10" />
-			<resource name="sand" amount="15" />
-			<resource name="regolith" amount="25" />
+			<resource name="cement" amount="17.0" />
+			<resource name="regolith" amount="83.0" />
+		</inputs>
+		<outputs>
+			<resource name="mortar" amount="100.0" />
+		</outputs>
+	</process>
+	
+	<!-- Makes dry mortar mix with cement and sand (1:5 mixture). -->
+	<process name="sand mortar mixing" tech="1" skill="1" work-time="100" process-time="0" >
+		<inputs>
+			<resource name="cement" amount="17.0" />
+			<resource name="sand" amount="83.0" />
+		</inputs>
+		<outputs>
+			<resource name="mortar" amount="100.0" />
+		</outputs>
+	</process>
+	
+	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
+	<process name="concrete mixing" tech="1" skill="1" work-time="50" process-time="0" >
+		<inputs>
+			<resource name="cement" amount="10.0" />
+			<resource name="sand" amount="15.0" />
+			<resource name="regolith" amount="25.0" />
 		</inputs>
 		<outputs>
 			<resource name="concrete" amount="50.0" />
@@ -1511,7 +1533,7 @@
 	</process>
 	
 	<!-- Same as concrete mixing but using lime in place of cement. -->
-	<process name="limecrete mixing" tech="1" skill="1" work-time="50" process-time="50" >
+	<process name="limecrete mixing" tech="1" skill="1" work-time="50" process-time="0" >
 		<inputs>
 			<resource name="lime" amount="10" />
 			<resource name="sand" amount="15" />
@@ -1523,7 +1545,7 @@
 	</process>
 	
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="brick baking" tech="1" skill="1" work-time="10" process-time="50" >
+	<process name="regolith brick baking" tech="1" skill="1" work-time="10" process-time="50" >
 		<inputs>
 			<resource name="regolith" amount="28.6" />
 			<resource name="water" amount="5.0" />
@@ -1533,10 +1555,32 @@
 		</outputs>
 	</process>
 	
+	<!-- Brick manufacturing with sand, water, heat and pressure. -->
+	<process name="sand brick baking" tech="1" skill="1" work-time="10" process-time="50" >
+		<inputs>
+			<resource name="sand" amount="28.6" />
+			<resource name="water" amount="5.0" />
+		</inputs>
+		<outputs>
+			<part name="brick" number="10" />
+		</outputs>
+	</process>
+	
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="large batch brick baking" tech="1" skill="2" work-time="100" process-time="500" >
+	<process name="large batch regolith brick baking" tech="1" skill="2" work-time="100" process-time="500" >
 		<inputs>
 			<resource name="regolith" amount="286.0" />
+			<resource name="water" amount="50.0" />
+		</inputs>
+		<outputs>
+			<part name="brick" number="100" />
+		</outputs>
+	</process>
+	
+	<!-- Brick manufacturing with sand, water, heat and pressure. -->
+	<process name="large batch sand brick baking" tech="1" skill="2" work-time="100" process-time="500" >
+		<inputs>
+			<resource name="sand" amount="286.0" />
 			<resource name="water" amount="50.0" />
 		</inputs>
 		<outputs>

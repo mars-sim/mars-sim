@@ -71,5 +71,6 @@
 
 	<resource name="cement" phase="solid" life-support="false" />
 	<resource name="concrete" phase="solid" life-support="false" />
+	<resource name="mortar" phase="solid" life-support="false" />
 
 </resource-list>
