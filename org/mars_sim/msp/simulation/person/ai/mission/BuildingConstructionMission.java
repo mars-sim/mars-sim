@@ -139,19 +139,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
                     }
                     else {
-                        ConstructionStageInfo stageInfo = null;
-                        double topStageInfoProfit = 0D;
-                        Map<ConstructionStageInfo, Double> stageProfits = 
-                            values.getNewConstructionStageProfits(constructionSite, constructionSkill);
-                        Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
-                        while (i.hasNext()) {
-                            ConstructionStageInfo info = i.next();
-                            double infoProfit = stageProfits.get(info);
-                            if (infoProfit > topStageInfoProfit) {
-                                stageInfo = info;
-                                topStageInfoProfit = infoProfit;
-                            }
-                        }
+                        ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
                         
                         if (stageInfo != null) {
                             constructionStage = new ConstructionStage(stageInfo);
@@ -247,6 +235,46 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
                 result = 0D;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Determines a new construction stage info for a site.
+     * @param site the construction site.
+     * @param skill the architect's construction skill.
+     * @return construction stage info.
+     * @throws Exception if error determining construction stage info.
+     */
+    private ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) throws Exception {
+        ConstructionStageInfo result = null;
+        
+        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        Map<ConstructionStageInfo, Double> stageProfits = 
+            values.getNewConstructionStageProfits(site, skill);
+        double totalProfit = 0D;
+        Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
+        while (i.hasNext()) {
+            ConstructionStageInfo info = i.next();
+            double infoProfit = stageProfits.get(info);
+            if (infoProfit > 0D) totalProfit += infoProfit;
+        }
+        
+        double randomValue = RandomUtil.getRandomDouble(totalProfit);
+        
+        double totalProfit2 = 0D;
+        Iterator<ConstructionStageInfo> j = stageProfits.keySet().iterator();
+        while (j.hasNext()) {
+            ConstructionStageInfo info = j.next();
+            double infoProfit = stageProfits.get(info);
+            if (infoProfit > 0D) {
+                totalProfit2 += infoProfit;
+                if (totalProfit2 > randomValue) {
+                    result = info;
+                    break;
+                }
+            }
         }
         
         return result;
