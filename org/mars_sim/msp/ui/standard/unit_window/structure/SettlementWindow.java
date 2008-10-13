@@ -45,5 +45,6 @@ public class SettlementWindow extends UnitWindow {
         addTabPanel(new MaintenanceTabPanel(settlement, desktop));
         addTabPanel(new ManufactureTabPanel(settlement, desktop));
         addTabPanel(new MissionTabPanel(settlement, desktop));
+        addTabPanel(new ConstructionTabPanel(settlement, desktop));
     }
 }

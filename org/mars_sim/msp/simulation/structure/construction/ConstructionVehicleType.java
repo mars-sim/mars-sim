@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionVehicleType.java
- * @version 2.85 2008-08-10
+ * @version 2.85 2008-10-13
  * @author Scott Davis
  */
 
@@ -37,21 +37,24 @@ public class ConstructionVehicleType implements Serializable {
     }
     
     /**
-     * @return gets the attachment parts.
+     * Gets the attachment parts.
+     * @return list of parts.
      */
     public List<Part> getAttachmentParts() {
         return attachmentParts;
     }
 
     /**
-     * @return gets the vehicle class.
+     * Gets the vehicle class.
+     * @return class.
      */
     public Class getVehicleClass() {
         return vehicleClass;
     }
 
     /**
-     * @return gets the vehicle type.
+     * Gets the vehicle type.
+     * @return vehicle type.
      */
     public String getVehicleType() {
         return vehicleType;

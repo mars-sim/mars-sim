@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-08-28
+ * @version 2.85 2008-10-12
  * @author Scott Davis
  */
 
@@ -9,8 +9,10 @@ package org.mars_sim.msp.simulation.structure.construction;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * A building construction site.
@@ -123,7 +125,8 @@ public class ConstructionSite implements Serializable {
         
         // Record completed building name.
         ConstructionManager constructionManager = manager.getSettlement().getConstructionManager();
-        constructionManager.addConstructedBuildingName(buildingStage.getInfo().getName());
+        MarsClock timeStamp = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        constructionManager.addConstructedBuildingLogEntry(buildingStage.getInfo().getName(), timeStamp);
         
         // Clear construction value cache.
         constructionManager.getConstructionValues().clearCache();

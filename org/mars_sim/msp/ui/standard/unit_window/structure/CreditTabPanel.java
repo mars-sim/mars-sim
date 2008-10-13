@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditTabPanel.java
- * @version 2.85 2008-07-19
+ * @version 2.85 2008-10-12
  * @author Scott Davis
  */
 
@@ -88,7 +88,7 @@ public class CreditTabPanel extends TabPanel {
 	}
 	
     /** 
-     * Internal class used as model for the power table.
+     * Internal class used as model for the credit table.
      */
     private class CreditTableModel extends AbstractTableModel implements CreditListener {
     	

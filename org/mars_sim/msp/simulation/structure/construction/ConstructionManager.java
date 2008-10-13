@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 2.85 2008-08-28
+ * @version 2.85 2008-10-12
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * Manager for construction sites at a settlement.
@@ -28,7 +29,7 @@ public class ConstructionManager implements Serializable {
     // Data members.
     private List<ConstructionSite> sites; // The settlement's construction sites.
     private ConstructionValues values;
-    private List<String> constructedBuildingNames; // Names of all buildings constructed at settlement.
+    private List<ConstructedBuildingLogEntry> constructedBuildingLog; 
    
     /**
      * Constructor
@@ -37,7 +38,7 @@ public class ConstructionManager implements Serializable {
     public ConstructionManager(Settlement settlement) {
         sites = new ArrayList<ConstructionSite>();
         values = new ConstructionValues(settlement);
-        constructedBuildingNames = new ArrayList<String>();
+        constructedBuildingLog = new ArrayList<ConstructedBuildingLogEntry>();
     }
     
     /**
@@ -92,20 +93,25 @@ public class ConstructionManager implements Serializable {
     }
     
     /**
-     * Adds a building name to the construction buildings list.
+     * Adds a building log entry to the constructed buildings list.
      * @param buildingName the building name to add.
+     * @param builtTime the time stamp that construction was finished.
      */
-    void addConstructedBuildingName(String buildingName) {
+    void addConstructedBuildingLogEntry(String buildingName, MarsClock builtTime) {
         if (buildingName == null) throw new IllegalArgumentException("buildingName is null");
-        else constructedBuildingNames.add(buildingName);
+        else if (builtTime == null) throw new IllegalArgumentException("builtTime is null");
+        else {
+            ConstructedBuildingLogEntry logEntry = 
+                new ConstructedBuildingLogEntry(buildingName, builtTime);
+            constructedBuildingLog.add(logEntry);
+        }
     }
     
     /**
-     * Gets a list of all building names that have been constructed at the settlement.
-     * @return array of building names.
+     * Gets a log of all constructed buildings at the settlement.
+     * @return list of ConstructedBuildingLogEntry
      */
-    public String[] getConstructedBuildingNames() {
-        String[] result = new String[constructedBuildingNames.size()];
-        return constructedBuildingNames.toArray(result);
+    public List<ConstructedBuildingLogEntry> getConstructedBuildingLog() {
+        return new ArrayList<ConstructedBuildingLogEntry>(constructedBuildingLog);
     }
 }

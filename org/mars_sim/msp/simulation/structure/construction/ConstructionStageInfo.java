@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfo.java
- * @version 2.85 2008-08-15
+ * @version 2.85 2008-10-13
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public class ConstructionStageInfo implements Serializable {
      * Constructor
      * @param name the name of the stage.
      * @param type the stage type.
-     * @param workTime the work time required for construction.
+     * @param workTime the work time (millisols) required for construction.
      * @param architectConstructionSkill the construction skill required.
      * @param prerequisiteStage the name of the prerequisite stage.
      * @param parts map of parts required and their number.
@@ -61,56 +61,64 @@ public class ConstructionStageInfo implements Serializable {
     }
 
     /**
-     * @return gets the architect construction skill level.
+     * Gets the architect construction skill level.
+     * @return skill level.
      */
     public int getArchitectConstructionSkill() {
         return architectConstructionSkill;
     }
 
     /**
-     * @return gets the name of the stage.
+     * Gets the name of the stage.
+     * @return name.
      */
     public String getName() {
         return name;
     }
 
     /**
-     * @return Gets the parts needed for the stage.
+     * Gets the parts needed for the stage.
+     * @return map of parts and their number.
      */
     public Map<Part, Integer> getParts() {
         return parts;
     }
 
     /**
-     * @return gets the prerequisite stage name.
+     * Gets the prerequisite stage name.
+     * @return name.
      */
     public String getPrerequisiteStage() {
         return prerequisiteStage;
     }
 
     /**
-     * @return gets the resources needed for the stage.
+     * Gets the resources needed for the stage.
+     * @return map of resources and their amounts (kg).
      */
     public Map<AmountResource, Double> getResources() {
         return resources;
     }
 
     /**
-     * @return gets the stage type.
+     * Gets the stage type.
+     * @return type.
      */
     public String getType() {
         return type;
     }
 
     /**
-     * @return gets the vehicles needed for the stage.
+     * Gets the vehicles needed for the stage.
+     * @return vehicle type.
      */
     public List<ConstructionVehicleType> getVehicles() {
         return vehicles;
     }
 
     /**
-     * @return gets the construction work time.
+     * Gets the construction work time.
+     * @return time (millisols).
      */
     public double getWorkTime() {
         return workTime;

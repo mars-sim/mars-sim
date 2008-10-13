@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-10-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
