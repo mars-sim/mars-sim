@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-10-11
+ * @version 2.85 2008-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -142,7 +142,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
                         
                         if (stageInfo != null) {
-                            constructionStage = new ConstructionStage(stageInfo);
+                            constructionStage = new ConstructionStage(stageInfo, constructionSite);
                             constructionSite.addNewStage(constructionStage);
                             values.clearCache();
                             logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
@@ -622,5 +622,21 @@ public class BuildingConstructionMission extends Mission implements Serializable
         catch (Exception e) {}
         
         return result;
+    }
+    
+    /**
+     * Gets the mission's construction site.
+     * @return construction site.
+     */
+    public ConstructionSite getConstructionSite() {
+        return constructionSite;
+    }
+    
+    /**
+     * Gets the mission's construction stage.
+     * @return construction stage.
+     */
+    public ConstructionStage getConstructionStage() {
+        return constructionStage;
     }
 }

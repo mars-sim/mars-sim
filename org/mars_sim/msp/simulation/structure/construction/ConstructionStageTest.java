@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageTest.java
- * @version 2.85 2008-08-31
+ * @version 2.85 2008-10-23
  * @author Scott Davis
  */
 
@@ -53,7 +53,8 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.ConstructionStage(ConstructionStageInfo)'
      */
     public void testConstructionStage() {
-        ConstructionStage stage = new ConstructionStage(foundationInfo);
+        ConstructionSite site = new ConstructionSite();
+        ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertNotNull(stage);
     }
 
@@ -62,7 +63,8 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getInfo()'
      */
     public void testGetInfo() {
-        ConstructionStage stage = new ConstructionStage(foundationInfo);
+        ConstructionSite site = new ConstructionSite();
+        ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(foundationInfo, stage.getInfo());
     }
 
@@ -71,7 +73,8 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.getCompletedWorkTime()'
      */
     public void testGetCompletedWorkTime() {
-        ConstructionStage stage = new ConstructionStage(foundationInfo);
+        ConstructionSite site = new ConstructionSite();
+        ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         assertEquals(0D, stage.getCompletedWorkTime());
     }
 
@@ -80,7 +83,8 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.addWorkTime(double)'
      */
     public void testAddWorkTime() {
-        ConstructionStage stage = new ConstructionStage(foundationInfo);
+        ConstructionSite site = new ConstructionSite();
+        ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertEquals(5000D, stage.getCompletedWorkTime());
         stage.addWorkTime(5000D);
@@ -94,7 +98,8 @@ public class ConstructionStageTest extends TestCase {
      * .construction.ConstructionStage.isComplete()'
      */
     public void testIsComplete() {
-        ConstructionStage stage = new ConstructionStage(foundationInfo);
+        ConstructionSite site = new ConstructionSite();
+        ConstructionStage stage = new ConstructionStage(foundationInfo, site);
         stage.addWorkTime(5000D);
         assertFalse(stage.isComplete());
         stage.addWorkTime(10000D);

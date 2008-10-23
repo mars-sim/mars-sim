@@ -193,7 +193,11 @@ public class ConstructionSitesPanel extends JPanel {
             setToolTipText(getToolTipString());
         }
         
-        public String getStatusString() {
+        /**
+         * Gets the status label string.
+         * @return status string.
+         */
+        private String getStatusString() {
             String statusString = "";
             ConstructionStage stage = site.getCurrentConstructionStage();
             if (stage != null) {
@@ -211,7 +215,7 @@ public class ConstructionSitesPanel extends JPanel {
         /**
          * Gets a tool tip string for the panel.
          */
-        public String getToolTipString() {
+        private String getToolTipString() {
             StringBuffer result = new StringBuffer("<html>");
             result.append(getStatusString() + "<br>");
             
@@ -269,6 +273,5 @@ public class ConstructionSitesPanel extends JPanel {
             
             return result.toString();
         }
-    }
-    
+    }   
 }

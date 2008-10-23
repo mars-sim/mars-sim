@@ -1,13 +1,17 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-10-12
+ * @version 2.85 2008-10-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.structure.construction;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -19,11 +23,18 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  */
 public class ConstructionSite implements Serializable {
     
+    // Construction site events.
+    public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
+    public static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
+    public static final String ADD_CONSTRUCTION_STAGE_EVENT = "adding construction stage";
+    public static final String CREATE_BUILDING_EVENT = "creating new building";
+    
     // Data members
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
     private boolean undergoingConstruction;
+    private transient List<ConstructionListener> listeners;
     
     /**
      * Constructor
@@ -33,6 +44,7 @@ public class ConstructionSite implements Serializable {
         frameStage = null;
         buildingStage = null;
         undergoingConstruction = false;
+        listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
     }
     
     /**
@@ -58,6 +70,8 @@ public class ConstructionSite implements Serializable {
      */
     public void setUndergoingConstruction(boolean undergoingConstruction) {
         this.undergoingConstruction = undergoingConstruction;
+        if (undergoingConstruction) fireConstructionUpdate(START_UNDERGOING_CONSTRUCTION_EVENT);
+        else fireConstructionUpdate(END_UNDERGOING_CONSTRUCTION_EVENT);
     }
     
     /**
@@ -110,6 +124,9 @@ public class ConstructionSite implements Serializable {
             buildingStage = stage;
         }
         else throw new Exception("Stage type: " + stage.getInfo().getType() + " not valid");
+        
+        // Fire construction event.
+        fireConstructionUpdate(ADD_CONSTRUCTION_STAGE_EVENT, stage);
     }
     
     /**
@@ -130,6 +147,9 @@ public class ConstructionSite implements Serializable {
         
         // Clear construction value cache.
         constructionManager.getConstructionValues().clearCache();
+        
+        // Fire construction event.
+        fireConstructionUpdate(CREATE_BUILDING_EVENT, newBuilding);
         
         return newBuilding;
     }
@@ -166,5 +186,48 @@ public class ConstructionSite implements Serializable {
         else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
         
         return result;
+    }
+    
+    /**
+     * Adds a listener
+     * @param newListener the listener to add.
+     */
+    public final void addConstructionListener(ConstructionListener newListener) {
+        if (listeners == null) 
+            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+        if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Removes a listener
+     * @param oldListener the listener to remove.
+     */
+    public final void removeConstructionListener(ConstructionListener oldListener) {
+        if (listeners == null) 
+            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+        if (listeners.contains(oldListener)) listeners.remove(oldListener);
+    }
+    
+    /**
+     * Fire a construction update event.
+     * @param updateType the update type.
+     */
+    final void fireConstructionUpdate(String updateType) {
+        fireConstructionUpdate(updateType, null);
+    }
+    
+    /**
+     * Fire a construction update event.
+     * @param updateType the update type.
+     * @param target the event target or null if none.
+     */
+    final void fireConstructionUpdate(String updateType, Object target) {
+        if (listeners == null) 
+            listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+        synchronized(listeners) {
+            Iterator i = listeners.iterator();
+            while (i.hasNext()) ((ConstructionListener) i.next()).constructionUpdate(
+                    new ConstructionEvent(this, updateType, target));
+        }
     }
 }

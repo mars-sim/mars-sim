@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeMissionCustomInfoPanel.java
- * @version 2.84 2008-06-09
+ * @version 2.85 2008-10-20
  * @author Scott Davis
  */
 
@@ -36,7 +36,7 @@ import org.mars_sim.msp.ui.standard.NumberCellRenderer;
 /**
  * A panel for displaying mining mission information.
  */
-public class MiningMissionCustomInfoPanel extends JPanel {
+public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	// Data members
 	private Mining mission;
@@ -51,8 +51,11 @@ public class MiningMissionCustomInfoPanel extends JPanel {
 	 */
 	MiningMissionCustomInfoPanel(MainDesktopPane desktop) {
 		// Use JPanel constructor
-		super(new BorderLayout());
+		super();
 		
+        // Set the layout.
+        setLayout(new BorderLayout());
+        
 		// Initialize data members.
 		this.desktop = desktop;
 		
@@ -126,10 +129,7 @@ public class MiningMissionCustomInfoPanel extends JPanel {
     	return desktop;
     }
 
-	/**
-	 * Updates the panel based on a new mission to display.
-	 * @param mission the mission to display.
-	 */
+	@Override
 	public void updateMission(Mission mission) {
 		if (mission instanceof Mining) {
 			this.mission = (Mining) mission;
@@ -139,10 +139,7 @@ public class MiningMissionCustomInfoPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * Updates the panel based on a mission event.
-	 * @param e the mission event.
-	 */
+	@Override
 	public void updateMissionEvent(MissionEvent e) {
 		if (e.getType().equals(Mining.EXCAVATE_MINERALS_EVENT) || 
 				e.getType().equals(Mining.COLLECT_MINERALS_EVENT))

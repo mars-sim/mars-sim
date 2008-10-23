@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStage.java
- * @version 2.85 2008-08-10
+ * @version 2.85 2008-08-23
  * @author Scott Davis
  */
 
@@ -14,16 +14,21 @@ import java.io.Serializable;
  */
 public class ConstructionStage implements Serializable {
 
+    // Construction site events.
+    public static final String ADD_CONSTRUCTION_WORK_EVENT = "adding construction work";
+    
     // Data members
     private ConstructionStageInfo info;
+    private ConstructionSite site;
     private double completedWorkTime;
     
     /**
      * Constructor
      * @param info the stage information.
      */
-    public ConstructionStage(ConstructionStageInfo info) {
+    public ConstructionStage(ConstructionStageInfo info, ConstructionSite site) {
         this.info = info;
+        this.site = site;
         completedWorkTime = 0D;
     }
     
@@ -51,6 +56,9 @@ public class ConstructionStage implements Serializable {
         completedWorkTime += workTime;
         if (completedWorkTime > info.getWorkTime())
             completedWorkTime = info.getWorkTime();
+        
+        // Fire construction event
+        site.fireConstructionUpdate(ADD_CONSTRUCTION_WORK_EVENT, this);
     }
     
     /**

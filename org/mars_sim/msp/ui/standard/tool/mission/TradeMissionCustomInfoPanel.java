@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * TradeMissionCustomInfoPanel.java
- * @version 2.83 2008-01-09
+ * @version 2.85 2008-10-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.tool.mission;
 
 import java.awt.BorderLayout;
@@ -29,7 +28,7 @@ import org.mars_sim.msp.simulation.structure.goods.Good;
 /**
  * A panel for displaying trade mission information.
  */
-public class TradeMissionCustomInfoPanel extends JPanel {
+public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	// Data members.
 	private Trade mission;
@@ -43,8 +42,12 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 	 * Constructor
 	 */
 	TradeMissionCustomInfoPanel() {
-		super(new GridLayout(3, 1));
+        // Use JPanel constructor
+		super();
 		
+        // Set the layout.
+        setLayout(new GridLayout(3, 1));
+        
 		// Create the selling goods panel.
 		JPanel sellingGoodsPane = new JPanel(new BorderLayout());
 		add(sellingGoodsPane);
@@ -116,10 +119,7 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 		boughtGoodsScrollPane.setViewportView(boughtGoodsTable);
 	}
 	
-	/**
-	 * Updates the panel based on a mission event.
-	 * @param e the mission event.
-	 */
+	@Override
 	public void updateMissionEvent(MissionEvent e) {
 		if (e.getType().equals(Trade.BUY_LOAD_EVENT)) {
 			boughtGoodsTableModel.updateTable();
@@ -127,10 +127,7 @@ public class TradeMissionCustomInfoPanel extends JPanel {
 		}
 	}
 
-	/**
-	 * Updates the panel based on a new mission to display.
-	 * @param mission the mission to display.
-	 */
+	@Override
 	public void updateMission(Mission mission) {
 		if (mission instanceof Trade) {
 			this.mission = (Trade) mission;

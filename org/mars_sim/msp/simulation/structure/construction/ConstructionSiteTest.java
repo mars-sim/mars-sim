@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSiteTest.java
- * @version 2.85 2008-08-31
+ * @version 2.85 2008-10-23
  * @author Scott Davis
  */
 
@@ -54,15 +54,15 @@ public class ConstructionSiteTest extends TestCase {
         
         ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info", 
                 ConstructionStageInfo.FOUNDATION, 10000D, 0, null, parts, resources, vehicles);
-        foundationStage = new ConstructionStage(foundationInfo);
+        foundationStage = new ConstructionStage(foundationInfo, site);
         
         ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info", 
                 ConstructionStageInfo.FRAME, 10000D, 0, null, parts, resources, vehicles);
-        frameStage = new ConstructionStage(frameInfo);
+        frameStage = new ConstructionStage(frameInfo, site);
         
         ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop", 
                 ConstructionStageInfo.BUILDING, 10000D, 0, null, parts, resources, vehicles);
-        buildingStage = new ConstructionStage(buildingInfo);
+        buildingStage = new ConstructionStage(buildingInfo, site);
     }
     
     /*
