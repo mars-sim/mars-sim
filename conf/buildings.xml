@@ -431,7 +431,7 @@
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
-				<power-source type="Fuel Power Source" toggle="true" power="15.0" fuel-type="methane" 
+				<power-source type="Fuel Power Source" toggle="false" power="15.0" fuel-type="methane" 
 				consumption-rate="6.0" />
 			</power-generation>
 		</functions>
