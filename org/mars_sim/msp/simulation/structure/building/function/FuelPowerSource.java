@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 2.85 22.8.2008
+ * @version 2.85 25.20.2008
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -26,6 +26,9 @@ public class FuelPowerSource extends PowerSource implements Serializable {
 
     private final static String TYPE = "Fuel Power Source";
 
+    // The work time (millisol) required to toggle this power source on or off. 
+    public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
+    
     private boolean toggle = false;
 
     // A fuelpower source works only with one kind of fuel
@@ -33,6 +36,8 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     private AmountResource resource;
 
     private double consumptionSpeed;
+    
+    private double toggleRunningWorkTime;
 
     /**
      * @param type
@@ -118,5 +123,19 @@ public class FuelPowerSource extends PowerSource implements Serializable {
      */
     public double getFuelConsumptionRate() {
         return consumptionSpeed;
+    }
+    
+    /**
+     * Adds work time to toggling the power source on or off.
+     * @param time the amount (millisols) of time to add.
+     */
+    public void addToggleWorkTime(double time) {
+        toggleRunningWorkTime += time;
+        if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
+            toggleRunningWorkTime = 0D;
+            toggle = !toggle;
+             if (toggle) logger.info(getType() + " turned on.");
+             else logger.info(getType() + " turned off.");
+        }
     }
 }

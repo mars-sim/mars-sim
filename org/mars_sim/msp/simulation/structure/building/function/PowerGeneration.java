@@ -176,4 +176,12 @@ public class PowerGeneration extends Function implements Serializable {
         
         return result;
     }
+    
+    /**
+     * Gets the power sources for the building.
+     * @return list of power sources.
+     */
+    public List<PowerSource> getPowerSources() {
+        return new ArrayList<PowerSource>(powerSources);
+    }
 }

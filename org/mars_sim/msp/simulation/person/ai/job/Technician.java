@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-10-25
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
 import org.mars_sim.msp.simulation.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.simulation.person.ai.task.RepairEVAMalfunction;
 import org.mars_sim.msp.simulation.person.ai.task.RepairMalfunction;
+import org.mars_sim.msp.simulation.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.simulation.person.ai.task.ToggleResourceProcess;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
@@ -45,6 +46,7 @@ public class Technician extends Job implements Serializable {
 		jobTasks.add(EnterAirlock.class);
 		jobTasks.add(ExitAirlock.class);
 		jobTasks.add(ToggleResourceProcess.class);
+        jobTasks.add(ToggleFuelPowerSource.class);
 		
 		// Add engineer-related missions.
 		jobMissionJoins.add(TravelToSettlement.class);	

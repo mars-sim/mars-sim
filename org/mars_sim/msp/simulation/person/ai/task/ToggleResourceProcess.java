@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.85 2008-07-09
+ * @version 2.85 2008-10-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -29,8 +29,10 @@ import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
 
-/**
- *
+/** 
+ * The ToggleResourceProcess class is an EVA task for toggling a particular
+ * automated resource process on or off.
+ * This is an effort driven task.
  */
 public class ToggleResourceProcess extends EVAOperation implements Serializable {
 
@@ -156,9 +158,9 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		if (settlement != null) {
 			BuildingManager manager = settlement.getBuildingManager();
 			double bestDiff = 0D;
-			Iterator i = manager.getBuildings(ResourceProcessing.NAME).iterator();
+			Iterator<Building> i = manager.getBuildings(ResourceProcessing.NAME).iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				ResourceProcess process = getResourceProcess(building);
 				if (process != null) {
 					double diff = getResourcesValueDiff(settlement, process);
@@ -186,9 +188,9 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		if (building.hasFunction(ResourceProcessing.NAME)) {
 			double bestDiff = 0D;
 			ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
-			Iterator i = processing.getProcesses().iterator();
+			Iterator<ResourceProcess> i = processing.getProcesses().iterator();
 			while (i.hasNext()) {
-				ResourceProcess process = (ResourceProcess) i.next();
+				ResourceProcess process = i.next();
 				double diff = getResourcesValueDiff(settlement, process);
 				if (diff > bestDiff) {
 					bestDiff = diff;
@@ -231,12 +233,12 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) {
 		double result = 0D;
 		
-		Iterator i = null;
+		Iterator<AmountResource> i = null;
 		if (input) i = process.getInputResources().iterator();
 		else i = process.getOutputResources().iterator();
 		
 		while (i.hasNext()) {
-			AmountResource resource = (AmountResource) i.next();
+			AmountResource resource = i.next();
 			boolean useResource = true;
 			if (input && process.isAmbientInputResource(resource)) useResource = false;
 			if (!input && process.isWasteOutputResource(resource)) useResource = false;
@@ -262,9 +264,9 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	private static boolean isEmptyInputResourceInProcess(Settlement settlement, ResourceProcess process) throws Exception {
 		boolean result = false;
 		
-		Iterator i = process.getInputResources().iterator();
+		Iterator<AmountResource> i = process.getInputResources().iterator();
 		while (i.hasNext()) {
-			AmountResource resource = (AmountResource) i.next();
+			AmountResource resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
 				double stored = settlement.getInventory().getAmountResourceStored(resource);
 				if (stored == 0D) result = true;
@@ -294,7 +296,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 			person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
 		}
 		
-		// If phase is maintenance, add experience to mechanics skill.
+		// If phase is toggle process, add experience to mechanics skill.
 		if (TOGGLE_PROCESS.equals(getPhase())) {
 			// 1 base experience point per 100 millisols of time spent.
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
