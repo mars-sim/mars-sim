@@ -202,6 +202,16 @@
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</building>
+		
+		<building name="small battery array" work-time="10.0" skill-required="2" frame="array frame" >
+			<part name="rover battery" number="10" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
 
 	</building-list>
 	

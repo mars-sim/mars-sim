@@ -586,5 +586,14 @@
 			</resource-processing>
 		</functions>
 	</building>
+	
+	<!-- Array of rover batteries -->
+	<building name="Small Battery Array">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<!-- power storage capacity in kW hr. -->
+			<power-storage capacity="500.0" />
+		</functions>
+	</building>
 
 </building-list>

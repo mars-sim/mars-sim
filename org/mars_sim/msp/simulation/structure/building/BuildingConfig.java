@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.85 2008-09-15
+ * @version 2.85 2008-11-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -71,6 +71,7 @@ public class BuildingConfig implements Serializable {
 	private static final String FUEL_TYPE = "fuel-type";
 	private static final String COMSUMPTION_RATE = "consumption-rate";
 	private static final String TOGGLE = "toggle";
+    private static final String POWER_STORAGE = "power-storage";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -533,6 +534,34 @@ public class BuildingConfig implements Serializable {
 		}
 		return powerSourceList;
 	}
+    
+    /**
+     * Checks if building has power storage capability.
+     * @param buildingName the name of the building
+     * @return true if power storage
+     * @throws Exception if building name can not be found or XML parsing error.
+     */
+    public boolean hasPowerStorage(String buildingName) throws Exception {
+        boolean result = false;
+        Element buildingElement = getBuildingElement(buildingName);
+        Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+        NodeList powerStorageNodes = functionsElement.getElementsByTagName(POWER_STORAGE);
+        if (powerStorageNodes.getLength() > 0) result = true;
+        return result;
+    }
+    
+    /**
+     * Gets the power storage capacity of the building.
+     * @param buildingName the name of the building.
+     * @return power storage capacity (kW hr).
+     * @throws Exception if building name can not be found or XML parsing error.
+     */
+    public double getPowerStorageCapacity(String buildingName) throws Exception {
+        Element buildingElement = getBuildingElement(buildingName);
+        Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
+        Element powerStorageElement = (Element) functionsElement.getElementsByTagName(POWER_STORAGE).item(0);
+        return Double.parseDouble(powerStorageElement.getAttribute(CAPACITY));
+    }
 	
 	/**
 	 * Checks if building has medical care capability.

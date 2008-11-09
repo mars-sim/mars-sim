@@ -462,6 +462,8 @@ public class BuildingManager implements Serializable {
                 result += MedicalCare.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasPowerGeneration(buildingName)) 
                 result += PowerGeneration.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasPowerStorage(buildingName))
+                result += PowerStorage.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasRecreation(buildingName))
                 result += Recreation.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasResearchLab(buildingName))

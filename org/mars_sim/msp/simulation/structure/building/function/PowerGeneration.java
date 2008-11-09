@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.85 2008-08-22
+ * @version 2.85 2008-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -21,8 +21,10 @@ import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
  */
 public class PowerGeneration extends Function implements Serializable {
     
+    // Name of the building function.
     public static final String NAME = "Power Generation";
     
+    // Data members.
     private List<PowerSource> powerSources;
     
     /**
