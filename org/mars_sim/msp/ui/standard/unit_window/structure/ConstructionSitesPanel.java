@@ -54,12 +54,10 @@ public class ConstructionSitesPanel extends JPanel {
         
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();
-        // sitesScrollPane.setPreferredSize(new Dimension(220, 215));
         add(sitesScrollPane, BorderLayout.CENTER);  
         
         // Prepare sites outer list pane.
         JPanel sitesOuterListPane = new JPanel(new BorderLayout(0, 0));
-        // sitesOuterListPane.setBorder(new MarsPanelBorder());
         sitesScrollPane.setViewportView(sitesOuterListPane);
         
         // Prepare sites list pane.
