@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGridTabPanel.java
- * @version 2.76 2004-07-12
+ * @version 2.85 2008-11-25
  * @author Scott Davis
  */
 
@@ -26,12 +26,16 @@ public class PowerGridTabPanel extends TabPanel {
     // Data Members
     private JLabel powerGeneratedLabel; // The total power generated label.
     private JLabel powerUsedLabel; // The total power used label.
+    private JLabel powerStorageCapacityLabel; // The total power storage capacity label.
+    private JLabel powerStoredLabel; // The total power stored label.
     private PowerTableModel powerTableModel; // Table model for power info.
     private PowerGrid powerGrid; // The settlement's power grid.
     
     // Data cache
     private double powerGeneratedCache; // The total power generated cache.
     private double powerUsedCache; // The total power used cache.
+    private double powerStorageCapacityCache; // The total power storage capacity cache.
+    private double powerStoredCache; // The total power stored cache.
     
     private DecimalFormat formatter = new DecimalFormat("0.0");
     
@@ -58,7 +62,7 @@ public class PowerGridTabPanel extends TabPanel {
         powerGridLabelPanel.add(powerGridLabel);
         
         // Prepare power info panel.
-        JPanel powerInfoPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+        JPanel powerInfoPanel = new JPanel(new GridLayout(4, 1, 0, 0));
         powerInfoPanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(powerInfoPanel);
         
@@ -73,6 +77,18 @@ public class PowerGridTabPanel extends TabPanel {
         powerUsedLabel = new JLabel("Total Power Used: " + 
             formatter.format(powerUsedCache) + " kW.", JLabel.CENTER);
         powerInfoPanel.add(powerUsedLabel);
+        
+        // Prepare power storage capacity label.
+        powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
+        powerStorageCapacityLabel = new JLabel("Power Storage Capacity: " + 
+                formatter.format(powerStorageCapacityCache) + " kW hr.", JLabel.CENTER);
+        powerInfoPanel.add(powerStorageCapacityLabel);
+        
+        // Prepare power stored label.
+        powerStoredCache = powerGrid.getStoredPower();
+        powerStoredLabel = new JLabel("Total Power Stored: " +
+                formatter.format(powerStoredCache) + " kW hr.", JLabel.CENTER);
+        powerInfoPanel.add(powerStoredLabel);
         
 		// Create scroll panel for the outer table panel.
 		JScrollPane powerScrollPanel = new JScrollPane();
@@ -121,6 +137,20 @@ public class PowerGridTabPanel extends TabPanel {
             powerUsedCache = powerGrid.getRequiredPower();
             powerUsedLabel.setText("Total Power Used: " + 
                 formatter.format(powerUsedCache) + " kW.");
+        }
+        
+        // Update power storage capacity label.
+        if (powerStorageCapacityCache != powerGrid.getStoredPowerCapacity()) {
+            powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
+            powerStorageCapacityLabel.setText("Power Storage Capacity: " + 
+                formatter.format(powerStorageCapacityCache) + " kW hr.");
+        }
+        
+        // Update poewr stored label.
+        if (powerStoredCache != powerGrid.getStoredPower()) {
+            powerStoredCache = powerGrid.getStoredPower();
+            powerStoredLabel.setText("Total Power Stored: " +
+                    formatter.format(powerStoredCache) + " kW hr.");
         }
         
         // Update power table.
