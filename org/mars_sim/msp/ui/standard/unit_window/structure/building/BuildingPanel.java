@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingPanel.java
- * @version 2.85 2008-11-16
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -28,6 +28,7 @@ import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
 import org.mars_sim.msp.simulation.structure.building.function.PowerStorage;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.simulation.structure.building.function.Storage;
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 
@@ -170,6 +171,17 @@ public class BuildingPanel extends JPanel {
             	functionListPanel.add(resourceProcessingPanel);
         	}
         	catch (BuildingException e) {}
+        }
+        
+        // Prepare storage process panel if building has storage function.
+        if (building.hasFunction(Storage.NAME)) {
+            try {
+                Storage storage = (Storage) building.getFunction(Storage.NAME);
+                BuildingFunctionPanel storagePanel = new StorageBuildingPanel(storage, desktop);
+                functionPanels.add(storagePanel);
+                functionListPanel.add(storagePanel);
+            }
+            catch (BuildingException e) {}
         }
         
         // Prepare malfunctionable panel.
