@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.85 2008-07-12
+ * @version 2.85 2008-11-26
  * @author Scott Davis
  */
  
@@ -36,13 +36,15 @@ public class ResourceProcess implements Serializable {
     private boolean runningProcess;
     private double currentProductionLevel;
     private double toggleRunningWorkTime;
+    private double powerRequired;
     
     /**
      * Constructor
      * @param name the name of the process.
+     * @para powerRequired the amount of power required to run the process (kW).
      * @param defaultOn true of process is on by default, false if off by default. 
      */
-    public ResourceProcess(String name, boolean defaultOn) {
+    public ResourceProcess(String name, double powerRequired, boolean defaultOn) {
         this.name = name;
         maxInputResourceRates = new HashMap<AmountResource, Double>();
         maxAmbientInputResourceRates = new HashMap<AmountResource, Double>();
@@ -50,6 +52,7 @@ public class ResourceProcess implements Serializable {
         maxWasteOutputResourceRates = new HashMap<AmountResource, Double>();
         runningProcess = defaultOn;
         currentProductionLevel = 1D;
+        this.powerRequired = powerRequired;
     }
     
     /**
@@ -205,7 +208,8 @@ public class ResourceProcess implements Serializable {
      * @param inventory the inventory pool to use for processes.
      * @throws Exception if error processing resources.
      */
-    public void processResources(double time, double productionLevel, Inventory inventory) throws Exception {
+    public void processResources(double time, double productionLevel, 
+            Inventory inventory) throws Exception {
     	
     	if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
@@ -298,5 +302,13 @@ public class ResourceProcess implements Serializable {
      */
     public String toString() {
     	return getProcessName();
+    }
+    
+    /**
+     * Gets the amount of power required to run the process.
+     * @return power (kW).
+     */
+    public double getPowerRequired() {
+        return powerRequired;
     }
 }

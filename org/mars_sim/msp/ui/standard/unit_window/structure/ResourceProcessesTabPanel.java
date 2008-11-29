@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 2.85 2008-07-12
+ * @version 2.85 2008-11-26
  * @author Scott Davis
  */
 
@@ -207,6 +207,8 @@ public class ResourceProcessesTabPanel extends TabPanel {
 			
 			result.append("Resource Process: " + process.getProcessName() + "<br>");
 			result.append("Building: " + building.getName() + "<br>");
+            
+            result.append("Power Required: " + decFormatter.format(process.getPowerRequired()) + " kW<br>");
 			
 			result.append("Process Inputs:<br>");
 			Iterator<AmountResource> i = process.getInputResources().iterator();

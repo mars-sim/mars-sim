@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
  * The ResourceProcessing class is a building function indicating 
@@ -87,7 +88,11 @@ public class ResourceProcessing extends Function implements Serializable {
                 }
             }
             
-            // TODO: Subtract power used per Sol when we implement that.
+            // Subtract value of require power.
+            double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+            double powerHrsRequiredPerSol = process.getPowerRequired() * hoursInSol;
+            double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
+            processValue -= powerValue;
             
             if (processValue < 0D) processValue = 0D;
             result += processValue;
@@ -141,7 +146,13 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getFullPowerRequired() {
-		return 0D;
+        double result = 0D;
+        Iterator<ResourceProcess> i = resourceProcesses.iterator();
+        while (i.hasNext()) {
+            ResourceProcess process = i.next();
+            if (process.isProcessRunning()) result += process.getPowerRequired();
+        }
+		return result;
 	}
 	
 	/**
@@ -149,6 +160,12 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @return power (kW)
 	 */
 	public double getPowerDownPowerRequired() {
-		return 0D;
+        double result = 0D;
+        Iterator<ResourceProcess> i = resourceProcesses.iterator();
+        while (i.hasNext()) {
+            ResourceProcess process = i.next();
+            if (process.isProcessRunning()) result += process.getPowerRequired();
+        }
+        return result;
 	}
 }

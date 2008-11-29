@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 2.85 2008-11-02
+ * @version 2.85 2008-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building;
@@ -396,8 +396,11 @@ public class BuildingConfig implements Serializable {
 			String defaultString = processElement.getAttribute(DEFAULT);
 			boolean defaultOn = true;
 			if (defaultString.equals("off")) defaultOn = false;
+            
+            double powerRequired = Double.parseDouble(processElement.getAttribute(POWER_REQUIRED));
 			
-			ResourceProcess process = new ResourceProcess(processElement.getAttribute(NAME), defaultOn);
+			ResourceProcess process = new ResourceProcess(processElement.getAttribute(NAME), 
+                    powerRequired, defaultOn);
 			
 			// Get input resources.
 			NodeList inputNodes = processElement.getElementsByTagName(INPUT);

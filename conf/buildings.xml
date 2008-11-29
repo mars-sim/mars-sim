@@ -62,7 +62,7 @@
 			<resource-processing power-down-level=".5">
 				
 				<!-- Water recycling process for cleaning waste water. -->
-				<process name="Water Recycling" default="off">
+				<process name="Water Recycling" power-required="4.0" default="off">
 				
 					<!-- Waste water influx. -->
 					<!-- resource: the resource added to the process. -->
@@ -82,7 +82,7 @@
 				</process>
 				
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
-				<process name="Carbon Scrubbing" default="off">
+				<process name="Carbon Scrubbing" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".067" ambient="false" />
 					<output resource="Oxygen" rate=".05" ambient="false" />
 				</process>
@@ -159,7 +159,7 @@
 				<resource-storage resource="Food" capacity="500.0" />
 			</storage>
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" default="on">
+				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
 					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
 				</process>
@@ -181,21 +181,21 @@
 	<!-- The starting ERV base has a full load of hydrogen and has not generated any -->
 	<!-- carbon dioxide, water or oxygen yet. -->
 	<building name="Starting ERV Base" >
-		<power-required base-power="10.0" base-power-down-power="5.0" />
+		<power-required base-power="2.0" base-power-down-power="1.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" default="on">
+				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
 					<input resource="Hydrogen" rate="3.2" ambient="false" />
 					<output resource="Methane" rate="7.2" ambient="false" />
 					<output resource="Water" rate="16.0" ambient="false" />
 				</process>
-				<process name="Water Electrolysis" default="off">
+				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="Water" rate=".1" ambient="false" />
 					<output resource="Hydrogen" rate=".011" ambient="false" />
 					<output resource="Oxygen" rate=".089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" default="on">
+				<process name="CO2 Reduction" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
 					<output resource="Oxygen" rate=".3" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
@@ -218,21 +218,21 @@
 	<!-- The ERV base has already converted its initial load of hydrogen into carbon dioxide, 
 	     water and oxygen. -->
 	<building name="ERV Base" >
-		<power-required base-power="10.0" base-power-down-power="5.0" />
+		<power-required base-power="8.0" base-power-down-power="1.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" default="on">
+				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
 					<input resource="Hydrogen" rate="3.2" ambient="false" />
 					<output resource="Methane" rate="7.2" ambient="false" />
 					<output resource="Water" rate="16.0" ambient="false" />
 				</process>
-				<process name="Water Electrolysis" default="off">
+				<process name="Water Electrolysis" power-required="4.0" default="off">
 					<input resource="Water" rate=".1" ambient="false" />
 					<output resource="Hydrogen" rate=".011" ambient="false" />
 					<output resource="Oxygen" rate=".089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" default="on">
+				<process name="CO2 Reduction" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
 					<output resource="Oxygen" rate=".3" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
@@ -265,30 +265,30 @@
 	
 	<!-- An uninhabitable specialized building for water and air processing and recycling. -->
 	<building name="Atmospheric Processor">
-		<power-required base-power="50.0" base-power-down-power="10.0" />
+		<power-required base-power="5.0" base-power-down-power="1.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sebatier" default="on">
+				<process name="Sebatier" power-required="5.0" default="on">
 					<input resource="Carbon Dioxide" rate="48.0" ambient="true" />
 					<input resource="Hydrogen" rate="8.0" ambient="false" />
 					<output resource="Methane" rate="18.0" ambient="false" />
 					<output resource="Water" rate="40.0" ambient="false" />
 				</process>
-				<process name="Water Electrolysis" default="off">
+				<process name="Water Electrolysis" power-required="40.0" default="off">
 					<input resource="Water" rate="1.0" ambient="false" />
 					<output resource="Hydrogen" rate=".11" ambient="false" />
 					<output resource="Oxygen" rate=".89" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" default="on">
+				<process name="CO2 Reduction" power-required="20.0" default="on">
 					<input resource="Carbon Dioxide" rate="8.25" ambient="true" />
 					<output resource="Oxygen" rate="3.0" ambient="false" />
 					<output resource="Carbon Monoxide" rate="5.25" ambient="true" />
 				</process>
-				<process name="Water Recycling" default="off">
+				<process name="Water Recycling" power-required="40.0" default="off">
 					<input resource="Waste Water" rate="2.0" ambient="false" />
 					<output resource="Water" rate="1.7" ambient="false" />
 				</process>
-				<process name="Carbon Scrubbing" default="off">
+				<process name="Carbon Scrubbing" power-required="20.0" default="off">
 					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
 					<output resource="Oxygen" rate=".5" ambient="false" />
 				</process>
@@ -362,7 +362,7 @@
 				<resource-storage resource="Food" capacity="500.0" />
 			</storage>	
 			<resource-processing power-down-level=".5">
-				<process name="Carbon Dioxide Pump" default="on">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
 					<input resource="Carbon Dioxide" rate="50.0" ambient="true" />
 					<output resource="Carbon Dioxide" rate="50.0" ambient="false" />
 				</process>
@@ -398,7 +398,7 @@
 	
 	<!-- A manufacturing workshop -->
 	<building name="Workshop">
-		<power-required base-power="50.0" base-power-down-power="0.0" />
+		<power-required base-power="7.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="4" concurrent-processes="4" />
@@ -539,7 +539,7 @@
 	
 	<!-- A small brick manufacturing building. -->
 	<building name="Manufacturing Shed">
-		<power-required base-power="20.0" base-power-down-power="0.0" />
+		<power-required base-power="3.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<manufacture tech-level="2" concurrent-processes="2" />
@@ -577,7 +577,7 @@
 		<power-required base-power="5.0" base-power-down-power="2.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sabatier" default="on">
+				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
 					<input resource="Hydrogen" rate="3.2" ambient="false" />
 					<output resource="Methane" rate="7.2" ambient="false" />

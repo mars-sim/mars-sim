@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.85 2008-10-25
+ * @version 2.85 2008-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -28,6 +28,7 @@ import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
+import org.mars_sim.msp.simulation.time.MarsClock;
 
 /** 
  * The ToggleResourceProcess class is an EVA task for toggling a particular
@@ -213,6 +214,13 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = outputValue - inputValue;
+        
+        // Subtract power required per millisol.
+        double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+        double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+        double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
+        diff -= powerValue;
+        
 		if (process.isProcessRunning()) diff *= -1D;
 		
 		// Check if settlement doesn't have one or more of the input resources.
