@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 2.83 2008-01-19
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ public class ManufactureConfig implements Serializable {
 	private static final String SKILL = "skill";
 	private static final String WORK_TIME = "work-time";
 	private static final String PROCESS_TIME = "process-time";
+    private static final String POWER_REQUIRED = "power-required";
 	private static final String INPUTS = "inputs";
 	private static final String OUTPUTS = "outputs";
 	private static final String RESOURCE = "resource";
@@ -83,6 +84,9 @@ public class ManufactureConfig implements Serializable {
 					
 					process.setProcessTimeRequired(Double.parseDouble(
 							processElement.getAttribute(PROCESS_TIME)));
+                    
+                    process.setPowerRequired(Double.parseDouble(
+                            processElement.getAttribute(POWER_REQUIRED)));
 					
 					Element inputs = (Element) processElement.
 							getElementsByTagName(INPUTS).item(0);

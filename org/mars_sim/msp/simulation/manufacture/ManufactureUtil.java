@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.85 2008-09-13
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import org.mars_sim.msp.simulation.structure.building.function.Manufacture;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.structure.goods.GoodsManager;
 import org.mars_sim.msp.simulation.structure.goods.GoodsUtil;
+import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 
 /**
@@ -108,7 +109,12 @@ public final class ManufactureUtil {
 		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
 		while (j.hasNext()) outputsValue += getManufactureProcessItemValue(j.next(), settlement);
 		
-		return outputsValue - inputsValue;
+        // Subtract power value.
+        double hoursInMillisol = MarsClock.convertMillisolsToSeconds(1D) / 60D / 60D;
+        double powerHrsRequiredPerMillisol = process.getPowerRequired() * hoursInMillisol;
+        double powerValue = powerHrsRequiredPerMillisol * settlement.getPowerGrid().getPowerValue();
+        
+		return outputsValue - inputsValue - powerValue;
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 2.85 2008-07-12
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 
@@ -163,6 +163,7 @@ public class ManufacturePanel extends JPanel {
     	if (building != null) result.append("Manufacture Building: " + building.getName() + "<br>");
     	result.append("Effort Time Required: " + info.getWorkTimeRequired() + " millisols<br>");
     	result.append("Process Time Required: " + info.getProcessTimeRequired() + " millisols<br>");
+        result.append("Power Required: " + info.getPowerRequired() + " kW<br>");
     	result.append("Building Tech Level Required: " + info.getTechLevelRequired() + "<br>");
     	result.append("Materials Science Skill Level Required: " + info.getSkillLevelRequired() + "<br>");
     	

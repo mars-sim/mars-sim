@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.85 2008-08-20
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 
@@ -194,14 +194,26 @@ public class Manufacture extends Function implements Serializable {
 	
 	@Override
 	public double getFullPowerRequired() {
-		// TODO When we add power requirements for manufacturing processes, 
-		// we can base power required on that.
-		return 0;
+        double result = 0D;
+        Iterator<ManufactureProcess> i = processes.iterator();
+        while (i.hasNext()) {
+            ManufactureProcess process = i.next();
+            if (process.getProcessTimeRemaining() > 0D)
+                result += process.getInfo().getPowerRequired();
+        }
+        return result;
 	}
 
 	@Override
 	public double getPowerDownPowerRequired() {
-		return 0;
+        double result = 0D;
+        Iterator<ManufactureProcess> i = processes.iterator();
+        while (i.hasNext()) {
+            ManufactureProcess process = i.next();
+            if (process.getProcessTimeRemaining() > 0D)
+                result += process.getInfo().getPowerRequired();
+        }
+        return result;
 	}
 
 	@Override

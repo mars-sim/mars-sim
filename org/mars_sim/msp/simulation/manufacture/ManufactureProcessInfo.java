@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessInfo.java
- * @version 2.83 2008-01-19
+ * @version 2.85 2008-11-28
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ public class ManufactureProcessInfo implements Serializable {
 	private int skillLevelRequired;
 	private double workTimeRequired;
 	private double processTimeRequired;
+    private double powerRequired;
 	private List<ManufactureProcessItem> inputList;
 	private List<ManufactureProcessItem> outputList;
 	
@@ -63,6 +64,14 @@ public class ManufactureProcessInfo implements Serializable {
 	public void setProcessTimeRequired(double processTimeRequired) {
 		this.processTimeRequired = processTimeRequired;
 	}
+    
+    public double getPowerRequired() {
+        return powerRequired;
+    }
+    
+    public void setPowerRequired(double powerRequired) {
+        this.powerRequired = powerRequired;
+    }
 	
 	public List<ManufactureProcessItem> getInputList() {
 		return inputList;
