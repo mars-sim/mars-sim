@@ -203,7 +203,7 @@
 			</vehicle>
 		</building>
 		
-		<building name="small battery array" work-time="10.0" skill-required="2" frame="array frame" >
+		<building name="small battery array" work-time="10.0" skill-required="2" frame="brick bin frame" >
 			<part name="rover battery" number="10" />
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />
