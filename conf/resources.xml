@@ -62,12 +62,16 @@
 	<resource name="taenite" phase="solid" life-support="false" />
 	<resource name="chalcopyrite" phase="solid" life-support="false" />
 	<resource name="malachite" phase="solid" life-support="false" />
+	<resource name="sylvite" phase="solid" life-support="false" />
 
 	<resource name="nickel" phase="solid" life-support="false" />
 	<resource name="sulfur" phase="solid" life-support="false" />
 	<resource name="magnesium" phase="solid" life-support="false" />
 	<resource name="silicon" phase="solid" life-support="false" />
 	<resource name="copper" phase="solid" life-support="false" />
+	
+	<!-- Potassium hydroxide -->
+	<resource name="potash lye" phase="solid" life-support="false" />
 
 	<resource name="cement" phase="solid" life-support="false" />
 	<resource name="concrete" phase="solid" life-support="false" />

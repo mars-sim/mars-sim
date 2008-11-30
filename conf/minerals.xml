@@ -81,4 +81,12 @@
 		</locale-list>
 	</mineral>
 	
+	<!-- Sylvite is a salt concentration of potasium chloride. -->
+	<!-- http://en.wikipedia.org/wiki/Sylvite -->
+	<mineral name="sylvite" frequency="common">
+		<locale-list>
+			<local name="sedimentary" />
+		</locale-list>
+	</mineral>
+	
 </mineral-concentrations>
