@@ -79,6 +79,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     private MarsClock sitePreparationStartTime;
     private boolean finishingExistingStage;
     private boolean constructionSuppliesLoaded;
+    private List<Part> luvAttachmentParts;
     
     /**
      * Constructor
@@ -173,7 +174,27 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         }
                     }
                 }
-            }
+                
+                // Retrieve construction LUV attachment parts.
+                if (constructionStage != null) {
+                    luvAttachmentParts = new ArrayList<Part>();
+                    Iterator<ConstructionVehicleType> i = constructionStage.getInfo().getVehicles().iterator();
+                    while (i.hasNext()) {
+                        Iterator<Part> j = i.next().getAttachmentParts().iterator();
+                        while (j.hasNext()) {
+                            Part part = j.next();
+                            try {
+                                settlement.getInventory().retrieveItemResources(part, 1);
+                                luvAttachmentParts.add(part);
+                            }
+                            catch (Exception e) {
+                                logger.log(Level.SEVERE, "Error retrieving attachment part " + part.getName());
+                                endMission("Construction attachment part " + part.getName() + " could not be retrieved.");
+                            }
+                        }
+                    }
+                }
+            } 
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error determining construction sites.");
                 throw new MissionException("Error determining construction sites.", e);
@@ -462,6 +483,19 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         // Unreserve all mission construction vehicles.
         unreserveConstructionVehicles();
+        
+        // Store all LUV attachment parts in settlement.
+        Iterator<Part> i = luvAttachmentParts.iterator();
+        while (i.hasNext()) {
+            Part part = i.next();
+            try {
+                settlement.getInventory().storeItemResources(part, 1);
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error storing attachment part " + part.getName());
+                endMission("Construction attachment part " + part.getName() + " could not be stored.");
+            }
+        }
     }
 
     @Override
@@ -482,7 +516,14 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Add construction parts.
             resources.putAll(constructionStage.getInfo().getParts());
             
-            // TODO: add vehicle attachment parts?
+            // Add construction LUV attachment parts.
+            Iterator<Part> i = luvAttachmentParts.iterator();
+            while (i.hasNext()) {
+                Part part = i.next();
+                if (resources.containsKey(part)) 
+                    resources.put(part, (resources.get(part).intValue() + 1));
+                else resources.put(part, 1);
+            }
         }
 
         return resources;

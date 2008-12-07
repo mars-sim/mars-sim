@@ -19,8 +19,10 @@ import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStage;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 
@@ -102,8 +104,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
     
     /**
      * Perform the exit airlock phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
+     * @param time the time (millisols) to perform this phase.
+     * @return the time (millisols) remaining after performing this phase.
      * @throws Exception if error exiting the airlock.
      */
     private double exitEVA(double time) throws Exception {
@@ -125,8 +127,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
 
     /**
      * Perform the enter airlock phase of the task.
-     * @param time amount of time to perform the phase
-     * @return time remaining after performing the phase
+     * @param time amount (millisols) of time to perform the phase
+     * @return time (millisols) remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
     private double enterEVA(double time) throws Exception {
@@ -139,6 +141,12 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         return time;
     }
     
+    /**
+     * Perform the construction phase of the task.
+     * @param time amount (millisols) of time to perform the phase.
+     * @return time (millisols) remaining after performing the phase.
+     * @throws Exception
+     */
     private double construction(double time) throws Exception {
         
         // Check for an accident during the EVA operation.
@@ -191,7 +199,27 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
                     tempLuv.setOperator(person);
                     luv = tempLuv;
                     operatingLUV = true;
+                    
+                    // Load attachment parts on vehicle.
+                    loadAttachmentParts();
                 }
+            }
+        }
+    }
+    
+    /**
+     * Loads any needed attachment parts on the construction vehicle.
+     * @throws Exception if error loading the parts.
+     */
+    private void loadAttachmentParts() throws Exception {
+        if (luv != null) {
+            int index = vehicles.indexOf(luv);
+            ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
+            Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
+            while (i.hasNext()) {
+                // Assume part has already be retrieved from settlement at 
+                // construction mission start.
+                luv.getInventory().storeItemResources(i.next(), 1);
             }
         }
     }
@@ -205,6 +233,26 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         luv.setOperator(null);
         operatingLUV = false;
         settlement.getInventory().storeUnit(luv);
+        
+        // Unload attachment parts from vehicle.
+        unloadAttachmentParts();
+    }
+    
+    /**
+     * Unloads attachment parts from the construction vehicle.
+     * @throws Exception if error unloading parts.
+     */
+    private void unloadAttachmentParts() throws Exception {
+        if (luv != null) {
+            int index = vehicles.indexOf(luv);
+            ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
+            Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
+            while (i.hasNext()) {
+                // Assume part will be stored in the settlement when 
+                // construction mission ends.
+                luv.getInventory().retrieveItemResources(i.next(), 1);
+            }
+        }
     }
     
     @Override
