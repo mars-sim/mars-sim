@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.82 2007-11-26
+ * @version 2.85 2008-12-13
  * @author Scott Davis
  */
 
@@ -82,10 +82,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
     public MainDesktopPane(MainWindow mainWindow) {
 
         // Initialize data members
+        soundPlayer = new AudioPlayer();
+        soundPlayer.play(SoundConstants.SOUNDS_ROOT_PATH + SoundConstants.SND_SPLASH); // play our splash sound
+
         this.mainWindow = mainWindow;
         unitWindows = new ArrayList<UnitWindow>();
         toolWindows = new ArrayList<ToolWindow>();
-        soundPlayer = new AudioPlayer();
 
         // Set background color to black
         setBackground(Color.black);
