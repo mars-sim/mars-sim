@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -211,7 +211,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			Settlement settlement = person.getSettlement();
 	    
 			// Check if a mission-capable rover is available.
-			boolean reservableRover = areVehiclesAvailable(settlement);
+			boolean reservableRover = areVehiclesAvailable(settlement, false);
             
             // Check if available backup rover.
             boolean backupRover = hasBackupRover(settlement);

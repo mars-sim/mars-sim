@@ -249,6 +249,12 @@ class VehiclePanel extends WizardPanel {
     		
     		if (column == 7) {
     			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+                
+                // Allow rescue/salvage mission to use vehicle undergoing maintenance.
+                String type = getWizard().getMissionData().getType();
+                if (MissionDataBean.RESCUE_MISSION.equals(type)) {
+                    if (vehicle.getStatus().equals(Vehicle.MAINTENANCE)) result = false;
+                }
     		}
     		else if (column == 8) {
     			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);

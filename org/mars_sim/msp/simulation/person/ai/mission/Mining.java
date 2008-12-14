@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -213,7 +213,7 @@ public class Mining extends RoverMission {
 			Settlement settlement = person.getSettlement();
 	    
 			// Check if a mission-capable rover is available.
-			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement);
+			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement, false);
 			
             // Check if available backup rover.
             boolean backupRover = hasBackupRover(settlement);
@@ -246,7 +246,7 @@ public class Mining extends RoverMission {
 				
 				try {
 					// Get available rover.
-					Rover rover = (Rover) getVehicleWithGreatestRange(settlement);
+					Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
 					if (rover != null) {
 				
 						// Find best mining site.

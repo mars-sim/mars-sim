@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -354,7 +354,9 @@ public abstract class Mission implements Serializable {
      * @param person the person performing the phase.
      * @throws MissionException if problem performing the phase.
      */
-    protected abstract void performPhase(Person person) throws MissionException;
+    protected void performPhase(Person person) throws MissionException {
+        if (getPhase() == null) endMission("Current mission phase is null.");
+    }
 
     /** Gets the mission capacity for participating people.
      *  @return mission capacity

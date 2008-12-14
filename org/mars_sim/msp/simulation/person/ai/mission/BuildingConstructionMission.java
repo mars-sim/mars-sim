@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-10-23
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -373,6 +373,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
     @Override
     protected void performPhase(Person person) throws MissionException {
+        super.performPhase(person);
         if (PREPARE_SITE_PHASE.equals(getPhase())) prepareSitePhase(person);
         else if (CONSTRUCTION_PHASE.equals(getPhase())) constructionPhase(person);
     }
@@ -651,7 +652,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         try {
             // Cancel construction mission if there are any beacon vehicles within range that need help.
             Vehicle vehicleTarget = null;
-            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement);
+            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
             if (vehicle != null) {
                 vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement, vehicle.getRange());
                 if (vehicleTarget != null) {

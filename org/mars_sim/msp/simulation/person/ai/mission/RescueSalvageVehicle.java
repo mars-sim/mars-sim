@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -43,7 +43,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
@@ -186,7 +186,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
             Settlement settlement = person.getSettlement();
 	    
 	    	// Check if available rover.
-	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
+	    	if (!areVehiclesAvailable(settlement, true)) missionPossible = false;
 	    	
 			// Check if min number of EVA suits at settlement.
 			if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < MISSION_MIN_MEMBERS) 
@@ -195,7 +195,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 	    	// Check if there are any beacon vehicles within range that need help.
 	    	Vehicle vehicleTarget = null;
 	    	try {
-	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement);
+	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement, true);
 		    	if (vehicle != null) {
 		    		vehicleTarget = findAvailableBeaconVehicle(settlement, vehicle.getRange());
 		    		if (vehicleTarget == null) missionPossible = false;
@@ -241,6 +241,38 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
         }
 
         return missionProbability;
+    }
+    
+    @Override
+    protected boolean isUsableVehicle(Vehicle newVehicle) throws MissionException {
+        if (newVehicle != null) {
+            boolean usable = true;
+            
+            if (!(newVehicle instanceof Rover)) usable = false;
+            if (newVehicle.isReservedForMission()) usable = false;
+            String status = newVehicle.getStatus();
+            if (!status.equals(Vehicle.PARKED) && !status.equals(Vehicle.MAINTENANCE)) 
+                usable = false;
+            try {
+                if (newVehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
+            }
+            catch (InventoryException e) {
+                throw new MissionException(getPhase(), e);
+            }
+            
+            return usable;
+        }
+        else throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
+    }
+    
+    @Override
+    protected void setVehicle(Vehicle newVehicle) throws MissionException {
+        super.setVehicle(newVehicle);
+        if (getVehicle() == newVehicle) {
+            if (newVehicle.isReservedForMaintenance()) {
+                newVehicle.setReservedForMaintenance(false);
+            }
+        }
     }
     
     /**

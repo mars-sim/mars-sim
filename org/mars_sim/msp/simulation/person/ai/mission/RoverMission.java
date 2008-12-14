@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -120,10 +120,12 @@ public abstract class RoverMission extends VehicleMission {
 	/**
 	 * Gets the available vehicle at the settlement with the greatest range.
 	 * @param settlement the settlement to check.
+     * @param allowMaintReserved allow vehicles that are reserved for maintenance.
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	protected final static Vehicle getVehicleWithGreatestRange(Settlement settlement) throws Exception {
+	protected final static Vehicle getVehicleWithGreatestRange(Settlement settlement, 
+            boolean allowMaintReserved) throws Exception {
 		Vehicle result = null;
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -131,7 +133,8 @@ public abstract class RoverMission extends VehicleMission {
 			Vehicle vehicle = i.next();
 			
 			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
+            if (vehicle.isReservedForMission()) usable = false;
+			if (!allowMaintReserved && vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (vehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
@@ -148,9 +151,11 @@ public abstract class RoverMission extends VehicleMission {
 	/**
 	 * Checks to see if any vehicles are available at a settlement.
 	 * @param settlement the settlement to check.
+     * @param allowMaintReserved allow vehicles that are reserved for maintenance.
 	 * @return true if vehicles are available.
 	 */
-	protected static boolean areVehiclesAvailable(Settlement settlement) {
+	protected static boolean areVehiclesAvailable(Settlement settlement, 
+            boolean allowMaintReserved) {
 		
 		boolean result = false;
 		
@@ -159,7 +164,8 @@ public abstract class RoverMission extends VehicleMission {
 			Vehicle vehicle = i.next();
 			
 			boolean usable = true;
-			if (vehicle.isReserved()) usable = false;
+            if (vehicle.isReservedForMission()) usable = false;
+            if (!allowMaintReserved && vehicle.isReserved()) usable = false;
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
 			

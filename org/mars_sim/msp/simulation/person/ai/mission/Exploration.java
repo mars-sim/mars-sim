@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -193,7 +193,7 @@ public class Exploration extends RoverMission {
 			Settlement settlement = person.getSettlement();
 	    
 			// Check if a mission-capable rover is available.
-			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement);
+			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement, false);
 			
             // Check if available backup rover.
             boolean backupRover = hasBackupRover(settlement);

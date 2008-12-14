@@ -130,7 +130,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param newVehicle the vehicle to use.
 	 * @throws MissionException if vehicle cannot be used.
 	 */
-	protected final void setVehicle(Vehicle newVehicle) throws MissionException {
+	protected void setVehicle(Vehicle newVehicle) throws MissionException {
 		if (newVehicle != null) {
 			boolean usable = false;
 			try {
@@ -375,6 +375,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws MissionException if problem performing the phase.
      */
     protected void performPhase(Person person) throws MissionException {
+        super.performPhase(person);
     	if (EMBARKING.equals(getPhase())) performEmbarkFromSettlementPhase(person);
 		else if (TRAVELLING.equals(getPhase())) performTravelPhase(person);
 		else if (DISEMBARKING.equals(getPhase())) performDisembarkToSettlementPhase(person, 

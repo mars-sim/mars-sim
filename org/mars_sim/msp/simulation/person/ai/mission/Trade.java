@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -233,7 +233,7 @@ public class Trade extends RoverMission implements Serializable {
             Settlement settlement = person.getSettlement();
 	    
 	    	// Check if available rover.
-	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
+	    	if (!areVehiclesAvailable(settlement, false)) missionPossible = false;
             
             // Check if available backup rover.
             if (!hasBackupRover(settlement)) missionPossible = false;
@@ -249,7 +249,7 @@ public class Trade extends RoverMission implements Serializable {
 	    	// Check for the best trade settlement within range.
 			double tradeProfit = 0D;
 	    	try {
-	    		Rover rover = (Rover) getVehicleWithGreatestRange(settlement);
+	    		Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
 	    		if (rover != null) {
 	    			// Only check a few times a Sol, else use cache.
 	    			// Note: this method is very CPU intensive.

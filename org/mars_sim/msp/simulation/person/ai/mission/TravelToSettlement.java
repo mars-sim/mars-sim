@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2008-09-28
+ * @version 2.85 2008-12-14
  * @author Scott Davis
  */
 
@@ -164,7 +164,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
             Settlement settlement = person.getSettlement();
 	    
 	    	// Check if available rover.
-	    	if (!areVehiclesAvailable(settlement)) missionPossible = false;
+	    	if (!areVehiclesAvailable(settlement, false)) missionPossible = false;
             
             // Check if available backup rover.
             if (!hasBackupRover(settlement)) missionPossible = false;
@@ -180,7 +180,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 	    	// Check if there are any desirable settlements within range.
             double topSettlementDesirability = 0D;
 	    	try {
-	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement);
+	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement, false);
 	    		if (vehicle != null) {
 	    			Map<Settlement, Double> desirableSettlements = 
                         getDestinationSettlements(person, settlement, vehicle.getRange());
