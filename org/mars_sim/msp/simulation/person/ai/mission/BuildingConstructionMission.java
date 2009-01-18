@@ -8,6 +8,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -161,45 +162,78 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 }
                 
                 // Reserve construction vehicles.
-                if (constructionStage != null) {
-                    constructionVehicles = new ArrayList<GroundVehicle>();
-                    Iterator<ConstructionVehicleType> i = constructionStage.getInfo().getVehicles().iterator();
-                    while (i.hasNext()) {
-                        ConstructionVehicleType vehicleType = i.next();
-                        // Only handle light utility vehicles for now.
-                        if (vehicleType.getVehicleClass() == LightUtilityVehicle.class) {
-                            LightUtilityVehicle luv = reserveLightUtilityVehicle();
-                            if (luv != null) constructionVehicles.add(luv); 
-                            else endMission("Light utility vehicle not available.");
-                        }
-                    }
-                }
+                reserveConstructionVehicles();
                 
                 // Retrieve construction LUV attachment parts.
-                if (constructionStage != null) {
-                    luvAttachmentParts = new ArrayList<Part>();
-                    Iterator<ConstructionVehicleType> i = constructionStage.getInfo().getVehicles().iterator();
-                    while (i.hasNext()) {
-                        Iterator<Part> j = i.next().getAttachmentParts().iterator();
-                        while (j.hasNext()) {
-                            Part part = j.next();
-                            try {
-                                settlement.getInventory().retrieveItemResources(part, 1);
-                                luvAttachmentParts.add(part);
-                            }
-                            catch (Exception e) {
-                                logger.log(Level.SEVERE, "Error retrieving attachment part " + part.getName());
-                                endMission("Construction attachment part " + part.getName() + " could not be retrieved.");
-                            }
-                        }
-                    }
-                }
+                retrieveConstructionLUVParts();
             } 
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error determining construction sites.");
                 throw new MissionException("Error determining construction sites.", e);
             }
         }
+        
+        // Add phases.
+        addPhase(PREPARE_SITE_PHASE);
+        addPhase(CONSTRUCTION_PHASE);
+        
+        // Set initial mission phase.
+        setPhase(PREPARE_SITE_PHASE);
+        setPhaseDescription("Preparing construction site at " + settlement.getName());
+    }
+    
+    /**
+     * Constructor
+     * @param members the mission members.
+     * @param settlement the settlement.
+     * @param site the construction site.
+     * @param stageInfo the construction stage info.
+     * @param vehicles the construction vehicles.
+     * @throws MissionException if error creating mission.
+     */
+    public BuildingConstructionMission(Collection<Person> members, Settlement settlement, 
+            ConstructionSite site, ConstructionStageInfo stageInfo, 
+            List<GroundVehicle> vehicles) throws MissionException {
+        
+        // Use Mission constructor.
+        super(DEFAULT_DESCRIPTION, (Person) members.toArray()[0], 1);
+        
+        this.settlement = settlement;
+        
+        ConstructionManager manager = settlement.getConstructionManager();
+        if (site != null) constructionSite = site;
+        else {
+            logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+            constructionSite = manager.createNewConstructionSite();
+            if (constructionSite == null) endMission("Construction site could not be created.");
+        }
+        
+        if (constructionSite.hasUnfinishedStage()) {
+            constructionStage = constructionSite.getCurrentConstructionStage();
+        }
+        else {
+            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
+            constructionStage = new ConstructionStage(stageInfo, constructionSite);
+            try {
+                constructionSite.addNewStage(constructionStage);
+            }
+            catch (Exception e) {
+                endMission("Construction stage could not be created.");
+            }
+        }
+        
+        // Mark site as undergoing construction.
+        if (constructionStage != null) constructionSite.setUndergoingConstruction(true);
+        
+        // Add mission members.
+        Iterator<Person> i = members.iterator();
+        while (i.hasNext()) i.next().getMind().setMission(this);
+        
+        // Reserve construction vehicles.
+        reserveConstructionVehicles();
+        
+        // Retrieve construction LUV attachment parts.
+        retrieveConstructionLUVParts();
         
         // Add phases.
         addPhase(PREPARE_SITE_PHASE);
@@ -259,6 +293,49 @@ public class BuildingConstructionMission extends Mission implements Serializable
         }
         
         return result;
+    }
+    
+    /**
+     * Reserve construction vehicles for the mission.
+     */
+    private void reserveConstructionVehicles() {
+        if (constructionStage != null) {
+            constructionVehicles = new ArrayList<GroundVehicle>();
+            Iterator<ConstructionVehicleType> j = constructionStage.getInfo().getVehicles().iterator();
+            while (j.hasNext()) {
+                ConstructionVehicleType vehicleType = j.next();
+                // Only handle light utility vehicles for now.
+                if (vehicleType.getVehicleClass() == LightUtilityVehicle.class) {
+                    LightUtilityVehicle luv = reserveLightUtilityVehicle();
+                    if (luv != null) constructionVehicles.add(luv); 
+                    else endMission("Light utility vehicle not available.");
+                }
+            }
+        }
+    }
+    
+    /**
+     * Retrieve LUV attachment parts from the settlement.
+     */
+    private void retrieveConstructionLUVParts() {
+        if (constructionStage != null) {
+            luvAttachmentParts = new ArrayList<Part>();
+            Iterator<ConstructionVehicleType> k = constructionStage.getInfo().getVehicles().iterator();
+            while (k.hasNext()) {
+                Iterator<Part> l = k.next().getAttachmentParts().iterator();
+                while (l.hasNext()) {
+                    Part part = l.next();
+                    try {
+                        settlement.getInventory().retrieveItemResources(part, 1);
+                        luvAttachmentParts.add(part);
+                    }
+                    catch (Exception e) {
+                        logger.log(Level.SEVERE, "Error retrieving attachment part " + part.getName());
+                        endMission("Construction attachment part " + part.getName() + " could not be retrieved.");
+                    }
+                }
+            }
+        }
     }
     
     /**

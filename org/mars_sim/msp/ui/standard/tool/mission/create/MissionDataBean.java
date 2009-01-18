@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.84 2008-06-09
+ * @version 2.85 2008-12-31
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.ExploredLocation;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
@@ -27,7 +28,10 @@ import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionSite;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.simulation.structure.goods.Good;
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 
@@ -44,6 +48,7 @@ class MissionDataBean {
 	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
 	final static String TRADE_MISSION = "Trade";
 	final static String MINING_MISSION = "Mining";
+    final static String CONSTRUCTION_MISSION = "Building Construction";
 
 	// Data members.
 	private String type;
@@ -60,6 +65,10 @@ class MissionDataBean {
 	private ExploredLocation miningSite;
 	private Map<Good, Integer> sellGoods;
 	private Map<Good, Integer> buyGoods;
+    private Settlement constructionSettlement;
+    private ConstructionSite constructionSite;
+    private ConstructionStageInfo constructionStageInfo;
+    private List<GroundVehicle> constructionVehicles;
 	
 	/**
 	 * Creates a mission from the mission data.
@@ -91,6 +100,11 @@ class MissionDataBean {
 						buyGoods);
 			else if (MINING_MISSION.equals(type))
 				mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
+            else if (CONSTRUCTION_MISSION.equals(type)) {
+                mission = new BuildingConstructionMission(members, constructionSettlement, constructionSite, 
+                        constructionStageInfo, constructionVehicles);
+            }
+            else throw new MissionException(null, "mission type: " + type + " unknown");
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
@@ -106,7 +120,7 @@ class MissionDataBean {
 	 */
 	static final String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
-				RESCUE_MISSION, TRADE_MISSION, MINING_MISSION };
+				RESCUE_MISSION, TRADE_MISSION, MINING_MISSION, CONSTRUCTION_MISSION };
 		return result;
 	}
 	
@@ -124,6 +138,8 @@ class MissionDataBean {
 		else if (missionType.equals(RESCUE_MISSION)) result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(TRADE_MISSION)) result = Trade.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(MINING_MISSION)) result = Mining.DEFAULT_DESCRIPTION;
+        else if (missionType.equals(CONSTRUCTION_MISSION)) result = 
+            BuildingConstructionMission.DEFAULT_DESCRIPTION;
 		return result;
 	}
 	
@@ -350,4 +366,68 @@ class MissionDataBean {
 	void setMiningSite(ExploredLocation miningSite) {
 		this.miningSite = miningSite;
 	}
+    
+    /**
+     * Gets the construction settlement.
+     * @return settlement.
+     */
+    Settlement getConstructionSettlement() {
+        return constructionSettlement;
+    }
+    
+    /**
+     * Sets the construction settlement.
+     * @param constructionSettlement the construction settlement.
+     */
+    void setConstructionSettlement(Settlement constructionSettlement) {
+        this.constructionSettlement = constructionSettlement;
+    }
+    
+    /**
+     * Gets the construction site.
+     * @return construction site.
+     */
+    ConstructionSite getConstructionSite() {
+        return constructionSite;
+    }
+    
+    /**
+     * Sets the construction site.
+     * @param constructionSite the construction site.
+     */
+    void setConstructionSite(ConstructionSite constructionSite) {
+        this.constructionSite = constructionSite;
+    }
+    
+    /**
+     * Gets the construction stage info.
+     * @return construction stage info.
+     */
+    ConstructionStageInfo getConstructionStageInfo() {
+        return constructionStageInfo;
+    }
+    
+    /**
+     * Sets the construction stage info.
+     * @param constructionStageInfo the construction stage info.
+     */
+    void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
+        this.constructionStageInfo = constructionStageInfo;
+    }
+    
+    /**
+     * Gets the construction vehicles.
+     * @return list of ground vehicles.
+     */
+    List<GroundVehicle> getConstructionVehicles() {
+        return constructionVehicles;
+    }
+    
+    /**
+     * Sets the construction vehicles.
+     * @param constructionVehicles list of ground vehicles.
+     */
+    void setConstructionVehicles(List<GroundVehicle> constructionVehicles) {
+        this.constructionVehicles = constructionVehicles;
+    }
 }

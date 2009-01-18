@@ -36,7 +36,7 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 /**
  * A wizard panel for selecting the mission light utility vehicle.
  */
-public class LightUtilityVehiclePanel extends WizardPanel {
+class LightUtilityVehiclePanel extends WizardPanel {
 
 	// The wizard panel name.
 	private final static String NAME = "Light Utility Vehicle";

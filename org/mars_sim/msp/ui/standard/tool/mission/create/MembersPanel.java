@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2009-01-05
  * @author Scott Davis
  */
 
@@ -114,7 +114,8 @@ class MembersPanel extends WizardPanel {
         				
         					if (failedRow) {
         						// Display failed row message and disable add button.
-        						errorMessageLabel.setText("One or more selected people cannot be used on the mission (see red cells).");
+        						errorMessageLabel.setText("One or more selected people cannot be used on the mission " +
+                                        "(see red cells).");
         						addButton.setEnabled(false);
         					}
         					else {
@@ -283,7 +284,10 @@ class MembersPanel extends WizardPanel {
 	 * Updates the rover capacity label.
 	 */
 	void updateRoverCapacityLabel() {
-		roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
+        String type = getWizard().getMissionData().getType();
+        if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) 
+            roverCapacityLabel.setText(" ");
+        else roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
 	}
 	
 	/**
@@ -291,9 +295,13 @@ class MembersPanel extends WizardPanel {
 	 * @return rover capacity.
 	 */
 	int getRemainingRoverCapacity() {
-		int roverCapacity = ((Crewable) getWizard().getMissionData().getRover()).getCrewCapacity();
-		int memberNum = membersTableModel.getRowCount();
-		return roverCapacity - memberNum;
+        String type = getWizard().getMissionData().getType();
+        if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) return Integer.MAX_VALUE;
+        else {
+            int roverCapacity = ((Crewable) getWizard().getMissionData().getRover()).getCrewCapacity();
+            int memberNum = membersTableModel.getRowCount();
+            return roverCapacity - memberNum;
+        }
 	}
 	
 	/**
@@ -354,8 +362,11 @@ class MembersPanel extends WizardPanel {
     	 */
     	void updateTable() {
     		units.clear();
-    		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection<Person> people = CollectionUtils.sortByName(startingSettlement.getInhabitants());
+            MissionDataBean missionData = getWizard().getMissionData();
+    		Settlement settlement = missionData.getStartingSettlement();
+            if (MissionDataBean.CONSTRUCTION_MISSION.equals(missionData.getType()))
+                settlement = missionData.getConstructionSettlement();
+    		Collection<Person> people = CollectionUtils.sortByName(settlement.getInhabitants());
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) units.add(i.next());
     		fireTableDataChanged();

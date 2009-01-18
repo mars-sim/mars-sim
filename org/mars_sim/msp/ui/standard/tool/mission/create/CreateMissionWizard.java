@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.83 2008-02-10
+ * @version 2.85 2009-01-16
  * @author Scott Davis
  */
 
@@ -145,7 +145,8 @@ public class CreateMissionWizard extends JDialog {
 	 */
 	void setFinalWizardPanels() {
 		// Remove old final panels if any.
-		for (int x = 4; x < wizardPanels.size(); x++) wizardPanels.remove(x);
+        int numPanels = wizardPanels.size();
+		for (int x = 4; x < numPanels; x++) wizardPanels.remove(4);
 		
 		// Add mission type appropriate final panels.
 		if (missionBean.getType().equals(MissionDataBean.TRAVEL_MISSION)) 
@@ -167,6 +168,16 @@ public class CreateMissionWizard extends JDialog {
 			addWizardPanel(new LightUtilityVehiclePanel(this));
 			addWizardPanel(new MiningSitePanel(this));
 		}
+        else if (missionBean.getType().equals(MissionDataBean.CONSTRUCTION_MISSION)) {
+            // Remove travel-related panels.
+            numPanels = wizardPanels.size();
+            for (int x = 1; x < numPanels; x++) wizardPanels.remove(1);
+            
+            addWizardPanel(new ConstructionSettlementPanel(this));
+            addWizardPanel(new MembersPanel(this));
+            addWizardPanel(new ConstructionProjectPanel(this));
+            addWizardPanel(new ConstructionVehiclePanel(this));
+        }
 	}
 	
 	/**

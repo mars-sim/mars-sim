@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TypePanel.java
- * @version 2.80 2007-03-22
+ * @version 2.85 2009-01-10
  * @author Scott Davis
  */
 
@@ -72,6 +72,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		for (int x = 0; x < missionTypes.length; x++) displayMissionTypes[x + 1] = missionTypes[x];
 		typeSelect = new JComboBox(displayMissionTypes);
 		typeSelect.addItemListener(this);
+        typeSelect.setMaximumRowCount(typeSelect.getItemCount());
 		typePane.add(typeSelect);
 		typePane.setMaximumSize(new Dimension(Short.MAX_VALUE, typeSelect.getPreferredSize().height));
 		
