@@ -114,7 +114,7 @@ public class BuildingManager implements Serializable {
      * @return collection of buildings
      */
     public List<Building> getBuildings() {
-        return buildings;
+        return new ArrayList<Building>(buildings);
     }
     
     /**
