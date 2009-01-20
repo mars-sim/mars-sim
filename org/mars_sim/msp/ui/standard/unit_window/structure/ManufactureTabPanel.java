@@ -74,6 +74,7 @@ public class ManufactureTabPanel extends TabPanel {
         super("Manu", null, "Manufacturing", unit, desktop);
         
         settlement = (Settlement) unit;
+        setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         
         // Create topPanel.
         JPanel topPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -85,6 +86,7 @@ public class ManufactureTabPanel extends TabPanel {
         
 		// Create scroll panel for manufacture list pane.
         manufactureScrollPane = new JScrollPane();
+        manufactureScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
         topContentPanel.add(manufactureScrollPane);  
 		
@@ -345,7 +347,7 @@ public class ManufactureTabPanel extends TabPanel {
 			ManufactureProcessInfo info = (ManufactureProcessInfo) value;
 			if (info != null) {
 				String processName = info.getName();
-				if (processName.length() > 40) processName = processName.substring(0, 40) + "...";
+				if (processName.length() > 35) processName = processName.substring(0, 35) + "...";
 				((JLabel) result).setText(processName);
 				((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
 			}
