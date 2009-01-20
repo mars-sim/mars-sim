@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.84 2008-05-24
+ * @version 2.85 2009-01-19
  * @author Scott Davis
  */
 
@@ -28,6 +28,7 @@ import javax.swing.border.EmptyBorder;
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.NavPoint;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelMission;
 import org.mars_sim.msp.simulation.person.ai.mission.VehicleMission;
@@ -178,25 +179,31 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare destination text label
         destinationTextLabel = new JLabel("", JLabel.LEFT);
         
-        VehicleMission mission = (VehicleMission) 
-				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-        	NavPoint destinationPoint = mission.getNextNavpoint();
-        	if (destinationPoint.isSettlementAtNavpoint()) {
-                // If destination is settlement, add destination button.
-                destinationSettlementCache = destinationPoint.getSettlement();
-                destinationButton.setText(destinationSettlementCache.getName());
-                destinationLabelPanel.add(destinationButton);
-        	}
-        	else {
-                // If destination is coordinates, add destination text label.
-                destinationTextCache = "Coordinates";
-                destinationTextLabel.setText(destinationTextCache);
-                destinationLabelPanel.add(destinationTextLabel);
-        	}
+        boolean hasDestination = false;
+        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        if ((mission != null) && (mission instanceof VehicleMission)) {
+            
+            VehicleMission vehicleMission = (VehicleMission) mission;
+            if (vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+                hasDestination = true;
+                destinationLocationCache = vehicleMission.getNextNavpoint().getLocation();
+                NavPoint destinationPoint = vehicleMission.getNextNavpoint();
+                if (destinationPoint.isSettlementAtNavpoint()) {
+                    // If destination is settlement, add destination button.
+                    destinationSettlementCache = destinationPoint.getSettlement();
+                    destinationButton.setText(destinationSettlementCache.getName());
+                    destinationLabelPanel.add(destinationButton);
+                }
+                else {
+                    // If destination is coordinates, add destination text label.
+                    destinationTextCache = "Coordinates";
+                    destinationTextLabel.setText(destinationTextCache);
+                    destinationLabelPanel.add(destinationTextLabel);
+                }
+            }
         }
-        else {
-        	// If destination is none, add destination text label.
+        if (!hasDestination) {
+            // If destination is none, add destination text label.
             destinationTextCache = "None";
             destinationTextLabel.setText(destinationTextCache);
             destinationLabelPanel.add(destinationTextLabel);
@@ -205,10 +212,6 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         // Prepare destination info label panel.
         JPanel destinationInfoLabelPanel = new JPanel(new GridLayout(4, 1, 0, 0));
         destinationInfoPanel.add(destinationInfoLabelPanel, BorderLayout.CENTER);
-        
-        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT))
-        	destinationLocationCache = mission.getNextNavpoint().getLocation();
-        else destinationLocationCache = null;
         
         // Prepare destination latitude label.
         String latitudeString = "";
@@ -225,9 +228,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationInfoLabelPanel.add(destinationLongitudeLabel);
         
         // Prepare distance label.
-        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        if ((mission != null) && (mission instanceof VehicleMission) && 
+                ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
         	try {
-        		distanceCache = mission.getCurrentLegRemainingDistance();
+        		distanceCache = ((VehicleMission) mission).getCurrentLegRemainingDistance();
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
@@ -242,7 +246,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         destinationInfoLabelPanel.add(distanceLabel);
         
         // Prepare ETA label.
-        if ((mission != null) && (mission.getLegETA() != null)) etaCache = mission.getLegETA().toString();
+        if ((mission != null) && (mission instanceof VehicleMission) && 
+                (((VehicleMission) mission).getLegETA() != null)) {
+            etaCache = ((VehicleMission) mission).getLegETA().toString();
+        }
         else etaCache = "";
         etaLabel = new JLabel("ETA: " + etaCache, JLabel.LEFT);
         destinationInfoLabelPanel.add(etaLabel);
@@ -324,10 +331,10 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
             }
         }
         
-        VehicleMission mission = (VehicleMission) 
-			Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-        	NavPoint destinationPoint = mission.getNextNavpoint();
+        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        if ((mission != null) && (mission instanceof VehicleMission) 
+                && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        	NavPoint destinationPoint = ((VehicleMission) mission).getNextNavpoint();
         	if (destinationPoint.isSettlementAtNavpoint()) {
         		// If destination is settlement, update destination button.
         		if (destinationSettlementCache != destinationPoint.getSettlement()) {
@@ -358,10 +365,12 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         
         // Update latitude and longitude panels if necessary.
-        if ((mission != null) && mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+        if ((mission != null) && (mission instanceof VehicleMission) 
+                && ((VehicleMission) mission).getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            VehicleMission vehicleMission = (VehicleMission) mission;
         	if (destinationLocationCache == null) 
-        		destinationLocationCache = new Coordinates(mission.getNextNavpoint().getLocation());
-        	else destinationLocationCache.setCoords(mission.getNextNavpoint().getLocation());
+        		destinationLocationCache = new Coordinates(vehicleMission.getNextNavpoint().getLocation());
+        	else destinationLocationCache.setCoords(vehicleMission.getNextNavpoint().getLocation());
             destinationLatitudeLabel.setText("Latitude: " + 
                     destinationLocationCache.getFormattedLatitudeString());
             destinationLongitudeLabel.setText("Longitude: " + 
@@ -376,10 +385,11 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         
         // Update distance to destination if necessary.
-        if (mission != null) {
+        if ((mission != null) && (mission instanceof VehicleMission)) {
+            VehicleMission vehicleMission = (VehicleMission) mission;
         	try {
-        		if (distanceCache != mission.getCurrentLegRemainingDistance()) {
-        			distanceCache = mission.getCurrentLegRemainingDistance();
+        		if (distanceCache != vehicleMission.getCurrentLegRemainingDistance()) {
+        			distanceCache = vehicleMission.getCurrentLegRemainingDistance();
         			distanceLabel.setText("Distance: " + formatter.format(distanceCache) + " km.");
         		}
         	}
@@ -394,11 +404,14 @@ public class NavigationTabPanel extends TabPanel implements ActionListener {
         }
         
         // Update ETA if necessary
-        if ((mission != null) && (mission.getLegETA() != null)){
-        	if (!etaCache.equals(mission.getLegETA().toString())) {
-        		etaCache = mission.getLegETA().toString();
-                etaLabel.setText("ETA: " + etaCache);
-        	}
+        if ((mission != null) && (mission instanceof VehicleMission)) {
+            VehicleMission vehicleMission = (VehicleMission) mission;
+            if (vehicleMission.getLegETA() != null) {
+                if (!etaCache.equals(vehicleMission.getLegETA().toString())) {
+                    etaCache = vehicleMission.getLegETA().toString();
+                    etaLabel.setText("ETA: " + etaCache);
+                }
+            }
         }
         else {
         	etaCache = "";

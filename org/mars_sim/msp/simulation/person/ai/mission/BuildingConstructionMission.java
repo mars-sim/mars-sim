@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 2.85 2008-12-14
+ * @version 2.85 2009-01-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -230,7 +230,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
         while (i.hasNext()) i.next().getMind().setMission(this);
         
         // Reserve construction vehicles.
-        reserveConstructionVehicles();
+        constructionVehicles = vehicles;
+        Iterator<GroundVehicle> j = vehicles.iterator();
+        while (j.hasNext()) j.next().setReservedForMission(true);
         
         // Retrieve construction LUV attachment parts.
         retrieveConstructionLUVParts();
@@ -649,6 +651,14 @@ public class BuildingConstructionMission extends Mission implements Serializable
             Iterator<GroundVehicle> i = constructionVehicles.iterator();
             while (i.hasNext()) i.next().setReservedForMission(false);
         }
+    }
+    
+    /**
+     * Gets a list of all construction vehicles used by the mission.
+     * @return list of construction vehicles.
+     */
+    public List<GroundVehicle> getConstructionVehicles() {
+        return new ArrayList<GroundVehicle>(constructionVehicles);
     }
     
     /**
