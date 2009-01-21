@@ -281,7 +281,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			// Update mission info in UI.
 			descriptionLabel.setText("Description: " + mission.getDescription());
 			typeLabel.setText("Type: " + mission.getName());
-			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
+            String phaseText = mission.getPhaseDescription();
+            if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
+			phaseLabel.setText("Phase: " + phaseText);
 			int memberNum = mission.getPeopleNumber();
 			int minMembers = mission.getMinPeople();
 			int maxMembers = mission.getMissionCapacity();
@@ -428,8 +430,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     			typeLabel.setText("Type: " + mission.getName());
     		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
     			descriptionLabel.setText("Description: " + mission.getDescription());
-    		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT))
-    			phaseLabel.setText("Phase: " + mission.getPhaseDescription());
+    		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT)) {
+                String phaseText = mission.getPhaseDescription();
+                if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
+                phaseLabel.setText("Phase: " + phaseText);
+            }
     		else if (type.equals(Mission.ADD_MEMBER_EVENT) || type.equals(Mission.REMOVE_MEMBER_EVENT) || 
     				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
     			int memberNum = mission.getPeopleNumber();
