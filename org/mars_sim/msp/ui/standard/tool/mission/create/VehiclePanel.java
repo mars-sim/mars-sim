@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclePanel.java
- * @version 2.84 2008-05-12
+ * @version 2.85 2009-01-20
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.simulation.CollectionUtils;
 import org.mars_sim.msp.simulation.Inventory;
+import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -176,6 +177,7 @@ class VehiclePanel extends WizardPanel {
     		columns.add("Lab");
     		columns.add("Sick Bay");
     		columns.add("Cargo Cap.");
+            columns.add("Current Cargo");
     		columns.add("Status");
     		columns.add("Mission");
     	}
@@ -208,9 +210,11 @@ class VehiclePanel extends WizardPanel {
             			result = new Boolean(vehicle.hasSickBay());
             		else if (column == 6)
             			result = new Integer((int) inv.getGeneralCapacity());
-            		else if (column == 7)
+                    else if (column == 7)
+                        result = new Integer((int) inv.getTotalInventoryMass());
+            		else if (column == 8)
             			result = vehicle.getStatus();
-            		else if (column == 8) {
+            		else if (column == 9) {
             			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
             			if (mission != null) result = mission.getDescription();
             			else result = "None";
@@ -247,7 +251,15 @@ class VehiclePanel extends WizardPanel {
     		boolean result = false;
     		Rover vehicle = (Rover) getUnit(row);
     		
-    		if (column == 7) {
+            if (column == 7) {
+                try {
+                    if (vehicle.getInventory().getTotalInventoryMass() > 0D) result = true;
+                }
+                catch (InventoryException e) {
+                    e.printStackTrace(System.err);
+                }
+            }
+            else if (column == 8) {
     			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
                 
                 // Allow rescue/salvage mission to use vehicle undergoing maintenance.
@@ -256,7 +268,7 @@ class VehiclePanel extends WizardPanel {
                     if (vehicle.getStatus().equals(Vehicle.MAINTENANCE)) result = false;
                 }
     		}
-    		else if (column == 8) {
+    		else if (column == 9) {
     			Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
     			if (mission != null) result = true;
     		}
