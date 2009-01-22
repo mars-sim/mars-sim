@@ -437,14 +437,10 @@ public class PowerGrid implements Serializable {
      */
     private void determinePowerValue() {
     	double demand = powerRequired;
-    	double supply = powerGenerated;
+    	double supply = powerGenerated + (powerStored / 2D);
     	
     	double newPowerValue = demand / (supply + 1.0D);
         
-        // Add power storage value.
-        double powerStorageValue = powerStorageCapacity / (powerStored + 1.0D);
-        newPowerValue += powerStorageValue;
-    	
     	if (newPowerValue != powerValue) {
     		powerValue = newPowerValue;
     		settlement.fireUnitUpdate(POWER_VALUE_EVENT);
