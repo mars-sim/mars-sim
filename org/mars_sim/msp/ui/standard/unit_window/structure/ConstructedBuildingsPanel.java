@@ -7,6 +7,7 @@
 package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.JLabel;
@@ -43,6 +44,8 @@ public class ConstructedBuildingsPanel extends JPanel {
         
         // Create scroll panel for the outer table panel.
         JScrollPane scrollPanel = new JScrollPane();
+        scrollPanel.setPreferredSize(new Dimension(200, 75));
+        scrollPanel.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPanel, BorderLayout.CENTER);         
         
         // Prepare outer table panel.

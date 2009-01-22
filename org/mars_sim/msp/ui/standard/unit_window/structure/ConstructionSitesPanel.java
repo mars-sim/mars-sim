@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.standard.unit_window.structure;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.text.DecimalFormat;
 import java.util.Iterator;
@@ -54,6 +55,8 @@ public class ConstructionSitesPanel extends JPanel {
         
         // Create scroll panel for sites list pane.
         sitesScrollPane = new JScrollPane();
+        sitesScrollPane.setPreferredSize(new Dimension(200, 75));
+        sitesScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(sitesScrollPane, BorderLayout.CENTER);  
         
         // Prepare sites outer list pane.
