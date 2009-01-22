@@ -232,7 +232,11 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
 	    
-			if (reservableRover && backupRover && minNum && enoughContainers && !embarkingMissions) result = 5D;
+            // Check if settlement has enough basic resources for a rover mission.
+            boolean hasBasicResources = RoverMission.hasEnoughBasicResources(settlement);
+            
+			if (reservableRover && backupRover && minNum && enoughContainers && 
+                    !embarkingMissions && hasBasicResources) result = 5D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2008-12-14
+ * @version 2.85 2009-01-21
  * @author Scott Davis
  */
 
@@ -283,6 +283,10 @@ public class Trade extends RoverMission implements Serializable {
 			// Check for embarking missions.
 			if (VehicleMission.hasEmbarkingMissions(settlement)) missionPossible = false;
 	    	
+			// Check if settlement has enough basic resources for a rover mission.
+            if (!RoverMission.hasEnoughBasicResources(settlement)) 
+                missionPossible = false;
+            
 	    	// Determine mission probability.
 	        if (missionPossible) {
 	        	

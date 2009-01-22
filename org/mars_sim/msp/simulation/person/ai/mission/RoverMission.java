@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 2.85 2008-12-14
+ * @version 2.85 2009-01-21
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.person.ai.mission;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.Person;
@@ -582,5 +583,29 @@ public abstract class RoverMission extends VehicleMission {
                 availableVehicleNum++;
         }
         return (availableVehicleNum >= 2);
+    }
+    
+    /**
+     * Checks if there are enough basic mission resources at the settlement to start mission.
+     * @param settlement the starting settlement.
+     * @return true if enough resources.
+     */
+    protected static boolean hasEnoughBasicResources(Settlement settlement) {
+        boolean hasBasicResources = true;
+        Inventory inv = settlement.getInventory();
+        try {
+            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            if (inv.getAmountResourceStored(oxygen) < 50D) hasBasicResources = false;
+            AmountResource water = AmountResource.findAmountResource("water");
+            if (inv.getAmountResourceStored(water) < 50D) hasBasicResources = false;
+            AmountResource food = AmountResource.findAmountResource("food");
+            if (inv.getAmountResourceStored(food) < 50D) hasBasicResources = false;
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            if (inv.getAmountResourceStored(methane) < 100D) hasBasicResources = false;
+        }
+        catch (Exception e) {
+            e.printStackTrace(System.err);
+        }
+        return hasBasicResources;
     }
 }
