@@ -81,8 +81,6 @@ public class ConstructionValues implements Serializable {
             if (newSiteProfit > profit) profit = newSiteProfit;
             
             settlementConstructionValueCache.put(constructionSkill, profit);
-            System.out.println(settlement.getName() + " construction profit: " + profit + 
-            		" for skill: " + constructionSkill);
         }
         
         return settlementConstructionValueCache.get(constructionSkill);
