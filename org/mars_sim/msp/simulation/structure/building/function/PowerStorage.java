@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.85 2008-11-07
+ * @version 2.85 2009-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -69,7 +69,10 @@ public class PowerStorage extends Function implements Serializable {
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         double powerStorage = config.getPowerStorageCapacity(buildingName);
         
-        return powerStorage * existingPowerStorageValue / hrInSol;
+        double value = powerStorage * existingPowerStorageValue / hrInSol;
+        if (value > 10D) value = 10D;
+        
+        return value;
     }
     
     /**
