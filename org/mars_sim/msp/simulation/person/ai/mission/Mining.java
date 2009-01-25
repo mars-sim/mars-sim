@@ -872,8 +872,8 @@ public class Mining extends RoverMission {
 	public void endMission(String reason) {
 		super.endMission(reason);
 		
-		miningSite.setReserved(false);
-		luv.setReservedForMission(false);
+		if (miningSite != null) miningSite.setReserved(false);
+		if (luv != null) luv.setReservedForMission(false);
 	}
 	
 	/**
