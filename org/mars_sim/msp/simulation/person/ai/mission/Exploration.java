@@ -219,7 +219,7 @@ public class Exploration extends RoverMission {
             boolean hasBasicResources = RoverMission.hasEnoughBasicResources(settlement);
             
 			if (reservableRover && backupRover && minNum && enoughContainers && 
-                    !embarkingMissions && hasBasicResources) result = 5D;
+                    !embarkingMissions && hasBasicResources) result = 10D;
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
