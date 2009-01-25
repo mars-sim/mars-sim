@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2009-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -91,7 +91,7 @@ public class Driver extends Job implements Serializable {
 			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		
-		result = settlementVehicleNum * 2D;
+		result = settlementVehicleNum;
         
         // Add overpopulation modifier.
         int overpop = settlement.getAllAssociatedPeople().size() - settlement.getPopulationCapacity();

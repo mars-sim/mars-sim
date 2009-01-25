@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Architect.java
- * @version 2.85 2008-09-21
+ * @version 2.85 2009-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -74,13 +74,17 @@ public class Architect extends Job implements Serializable {
             // Based on settlement construction profit.
             double constructionProfit = settlement.getConstructionManager().getConstructionValues().
                     getSettlementConstructionProfit();
-            result = constructionProfit / 100D;
+            result = constructionProfit / 1000D;
             if (result < 0D) result = 0D;
+            if (result > 100D) result = 100D;
         }
         catch (Exception e) {
             e.printStackTrace(System.err);
             logger.log(Level.SEVERE,"Architect.getSettlementNeed()", e);
         }
+        
+        // Add number of buildings currently at settlement.
+        result += settlement.getBuildingManager().getBuildingNum();
         
         return result;  
     }
