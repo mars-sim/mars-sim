@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.85 2008-08-23
+ * @version 2.85 2009-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.simulation.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.simulation.person.ai.task.ResearchMaterialsScience;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -44,6 +45,7 @@ public class Engineer extends Job implements Serializable {
 		// Add engineer-related tasks.
 		jobTasks.add(ManufactureGood.class);
 		jobTasks.add(ResearchMaterialsScience.class);
+        jobTasks.add(DigLocalRegolith.class);
 		
 		// Add engineer-related missions.
 		jobMissionJoins.add(TravelToSettlement.class);	
@@ -91,7 +93,7 @@ public class Engineer extends Job implements Serializable {
 			Building building = (Building) i.next();
 			try {
 				Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
-				result += workshop.getTechLevel() * workshop.getConcurrentProcesses();
+				result += workshop.getTechLevel() * workshop.getConcurrentProcesses() * 2D;
 			}
 			catch (BuildingException e) {
 			    logger.log(Level.SEVERE,"Engineer.getSettlementNeed()",e);
