@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 2.85 2008-08-31
+ * @version 2.85 2009-02-11
  * @author Scott Davis
  */
 
@@ -249,7 +249,6 @@ public class ConstructionValues implements Serializable {
     
     /**
      * Gets a map of all construction stage infos and their values.
-     * @param stageType the construction stage type.
      * @return map of construction stage infos and their values (VP).
      * @throws Exception if error determining value.
      */

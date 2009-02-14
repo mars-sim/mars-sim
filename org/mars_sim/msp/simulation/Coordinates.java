@@ -57,8 +57,8 @@ public class Coordinates implements Serializable {
     
     /**
      * Constructor with a latitude and longitude string.
-     * @param latitude String representing latitude value. ex. "25.344 N" or "25.344º N"
-     * @param longitude String representing longitude value. ex. "63.5532 W" or "63.5532º W"
+     * @param latitude String representing latitude value. ex. "25.344 N"
+     * @param longitude String representing longitude value. ex. "63.5532 W"
      * @throws Exception if latitude or longitude strings are invalid.
      */
     public Coordinates(String latitude, String longitude) throws Exception {
@@ -229,7 +229,7 @@ public class Coordinates implements Serializable {
     /** 
      * Gets a common formatted string to represent longitude for
      * this location. 
-     * ex. "35.6º E"
+     * ex. "35.6 E"
      * @return formatted longitude string for this Coordinates object
      */
     public String getFormattedLongitudeString() {
@@ -257,7 +257,7 @@ public class Coordinates implements Serializable {
     /** 
      * Gets a common formatted string to represent latitude for this
      * location. 
-     * ex. "35.6º S"
+     * ex. "35.6 S"
      * @return formatted latitude string for this Coordinates object
      */
     public String getFormattedLatitudeString() {
@@ -467,7 +467,7 @@ public class Coordinates implements Serializable {
 
 	/** 
 	 * Parse a latitude string into a phi value.
-	 * ex. "25.344 N" or "25.344º N"
+	 * ex. "25.344 N"
 	 * @param latitude as string
 	 * @return phi value
 	 * @throws ParseException if latitude string could not be parsed.
@@ -499,7 +499,7 @@ public class Coordinates implements Serializable {
 	
 	/** 
 	 * Parse a longitude string into a theta value.
-	 * ex. "63.5532 W" or "63.5532º W"
+	 * ex. "63.5532 W"
 	 * @param longitude as string
 	 * @return theta value
 	 * @throws ParseException if longitude string could not be parsed.

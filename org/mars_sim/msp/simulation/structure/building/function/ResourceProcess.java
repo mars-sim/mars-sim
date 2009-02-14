@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 2.85 2008-11-26
+ * @version 2.85 2009-02-11
  * @author Scott Davis
  */
  
@@ -41,7 +41,7 @@ public class ResourceProcess implements Serializable {
     /**
      * Constructor
      * @param name the name of the process.
-     * @para powerRequired the amount of power required to run the process (kW).
+     * @param powerRequired the amount of power required to run the process (kW).
      * @param defaultOn true of process is on by default, false if off by default. 
      */
     public ResourceProcess(String name, double powerRequired, boolean defaultOn) {

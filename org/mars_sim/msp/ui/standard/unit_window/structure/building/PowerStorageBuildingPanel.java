@@ -30,7 +30,7 @@ public class PowerStorageBuildingPanel extends BuildingFunctionPanel {
     
     /**
      * Constructor
-     * @param building the building the panel is for.
+     * @param storage The power storage building function.
      * @param desktop The main desktop.
      */
     public PowerStorageBuildingPanel(PowerStorage storage, MainDesktopPane desktop) {

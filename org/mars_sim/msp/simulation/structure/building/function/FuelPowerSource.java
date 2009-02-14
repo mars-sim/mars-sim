@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 2.85 25.20.2008
+ * @version 2.85 11.02.2009
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -40,8 +40,11 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     private double toggleRunningWorkTime;
 
     /**
-     * @param type
-     * @param maxPower
+     * Constructor
+     * @param _maxPower the maximum power (kW) of the power source.
+     * @param _toggle if the power source is toggled on or off.
+     * @param fuelType the fuel type.
+     * @param _consumptionSpeed the rate of fuel consumption (kg/Sol).
      */
     public FuelPowerSource(double _maxPower, boolean _toggle, String fuelType,
             double _consumptionSpeed) {
@@ -56,9 +59,6 @@ public class FuelPowerSource extends PowerSource implements Serializable {
         }
     }
 
-    /*
-     * 
-     */
     @Override
     public double getCurrentPower(Building building) {
         try {

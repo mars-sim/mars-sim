@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 2.85 2008-08-31
+ * @version 2.85 2009-02-11
  * @author Scott Davis
  */
 
@@ -47,7 +47,7 @@ public class ConstructionConfig implements Serializable {
     
     /**
      * Constructor
-     * @param buildingDoc DOM document with construction configuration
+     * @param constructionDoc DOM document with construction configuration
      */
     public ConstructionConfig(Document constructionDoc) {
         this.constructionDoc = constructionDoc; 
