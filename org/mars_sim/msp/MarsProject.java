@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project MarsProject.java
- * @version 2.83 2008-02-26
+ * @version 2.86 2009-02-19
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -104,7 +104,7 @@ public class MarsProject {
      */
     public static void main(String args[]) {
         // starting the simulation
-        System.setProperty("swing.aatext", "true");
+        System.setProperty("swing.aatext", "true"); //antialiasing, doesn't seem to work on Java 6...
         new MarsProject(args);
     }
 }
