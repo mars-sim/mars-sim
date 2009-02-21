@@ -11,6 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.xml.parsers.*;
+
+import org.jdom.input.DOMBuilder;
+import org.jdom.input.SAXBuilder;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
 import org.mars_sim.msp.simulation.mars.*;
@@ -97,7 +100,7 @@ public class SimulationConfig implements Serializable {
 		
 			// Load subset configuration classes.
 			resourceConfig = new AmountResourceConfig(parseXMLFile(RESOURCE_FILE));
-			partConfig = new PartConfig(parseXMLFile(PART_FILE));
+			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE));
 			partPackageConfig = new PartPackageConfig(parseXMLFile(PART_PACKAGE_FILE));
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
@@ -161,6 +164,20 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 	
+	/**
+     * Parses an XML file into a DOM document.
+     * @param filename the path of the file.
+     * @return DOM document
+     * @throws Exception if XML could not be parsed or file could not be found.
+     */
+    private org.jdom.Document parseXMLFileAsJDOMDocument(String filename) throws Exception {
+            InputStream stream = getInputStream(filename);
+            SAXBuilder saxBuilder = new SAXBuilder();
+            org.jdom.Document result = saxBuilder.build(stream);
+            stream.close();
+            return result;
+    }
+    
 	/**
 	 * Gets a configuration file as an input stream.
 	 * @param filename the filename of the configuration file.
