@@ -7,10 +7,11 @@
 package org.mars_sim.msp.simulation.resource;
 
 import java.io.Serializable;
+import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 /**
  * Provides configuration information about parts.
@@ -42,32 +43,32 @@ public final class PartConfig implements Serializable {
 	 * @throws Exception if error loading item resources.
 	 */
 	private void loadItemResources(Document itemResourceDoc) throws Exception {
-		Element root = itemResourceDoc.getDocumentElement();
-		NodeList partNodes = root.getElementsByTagName(PART);
-		for (int x=0; x < partNodes.getLength(); x++) {
+		Element root = itemResourceDoc.getRootElement();
+		List<Element> partNodes = root.getChildren(PART);
+		for (int x=0; x < partNodes.size(); x++) {
 			String name = "";
 			
 			try {
-				Element partElement = (Element) partNodes.item(x);
+				Element partElement = partNodes.get(x);
 				
 				// Get name.
-				name = partElement.getAttribute(NAME);
+				name = partElement.getAttributeValue(NAME);
 				
 				// Get mass.
-				double mass = Double.parseDouble(partElement.getAttribute(MASS));
+				double mass = Double.parseDouble(partElement.getAttributeValue(MASS));
 				
 				// Add part to item resources.
 				Part part = new Part(name, mass);
 				
 				// Add maintenance entities for part.
-				Element entityListElement = (Element) partElement.getElementsByTagName(MAINTENANCE_ENTITY_LIST).item(0);
+				Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
 				if (entityListElement != null) {
-					NodeList entityNodes = entityListElement.getElementsByTagName(ENTITY);
-					for (int y = 0; y < entityNodes.getLength(); y++) {
-						Element entityElement = (Element) entityNodes.item(y);
-						String entityName = entityElement.getAttribute(NAME);
-						int probability = Integer.parseInt(entityElement.getAttribute(PROBABILITY));
-						int maxNumber = Integer.parseInt(entityElement.getAttribute(MAX_NUMBER));
+					List<Element> entityNodes = entityListElement.getChildren(ENTITY);
+					for (int y = 0; y < entityNodes.size(); y++) {
+						Element entityElement = (Element) entityNodes.get(y);
+						String entityName = entityElement.getAttributeValue(NAME);
+						int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
+						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
 						part.addMaintenanceEntity(entityName, probability, maxNumber);
 					}
 				}
