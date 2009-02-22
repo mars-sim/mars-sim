@@ -45,12 +45,10 @@ public final class PartConfig implements Serializable {
 	private void loadItemResources(Document itemResourceDoc) throws Exception {
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);
-		for (int x=0; x < partNodes.size(); x++) {
+		for (Element partElement : partNodes) {
 			String name = "";
 			
 			try {
-				Element partElement = partNodes.get(x);
-				
 				// Get name.
 				name = partElement.getAttributeValue(NAME);
 				
@@ -64,8 +62,7 @@ public final class PartConfig implements Serializable {
 				Element entityListElement = partElement.getChild(MAINTENANCE_ENTITY_LIST);
 				if (entityListElement != null) {
 					List<Element> entityNodes = entityListElement.getChildren(ENTITY);
-					for (int y = 0; y < entityNodes.size(); y++) {
-						Element entityElement = (Element) entityNodes.get(y);
+					for (Element entityElement : entityNodes) {
 						String entityName = entityElement.getAttributeValue(NAME);
 						int probability = Integer.parseInt(entityElement.getAttributeValue(PROBABILITY));
 						int maxNumber = Integer.parseInt(entityElement.getAttributeValue(MAX_NUMBER));
