@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GuideWindow.java
- * @version 2.84 2008-05-16
+ * @version 2.86 2009-02-23
  * @author Lars Naesbye Christensen
  */
 
@@ -14,6 +14,10 @@ import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JEditorPane;
+
+/** The HTMLContentPane class provides a pane for displaying
+ *  the help files in the Guide window.
+ */
 
 public class HTMLContentPane extends JEditorPane {
 
