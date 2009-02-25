@@ -10,16 +10,16 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 /**
  * Provides configuration information about part packages.
- * Uses a DOM document to get the information. 
+ * Uses a JDOM document to get the information. 
  */
 public class PartPackageConfig implements Serializable {
 
@@ -50,23 +50,22 @@ public class PartPackageConfig implements Serializable {
 	 */
 	private void loadPartPackages(Document partPackageDoc) throws Exception {
 		
-		Element root = partPackageDoc.getDocumentElement();
-		NodeList partPackageNodes = root.getElementsByTagName(PART_PACKAGE);
-		for (int x = 0; x < partPackageNodes.getLength(); x++) {
+		Element root = partPackageDoc.getRootElement();
+		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
+		for (Element partPackageElement : partPackageNodes) {
 			PartPackage partPackage = new PartPackage();
-			partPackages.add(partPackage);
 			
-			Element partPackageElement = (Element) partPackageNodes.item(x);
-			partPackage.name = partPackageElement.getAttribute(NAME);
+			partPackage.name = partPackageElement.getAttributeValue(NAME);
 			
-			NodeList partNodes = partPackageElement.getElementsByTagName(PART);
-			for (int y = 0; y < partNodes.getLength(); y++) {
-				Element partElement = (Element) partNodes.item(y);
-				String partType = partElement.getAttribute(TYPE);
+			List<Element> partNodes = partPackageElement.getChildren(PART);
+			for (Element partElement : partNodes) {
+				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
-				int partNumber = Integer.parseInt(partElement.getAttribute(NUMBER));
+				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 				partPackage.parts.put(part, partNumber);
 			}
+			
+			partPackages.add(partPackage);
 		}
 	}
 	
@@ -80,11 +79,12 @@ public class PartPackageConfig implements Serializable {
 		Map<Part, Integer> result = null;
 		
 		PartPackage foundPartPackage = null;
-		Iterator<PartPackage> i = partPackages.iterator();
-		while (i.hasNext()) {
-			PartPackage partPackage = i.next();
-			if (partPackage.name.equals(name)) foundPartPackage = partPackage;
-		}
+		for(PartPackage partPackage : partPackages) {
+	            if (partPackage.name.equals(name)) {
+	                foundPartPackage = partPackage;
+	                break;
+	            }
+	    }
 		
 		if (foundPartPackage != null) 
 			result = new HashMap<Part, Integer>(foundPartPackage.parts);
