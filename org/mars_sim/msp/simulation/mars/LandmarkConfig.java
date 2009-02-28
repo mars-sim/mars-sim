@@ -7,10 +7,15 @@
 package org.mars_sim.msp.simulation.mars;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.Coordinates;
-import org.w3c.dom.*;
+
+
+
 
 /**
  * Provides configuration information about landmarks.
@@ -45,22 +50,21 @@ public class LandmarkConfig implements Serializable {
 		if (landmarkList == null) {
 			landmarkList = new ArrayList<Landmark>();
 			
-			Element root = landmarkDoc.getDocumentElement();
-			NodeList landmarks = root.getElementsByTagName(LANDMARK);
-			for (int x=0; x < landmarks.getLength(); x++) {
+			Element root = landmarkDoc.getRootElement();
+			List<Element> landmarks = root.getChildren(LANDMARK);
+			
+			for (Element landmark : landmarks) {
 				String name = "";
 				
 				try {
-					Element landmark = (Element) landmarks.item(x);
-					
 					// Get landmark name.
-					name = landmark.getAttribute(NAME);
+					name = landmark.getAttributeValue(NAME);
 					
 					// Get latitude.
-					String latitude = landmark.getAttribute(LATITUDE);
+					String latitude = landmark.getAttributeValue(LATITUDE);
 					
 					// Get longitude.
-					String longitude = landmark.getAttribute(LONGITUDE);
+					String longitude = landmark.getAttributeValue(LONGITUDE);
 					
 					// Create location coordinate.
 					Coordinates location = new Coordinates(latitude, longitude);

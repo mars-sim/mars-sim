@@ -7,9 +7,12 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.w3c.dom.*;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 /**
  * Provides configuration information about greenhouse crops.
@@ -43,19 +46,18 @@ public class CropConfig implements Serializable {
 		if (cropList == null) {
 			cropList = new ArrayList<CropType>();
 			
-			Element root = cropDoc.getDocumentElement();
-			NodeList crops = root.getElementsByTagName(CROP);
-			for (int x=0; x < crops.getLength(); x++) {
+			Element root = cropDoc.getRootElement();
+			List<Element> crops = root.getChildren(CROP);
+			
+			for (Element crop : crops) {
 				String name = "";
 				
 				try {
-					Element crop = (Element) crops.item(x);
-				
 					// Get name.
-					name = crop.getAttribute(NAME);
+					name = crop.getAttributeValue(NAME);
 				
 					// Get growing time.
-					String growingTimeStr = crop.getAttribute(GROWING_TIME);
+					String growingTimeStr = crop.getAttributeValue(GROWING_TIME);
 					double growingTime = Double.parseDouble(growingTimeStr);
 				
 					// Create crop type.

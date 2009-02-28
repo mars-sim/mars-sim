@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 public class MineralMapConfig implements Serializable {
 	
@@ -40,30 +40,29 @@ public class MineralMapConfig implements Serializable {
 		else {
 			mineralTypes = new ArrayList<MineralType>();
 		
-			Element root = mineralDoc.getDocumentElement();
-			NodeList minerals = root.getElementsByTagName(MINERAL);
+			Element root = mineralDoc.getRootElement();
+			List<Element> minerals = root.getChildren(MINERAL);
 		
-			for (int x = 0; x < minerals.getLength(); x++) {
+			for (Element mineral : minerals ) {
 				String name = "";
 			
 				try {
-					Element mineral = (Element) minerals.item(x);
 				
 					// Get mineral name.
-					name = mineral.getAttribute(NAME).toLowerCase().trim();
+					name = mineral.getAttributeValue(NAME).toLowerCase().trim();
 				
 					// Get frequency.
-					String frequency = mineral.getAttribute(FREQUENCY).toLowerCase().trim();
+					String frequency = mineral.getAttributeValue(FREQUENCY).toLowerCase().trim();
 				
 					// Create mineralType.
 					MineralType mineralType = new MineralType(name, frequency);
 				
 					// Get locales.
-					Element localeList = (Element) mineral.getElementsByTagName(LOCALE_LIST).item(0);
-					NodeList locales = localeList.getElementsByTagName(LOCALE);
-					for (int y = 0; y < locales.getLength(); y++) {
-						Element locale = (Element) locales.item(y);
-						String localeName = locale.getAttribute(NAME).toLowerCase().trim();
+					Element localeList = mineral.getChild(LOCALE_LIST);
+					List<Element> locales = localeList.getChildren(LOCALE);
+					
+					for (Element locale : locales) {
+						String localeName = locale.getAttributeValue(NAME).toLowerCase().trim();
 						mineralType.addLocale(localeName);
 					}
 				

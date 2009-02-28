@@ -8,10 +8,11 @@
 package org.mars_sim.msp.simulation.resource;
 
 import java.io.Serializable;
+import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 /**
  * Provides configuration information about amount resources.
@@ -40,23 +41,22 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error loading amount resources.
 	 */
 	private void loadAmountResources(Document amountResourceDoc) throws Exception {
-		Element root = amountResourceDoc.getDocumentElement();
-		NodeList resourceNodes = root.getElementsByTagName(RESOURCE);
-		for (int x=0; x < resourceNodes.getLength(); x++) {
+		Element root = amountResourceDoc.getRootElement();
+		List<Element> resourceNodes = root.getChildren(RESOURCE);
+		
+		for (Element resourceElement : resourceNodes) {
 			String name = "";
 			
 			try {
-				Element resourceElement = (Element) resourceNodes.item(x);
-				
 				// Get name.
-				name = resourceElement.getAttribute(NAME);
+				name = resourceElement.getAttributeValue(NAME);
 				
 				// Get phase.
-				String phaseString = resourceElement.getAttribute(PHASE);
+				String phaseString = resourceElement.getAttributeValue(PHASE);
 				Phase phase = Phase.findPhase(phaseString);
 				
 				// Get life support
-				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttribute(LIFE_SUPPORT));
+				Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 				
 				// Create new amount resource.
 				new AmountResource(name, phase, lifeSupport);
