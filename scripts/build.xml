@@ -56,6 +56,7 @@
                     <include name="plexus-core.jar" />
                     <include name="commons-collections-3.1.jar" />
                     <include name="log4j-1.2.8.jar" />
+                	<include name="jdom.jar" />
                 </fileset>
             </classpath>
         </javac>
@@ -179,6 +180,7 @@
                 	<include name="jogg-0.0.7.jar" />
                 	<include name="jorbis-0.0.15.jar" />
                 	<include name="vorbisspi1.0.2.jar" />
+                	<include name="jdom.jar" />
                 </fileset>
             </classpath>
         </javadoc>
