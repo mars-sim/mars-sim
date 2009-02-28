@@ -99,15 +99,15 @@ public class SimulationConfig implements Serializable {
 			simulationDoc = parseXMLFile(SIMULATION_FILE);
 		
 			// Load subset configuration classes.
-			resourceConfig = new AmountResourceConfig(parseXMLFile(RESOURCE_FILE));
+			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE));
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE));
 			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE));
 			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
-			medicalConfig = new MedicalConfig(parseXMLFile(MEDICAL_FILE));
-			landmarkConfig = new LandmarkConfig(parseXMLFile(LANDMARK_FILE));
-			mineralMapConfig = new MineralMapConfig(parseXMLFile(MINERAL_MAP_FILE));
+			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE));
+			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE));
+			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE));
 			malfunctionConfig = new MalfunctionConfig(parseXMLFile(MALFUNCTION_FILE));
-			cropConfig = new CropConfig(parseXMLFile(CROP_FILE));
+			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE));
 			vehicleConfig = new VehicleConfig(parseXMLFile(VEHICLE_FILE));
 			buildingConfig = new BuildingConfig(parseXMLFile(BUILDING_FILE));
 			resupplyConfig = new ResupplyConfig(parseXMLFile(RESUPPLY_FILE), partPackageConfig);
