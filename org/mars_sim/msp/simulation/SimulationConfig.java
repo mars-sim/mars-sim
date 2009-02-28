@@ -102,7 +102,7 @@ public class SimulationConfig implements Serializable {
 			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE));
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE));
 			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE));
-			personConfig = new PersonConfig(parseXMLFile(PEOPLE_FILE));
+			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE));
 			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE));
 			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE));
 			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE));
