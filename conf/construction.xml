@@ -28,9 +28,9 @@
 		</foundation>
 		
 		<foundation name="subsurface foundation 5m x 5m x 3m" work-time="20.0" skill-required="1" >
-			<vehicle type="light utility vehicle" >
-			    <resource name="concrete" amount="500.0" />
-			    <resource name="water" amount="200.0" />
+			<resource name="concrete" amount="500.0" />
+			<resource name="water" amount="200.0" />
+			<vehicle type="light utility vehicle" >    
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
 				<attachment-part name="soil compactor" />
