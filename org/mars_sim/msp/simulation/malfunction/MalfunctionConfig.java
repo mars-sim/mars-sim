@@ -7,9 +7,16 @@
 package org.mars_sim.msp.simulation.malfunction;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
-import org.w3c.dom.*;
+
 
 /**
  * Provides configuration information about malfunctions.
@@ -36,6 +43,7 @@ public class MalfunctionConfig implements Serializable {
 	private static final String REPAIR_PARTS_LIST = "repair-parts-list";
 	private static final String PART = "part";
 	private static final String NUMBER = "number";
+	private static final String VALUE = "value";
 
 	private Document malfunctionDoc;
 	private List<Malfunction> malfunctionList;
@@ -60,69 +68,70 @@ public class MalfunctionConfig implements Serializable {
 		if (malfunctionList == null) {
 			malfunctionList = new ArrayList<Malfunction>();
 			
-			Element root = malfunctionDoc.getDocumentElement();
-			NodeList malfunctionNodes = root.getElementsByTagName(MALFUNCTION);
-			for (int x=0; x < malfunctionNodes.getLength(); x++) {
+			Element root = malfunctionDoc.getRootElement();
+			List<Element> malfunctionNodes = root.getChildren(MALFUNCTION);
+			for (Element malfunctionElement : malfunctionNodes) {
 				String name = "";
 				
 				try {
-					Element malfunctionElement = (Element) malfunctionNodes.item(x);
 					
 					// Get name.
-					name = malfunctionElement.getAttribute(NAME);
+					name = malfunctionElement.getAttributeValue(NAME);
 					
 					// Get severity.
-					Element severityElement = (Element) malfunctionElement.getElementsByTagName(SEVERITY).item(0);
-					int severity = Integer.parseInt(severityElement.getAttribute("value"));
+					Element severityElement = malfunctionElement.getChild(SEVERITY);
+					int severity = Integer.parseInt(severityElement.getAttributeValue(VALUE));
 					
 					// Get probability.
-					Element probabilityElement = (Element) malfunctionElement.getElementsByTagName(PROBABILITY).item(0);
-					double probability = Double.parseDouble(probabilityElement.getAttribute("value"));
+					Element probabilityElement = malfunctionElement.getChild(PROBABILITY);
+					double probability = Double.parseDouble(probabilityElement.getAttributeValue(VALUE));
 					
 					// Get repair time. (optional)
 					double repairTime = 0D;
-					try {
-						Element repairTimeElement = (Element) malfunctionElement.getElementsByTagName(REPAIR_TIME).item(0);
-						repairTime = Double.parseDouble(repairTimeElement.getAttribute("value"));
-					}
-					catch (NullPointerException e) {}
+			
+				     Element repairTimeElement = (Element) malfunctionElement.getChild(REPAIR_TIME);
+				     
+				     if(repairTimeElement != null)
+					 repairTime = Double.parseDouble(repairTimeElement.getAttributeValue(VALUE));
+
 					
 					// Get emergency repair time. (optional)
 					double emergencyRepairTime = 0D;
-					try {
-						Element emergencyRepairTimeElement = (Element) malfunctionElement.getElementsByTagName(EMERGENCY_REPAIR_TIME).item(0);
-						emergencyRepairTime = Double.parseDouble(emergencyRepairTimeElement.getAttribute("value"));
-					}
-					catch (NullPointerException e) {}					
+					Element emergencyRepairTimeElement = malfunctionElement.getChild(EMERGENCY_REPAIR_TIME);
+					
+					if(emergencyRepairTimeElement != null)
+					emergencyRepairTime = Double.parseDouble(emergencyRepairTimeElement.getAttributeValue(VALUE));
+									
 					
 					// Get EVA repair time. (optional)
 					double evaRepairTime = 0D;
-					try {
-						Element evaRepairTimeElement = (Element) malfunctionElement.getElementsByTagName(EVA_REPAIR_TIME).item(0);
-						evaRepairTime = Double.parseDouble(evaRepairTimeElement.getAttribute("value"));
-					}
-					catch (NullPointerException e) {}
+					Element evaRepairTimeElement = malfunctionElement.getChild(EVA_REPAIR_TIME);
+					
+					if(evaRepairTimeElement != null)
+					evaRepairTime = Double.parseDouble(evaRepairTimeElement.getAttributeValue(VALUE));
+				
 					
 					// Get affected entities.
 					List<String> entities = new ArrayList<String>();
-					Element entityListElement = (Element) malfunctionElement.getElementsByTagName(ENTITY_LIST).item(0);
-					NodeList entityNodes = entityListElement.getElementsByTagName(ENTITY);
-					for (int y = 0; y < entityNodes.getLength(); y++) {
-						Element entityElement = (Element) entityNodes.item(y);
-						entities.add(entityElement.getAttribute(NAME));	
+					Element entityListElement = malfunctionElement.getChild(ENTITY_LIST);
+					List<Element> entityNodes = entityListElement.getChildren(ENTITY);
+					
+					for (Element entityElement : entityNodes) {
+						entities.add(entityElement.getAttributeValue(NAME));	
 					}
 					
 					// Get effects.
 					Map<String, Double> lifeSupportEffects = new HashMap<String, Double>();
 					Map<AmountResource, Double> resourceEffects = new HashMap<AmountResource, Double>();
-					try {
-						Element effectListElement = (Element) malfunctionElement.getElementsByTagName(EFFECT_LIST).item(0);
-						NodeList effectNodes = effectListElement.getElementsByTagName(EFFECT);
-						for (int y = 0; y < effectNodes.getLength(); y++) {
-							Element effectElement = (Element) effectNodes.item(y);
-							String type = effectElement.getAttribute(TYPE);
-							String effectName = effectElement.getAttribute(NAME);
-							Double changeRate = new Double(effectElement.getAttribute(CHANGE_RATE));
+					Element effectListElement = malfunctionElement.getChild(EFFECT_LIST);
+						
+					if(effectListElement != null) {
+						List<Element> effectNodes = effectListElement.getChildren(EFFECT);
+						
+						for (Element effectElement : effectNodes) {
+							String type = effectElement.getAttributeValue(TYPE);
+							String effectName = effectElement.getAttributeValue(NAME);
+							Double changeRate = new Double(effectElement.getAttributeValue(CHANGE_RATE));
 							
 							if (type.equals("life support")) lifeSupportEffects.put(effectName, changeRate);
 							else if (type.equals("resource")) {
@@ -132,35 +141,37 @@ public class MalfunctionConfig implements Serializable {
 							else throw new Exception("Effect " + effectName + " type not correct in malfunction " + name);
 						}
 					}
-					catch (NullPointerException e) {}
+				
 					
 					// Get medical complaints.
 					Map<String, Double> medicalComplaints = new HashMap<String, Double>();
-					try {
-						Element medicalComplaintListElement = (Element) malfunctionElement.getElementsByTagName(MEDICAL_COMPLAINT_LIST).item(0);
-						NodeList medicalComplaintNodes = medicalComplaintListElement.getElementsByTagName(MEDICAL_COMPLAINT);
-						for (int y = 0; y < medicalComplaintNodes.getLength(); y++) {
-							Element medicalComplaintElement = (Element) medicalComplaintNodes.item(y);
-							String complaintName = medicalComplaintElement.getAttribute(NAME);
-							Double complaintProbability = new Double(medicalComplaintElement.getAttribute(PROBABILITY));
+	
+					Element medicalComplaintListElement = malfunctionElement.getChild(MEDICAL_COMPLAINT_LIST);
+						
+					if(medicalComplaintListElement != null) {
+					  List<Element> medicalComplaintNodes = medicalComplaintListElement.getChildren(MEDICAL_COMPLAINT);
+						
+					  for (Element medicalComplaintElement : medicalComplaintNodes) {
+							String complaintName = medicalComplaintElement.getAttributeValue(NAME);
+							Double complaintProbability = new Double(medicalComplaintElement.getAttributeValue(PROBABILITY));
 							medicalComplaints.put(complaintName, complaintProbability);
 						}
 					}
-					catch (NullPointerException e) {}
+				
 					
 					// Create malfunction.
 					Malfunction malfunction = new Malfunction(name, severity, probability, emergencyRepairTime, repairTime, 
 						evaRepairTime, entities, resourceEffects, lifeSupportEffects, medicalComplaints);
 					
 					// Add repair parts.
-					Element repairPartsListElement = (Element) malfunctionElement.getElementsByTagName(REPAIR_PARTS_LIST).item(0);
+					Element repairPartsListElement = malfunctionElement.getChild(REPAIR_PARTS_LIST);
 					if (repairPartsListElement != null) {
-						NodeList partNodes = repairPartsListElement.getElementsByTagName(PART);
-						for (int y = 0; y < partNodes.getLength(); y++) {
-							Element partElement = (Element) partNodes.item(y);
-							String partName = partElement.getAttribute(NAME);
-							int partNumber = Integer.parseInt(partElement.getAttribute(NUMBER));
-							int partProbability = Integer.parseInt(partElement.getAttribute(PROBABILITY));
+						List<Element> partNodes = repairPartsListElement.getChildren(PART);
+						
+						for (Element partElement : partNodes ) {
+							String partName = partElement.getAttributeValue(NAME);
+							int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
+							int partProbability = Integer.parseInt(partElement.getAttributeValue(PROBABILITY));
 							addMalfunctionRepairPart(name, partName, partNumber, partProbability);
 						}
 					}

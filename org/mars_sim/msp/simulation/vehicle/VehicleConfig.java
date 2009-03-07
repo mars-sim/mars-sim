@@ -7,10 +7,18 @@
 package org.mars_sim.msp.simulation.vehicle;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.Part;
-import org.w3c.dom.*;
+import org.w3c.dom.NodeList;
+
+
 
 /**
  * Provides configuration information about vehicle units.
@@ -59,12 +67,11 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
 	public Set<String> getVehicleTypes() throws Exception {
-		Element root = vehicleDoc.getDocumentElement();
-		NodeList vehicleNodes = root.getElementsByTagName(VEHICLE);
-		Set<String> types = new HashSet<String>(vehicleNodes.getLength());
-		for (int x=0; x < vehicleNodes.getLength(); x++) {
-			Element vehicleElement = (Element) vehicleNodes.item(x);
-			types.add(vehicleElement.getAttribute(TYPE));
+		Element root = vehicleDoc.getRootElement();
+		List<Element> vehicleNodes = root.getChildren(VEHICLE);
+		Set<String> types = new HashSet<String>(vehicleNodes.size());
+		for (Element vehicleElement : vehicleNodes) {
+			types.add(vehicleElement.getAttributeValue(TYPE));
 		}
 		return types;
 	}
@@ -78,12 +85,13 @@ public class VehicleConfig implements Serializable {
 	private Element getVehicleElement(String vehicleType) throws Exception {
 		Element result = null;
 		
-		Element root = vehicleDoc.getDocumentElement();
-		NodeList vehicleNodes = root.getElementsByTagName(VEHICLE);
-		for (int x=0; x < vehicleNodes.getLength(); x++) {
-			Element vehicleElement = (Element) vehicleNodes.item(x);
-			String type = vehicleElement.getAttribute(TYPE);
-			if (vehicleType.equalsIgnoreCase(type)) result = vehicleElement;
+		Element root = vehicleDoc.getRootElement();
+		List<Element> vehicleNodes = root.getChildren(VEHICLE);
+		
+		for (Element vehicleElement : vehicleNodes) {
+			String type = vehicleElement.getAttributeValue(TYPE);
+			if (vehicleType.equalsIgnoreCase(type))
+				result = vehicleElement;
 		}
 		
 		if (result == null) throw new Exception("Vehicle type: " + vehicleType + 
@@ -100,8 +108,8 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getFuelEfficiency(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element fuelEfficiencyElement = (Element) vehicleElement.getElementsByTagName(FUEL_EFFICIENCY).item(0);
-		return Double.parseDouble(fuelEfficiencyElement.getAttribute(VALUE));
+		Element fuelEfficiencyElement = vehicleElement.getChild(FUEL_EFFICIENCY);
+		return Double.parseDouble(fuelEfficiencyElement.getAttributeValue(VALUE));
 	}
 	
 	/**
@@ -112,8 +120,8 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getBaseSpeed(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element baseSpeedElement = (Element) vehicleElement.getElementsByTagName(BASE_SPEED).item(0);
-		return Double.parseDouble(baseSpeedElement.getAttribute(VALUE));
+		Element baseSpeedElement = vehicleElement.getChild(BASE_SPEED);
+		return Double.parseDouble(baseSpeedElement.getAttributeValue(VALUE));
 	}
 	
 	/**
@@ -124,8 +132,8 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getEmptyMass(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element emptyMassElement = (Element) vehicleElement.getElementsByTagName(EMPTY_MASS).item(0);
-		return Double.parseDouble(emptyMassElement.getAttribute(VALUE));
+		Element emptyMassElement = vehicleElement.getChild(EMPTY_MASS);
+		return Double.parseDouble(emptyMassElement.getAttributeValue(VALUE));
 	}
 	
 	/**
@@ -136,8 +144,8 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getCrewSize(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element crewSizeElement = (Element) vehicleElement.getElementsByTagName(CREW_SIZE).item(0);
-		return Integer.parseInt(crewSizeElement.getAttribute(VALUE));
+		Element crewSizeElement = (Element) vehicleElement.getChild(CREW_SIZE);
+		return Integer.parseInt(crewSizeElement.getAttributeValue(VALUE));
 	}
 	
 	/**
@@ -148,8 +156,8 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getTotalCapacity(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element cargoElement = (Element) vehicleElement.getElementsByTagName(CARGO).item(0);
-		return Double.parseDouble(cargoElement.getAttribute(TOTAL_CAPACITY));
+		Element cargoElement = vehicleElement.getChild(CARGO);
+		return Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
 	}
 	
 	/**
@@ -164,12 +172,11 @@ public class VehicleConfig implements Serializable {
 		double resourceCapacity = 0D;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element cargoElement = (Element) vehicleElement.getElementsByTagName(CARGO).item(0);
-		NodeList capacityList = cargoElement.getElementsByTagName(CAPACITY);
-		for (int x=0; x < capacityList.getLength(); x++) {
-			Element capacityElement = (Element) capacityList.item(x);
-			if (resource.toLowerCase().equals(capacityElement.getAttribute(RESOURCE).toLowerCase())) 
-				resourceCapacity = Double.parseDouble(capacityElement.getAttribute(VALUE));
+		Element cargoElement = vehicleElement.getChild(CARGO);
+		List<Element> capacityList = cargoElement.getChildren(CAPACITY);
+		for (Element capacityElement : capacityList) {
+			if (resource.toLowerCase().equals(capacityElement.getAttributeValue(RESOURCE).toLowerCase())) 
+				resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
 		}
 		
 		return resourceCapacity;
@@ -182,13 +189,9 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public boolean hasSickbay(String vehicleType) throws Exception {
-		boolean result = false;
-		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		NodeList sickbayNodes = vehicleElement.getElementsByTagName(SICKBAY);
-		if (sickbayNodes.getLength() > 0) result = true;
-		
-		return result;
+		List<Element> sickbayNodes = vehicleElement.getChildren(SICKBAY);
+		return (sickbayNodes.size() > 0);
 	}
 	
 	/**
@@ -198,15 +201,13 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getSickbayTechLevel(String vehicleType) throws Exception {
-		int sickbayTechLevel = -1;
-		
+		int sickbayTechLevel = -1;	
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element sickbayElement = (Element) vehicleElement.getElementsByTagName(SICKBAY).item(0);
-			sickbayTechLevel = Integer.parseInt(sickbayElement.getAttribute(TECH_LEVEL));
-		}
-		catch (NullPointerException e) {}
-		
+	    Element sickbayElement = vehicleElement.getChild(SICKBAY);
+	    
+	    if(sickbayElement != null)
+		sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
+	
 		return sickbayTechLevel;
 	}
 	
@@ -220,11 +221,10 @@ public class VehicleConfig implements Serializable {
 		int sickbayBeds = -1;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element sickbayElement = (Element) vehicleElement.getElementsByTagName(SICKBAY).item(0);
-			sickbayBeds = Integer.parseInt(sickbayElement.getAttribute(BEDS));
-		}
-		catch (NullPointerException e) {}
+	    Element sickbayElement = vehicleElement.getChild(SICKBAY);
+	    
+	    if(sickbayElement != null)
+		sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
 		
 		return sickbayBeds;
 	}
@@ -235,14 +235,10 @@ public class VehicleConfig implements Serializable {
 	 * @return true if lab
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public boolean hasLab(String vehicleType) throws Exception {
-		boolean result = false;
-		
+	public boolean hasLab(String vehicleType) throws Exception {	
 		Element vehicleElement = getVehicleElement(vehicleType);
-		NodeList labNodes = vehicleElement.getElementsByTagName(LAB);
-		if (labNodes.getLength() > 0) result = true;
-		
-		return result;
+		List<Element> labNodes = vehicleElement.getChildren(LAB);
+		return (labNodes.size() > 0);
 	}	
 	
 	/**
@@ -255,11 +251,11 @@ public class VehicleConfig implements Serializable {
 		int labTechLevel = -1;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element labElement = (Element) vehicleElement.getElementsByTagName(LAB).item(0);
-			labTechLevel = Integer.parseInt(labElement.getAttribute(TECH_LEVEL));
-		}
-		catch (NullPointerException e) {}
+		Element labElement = vehicleElement.getChild(LAB);
+		
+		if(labElement != null)
+		labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
+		
 		
 		return labTechLevel;
 	}
@@ -274,15 +270,16 @@ public class VehicleConfig implements Serializable {
 		List<String> specialities = new ArrayList<String>();
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element labElement = (Element) vehicleElement.getElementsByTagName(LAB).item(0);
-			NodeList techSpecialityNodes = labElement.getElementsByTagName(TECH_SPECIALITY);
-			for (int x=0; x < techSpecialityNodes.getLength(); x++) {
-				Element techSpecialityElement = (Element) techSpecialityNodes.item(x);
-				specialities.add(techSpecialityElement.getAttribute(VALUE));
+		
+		Element labElement = vehicleElement.getChild(LAB);
+			
+		if(labElement != null) {
+			List<Element> techSpecialityNodes = labElement.getChildren(TECH_SPECIALITY);
+			for (Element techSpecialityElement : techSpecialityNodes) {
+				specialities.add(techSpecialityElement.getAttributeValue(VALUE));
 			}
 		}
-		catch (NullPointerException e) {}
+
 		
 		return specialities;
 	}
@@ -294,13 +291,9 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public boolean hasPartAttachments(String vehicleType) throws Exception {
-		boolean result = false;
-		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		NodeList partAttachmentNodes = vehicleElement.getElementsByTagName(PART_ATTACHMENT);
-		if (partAttachmentNodes.getLength() > 0) result = true;
-		
-		return result;
+		List<Element> partAttachmentNodes = vehicleElement.getChildren(PART_ATTACHMENT);
+		return (partAttachmentNodes.size() > 0);
 	}
 	
 	/**
@@ -313,11 +306,10 @@ public class VehicleConfig implements Serializable {
 		int result = 0;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element partAttachmentElement = (Element) vehicleElement.getElementsByTagName(PART_ATTACHMENT).item(0);
-			result = Integer.parseInt(partAttachmentElement.getAttribute(NUMBER_SLOTS));
-		}
-		catch (NullPointerException e) {}
+			Element partAttachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
+			
+			if(partAttachmentElement != null)
+			result = Integer.parseInt(partAttachmentElement.getAttributeValue(NUMBER_SLOTS));
 		
 		return result;
 	}
@@ -332,17 +324,19 @@ public class VehicleConfig implements Serializable {
 		Collection<Part> result = new ArrayList<Part>();
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
-		try {
-			Element partAttachmentElement = (Element) vehicleElement.getElementsByTagName(PART_ATTACHMENT).item(0);
-			NodeList partNodes = partAttachmentElement.getElementsByTagName(PART);
-			for (int x=0; x < partNodes.getLength(); x++) {
-				Element partElement = (Element) partNodes.item(x);
-				String partName = partElement.getAttribute(NAME);
+
+	    Element partAttachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
+			
+		if(partAttachmentElement != null) {
+			List<Element> partNodes = partAttachmentElement.getChildren(PART);
+			
+			for (Element partElement : partNodes) {
+				String partName = partElement.getAttributeValue(NAME);
 				Part part = (Part) Part.findItemResource(partName);
 				result.add(part);
 			}
 		}
-		catch (NullPointerException e) {}
+	
 		
 		return result;
 	}
@@ -357,12 +351,12 @@ public class VehicleConfig implements Serializable {
 		if (roverNames == null) {
 			roverNames = new ArrayList<String>();
 			
-			Element root = vehicleDoc.getDocumentElement();
-			Element vehicleNameListElement = (Element) root.getElementsByTagName(ROVER_NAME_LIST).item(0);
-			NodeList vehicleNameNodes = vehicleNameListElement.getElementsByTagName(ROVER_NAME);
-			for (int x=0; x < vehicleNameNodes.getLength(); x++) {
-				Element vehicleNameElement = (Element) vehicleNameNodes.item(x);
-				roverNames.add(vehicleNameElement.getAttribute(VALUE));
+			Element root = vehicleDoc.getRootElement();
+			Element vehicleNameListElement = root.getChild(ROVER_NAME_LIST);
+			List<Element> vehicleNameNodes = vehicleNameListElement.getChildren(ROVER_NAME);
+			
+			for (Element vehicleNameElement : vehicleNameNodes) {
+				roverNames.add(vehicleNameElement.getAttributeValue(VALUE));
 			}
 		}
 		
