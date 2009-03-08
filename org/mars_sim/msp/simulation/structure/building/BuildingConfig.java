@@ -7,12 +7,23 @@
 package org.mars_sim.msp.simulation.structure.building;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+import org.mars_sim.msp.simulation.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.simulation.structure.building.function.PowerSource;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.simulation.structure.building.function.SolarPowerSource;
+import org.mars_sim.msp.simulation.structure.building.function.SolarThermalPowerSource;
+import org.mars_sim.msp.simulation.structure.building.function.StandardPowerSource;
+import org.mars_sim.msp.simulation.structure.building.function.WindPowerSource;
+import org.w3c.dom.NodeList;
 
-import org.w3c.dom.*;
 
 /**
  * Provides configuration information about settlement buildings.
@@ -99,12 +110,14 @@ public class BuildingConfig implements Serializable {
 	private Element getBuildingElement(String buildingName) throws Exception {
 		Element result = null;
 		
-		Element root = buildingDoc.getDocumentElement();
-		NodeList buildingNodes = root.getElementsByTagName(BUILDING);
-		for (int x=0; x < buildingNodes.getLength(); x++) {
-			Element buildingElement = (Element) buildingNodes.item(x);
-			String name = buildingElement.getAttribute(NAME);
-			if (buildingName.equalsIgnoreCase(name)) result = buildingElement;
+		Element root = buildingDoc.getRootElement();
+		List<Element> buildingNodes = root.getChildren(BUILDING);
+		for (Element buildingElement : buildingNodes) {
+			String name = buildingElement.getAttributeValue(NAME);
+			if (buildingName.equalsIgnoreCase(name)) { 
+				result = buildingElement;
+				break;
+			}
 		}
 		
 		if (result == null) throw new Exception("Building type: " + buildingName + 
@@ -122,8 +135,8 @@ public class BuildingConfig implements Serializable {
 	public double getBasePowerRequirement(String buildingName) throws Exception {
         try {
             Element buildingElement = getBuildingElement(buildingName);
-            Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
-            return Double.parseDouble(powerElement.getAttribute(BASE_POWER));
+            Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+            return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
         }
         catch (Exception e) {
             throw new Exception("power-required: base-power attribute not found for building: " + buildingName);
@@ -139,8 +152,8 @@ public class BuildingConfig implements Serializable {
 	public double getBasePowerDownPowerRequirement(String buildingName) throws Exception {
         try {
             Element buildingElement = getBuildingElement(buildingName);
-            Element powerElement = (Element) buildingElement.getElementsByTagName(POWER_REQUIRED).item(0);
-            return Double.parseDouble(powerElement.getAttribute(BASE_POWER_DOWN_POWER));
+            Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+            return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
         }
         catch (Exception e) {
             throw new Exception("power-required: base-power-down-power attribute not found for building: " + buildingName);
@@ -154,12 +167,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found.
 	 */
 	public boolean hasLifeSupport(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList lifeSupportNodes = functionsElement.getElementsByTagName(LIFE_SUPPORT);
-		if (lifeSupportNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,LIFE_SUPPORT);
 	}
 	
 	/**
@@ -169,10 +177,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getLifeSupportCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element lifeSupportElement = (Element) functionsElement.getElementsByTagName(LIFE_SUPPORT).item(0);
-		return Integer.parseInt(lifeSupportElement.getAttribute(CAPACITY));
+		return getValueAsInteger(buildingName,FUNCTIONS,LIFE_SUPPORT,CAPACITY);
 	}
 	
 	/**
@@ -183,9 +188,9 @@ public class BuildingConfig implements Serializable {
 	 */
 	public double getLifeSupportPowerRequirement(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element lifeSupportElement = (Element) functionsElement.getElementsByTagName(LIFE_SUPPORT).item(0);
-		return Double.parseDouble(lifeSupportElement.getAttribute(POWER_REQUIRED));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element lifeSupportElement = functionsElement.getChild(LIFE_SUPPORT);
+		return Double.parseDouble(lifeSupportElement.getAttributeValue(POWER_REQUIRED));
 	}
 	
 	/**
@@ -195,12 +200,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasLivingAccommodations(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList livingAccommodationsNodes = functionsElement.getElementsByTagName(LIVING_ACCOMMODATIONS);
-		if (livingAccommodationsNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS);
 	}
 	
 	/**
@@ -210,10 +210,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getLivingAccommodationBeds(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element livingAccommodationsElement = (Element) functionsElement.getElementsByTagName(LIVING_ACCOMMODATIONS).item(0);
-		return Integer.parseInt(livingAccommodationsElement.getAttribute(BEDS));
+		return getValueAsInteger(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
 	}
 	
 	/**
@@ -223,12 +220,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasResearchLab(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList researchNodes = functionsElement.getElementsByTagName(RESEARCH);
-		if (researchNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,RESEARCH);
 	}
 	
 	/**
@@ -238,10 +230,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getResearchTechLevel(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element researchElement = (Element) functionsElement.getElementsByTagName(RESEARCH).item(0);
-		return Integer.parseInt(researchElement.getAttribute(TECH_LEVEL));
+		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,TECH_LEVEL);
 	}
 	
 	/**
@@ -251,10 +240,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */	
 	public int getResearchCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element researchElement = (Element) functionsElement.getElementsByTagName(RESEARCH).item(0);
-		return Integer.parseInt(researchElement.getAttribute(CAPACITY));		
+		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,CAPACITY);		
 	}
 	
 	/**
@@ -266,12 +252,12 @@ public class BuildingConfig implements Serializable {
 	public List<String> getResearchSpecialities(String buildingName) throws Exception {
 		List<String> result = new ArrayList<String>();
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element researchElement = (Element) functionsElement.getElementsByTagName(RESEARCH).item(0);
-		NodeList researchSpecialities = researchElement.getElementsByTagName(RESEARCH_SPECIALITY);
-		for (int x=0; x < researchSpecialities.getLength(); x++) {
-			Element researchSpecialityElement = (Element) researchSpecialities.item(x);
-			result.add(researchSpecialityElement.getAttribute(NAME));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element researchElement = functionsElement.getChild(RESEARCH);
+		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALITY);
+		
+		for (Element researchSpecialityElement : researchSpecialities ) {
+			result.add(researchSpecialityElement.getAttributeValue(NAME));
 		}
 		return result;
 	}
@@ -283,12 +269,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasCommunication(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList communicationNodes = functionsElement.getElementsByTagName(COMMUNICATION);
-		if (communicationNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,COMMUNICATION);
 	}
 	
 	/**
@@ -298,12 +279,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasEVA(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList evaNodes = functionsElement.getElementsByTagName(EVA);
-		if (evaNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,EVA);
 	}
 	
 	/**
@@ -313,10 +289,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getAirlockCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element evaElement = (Element) functionsElement.getElementsByTagName(EVA).item(0);
-		return Integer.parseInt(evaElement.getAttribute(AIRLOCK_CAPACITY));
+		return getValueAsInteger(buildingName,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
 	}
 	
 	/**
@@ -326,12 +299,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasRecreation(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList recreationNodes = functionsElement.getElementsByTagName(RECREATION);
-		if (recreationNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,RECREATION);
 	}	
 	
 	/**
@@ -341,12 +309,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasDining(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList diningNodes = functionsElement.getElementsByTagName(DINING);
-		if (diningNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,DINING);
 	}
 	
 	/**
@@ -356,12 +319,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasResourceProcessing(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList resourceProcessingNodes = functionsElement.getElementsByTagName(RESOURCE_PROCESSING);
-		if (resourceProcessingNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,RESOURCE_PROCESSING);
 	}
 	
 	/**
@@ -372,9 +330,9 @@ public class BuildingConfig implements Serializable {
 	 */
 	public double getResourceProcessingPowerDown(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING).item(0);
-		return Double.parseDouble(resourceProcessingElement.getAttribute(POWER_DOWN_LEVEL));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element resourceProcessingElement =  functionsElement.getChild(RESOURCE_PROCESSING);
+		return Double.parseDouble(resourceProcessingElement.getAttributeValue(POWER_DOWN_LEVEL));
 	}
 	
 	
@@ -387,40 +345,39 @@ public class BuildingConfig implements Serializable {
 	public List<ResourceProcess> getResourceProcesses(String buildingName) throws Exception {
 		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element resourceProcessingElement = (Element) functionsElement.getElementsByTagName(RESOURCE_PROCESSING).item(0);
-		NodeList resourceProcessNodes = resourceProcessingElement.getElementsByTagName(PROCESS);
-		for (int x=0; x < resourceProcessNodes.getLength(); x++) {
-			Element processElement = (Element) resourceProcessNodes.item(x);
-			
-			String defaultString = processElement.getAttribute(DEFAULT);
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element resourceProcessingElement = functionsElement.getChild(RESOURCE_PROCESSING);
+		List<Element> resourceProcessNodes = resourceProcessingElement.getChildren(PROCESS);
+		
+		for (Element processElement : resourceProcessNodes) {
+	
+			String defaultString = processElement.getAttributeValue(DEFAULT);
 			boolean defaultOn = true;
 			if (defaultString.equals("off")) defaultOn = false;
             
-            double powerRequired = Double.parseDouble(processElement.getAttribute(POWER_REQUIRED));
+            double powerRequired = Double.parseDouble(processElement.getAttributeValue(POWER_REQUIRED));
 			
-			ResourceProcess process = new ResourceProcess(processElement.getAttribute(NAME), 
+			ResourceProcess process = new ResourceProcess(processElement.getAttributeValue(NAME), 
                     powerRequired, defaultOn);
 			
 			// Get input resources.
-			NodeList inputNodes = processElement.getElementsByTagName(INPUT);
-			for (int y=0; y < inputNodes.getLength(); y++) {
-				Element inputElement = (Element) inputNodes.item(y);
-				String resourceName = inputElement.getAttribute(RESOURCE).toLowerCase();
+			List<Element> inputNodes = processElement.getChildren(INPUT);
+			
+			for (Element inputElement : inputNodes) {
+				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
-				double rate = Double.parseDouble(inputElement.getAttribute(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(inputElement.getAttribute(AMBIENT)).booleanValue();
+				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT)).booleanValue();
 				process.addMaxInputResourceRate(resource, rate, ambient);
 			}
 			
 			// Get output resources.
-			NodeList outputNodes = processElement.getElementsByTagName(OUTPUT);
-			for (int y=0; y < outputNodes.getLength(); y++) {
-				Element outputElement = (Element) outputNodes.item(y);
-				String resourceName = outputElement.getAttribute(RESOURCE).toLowerCase();
+			List<Element> outputNodes = processElement.getChildren(OUTPUT);
+			for (Element outputElement : outputNodes) {
+				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
-				double rate = Double.parseDouble(outputElement.getAttribute(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(outputElement.getAttribute(AMBIENT)).booleanValue();
+				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
+				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT)).booleanValue();
 				process.addMaxOutputResourceRate(resource, rate, ambient);
 			}
 			
@@ -437,12 +394,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasStorage(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList storageNodes = functionsElement.getElementsByTagName(STORAGE);
-		if (storageNodes.getLength() > 0) result = true;
-		return result;	
+		return hasElements(buildingName,FUNCTIONS,STORAGE);
 	}
 	
 	/**
@@ -454,14 +406,14 @@ public class BuildingConfig implements Serializable {
 	public Map<AmountResource, Double> getStorageCapacities(String buildingName) throws Exception {
 		Map<AmountResource, Double> capacities = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
-		NodeList resourceStorageNodes = storageElement.getElementsByTagName(RESOURCE_STORAGE);
-		for (int x=0; x < resourceStorageNodes.getLength(); x++) {
-			Element resourceStorageElement = (Element) resourceStorageNodes.item(x);
-			String resourceName = resourceStorageElement.getAttribute(RESOURCE).toLowerCase();
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		List<Element> resourceStorageNodes = storageElement.getChildren(RESOURCE_STORAGE);
+		
+		for (Element resourceStorageElement : resourceStorageNodes) {
+			String resourceName = resourceStorageElement.getAttributeValue(RESOURCE).toLowerCase();
             AmountResource resource = AmountResource.findAmountResource(resourceName);
-			Double capacity = new Double(resourceStorageElement.getAttribute(CAPACITY));
+			Double capacity = new Double(resourceStorageElement.getAttributeValue(CAPACITY));
 			capacities.put(resource, capacity);
 		}
 		return capacities;
@@ -476,14 +428,13 @@ public class BuildingConfig implements Serializable {
 	public Map<AmountResource, Double> getInitialStorage(String buildingName) throws Exception {
 		Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element storageElement = (Element) functionsElement.getElementsByTagName(STORAGE).item(0);
-		NodeList resourceInitialNodes = storageElement.getElementsByTagName(RESOURCE_INITIAL);
-		for (int x=0; x < resourceInitialNodes.getLength(); x++) {
-			Element resourceInitialElement = (Element) resourceInitialNodes.item(x);
-			String resourceName = resourceInitialElement.getAttribute(RESOURCE).toLowerCase();
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element storageElement = functionsElement.getChild(STORAGE);
+		List<Element> resourceInitialNodes = storageElement.getChildren(RESOURCE_INITIAL);
+		for (Element resourceInitialElement : resourceInitialNodes) {
+			String resourceName = resourceInitialElement.getAttributeValue(RESOURCE).toLowerCase();
             AmountResource resource = AmountResource.findAmountResource(resourceName);
-			Double amount = new Double(resourceInitialElement.getAttribute(AMOUNT));
+			Double amount = new Double(resourceInitialElement.getAttributeValue(AMOUNT));
 			resourceMap.put(resource, amount);
 		}
 		return resourceMap;
@@ -496,12 +447,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasPowerGeneration(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList powerGenerationNodes = functionsElement.getElementsByTagName(POWER_GENERATION);
-		if (powerGenerationNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,POWER_GENERATION);
 	}
 	
 	/**
@@ -513,21 +459,20 @@ public class BuildingConfig implements Serializable {
 	public List<PowerSource> getPowerSources(String buildingName) throws Exception {
 		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element powerGenerationElement = (Element) functionsElement.getElementsByTagName(POWER_GENERATION).item(0);
-		NodeList powerSourceNodes = powerGenerationElement.getElementsByTagName(POWER_SOURCE);
-		for (int x=0; x < powerSourceNodes.getLength(); x++) {
-			Element powerSourceElement = (Element) powerSourceNodes.item(x);
-			String type = powerSourceElement.getAttribute(TYPE);
-			double power = Double.parseDouble(powerSourceElement.getAttribute(POWER));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element powerGenerationElement = functionsElement.getChild(POWER_GENERATION);
+		List<Element> powerSourceNodes = powerGenerationElement.getChildren(POWER_SOURCE);
+		for (Element powerSourceElement : powerSourceNodes) {
+			String type = powerSourceElement.getAttributeValue(TYPE);
+			double power = Double.parseDouble(powerSourceElement.getAttributeValue(POWER));
 			PowerSource powerSource = null;
 			if (type.equalsIgnoreCase(STANDARD_POWER_SOURCE)) powerSource = new StandardPowerSource(power);
 			else if (type.equalsIgnoreCase(SOLAR_POWER_SOURCE)) powerSource = new SolarPowerSource(power);
             else if (type.equalsIgnoreCase(SOLAR_THERMAL_POWER_SOURCE)) powerSource = new SolarThermalPowerSource(power);
 			else if (type.equalsIgnoreCase(FUEL_POWER_SOURCE)) {
-			    boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttribute(TOGGLE));
-			    String fuelType = powerSourceElement.getAttribute(FUEL_TYPE);
-			    double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttribute(COMSUMPTION_RATE));
+			    boolean toggleStafe = Boolean.parseBoolean(powerSourceElement.getAttributeValue(TOGGLE));
+			    String fuelType = powerSourceElement.getAttributeValue(FUEL_TYPE);
+			    double consumptionSpeed = Double.parseDouble(powerSourceElement.getAttributeValue(COMSUMPTION_RATE));
 			    powerSource = new FuelPowerSource(power ,toggleStafe, fuelType, consumptionSpeed);
 			}
             else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
@@ -545,12 +490,7 @@ public class BuildingConfig implements Serializable {
      * @throws Exception if building name can not be found or XML parsing error.
      */
     public boolean hasPowerStorage(String buildingName) throws Exception {
-        boolean result = false;
-        Element buildingElement = getBuildingElement(buildingName);
-        Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-        NodeList powerStorageNodes = functionsElement.getElementsByTagName(POWER_STORAGE);
-        if (powerStorageNodes.getLength() > 0) result = true;
-        return result;
+    	return hasElements(buildingName,FUNCTIONS,POWER_STORAGE);
     }
     
     /**
@@ -561,9 +501,9 @@ public class BuildingConfig implements Serializable {
      */
     public double getPowerStorageCapacity(String buildingName) throws Exception {
         Element buildingElement = getBuildingElement(buildingName);
-        Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-        Element powerStorageElement = (Element) functionsElement.getElementsByTagName(POWER_STORAGE).item(0);
-        return Double.parseDouble(powerStorageElement.getAttribute(CAPACITY));
+        Element functionsElement = buildingElement.getChild(FUNCTIONS);
+        Element powerStorageElement = functionsElement.getChild(POWER_STORAGE);
+        return Double.parseDouble(powerStorageElement.getAttributeValue(CAPACITY));
     }
 	
 	/**
@@ -573,12 +513,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasMedicalCare(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList medicalCareNodes = functionsElement.getElementsByTagName(MEDICAL_CARE);
-		if (medicalCareNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,MEDICAL_CARE);
 	}
 	
 	/**
@@ -588,10 +523,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getMedicalCareTechLevel(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE).item(0);
-		return Integer.parseInt(medicalCareElement.getAttribute(TECH_LEVEL));
+		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,TECH_LEVEL);
 	}
 	
 	/**
@@ -601,10 +533,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getMedicalCareBeds(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element medicalCareElement = (Element) functionsElement.getElementsByTagName(MEDICAL_CARE).item(0);
-		return Integer.parseInt(medicalCareElement.getAttribute(BEDS));
+		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,BEDS);
 	}
 	
 	/**
@@ -614,12 +543,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasFarming(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList farmingNodes = functionsElement.getElementsByTagName(FARMING);
-		if (farmingNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,FARMING);
 	}
 	
 	/**
@@ -629,10 +553,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getCropNum(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
-		return Integer.parseInt(farmElement.getAttribute(CROPS));
+		return getValueAsInteger(buildingName,FUNCTIONS,FARMING,CROPS);
 	}
 	
 	/**
@@ -643,9 +564,9 @@ public class BuildingConfig implements Serializable {
 	 */
 	public double getPowerForGrowingCrop(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
-		return Double.parseDouble(farmElement.getAttribute(POWER_GROWING_CROP));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element farmElement = functionsElement.getChild(FARMING);
+		return Double.parseDouble(farmElement.getAttributeValue(POWER_GROWING_CROP));
 	}
 	
 	/**
@@ -656,9 +577,9 @@ public class BuildingConfig implements Serializable {
 	 */
 	public double getPowerForSustainingCrop(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
-		return Double.parseDouble(farmElement.getAttribute(POWER_SUSTAINING_CROP));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element farmElement = functionsElement.getChild(FARMING);
+		return Double.parseDouble(farmElement.getAttributeValue(POWER_SUSTAINING_CROP));
 	}
 	
 	/**
@@ -669,9 +590,9 @@ public class BuildingConfig implements Serializable {
 	 */
 	public double getCropGrowingArea(String buildingName) throws Exception {
 		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element farmElement = (Element) functionsElement.getElementsByTagName(FARMING).item(0);
-		return Double.parseDouble(farmElement.getAttribute(GROWING_AREA));
+		Element functionsElement = buildingElement.getChild(FUNCTIONS);
+		Element farmElement = functionsElement.getChild(FARMING);
+		return Double.parseDouble(farmElement.getAttributeValue(GROWING_AREA));
 	}
 	
 	/**
@@ -681,12 +602,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasExercise(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList exerciseNodes = functionsElement.getElementsByTagName(EXERCISE);
-		if (exerciseNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,EXERCISE);
 	}
 	
 	/**
@@ -696,10 +612,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getExerciseCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element exerciseElement = (Element) functionsElement.getElementsByTagName(EXERCISE).item(0);
-		return Integer.parseInt(exerciseElement.getAttribute(CAPACITY));
+		return getValueAsInteger(buildingName,FUNCTIONS,EXERCISE,CAPACITY);
 	}
 	
 	/**
@@ -709,12 +622,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasGroundVehicleMaintenance(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList maintenanceNodes = functionsElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE);
-		if (maintenanceNodes.getLength() > 0) result = true;
-		return result;		
+		return hasElements(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE);
 	}
 	
 	/**
@@ -724,10 +632,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getVehicleCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element maintenanceElement = (Element) functionsElement.getElementsByTagName(GROUND_VEHICLE_MAINTENANCE).item(0);
-		return Integer.parseInt(maintenanceElement.getAttribute(VEHICLE_CAPACITY));
+		return getValueAsInteger(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
 	}
 	
 	/**
@@ -737,12 +642,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasCooking(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList cookingNodes = functionsElement.getElementsByTagName(COOKING);
-		if (cookingNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,COOKING);
 	}
 	
 	/**
@@ -752,10 +652,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getCookCapacity(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element cookingElement = (Element) functionsElement.getElementsByTagName(COOKING).item(0);
-		return Integer.parseInt(cookingElement.getAttribute(CAPACITY));
+		return getValueAsInteger(buildingName,FUNCTIONS,COOKING,CAPACITY);
 	}
 	
 	/**
@@ -765,12 +662,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public boolean hasManufacture(String buildingName) throws Exception {
-		boolean result = false;
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		NodeList manufactureNodes = functionsElement.getElementsByTagName(MANUFACTURE);
-		if (manufactureNodes.getLength() > 0) result = true;
-		return result;
+		return hasElements(buildingName,FUNCTIONS,MANUFACTURE);
 	}
 	
 	/**
@@ -780,10 +672,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getManufactureTechLevel(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element manufactureElement = (Element) functionsElement.getElementsByTagName(MANUFACTURE).item(0);
-		return Integer.parseInt(manufactureElement.getAttribute(TECH_LEVEL));
+		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
 	}
 	
 	/**
@@ -793,9 +682,21 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public int getManufactureConcurrentProcesses(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = (Element) buildingElement.getElementsByTagName(FUNCTIONS).item(0);
-		Element manufactureElement = (Element) functionsElement.getElementsByTagName(MANUFACTURE).item(0);
-		return Integer.parseInt(manufactureElement.getAttribute(CONCURRENT_PROCESSES));
+		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
+	}
+	
+	private int getValueAsInteger(String buildingName, String child, 
+			                      String subchild, String param) throws Exception{
+		Element element1 = getBuildingElement(buildingName);
+		Element element2 = element1.getChild(child);
+		Element element3 = element2.getChild(subchild);
+		return Integer.parseInt(element3.getAttributeValue(param));
+	}
+	
+	private boolean hasElements(String buildingName, String child, String children) throws Exception {
+		Element element1 = getBuildingElement(buildingName);
+		Element element2 = element1.getChild(child);
+		List<Element> elements = element2.getChildren(children);
+		return (elements.size() > 0);
 	}
 }
