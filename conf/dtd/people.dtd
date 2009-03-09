@@ -1,0 +1,60 @@
+<!ELEMENT people-configuration (oxygen-consumption-rate, water-consumption-rate, 
+food-consumption-rate, oxygen-deprivation-time, water-deprivation-time, 
+food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time, 
+min-temperature, max-temperature, freezing-time, stress-breakdown-chance, 
+gender-male-percentage, personality-types, person-name-list, person-list)>
+<!ELEMENT oxygen-consumption-rate EMPTY>
+<!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT water-consumption-rate EMPTY>
+<!ATTLIST water-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT food-consumption-rate EMPTY>
+<!ATTLIST food-consumption-rate value CDATA #REQUIRED>
+<!ELEMENT oxygen-deprivation-time EMPTY>
+<!ATTLIST oxygen-deprivation-time value CDATA #REQUIRED>
+<!ELEMENT water-deprivation-time EMPTY>
+<!ATTLIST water-deprivation-time value CDATA #REQUIRED>
+<!ELEMENT food-deprivation-time EMPTY>
+<!ATTLIST food-deprivation-time value CDATA #REQUIRED>
+<!ELEMENT starvation-start-time EMPTY>
+<!ATTLIST starvation-start-time value CDATA #REQUIRED>
+<!ELEMENT min-air-pressure EMPTY>
+<!ATTLIST min-air-pressure value CDATA #REQUIRED>
+<!ELEMENT decompression-time EMPTY>
+<!ATTLIST decompression-time value CDATA #REQUIRED>
+<!ELEMENT min-temperature EMPTY>
+<!ATTLIST min-temperature value CDATA #REQUIRED>
+<!ELEMENT max-temperature EMPTY>
+<!ATTLIST max-temperature value CDATA #REQUIRED>
+<!ELEMENT freezing-time EMPTY>
+<!ATTLIST freezing-time value CDATA #REQUIRED>
+<!ELEMENT stress-breakdown-chance EMPTY>
+<!ATTLIST stress-breakdown-chance value CDATA #REQUIRED>
+<!ELEMENT gender-male-percentage EMPTY>
+<!ATTLIST gender-male-percentage value CDATA #REQUIRED>
+<!ELEMENT personality-types (mbti*)>
+<!ELEMENT mbti EMPTY>
+<!ATTLIST mbti type CDATA #REQUIRED>
+<!ATTLIST mbti percentage CDATA #REQUIRED>
+<!ELEMENT person-name-list (person-name*)>
+<!ELEMENT person-name EMPTY>
+<!ATTLIST person-name value CDATA #REQUIRED>
+<!ATTLIST person-name gender (male|female) #REQUIRED>
+<!ELEMENT person-list (person*)>
+<!ELEMENT person (natural-attribute-list?, skill-list?, relationship-list?)>
+<!ATTLIST person name CDATA #REQUIRED>
+<!ATTLIST person gender (male|female) #IMPLIED>
+<!ATTLIST person personality-type CDATA #IMPLIED>
+<!ATTLIST person settlement CDATA #IMPLIED>
+<!ATTLIST person job CDATA #IMPLIED>
+<!ELEMENT natural-attribute-list (natural-attribute*)>
+<!ELEMENT natural-attribute EMPTY>
+<!ATTLIST natural-attribute name CDATA #REQUIRED>
+<!ATTLIST natural-attribute value CDATA #REQUIRED>
+<!ELEMENT skill-list (skill*)>
+<!ELEMENT skill EMPTY>
+<!ATTLIST skill name CDATA #REQUIRED>
+<!ATTLIST skill level CDATA #REQUIRED>
+<!ELEMENT relationship-list (relationship*)>
+<!ELEMENT relationship EMPTY>
+<!ATTLIST relationship person-name CDATA #REQUIRED>
+<!ATTLIST relationship opinion CDATA #REQUIRED>

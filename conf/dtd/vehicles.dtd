@@ -1,0 +1,31 @@
+<!ELEMENT vehicle-configuration (vehicle*, rover-name-list)>
+<!ELEMENT vehicle (fuel-efficiency, base-speed, empty-mass, 
+crew-size?, cargo?, part-attachment?, sickbay?, lab?)>
+<!ATTLIST vehicle type CDATA #REQUIRED>
+<!ELEMENT fuel-efficiency EMPTY>
+<!ATTLIST fuel-efficiency value CDATA #REQUIRED>
+<!ELEMENT base-speed EMPTY>
+<!ATTLIST base-speed value CDATA #REQUIRED>
+<!ELEMENT empty-mass EMPTY>
+<!ATTLIST empty-mass value CDATA #REQUIRED>
+<!ELEMENT crew-size EMPTY>
+<!ATTLIST crew-size value CDATA #REQUIRED>
+<!ELEMENT cargo (capacity*)>
+<!ATTLIST cargo total-capacity CDATA #REQUIRED>
+<!ELEMENT capacity EMPTY>
+<!ATTLIST capacity resource CDATA #REQUIRED>
+<!ATTLIST capacity value CDATA #REQUIRED>
+<!ELEMENT part-attachment (part+)>
+<!ATTLIST part-attachment number-slots CDATA #REQUIRED>
+<!ELEMENT part EMPTY>
+<!ATTLIST part name CDATA #REQUIRED>
+<!ELEMENT sickbay EMPTY>
+<!ATTLIST sickbay tech-level CDATA #REQUIRED>
+<!ATTLIST sickbay beds CDATA #REQUIRED>
+<!ELEMENT lab (tech-speciality+)>
+<!ATTLIST lab tech-level CDATA #REQUIRED>
+<!ELEMENT tech-speciality EMPTY>
+<!ATTLIST tech-speciality value CDATA #REQUIRED>
+<!ELEMENT rover-name-list (rover-name*)>
+<!ELEMENT rover-name EMPTY>
+<!ATTLIST rover-name value CDATA #REQUIRED>

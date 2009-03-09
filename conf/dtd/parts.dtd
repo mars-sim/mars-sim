@@ -1,0 +1,9 @@
+<!ELEMENT part-list (part*)>
+<!ELEMENT part (maintenance-entity-list?)>
+<!ATTLIST part name CDATA #REQUIRED>
+<!ATTLIST part mass CDATA #REQUIRED>
+<!ELEMENT maintenance-entity-list (entity*)>
+<!ELEMENT entity EMPTY>
+<!ATTLIST entity name CDATA #REQUIRED>
+<!ATTLIST entity probability CDATA #REQUIRED>
+<!ATTLIST entity max-number CDATA #REQUIRED>

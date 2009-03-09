@@ -1,0 +1,8 @@
+<!ELEMENT simulation-configuration (time-configuration)>
+<!ELEMENT time-configuration (time-ratio, earth-start-date-time, mars-start-date-time)>
+<!ELEMENT time-ratio EMPTY>
+<!ATTLIST time-ratio value CDATA #REQUIRED>
+<!ELEMENT earth-start-date-time EMPTY>
+<!ATTLIST earth-start-date-time value CDATA #REQUIRED>
+<!ELEMENT mars-start-date-time EMPTY>
+<!ATTLIST mars-start-date-time value CDATA #REQUIRED>

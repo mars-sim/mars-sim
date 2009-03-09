@@ -1,0 +1,30 @@
+<!ELEMENT medical (medical-complaint-list, treatment-list)>
+<!ELEMENT medical-complaint-list (medical-complaint*)>
+<!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability, 
+performance-percent, treatment?, degrade-complaint?)>
+<!ATTLIST medical-complaint name CDATA #REQUIRED>
+<!ELEMENT seriousness EMPTY>
+<!ATTLIST seriousness value CDATA #REQUIRED>
+<!ELEMENT degrade-time EMPTY>
+<!ATTLIST degrade-time value CDATA #REQUIRED>
+<!ELEMENT recovery-time EMPTY>
+<!ATTLIST recovery-time value CDATA #REQUIRED>
+<!ELEMENT probability EMPTY>
+<!ATTLIST probability value CDATA #REQUIRED>
+<!ELEMENT performance-percent EMPTY>
+<!ATTLIST performance-percent value CDATA #REQUIRED>
+<!ELEMENT treatment EMPTY>
+<!ATTLIST treatment value CDATA #REQUIRED>
+<!ELEMENT degrade-complaint EMPTY>
+<!ATTLIST degrade-complaint value CDATA #REQUIRED>
+<!ELEMENT treatment-list (treatment*)>
+<!ELEMENT treatment (skill?, medical-tech-level?, treatment-time?, retainaid?)> 
+<!ATTLIST treatment name CDATA #REQUIRED>
+<!ELEMENT skill EMPTY>
+<!ATTLIST skill value CDATA #REQUIRED>
+<!ELEMENT medical-tech-level EMPTY>
+<!ATTLIST medical-tech-level value CDATA #REQUIRED>
+<!ELEMENT treatment-time EMPTY>
+<!ATTLIST treatment-time value CDATA #REQUIRED>
+<!ELEMENT retainaid EMPTY>
+<!ATTLIST retainaid value (true|false) #REQUIRED>
