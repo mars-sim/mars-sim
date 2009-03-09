@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE manufacturing-processes SYSTEM "conf/dtd/manufacturing.dtd">
 
 <!-- List of all manufacturing processes. -->
 <manufacturing-processes>
@@ -9,6 +10,7 @@
 	<!-- work-time - The effort time (in millisols) required to perform the process.  Higher skilled -->
 	<!--             workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
+	<!-- power-required - The total amount of power (kW hr) required for the process. -->
 	<process name="extract iron oxide from regolith" tech="1" skill="1" work-time="100" process-time="0" 
 			power-required="0.0">
 		
@@ -284,11 +286,11 @@
 	<process name="co2 extinguisher manufacturing" tech="2" skill="3" work-time="100" process-time="0" 
 			power-required="0.0">
 		<inputs>
+			<resource name="carbon dioxide" amount="10.0" />
 			<part name="steel canister" number="1" />
 			<part name="valve" number="2" />
 			<part name="gasket" number="4" />
 			<part name="plastic tubing" number="1" />
-			<resource name="carbon dioxide" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="co2 extinguisher" number="1" />
@@ -309,9 +311,9 @@
 	<process name="satellite dish manufacturing" tech="2" skill="3" work-time="200" process-time="200" 
 			power-required="5.0">
 		<inputs>
-			<part name="fiberglass" number="1" />
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
+			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -335,9 +337,9 @@
 	<process name="radio antenna manufacturing" tech="2" skill="2" work-time="100" process-time="100" 
 			power-required="5.0">
 		<inputs>
-			<part name="fiberglass" number="1" />
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
+			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -583,8 +585,8 @@
 	<process name="timing belt manufacturing" tech="4" skill="2" work-time="100" process-time="200" 
 			power-required="2.0">
 		<inputs>
-			<part name="fiberglass cloth" number="1" />
 			<resource name="styrene" amount="1.0" />
+			<part name="fiberglass cloth" number="1" />
 		</inputs>
 		<outputs>
 			<part name="timing belt" number="5" />
@@ -883,9 +885,9 @@
 	<process name="eva antenna manufacturing" tech="2" skill="2" work-time="50" process-time="50" 
 			power-required="3.0">
 		<inputs>
-			<part name="fiberglass" number="1" />
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
+			<part name="fiberglass" number="1" />
 			<part name="aluminum sheet" number="1" />
 			<part name="electrical wire" number="10" />
 			<part name="wire connector" number="10" />
@@ -931,9 +933,9 @@
 	<process name="rover chassis panel manufacturing" tech="4" skill="4" work-time="200" process-time="400" 
 			power-required="10.0">
 		<inputs>
-			<part name="fiberglass" number="50" />
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="25.0" />
+			<part name="fiberglass" number="50" />
 		</inputs>
 		<outputs>
 			<part name="rover chassis panel" number="1" />
@@ -1564,9 +1566,9 @@
 	<process name="turbine blade forming" tech="2" skill="3" work-time="200" process-time="200" 
 			power-required="3.0">
 		<inputs>
-			<part name="fiberglass" number="1" />
 			<resource name="polyester resin" amount=".5" />
 			<resource name="styrene" amount=".5" />
+			<part name="fiberglass" number="1" />
 		</inputs>
 		<outputs>
 			<part name="wind turbine blade" number="1" />
@@ -1752,11 +1754,11 @@
 	<process name="rover battery manufacturing" tech="2" skill="3" work-time="200" process-time="50" 
 			power-required="2.0">
 		<inputs>
-			<part name="iron sheet" number="2" />
-			<part name="wire connector" number="2" />
 			<resource name="nickel" amount="5.0" />
 			<resource name="potash lye" amount="10.0" />
 			<resource name="polyethylene" amount="5.0" />
+			<part name="iron sheet" number="2" />
+			<part name="wire connector" number="2" />
 		</inputs>
 		<outputs>
 			<part name="rover battery" number="1" />
@@ -1768,11 +1770,11 @@
 	<process name="eva battery manufacturing" tech="2" skill="3" work-time="200" process-time="50" 
 			power-required="2.0">
 		<inputs>
-			<part name="iron sheet" number="1" />
-			<part name="wire connector" number="6" />
 			<resource name="nickel" amount="3.0" />
 			<resource name="potash lye" amount="7.0" />
 			<resource name="polyethylene" amount="4.0" />
+			<part name="iron sheet" number="1" />
+			<part name="wire connector" number="6" />
 		</inputs>
 		<outputs>
 			<part name="eva battery" number="3" />

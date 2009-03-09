@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE mineral-concentrations SYSTEM "conf/dtd/minerals.dtd">
 
 <!-- List of all mineral concentrations that can be mined. -->
 <mineral-concentrations>
@@ -6,7 +7,7 @@
 	<!-- Hematite is an iron ore. -->
 	<!-- http://en.wikipedia.org/wiki/Hematite -->
 	<!-- frequency - how common are the mineral concentrations? -->
-	<!-- Valid values: "common", "uncommon", "rare", "very rare" -->
+	<!-- Valid values: "common", "uncommon", "rare", "very_rare" -->
 	<mineral name="hematite" frequency="common">
 		<locale-list>
 			<!-- locale topographical regions the mineral is located. -->
@@ -85,7 +86,7 @@
 	<!-- http://en.wikipedia.org/wiki/Sylvite -->
 	<mineral name="sylvite" frequency="common">
 		<locale-list>
-			<local name="sedimentary" />
+			<locale name="sedimentary" />
 		</locale-list>
 	</mineral>
 	

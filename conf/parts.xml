@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE part-list SYSTEM "conf/dtd/parts.dtd">
 
 <!-- List of all parts in the simulation.  -->
 <!-- Parts are used for maintenance, repair and manufacturing. -->

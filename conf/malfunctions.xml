@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE malfunction-list SYSTEM "conf/dtd/malfunctions.dtd">
 
 <!-- List of possible malfunctions -->
 <malfunction-list>
@@ -41,11 +42,11 @@
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (kg/millisol) -->
 			<!-- See resources.txt -->
-			<effect type="life support" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
 			<!-- Values: Change rate of life support. (atm/millisol) -->
-			<effect type="life support" name="Air Pressure" change-rate="-.01" />
+			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
 		</effect-list>
 		
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
@@ -94,8 +95,8 @@
 			<entity name="rover" />
 		</entity-list>
 		<effect-list>
-			<effect type="life support" name="Oxygen" change-rate="-.01" />
-			<effect type="life support" name="Temperature" change-rate="+.01" />
+			<effect type="life-support" name="Oxygen" change-rate="-.01" />
+			<effect type="life-support" name="Temperature" change-rate="+.01" />
 		</effect-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="15.0" />
@@ -116,8 +117,8 @@
 			<entity name="life support" />
 		</entity-list>
 		<effect-list>
-			<effect type="life support" name="Oxygen" change-rate="-.02" />
-			<effect type="life support" name="Temperature" change-rate="+.02" />
+			<effect type="life-support" name="Oxygen" change-rate="-.02" />
+			<effect type="life-support" name="Temperature" change-rate="+.02" />
 		</effect-list>
 		<medical-complaint-list>
 			<medical-complaint name="Minor Burns" probability="30.0" />
@@ -261,9 +262,9 @@
 			<entity name="manufacture" />
 			<entity name="eva suit" />
 		</entity-list>
-		<effects-list>
+		<effect-list>
 			<effect type="resource" name="Water" change-rate="-.1" />
-		</effects-list>
+		</effect-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
@@ -277,14 +278,14 @@
 	<malfunction name="Heating Unit Failure">
 		<severity value="70" />
 		<probability value="10.0" />
-		<emergency-repair-time value="20.0" />
 		<repair-time value="100.0" />
+		<emergency-repair-time value="20.0" />
 		<entity-list>
 			<entity name="eva suit" />
 		</entity-list>
-		<effects-list>
+		<effect-list>
 			<effect type="life-support" name="Temperature" change-rate="-.1" />
-		</effects-list>
+		</effect-list>
 		<repair-parts-list>
 			<part name="wire connector" number="2" probability="30" />
 			<part name="electrical wire" number="2" probability="40" />
@@ -296,17 +297,17 @@
 	<malfunction name="Water Contamination">
 		<severity value="60" />
 		<probability value="10.0" />
-		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
+		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="living accommodations" />
 			<entity name="farming" />
 			<entity name="manufacture" />
 			<entity name="rover" />
 		</entity-list>
-		<effects-list>
+		<effect-list>
 			<effect type="resource" name="Water" change-rate="-1.0" />
-		</effects-list>
+		</effect-list>
 		<repair-parts-list>
 			<part name="gasket" number="1" probability="30" />
 			<part name="valve" number="1" probability="20" />
@@ -320,39 +321,39 @@
 	<malfunction name="Food Contamination">
 		<severity value="60" />
 		<probability value="10.0" />
-		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
+		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="dining" />
 			<entity name="rover" />
 		</entity-list>
-		<effects-list>
+		<effect-list>
 			<effect type="resource" name="Food" change-rate="-1.0" />
-		</effects-list>
+		</effect-list>
 	</malfunction>
 
 	<!-- Dangerous chemical spill. -->
 	<malfunction name="Chemical Spill">
 		<severity value="50" />
 		<probability value="10.0" />
-		<emergency-repair-time value="100.0" />
 		<repair-time value="500.0" />
+		<emergency-repair-time value="100.0" />
 		<entity-list>
 			<entity name="farming" />
 			<entity name="manufacture" />
 			<entity name="research" />
 		</entity-list>
-		<effects-list>
+		<effect-list>
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
-		</effects-list>
+		</effect-list>
 	</malfunction>
 	
 	<!-- EVA suit tear. -->
 	<malfunction name="Suit Tear">
 		<severity value="70" />
 		<probability value="50.0" />
-		<emergency-repair-time value="1.0" />
 		<repair-time value="20.0" />
+		<emergency-repair-time value="1.0" />
 		<entity-list>
 			<entity name="eva suit" />
 		</entity-list>

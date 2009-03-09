@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE construction SYSTEM "conf/dtd/construction.dtd">
 
 <construction>
 	<foundation-list>
@@ -42,46 +43,46 @@
 	<frame-list>
 	
 		<frame name="steel frame tower" work-time="20.0" skill-required="2" foundation="surface foundation 5m x 5m" >
-			<part name="steel truss" number="20" />
-			<part name="steel cable" number="6" />
 			<resource name="concrete" amount="50.0" />
 			<resource name="water" amount="20.0" />
+			<part name="steel truss" number="20" />
+			<part name="steel cable" number="6" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
 		
 		<frame name="small steel frame" work-time="10.0" skill-required="1" foundation="surface foundation 5m x 5m" >
-			<part name="steel truss" number="10" />
 			<resource name="concrete" amount="25.0" />
 			<resource name="water" amount="10.0" />
+			<part name="steel truss" number="10" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
 	
 		<frame name="array frame" work-time="20.0" skill-required="2" foundation="surface foundation 10m x 5m" >
-			<part name="steel truss" number="20" />
 			<resource name="concrete" amount="50.0" />
 			<resource name="water" amount="20.0" />
+			<part name="steel truss" number="20" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
 		
 		<frame name="brick bin frame" work-time="5.0" skill-required="1" foundation="surface foundation 3m x 2m" >
-			<part name="brick" number="1680" />
 			<resource name="mortar" amount="1680.0" />
 			<resource name="water" amount="1680.0" />
+			<part name="brick" number="1680" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</frame>
 		
 		<frame name="small brick shed frame" work-time="40.0" skill-required="1" foundation="subsurface foundation 5m x 5m x 3m" >
-			<part name="brick" number="5926" />
 			<resource name="mortar" amount="5926.0" />
 			<resource name="water" amount="5926.0" />
+			<part name="brick" number="5926" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -113,6 +114,7 @@
 		</building>
 		
 		<building name="solar thermal array" work-time="15.0" skill-required="3" frame="array frame" >
+			<resource name="water" amount="200.0" />
 			<part name="solar parabolic mirror" number="3" />
 			<part name="glass tube" number="6" />
 			<part name="steel pipe" number="10" />
@@ -121,7 +123,6 @@
 			<part name="power cable" number="2" />
 			<part name="electrical wire" number="20" />
 			<part name="wire connector" number="20" />
-			<resource name="water" amount="200.0" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -157,6 +158,7 @@
 		</building>
 		
 		<building name="manufacturing shed" work-time="20.0" skill-required="3" frame="small brick shed frame" >
+			<resource name="cement" amount="20.0" />
 			<part name="steel pipe" number="3" />
 			<part name="plastic pipe" number="10" />
 			<part name="valve" number="10" />
@@ -168,7 +170,6 @@
 			<part name="epoxy resin bottle" number="25" />
 			<part name="small electric motor" number="1" />
 			<part name="brick" number="100" />
-			<resource name="cement" amount="20.0" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -190,6 +191,7 @@
 		</building>
 		
 		<building name="small sabatier processor" work-time="10.0" skill-required="3" frame="small steel frame" >
+			<resource name="nickel" amount=".5" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
 			<part name="small electric motor" number="1" />
@@ -197,7 +199,6 @@
 			<part name="power cable" number="1" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
-			<resource name="nickel" amount=".5" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
