@@ -133,7 +133,7 @@ public class MalfunctionConfig implements Serializable {
 							String effectName = effectElement.getAttributeValue(NAME);
 							Double changeRate = new Double(effectElement.getAttributeValue(CHANGE_RATE));
 							
-							if (type.equals("life support")) lifeSupportEffects.put(effectName, changeRate);
+							if (type.equals("life-support")) lifeSupportEffects.put(effectName, changeRate);
 							else if (type.equals("resource")) {
 								AmountResource resource = AmountResource.findAmountResource(effectName);
 								resourceEffects.put(resource, changeRate);
