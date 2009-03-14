@@ -104,24 +104,19 @@ public class UIConfig {
      * Loads and parses the XML save file.
      */
     public void parseFile() {
-        InputStream stream = null;
+        File stream = null;
         try {
             DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             String path = DIRECTORY + File.separator + FILE_NAME;
-            stream = getClass().getClassLoader().getResourceAsStream(path);
+            stream = new File(path);
+            
             configDoc = builder.parse(stream);
+            
         } 
         catch (Exception e) {
             logger.log(Level.SEVERE, "parseFile()", e);
         } 
-        finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } 
-                catch (Exception e) {};
-            }
-        }
+        
     }
 
     /**
