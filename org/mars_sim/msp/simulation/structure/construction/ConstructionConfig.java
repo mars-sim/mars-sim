@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
 
 /**
  * Parses construction configuration file.
@@ -107,23 +107,23 @@ public class ConstructionConfig implements Serializable {
         }
         else throw new Exception("stageType: " + stageType + " not valid.");
             
-        Element root = constructionDoc.getDocumentElement();
-        Element stageInfoListElement = (Element) root.getElementsByTagName(stageType + "-list").item(0);
-        NodeList stageInfoNodes = stageInfoListElement.getElementsByTagName(stageType);
-        for (int x = 0; x < stageInfoNodes.getLength(); x++) {
+        Element root = constructionDoc.getRootElement();
+        Element stageInfoListElement = root.getChild(stageType + "-list");
+        List<Element> stageInfoNodes = stageInfoListElement.getChildren(stageType);
+        
+        for (Element stageInfoElement : stageInfoNodes) {
             String name = "";
                 
             try {
-                Element stageInfoElement = (Element) stageInfoNodes.item(x);
                     
                 // Get name.
-                name = stageInfoElement.getAttribute(NAME);
+                name = stageInfoElement.getAttributeValue(NAME);
                     
-                double workTime = Double.parseDouble(stageInfoElement.getAttribute(WORK_TIME));
+                double workTime = Double.parseDouble(stageInfoElement.getAttributeValue(WORK_TIME));
                 // convert work time from Sols to millisols.
                 workTime *= 1000D;
                     
-                int skillRequired = Integer.parseInt(stageInfoElement.getAttribute(SKILL_REQUIRED));
+                int skillRequired = Integer.parseInt(stageInfoElement.getAttributeValue(SKILL_REQUIRED));
                     
                 String prerequisiteStage = null;
                 String prerequisiteStageType = null;
@@ -132,35 +132,34 @@ public class ConstructionConfig implements Serializable {
                 else if (ConstructionStageInfo.BUILDING.equals(stageType)) 
                     prerequisiteStageType = ConstructionStageInfo.FRAME;
                 if (prerequisiteStageType != null) 
-                    prerequisiteStage = stageInfoElement.getAttribute(prerequisiteStageType);
+                    prerequisiteStage = stageInfoElement.getAttributeValue(prerequisiteStageType);
                     
-                NodeList partList = stageInfoElement.getElementsByTagName(PART);
-                Map<Part, Integer> parts = new HashMap<Part, Integer>(partList.getLength());
-                for (int y = 0; y < partList.getLength(); y++) {
-                    Element partElement = (Element) partList.item(y);
-                    String partName = partElement.getAttribute(NAME);
-                    int partNum = Integer.parseInt(partElement.getAttribute(NUMBER));
+                List<Element> partList = stageInfoElement.getChildren(PART);
+                
+                Map<Part, Integer> parts = new HashMap<Part, Integer>(partList.size());
+                for (Element partElement : partList) {
+                    String partName = partElement.getAttributeValue(NAME);
+                    int partNum = Integer.parseInt(partElement.getAttributeValue(NUMBER));
                     Part part = (Part) ItemResource.findItemResource(partName);
                     parts.put(part, partNum);
                 }
                     
-                NodeList resourceList = stageInfoElement.getElementsByTagName(RESOURCE);
+                List<Element> resourceList = stageInfoElement.getChildren(RESOURCE);
                 Map<AmountResource, Double> resources = 
-                    new HashMap<AmountResource, Double>(resourceList.getLength());
-                for (int y = 0; y < resourceList.getLength(); y++) {
-                    Element resourceElement = (Element) resourceList.item(y);
-                    String resourceName = resourceElement.getAttribute(NAME);
-                    double resourceAmount = Double.parseDouble(resourceElement.getAttribute(AMOUNT));
+                    new HashMap<AmountResource, Double>(resourceList.size());
+                for (Element resourceElement : resourceList) {
+                    String resourceName = resourceElement.getAttributeValue(NAME);
+                    double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
                     AmountResource resource = AmountResource.findAmountResource(resourceName);
                     resources.put(resource, resourceAmount);
                 }
                     
-                NodeList vehicleList = stageInfoElement.getElementsByTagName(VEHICLE);
+                List<Element> vehicleList = stageInfoElement.getChildren(VEHICLE);
                 List<ConstructionVehicleType> vehicles = 
-                    new ArrayList<ConstructionVehicleType>(vehicleList.getLength());
-                for (int y = 0; y < vehicleList.getLength(); y++) {
-                    Element vehicleElement = (Element) vehicleList.item(y);
-                    String vehicleType = vehicleElement.getAttribute(TYPE);
+                    new ArrayList<ConstructionVehicleType>(vehicleList.size());
+                
+                for (Element vehicleElement : vehicleList) {
+                    String vehicleType = vehicleElement.getAttributeValue(TYPE);
                         
                     Class vehicleClass = null;
                     if (vehicleType.toLowerCase().indexOf("rover") > -1) vehicleClass = Rover.class;
@@ -168,11 +167,10 @@ public class ConstructionConfig implements Serializable {
                         vehicleClass = LightUtilityVehicle.class;
                     else throw new Exception("Unknown vehicle type: " + vehicleType);
                         
-                    NodeList attachmentPartList = vehicleElement.getElementsByTagName(ATTACHMENT_PART);
-                    List<Part> attachmentParts = new ArrayList<Part>(attachmentPartList.getLength());
-                    for (int z = 0; z < attachmentPartList.getLength(); z++) {
-                        Element attachmentPartElement = (Element) attachmentPartList.item(z);
-                        String partName = attachmentPartElement.getAttribute(NAME);
+                    List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
+                    List<Part> attachmentParts = new ArrayList<Part>(attachmentPartList.size());
+                    for (Element attachmentPartElement : attachmentPartList) {
+                        String partName = attachmentPartElement.getAttributeValue(NAME);
                         Part attachmentPart = (Part) ItemResource.findItemResource(partName);
                         attachmentParts.add(attachmentPart);
                     }

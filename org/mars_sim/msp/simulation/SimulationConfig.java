@@ -113,7 +113,7 @@ public class SimulationConfig implements Serializable {
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE), partPackageConfig);
 			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE));
-            constructionConfig = new ConstructionConfig(parseXMLFile(CONSTRUCTION_FILE));
+            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE));
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
