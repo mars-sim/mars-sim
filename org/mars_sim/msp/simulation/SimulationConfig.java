@@ -110,9 +110,9 @@ public class SimulationConfig implements Serializable {
 			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE));
 			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE));
 			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE));
-			resupplyConfig = new ResupplyConfig(parseXMLFile(RESUPPLY_FILE), partPackageConfig);
+			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE), partPackageConfig);
 			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE), partPackageConfig);
-			manufactureConfig = new ManufactureConfig(parseXMLFile(MANUFACTURE_FILE));
+			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE));
             constructionConfig = new ConstructionConfig(parseXMLFile(CONSTRUCTION_FILE));
 		}
 		catch (Exception e) {

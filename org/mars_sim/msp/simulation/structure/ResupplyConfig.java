@@ -14,12 +14,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.PartPackageConfig;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
+
+
 
 /**
  * Provides configuration information about settlement resupply missions.
@@ -65,85 +67,78 @@ public class ResupplyConfig implements Serializable {
 	private void loadResupplyTemplates(Document resupplyDoc, PartPackageConfig partPackageConfig) 
 			throws Exception {
 		
-		Element root = resupplyDoc.getDocumentElement();
-		NodeList resupplyNodes = root.getElementsByTagName(RESUPPLY);
-		for (int x = 0; x < resupplyNodes.getLength(); x++) {
+		Element root = resupplyDoc.getRootElement();
+		List<Element> resupplyNodes = root.getChildren(RESUPPLY);
+		for (Element resupplyElement : resupplyNodes) {
 			ResupplyTemplate template = new ResupplyTemplate();
 			resupplyTemplates.add(template);
 			
-			Element resupplyElement = (Element) resupplyNodes.item(x);
-			template.name = resupplyElement.getAttribute(NAME);
+			template.name = resupplyElement.getAttributeValue(NAME);
 			
 			// Load buildings
-			NodeList buildingNodes = resupplyElement.getElementsByTagName(BUILDING);
-			for (int y = 0; y < buildingNodes.getLength(); y++) {
-				Element buildingElement = (Element) buildingNodes.item(y);
-				String buildingType = buildingElement.getAttribute(TYPE);
-				int buildingNumber = Integer.parseInt(buildingElement.getAttribute(NUMBER));
+			List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
+			for (Element buildingElement : buildingNodes) {
+				String buildingType = buildingElement.getAttributeValue(TYPE);
+				int buildingNumber = Integer.parseInt(buildingElement.getAttributeValue(NUMBER));
 				if (template.buildings.containsKey(buildingType)) 
 					buildingNumber += template.buildings.get(buildingType);
 				template.buildings.put(buildingType, buildingNumber);
 			}
 			
 			// Load vehicles
-			NodeList vehicleNodes = resupplyElement.getElementsByTagName(VEHICLE);
-			for (int y = 0; y < vehicleNodes.getLength(); y++) {
-				Element vehicleElement = (Element) vehicleNodes.item(y);
-				String vehicleType = vehicleElement.getAttribute(TYPE);
-				int vehicleNumber = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
+			List<Element> vehicleNodes = resupplyElement.getChildren(VEHICLE);
+			for (Element vehicleElement : vehicleNodes) {
+				String vehicleType = vehicleElement.getAttributeValue(TYPE);
+				int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
 				if (template.vehicles.containsKey(vehicleType)) 
 					vehicleNumber += template.vehicles.get(vehicleType);
 				template.vehicles.put(vehicleType, vehicleNumber);
 			}
 			
 			// Load equipment
-			NodeList equipmentNodes = resupplyElement.getElementsByTagName(EQUIPMENT);
-			for (int y = 0; y < equipmentNodes.getLength(); y++) {
-				Element equipmentElement = (Element) equipmentNodes.item(y);
-				String equipmentType = equipmentElement.getAttribute(TYPE);
-				int equipmentNumber = Integer.parseInt(equipmentElement.getAttribute(NUMBER));
+			List<Element> equipmentNodes = resupplyElement.getChildren(EQUIPMENT);
+			for (Element equipmentElement : equipmentNodes) {
+				String equipmentType = equipmentElement.getAttributeValue(TYPE);
+				int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
 				if (template.equipment.containsKey(equipmentType)) 
 					equipmentNumber += template.equipment.get(equipmentType);
 				template.equipment.put(equipmentType, equipmentNumber);
 			}
 			
 			// Load people
-			NodeList personNodes = resupplyElement.getElementsByTagName(PERSON);
-			for (int y = 0; y < personNodes.getLength(); y++) {
-				Element personElement = (Element) personNodes.item(y);
-				int personNumber = Integer.parseInt(personElement.getAttribute(NUMBER));
+			List<Element> personNodes = resupplyElement.getChildren(PERSON);
+			for (Element personElement : personNodes) {
+				int personNumber = Integer.parseInt(personElement.getAttributeValue(NUMBER));
 				template.people += personNumber;
 			}
 			
 			// Load resources
-			NodeList resourceNodes = resupplyElement.getElementsByTagName(RESOURCE);
-			for (int y = 0; y < resourceNodes.getLength(); y++) {
-				Element resourceElement = (Element) resourceNodes.item(y);
-				String resourceType = resourceElement.getAttribute(TYPE);
+		    List<Element> resourceNodes = resupplyElement.getChildren(RESOURCE);
+			for (Element resourceElement : resourceNodes) {
+				String resourceType = resourceElement.getAttributeValue(TYPE);
 				AmountResource resource = AmountResource.findAmountResource(resourceType);
-				double resourceAmount = Double.parseDouble(resourceElement.getAttribute(AMOUNT));
+				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
 				if (template.resources.containsKey(resource)) 
 					resourceAmount += template.resources.get(resource);
 				template.resources.put(resource, resourceAmount);
 			}
 			
 			// Load parts
-			NodeList partNodes = resupplyElement.getElementsByTagName(PART);
-			for (int y = 0; y < partNodes.getLength(); y++) {
-				Element partElement = (Element) partNodes.item(y);
-				String partType = partElement.getAttribute(TYPE);
+			List<Element> partNodes = resupplyElement.getChildren(PART);
+			for (Element partElement : partNodes) {
+				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
-				int partNumber = Integer.parseInt(partElement.getAttribute(NUMBER));
+				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 				if (template.parts.containsKey(part)) partNumber += template.parts.get(part);
 				template.parts.put(part, partNumber);
 			}
 			
 			// Load part packages
-			NodeList partPackageNodes = resupplyElement.getElementsByTagName(PART_PACKAGE);
-			for (int y = 0; y < partPackageNodes.getLength(); y++) {
-				Element partPackageElement = (Element) partPackageNodes.item(y);
-				String packageName = partPackageElement.getAttribute(NAME);
-				int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
+			List<Element> partPackageNodes = resupplyElement.getChildren(PART_PACKAGE);
+			
+			for (Element partPackageElement : partPackageNodes) {
+				String packageName = partPackageElement.getAttributeValue(NAME);
+				int packageNumber = Integer.parseInt(partPackageElement.getAttributeValue(NUMBER));
 				if (packageNumber > 0) {
 					for (int z = 0; z < packageNumber; z++) {
 						Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);

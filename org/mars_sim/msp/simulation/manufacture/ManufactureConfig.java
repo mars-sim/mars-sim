@@ -11,9 +11,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import org.jdom.Document;
+import org.jdom.Element;
+
 
 public class ManufactureConfig implements Serializable {
 	
@@ -56,73 +56,70 @@ public class ManufactureConfig implements Serializable {
 		
 		if (manufactureProcessList == null) {
 			
-			Element root = manufactureDoc.getDocumentElement();
-			NodeList processNodes = root.getElementsByTagName(PROCESS);
+			Element root = manufactureDoc.getRootElement();
+			List<Element> processNodes = root.getChildren(PROCESS);
 			manufactureProcessList = new ArrayList<ManufactureProcessInfo>(
-					processNodes.getLength());
+					processNodes.size());
 			
-			for (int x=0; x < processNodes.getLength(); x++) {
+			for (Element processElement : processNodes) {
 				
 				ManufactureProcessInfo process = new ManufactureProcessInfo();
 				manufactureProcessList.add(process);
 				String name = "";
 				
 				try {
-					Element processElement = (Element) processNodes.item(x);
 					
-					name = processElement.getAttribute(NAME);
+					name = processElement.getAttributeValue(NAME);
 					process.setName(name);
 					
 					process.setTechLevelRequired(Integer.parseInt(
-							processElement.getAttribute(TECH)));
+							processElement.getAttributeValue(TECH)));
 					
 					process.setSkillLevelRequired(Integer.parseInt(
-							processElement.getAttribute(SKILL)));
+							processElement.getAttributeValue(SKILL)));
 					
 					process.setWorkTimeRequired(Double.parseDouble(
-							processElement.getAttribute(WORK_TIME)));
+							processElement.getAttributeValue(WORK_TIME)));
 					
 					process.setProcessTimeRequired(Double.parseDouble(
-							processElement.getAttribute(PROCESS_TIME)));
+							processElement.getAttributeValue(PROCESS_TIME)));
                     
                     process.setPowerRequired(Double.parseDouble(
-                            processElement.getAttribute(POWER_REQUIRED)));
+                            processElement.getAttributeValue(POWER_REQUIRED)));
 					
-					Element inputs = (Element) processElement.
-							getElementsByTagName(INPUTS).item(0);
+					Element inputs = processElement.getChild(INPUTS);
 					List<ManufactureProcessItem> inputList = 
 							new ArrayList<ManufactureProcessItem>();
 					process.setInputList(inputList);
 					
 					parseResources(inputList, 
-							inputs.getElementsByTagName(RESOURCE));
+							inputs.getChildren(RESOURCE));
 					
 					parseParts(inputList, 
-							inputs.getElementsByTagName(PART));
+							inputs.getChildren(PART));
 					
 					parseEquipment(inputList, 
-							inputs.getElementsByTagName(EQUIPMENT));
+							inputs.getChildren(EQUIPMENT));
 					
 					parseVehicles(inputList, 
-							inputs.getElementsByTagName(VEHICLE));
+							inputs.getChildren(VEHICLE));
 					
-					Element outputs = (Element) processElement.
-							getElementsByTagName(OUTPUTS).item(0);
+					Element outputs = processElement.getChild(OUTPUTS);
 					List<ManufactureProcessItem> outputList = 
 							new ArrayList<ManufactureProcessItem>();
 					process.setOutputList(outputList);
 			
 					parseResources(outputList, 
-							outputs.getElementsByTagName(RESOURCE));
+							outputs.getChildren(RESOURCE));
 			
 					parseParts(outputList, 
-							outputs.getElementsByTagName(PART));
+							outputs.getChildren(PART));
 			
 					parseEquipment(outputList, 
-							outputs.getElementsByTagName(EQUIPMENT));
+							outputs.getChildren(EQUIPMENT));
 			
 					parseVehicles(outputList, 
-							outputs.getElementsByTagName(VEHICLE));
+							outputs.getChildren(VEHICLE));
 				}
 				catch (Exception e) {
 					throw new Exception("Error reading manufacturing process "
@@ -141,14 +138,13 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing resources.
 	 */
 	private void parseResources(List<ManufactureProcessItem> list, 
-			NodeList resourceNodes) throws Exception {
-		for (int y = 0; y < resourceNodes.getLength(); y++) {
-			Element resourceElement = (Element) resourceNodes.item(y);
+			List<Element> resourceNodes) throws Exception {
+		for (Element resourceElement : resourceNodes) {
 			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
 			resourceItem.setType(ManufactureProcessItem.AMOUNT_RESOURCE);
-			resourceItem.setName(resourceElement.getAttribute(NAME));
+			resourceItem.setName(resourceElement.getAttributeValue(NAME));
 			resourceItem.setAmount(Double.parseDouble(
-					resourceElement.getAttribute(AMOUNT)));
+					resourceElement.getAttributeValue(AMOUNT)));
 			list.add(resourceItem);
 		}
 	}
@@ -160,14 +156,13 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing parts.
 	 */
 	private void parseParts(List<ManufactureProcessItem> list, 
-			NodeList partNodes) throws Exception {
-		for (int y = 0; y < partNodes.getLength(); y++) {
-			Element partElement = (Element) partNodes.item(y);
+			List<Element> partNodes) throws Exception {
+		for (Element partElement : partNodes) {
 			ManufactureProcessItem partItem = new ManufactureProcessItem();
 			partItem.setType(ManufactureProcessItem.PART);
-			partItem.setName(partElement.getAttribute(NAME));
+			partItem.setName(partElement.getAttributeValue(NAME));
 			partItem.setAmount(Integer.parseInt(
-					partElement.getAttribute(NUMBER)));
+					partElement.getAttributeValue(NUMBER)));
 			list.add(partItem);
 		}
 	}
@@ -179,15 +174,14 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing equipment.
 	 */
 	private void parseEquipment(List<ManufactureProcessItem> list, 
-			NodeList equipmentNodes) throws Exception {
-		for (int y = 0; y < equipmentNodes.getLength(); y++) {
-			Element equipmentElement = (Element) equipmentNodes.item(y);
+			List<Element> equipmentNodes) throws Exception {
+		for (Element equipmentElement : equipmentNodes) {
 			ManufactureProcessItem equipmentItem = 
 				new ManufactureProcessItem();
 			equipmentItem.setType(ManufactureProcessItem.EQUIPMENT);
-			equipmentItem.setName(equipmentElement.getAttribute(NAME));
+			equipmentItem.setName(equipmentElement.getAttributeValue(NAME));
 			equipmentItem.setAmount(Integer.parseInt(
-					equipmentElement.getAttribute(NUMBER)));
+					equipmentElement.getAttributeValue(NUMBER)));
 			list.add(equipmentItem);
 		}
 	}
@@ -199,13 +193,12 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing vehicles.
 	 */
 	private void parseVehicles(List<ManufactureProcessItem> list, 
-			NodeList vehicleNodes) throws Exception {
-		for (int y = 0; y < vehicleNodes.getLength(); y++) {
-			Element vehicleElement = (Element) vehicleNodes.item(y);
+			List<Element> vehicleNodes) throws Exception {
+		for (Element vehicleElement : vehicleNodes) {
 			ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
 			vehicleItem.setType(ManufactureProcessItem.VEHICLE);
-			vehicleItem.setName(vehicleElement.getAttribute(NAME));
-			vehicleItem.setAmount(Integer.parseInt(vehicleElement.getAttribute(NUMBER)));
+			vehicleItem.setName(vehicleElement.getAttributeValue(NAME));
+			vehicleItem.setAmount(Integer.parseInt(vehicleElement.getAttributeValue(NUMBER)));
 			list.add(vehicleItem);
 		}
 	}
