@@ -6,17 +6,20 @@
  */
 package org.mars_sim.msp.simulation;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.parsers.*;
-
-import org.jdom.input.DOMBuilder;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
-import org.mars_sim.msp.simulation.mars.*;
+import org.mars_sim.msp.simulation.mars.LandmarkConfig;
+import org.mars_sim.msp.simulation.mars.MineralMapConfig;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
 import org.mars_sim.msp.simulation.resource.AmountResourceConfig;
@@ -28,8 +31,8 @@ import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
-import org.w3c.dom.*;
-import org.xml.sax.SAXException;
+
+
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
@@ -59,7 +62,8 @@ public class SimulationConfig implements Serializable {
 	private static final String RESOURCE_FILE = "resources";
 	private static final String MANUFACTURE_FILE = "manufacturing";
     private static final String CONSTRUCTION_FILE = "construction";
-	
+    private static final String VALUE = "value";
+    
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
@@ -96,7 +100,7 @@ public class SimulationConfig implements Serializable {
 		
 		try {
 			// Load simulation document
-			simulationDoc = parseXMLFile(SIMULATION_FILE);
+			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE);
 		
 			// Load subset configuration classes.
 			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE));
@@ -111,7 +115,7 @@ public class SimulationConfig implements Serializable {
 			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE));
 			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE));
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFile(SETTLEMENT_FILE), partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE));
             constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE));
 		}
@@ -145,24 +149,6 @@ public class SimulationConfig implements Serializable {
 		setInstance(new SimulationConfig());
 	}
 	
-	/**
-	 * Parses an XML file into a DOM document.
-	 * @param filename the path of the file.
-	 * @return DOM document
-	 * @throws Exception if XML could not be parsed or file could not be found.
-	 */
-	private Document parseXMLFile(String filename) throws Exception {
-		DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-		try {
-			InputStream stream = getInputStream(filename);
-			Document result = builder.parse(stream);
-			stream.close();
-			return result;
-		}
-		catch (SAXException e) {
-			throw new SAXException("XML Parsing failed on " + filename + ": " + e.getMessage());
-		}
-	}
 	
 	/**
      * Parses an XML file into a DOM document.
@@ -170,10 +156,10 @@ public class SimulationConfig implements Serializable {
      * @return DOM document
      * @throws Exception if XML could not be parsed or file could not be found.
      */
-    private org.jdom.Document parseXMLFileAsJDOMDocument(String filename) throws Exception {
+    private Document parseXMLFileAsJDOMDocument(String filename) throws Exception {
             InputStream stream = getInputStream(filename);
             SAXBuilder saxBuilder = new SAXBuilder();
-            org.jdom.Document result = saxBuilder.build(stream);
+            Document result = saxBuilder.build(stream);
             stream.close();
             return result;
     }
@@ -200,10 +186,10 @@ public class SimulationConfig implements Serializable {
 	 */
 	public double getSimulationTimeRatio() throws Exception {
 		
-		Element root = simulationDoc.getDocumentElement();
-		Element timeConfig = (Element) root.getElementsByTagName(TIME_CONFIGURATION).item(0);
-		Element timeRatio = (Element) timeConfig.getElementsByTagName(TIME_RATIO).item(0);
-		double ratio = Double.parseDouble(timeRatio.getAttribute("value"));
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element timeRatio = timeConfig.getChild(TIME_RATIO);
+		double ratio = Double.parseDouble(timeRatio.getAttributeValue(VALUE));
 		if (ratio < 0D) throw new Exception("Simulation time ratio must be positive number.");
 		else if (ratio == 0D) throw new Exception("Simulation time ratio cannot be zero.");
 		
@@ -217,10 +203,10 @@ public class SimulationConfig implements Serializable {
 	 */
 	public String getEarthStartDateTime() throws Exception {
 		
-		Element root = simulationDoc.getDocumentElement();
-		Element timeConfig = (Element) root.getElementsByTagName(TIME_CONFIGURATION).item(0);
-		Element earthStartDate = (Element) timeConfig.getElementsByTagName(EARTH_START_DATE_TIME).item(0);
-		String startDate = earthStartDate.getAttribute("value");
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element earthStartDate = (Element) timeConfig.getChild(EARTH_START_DATE_TIME);
+		String startDate = earthStartDate.getAttributeValue(VALUE);
 		if ((startDate == null) || startDate.trim().equals("")) 
 			throw new Exception("Earth start date time must not be blank.");
 			
@@ -234,10 +220,10 @@ public class SimulationConfig implements Serializable {
 	 */
 	public String getMarsStartDateTime() throws Exception {
 		
-		Element root = simulationDoc.getDocumentElement();
-		Element timeConfig = (Element) root.getElementsByTagName(TIME_CONFIGURATION).item(0);
-		Element marsStartDate = (Element) timeConfig.getElementsByTagName(MARS_START_DATE_TIME).item(0);
-		String startDate = marsStartDate.getAttribute("value");
+		Element root = simulationDoc.getRootElement();
+		Element timeConfig = root.getChild(TIME_CONFIGURATION);
+		Element marsStartDate = timeConfig.getChild(MARS_START_DATE_TIME);
+		String startDate = marsStartDate.getAttributeValue(VALUE);
 		if ((startDate == null) || startDate.trim().equals("")) 
 			throw new Exception("Mars start date time must not be blank.");
 		

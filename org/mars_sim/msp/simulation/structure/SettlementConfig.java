@@ -14,12 +14,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.jdom.Document;
+import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.PartPackageConfig;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
 
 /**
  * Provides configuration information about settlements.
@@ -86,78 +87,71 @@ public class SettlementConfig implements Serializable {
 	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) 
 			throws Exception {
 		
-		Element root = settlementDoc.getDocumentElement();
-		Element templateList = (Element) root.getElementsByTagName(SETTLEMENT_TEMPLATE_LIST).item(0);
-		NodeList templateNodes = templateList.getElementsByTagName(TEMPLATE);
-		for (int x=0; x < templateNodes.getLength(); x++) {
+		Element root = settlementDoc.getRootElement();
+		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
+		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
+		for (Element templateElement : templateNodes) {
 			SettlementTemplate template = new SettlementTemplate();
 			settlementTemplates.add(template);
 			
-			Element templateElement = (Element) templateNodes.item(x);
-			template.name = templateElement.getAttribute(NAME);
+			template.name = templateElement.getAttributeValue(NAME);
 			
 			// Load buildings
-			NodeList buildingNodes = templateElement.getElementsByTagName(BUILDING);
-			for (int y = 0; y < buildingNodes.getLength(); y++) {
-				Element buildingElement = (Element) buildingNodes.item(y);
-				String buildingType = buildingElement.getAttribute(TYPE);
-				int buildingNumber = Integer.parseInt(buildingElement.getAttribute(NUMBER));
+			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
+			for (Element buildingElement : buildingNodes) {
+				String buildingType = buildingElement.getAttributeValue(TYPE);
+				int buildingNumber = Integer.parseInt(buildingElement.getAttributeValue(NUMBER));
 				if (template.buildings.containsKey(buildingType)) 
 					buildingNumber += template.buildings.get(buildingType);
 				template.buildings.put(buildingType, buildingNumber);
 			}
 			
 			// Load vehicles
-			NodeList vehicleNodes = templateElement.getElementsByTagName(VEHICLE);
-			for (int y = 0; y < vehicleNodes.getLength(); y++) {
-				Element vehicleElement = (Element) vehicleNodes.item(y);
-				String vehicleType = vehicleElement.getAttribute(TYPE);
-				int vehicleNumber = Integer.parseInt(vehicleElement.getAttribute(NUMBER));
+			List<Element> vehicleNodes = templateElement.getChildren(VEHICLE);
+			for (Element vehicleElement : vehicleNodes) {
+				String vehicleType = vehicleElement.getAttributeValue(TYPE);
+				int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
 				if (template.vehicles.containsKey(vehicleType)) 
 					vehicleNumber += template.vehicles.get(vehicleType);
 				template.vehicles.put(vehicleType, vehicleNumber);
 			}
 			
 			// Load equipment
-			NodeList equipmentNodes = templateElement.getElementsByTagName(EQUIPMENT);
-			for (int y = 0; y < equipmentNodes.getLength(); y++) {
-				Element equipmentElement = (Element) equipmentNodes.item(y);
-				String equipmentType = equipmentElement.getAttribute(TYPE);
-				int equipmentNumber = Integer.parseInt(equipmentElement.getAttribute(NUMBER));
+			List<Element> equipmentNodes = templateElement.getChildren(EQUIPMENT);
+			for (Element equipmentElement : equipmentNodes) {
+				String equipmentType = equipmentElement.getAttributeValue(TYPE);
+				int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
 				if (template.equipment.containsKey(equipmentType)) 
 					equipmentNumber += template.equipment.get(equipmentType);
 				template.equipment.put(equipmentType, equipmentNumber);
 			}
 			
 			// Load resources
-			NodeList resourceNodes = templateElement.getElementsByTagName(RESOURCE);
-			for (int y = 0; y < resourceNodes.getLength(); y++) {
-				Element resourceElement = (Element) resourceNodes.item(y);
-				String resourceType = resourceElement.getAttribute(TYPE);
+			List<Element> resourceNodes = templateElement.getChildren(RESOURCE);
+			for (Element resourceElement : resourceNodes) {
+				String resourceType = resourceElement.getAttributeValue(TYPE);
 				AmountResource resource = AmountResource.findAmountResource(resourceType);
-				double resourceAmount = Double.parseDouble(resourceElement.getAttribute(AMOUNT));
+				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
 				if (template.resources.containsKey(resource)) 
 					resourceAmount += template.resources.get(resource);
 				template.resources.put(resource, resourceAmount);
 			}
 			
 			// Load parts
-			NodeList partNodes = templateElement.getElementsByTagName(PART);
-			for (int y = 0; y < partNodes.getLength(); y++) {
-				Element partElement = (Element) partNodes.item(y);
-				String partType = partElement.getAttribute(TYPE);
+			List<Element> partNodes = templateElement.getChildren(PART);
+			for (Element partElement : partNodes) {
+				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
-				int partNumber = Integer.parseInt(partElement.getAttribute(NUMBER));
+				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
 				if (template.parts.containsKey(part)) partNumber += template.parts.get(part);
 				template.parts.put(part, partNumber);
 			}
 			
 			// Load part packages
-			NodeList partPackageNodes = templateElement.getElementsByTagName(PART_PACKAGE);
-			for (int y = 0; y < partPackageNodes.getLength(); y++) {
-				Element partPackageElement = (Element) partPackageNodes.item(y);
-				String packageName = partPackageElement.getAttribute(NAME);
-				int packageNumber = Integer.parseInt(partPackageElement.getAttribute(NUMBER));
+			List<Element> partPackageNodes = templateElement.getChildren(PART_PACKAGE);
+			for (Element partPackageElement : partPackageNodes) {
+				String packageName = partPackageElement.getAttributeValue(NAME);
+				int packageNumber = Integer.parseInt(partPackageElement.getAttributeValue(NUMBER));
 				if (packageNumber > 0) {
 					for (int z = 0; z < packageNumber; z++) {
 						Map<Part, Integer> partPackage = partPackageConfig.getPartsInPackage(packageName);
@@ -174,15 +168,14 @@ public class SettlementConfig implements Serializable {
 			}
 			
 			// Load resupplies
-			Element resupplyList = (Element) templateElement.getElementsByTagName(RESUPPLY).item(0);
+			Element resupplyList = (Element) templateElement.getChild(RESUPPLY);
 			if (resupplyList != null) {
-				NodeList resupplyNodes = resupplyList.getElementsByTagName(RESUPPLY_MISSION);
-				for (int y = 0; y < resupplyNodes.getLength(); y++) {
-					Element resupplyMissionElement = (Element) resupplyNodes.item(y);
+				List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
+				for (Element resupplyMissionElement: resupplyNodes) {
 					ResupplyMission resupplyMission = new ResupplyMission();
-					resupplyMission.name = resupplyMissionElement.getAttribute(NAME);
+					resupplyMission.name = resupplyMissionElement.getAttributeValue(NAME);
 					resupplyMission.arrivalTime = 
-						Double.parseDouble(resupplyMissionElement.getAttribute(ARRIVAL_TIME));
+						Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
 					template.resupplies.add(resupplyMission);
 				}
 			}
@@ -195,28 +188,27 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if XML error.
 	 */
 	private void loadInitialSettlements(Document settlementDoc) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element initialSettlementList = (Element) root.getElementsByTagName(INITIAL_SETTLEMENT_LIST).item(0);
-		NodeList settlementNodes = initialSettlementList.getElementsByTagName(SETTLEMENT);
-		for (int x=0; x < settlementNodes.getLength(); x++) {
-			Element settlementElement = (Element) settlementNodes.item(x);
+		Element root = settlementDoc.getRootElement();
+		Element initialSettlementList = root.getChild(INITIAL_SETTLEMENT_LIST);
+		List<Element> settlementNodes = initialSettlementList.getChildren(SETTLEMENT);
+		for (Element settlementElement : settlementNodes) {
 			InitialSettlement initialSettlement = new InitialSettlement();
 			
-			String settlementName = settlementElement.getAttribute(NAME);
+			String settlementName = settlementElement.getAttributeValue(NAME);
 			if (settlementName.equals(RANDOM)) initialSettlement.randomName = true;
 			else initialSettlement.name = settlementName;
 			
-			initialSettlement.template = settlementElement.getAttribute(TEMPLATE);
+			initialSettlement.template = settlementElement.getAttributeValue(TEMPLATE);
 			
-			NodeList locationNodes = settlementElement.getElementsByTagName(LOCATION);
-			if (locationNodes.getLength() > 0) {
-				Element locationElement = (Element) locationNodes.item(0);
+			List<Element> locationNodes = settlementElement.getChildren(LOCATION);
+			if (locationNodes.size() > 0) {
+				Element locationElement = locationNodes.get(0);
 				
-				String longitudeString = locationElement.getAttribute(LONGITUDE);
+				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
 				if (longitudeString.equals(RANDOM)) initialSettlement.randomLongitude = true;
 				else initialSettlement.longitude = longitudeString;
 				
-				String latitudeString = locationElement.getAttribute(LATITUDE);
+				String latitudeString = locationElement.getAttributeValue(LATITUDE);
 				if (latitudeString.equals(RANDOM)) initialSettlement.randomLatitude = true;
 				else initialSettlement.latitude = latitudeString;
 			}
@@ -235,12 +227,11 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if XML error.
 	 */
 	private void loadSettlementNames(Document settlementDoc) throws Exception {
-		Element root = settlementDoc.getDocumentElement();
-		Element settlementNameList = (Element) root.getElementsByTagName(SETTLEMENT_NAME_LIST).item(0);
-		NodeList settlementNameNodes = settlementNameList.getElementsByTagName(SETTLEMENT_NAME);
-		for (int x=0; x < settlementNameNodes.getLength(); x++) {
-			Element settlementNameElement = (Element) settlementNameNodes.item(x);
-			settlementNames.add(settlementNameElement.getAttribute(VALUE));
+		Element root = settlementDoc.getRootElement();
+		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);
+		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
+		for (Element settlementNameElement : settlementNameNodes) {
+			settlementNames.add(settlementNameElement.getAttributeValue(VALUE));
 		}
 	}
 	

@@ -12,7 +12,6 @@ import java.awt.Point;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,13 +29,18 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+
+
+
 
 // import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
@@ -106,11 +110,11 @@ public class UIConfig {
     public void parseFile() {
         File stream = null;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
             String path = DIRECTORY + File.separator + FILE_NAME;
             stream = new File(path);
             
-            configDoc = builder.parse(stream);
+            SAXBuilder saxBuilder = new SAXBuilder();
+            configDoc = saxBuilder.build(stream);
             
         } 
         catch (Exception e) {
@@ -127,11 +131,11 @@ public class UIConfig {
     public void saveFile(MainWindow window) {
         OutputStream stream = null;
         try {
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document outputDoc = builder.newDocument();
-
-            Element uiElement = outputDoc.createElement(UI);
-            outputDoc.appendChild(uiElement);
+            Document outputDoc = new Document();
+            
+            Element uiElement = new Element(UI);
+            outputDoc.addContent(uiElement);
+            outputDoc.setRootElement(uiElement);
 
             uiElement.setAttribute(USE_DEFAULT, "false");
 
@@ -140,30 +144,30 @@ public class UIConfig {
             else
                 uiElement.setAttribute(LOOK_AND_FEEL, "native");
 
-            Element mainWindowElement = outputDoc.createElement(MAIN_WINDOW);
-            uiElement.appendChild(mainWindowElement);
+            Element mainWindowElement = new Element(MAIN_WINDOW);
+            uiElement.addContent(mainWindowElement);
 
             mainWindowElement.setAttribute(LOCATION_X, Integer.toString(window.getX()));
             mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(window.getY()));
             mainWindowElement.setAttribute(WIDTH, Integer.toString(window.getWidth()));
             mainWindowElement.setAttribute(HEIGHT, Integer.toString(window.getHeight()));
 
-            Element volumeElement = outputDoc.createElement(VOLUME);
-            uiElement.appendChild(volumeElement);
+            Element volumeElement = new Element(VOLUME);
+            uiElement.addContent(volumeElement);
 
             AudioPlayer player = window.getDesktop().getSoundPlayer();
             volumeElement.setAttribute(SOUND, Float.toString(player.getVolume()));
             volumeElement.setAttribute(MUTE, Boolean.toString(player.isMute()));
 
-            Element internalWindowsElement = outputDoc.createElement(INTERNAL_WINDOWS);
-            uiElement.appendChild(internalWindowsElement);
+            Element internalWindowsElement = new Element(INTERNAL_WINDOWS);
+            uiElement.addContent(internalWindowsElement);
 
             // Add all internal windows.
             MainDesktopPane desktop = window.getDesktop();
             JInternalFrame[] windows = desktop.getAllFrames();
             for (int x = 0; x < windows.length; x++) {
-                Element windowElement = outputDoc.createElement(WINDOW);
-                internalWindowsElement.appendChild(windowElement);
+                Element windowElement = new Element(WINDOW);
+                internalWindowsElement.addContent(windowElement);
 
                 windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(windows[x])));
                 windowElement.setAttribute(LOCATION_X, Integer.toString(windows[x].getX()));
@@ -188,8 +192,8 @@ public class UIConfig {
                 UnitWindow unitWindow = desktop.findUnitWindow(toolBarUnits[x]);
 
                 if ((unitWindow == null) || unitWindow.isIcon()) {
-                    Element windowElement = outputDoc.createElement(WINDOW);
-                    internalWindowsElement.appendChild(windowElement);
+                    Element windowElement = new Element(WINDOW);
+                    internalWindowsElement.addContent(windowElement);
 
                     windowElement.setAttribute(TYPE, UNIT);
                     windowElement.setAttribute(NAME, toolBarUnits[x].getName());
@@ -199,12 +203,10 @@ public class UIConfig {
 
             // Save to file.
             String path = DIRECTORY + File.separator + FILE_NAME;
+            XMLOutputter fmt=new XMLOutputter();
+            fmt.setFormat(Format.getPrettyFormat());
             stream = new BufferedOutputStream(new FileOutputStream(path));
-            Transformer tr = TransformerFactory.newInstance().newTransformer();
-            tr.setOutputProperty(OutputKeys.INDENT, "yes");
-            tr.setOutputProperty(OutputKeys.METHOD, "xml");
-            tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "3");
-            tr.transform(new DOMSource(outputDoc), new StreamResult(stream));
+            fmt.output(outputDoc, stream);
         } 
         catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
@@ -226,8 +228,8 @@ public class UIConfig {
      */
     public boolean useUIDefault() {
         try {
-            Element root = configDoc.getDocumentElement();
-            return Boolean.parseBoolean(root.getAttribute(USE_DEFAULT));
+            Element root = configDoc.getRootElement();
+            return Boolean.parseBoolean(root.getAttributeValue(USE_DEFAULT));
         } 
         catch (Exception e) {
             return true;
@@ -241,10 +243,9 @@ public class UIConfig {
      */
     public boolean useNativeLookAndFeel() {
         try {
-            Element root = configDoc.getDocumentElement();
-            String lookAndFeel = root.getAttribute(LOOK_AND_FEEL);
-            if (lookAndFeel.equals("native")) return true;
-            else return false;
+            Element root = configDoc.getRootElement();
+            String lookAndFeel = root.getAttributeValue(LOOK_AND_FEEL);
+            return (lookAndFeel.equals("native"));
         } 
         catch (Exception e) {
             return false;
@@ -258,10 +259,10 @@ public class UIConfig {
      */
     public Point getMainWindowLocation() {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element mainWindow = (Element) root.getElementsByTagName(MAIN_WINDOW).item(0);
-            int x = Integer.parseInt(mainWindow.getAttribute(LOCATION_X));
-            int y = Integer.parseInt(mainWindow.getAttribute(LOCATION_Y));
+            Element root = configDoc.getRootElement();
+            Element mainWindow = root.getChild(MAIN_WINDOW);
+            int x = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_X));
+            int y = Integer.parseInt(mainWindow.getAttributeValue(LOCATION_Y));
             return new Point(x, y);
         } 
         catch (Exception e) {
@@ -276,10 +277,10 @@ public class UIConfig {
      */
     public Dimension getMainWindowDimension() {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element mainWindow = (Element) root.getElementsByTagName(MAIN_WINDOW).item(0);
-            int width = Integer.parseInt(mainWindow.getAttribute(WIDTH));
-            int height = Integer.parseInt(mainWindow.getAttribute(HEIGHT));
+            Element root = configDoc.getRootElement();
+            Element mainWindow = root.getChild(MAIN_WINDOW);
+            int width = Integer.parseInt(mainWindow.getAttributeValue(WIDTH));
+            int height = Integer.parseInt(mainWindow.getAttributeValue(HEIGHT));
             return new Dimension(width, height);
         } 
         catch (Exception e) {
@@ -294,9 +295,9 @@ public class UIConfig {
      */
     public float getVolume() {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element volume = (Element) root.getElementsByTagName(VOLUME).item(0);
-            return Float.parseFloat(volume.getAttribute(SOUND));
+            Element root = configDoc.getRootElement();
+            Element volume = root.getChild(VOLUME);
+            return Float.parseFloat(volume.getAttributeValue(SOUND));
         } 
         catch (Exception e) {
             return 50F;
@@ -310,9 +311,9 @@ public class UIConfig {
      */
     public boolean isMute() {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element volume = (Element) root.getElementsByTagName(VOLUME).item(0);
-            return Boolean.parseBoolean(volume.getAttribute(MUTE));
+            Element root = configDoc.getRootElement();
+            Element volume = root.getChild(VOLUME);
+            return Boolean.parseBoolean(volume.getAttributeValue(MUTE));
         } 
         catch (Exception e) {
             return false;
@@ -327,16 +328,18 @@ public class UIConfig {
      */
     public boolean isInternalWindowDisplayed(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             boolean result = false;
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
-                    if (name.equals(windowName))
-                        result = Boolean.parseBoolean(internalWindow.getAttribute(DISPLAY));
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
+                    if (name.equals(windowName)){
+                        result = Boolean.parseBoolean(internalWindow.getAttributeValue(DISPLAY));
+                        break;
+                    }
                 }
             }
             return result;
@@ -354,17 +357,17 @@ public class UIConfig {
      */
     public Point getInternalWindowLocation(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             Point result = new Point(0, 0);
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
                     if (name.equals(windowName)) {
-                        int locationX = Integer.parseInt(internalWindow.getAttribute(LOCATION_X));
-                        int locationY = Integer.parseInt(internalWindow.getAttribute(LOCATION_Y));
+                        int locationX = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_X));
+                        int locationY = Integer.parseInt(internalWindow.getAttributeValue(LOCATION_Y));
                         result.setLocation(locationX, locationY);
                     }
                 }
@@ -384,16 +387,16 @@ public class UIConfig {
      */
     public int getInternalWindowZOrder(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             int result = -1;
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
                     if (name.equals(windowName))
-                        result = Integer.parseInt(internalWindow.getAttribute(Z_ORDER));
+                        result = Integer.parseInt(internalWindow.getAttributeValue(Z_ORDER));
                 }
             }
             return result;
@@ -411,17 +414,17 @@ public class UIConfig {
      */
     public Dimension getInternalWindowDimension(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             Dimension result = new Dimension(0, 0);
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
                     if (name.equals(windowName)) {
-                        int width = Integer.parseInt(internalWindow.getAttribute(WIDTH));
-                        int height = Integer.parseInt(internalWindow.getAttribute(HEIGHT));
+                        int width = Integer.parseInt(internalWindow.getAttributeValue(WIDTH));
+                        int height = Integer.parseInt(internalWindow.getAttributeValue(HEIGHT));
                         result = new Dimension(width, height);
                     }
                 }
@@ -441,16 +444,16 @@ public class UIConfig {
      */
     public String getInternalWindowType(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             String result = "";
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
                     if (name.equals(windowName))
-                        result = internalWindow.getAttribute(TYPE);
+                        result = internalWindow.getAttributeValue(TYPE);
                 }
             }
             return result;
@@ -468,14 +471,14 @@ public class UIConfig {
      */
     public boolean isInternalWindowConfigured(String windowName) {
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
             boolean result = false;
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    String name = internalWindow.getAttribute(NAME);
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    String name = internalWindow.getAttributeValue(NAME);
                     if (name.equals(windowName))
                         result = true;
                 }
@@ -495,13 +498,13 @@ public class UIConfig {
     public List<String> getInternalWindowNames() {
         List<String> result = new ArrayList<String>();
         try {
-            Element root = configDoc.getDocumentElement();
-            Element internalWindows = (Element) root.getElementsByTagName(INTERNAL_WINDOWS).item(0);
-            NodeList internalWindowNodes = internalWindows.getChildNodes();
-            for (int x = 0; x < internalWindowNodes.getLength(); x++) {
-                if (internalWindowNodes.item(x) instanceof Element) {
-                    Element internalWindow = (Element) internalWindowNodes.item(x);
-                    result.add(internalWindow.getAttribute(NAME));
+            Element root = configDoc.getRootElement();
+            Element internalWindows = root.getChild(INTERNAL_WINDOWS);
+            List<Object> internalWindowNodes = internalWindows.getChildren();
+            for (Object element : internalWindowNodes) {
+                if (element instanceof Element) {
+                    Element internalWindow = (Element) element;
+                    result.add(internalWindow.getAttributeValue(NAME));
                 }
             }
             return result;
