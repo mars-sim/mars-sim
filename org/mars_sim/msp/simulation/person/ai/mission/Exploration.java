@@ -32,6 +32,7 @@ import org.mars_sim.msp.simulation.mars.SurfaceFeatures;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.PersonConfig;
 import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.task.ExploreSite;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
@@ -104,8 +105,11 @@ public class Exploration extends RoverMission {
 			
 			// Determine exploration sites
         	try {
-        		if (hasVehicle()) determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
-        			getPeopleNumber(), true), NUM_SITES);
+        		if (hasVehicle()) {
+                    int skill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
+                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
+                            getPeopleNumber(), true), NUM_SITES, skill);
+                }
         	}
         	catch (Exception e) {
         		throw new MissionException(getPhase(), e);
@@ -219,7 +223,21 @@ public class Exploration extends RoverMission {
             boolean hasBasicResources = RoverMission.hasEnoughBasicResources(settlement);
             
 			if (reservableRover && backupRover && minNum && enoughContainers && 
-                    !embarkingMissions && hasBasicResources) result = 10D;
+                    !embarkingMissions && hasBasicResources) {
+                try {
+                    // Get available rover.
+                    Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
+                    if (rover != null) {
+                        // Check if any mineral locations within rover range.
+                        if (hasNearbyMineralLocations(rover, settlement)) {
+                            result = 10D;
+                        }
+                    }
+                }
+                catch (Exception e) {
+                    logger.log(Level.SEVERE, "Error determining mineral locations.", e);
+                }
+            }
 			
 			// Crowding modifier
 			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
@@ -238,6 +256,42 @@ public class Exploration extends RoverMission {
 		
 		return result;
 	}
+    
+    /**
+     * Checks of there are any mineral locations within rover/mission range.
+     * @param rover the rover to use.
+     * @param homeSettlement the starting settlement.
+     * @return true if mineral locations.
+     * @throws Exception if error determining mineral locations.
+     */
+    private static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) 
+            throws Exception {
+        
+        double roverRange = rover.getRange();
+        double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
+        double tripRange = getTripTimeRange(tripTimeLimit, rover.getBaseSpeed() / 2D);
+        double range = roverRange;
+        if (tripRange < range) range = tripRange;
+        
+        MineralMap map = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+        Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+        boolean result = (mineralLocation != null);
+        
+        return result;
+    }
+    
+    /**
+     * Gets the range of a trip based on its time limit and exploration sites.
+     * @param tripTimeLimit time (millisols) limit of trip.
+     * @param averageSpeed the average speed of the vehicle.
+     * @return range (km) limit.
+     */
+    private static double getTripTimeRange(double tripTimeLimit, double averageSpeed) {
+        double tripTimeTravellingLimit = tripTimeLimit - (NUM_SITES * EXPLORING_SITE_TIME);
+        double millisolsInHour = MarsClock.convertSecondsToMillisols(60D * 60D);
+        double averageSpeedMillisol = averageSpeed / millisolsInHour;
+        return tripTimeTravellingLimit * averageSpeedMillisol;
+    }
 	
     @Override
     protected void determineNewPhase() throws MissionException {
@@ -615,10 +669,11 @@ public class Exploration extends RoverMission {
 	 * Determine the locations of the exploration sites.
 	 * @param roverRange the rover's driving range
 	 * @param numSites the number of exploration sites
+     * @param areologySkill the skill level in areology for the areologist starting the mission.
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
-	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites) 
-			throws MissionException {
+	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, 
+            int areologySkill) throws MissionException {
 
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 		
@@ -632,22 +687,30 @@ public class Exploration extends RoverMission {
     		Coordinates startingLocation = getCurrentMissionLocation();
         
     		// Determine the first exploration site.
+            /*
     		Direction direction = new Direction(RandomUtil.getRandomDouble(2 * Math.PI));
     		double limit = range / 4D;
     		double siteDistance = RandomUtil.getRandomDouble(limit);
     		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
-    		unorderedSites.add(newLocation);
-    		Coordinates currentLocation = newLocation;
+            */
+            Coordinates newLocation = determineFirstExplorationSite((range / 2D), areologySkill);
+            if (newLocation != null) {
+                unorderedSites.add(newLocation);
+            }
+            else throw new MissionException(getPhase(), "Could not determine first exploration site.");
+            
+            double siteDistance = startingLocation.getDistance(newLocation);
+            Coordinates currentLocation = newLocation;
         
     		// Determine remaining exploration sites.
     		double remainingRange = (range / 2D) - siteDistance;
     		for (int x=1; x < numSites; x++) {
     			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
     			if (remainingRange > currentDistanceToSettlement) {
-    				direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+    				Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
     				double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
     				double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * direction.getCosDirection());
-    				limit = tempLimit1 / tempLimit2;
+    				double limit = tempLimit1 / tempLimit2;
     				siteDistance = RandomUtil.getRandomDouble(limit);
     				newLocation = currentLocation.getNewLocation(direction, siteDistance);
     				unorderedSites.add(newLocation);
@@ -677,6 +740,35 @@ public class Exploration extends RoverMission {
     		throw new MissionException(getPhase(), e);
     	}
 	}
+    
+    /**
+     * Determine the first exploration site.
+     * @param range the range (km) for site.
+     * @param areologySkill the skill level in areology of the areologist starting the mission.
+     * @return first exploration site or null if none.
+     * @throws MissionException if error determining site.
+     */
+    private Coordinates determineFirstExplorationSite(double range, int areologySkill) 
+            throws MissionException {
+        Coordinates result = null;
+        
+        Coordinates startingLocation = getCurrentMissionLocation();
+        MineralMap map = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+        Coordinates randomLocation = map.findRandomMineralLocation(startingLocation, range);
+        if (randomLocation != null) {
+            Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
+            if (areologySkill <= 0) areologySkill = 1;
+            double distance = RandomUtil.getRandomDouble(500D / areologySkill);
+            result = randomLocation.getNewLocation(direction, distance);
+            double distanceFromStart = startingLocation.getDistance(result);
+            if (distanceFromStart > range) {
+                Direction direction2 = startingLocation.getDirectionToPoint(result);
+                result = startingLocation.getNewLocation(direction2, range);
+            }
+        }
+        
+        return result;
+    }
 	
 	/**
 	 * Gets the range of a trip based on its time limit and exploration sites.

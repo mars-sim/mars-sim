@@ -36,4 +36,13 @@ public interface MineralMap {
      * @return array of name strings.
      */
     public String[] getMineralTypeNames();
+    
+    /**
+     * Finds a random location with mineral concentrations from a starting location
+     * and within a distance range.
+     * @param startingLocation the starting location.
+     * @param range the distance range (km).
+     * @return location with one or more mineral concentrations or null if none found.
+     */
+    public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range);
 }

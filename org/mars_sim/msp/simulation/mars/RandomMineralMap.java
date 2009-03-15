@@ -276,6 +276,41 @@ public class RandomMineralMap implements Serializable, MineralMap {
     	
     	return result;
     }
+    
+    /**
+     * Finds a random location with mineral concentrations from a starting location
+     * and within a distance range.
+     * @param startingLocation the starting location.
+     * @param range the distance range (km).
+     * @return location with one or more mineral concentrations or null if none found.
+     */
+    public Coordinates findRandomMineralLocation(Coordinates startingLocation, double range) {
+        Coordinates result = null;
+        
+        List<MineralConcentration> locales = new ArrayList<MineralConcentration>(0);
+        
+        Iterator<MineralConcentration> i = mineralConcentrations.iterator();
+        while (i.hasNext()) {
+            MineralConcentration mineralConc = i.next();
+            double distance = startingLocation.getDistance(mineralConc.getLocation());
+            if (range > (distance - mineralConc.getConcentration())) {
+                locales.add(mineralConc);
+            }
+        }
+        
+        if (locales.size() > 0) {
+            int index = RandomUtil.getRandomInt(locales.size() - 1);
+            MineralConcentration concentration = locales.get(index);
+            double distance = startingLocation.getDistance(concentration.getLocation());
+            if (range < distance) {
+                Direction direction = startingLocation.getDirectionToPoint(concentration.getLocation());
+                result = startingLocation.getNewLocation(direction, range);
+            }
+            else result = new Coordinates(concentration.getLocation());
+        }
+        
+        return result;
+    }
 	
     /**
      * Internal class representing a mineral concentration.
