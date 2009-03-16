@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 2.85 2008-07-19
+ * @version 2.86 2009-03-15
  * @author Scott Davis
  */
 
@@ -29,6 +29,8 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mining;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.simulation.person.ai.mission.MissionListener;
@@ -39,6 +41,7 @@ import org.mars_sim.msp.ui.standard.ImageLoader;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.map.CannedMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
+import org.mars_sim.msp.ui.standard.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.NavpointMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
@@ -55,6 +58,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	private MapPanel mapPane;
 	private VehicleTrailMapLayer trailLayer;
 	private NavpointMapLayer navpointLayer;
+    private MineralMapLayer mineralLayer;
 	private NavpointTableModel navpointTableModel;
 	private JTable navpointTable;
 	
@@ -83,6 +87,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		mapPane.addMapLayer(trailLayer);
 		navpointLayer = new NavpointMapLayer(this);
 		mapPane.addMapLayer(navpointLayer);
+        mineralLayer = new MineralMapLayer(this);
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
 		// Create the north button.
@@ -208,13 +213,23 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 				// Update map and info for new mission.
 				currentMission = mission;
 				if (mission.getPeopleNumber() > 0) {
-					if (mission instanceof VehicleMission) 
+					if (mission instanceof VehicleMission) {
 						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
+                    }
+                    
 					if (mission instanceof TravelMission) {
 						navpointLayer.setSingleMission((TravelMission) mission);
 						navpointLayer.setSelectedNavpoint(null);
 						navpointTableModel.updateNavpoints();
 					}
+                    
+                    if ((mission instanceof Exploration) || (mission instanceof Mining)) {
+                        if (!mapPane.hasMapLayer(mineralLayer)) mapPane.addMapLayer(mineralLayer);
+                    }
+                    else {
+                        if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
+                    }
+                    
 					mapPane.showMap(((Unit)currentMission.getPeople().toArray()[0]).getCoordinates());
 				}
 			}
@@ -226,6 +241,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 			navpointLayer.setSingleMission(null);
 			navpointLayer.setSelectedNavpoint(null);
 			navpointTableModel.updateNavpoints();
+            if (mapPane.hasMapLayer(mineralLayer)) mapPane.removeMapLayer(mineralLayer);
 			mapPane.showMap(null);
 		}
 	}
