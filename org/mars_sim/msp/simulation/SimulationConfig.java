@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.85 2008-08-10
+ * @version 2.86 2009-03-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -100,24 +100,24 @@ public class SimulationConfig implements Serializable {
 		
 		try {
 			// Load simulation document
-			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE);
+			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
 		
 			// Load subset configuration classes.
-			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE));
-			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE));
-			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE));
-			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE));
-			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE));
-			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE));
-			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE));
-			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE));
-			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE));
-			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE));
-			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE));
-			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE), partPackageConfig);
-			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE));
-            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE));
+			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
+			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
+			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
+			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
+			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, false));
+			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
+			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
+			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
+			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
+			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
+			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, false));
+			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
+			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
+            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
@@ -153,12 +153,13 @@ public class SimulationConfig implements Serializable {
 	/**
      * Parses an XML file into a DOM document.
      * @param filename the path of the file.
+     * @param useDTD true if the XML DTD should be used.
      * @return DOM document
      * @throws Exception if XML could not be parsed or file could not be found.
      */
-    private Document parseXMLFileAsJDOMDocument(String filename) throws Exception {
+    private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
             InputStream stream = getInputStream(filename);
-            SAXBuilder saxBuilder = new SAXBuilder();
+            SAXBuilder saxBuilder = new SAXBuilder(useDTD);
             Document result = saxBuilder.build(stream);
             stream.close();
             return result;
