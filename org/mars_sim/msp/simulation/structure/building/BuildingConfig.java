@@ -187,10 +187,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getLifeSupportPowerRequirement(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element lifeSupportElement = functionsElement.getChild(LIFE_SUPPORT);
-		return Double.parseDouble(lifeSupportElement.getAttributeValue(POWER_REQUIRED));
+		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
 	}
 	
 	/**
@@ -329,10 +326,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getResourceProcessingPowerDown(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element resourceProcessingElement =  functionsElement.getChild(RESOURCE_PROCESSING);
-		return Double.parseDouble(resourceProcessingElement.getAttributeValue(POWER_DOWN_LEVEL));
+		return getValueAsDouble(buildingName,FUNCTIONS,RESOURCE_PROCESSING,POWER_DOWN_LEVEL);
 	}
 	
 	
@@ -500,10 +494,7 @@ public class BuildingConfig implements Serializable {
      * @throws Exception if building name can not be found or XML parsing error.
      */
     public double getPowerStorageCapacity(String buildingName) throws Exception {
-        Element buildingElement = getBuildingElement(buildingName);
-        Element functionsElement = buildingElement.getChild(FUNCTIONS);
-        Element powerStorageElement = functionsElement.getChild(POWER_STORAGE);
-        return Double.parseDouble(powerStorageElement.getAttributeValue(CAPACITY));
+    	return getValueAsDouble(buildingName,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
 	
 	/**
@@ -563,10 +554,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getPowerForGrowingCrop(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element farmElement = functionsElement.getChild(FARMING);
-		return Double.parseDouble(farmElement.getAttributeValue(POWER_GROWING_CROP));
+		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_GROWING_CROP);
 	}
 	
 	/**
@@ -576,10 +564,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getPowerForSustainingCrop(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element farmElement = functionsElement.getChild(FARMING);
-		return Double.parseDouble(farmElement.getAttributeValue(POWER_SUSTAINING_CROP));
+		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_SUSTAINING_CROP);
 	}
 	
 	/**
@@ -589,10 +574,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
 	public double getCropGrowingArea(String buildingName) throws Exception {
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element farmElement = functionsElement.getChild(FARMING);
-		return Double.parseDouble(farmElement.getAttributeValue(GROWING_AREA));
+		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,GROWING_AREA);
 	}
 	
 	/**
@@ -691,6 +673,14 @@ public class BuildingConfig implements Serializable {
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
 		return Integer.parseInt(element3.getAttributeValue(param));
+	}
+	
+	private double getValueAsDouble(String buildingName, String child, 
+            String subchild, String param) throws Exception{
+		Element element1 = getBuildingElement(buildingName);
+		Element element2 = element1.getChild(child);
+		Element element3 = element2.getChild(subchild);
+		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 	
 	private boolean hasElements(String buildingName, String child, String children) throws Exception {

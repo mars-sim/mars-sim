@@ -120,10 +120,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getOxygenConsumptionRate() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element oxygenRateElement = root.getChild(OXYGEN_CONSUMPTION_RATE);
-		String oxygenRateStr = oxygenRateElement.getAttributeValue(VALUE);
-		return Double.parseDouble(oxygenRateStr);
+		return getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
 	}
 	
 	/**
@@ -132,10 +129,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getWaterConsumptionRate() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element waterRateElement = root.getChild(WATER_CONSUMPTION_RATE);
-		String waterRateStr = waterRateElement.getAttributeValue(VALUE);
-		return Double.parseDouble(waterRateStr);
+		return getValueAsDouble(WATER_CONSUMPTION_RATE);
 	}
 	
 	/**
@@ -144,10 +138,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if consumption rate could not be found.
 	 */
 	public double getFoodConsumptionRate() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element foodRateElement = root.getChild(FOOD_CONSUMPTION_RATE);
-		String foodRateStr = foodRateElement.getAttributeValue(VALUE);
-		return Double.parseDouble(foodRateStr);
+		return getValueAsDouble(FOOD_CONSUMPTION_RATE);
 	}
 	
 	/**
@@ -156,10 +147,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if oxygen deprivation time could not be found.
 	 */
 	public double getOxygenDeprivationTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element oxygenTimeElement = root.getChild(OXYGEN_DEPRIVATION_TIME);
-		String oxygenTimeStr = oxygenTimeElement.getAttributeValue(VALUE);
-		return Double.parseDouble(oxygenTimeStr);
+		return getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
 	}
 	
 	/**
@@ -168,10 +156,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if water deprivation time could not be found.
 	 */
 	public double getWaterDeprivationTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element waterTimeElement = root.getChild(WATER_DEPRIVATION_TIME);
-		String waterTimeStr = waterTimeElement.getAttributeValue(VALUE);
-		return Double.parseDouble(waterTimeStr);
+		return getValueAsDouble(WATER_DEPRIVATION_TIME);
 	}
 	
 	/**
@@ -180,11 +165,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if food deprivation time could not be found.
 	 */
 	public double getFoodDeprivationTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element foodTimeElement = root.getChild(FOOD_DEPRIVATION_TIME);
-		String foodTimeStr = foodTimeElement.getAttributeValue(VALUE);
-		return  Double.parseDouble(foodTimeStr);
-		
+		return getValueAsDouble(FOOD_DEPRIVATION_TIME);
 	}
 	
 	/**
@@ -193,10 +174,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if starvation start time could not be found.
 	 */
 	public double getStarvationStartTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element starvationTimeElement = root.getChild(STARVATION_START_TIME);
-		String starvationTimeStr = starvationTimeElement.getAttributeValue(VALUE);
-		return Double.parseDouble(starvationTimeStr);
+		return getValueAsDouble(STARVATION_START_TIME);
 	}
 	
 	/**
@@ -205,10 +183,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element airPressureElement = root.getChild(MIN_AIR_PRESSURE);
-		String airPressureStr = airPressureElement.getAttributeValue(VALUE);
-		return  Double.parseDouble(airPressureStr);
+		return getValueAsDouble(MIN_AIR_PRESSURE);
 	}
 	
 	/**
@@ -217,10 +192,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if decompression time could not be found.
 	 */
 	public double getDecompressionTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element decompressionTimeElement = root.getChild(DECOMPRESSION_TIME);
-		String decompressionTimeStr = decompressionTimeElement.getAttributeValue(VALUE);
-		return Double.parseDouble(decompressionTimeStr);
+		return getValueAsDouble(DECOMPRESSION_TIME);
 	}
 	
 	/**
@@ -229,10 +201,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if min temperature cannot be found.
 	 */
 	public double getMinTemperature() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element minTemperatureElement = root.getChild(MIN_TEMPERATURE);
-		String minTemperatureStr = minTemperatureElement.getAttributeValue(VALUE);
-		return Double.parseDouble(minTemperatureStr);
+		return getValueAsDouble(MIN_TEMPERATURE);
 	}
 	
 	/**
@@ -241,10 +210,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if max temperature cannot be found.
 	 */
 	public double getMaxTemperature() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element maxTemperatureElement = root.getChild(MAX_TEMPERATURE);
-		String maxTemperatureStr = maxTemperatureElement.getAttributeValue(VALUE);
-		return Double.parseDouble(maxTemperatureStr);
+		return getValueAsDouble(MAX_TEMPERATURE);
 	}
 	
 	/**
@@ -253,10 +219,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if freezing time could not be found.
 	 */
 	public double getFreezingTime() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element freezingTimeElement = root.getChild(FREEZING_TIME);
-		String freezingTimeStr = freezingTimeElement.getAttributeValue(VALUE);
-		return Double.parseDouble(freezingTimeStr);
+		return getValueAsDouble(FREEZING_TIME);
 	}
 	
 	/**
@@ -265,10 +228,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if stress breakdown time could not be found.
 	 */
 	public double getStressBreakdownChance() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element stressBreakdownChanceElement = root.getChild(STRESS_BREAKDOWN_CHANCE);
-		String stressBreakdownChanceStr = stressBreakdownChanceElement.getAttributeValue(VALUE);
-		return Double.parseDouble(stressBreakdownChanceStr);
+		return getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
 	}
 	
 	/**
@@ -277,10 +237,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if gender ratio could not be found.
 	 */
 	public double getGenderRatio() throws Exception {
-		Element root = personDoc.getRootElement();
-		Element genderRatioElement = root.getChild(GENDER_MALE_PERCENTAGE);
-		String genderRatioStr = genderRatioElement.getAttributeValue(VALUE);
-		return (Double.parseDouble(genderRatioStr) / 100D);
+		return getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
 	}
 	
 	/**
@@ -327,10 +284,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonName(int index) throws Exception {
-		Element root = personDoc.getRootElement();
-		Element personList = root.getChild(PERSON_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(NAME);
+		return getValueAsString(index,NAME);
 	}
 	
 	/**
@@ -340,10 +294,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonGender(int index) throws Exception {
-		Element root = personDoc.getRootElement();
-		Element personList = root.getChild(PERSON_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(GENDER);
+		return getValueAsString(index,GENDER);
 	}
 	
 	/**
@@ -353,10 +304,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonPersonalityType(int index) throws Exception {
-		Element root = personDoc.getRootElement();
-		Element personList = root.getChild(PERSON_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(PERSONALITY_TYPE);
+		return getValueAsString(index,PERSONALITY_TYPE);
 	}
 	
 	/**
@@ -366,10 +314,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonSettlement(int index) throws Exception {
-		Element root = personDoc.getRootElement();
-		Element personList = root.getChild(PERSON_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(SETTLEMENT);
+		return getValueAsString(index,SETTLEMENT);
 	}
 	
 	/**
@@ -379,10 +324,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
 	public String getConfiguredPersonJob(int index) throws Exception {
-		Element root = personDoc.getRootElement();
-		Element personList = root.getChild(PERSON_LIST);
-		Element personElement = (Element) personList.getChildren(PERSON).get(index);
-		return personElement.getAttributeValue(JOB);
+		return getValueAsString(index,JOB);
 	}
 	
 	/**
@@ -412,6 +354,20 @@ public class PersonConfig implements Serializable {
 		return result;
 	}
 	
+	private String getValueAsString(int index, String param){
+		Element root = personDoc.getRootElement();
+		Element personList = root.getChild(PERSON_LIST);
+		Element personElement = (Element) personList.getChildren(PERSON).get(index);
+		return personElement.getAttributeValue(param);
+	}
+	
+	
+	private double getValueAsDouble(String child) {
+		Element root = personDoc.getRootElement();
+		Element element = root.getChild(child);
+		String str = element.getAttributeValue(VALUE);
+		return Double.parseDouble(str);	
+	}
 	/**
 	 * Gets a map of the configured person's skills.
 	 * @param index the person's index.
