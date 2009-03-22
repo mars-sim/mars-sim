@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 2.84 2008-04-14
+ * @version 2.86 2009-03-21
  * @author Scott Davis
  */
 
@@ -37,6 +37,7 @@ import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.map.EllipseLayer;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
 import org.mars_sim.msp.ui.standard.tool.map.MapUtils;
+import org.mars_sim.msp.ui.standard.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.NavpointEditLayer;
 import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
@@ -100,6 +101,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
+        mapPane.addMapLayer(new MineralMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));

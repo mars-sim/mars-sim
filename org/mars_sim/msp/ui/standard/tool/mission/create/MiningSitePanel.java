@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 2.84 2008-06-15
+ * @version 2.86 2009-03-21
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ import org.mars_sim.msp.ui.standard.tool.map.ExploredSiteMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.Map;
 import org.mars_sim.msp.ui.standard.tool.map.MapPanel;
 import org.mars_sim.msp.ui.standard.tool.map.MapUtils;
+import org.mars_sim.msp.ui.standard.tool.map.MineralMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.SurfMarsMap;
 import org.mars_sim.msp.ui.standard.tool.map.UnitIconMapLayer;
 import org.mars_sim.msp.ui.standard.tool.map.UnitLabelMapLayer;
@@ -94,6 +95,7 @@ public class MiningSitePanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
+        mapPane.addMapLayer(new MineralMapLayer(mapPane));
 		mapPane.addMapLayer(unitIconLayer = new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(unitLabelLayer = new UnitLabelMapLayer());
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
