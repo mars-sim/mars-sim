@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 2.81 2007-08-27
+ * @version 2.86 2009-03-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.medical;
@@ -13,8 +13,6 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
-import org.w3c.dom.NodeList;
-
 
 
 /**
@@ -33,9 +31,10 @@ public class MedicalConfig implements Serializable {
 	private static final String RECOVERY_TIME = "recovery-time";
 	private static final String PROBABILITY = "probability";
 	private static final String PERFORMANCE_PERCENT = "performance-percent";
-	private static final String TREATMENT = "treatment";
+	private static final String TREATMENT_TYPE = "treatment-type";
 	private static final String DEGRADE_COMPLAINT = "degrade-complaint";
 	private static final String TREATMENT_LIST = "treatment-list";
+    private static final String TREATMENT = "treatment";
 	private static final String SKILL = "skill";
 	private static final String MEDICAL_TECH_LEVEL = "medical-tech-level";
 	private static final String TREATMENT_TIME = "treatment-time";
@@ -98,7 +97,7 @@ public class MedicalConfig implements Serializable {
 				
 					// Get the treatment. (optional)
 					String treatmentStr = "";
-				    Element treatmentElement = medicalComplaint.getChild(TREATMENT);
+				    Element treatmentElement = medicalComplaint.getChild(TREATMENT_TYPE);
 				    
 				    if(treatmentElement != null)
 				    treatmentStr = treatmentElement.getAttributeValue(VALUE);

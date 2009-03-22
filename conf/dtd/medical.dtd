@@ -1,7 +1,7 @@
 <!ELEMENT medical (medical-complaint-list, treatment-list)>
 <!ELEMENT medical-complaint-list (medical-complaint*)>
 <!ELEMENT medical-complaint (seriousness, degrade-time?, recovery-time, probability, 
-performance-percent, treatment?, degrade-complaint?)>
+performance-percent, treatment-type?, degrade-complaint?)>
 <!ATTLIST medical-complaint name CDATA #REQUIRED>
 <!ELEMENT seriousness EMPTY>
 <!ATTLIST seriousness value CDATA #REQUIRED>
@@ -13,8 +13,8 @@ performance-percent, treatment?, degrade-complaint?)>
 <!ATTLIST probability value CDATA #REQUIRED>
 <!ELEMENT performance-percent EMPTY>
 <!ATTLIST performance-percent value CDATA #REQUIRED>
-<!ELEMENT treatment EMPTY>
-<!ATTLIST treatment value CDATA #REQUIRED>
+<!ELEMENT treatment-type EMPTY>
+<!ATTLIST treatment-type value CDATA #REQUIRED>
 <!ELEMENT degrade-complaint EMPTY>
 <!ATTLIST degrade-complaint value CDATA #REQUIRED>
 <!ELEMENT treatment-list (treatment*)>

@@ -41,9 +41,9 @@ import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
  */
 public class SimulationConfig implements Serializable {
     
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.SimulationConfig";
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.SimulationConfig";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Configuration files to load.
 	private static final String SIMULATION_FILE = "simulation";
@@ -107,13 +107,13 @@ public class SimulationConfig implements Serializable {
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
 			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
 			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
-			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, false));
+			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
 			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
 			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
 			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
 			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
 			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
-			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, false));
+			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));

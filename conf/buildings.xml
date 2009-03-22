@@ -1,4 +1,5 @@
 <?xml version="1.0" ?>
+<!DOCTYPE building-list SYSTEM "conf/dtd/buildings.dtd">
 
 <!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list>
@@ -17,6 +18,22 @@
 		<!-- The functions the building is capable of performing/fulfilling. -->
 		<functions>
 		
+			<!-- The building has communication capabilities. -->
+			<communication />
+			
+			<!-- The building has facilities for cooking/preparing meals. -->
+			<cooking capacity="1" />
+		
+			<!-- The building has facilities for eating meals. -->
+			<dining />
+		
+			<!-- The building has an airlock and changing room for EVA operations. -->
+			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
+			<EVA airlock-capacity="4" />
+			
+			<!-- The building has exercise facilities. -->
+			<exercise capacity="1" />
+		
 			<!-- The building is inhabitable and can provide life support for people. -->
 			<!-- capacity: number of people the building can normally support without crowding. -->
 			<!-- power-required: power (kW) required for life support. -->
@@ -25,6 +42,28 @@
 			<!-- The building provides sleeping quarters for people. -->
 			<!-- beds: the number of sleeping quarters provided. -->
 			<living-accommodations beds="4" />
+		
+			<!-- The building has manufacturing capacity. -->
+			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
+			<!-- concurrent-processes: the number of concurrent manufacturing processes the building 
+			     can support -->
+			<manufacture tech-level="1" concurrent-processes="1" />
+		
+			<!-- The building has a medical infirmary. -->
+			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
+			<!-- beds: the number of patients the infirmary can support. -->
+			<medical-care tech-level="4" beds="2" />
+		
+			<!-- The building if capable of producing electrical power. -->
+			<power-generation>
+				<!-- A solar cell on top of the lander hab. -->
+				<!-- type: the type of power source. -->
+				<!-- power: the maximum power (kW) produced by the power source. -->
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+		
+			<!-- The building has recreation facilities (movies, games, music, etc.). -->
+			<recreation />
 		
 			<!-- The building has a research laboratory. -->
 			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
@@ -36,25 +75,6 @@
 				<research-speciality name="Materials Science" />
 				<research-speciality name="Construction" />
 			</research>
-		
-			<!-- The building has communication capabilities. -->
-			<communication />
-		
-			<!-- The building has an airlock and changing room for EVA operations. -->
-			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
-			<EVA airlock-capacity="4" />
-			
-			<!-- The building has recreation facilities (movies, games, music, etc.). -->
-			<recreation />
-			
-			<!-- The building has facilities for eating meals. -->
-			<dining />
-			
-			<!-- The building has facilities for cooking/preparing meals. -->
-			<cooking capacity="1" />
-			
-			<!-- The building has exercise facilities. -->
-			<exercise capacity="1" />
 			
 			<!-- The building is capable of processing resources. -->
 			<!-- power-down-level: the efficiency of the resource processes -->
@@ -113,24 +133,6 @@
 				<resource-initial resource="Food" amount="500.0" /> 
 			</storage>
 			
-			<!-- The building if capable of producing electrical power. -->
-			<power-generation>
-				<!-- A solar cell on top of the lander hab. -->
-				<!-- type: the type of power source. -->
-				<!-- power: the maximum power (kW) produced by the power source. -->
-				<power-source type="Solar Power Source" power="5.0" />
-			</power-generation>
-			
-			<!-- The building has a medical infirmary. -->
-			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
-			<!-- beds: the number of patients the infirmary can support. -->
-			<medical-care tech-level="4" beds="2" />
-			
-			<!-- The building has manufacturing capacity. -->
-			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
-			<!-- concurrent-processes: the number of concurrent manufacturing processes the building 
-			     can support -->
-			<manufacture tech-level="1" concurrent-processes="1" />
 		</functions>
 		
 	</building>
@@ -138,11 +140,7 @@
 	<!-- The inflatable greenhouse is a small building for growing various plant crops. --> 
 	<building name="Inflatable Greenhouse" >
 		<power-required base-power="0.0" base-power-down-power="0.0" />
-		<functions>
-			<life-support capacity="3" power-required="6.0" />
-			<research tech-level="1" capacity="1">
-				<research-speciality name="Botany" />
-			</research>			
+		<functions>		
 			
 			<!-- The building is capable of growing plant crops. -->
 			<!-- crops: the number of different crops grown in the building. -->
@@ -152,18 +150,25 @@
 			<!-- growing-area: the total area (square meters) for growing crops. -->
 			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="75.0" />
 			
-			<storage>
-				<resource-storage resource="Water" capacity="500.0" />
-				<resource-storage resource="Waste Water" capacity="500.0" />
-				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
-				<resource-storage resource="Food" capacity="500.0" />
-			</storage>
+			<life-support capacity="3" power-required="6.0" />
+			<research tech-level="1" capacity="1">
+				<research-speciality name="Botany" />
+			</research>	
+			
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
 					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
 				</process>
 			</resource-processing>
+			
+			<storage>
+				<resource-storage resource="Water" capacity="500.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>
+			
 		</functions>
 	</building>
 	
@@ -183,6 +188,9 @@
 	<building name="Starting ERV Base" >
 		<power-required base-power="2.0" base-power-down-power="1.0" />
 		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
@@ -208,9 +216,6 @@
 				<resource-storage resource="Water" capacity="9000.0" />
 				<resource-initial resource="Hydrogen" amount="6300.0" />
 			</storage>
-			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
-			</power-generation>
 		</functions>
 	</building>
 	
@@ -220,6 +225,9 @@
 	<building name="ERV Base" >
 		<power-required base-power="8.0" base-power-down-power="1.0" />
 		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
 			<resource-processing power-down-level=".5">
 				<process name="Sabatier" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
@@ -247,9 +255,6 @@
 				<resource-initial resource="Oxygen" amount="74000.0" />
 				<resource-initial resource="Water" amount="9000.0" />
 			</storage>
-			<power-generation>
-				<power-source type="Solar Power Source" power="5.0" />
-			</power-generation>
 		</functions>
 	</building>
 	
@@ -316,11 +321,11 @@
 	<building name="Lounge">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<life-support capacity="20" power-required="40.0" />
-			<recreation />
 			<cooking capacity="4" />
 			<dining />
 			<exercise capacity="10" />
+			<life-support capacity="20" power-required="40.0" />
+			<recreation />
 		</functions>
 	</building>
 	
@@ -329,10 +334,10 @@
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
+			<medical-care tech-level="5" beds="8" />
 			<research tech-level="2" capacity="10">
 				<research-speciality name="Medicine" />
 			</research>
-			<medical-care tech-level="5" beds="8" />
 		</functions>
 	</building>
 	
@@ -340,9 +345,9 @@
 	<building name="Command and Control">
 		<power-required base-power="50.0" base-power-down-power="10.0" />
 		<functions>
-			<life-support capacity="10" power-required="20.0" />
 			<communication />
 			<EVA airlock-capacity="8" />
+			<life-support capacity="10" power-required="20.0" />
 		</functions>
 	</building>
 	
@@ -350,23 +355,23 @@
 	<building name="Large Greenhouse">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="5">
 				<research-speciality name="Botany" />
 			</research>
-			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
-			<storage>
-				<resource-storage resource="Water" capacity="1000.0" />
-				<resource-storage resource="Waste Water" capacity="1000.0" />
-				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
-				<resource-storage resource="Food" capacity="500.0" />
-			</storage>	
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
 					<input resource="Carbon Dioxide" rate="50.0" ambient="true" />
 					<output resource="Carbon Dioxide" rate="50.0" ambient="false" />
 				</process>
-			</resource-processing>					
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Water" capacity="1000.0" />
+				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>				
 		</functions>
 	</building>
 	
@@ -388,8 +393,8 @@
 	<building name="Garage">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<life-support capacity="4" power-required="8.0" />
 			<ground-vehicle-maintenance vehicle-capacity="2" />
+			<life-support capacity="4" power-required="8.0" />
 			<storage>
 				<resource-storage resource="Methane" capacity="1000.0" />
 			</storage>

@@ -30,7 +30,7 @@
 			
 			<!-- Treatment to cure the illness (see treatment list below). (optional) -->
 			<!-- If no treatment is listed, then illness immediately goes to recovery.  -->
-			<treatment value="Minor Operation" />
+			<treatment-type value="Minor Operation" />
 			
 			<!-- The next complaint changed to when this complaint exceeds its degrading time. (optional) -->
 			<!-- If no degrade-complaint is listed, this complaint causes death after degrade time. -->
@@ -48,7 +48,7 @@
 			<recovery-time value="14.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
-			<treatment value="Major Operation" />
+			<treatment-type value="Major Operation" />
 		</medical-complaint>
 		
 		<!-- Meningitis is an inflamation of the membranes covering the brain and spinal cord. -->
@@ -60,7 +60,7 @@
 			<recovery-time value="10.0" />
 			<probability value="0.1" />
 			<performance-percent value="0.0" />
-			<treatment value="Antibiotics" />
+			<treatment-type value="Antibiotics" />
 		</medical-complaint>
 		
 		<!-- A pulled/muscle is a minor and common medical complaint. -->
@@ -104,7 +104,7 @@
 			<recovery-time value="14.0" />
 			<probability value="8.0" />
 			<performance-percent value="10.0" />
-			<treatment value="Plaster Cast" />
+			<treatment-type value="Plaster Cast" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
 		
@@ -115,7 +115,7 @@
 			<recovery-time value="2.0" />
 			<probability value="14.0" />
 			<performance-percent value="60.0" />
-			<treatment value="Dressing" />
+			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>
 		
@@ -127,7 +127,7 @@
 			<recovery-time value="15.0" />
 			<probability value="0.0" />
 			<performance-percent value="10.0" />
-			<treatment value="Antibiotics" />
+			<treatment-type value="Antibiotics" />
 		</medical-complaint>
 
 		<!-- Minor burns are painful but not serious and will heal in time. -->
@@ -145,7 +145,7 @@
 			<recovery-time value="20.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
-			<treatment value="Dressing" />
+			<treatment-type value="Dressing" />
 		</medical-complaint>
 		
 		<!-- Major burns involve 3rd-degree burns over much of the body. -->
@@ -156,7 +156,7 @@
 			<recovery-time value="40.0" />
 			<probability value="0.0" />
 			<performance-percent value="0.0" />
-			<treatment value="Skin Graft" />
+			<treatment-type value="Skin Graft" />
 		</medical-complaint>	
 		
 		<!-- Frostnip is damaged tissue due to exposure to freezing conditions -->
@@ -177,7 +177,7 @@
 			<recovery-time value="10.0" />
 			<probability value="0.0" />
 			<performance-percent value="40.0" />
-			<treatment value="Dressing" />
+			<treatment-type value="Dressing" />
 			<degrade-complaint value="Gangrene" />
 		</medical-complaint>			
 		
