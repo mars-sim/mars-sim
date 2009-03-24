@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 2.84 2008-05-12
+ * @version 2.86 2009-03-23
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.awt.GridLayout;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -156,8 +157,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             		ItemResource resource = iItem.next();
             		resources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
             	}
+                
+                // Sort resources alphabetically by name.
+                Collections.sort(keys);
             }
-            catch (InventoryException e) {}
+            catch (InventoryException e) {
+                e.printStackTrace(System.err);
+            }
         }
         
         public int getRowCount() {
@@ -212,6 +218,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             		ItemResource resource = iItem.next();
             		newResources.put(resource, inventory.getItemResourceNum(resource));
             	}
+                
+            	// Sort resources alphabetically by name.
+                Collections.sort(newResourceKeys);
             
         		if (!resources.equals(newResources)) {
         			resources = newResources;
@@ -219,7 +228,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         			fireTableDataChanged();
         		}
         	}
-        	catch(Exception e) {}
+        	catch(Exception e) {
+        	    e.printStackTrace(System.err);   
+            }
         }
     }
     
@@ -229,11 +240,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     private class EquipmentTableModel extends AbstractTableModel {
         
         Inventory inventory;
-        Collection<Unit> equipment;
+        List<Unit> equipment;
         
         private EquipmentTableModel(Inventory inventory) {
             this.inventory = inventory;
-            equipment = inventory.findAllUnitsOfClass(Equipment.class);
+            Collection<Unit> equipmentCol = inventory.findAllUnitsOfClass(Equipment.class);
+            equipment = new ArrayList<Unit>(equipmentCol);
+            
+            // Sort equipment alphabetically by name.
+            Collections.sort(equipment);
         }
         
         public int getRowCount() {
@@ -256,21 +271,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         
         public Object getValueAt(int row, int column) {
             if (row < equipment.size()) {
-                Unit result = null;
-                int count = 0;
-                Iterator<Unit> i = equipment.iterator();
-                while (i.hasNext()) {
-                    Unit item = i.next();
-                    if (count == row) result = item;
-                    count++;
-                }
-                return result;
+                return equipment.get(row);
             }   
             else return "unknown";
         }
   
         public void update() {
-            Collection<Unit> newEquipment = inventory.findAllUnitsOfClass(Equipment.class);
+            List<Unit> newEquipment = new ArrayList<Unit>(
+                    inventory.findAllUnitsOfClass(Equipment.class));
+            
+            // Sort equipment alphabetically by name.
+            Collections.sort(newEquipment);
+            
             if (!equipment.equals(newEquipment)) {
                 equipment = newEquipment;
                 fireTableDataChanged();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 2.82 2007-11-09
+ * @version 2.86 2009-03-22
  * @author Scott Davis
  */
 
@@ -133,4 +133,14 @@ public class ItemResource implements Resource, Serializable {
 	public static final ItemResource getTestResourcePipeWrench() {
 		return new ItemResource("pipe wrench", 2.5D);
 	}
+    
+    /**
+     * Compares this object with the specified object for order.
+     * @param o the Object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, 
+     * equal to, or greater than the specified object.
+     */
+    public int compareTo(Resource o) {
+        return name.compareTo(o.getName());
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 2.85 2008-08-07
+ * @version 2.86 2009-03-22
  * @author Scott Davis
  */
 
@@ -120,4 +120,14 @@ public final class AmountResource implements Resource, Serializable {
 	public int hashCode() {
 		return (name.hashCode() * phase.hashCode());
 	}
+    
+    /**
+     * Compares this object with the specified object for order.
+     * @param o the Object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, 
+     * equal to, or greater than the specified object.
+     */
+    public int compareTo(Resource o) {
+        return name.compareTo(o.getName());
+    }
 }

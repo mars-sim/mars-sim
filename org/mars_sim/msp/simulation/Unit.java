@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 2.81 2007-08-20
+ * @version 2.86 2009-03-23
  * @author Scott Davis
  */
 
@@ -18,7 +18,7 @@ import java.util.List;
  * Simulation.  Units include people, vehicles and settlements.
  * This class provides data members and methods common to all units.
  */
-public abstract class Unit implements Serializable {
+public abstract class Unit implements Serializable, Comparable<Unit> {
 
 	// Unit event types
 	public static final String NAME_EVENT = "name";
@@ -247,5 +247,15 @@ public abstract class Unit implements Serializable {
     		Iterator<UnitListener> i = listeners.iterator();
     		while (i.hasNext()) i.next().unitUpdate(new UnitEvent(this, updateType, target));
     	}
+    }
+    
+    /**
+     * Compares this object with the specified object for order.
+     * @param o the Object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, 
+     * equal to, or greater than the specified object.
+     */
+    public int compareTo(Unit o) {
+        return name.compareToIgnoreCase(o.getName());
     }
 }
