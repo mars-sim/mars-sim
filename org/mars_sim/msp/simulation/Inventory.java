@@ -239,7 +239,7 @@ public class Inventory implements Serializable {
     			allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
     			if (containedUnits != null) {
-    			    	Iterator<Unit> i = containedUnits.iterator();
+    			    Iterator<Unit> i = containedUnits.iterator();
     				while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
     			}
     			return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
