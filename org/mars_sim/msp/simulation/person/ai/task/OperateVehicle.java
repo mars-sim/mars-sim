@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 2.79 2006-05-11
+ * @version 2.86 2009-04-11
  * @author Scott Davis
  */
 
@@ -40,8 +40,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	private Coordinates destination; // The location of the destination of the trip.
 	private MarsClock startTripTime; // The time/date the trip is starting.
 	private double startTripDistance; // The distance (km) to the destination at the start of the trip.
-	protected double backingUpDistance; // The distance (km) the vehicle has backed up.
-	protected boolean isBackingUp; // Is the vehicle backing up?
 	
 	/**
 	 * Default Constructor
@@ -74,8 +72,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.destination = destination;
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
-		backingUpDistance = 0D;
-		isBackingUp = false;
 		addPhase(MOBILIZE);
 		
 		// Set initial phase
@@ -215,9 +211,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
             // Determine new position.
             vehicle.setCoordinates(vehicle.getCoordinates().getNewLocation(vehicle.getDirection(), distanceTraveled));
         }
-        
-        // If backing up, add distanceTraveled to backingUpDistance
-        if (isBackingUp) backingUpDistance += distanceTraveled;
         
         // Add distance traveled to vehicle's odometer.
         vehicle.addTotalDistanceTraveled(distanceTraveled);

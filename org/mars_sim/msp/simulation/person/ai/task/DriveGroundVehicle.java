@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.81 2007-08-12
+ * @version 2.86 2009-04-11
  * @author Scott Davis
  */
 
@@ -28,10 +28,13 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
 
+    // Side directions.
+    private final static int NONE = 0;
+    private final static int LEFT = 1;
+    private final static int RIGHT = 2;
+    
     // Data members
-    private double closestDistance; // Closest distance to destination vehicle has been so far.
-    private double obstacleDistance; // Distance travelled in obstacle avoidance path.
-    private double obstacleTimeCount; // Amount of time driver has not been any closer to destination. (in millisols)
+    private int sideDirection = NONE;
 
     /** 
      * Default Constructor
@@ -51,8 +54,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
         // Set initial parameters
         setDescription("Driving " + vehicle.getName());
-        closestDistance = Double.MAX_VALUE;
-        obstacleTimeCount = 0D;
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 
@@ -78,8 +79,6 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     	
         // Set initial parameters
         setDescription("Driving " + vehicle.getName());
-        closestDistance = Double.MAX_VALUE;
-        obstacleTimeCount = 0D;
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 		if ((startingPhase != null) && !startingPhase.equals("")) setPhase(startingPhase);
@@ -126,7 +125,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	}
 
     /** 
-     * Perform task in obstace phase.
+     * Perform task in obstacle phase.
      * @param time the amount of time to perform the task (in millisols)
      * @return time remaining after performing phase (in millisols)
      * @throws Exception if error performing phase.
@@ -136,59 +135,40 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         double timeUsed = 0D;
         GroundVehicle vehicle = (GroundVehicle) getVehicle();
 
-        // If driver has failed to get around an obstacle after 100 millisols,
-        // vehicle should be considered stuck and needs to be winched free.
-        if ((obstacleTimeCount >= 100D) && !vehicle.isStuck()) {
-            vehicle.setStuck(true);
-            setPhase(WINCH_VEHICLE);
-            obstacleTimeCount = 0D;
-            obstacleDistance = 0D;
-            isBackingUp = false;
-            backingUpDistance = 0D;
-            return time;
-        }
-
-        // If having backup 10 km or more, revert to normal obstacle avoidance.
-        if (isBackingUp && (backingUpDistance >= 10D)) {
-            backingUpDistance = 0D;
-            isBackingUp = false;
-        }
-	
         // Update vehicle elevation.
         updateVehicleElevationAltitude();
         
-        // Update vehicle direction.
-        if (isBackingUp) {
-        	double backupTweakDirection = Math.PI / 10D;
-            double reverseDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection() + 
-            		Math.PI + backupTweakDirection;
-            vehicle.setDirection(new Direction(reverseDirection));
+        // Get the direction to the destination.
+        Direction destinationDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination());
+        
+        // If speed in destination direction is good, change to mobilize phase.
+        double destinationSpeed = getSpeed(destinationDirection);
+        if (destinationSpeed >= 1D) {
+            vehicle.setDirection(destinationDirection);
+            setPhase(OperateVehicle.MOBILIZE);
+            sideDirection = NONE;
+            return time;
         }
-        else {
-        	if (obstacleDistance == 0D) vehicle.setDirection(getObstacleAvoidanceDirection());
-        	else if (obstacleDistance > 10D) {
-        		obstacleDistance = 0D;
-        		setPhase(OperateVehicle.MOBILIZE);
-        	}
+        
+        // Determine the direction to avoid the obstacle.
+        Direction travelDirection = getObstacleAvoidanceDirection();
+        
+        // If an obstacle avoidance direction could not be found, winch vehicle.
+        if (travelDirection == null) {
+            setPhase(WINCH_VEHICLE);
+            sideDirection = NONE;
+            return time;
         }
+        
+        // Set the vehicle's direction.
+        vehicle.setDirection(travelDirection);
 
         // Update vehicle speed.
-        if (isBackingUp) vehicle.setSpeed(getSpeed(vehicle.getDirection()) / 2D);
-        else vehicle.setSpeed(getSpeed(vehicle.getDirection()));
+        vehicle.setSpeed(getSpeed(vehicle.getDirection()));
 
         // Drive in the direction
         timeUsed = time - mobilizeVehicle(time);
         
-        // Update obstacle distance.
-        if (!isBackingUp) obstacleDistance += vehicle.getSpeed() * timeUsed;
-
-        // Update closest distance to destination.
-        if (getDistanceToDestination() < closestDistance) {
-            closestDistance = getDistanceToDestination();
-            obstacleTimeCount = 0;
-        }
-        else obstacleTimeCount += timeUsed;
-
         // Add experience points
         addExperience(time);
 
@@ -244,35 +224,49 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 
     /** 
      * Gets the direction for obstacle avoidance.
-     * @return direction for obstacle avoidance in radians
+     * @return direction for obstacle avoidance in radians or null if none found.
      * @throws exception if error in getting direction.
      */
     private Direction getObstacleAvoidanceDirection() throws Exception {
+        Direction result = null;
+        
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
         boolean foundGoodPath = false;
-
-        String sideCheck = "left";
-        if (RandomUtil.lessThanRandPercent(50)) sideCheck = "right";
-
-        Direction resultDirection = vehicle.getDirection();
-
-        for (int x=0; (x < 5) && !foundGoodPath; x++) {
-            // double modAngle = (double) x * (Math.PI / 6D);
-        	double modAngle = Math.PI / 6D;
-
-            if (sideCheck.equals("left"))
-                resultDirection.setDirection(resultDirection.getDirection() - modAngle);
-            else
-                resultDirection.setDirection(resultDirection.getDirection() + modAngle);
-
-            if (getSpeed(resultDirection) > 1D) foundGoodPath = true;
+        
+        double initialDirection = vehicle.getCoordinates().getDirectionToPoint(getDestination()).getDirection();
+        
+        if (sideDirection == NONE) {
+            for (int x = 1; (x < 11) && !foundGoodPath; x++) {
+                double modAngle = x * (Math.PI / 10D);
+                for (int y = 1; (y < 3) && !foundGoodPath; y++) {
+                    Direction testDirection = null;
+                    if (y == 1) testDirection = new Direction(initialDirection - modAngle);
+                    else testDirection = new Direction(initialDirection + modAngle);
+                    double testSpeed = getSpeed(testDirection);
+                    if (testSpeed > 1D) {
+                        result = testDirection;
+                        if (y == 1) sideDirection = LEFT;
+                        else sideDirection = RIGHT;
+                        foundGoodPath = true;
+                    }
+                }
+            }
         }
-
-        // if (foundGoodPath) setPhase(OperateVehicle.MOBILIZE);
-        // else isBackingUp = true;
-        if (!foundGoodPath) isBackingUp = true;
-
-        return resultDirection;
+        else {
+            for (int x = 1; (x < 21) && !foundGoodPath; x++) {
+                double modAngle = x * (Math.PI / 10D);
+                Direction testDirection = null;
+                if (sideDirection == LEFT) testDirection = new Direction(initialDirection - modAngle);
+                else testDirection = new Direction(initialDirection + modAngle);
+                double testSpeed = getSpeed(testDirection);
+                if (testSpeed > 1D) {
+                    result = testDirection;
+                    foundGoodPath = true;
+                }
+            }
+        }
+        
+        return result;
     }
     
 	/**
@@ -291,7 +285,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     protected double getSpeed(Direction direction) {
     	double result = super.getSpeed(direction);
     	result *= getSpeedLightConditionModifier();
-    	result *= getTerrainModifier();
+    	result *= getTerrainModifier(direction);
     	return result;
     }
     
@@ -309,9 +303,10 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     
     /**
      * Gets the terrain speed modifier.
+     * @param direction the direction of travel.
      * @return speed modifier (0D - 1D)
      */
-    protected double getTerrainModifier() {
+    protected double getTerrainModifier(Direction direction) {
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();
         
         // Get vehicle's terrain handling capability.
@@ -320,7 +315,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         // Determine modifier.
         double angleModifier = handling + getEffectiveSkillLevel() - 10D;
         if (angleModifier < 0D) angleModifier = Math.abs(1D / angleModifier);
-        double tempAngle = Math.abs(vehicle.getTerrainGrade() / angleModifier);
+        double tempAngle = Math.abs(vehicle.getTerrainGrade(direction) / angleModifier);
         if (tempAngle > (Math.PI / 2D)) tempAngle = Math.PI / 2D;
         return Math.cos(tempAngle);
     }
