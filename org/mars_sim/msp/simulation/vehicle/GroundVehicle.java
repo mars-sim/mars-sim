@@ -90,10 +90,18 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      * @return ground vehicle's current terrain grade angle from horizontal (radians)
      */
     public double getTerrainGrade() {
-    	// Determine the terrain grade in the vehicle's current direction.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    	return getTerrainGrade(getDirection());
+    }
+    
+    /** 
+     * Gets the average angle of terrain over next 7.4km distance in a given direction from the vehicle.
+     * @return ground vehicle's current terrain grade angle from horizontal (radians)
+     */
+    public double getTerrainGrade(Direction direction) {
+        // Determine the terrain grade in a given direction from the vehicle.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         TerrainElevation terrain = surface.getSurfaceTerrain();
-        return terrain.determineTerrainDifficulty(getCoordinates(), getDirection());
+        return terrain.determineTerrainDifficulty(getCoordinates(), direction);
     }
 
     /** Returns true if ground vehicle is stuck 
