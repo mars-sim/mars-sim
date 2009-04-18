@@ -21,13 +21,6 @@ import java.util.logging.Logger;
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 
 import org.jdom.DocType;
 import org.jdom.Document;
@@ -40,7 +33,6 @@ import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
-import com.sun.org.apache.xerces.internal.impl.dtd.DTDGrammar;
 
 
 
