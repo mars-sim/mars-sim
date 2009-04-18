@@ -29,6 +29,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
+import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -38,6 +39,8 @@ import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+
+import com.sun.org.apache.xerces.internal.impl.dtd.DTDGrammar;
 
 
 
@@ -62,7 +65,10 @@ public class UIConfig {
     private static final String DIRECTORY = "saved";
 
     private static final String FILE_NAME = "ui_settings.xml";
-
+    
+    private static final String FILE_NAME_DTD = "ui_settings.dtd";
+    
+ 
     // UI config elements and attributes.
     private static final String UI = "ui";
 
@@ -113,7 +119,8 @@ public class UIConfig {
             String path = DIRECTORY + File.separator + FILE_NAME;
             stream = new File(path);
             
-            SAXBuilder saxBuilder = new SAXBuilder();
+            SAXBuilder saxBuilder = new SAXBuilder(true);
+            
             configDoc = saxBuilder.build(stream);
             
         } 
@@ -132,8 +139,9 @@ public class UIConfig {
         OutputStream stream = null;
         try {
             Document outputDoc = new Document();
-            
+            DocType dtd = new DocType(UI,FILE_NAME_DTD);
             Element uiElement = new Element(UI);
+            outputDoc.setDocType(dtd);
             outputDoc.addContent(uiElement);
             outputDoc.setRootElement(uiElement);
 
