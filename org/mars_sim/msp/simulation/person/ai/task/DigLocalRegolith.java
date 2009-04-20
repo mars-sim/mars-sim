@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 2.85 2009-01-24
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -91,7 +91,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 // Factor the value of regolith at the settlement.
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(regolithResource));
+                double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
                 result = value;
                 if (result > 100D) result = 100D;
             }

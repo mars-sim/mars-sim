@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.84 2008-05-17
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -97,7 +97,7 @@ public class TendGreenhouse extends Task implements Serializable {
         		// Food value modifier.
         		GoodsManager manager = person.getSettlement().getGoodsManager();
         		AmountResource foodResource = AmountResource.findAmountResource("food");
-        		double foodValue = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(foodResource));
+        		double foodValue = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(foodResource));
         		result *= foodValue;
         	}
         	catch (Exception e) {

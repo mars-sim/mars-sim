@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.85 2008-08-23
+ * @version 2.86 2009-04-20
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -97,7 +97,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 				// Factor the value of regolith at the settlement.
 				GoodsManager manager = person.getSettlement().getGoodsManager();
 				AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-				double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(regolithResource));
+				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
 				result *= value * 10D;
                 if (result > 100D) result = 100D;
 			}

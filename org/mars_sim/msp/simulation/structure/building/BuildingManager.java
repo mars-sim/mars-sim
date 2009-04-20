@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 2.85 2008-08-18
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
  
@@ -474,7 +474,7 @@ public class BuildingManager implements Serializable {
                 result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
         
             // Multiply value.
-            result *= 10000D;
+            result *= 1000D;
         
             // Subtract power costs per Sol.
             double power = config.getBasePowerRequirement(buildingName);

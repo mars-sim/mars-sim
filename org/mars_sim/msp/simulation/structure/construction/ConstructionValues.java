@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 2.85 2009-02-11
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -330,7 +330,7 @@ public class ConstructionValues implements Serializable {
             AmountResource resource = j.next();
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             double amount = resources.get(resource);
-            double value = manager.getGoodValuePerMass(resourceGood) * amount;
+            double value = manager.getGoodValuePerItem(resourceGood) * amount;
             cost += value;
         }
     

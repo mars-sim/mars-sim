@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 2.85 2008-09-15
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -96,7 +96,7 @@ public class Storage extends Function implements Serializable {
             if (!newBuilding) existingStorage -= storageAmount;
             
             Good resourceGood = GoodsUtil.getResourceGood(resource);
-            double resourceValue = settlement.getGoodsManager().getGoodValuePerMass(resourceGood);
+            double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resourceGood);
             double resourceStored = settlement.getInventory().getAmountResourceStored(resource);
             double resourceDemand = resourceValue * (resourceStored + 1D);
             

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 2.84 2008-05-17
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -250,9 +250,9 @@ public final class TradeUtil {
     							addToInventory(containerGood, inventory, 1);
     							int containerNum = 0;
     							if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood).intValue();
-    							double containerSupply = manager.getAmountOfGoodForSettlement(containerGood);
-    		    	    		double containerMass = GoodsUtil.getGoodMassPerItem(containerGood);
-    		    	    		loadValue+= manager.getGoodValuePerItem(good, (containerSupply + (containerNum * containerMass)));
+    							double containerSupply = manager.getNumberOfGoodForSettlement(containerGood);
+                                double totalContainerNum = containerNum + containerSupply;
+    		    	    		loadValue+= manager.getGoodValuePerItem(containerGood, totalContainerNum);
     		    	    		tradeList.put(containerGood, (containerNum + 1));
     						}
     						else logger.warning("container for " + resource.getName() + " not available.");
@@ -275,16 +275,17 @@ public final class TradeUtil {
     				}
     				int currentNum = 0;
     				if (tradeList.containsKey(good)) currentNum = tradeList.get(good).intValue();
-    				double supply = manager.getAmountOfGoodForSettlement(good);
-    	    		double goodMass = GoodsUtil.getGoodMassPerItem(good);
-    	    		if (isAmountResource) goodMass *= getResourceTradeAmount((AmountResource) good.getObject());
-    	    		if (isItemResource) goodMass *= itemResourceNum;
-    	    		double goodValue = manager.getGoodValuePerItem(good, (supply + (currentNum * goodMass)));
+    				double supply = manager.getNumberOfGoodForSettlement(good);
+                    double goodNum = 0D;
+    	    		if (isAmountResource) goodNum = getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isItemResource) goodNum = itemResourceNum;
+    	    		double goodValue = manager.getGoodValuePerItem(good, (supply + currentNum + goodNum));
     	    		if (isAmountResource) goodValue *= getResourceTradeAmount((AmountResource) good.getObject());
     	    		if (isItemResource) goodValue *= itemResourceNum;
     	    		loadValue += goodValue;
     	    		int newNumber = currentNum + 1;
-    	    		if (isAmountResource) newNumber = currentNum + (int) getResourceTradeAmount((AmountResource) good.getObject());
+    	    		if (isAmountResource) newNumber = currentNum + (int) getResourceTradeAmount(
+                            (AmountResource) good.getObject());
     	    		if (isItemResource) newNumber = currentNum + itemResourceNum;
     	    		tradeList.put(good, newNumber);
     			}
@@ -319,22 +320,22 @@ public final class TradeUtil {
     	while (i.hasNext()) {
     		Good good = i.next();
     		int goodNumber = load.get(good).intValue();
-    		double supply = manager.getAmountOfGoodForSettlement(good);
-    		double goodMass = GoodsUtil.getGoodMassPerItem(good);
+    		double supply = manager.getNumberOfGoodForSettlement(good);
+    		// double goodMass = GoodsUtil.getGoodMassPerItem(good);
     		double multiplier = 1D;
     		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     			double tradeAmount = getResourceTradeAmount((AmountResource) good.getObject());
     			goodNumber/= (int) tradeAmount;
-    			goodMass *= tradeAmount;
+    			// goodMass *= tradeAmount;
     			multiplier = tradeAmount;
     		}
     		
     		for (int x = 0; x < goodNumber; x++) {
     			
     			double supplyAmount = 0D;
-    			if (buy) supplyAmount = supply + (x * goodMass);
+    			if (buy) supplyAmount = supply + x;
     			else {
-    				supplyAmount = supply - (x * goodMass);
+    				supplyAmount = supply - x;
     				if (supplyAmount < 0D) supplyAmount = 0D;
     			}
     			
@@ -425,10 +426,12 @@ public final class TradeUtil {
     	boolean limitReached = false;
     	while (!limitReached) {
     		
-    		double sellingSupplyAmount = (sellingInventory - totalTraded - 1) * item.getMassPerItem();
-    		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, sellingSupplyAmount);
-    		double buyingSupplyAmount = (buyingInventory + totalTraded + 1) * item.getMassPerItem();
-    		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, buyingSupplyAmount);
+    		double sellingSupplyAmount = sellingInventory - totalTraded - 1;
+    		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, 
+                    sellingSupplyAmount);
+    		double buyingSupplyAmount = buyingInventory + totalTraded + 1;
+    		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(itemResourceGood, 
+                    buyingSupplyAmount);
     		
     		if (buyingValue <= sellingValue) limitReached = true;
     		if (totalBuyingValue + buyingValue > valueLimit) limitReached = true;
@@ -470,7 +473,7 @@ public final class TradeUtil {
 		if (tradedGoods.containsKey(good)) amountTraded += tradedGoods.get(good).doubleValue();
 		
 		double sellingInventory = getNumInInventory(good, sellingSettlement.getInventory());
-		double sellingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (sellingInventory - amountTraded - 1D);
+		double sellingSupplyAmount = sellingInventory - amountTraded - 1D;
 		double sellingValue = sellingSettlement.getGoodsManager().getGoodValuePerItem(good, sellingSupplyAmount);
 		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
 			sellingValue*= getResourceTradeAmount((AmountResource) good.getObject());
@@ -478,7 +481,7 @@ public final class TradeUtil {
 		boolean allTraded = (sellingInventory <= amountTraded); 
 		
 		double buyingInventory = getNumInInventory(good, buyingSettlement.getInventory());
-		double buyingSupplyAmount = GoodsUtil.getGoodMassPerItem(good) * (buyingInventory + amountTraded + 1D);
+		double buyingSupplyAmount = buyingInventory + amountTraded + 1D;
 		double buyingValue = buyingSettlement.getGoodsManager().getGoodValuePerItem(good, buyingSupplyAmount);
 		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
 			buyingValue*= getResourceTradeAmount((AmountResource) good.getObject());

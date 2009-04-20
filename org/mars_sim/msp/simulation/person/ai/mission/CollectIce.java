@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.85 2008-09-18
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -91,7 +91,7 @@ public class CollectIce extends CollectResourcesMission {
 				// Factor the value of ice at the settlement.
 				GoodsManager manager = person.getSettlement().getGoodsManager();
 				AmountResource iceResource = AmountResource.findAmountResource("ice");
-				double value = manager.getGoodValuePerMass(GoodsUtil.getResourceGood(iceResource));
+				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
 				result *= value * 100D;
                 if (result > 100D) result = 100D;
 			}

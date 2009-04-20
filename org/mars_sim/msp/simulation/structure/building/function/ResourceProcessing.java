@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 2.85 2008-11-26
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -74,7 +74,7 @@ public class ResourceProcessing extends Function implements Serializable {
                 if (!process.isWasteOutputResource(resource)) {
                     Good resourceGood = GoodsUtil.getResourceGood(resource);
                     double rate = process.getMaxOutputResourceRate(resource) * 1000D;
-                    processValue += settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
+                    processValue += settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
                 }
             }
             
@@ -84,7 +84,7 @@ public class ResourceProcessing extends Function implements Serializable {
                 if (!process.isAmbientInputResource(resource)) {
                     Good resourceGood = GoodsUtil.getResourceGood(resource);
                     double rate = process.getMaxInputResourceRate(resource) * 1000D;
-                    processValue -= settlement.getGoodsManager().getGoodValuePerMass(resourceGood) * rate;
+                    processValue -= settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
                 }
             }
             

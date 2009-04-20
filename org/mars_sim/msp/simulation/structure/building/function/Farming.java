@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.85 2008-08-18
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -97,7 +97,7 @@ public class Farming extends Function implements Serializable {
         // Demand is value of estimated food needed by population per orbit.
         AmountResource foodResource = AmountResource.findAmountResource("food");
         Good foodGood = GoodsUtil.getResourceGood(foodResource);
-        double foodValue = settlement.getGoodsManager().getGoodValuePerMass(foodGood);
+        double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
         double personFoodConsumption = 
             SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
         int personNum = settlement.getAllAssociatedPeople().size();

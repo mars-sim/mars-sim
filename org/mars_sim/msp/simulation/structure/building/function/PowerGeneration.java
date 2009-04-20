@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.85 2008-10-07
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.structure.building.function;
@@ -102,7 +102,7 @@ public class PowerGeneration extends Function implements Serializable {
                 double fuelPower = source.getMaxPower();
                 AmountResource fuelResource = fuelSource.getFuelResource();
                 Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
-                double fuelValue = settlement.getGoodsManager().getGoodValuePerMass(fuelGood);
+                double fuelValue = settlement.getGoodsManager().getGoodValuePerItem(fuelGood);
                 fuelValue *= fuelSource.getFuelConsumptionRate();
                 fuelPower -= fuelValue;
                 if (fuelPower < 0D) fuelPower = 0D;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 2.85 2009-01-21
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -672,7 +672,7 @@ public class Mining extends RoverMission {
 			try {
 				AmountResource mineralResource = AmountResource.findAmountResource(mineralType);
 				Good mineralGood = GoodsUtil.getResourceGood(mineralResource);
-				double mineralValue = settlement.getGoodsManager().getGoodValuePerMass(mineralGood);
+				double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralGood);
 				double concentration = concentrations.get(mineralType);
 				double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
 				result += mineralValue * mineralAmount;

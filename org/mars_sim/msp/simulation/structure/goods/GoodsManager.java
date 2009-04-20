@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.85 2008-09-03
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -130,36 +130,19 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the value per mass of a good.
-	 * @param good the good to check value for.
-	 * @return the value per mass (value points / kg).
-	 */
-	public double getGoodValuePerMass(Good good) {
-		if (goodsValues.containsKey(good)) return goodsValues.get(good).doubleValue();
-		else throw new IllegalArgumentException("Good: " + good + " not valid.");
-	}
-	
-	public double getGoodValuePerMass(Good good, double supply) throws Exception {
-		if (goodsValues.containsKey(good)) return determineGoodValue(good, supply, true);
-		else throw new IllegalArgumentException("Good: " + good + " not valid.");
-	}
-	
-	/**
 	 * Gets the value per item of a good.
 	 * @param good the good to check.
 	 * @return value (VP)
 	 * @throws Exception if error getting value.
 	 */
 	public double getGoodValuePerItem(Good good) throws Exception {
-		if (goodsValues.containsKey(good)) 
-			return getGoodValuePerMass(good) * GoodsUtil.getGoodMassPerItem(good);
-		else throw new IllegalArgumentException("Good: " + good + " not valid.");
+        if (goodsValues.containsKey(good)) return goodsValues.get(good).doubleValue();
+        else throw new IllegalArgumentException("Good: " + good + " not valid.");
 	}
 	
 	public double getGoodValuePerItem(Good good, double supply) throws Exception {
-		if (goodsValues.containsKey(good))
-			return getGoodValuePerMass(good, supply) * GoodsUtil.getGoodMassPerItem(good);
-		else throw new IllegalArgumentException("Good: " + good + " not valid.");
+        if (goodsValues.containsKey(good)) return determineGoodValue(good, supply, true);
+        else throw new IllegalArgumentException("Good: " + good + " not valid.");
 	}
 	
 	/**
@@ -192,7 +175,7 @@ public class GoodsManager implements Serializable {
 	 */
 	public void updateGoodValue(Good good, boolean collectiveUpdate) throws Exception {
 		if (good != null) {
-			goodsValues.put(good, determineGoodValue(good, getAmountOfGoodForSettlement(good), false));
+			goodsValues.put(good, determineGoodValue(good, getNumberOfGoodForSettlement(good), false));
 			if (!collectiveUpdate) settlement.fireUnitUpdate(GOODS_VALUE_EVENT, good);
 		}
 		else throw new IllegalArgumentException("Good is null.");
@@ -201,7 +184,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the value of a good.
 	 * @param good the good to check.
-	 * @param supply the current supply (kg) of the good.
+	 * @param supply the current supply (# of items) of the good.
 	 * @param useCache use demand and trade caches to determine value?
 	 * @return value of good.
 	 * @throws Exception if problem determining good value.
@@ -351,7 +334,7 @@ public class GoodsManager implements Serializable {
 		AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
 		AmountResource food = AmountResource.findAmountResource("food");
 		if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
-			double foodValue = getGoodValuePerMass(GoodsUtil.getResourceGood(food));
+			double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
 			
 			Iterator i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
@@ -380,7 +363,8 @@ public class GoodsManager implements Serializable {
 	 * @return value (value points / kg)
 	 * @throws Exception if error getting value.
 	 */
-	private double getResourceProcessingValue(AmountResource resource, boolean useProcessingCache) throws Exception {
+	private double getResourceProcessingValue(AmountResource resource, 
+            boolean useProcessingCache) throws Exception {
 		double value = 0D;
 		
 		if (useProcessingCache) {
@@ -406,8 +390,10 @@ public class GoodsManager implements Serializable {
 	 * @param process the resource process.
 	 * @param resource the amount resource.
 	 * @return value (value points / kg)
+     * @throws exception if error getting good value.
 	 */
-	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
+	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) 
+            throws Exception {
 		double value = 0D;
 		
 		Set<AmountResource> inputResources = process.getInputResources();
@@ -420,7 +406,7 @@ public class GoodsManager implements Serializable {
 				AmountResource output = i.next();
 				double outputRate = process.getMaxOutputResourceRate(output); 
 				if (!process.isWasteOutputResource(resource))
-					outputValue += (getGoodValuePerMass(GoodsUtil.getResourceGood(output)) * outputRate);
+					outputValue += (getGoodValuePerItem(GoodsUtil.getResourceGood(output)) * outputRate);
 			}
             
             double totalInputRate = 0D;
@@ -507,16 +493,16 @@ public class GoodsManager implements Serializable {
 			while (j.hasNext()) 
                 outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
             
-            double totalMass = 0D;
+            double totalItems = 0D;
             Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
-            while (k.hasNext()) totalMass += ManufactureUtil.getMass(k.next());
+            while (k.hasNext()) totalItems += k.next().getAmount();
             
-            double resourceMass = ManufactureUtil.getMass(resourceInput);
+            double resourceItems = resourceInput.getAmount();
             
-            // double totalInputsValue = outputsValue / 2D;
-            double totalInputsValue = outputsValue * .75D;
+            double totalInputsValue = outputsValue / 2D;
+            //double totalInputsValue = outputsValue * .75D;
             
-            demand = (resourceMass / totalMass) * totalInputsValue;
+            demand = (resourceItems / totalItems) * totalInputsValue;
 		}
 		
 		return demand;
@@ -609,16 +595,6 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Gets the amount of a good at the settlement.
-	 * @param good the good to check.
-	 * @return the amount (kg) of the good at the settlement.
-	 * @throws Exception if error determining amount of the good.
-	 */
-	public double getAmountOfGoodForSettlement(Good good) throws Exception {
-		return getNumberOfGoodForSettlement(good) * GoodsUtil.getGoodMassPerItem(good);
-	}
-	
-	/**
 	 * Gets the amount of an amount resource for a settlement.
 	 * @param resource the resource to check.
 	 * @return amount (kg) of resource for the settlement.
@@ -655,9 +631,9 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the value of an item resource.
 	 * @param resourceGood the resource good to check.
-	 * @param supply the current supply (kg) of the good.
+	 * @param supply the current supply (# items) of the good.
 	 * @param useCache use the cache to determine value.
-	 * @return value (Value Points / kg)
+	 * @return value (Value Points / item)
 	 * @throws Exception if error determining value.
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
@@ -851,7 +827,7 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Gets the manufacturing demand for a part.
 	 * @param part the part.
-	 * @return demand (kg)
+	 * @return demand (# of parts)
 	 * @throws Exception if error getting part manufacturing demand.
 	 */
 	private double getPartManufacturingDemand(Part part) throws Exception {
@@ -875,7 +851,7 @@ public class GoodsManager implements Serializable {
 	 * Gets the demand of an input part in a manufacturing process. 
 	 * @param part the input part.
 	 * @param process the manufacturing process.
-	 * @return demand (kg)
+	 * @return demand (# of parts)
 	 * @throws Exception if error determining manufacturing demand.
 	 */
 	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) 
@@ -892,20 +868,17 @@ public class GoodsManager implements Serializable {
 		
 		if (partInput != null) {
 			double outputsValue = 0D;
+            double totalInputNum = 0D;
 			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-			while (j.hasNext()) 
-                outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
-            
-            double totalMass = 0D;
-            Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
-            while (k.hasNext()) totalMass += ManufactureUtil.getMass(k.next());
-            
-            double partMass = ManufactureUtil.getMass(partInput);
+			while (j.hasNext()) {
+                ManufactureProcessItem item = j.next();
+                outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
+                totalInputNum += item.getAmount();
+            }
             
             double totalInputsValue = outputsValue / 2D;
             
-            double demandAmount = (partMass / totalMass) * totalInputsValue;
-            demand = demandAmount / part.getMassPerItem();
+            demand = totalInputsValue * (partInput.getAmount() / totalInputNum);
 		}
 		
 		return demand;
@@ -951,25 +924,19 @@ public class GoodsManager implements Serializable {
         Map<Part, Integer> parts = stage.getParts();
         
         if (parts.containsKey(part)) {
-            double totalMass = 0D;
+            double totalNumber = 0D;
             
             Iterator<AmountResource> i = resources.keySet().iterator();
-            while (i.hasNext()) totalMass += resources.get(i.next());
+            while (i.hasNext()) totalNumber += resources.get(i.next());
             
             Iterator<Part> j = parts.keySet().iterator();
-            while (j.hasNext()) {
-                Part inputPart = j.next();
-                int number = parts.get(inputPart);
-                totalMass += number * inputPart.getMassPerItem();
-            }
+            while (j.hasNext()) totalNumber += parts.get(j.next());
             
             double partNumber = parts.get(part);
-            double partMass = partNumber * part.getMassPerItem();
             
             double totalInputsValue = stageValue / 2D;
             
-            double demandAmount = (partMass / totalMass) * totalInputsValue;
-            demand = demandAmount / part.getMassPerItem();
+            demand = totalInputsValue * (partNumber / totalNumber);
         }
         
         return demand;
@@ -1012,9 +979,9 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the value of an equipment.
 	 * @param equipmentGood the equipment good to check.
-	 * @param supply the current supply (kg) of the good.
+	 * @param supply the current supply (# of items) of the good.
 	 * @param useCache use the cache to determine value.
-	 * @return the value (value points / kg) 
+	 * @return the value (value points) 
 	 * @throws Exception if error determining value.
 	 */
 	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) 
@@ -1044,14 +1011,15 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the demand for a type of equipment.
 	 * @param equipmentClass the equipment class.
-	 * @return demand (kg).
+	 * @return demand (# of equipment).
 	 * @throws Exception if error getting demand.
 	 */
 	private double determineEquipmentDemand(Class equipmentClass) throws Exception {
 		double numDemand = 0D;
 		
 		// Determine number of EVA suits that are needed
-		if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * settlement.getAllAssociatedPeople().size();
+		if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * 
+                settlement.getAllAssociatedPeople().size();
 		
 		// Determine the number of containers that are needed.
 		if (Container.class.isAssignableFrom(equipmentClass)) {
@@ -1065,9 +1033,9 @@ public class GoodsManager implements Serializable {
 		// Determine number of bags that are needed.
 		if (Bag.class.equals(equipmentClass)) {
 			AmountResource ice = AmountResource.findAmountResource("ice");
-			double iceValue = getGoodValuePerMass(GoodsUtil.getResourceGood(ice));
+			double iceValue = getGoodValuePerItem(GoodsUtil.getResourceGood(ice));
 			AmountResource regolith = AmountResource.findAmountResource("regolith");
-			double regolithValue = getGoodValuePerMass(GoodsUtil.getResourceGood(regolith));
+			double regolithValue = getGoodValuePerItem(GoodsUtil.getResourceGood(regolith));
 			numDemand += CollectIce.REQUIRED_BAGS * areologistNum * iceValue;
 			numDemand += CollectRegolith.REQUIRED_BAGS * areologistNum * regolithValue;
 		}
@@ -1076,10 +1044,7 @@ public class GoodsManager implements Serializable {
 		if (SpecimenContainer.class.equals(equipmentClass)) 
 			numDemand +=  Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistNum;
 		
-		// Convert demand from number to mass.
-		double demand = numDemand * GoodsUtil.getGoodMassPerItem(GoodsUtil.getEquipmentGood(equipmentClass));
-		
-		return demand;
+		return numDemand;
 	}
 	
 	/**
@@ -1131,6 +1096,10 @@ public class GoodsManager implements Serializable {
 		return result;
 	}
     
+    /**
+     * Gets the number of architect associated with the settlement.
+     * @return number of architects.
+     */
     private int getArchitectNum() {
         int result = 0;
         Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -1203,21 +1172,20 @@ public class GoodsManager implements Serializable {
 	/**
 	 * Determines the value of a vehicle good.
 	 * @param vehicleGood the vehicle good.
-	 * @param supply the current supply (kg) of the good.
+	 * @param supply the current supply (# of vehicles) of the good.
 	 * @param useCache use the cache to determine value.
-	 * @return the value (value points / kg).
+	 * @return the value (value points).
 	 * @throws Exception if error determining vehicle value.
 	 */
-	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) throws Exception {
+	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) 
+            throws Exception {
 		double value = 0D;
 		
 		String vehicleType = vehicleGood.getName();
 		
 		boolean buy = false;
-		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		double currentNum = getNumberOfVehiclesForSettlement(vehicleType);
-		double currentSupply = currentNum * config.getEmptyMass(vehicleType);
-		if (supply == currentSupply) buy = true;
+		if (supply == currentNum) buy = true;
 		
 		if (vehicleBuyValueCache == null) vehicleBuyValueCache = new HashMap<String, Double>();
 		if (vehicleSellValueCache == null) vehicleSellValueCache = new HashMap<String, Double>();
@@ -1233,7 +1201,8 @@ public class GoodsManager implements Serializable {
 			}
 		}
 		else {
-			double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, vehicleType, buy);
+			double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, 
+                    vehicleType, buy);
 			if (travelToSettlementMissionValue > value) value = travelToSettlementMissionValue;
 		
 			double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
@@ -1248,7 +1217,8 @@ public class GoodsManager implements Serializable {
 			double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
 			if (tradeMissionValue > value) value = tradeMissionValue;
 			
-			double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, vehicleType, buy);
+			double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, 
+                    vehicleType, buy);
 			if (collectRegolithMissionValue > value) value = collectRegolithMissionValue;
 			
 			double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
@@ -1258,7 +1228,6 @@ public class GoodsManager implements Serializable {
             if (constructionMissionValue > value) value = constructionMissionValue;
 			
 			// Add trade value.
-			//value += determineTradeValue(vehicleGood, useCache);
 			double tradeValue = determineTradeValue(vehicleGood, useCache);
 			if (tradeValue > value) value = tradeValue;
 			
@@ -1269,7 +1238,8 @@ public class GoodsManager implements Serializable {
 		return value;
 	}
 	
-	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) throws Exception {
+	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) 
+            throws Exception {
 		
 		double demand = determineMissionVehicleDemand(missionType);
 		
@@ -1284,7 +1254,9 @@ public class GoodsManager implements Serializable {
 		
 		double vehicleCapacity = determineMissionVehicleCapacity(missionType, vehicleType);
 		
-		return (demand / (currentCapacity + 1D)) * vehicleCapacity;
+		double baseValue = (demand / (currentCapacity + 1D)) * vehicleCapacity;
+        
+        return baseValue;
 	}
 	
 	private double determineMissionVehicleDemand(String missionType) throws Exception {
@@ -1300,7 +1272,7 @@ public class GoodsManager implements Serializable {
 		}
 		else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			AmountResource ice = AmountResource.findAmountResource("ice");
-			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(ice));
+			demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ice));
 		}
 		else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
 			demand = getDriverNum();
@@ -1310,7 +1282,7 @@ public class GoodsManager implements Serializable {
 		}
 		else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
 			AmountResource regolith = AmountResource.findAmountResource("regolith");
-			demand = getGoodValuePerMass(GoodsUtil.getResourceGood(regolith));
+			demand = getGoodValuePerItem(GoodsUtil.getResourceGood(regolith));
 		}
 		else if (MINING_MISSION.equals(missionType)) {
 			demand = getAreologistNum() / 2D;
@@ -1474,7 +1446,7 @@ public class GoodsManager implements Serializable {
 	 * Determines the trade value for a good at a settlement.
 	 * @param good the good.
 	 * @param useTradeCache use the goods trade cache to determine trade value?
-	 * @return the trade value (VP/kg).
+	 * @return the trade value (VP).
 	 * @throws Exception if error determining trade value.
 	 */
 	private double determineTradeValue(Good good, boolean useTradeCache) throws Exception {
@@ -1489,7 +1461,7 @@ public class GoodsManager implements Serializable {
 			while (i.hasNext()) {
 				Settlement tempSettlement = i.next();
 				if (tempSettlement != settlement) {
-					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerMass(good);
+					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
 					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());
 					double tradeValue = baseValue / (1D + (distance / 1000D));
 					if (tradeValue > bestTradeValue) bestTradeValue = tradeValue;

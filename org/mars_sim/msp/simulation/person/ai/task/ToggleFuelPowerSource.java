@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 2.85 2008-10-25
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -235,11 +235,13 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @param settlement the settlement.
      * @param fuel source the fuel power source.
      * @return the total value for the input resources per Sol.
+     * @throws Exception if problem determining resources value.
      */
-    private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
+    private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) 
+            throws Exception {
         AmountResource resource = fuelSource.getFuelResource();
         double massPerSol = fuelSource.getFuelConsumptionRate();
-        double value = settlement.getGoodsManager().getGoodValuePerMass(GoodsUtil.getResourceGood(resource));
+        double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
         
         return value * massPerSol;
     }

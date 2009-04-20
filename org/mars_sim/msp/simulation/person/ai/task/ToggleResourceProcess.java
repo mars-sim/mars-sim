@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.85 2008-11-26
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -237,8 +237,10 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @param process the resource process.
 	 * @param input is the resource value for the input?
 	 * @return the total value for the input or output.
+     * @throws Exception if problem determining resource value.
 	 */
-	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) {
+	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) 
+            throws Exception {
 		double result = 0D;
 		
 		Iterator<AmountResource> i = null;
@@ -251,7 +253,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 			if (input && process.isAmbientInputResource(resource)) useResource = false;
 			if (!input && process.isWasteOutputResource(resource)) useResource = false;
 			if (useResource) {
-				double value = settlement.getGoodsManager().getGoodValuePerMass(GoodsUtil.getResourceGood(resource));
+				double value = settlement.getGoodsManager().getGoodValuePerItem(
+                        GoodsUtil.getResourceGood(resource));
 				double rate = 0D;
 				if (input) rate = process.getMaxInputResourceRate(resource);
 				else rate = process.getMaxOutputResourceRate(resource);

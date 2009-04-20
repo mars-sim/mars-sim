@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.85 2008-09-13
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 

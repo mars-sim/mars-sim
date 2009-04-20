@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.85 2008-11-28
+ * @version 2.86 2009-04-20
  * @author Scott Davis
  */
 
@@ -133,7 +133,7 @@ public final class ManufactureUtil {
 		if (item.getType().equals(ManufactureProcessItem.AMOUNT_RESOURCE)) {
 			AmountResource resource = AmountResource.findAmountResource(item.getName());
 			Good good = GoodsUtil.getResourceGood(resource);
-			result = manager.getGoodValuePerMass(good) * item.getAmount();
+			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
 		else if (item.getType().equals(ManufactureProcessItem.PART)) {
 			ItemResource resource = ItemResource.findItemResource(item.getName());
@@ -150,7 +150,7 @@ public final class ManufactureUtil {
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
 		else throw new Exception("Item type: " + item.getType() + " not valid.");
-		
+        
 		return result;
 	}
 
