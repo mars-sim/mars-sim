@@ -9,7 +9,7 @@
 <!ELEMENT volume (#PCDATA)>
 <!ATTLIST volume sound CDATA #REQUIRED>
 <!ATTLIST volume mute CDATA #REQUIRED>
-<!ELEMENT internal-windows (window)>
+<!ELEMENT internal-windows (window*)>
 <!ELEMENT window (#PCDATA)>
 <!ATTLIST window z-order CDATA #REQUIRED>
 <!ATTLIST window location-x CDATA #REQUIRED>
