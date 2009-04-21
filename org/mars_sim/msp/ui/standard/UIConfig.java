@@ -11,6 +11,7 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -107,18 +108,21 @@ public class UIConfig {
      */
     public void parseFile() {
         File stream = null;
-        try {
-            String path = DIRECTORY + File.separator + FILE_NAME;
-            stream = new File(path);
+        
+            try {
+				String path = DIRECTORY + File.separator + FILE_NAME;
+				stream = new File(path);
+				
+				SAXBuilder saxBuilder = new SAXBuilder(true);
+				
+				configDoc = saxBuilder.build(stream);
+			} catch (Exception e) {
+				if(!(e instanceof FileNotFoundException))
+			    logger.log(Level.SEVERE, "parseFile()", e);
+			} 
             
-            SAXBuilder saxBuilder = new SAXBuilder(true);
-            
-            configDoc = saxBuilder.build(stream);
-            
-        } 
-        catch (Exception e) {
-            logger.log(Level.SEVERE, "parseFile()", e);
-        } 
+       
+      
         
     }
 
@@ -151,7 +155,7 @@ public class UIConfig {
             mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(window.getY()));
             mainWindowElement.setAttribute(WIDTH, Integer.toString(window.getWidth()));
             mainWindowElement.setAttribute(HEIGHT, Integer.toString(window.getHeight()));
-
+   
             Element volumeElement = new Element(VOLUME);
             uiElement.addContent(volumeElement);
 
@@ -183,6 +187,9 @@ public class UIConfig {
                 else if (windows[x] instanceof UnitWindow) {
                     windowElement.setAttribute(TYPE, UNIT);
                     windowElement.setAttribute(NAME, ((UnitWindow) windows[x]).getUnit().getName());
+                }else {
+                	  windowElement.setAttribute(TYPE, "other");
+                      windowElement.setAttribute(NAME, "other");
                 }
             }
 
