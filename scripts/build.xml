@@ -74,8 +74,9 @@
                 	<include name="mp3sp.1.6.zip" />
                 	<include name="tritonus_share.jar" />
                		<include name="jogg-0.0.7.jar" />
-                	<include name="jorbis-0.0.17.jar" />
+                	<include name="jorbis-0.0.17.zip" />
                 	<include name="vorbisspi1.0.2.jar" />
+                    <include name="jdom.jar" />
                 </fileset>
             </classpath>
         </javac>
@@ -178,7 +179,7 @@
                 	<include name="mp3sp.1.6.zip" />
                 	<include name="tritonus_share.jar" />
                 	<include name="jogg-0.0.7.jar" />
-                	<include name="jorbis-0.0.15.jar" />
+                	<include name="jorbis-0.0.17.zip" />
                 	<include name="vorbisspi1.0.2.jar" />
                 	<include name="jdom.jar" />
                 </fileset>
