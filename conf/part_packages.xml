@@ -69,6 +69,7 @@
 		<part type="crane boom" number="1" />
 		<part type="small wheel" number="4" />
 		<part type="utility vehicle control panel" number="1" />
+		<part type="solar panel" number="1" />
 		
 	</part-package>
 	
@@ -130,6 +131,7 @@
 		<part type="crane boom" number="1" />
 		<part type="small wheel" number="4" />
 		<part type="utility vehicle control panel" number="1" />
+		<part type="solar panel" number="2" />
 	
 	</part-package>
 	
@@ -191,6 +193,7 @@
 		<part type="crane boom" number="2" />
 		<part type="small wheel" number="8" />
 		<part type="utility vehicle control panel" number="2" />
+		<part type="solar panel" number="3" />
 		
 	</part-package>
 	
@@ -252,6 +255,7 @@
 		<part type="crane boom" number="3" />
 		<part type="small wheel" number="12" />
 		<part type="utility vehicle control panel" number="3" />
+		<part type="solar panel" number="4" />
 	
 	</part-package>
 	
