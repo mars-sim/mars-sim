@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.85 2008-09-13
+ * @version 2.86 2009-04-27
  * @author Scott Davis
  */
 
@@ -661,6 +661,7 @@ public class LoadVehicle extends Task implements Serializable {
     		}
     	}
     	catch (InventoryException e) {
+            logger.info(e.getMessage());
     		sufficientCapacity = false;
     	}
     	
