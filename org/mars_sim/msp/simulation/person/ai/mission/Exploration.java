@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.85 2009-01-21
+ * @version 2.86 2009-04-27
  * @author Scott Davis
  */
 
@@ -693,7 +693,7 @@ public class Exploration extends RoverMission {
     		double siteDistance = RandomUtil.getRandomDouble(limit);
     		Coordinates newLocation = startingLocation.getNewLocation(direction, siteDistance);
             */
-            Coordinates newLocation = determineFirstExplorationSite((range / 2D), areologySkill);
+            Coordinates newLocation = determineFirstExplorationSite((range / 3D), areologySkill);
             if (newLocation != null) {
                 unorderedSites.add(newLocation);
             }
