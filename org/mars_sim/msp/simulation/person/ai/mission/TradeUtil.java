@@ -73,7 +73,7 @@ public final class TradeUtil {
     		Settlement settlement = i.next();
     		if (settlement != startingSettlement) {
     			double settlementRange = settlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
-    			if (settlementRange <= rover.getRange()) {
+    			if (settlementRange <= (rover.getRange() * .8D)) {
     				// double startTime = System.currentTimeMillis();
     				double profit = getEstimatedTradeProfit(startingSettlement, rover, settlement);
     				// double endTime = System.currentTimeMillis();
