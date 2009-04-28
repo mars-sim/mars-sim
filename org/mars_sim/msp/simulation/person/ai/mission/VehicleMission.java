@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 2.85 2008-08-24
+ * @version 2.86 2009-04-27
  * @author Scott Davis
  */
 
@@ -696,7 +696,8 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		// Creating mission emergency beacon event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.EMERGENCY_BEACON);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
-		logger.info("Emergency beacon activated on " + vehicle.getName());
+        if (beaconOn) logger.info("Emergency beacon activated on " + vehicle.getName());
+        else logger.info("Emergency beacon deactivated on " + vehicle.getName());
 		
 		vehicle.setEmergencyBeacon(beaconOn);
     }
