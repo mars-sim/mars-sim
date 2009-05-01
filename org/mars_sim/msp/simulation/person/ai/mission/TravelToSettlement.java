@@ -89,6 +89,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
                 setDescription("Travel To " + getDestinationSettlement().getName());
             } else
                 endMission("Destination is null.");
+            
+            //Check mission available space
+            int availableSpace = getDestinationSettlement().getPopulationCapacity() -
+            getDestinationSettlement().getAllAssociatedPeople().size();
+
+            if (availableSpace < getMissionCapacity()) setMissionCapacity(availableSpace);
 
             // Recruit additional people to mission.
             if (!isDone())
@@ -371,6 +377,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         int startingCrowding = startingSettlement.getPopulationCapacity() - startingSettlement.getAllAssociatedPeople().size() - 1;
         int destinationCrowding = destinationSettlement.getPopulationCapacity() - destinationSettlement.getAllAssociatedPeople().size();
         double crowdingFactor = destinationCrowding - startingCrowding;
+        
+        if(destinationCrowding < RoverMission.MIN_PEOPLE) {
+        	return 0;
+        }
 
         // Return the sum of the factors with modifiers.
         return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + (crowdingFactor * CROWDING_MODIFIER);
