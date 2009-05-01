@@ -36,7 +36,9 @@ public class TaskManager implements Serializable {
     private Mind mind; // The mind of the person the task manager is responsible for.
 
     // Array of available tasks
-    private Class[] availableTasks = { Relax.class, TendGreenhouse.class,
+    private Class[] availableTasks = { Relax.class, 
+    		                           Yoga.class,
+    		                           TendGreenhouse.class,
                                        Maintenance.class, 
                                        MaintainGroundVehicleGarage.class,
                                        MaintainGroundVehicleEVA.class,
