@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2009-01-21
+ * @version 2.86 2009-05-09
  * @author Scott Davis
  */
 
@@ -35,6 +35,7 @@ import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
 import org.mars_sim.msp.simulation.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.simulation.structure.goods.CreditManager;
 import org.mars_sim.msp.simulation.structure.goods.Good;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
@@ -258,7 +259,7 @@ public class Trade extends RoverMission implements Serializable {
 	    			if (TRADE_PROFIT_CACHE.containsKey(person)) {
 	    				TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(person);
 	    				double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
-	    				if (timeDiff < 200D) {
+	    				if (timeDiff < 1000D) {
 	    					tradeProfit = profitInfo.profit;
 	    					useCache = true;
 	    				}
@@ -269,7 +270,7 @@ public class Trade extends RoverMission implements Serializable {
 	    				tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
 	    				double endTime = System.currentTimeMillis();
 	    				logger.info(person.getName() + " getBestTradeProfit: " + (endTime - startTime) + 
-	    						" millisols - TP: " + (int) tradeProfit + " VP");
+	    						" milliseconds - TP: " + (int) tradeProfit + " VP");
 	    				TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit, 
 	    						(MarsClock) currentTime.clone()));
 	    				TRADE_SETTLEMENT_CACHE.put(person, TradeUtil.bestTradeSettlementCache);
@@ -959,12 +960,18 @@ public class Trade extends RoverMission implements Serializable {
 			double sellingValue = TradeUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
 			double buyingValue = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
 		
+            double revenue = buyingValue - sellingValue;
+            
+            CreditManager creditManager = Simulation.instance().getCreditManager();
+            double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
+            if (credit < 0D) revenue -= credit;
+            
 			double estimatedDistance = getStartingSettlement().getCoordinates().getDistance(
 					tradingSettlement.getCoordinates()) * 2D;
 			double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(), 
 					estimatedDistance);
 		
-			result = buyingValue - sellingValue - missionCost;
+			result = revenue - missionCost;
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

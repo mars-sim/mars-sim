@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 2.83 2008-01-09
+ * @version 2.86 2009-05-08
  * @author Scott Davis
  */
 
@@ -88,15 +88,31 @@ public class NegotiateTrade extends Task implements Serializable {
 		
 		// If duration, complete trade.
 		if (getDuration() < (getTimeCompleted() + time)) {
-			double tradeValueLimit = determineTradeValueLimit();
-			buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, tradeValueLimit);
+            
+            buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover);
+            double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
+            
+			double soldLoadValue = determineModifiedSoldLoadValue();
 			
+			// Add in credit to buy or sell load.
+            CreditManager creditManager = Simulation.instance().getCreditManager();
+            double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
+            if (credit > 0D) soldLoadValue += credit;
+            else if (credit < 0D) buyLoadValue -= credit;
+            
+            // Add nonprofit goods to buy load if sold value is higher.
+            if (buyLoadValue < soldLoadValue) {
+                buyLoad = TradeUtil.addNonProfitsToLoad(buyingSettlement, sellingSettlement, rover, buyLoad, 
+                        soldLoad.keySet(), buyLoadValue, soldLoadValue);
+            }
+            
 			// Set credit between settlements.
-			double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
-			CreditManager creditManager = Simulation.instance().getCreditManager();
-			double credit = tradeValueLimit - buyLoadValue;
+            buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
+            soldLoadValue = determineModifiedSoldLoadValue();
+            credit += (soldLoadValue - buyLoadValue);
 			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			// logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + " is " + credit);
+			// logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + 
+            // " is " + credit);
 		}
 		
 		return 0D;
@@ -114,16 +130,16 @@ public class NegotiateTrade extends Task implements Serializable {
 	}
 	
 	/**
-	 * Determines the trade value limit based on the traders' abilities.
-	 * @return value limit (value points)
-	 * @throws Exception if error determining value limit.
+	 * Determines the modified sold load value based on the traders' abilities.
+	 * @return value (value points)
+	 * @throws Exception if error determining modified sold load value.
 	 */
-	private double determineTradeValueLimit() throws Exception {
+	private double determineModifiedSoldLoadValue() throws Exception {
 		
 		double modifier = 1D;
 		
-		NaturalAttributeManager sellerAttributes = sellingTrader.getNaturalAttributeManager();
-		NaturalAttributeManager buyerAttributes = buyingTrader.getNaturalAttributeManager();
+		NaturalAttributeManager sellerAttributes = buyingTrader.getNaturalAttributeManager();
+		NaturalAttributeManager buyerAttributes = sellingTrader.getNaturalAttributeManager();
 		
 		// Modify by 10% for conversation natural attributes in buyer and seller.
 		modifier += sellerAttributes.getAttribute(NaturalAttributeManager.CONVERSATION) / 1000D;
@@ -134,22 +150,18 @@ public class NegotiateTrade extends Task implements Serializable {
 		modifier -= buyerAttributes.getAttribute(NaturalAttributeManager.ATTRACTIVENESS) / 1000D;
 		
 		// Modify by 10% for each skill level in trading for buyer and seller.
-		modifier += sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
-		modifier -= buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
+		modifier += buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
+		modifier -= sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
 		
 		// Modify by 10% for the relationship between the buyer and seller.
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		modifier += relationshipManager.getOpinionOfPerson(sellingTrader, buyingTrader) / 1000D;
-		modifier -= relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
+		modifier += relationshipManager.getOpinionOfPerson(buyingTrader, sellingTrader) / 1000D;
+		modifier -= relationshipManager.getOpinionOfPerson(sellingTrader, buyingTrader) / 1000D;
 		
 		// Get sold load value.
 		double soldLoadValue = TradeUtil.determineLoadValue(soldLoad, sellingSettlement, true);
 		
-		// Get existing credit between settlements.
-		CreditManager creditManager = Simulation.instance().getCreditManager();
-		double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
-		
-		return (soldLoadValue * modifier) + credit;
+		return soldLoadValue * modifier;
 	}
 
 	/**
