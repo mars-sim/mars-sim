@@ -349,7 +349,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     private void updateGoodsManager(double time) throws Exception {
     	
     	// Randomly update goods manager 1 time per Sol.
-    	if (time >= RandomUtil.getRandomDouble(1000D)) goodsManager.timePassing(time);
+        if (!goodsManager.isInitialized() || (time >= RandomUtil.getRandomDouble(1000D))) {
+            goodsManager.timePassing(time);
+        }
     }
 
     /**

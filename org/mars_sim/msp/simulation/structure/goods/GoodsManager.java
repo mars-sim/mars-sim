@@ -91,6 +91,7 @@ public class GoodsManager implements Serializable {
 	private Map<String, Double> vehicleBuyValueCache;
 	private Map<String, Double> vehicleSellValueCache;
 	private Map<Part, Double> partsDemandCache;
+    private boolean initialized = false;
 	
 	/**
 	 * Constructor
@@ -101,6 +102,14 @@ public class GoodsManager implements Serializable {
 		this.settlement = settlement;
 		populateGoodsValues();
 	}
+    
+    /**
+     * Checks if goods manager has been initialized.
+     * @return initialized.
+     */
+    public boolean isInitialized() {
+        return initialized;
+    }
 	
 	/**
 	 * Populates the goods cache maps with empty values.
@@ -158,13 +167,15 @@ public class GoodsManager implements Serializable {
 	 * Updates the values for all the goods at the settlement.
 	 * @throws Exception if error updating goods values.
 	 */
-	private void updateGoodsValues() throws Exception {
+	public void updateGoodsValues() throws Exception {
 		// Clear parts demand cache.
 		partsDemandCache.clear();
 		
 		Iterator<Good> i = goodsValues.keySet().iterator();
 		while (i.hasNext()) updateGoodValue(i.next(), true);
 		settlement.fireUnitUpdate(GOODS_VALUE_EVENT);
+        
+        initialized = true;
 	}
 
 	/**
