@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeMissionCustomInfoPanel.java
- * @version 2.85 2008-10-20
+ * @version 2.86 2009-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.mission;
@@ -10,6 +10,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -244,6 +245,7 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (mission.getSellLoad() != null) {
 				goodsMap = mission.getSellLoad();
 				goodsList = new ArrayList<Good>(goodsMap.keySet());
+                Collections.sort(goodsList);
 			}
 			else {
 				goodsMap.clear();
@@ -271,6 +273,7 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (mission.getDesiredBuyLoad() != null) {
 				goodsMap = mission.getDesiredBuyLoad();
 				goodsList = new ArrayList<Good>(goodsMap.keySet());
+                Collections.sort(goodsList);
 			}
 			else {
 				goodsMap.clear();
@@ -298,6 +301,7 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 			if (mission.getBuyLoad() != null) {
 				goodsMap = mission.getBuyLoad();
 				goodsList = new ArrayList<Good>(goodsMap.keySet());
+                Collections.sort(goodsList);
 			}
 			else {
 				goodsMap.clear();
