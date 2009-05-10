@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 2.86 2009-04-20
+ * @version 2.86 2009-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -50,6 +50,7 @@ public class Botanist extends Job implements Serializable {
 		jobTasks.add(TendGreenhouse.class);
 		
 		// Add botanist-related missions.
+        jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);

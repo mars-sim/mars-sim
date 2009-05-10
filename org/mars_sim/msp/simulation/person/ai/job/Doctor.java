@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 2.85 2008-08-23
+ * @version 2.86 2009-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -47,6 +47,7 @@ public class Doctor extends Job implements Serializable {
 		jobTasks.add(ResearchMedicine.class);
 		
 		// Add doctor-related missions.
+        jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
@@ -87,7 +88,7 @@ public class Doctor extends Job implements Serializable {
 		int population = settlement.getAllAssociatedPeople().size();
 		result+= population / 2D;
 		
-		// Add (labspace * tech level) / 2 for all labs with areology specialities.
+		// Add (labspace * tech level) / 2 for all labs with medical specialities.
 		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {

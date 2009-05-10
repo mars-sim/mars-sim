@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chef.java
- * @version 2.85 2008-08-23
+ * @version 2.86 2009-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -41,6 +41,7 @@ public class Chef extends Job implements Serializable {
 		jobTasks.add(CookMeal.class);
 		
 		// Add chef-related missions.
+        jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);

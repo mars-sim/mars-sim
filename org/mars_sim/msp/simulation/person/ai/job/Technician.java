@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 2.85 2008-10-25
+ * @version 2.86 2009-5-10
  * @author Scott Davis
  */
 
@@ -49,6 +49,7 @@ public class Technician extends Job implements Serializable {
         jobTasks.add(ToggleFuelPowerSource.class);
 		
 		// Add engineer-related missions.
+        jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);	
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);

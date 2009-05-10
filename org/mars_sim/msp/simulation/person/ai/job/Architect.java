@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Architect.java
- * @version 2.85 2009-01-24
+ * @version 2.86 2009-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -41,6 +41,7 @@ public class Architect extends Job implements Serializable {
         // Add architect-related missions.
         jobMissionStarts.add(BuildingConstructionMission.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionStarts.add(TravelToSettlement.class);
         jobMissionJoins.add(TravelToSettlement.class);  
         jobMissionStarts.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(RescueSalvageVehicle.class);
