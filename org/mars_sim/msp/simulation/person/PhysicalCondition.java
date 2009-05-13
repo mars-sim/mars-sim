@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 2.85 2008-08-31
+ * @version 2.86 2009-05-12
  * @author Barry Evans
  */
 
@@ -54,6 +54,7 @@ public class PhysicalCondition implements Serializable {
     private double performance;         // Performance factor
     private Person person;              // Person's of this physical
     private boolean alive;              // True if person is alive.
+    private List<Medication> medicationList; // List of medication affecting the person.
 
     /**
      * Constructor
@@ -68,6 +69,7 @@ public class PhysicalCondition implements Serializable {
         hunger = RandomUtil.getRandomDouble(1000D);
         stress = RandomUtil.getRandomDouble(100D);
         alive = true;
+        medicationList = new ArrayList<Medication>();
     }
     
     /**
@@ -187,6 +189,14 @@ public class PhysicalCondition implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
+        
+        // Add time to all medications affecting the person.
+        Iterator<Medication> i = medicationList.iterator();
+        while (i.hasNext()) {
+            Medication med = i.next();
+            med.timePassing(time);
+            if (!med.isMedicated()) i.remove();
+        }
         
         // If person is at maximum stress, check for mental breakdown.
         if (stress == 100.0D) checkForStressBreakdown(config, time);
@@ -617,5 +627,42 @@ public class PhysicalCondition implements Serializable {
     public static double getFoodConsumptionRate() throws Exception {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getFoodConsumptionRate();
+    }
+    
+    /**
+     * Gets a list of medication affecting the person.
+     * @return list of medication.
+     */
+    public List getMedicationList() {
+        return new ArrayList<Medication>(medicationList);
+    }
+    
+    /**
+     * Checks if the person is affected by the given medication.
+     * @param medicationName the name of the medication.
+     * @return true if person is affected by it.
+     */
+    public boolean hasMedication(String medicationName) {
+        if (medicationName == null) 
+            throw new IllegalArgumentException("medicationName is null");
+        
+        boolean result = false;
+        
+        Iterator<Medication> i = medicationList.iterator();
+        while (i.hasNext()) {
+            if (medicationName.equals(i.next().getName())) result = true;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Adds a medication that affects the person.
+     * @param medication the medication to add.
+     */
+    public void addMedication(Medication medication) {
+        if (medication == null) 
+            throw new IllegalArgumentException("medication is null");
+        medicationList.add(medication);
     }
 }
