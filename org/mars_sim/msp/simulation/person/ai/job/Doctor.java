@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 2.86 2009-05-10
+ * @version 2.86 2009-05-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -19,6 +19,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.MedicalAssistance;
+import org.mars_sim.msp.simulation.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.simulation.person.ai.task.ResearchMedicine;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -45,6 +46,7 @@ public class Doctor extends Job implements Serializable {
 		// Add doctor-related tasks.
 		jobTasks.add(MedicalAssistance.class);
 		jobTasks.add(ResearchMedicine.class);
+        jobTasks.add(PrescribeMedication.class);
 		
 		// Add doctor-related missions.
         jobMissionStarts.add(TravelToSettlement.class);

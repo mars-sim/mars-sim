@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.85 2009-01-24
+ * @version 2.86 2009-05-13
  * @author Scott Davis
  */
 
@@ -59,7 +59,8 @@ public class TaskManager implements Serializable {
                                        ManufactureGood.class, 
                                        ResearchConstruction.class,
                                        ToggleFuelPowerSource.class, 
-                                       DigLocalRegolith.class };
+                                       DigLocalRegolith.class, 
+                                       PrescribeMedication.class };
     
     // Cache variables.
     private MarsClock timeCache;
