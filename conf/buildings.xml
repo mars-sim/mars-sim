@@ -273,7 +273,7 @@
 		<power-required base-power="5.0" base-power-down-power="1.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
-				<process name="Sebatier" power-required="5.0" default="on">
+				<process name="Sabatier" power-required="5.0" default="on">
 					<input resource="Carbon Dioxide" rate="48.0" ambient="true" />
 					<input resource="Hydrogen" rate="8.0" ambient="false" />
 					<output resource="Methane" rate="18.0" ambient="false" />
