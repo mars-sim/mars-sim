@@ -184,7 +184,7 @@ public class MedicalAssistance extends Task implements Serializable {
 	 * @param time the amount of time (ms) the person performed this task.
 	 */
 	protected void addExperience(double time) {
-		// Add experience to "Cooking" skill
+		// Add experience to "Medical" skill
 		// (1 base experience point per 25 millisols of work)
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
@@ -192,7 +192,7 @@ public class MedicalAssistance extends Task implements Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.COOKING, newPoints);
+        person.getMind().getSkillManager().addExperience(Skill.MEDICAL, newPoints);
 	}
 
     /**
