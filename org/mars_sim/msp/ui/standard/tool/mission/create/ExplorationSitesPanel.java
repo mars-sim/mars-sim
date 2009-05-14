@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 2.86 2009-03-21
+ * @version 2.86 2009-05-14
  * @author Scott Davis
  */
 
@@ -19,6 +19,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -26,6 +28,9 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Direction;
@@ -58,6 +63,7 @@ class ExplorationSitesPanel extends WizardPanel {
 	private MapPanel mapPane;
 	private EllipseLayer ellipseLayer;
 	private NavpointEditLayer navLayer;
+    private MineralMapLayer mineralLayer;
 	private int navSelected;
 	private IntPoint navOffset;
 	private JPanel siteListPane;
@@ -101,7 +107,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
-        mapPane.addMapLayer(new MineralMapLayer(mapPane));
+        mineralLayer = new MineralMapLayer(mapPane);
+        mapPane.addMapLayer(mineralLayer);
 		mapPane.addMapLayer(new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(new UnitLabelMapLayer());
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
@@ -111,10 +118,18 @@ class ExplorationSitesPanel extends WizardPanel {
 		mapPane.addMouseMotionListener(new NavpointMouseMotionListener());
 		mapMainPane.add(mapPane, BorderLayout.NORTH);
 		
-		// Create the instruction label.
-		JLabel instructionLabel = new JLabel("Drag navpoint flags to the desired exploration sites.", JLabel.CENTER);
-		instructionLabel.setFont(instructionLabel.getFont().deriveFont(Font.BOLD));
-		mapMainPane.add(instructionLabel, BorderLayout.SOUTH);
+        // Create the instruction label panel.
+        JPanel instructionLabelPane = new JPanel(new GridLayout(2, 1, 0, 0));
+        mapMainPane.add(instructionLabelPane, BorderLayout.SOUTH);
+        
+		// Create the instruction labels.
+		JLabel instructionLabel1 = new JLabel("Drag navpoint flags to the desired exploration", JLabel.LEFT);
+		instructionLabel1.setFont(instructionLabel1.getFont().deriveFont(Font.BOLD));
+		instructionLabelPane.add(instructionLabel1);
+        
+        JLabel instructionLabel2 = new JLabel("sites.", JLabel.LEFT);
+        instructionLabel2.setFont(instructionLabel2.getFont().deriveFont(Font.BOLD));
+        instructionLabelPane.add(instructionLabel2);
 		
 		// Create the site panel.
 		JPanel sitePane = new JPanel(new BorderLayout(0, 0));
@@ -155,8 +170,34 @@ class ExplorationSitesPanel extends WizardPanel {
     			});
         addButtonPane.add(addButton);
 		
-        // Create a verticle strut to manage layout.
-        add(Box.createVerticalStrut(85));
+        // Create bottom panel.
+        JPanel bottomPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        bottomPane.setAlignmentX(Component.CENTER_ALIGNMENT);
+        add(bottomPane);
+        
+        // Create mineral legend panel.
+        JPanel mineralLegendPane = new JPanel(new BorderLayout(0, 0));
+        bottomPane.add(mineralLegendPane);
+        
+        JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+        mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
+        mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);
+        
+        // Create mineral legend scroll panel.
+        JScrollPane mineralLegendScrollPane = new JScrollPane();
+        mineralLegendPane.add(mineralLegendScrollPane, BorderLayout.CENTER);
+        
+        // Create mineral legend table model.
+        MineralTableModel mineralTableModel = new MineralTableModel();
+        
+        // Create mineral legend table.
+        JTable mineralLegendTable = new JTable(mineralTableModel);
+        mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
+        mineralLegendTable.setCellSelectionEnabled(false);
+        mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
+        mineralLegendScrollPane.setViewportView(mineralLegendTable);
+        
+        // Create a verticle glue to manage layout.
 		add(Box.createVerticalGlue());
 	}
 	
@@ -618,4 +659,73 @@ class ExplorationSitesPanel extends WizardPanel {
 	private Coordinates getCurrentNavpoint() {
 		return ((SitePanel) siteListPane.getComponent(navSelected)).getSite();
 	}
+    
+    /** 
+     * Internal class used as model for the mineral table.
+     */
+    private class MineralTableModel extends AbstractTableModel {
+        
+        private java.util.Map<String, Color> mineralColors = null;
+        private List<String> mineralNames = null;
+        
+        private MineralTableModel() {
+            mineralColors = mineralLayer.getMineralColors();
+            mineralNames = new ArrayList<String>(mineralColors.keySet());
+        }
+        
+        public int getRowCount() {
+            return mineralNames.size();
+        }
+        
+        public int getColumnCount() {
+            return 2;
+        }
+        
+        public Class<?> getColumnClass(int columnIndex) {
+            Class dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 0) dataType = String.class;
+            if (columnIndex == 1) dataType = Color.class;
+            return dataType;
+        }
+        
+        public String getColumnName(int columnIndex) {
+            if (columnIndex == 0) return "Mineral";
+            else if (columnIndex == 1) return "Color";
+            else return "unknown";
+        }
+        
+        public Object getValueAt(int row, int column) {
+            if (row < getRowCount()) {
+                String mineralName = mineralNames.get(row);
+                if (column == 0) {
+                    return mineralName;
+                }
+                else if (column == 1) {
+                    return mineralColors.get(mineralName);
+                }
+                else return "unknown";
+            }
+            else return "unknown";
+        }
+    }
+    
+    /**
+     * Internal class used to render color cells in the mineral table.
+     */
+    private class ColorTableCellRenderer implements TableCellRenderer {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, 
+                boolean isSelected, boolean hasFocus, int row, int column) {
+        
+            if ((value != null) && (value instanceof Color)) {
+                Color color = (Color) value;
+                JPanel colorPanel = new JPanel();
+                colorPanel.setOpaque(true);
+                colorPanel.setBackground(color);
+                return colorPanel;
+            }
+            else return null;
+            
+        }
+    }
 }
