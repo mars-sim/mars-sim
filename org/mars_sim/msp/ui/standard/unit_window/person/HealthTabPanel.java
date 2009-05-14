@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthTabPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.86 2009-05-13
  * @author Scott Davis
  */
 
@@ -10,11 +10,15 @@ package org.mars_sim.msp.ui.standard.unit_window.person;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Iterator;
+import java.util.List;
+
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.medical.HealthProblem;
+import org.mars_sim.msp.simulation.person.medical.Medication;
 import org.mars_sim.msp.ui.standard.*;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
@@ -28,6 +32,7 @@ public class HealthTabPanel extends TabPanel {
     private JLabel hungerLabel;
     private JLabel stressLabel;
     private JLabel performanceLabel;
+    private MedicationTableModel medicationTableModel;
     private HealthProblemTableModel healthProblemTableModel;
     
     // Data cache
@@ -98,10 +103,36 @@ public class HealthTabPanel extends TabPanel {
         performanceLabel = new JLabel(formatter.format(performanceCache) + " %", JLabel.RIGHT);
         conditionPanel.add(performanceLabel);
         
+        // Prepare table panel.
+        JPanel tablePanel = new JPanel(new GridLayout(2, 1));
+        centerContentPanel.add(tablePanel, BorderLayout.CENTER);
+        
+        // Prepare medication panel.
+        JPanel medicationPanel = new JPanel(new BorderLayout());
+        medicationPanel.setBorder(new MarsPanelBorder());
+        tablePanel.add(medicationPanel);
+        
+        // Prepare medication label.
+        JLabel medicationLabel = new JLabel("Medication", JLabel.CENTER);
+        medicationPanel.add(medicationLabel, BorderLayout.NORTH);
+        
+        // Prepare medication scroll panel
+        JScrollPane medicationScrollPanel = new JScrollPane();
+        medicationPanel.add(medicationScrollPanel, BorderLayout.CENTER);
+        
+        // Prepare medication table model.
+        medicationTableModel = new MedicationTableModel(person);
+        
+        // Prepare medication table.
+        JTable medicationTable = new JTable(medicationTableModel);
+        medicationTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
+        medicationTable.setCellSelectionEnabled(false);
+        medicationScrollPanel.setViewportView(medicationTable);
+        
         // Prepare health problem panel
         JPanel healthProblemPanel = new JPanel(new BorderLayout());
         healthProblemPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(healthProblemPanel, BorderLayout.CENTER);
+        tablePanel.add(healthProblemPanel);
         
         // Prepare health problem label
         JLabel healthProblemLabel = new JLabel("Health Problems", JLabel.CENTER);
@@ -116,7 +147,7 @@ public class HealthTabPanel extends TabPanel {
         
         // Create health problem table
         JTable healthProblemTable = new JTable(healthProblemTableModel);
-        healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
+        healthProblemTable.setPreferredScrollableViewportSize(new Dimension(225, 50));
         healthProblemTable.setCellSelectionEnabled(false);
         healthProblemScrollPanel.setViewportView(healthProblemTable);
     }
@@ -153,12 +184,15 @@ public class HealthTabPanel extends TabPanel {
             performanceLabel.setText(formatter.format(performanceCache) + "%");
         }
         
+        // Update medication table model.
+        medicationTableModel.update();
+        
         // Update health problem table model.
         healthProblemTableModel.update();
     }
     
     /** 
-     * Internal class used as model for the skill table.
+     * Internal class used as model for the health problem table.
      */
     private class HealthProblemTableModel extends AbstractTableModel {
         
@@ -220,6 +254,59 @@ public class HealthTabPanel extends TabPanel {
             // Make sure problems cache is current.
             if (!problemsCache.equals(condition.getProblems()))
                 problemsCache = condition.getProblems();
+                
+            fireTableDataChanged();
+        }
+    }
+    
+    /** 
+     * Internal class used as model for the medication table.
+     */
+    private class MedicationTableModel extends AbstractTableModel {
+        
+        private PhysicalCondition condition;
+        private List<Medication> medicationCache;
+        
+        private MedicationTableModel(Person person) {
+            condition = person.getPhysicalCondition();
+            medicationCache = condition.getMedicationList();
+        }
+        
+        public int getRowCount() {
+            return medicationCache.size();
+        }
+        
+        public int getColumnCount() {
+            return 2;
+        }
+        
+        public Class<?> getColumnClass(int columnIndex) {
+            Class dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 0) dataType = String.class;
+            else if (columnIndex == 1) dataType = Double.class;
+            return dataType;
+        }
+        
+        public String getColumnName(int columnIndex) {
+            if (columnIndex == 0) return "Medication";
+            else if (columnIndex == 1) return "Duration (millisols)";
+            else return "unknown";
+        }
+        
+        public Object getValueAt(int row, int column) {
+            Object result = "unknown";
+            if (row < getRowCount()) {
+                if (column == 0) result = medicationCache.get(row).getName(); 
+                else if (column == 1) result = medicationCache.get(row).getDuration();
+            }
+            return result;
+        }
+  
+        public void update() {
+            
+            // Make sure medication cache is current.
+            if (!medicationCache.equals(condition.getMedicationList()))
+                medicationCache = condition.getMedicationList();
                 
             fireTableDataChanged();
         }

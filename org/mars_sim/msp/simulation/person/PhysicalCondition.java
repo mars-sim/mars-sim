@@ -633,7 +633,7 @@ public class PhysicalCondition implements Serializable {
      * Gets a list of medication affecting the person.
      * @return list of medication.
      */
-    public List getMedicationList() {
+    public List<Medication> getMedicationList() {
         return new ArrayList<Medication>(medicationList);
     }
     
