@@ -93,7 +93,8 @@ public class Exploration extends RoverMission {
 			
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
-        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(
+                    startingPerson.getSettlement());
         	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
 		
 			// Initialize data members.
@@ -106,13 +107,14 @@ public class Exploration extends RoverMission {
 			// Determine exploration sites
         	try {
         		if (hasVehicle()) {
-                    int skill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
+                    int skill = startingPerson.getMind().getSkillManager().
+                            getEffectiveSkillLevel(Skill.AREOLOGY);
                     determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
                             getPeopleNumber(), true), NUM_SITES, skill);
                 }
         	}
         	catch (Exception e) {
-        		throw new MissionException(getPhase(), e);
+        		endMission("Exploration sites could not be determined.");
         	}
 			
 			// Add home settlement
@@ -142,7 +144,8 @@ public class Exploration extends RoverMission {
      * @throws MissionException if error constructing mission.
      */
     public Exploration(Collection<Person> members, Settlement startingSettlement, 
-    		List<Coordinates> explorationSites, Rover rover, String description) throws MissionException {
+    		List<Coordinates> explorationSites, Rover rover, String description) 
+            throws MissionException {
     	
        	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -162,7 +165,8 @@ public class Exploration extends RoverMission {
 			addNavpoint(new NavPoint(explorationSites.get(x), "exploration site " + (x + 1)));
 		
 		// Add home navpoint.
-		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));
+		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, 
+                startingSettlement.getName()));
 		
     	// Add mission members.
     	Iterator<Person> i = members.iterator();
@@ -177,7 +181,8 @@ public class Exploration extends RoverMission {
 
        	// Check if vehicle can carry enough supplies for the mission.
        	try {
-       		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (Exploration)");
+       		if (hasVehicle() && !isVehicleLoadable()) 
+                endMission("Vehicle is not loadable. (Exploration)");
        	}
        	catch (Exception e) {
        		throw new MissionException(getPhase(), e);
@@ -209,7 +214,8 @@ public class Exploration extends RoverMission {
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = false;
 			try {
-				int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(SpecimenContainer.class);
+				int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(
+                        SpecimenContainer.class);
 				enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
 			}
 			catch (InventoryException e) {
@@ -274,7 +280,8 @@ public class Exploration extends RoverMission {
         if (tripRange < range) range = tripRange;
         
         MineralMap map = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
-        Coordinates mineralLocation = map.findRandomMineralLocation(homeSettlement.getCoordinates(), range / 2D);
+        Coordinates mineralLocation = map.findRandomMineralLocation(
+                homeSettlement.getCoordinates(), range / 2D);
         boolean result = (mineralLocation != null);
         
         return result;
@@ -349,7 +356,8 @@ public class Exploration extends RoverMission {
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
 			createNewExploredSite();
-			explorationSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+			explorationSiteStartTime = (MarsClock) Simulation.instance().getMasterClock().
+                    getMarsClock().clone();
 		}
 		
 		// Check if crew has been at site for more than one sol.
@@ -380,7 +388,8 @@ public class Exploration extends RoverMission {
 			// night time, end the exploring phase.
 			try {
 				Mars mars = Simulation.instance().getMars();
-				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
+				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
+                        getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
 				if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
 			} 
@@ -708,8 +717,10 @@ public class Exploration extends RoverMission {
     			double currentDistanceToSettlement = currentLocation.getDistance(startingLocation);
     			if (remainingRange > currentDistanceToSettlement) {
     				Direction direction = new Direction(RandomUtil.getRandomDouble(2D * Math.PI));
-    				double tempLimit1 = Math.pow(remainingRange, 2D) - Math.pow(currentDistanceToSettlement, 2D);
-    				double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * direction.getCosDirection());
+    				double tempLimit1 = Math.pow(remainingRange, 2D) - 
+                            Math.pow(currentDistanceToSettlement, 2D);
+    				double tempLimit2 = (2D * remainingRange) - (2D * currentDistanceToSettlement * 
+                            direction.getCosDirection());
     				double limit = tempLimit1 / tempLimit2;
     				siteDistance = RandomUtil.getRandomDouble(limit);
     				newLocation = currentLocation.getNewLocation(direction, siteDistance);

@@ -116,7 +116,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
         		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
         	}
         	catch (Exception e) {
-        		throw new MissionException(getPhase(), e);
+                endMission("Collection site could not be determined.");
         	}
 		}
 		

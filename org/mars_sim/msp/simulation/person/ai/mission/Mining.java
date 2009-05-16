@@ -100,7 +100,8 @@ public class Mining extends RoverMission {
 		if (!isDone()) {
         	// Set mission capacity.
         	if (hasVehicle()) setMissionCapacity(getRover().getCrewCapacity());
-        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+        	int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(
+                    startingPerson.getSettlement());
         	if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
         	
 			// Initialize data members.
@@ -120,7 +121,7 @@ public class Mining extends RoverMission {
         		}
         	}
         	catch (Exception e) {
-        		throw new MissionException(getPhase(), e);
+                endMission("Mining site could not be determined.");
         	}
         	
 			// Add home settlement
@@ -478,7 +479,8 @@ public class Mining extends RoverMission {
 			// night time, end the mining phase.
 			try {
 				Mars mars = Simulation.instance().getMars();
-				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
+				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
+                        getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
 				if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
 			} 
