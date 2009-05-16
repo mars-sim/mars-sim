@@ -26,7 +26,8 @@ private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Y
 	private static final double STRESS_MODIFIER = -.7D; 
 	
 	public Yoga(Person person) throws Exception {
-		super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
+		super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
+			  RandomUtil.getRandomInt(100));
 		
 		 // Initialize phase
         addPhase(DOING_YOGA);
@@ -46,7 +47,7 @@ private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Y
  	 
  	 if(settlement != null) {
  		 int currentPopulation = settlement.getCurrentPopulationNum();
- 		 int maxPopulation = settlement.getAvailablePopulationCapacity();
+ 		 int maxPopulation = settlement.getPopulationCapacity();
  		 int percentange = (currentPopulation * 100) / maxPopulation;
  		 if(percentange > 70) {
  			result = result + 50;
