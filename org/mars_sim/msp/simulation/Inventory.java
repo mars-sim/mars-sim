@@ -234,7 +234,7 @@ public class Inventory implements Serializable {
      */
     public synchronized Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
-    	if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
+    	    if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
     		else {
     			allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
     			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
