@@ -187,8 +187,8 @@ public class PrescribeMedication extends Task implements Serializable {
                 }
                 else throw new Exception("medication is null");
             }
+            else throw new Exception ("patient is null");
         }
-        else throw new Exception ("patient is null");
         
         // Add experience.
         addExperience(time);
