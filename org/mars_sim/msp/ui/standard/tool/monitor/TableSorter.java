@@ -16,10 +16,14 @@ import javax.swing.event.TableModelEvent;
 public class TableSorter extends AbstractTableModel
                     implements TableModelListener, MonitorModel {
 
+    // Minimum time (milliseconds) between table sorts.
+    private static final long SORTING_TIME_BUFFER = 500L;
+    
     int             indexes[];
     boolean         sortAscending = false;
     int             sortedColumn;
     MonitorModel    sourceModel;
+    long            lastSortedTime;
 
     /**
      * Create a sorter model that provides sorting in front of the specified
@@ -88,6 +92,7 @@ public class TableSorter extends AbstractTableModel
      * deleted/inserted or a change to the sorted column, then re-sort
      */
     public void tableChanged(TableModelEvent e) {
+        
         // boolean resort = false;
         TableModelEvent newEvent = null;
         int type = e.getType();
@@ -107,11 +112,18 @@ public class TableSorter extends AbstractTableModel
             newEvent = new TableModelEvent(this, firstRow, lastRow, e.getColumn(), e.getType());
         }
         else if ((e.getColumn() == sortedColumn) ||
-                (e.getColumn() == TableModelEvent.ALL_COLUMNS))
-        {
-            // If the model has been resorted, flag all changes
-            if (sortModel()) {
-            	newEvent = new TableModelEvent(this, 0, sourceModel.getRowCount());
+                (e.getColumn() == TableModelEvent.ALL_COLUMNS)) {
+            // Check time buffer for sorting.
+            long currentTime = System.currentTimeMillis();
+            long timeDiff = currentTime - lastSortedTime;
+            if (timeDiff > SORTING_TIME_BUFFER) {
+                
+                // If the model has been resorted, flag all changes
+                if (sortModel()) {
+                    newEvent = new TableModelEvent(this, 0, sourceModel.getRowCount());
+                }
+                
+                lastSortedTime = currentTime;
             }
         }
 
