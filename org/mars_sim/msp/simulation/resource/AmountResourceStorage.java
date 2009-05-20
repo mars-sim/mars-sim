@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 2.83 2008-02-04
+ * @version 2.86 2009-05-19
  * @author Scott Davis 
  */
 
@@ -39,7 +39,8 @@ public class AmountResourceStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error setting capacity.
      */
-	public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) throws ResourceException {
+	public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) 
+            throws ResourceException {
 		if (typeStorage == null) typeStorage = new AmountResourceTypeStorage();
 		typeStorage.addAmountResourceTypeCapacity(resource, capacity);
 		resourceCapacityKeyCache = null;
@@ -70,7 +71,8 @@ public class AmountResourceStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error adding capacity.
      */
-    public void addAmountResourcePhaseCapacity(Phase phase, double capacity) throws ResourceException {
+    public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) 
+            throws ResourceException {
     	if (phaseStorage == null)  phaseStorage = new AmountResourcePhaseStorage();
     	phaseStorage.addAmountResourcePhaseCapacity(phase, capacity);
     	resourceCapacityKeyCache = null;
@@ -155,20 +157,22 @@ public class AmountResourceStorage implements Serializable {
      * Gets all of the amount resources stored.
      * @return set of amount resources.
      */
-    public Set<AmountResource> getAllAmountResourcesStored() {
+    public synchronized Set<AmountResource> getAllAmountResourcesStored() {
     	if (allStoredResourcesCache != null) return Collections.unmodifiableSet(allStoredResourcesCache);
     	else {
     		allStoredResourcesCache = new HashSet<AmountResource>();
-    		if (typeStorage != null) allStoredResourcesCache.addAll(typeStorage.getAllAmountResourcesStored());
-    		if (phaseStorage != null) {
-    			Iterator i = Phase.getPhases().iterator();
-    			while (i.hasNext()) {
-    				Phase phase = (Phase) i.next();
-    				if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) 
-    					allStoredResourcesCache.add(phaseStorage.getAmountResourcePhaseType(phase));
-    			}
-    		}
-    		return Collections.unmodifiableSet(allStoredResourcesCache);
+            synchronized(allStoredResourcesCache) {
+                if (typeStorage != null) allStoredResourcesCache.addAll(typeStorage.getAllAmountResourcesStored());
+    		    if (phaseStorage != null) {
+    			    Iterator i = Phase.getPhases().iterator();
+    			    while (i.hasNext()) {
+    				    Phase phase = (Phase) i.next();
+    				    if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) 
+    				        allStoredResourcesCache.add(phaseStorage.getAmountResourcePhaseType(phase));
+    			    }
+    		    }
+    		    return Collections.unmodifiableSet(allStoredResourcesCache);
+            }
     	}
     }
     
@@ -206,7 +210,8 @@ public class AmountResourceStorage implements Serializable {
      * @param amount the amount (kg).
      * @throws ResourceException if error storing resource.
      */
-    public void storeAmountResource(AmountResource resource, double amount) throws ResourceException {
+    public synchronized void storeAmountResource(AmountResource resource, double amount) 
+            throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot store negative amount of resource: " + amount);
     	if (amount > 0D) {
     		boolean storable = false;
@@ -253,7 +258,8 @@ public class AmountResourceStorage implements Serializable {
      * @param amount the amount (kg).
      * @throws ResourceException if error retrieving resource.
      */
-    public void retrieveAmountResource(AmountResource resource, double amount) throws ResourceException {
+    public synchronized void retrieveAmountResource(AmountResource resource, double amount) 
+            throws ResourceException {
     	if (amount < 0D) throw new ResourceException("Cannot retrieve negative amount of resource: " + amount);
     	boolean retrievable = false;
     	if (getAmountResourceStored(resource) >= amount) {
@@ -287,7 +293,7 @@ public class AmountResourceStorage implements Serializable {
     			" could not be retrieved from inventory.");
     }
     
-    private void clearStoredCache() {
+    private synchronized void clearStoredCache() {
     	resourceStoredKeyCache = null;
     	if (allStoredResourcesCache != null) {
     		allStoredResourcesCache.clear();

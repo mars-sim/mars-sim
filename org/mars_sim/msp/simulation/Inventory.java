@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.84 2008-04-08
+ * @version 2.86 2009-05-19
  * @author Scott Davis 
  */
 
@@ -70,7 +70,8 @@ public class Inventory implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws InventoryException if error setting capacity.
      */
-	public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) throws InventoryException {
+	public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) 
+            throws InventoryException {
 		if (resourceStorage == null) resourceStorage = new AmountResourceStorage();
 		try {
 			resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
@@ -87,7 +88,8 @@ public class Inventory implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws InventoryException if error adding capacity.
      */
-    public void addAmountResourcePhaseCapacity(Phase phase, double capacity) throws InventoryException {
+    public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) 
+            throws InventoryException {
     	if (resourceStorage == null) resourceStorage = new AmountResourceStorage();
     	try {
     		resourceStorage.addAmountResourcePhaseCapacity(phase, capacity);
@@ -134,7 +136,7 @@ public class Inventory implements Serializable {
      * @return true if storage capacity.
      * @throws InventoryException if error checking capacity.
      */
-    public synchronized boolean hasAmountResourceCapacity(AmountResource resource, double amount) throws InventoryException {
+    public boolean hasAmountResourceCapacity(AmountResource resource, double amount) throws InventoryException {
     	try {
     		boolean result = false;
     		if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
@@ -170,7 +172,7 @@ public class Inventory implements Serializable {
      * @return capacity amount (kg).
      * @throws InventoryException if error determining capacity.
      */
-    public synchronized double getAmountResourceCapacity(AmountResource resource) throws InventoryException {
+    public double getAmountResourceCapacity(AmountResource resource) throws InventoryException {
         if (resource == null) throw new IllegalArgumentException("resource cannot be null.");
     	try {
     		double result = 0D;
@@ -204,7 +206,7 @@ public class Inventory implements Serializable {
      * @return stored amount (kg).
      * @throws InventoryException if error getting amount stored.
      */
-    public synchronized double getAmountResourceStored(AmountResource resource) throws InventoryException {
+    public double getAmountResourceStored(AmountResource resource) throws InventoryException {
         if (resource == null) throw new IllegalArgumentException("resource is null");
     	try {
     		double result = 0D;
@@ -232,17 +234,22 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      * @throws InventoryException if error getting all amount resources.
      */
-    public synchronized Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
+    public Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
     	    if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
     		else {
-    			allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
-    			if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
-    			if (containedUnits != null) {
-    			    Iterator<Unit> i = containedUnits.iterator();
-    				while (i.hasNext()) allStoredAmountResourcesCache.addAll(i.next().getInventory().getAllAmountResourcesStored());
-    			}
-    			return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
+                allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
+                synchronized(allStoredAmountResourcesCache) {
+                    if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
+                    if (containedUnits != null) {
+                        Iterator<Unit> i = containedUnits.iterator();
+                        while (i.hasNext()) {
+                            Inventory containedInv = i.next().getInventory();
+                            allStoredAmountResourcesCache.addAll(containedInv.getAllAmountResourcesStored());
+                        }
+                    }
+                    return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
+                }
     		}
     	}
     	catch(Exception e) {
@@ -282,7 +289,7 @@ public class Inventory implements Serializable {
      * @return remaining capacity amount (kg).
      * throws InventoryException if error getting remaining capacity.
      */
-    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits) throws InventoryException {
+    public double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits) throws InventoryException {
     	try {
     		double result = 0D;
     		if (useContainedUnits && (amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource))
@@ -316,7 +323,8 @@ public class Inventory implements Serializable {
      * @param amount the amount (kg).
      * @throws InventoryException if error storing resource.
      */
-    public void storeAmountResource(AmountResource resource, double amount, boolean useContainedUnits) throws InventoryException {
+    public synchronized void storeAmountResource(AmountResource resource, double amount, 
+            boolean useContainedUnits) throws InventoryException {
     	try {
     		if (amount < 0D) throw new InventoryException("Cannot store negative amount of resource: " + amount);
     		if (amount > 0D) {
@@ -370,7 +378,8 @@ public class Inventory implements Serializable {
      * @param amount the amount (kg).
      * @throws InventoryException if error retrieving resource.
      */
-    public void retrieveAmountResource(AmountResource resource, double amount) throws InventoryException {
+    public synchronized void retrieveAmountResource(AmountResource resource, double amount) 
+            throws InventoryException {
     	try {
     		if (amount <= getAmountResourceStored(resource)) {
     			double remainingAmount = amount;
@@ -415,7 +424,7 @@ public class Inventory implements Serializable {
      * Adds a capacity to general capacity.
      * @param capacity amount capacity (kg).
      */
-    public void addGeneralCapacity(double capacity) {
+    public synchronized void addGeneralCapacity(double capacity) {
     	generalCapacity += capacity;
     }
     
@@ -548,7 +557,7 @@ public class Inventory implements Serializable {
      * @param number the number of resources to store.
      * @throws InventoryException if error storing the resources.
      */
-    public void storeItemResources(ItemResource resource, int number) throws InventoryException {
+    public synchronized void storeItemResources(ItemResource resource, int number) throws InventoryException {
     	if (number < 0) throw new InventoryException("Cannot store negative number of resources.");
     	double totalMass = resource.getMassPerItem() * number;
     	if (totalMass <= getRemainingGeneralCapacity()) {
@@ -567,7 +576,7 @@ public class Inventory implements Serializable {
      * @param number the number of resources to retrieve.
      * @throws InventoryException if error retrieving the resources.
      */
-    public void retrieveItemResources(ItemResource resource, int number) throws InventoryException {
+    public synchronized void retrieveItemResources(ItemResource resource, int number) throws InventoryException {
     	if (number < 0) throw new InventoryException("Cannot retrieve negative number of resources.");
     	if (hasItemResource(resource) && (number <= getItemResourceNum(resource))) {
     		int remainingNum = number;
@@ -781,7 +790,7 @@ public class Inventory implements Serializable {
      * @param unit the unit
      * @throws InventoryException if unit could not be stored.
      */
-    public void storeUnit(Unit unit) throws InventoryException {
+    public synchronized void storeUnit(Unit unit) throws InventoryException {
         if (canStoreUnit(unit)) {
         	if (containedUnits == null) {
         	    containedUnits = new ConcurrentLinkedQueue<Unit>();
@@ -828,7 +837,7 @@ public class Inventory implements Serializable {
      * @param unit the unit.
      * @throws InventoryException if unit could not be retrieved.
      */
-    public void retrieveUnit(Unit unit) throws InventoryException {
+    public synchronized void retrieveUnit(Unit unit) throws InventoryException {
     	boolean retrieved = false;
     	if (containsUnit(unit)) {
     		if (containedUnits.contains(unit)) {
