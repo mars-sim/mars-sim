@@ -270,7 +270,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public Object getValueAt(int row, int column) {
-            if (row < equipment.size()) {
+            if ((row >= 0) && (row < equipment.size())) {
                 return equipment.get(row);
             }   
             else return "unknown";
