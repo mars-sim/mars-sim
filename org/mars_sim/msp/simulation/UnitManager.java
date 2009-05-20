@@ -282,7 +282,7 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    	       Iterator<Settlement> i = getSettlements().iterator();
+    	    Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			List vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
