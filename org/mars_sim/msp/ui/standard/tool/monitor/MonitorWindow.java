@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.85 2008-06-26
+ * @version 2.86 2009-05-21
  * @author Barry Evans
  */
 
@@ -275,7 +275,8 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
     private MonitorTab getSelected() {
         MonitorTab selected = null;
         int selectedIdx = tabsSection.getSelectedIndex();
-        if (selectedIdx != -1) selected = tabs.get(selectedIdx);
+        if ((selectedIdx != -1) && (selectedIdx < tabs.size())) 
+            selected = tabs.get(selectedIdx);
         return selected;
     }
 

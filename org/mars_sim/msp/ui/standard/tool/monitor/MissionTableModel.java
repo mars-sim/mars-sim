@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 2.85 2008-07-19
+ * @version 2.86 2009-05-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.monitor;
@@ -193,7 +193,7 @@ public class MissionTableModel extends AbstractTableModel implements
 	}
 
 	public int getRowCount() {
-		return missionCache.size();
+        return missionCache.size();
 	}
 
     /**
@@ -290,8 +290,8 @@ public class MissionTableModel extends AbstractTableModel implements
     	for (int x = 0; x < missionCache.size(); x++) {
     		removeMission(missionCache.get(0));
     	}
-    	missionCache = null;
-    	Simulation.instance().getMissionManager().removeListener(this);
+        Simulation.instance().getMissionManager().removeListener(this);
+    	//missionCache = null;
     }
     
     /**
@@ -308,7 +308,8 @@ public class MissionTableModel extends AbstractTableModel implements
     	}
     	
     	public void run() {
-    		fireTableCellUpdated(row, column);
+            if ((row < getRowCount()) && (column < getColumnCount()))
+                fireTableCellUpdated(row, column);
     	}
     }
     
@@ -321,7 +322,7 @@ public class MissionTableModel extends AbstractTableModel implements
     	}
     	
     	public void run() {
-    		fireTableRowsDeleted(row, row);
+            if (row < getRowCount()) fireTableRowsDeleted(row, row);
     	}
     }
 }
