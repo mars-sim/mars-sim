@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 2.86 2009-05-14
+ * @version 2.86 2009-05-23
  * @author Scott Davis
  */
 
@@ -179,6 +179,7 @@ class ExplorationSitesPanel extends WizardPanel {
         JPanel mineralLegendPane = new JPanel(new BorderLayout(0, 0));
         bottomPane.add(mineralLegendPane);
         
+        // Create mineral legend label.
         JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
         mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
         mineralLegendPane.add(mineralLegendLabel, BorderLayout.NORTH);

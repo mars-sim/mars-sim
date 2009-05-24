@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 2.86 2009-03-21
+ * @version 2.86 2009-05-23
  * @author Scott Davis
  */
 
@@ -18,13 +18,17 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.IntPoint;
@@ -65,6 +69,7 @@ public class MiningSitePanel extends WizardPanel {
 	private UnitLabelMapLayer unitLabelLayer;
 	private EllipseLayer ellipseLayer;
 	private ExploredSiteMapLayer exploredSiteLayer;
+    private MineralMapLayer mineralLayer;
 	private JLabel longitudeLabel;
 	private JLabel latitudeLabel;
 	private JLabel errorMessageLabel;
@@ -90,12 +95,16 @@ public class MiningSitePanel extends WizardPanel {
 		titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
 		add(titleLabel, BorderLayout.NORTH);
 		
-		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-		add(centerPanel, BorderLayout.CENTER);
+        JPanel leftPanel = new JPanel(new BorderLayout(0, 0));
+        add(leftPanel, BorderLayout.CENTER);
+        
+		JPanel centerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		leftPanel.add(centerPanel, BorderLayout.CENTER);
 		
 		// Create the map panel.
 		mapPane = new MapPanel();
-        mapPane.addMapLayer(new MineralMapLayer(mapPane));
+        mineralLayer = new MineralMapLayer(mapPane);
+        mapPane.addMapLayer(mineralLayer);
 		mapPane.addMapLayer(unitIconLayer = new UnitIconMapLayer(mapPane));
 		mapPane.addMapLayer(unitLabelLayer = new UnitLabelMapLayer());
 		mapPane.addMapLayer(ellipseLayer = new EllipseLayer(Color.GREEN));
@@ -110,6 +119,29 @@ public class MiningSitePanel extends WizardPanel {
 		mapPane.setMaximumSize(mapPane.getPreferredSize());
 		centerPanel.add(mapPane);
 		
+        // Create legend panel.
+        JPanel legendPane = new JPanel(new BorderLayout(0, 0));
+        leftPanel.add(legendPane, BorderLayout.SOUTH);
+        
+        // Create mineral legend label.
+        JLabel mineralLegendLabel = new JLabel("Mineral Legend", JLabel.CENTER);
+        mineralLegendLabel.setFont(mineralLegendLabel.getFont().deriveFont(Font.BOLD));
+        legendPane.add(mineralLegendLabel, BorderLayout.NORTH);
+        
+        // Create mineral legend scroll panel.
+        JScrollPane mineralLegendScrollPane = new JScrollPane();
+        legendPane.add(mineralLegendScrollPane, BorderLayout.CENTER);
+        
+        // Create mineral legend table model.
+        MineralTableModel mineralTableModel = new MineralTableModel();
+        
+        // Create mineral legend table.
+        JTable mineralLegendTable = new JTable(mineralTableModel);
+        mineralLegendTable.setPreferredScrollableViewportSize(new Dimension(300, 50));
+        mineralLegendTable.setCellSelectionEnabled(false);
+        mineralLegendTable.setDefaultRenderer(Color.class, new ColorTableCellRenderer());
+        mineralLegendScrollPane.setViewportView(mineralLegendTable);
+        
 		// Create selected site panel.
 		JPanel selectedSitePane = new JPanel();
 		selectedSitePane.setBorder(new MarsPanelBorder());
@@ -321,4 +353,73 @@ public class MiningSitePanel extends WizardPanel {
 			if (closestSite != null) selectMiningSite(closestSite);
 		}
 	}
+    
+    /** 
+     * Internal class used as model for the mineral table.
+     */
+    private class MineralTableModel extends AbstractTableModel {
+        
+        private java.util.Map<String, Color> mineralColors = null;
+        private List<String> mineralNames = null;
+        
+        private MineralTableModel() {
+            mineralColors = mineralLayer.getMineralColors();
+            mineralNames = new ArrayList<String>(mineralColors.keySet());
+        }
+        
+        public int getRowCount() {
+            return mineralNames.size();
+        }
+        
+        public int getColumnCount() {
+            return 2;
+        }
+        
+        public Class<?> getColumnClass(int columnIndex) {
+            Class dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 0) dataType = String.class;
+            if (columnIndex == 1) dataType = Color.class;
+            return dataType;
+        }
+        
+        public String getColumnName(int columnIndex) {
+            if (columnIndex == 0) return "Mineral";
+            else if (columnIndex == 1) return "Color";
+            else return "unknown";
+        }
+        
+        public Object getValueAt(int row, int column) {
+            if (row < getRowCount()) {
+                String mineralName = mineralNames.get(row);
+                if (column == 0) {
+                    return mineralName;
+                }
+                else if (column == 1) {
+                    return mineralColors.get(mineralName);
+                }
+                else return "unknown";
+            }
+            else return "unknown";
+        }
+    }
+    
+    /**
+     * Internal class used to render color cells in the mineral table.
+     */
+    private class ColorTableCellRenderer implements TableCellRenderer {
+
+        public Component getTableCellRendererComponent(JTable table, Object value, 
+                boolean isSelected, boolean hasFocus, int row, int column) {
+        
+            if ((value != null) && (value instanceof Color)) {
+                Color color = (Color) value;
+                JPanel colorPanel = new JPanel();
+                colorPanel.setOpaque(true);
+                colorPanel.setBackground(color);
+                return colorPanel;
+            }
+            else return null;
+            
+        }
+    }
 }
