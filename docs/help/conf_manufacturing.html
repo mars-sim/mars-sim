@@ -13,14 +13,16 @@
 <P>A "malfunction" element has the following attributes: "name", "tech", "skill", "work-time", and "process-time".  The 
   "name" attribute has to be a unique name for the process.  The "tech" attribute is the minimum manufacturing building tech 
   level required for the process.  The "skill" attribute is the minimum materials science skill required for a settler to
-  start or work on the process.  The "work-time" attribute is the total amount of effective work time (millisols) (See <A HREF="conf_time.html">Time</A>) required to complete the process.  The "process-time" attribute is the total
+  start or work on the process.  The "work-time" attribute is the total amount of effective work time (millisols) 
+  (See <A HREF="conf_time.html">Time</A>) required to complete the process.  The "process-time" attribute is the total
   amount of time (millisols) (See <A HREF="conf_time.html">Time</A>) required for the process to be completed.</P>
 <P>The "malfunction" element has the following child elements:</P>
 <UL>
   <LI><B>inputs:</B> This is a list of input materials required for the process.  The inputs element is required, but there
     can be zero to many child elements of the following types:
     <UL>
-      <LI><B>resource:</B> The resource element has a "name" attribute for a supported type of resource (See <A HREF="conf_resources.html">resources.xml</A>).  The "amount" attribute is a decimal value of the amount of the 
+      <LI><B>resource:</B> The resource element has a "name" attribute for a supported type of resource 
+      (See <A HREF="conf_resources.html">resources.xml</A>).  The "amount" attribute is a decimal value of the amount of the 
         resource (kilograms) needed.</LI>
       <LI><B>part:</B> The part element has a "name" attribute that must match up to a part listed in the conf/parts.xml file 
         (See <A HREF="conf_parts.html">parts.xml</A>).  The "number" attribute is the number of parts required.</LI>
@@ -29,12 +31,13 @@
   <LI><B>outputs:</B> This is a list of output materials produced by the process.  The outputs element is required, but there
     can be zero to many child elements of the following types:
     <UL>
-      <LI><B>resource:</B> The resource element has a "name" attribute for a supported type of resource (See <A HREF="conf_resources.html">resources.xml</A>).  The "amount" attribute is a decimal value of the amount of the 
+      <LI><B>resource:</B> The resource element has a "name" attribute for a supported type of resource 
+      (See <A HREF="conf_resources.html">resources.xml</A>).  The "amount" attribute is a decimal value of the amount of the 
         resource (kilograms) produced.</LI>
       <LI><B>part:</B> The part element has a "name" attribute that must match up to a part listed in the conf/parts.xml file 
         (See <A HREF="conf_parts.html">parts.xml</A>).  The "number" attribute is the number of parts produced.</LI>
       <LI><B>equipment:</B> The equipment element has a "name" attribute that must match up to a supported type of equipment
-        in the simulation (as of version 2.85, currently supported equipment are: "bag", "gas canister", "barrel", 
+        in the simulation (as of version 2.86, currently supported equipment are: "bag", "gas canister", "barrel", 
         "specimen container", and "eva suit".  The "number" attribute is the number of equipment produced.</LI>
       <LI><B>vehicle:</B> The vehicle element has a "name" attribute that must match up to a vehicle type listed in the 
         conf/vehicles.xml file (See <A HREF="conf_vehicles.html">vehicles.xml</A>).  The "number" attribute is the number 
