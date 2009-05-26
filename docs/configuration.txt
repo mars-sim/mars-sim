@@ -11,6 +11,9 @@ The following files can be edited:
 
 buildings.xml:    Modify or create new buildings based on functional 
                   components.
+                  
+construction.xml: Modify or create new construction sites for constructing
+                  settlement buildings.
                
 crops.xml:        Modify or add new crops that settlers can grow in 
                   greenhouses.
@@ -25,6 +28,9 @@ manufacturing.xml: Modify or create new manufacturing processes.
 medical.xml:      Modify or create new illnesses or treatments.
 
 minerals.xml:     Modify or create new mineral types.
+
+part_packages.xml: Modify or create new part packages that can be used for
+                  initial settlements or resupplies from Earth.
 
 parts.xml:        Modify or create new parts.
 
