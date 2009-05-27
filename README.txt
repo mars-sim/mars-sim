@@ -1,5 +1,5 @@
 ** Mars Simulation Project **
-Copyright (C) 2008 Scott Davis
+Copyright (C) 2009 Scott Davis
 http://mars-sim.sourceforge.net/
 
 ---------------------------------------------------------------------
