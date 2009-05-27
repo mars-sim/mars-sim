@@ -15,9 +15,9 @@ import java.util.Map;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.Phase;
-import org.mars_sim.msp.simulation.structure.MockSettlement;
-import org.mars_sim.msp.simulation.structure.Settlement;
-import org.mars_sim.msp.simulation.structure.building.Building;
+//import org.mars_sim.msp.simulation.structure.MockSettlement;
+//import org.mars_sim.msp.simulation.structure.Settlement;
+//import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.vehicle.LightUtilityVehicle;
 
 import junit.framework.TestCase;
