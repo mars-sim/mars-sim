@@ -63,6 +63,7 @@ public class MalfunctionConfig implements Serializable {
 	 * @return list of malfunctions
 	 * @throws Exception when malfunctions can not be resolved.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<Malfunction> getMalfunctionList() throws Exception {
 		
 		if (malfunctionList == null) {

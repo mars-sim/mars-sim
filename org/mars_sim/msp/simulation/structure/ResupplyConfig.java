@@ -64,6 +64,7 @@ public class ResupplyConfig implements Serializable {
 	 * @param partPackageConfig th epart package configuration.
 	 * @throws Exception if error parsing XML.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadResupplyTemplates(Document resupplyDoc, PartPackageConfig partPackageConfig) 
 			throws Exception {
 		

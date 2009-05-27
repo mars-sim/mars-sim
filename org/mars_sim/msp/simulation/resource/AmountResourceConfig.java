@@ -40,6 +40,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @param amountResourceDoc the configuration XML document.
 	 * @throws Exception if error loading amount resources.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadAmountResources(Document amountResourceDoc) throws Exception {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);

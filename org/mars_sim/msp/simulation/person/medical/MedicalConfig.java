@@ -57,6 +57,7 @@ public class MedicalConfig implements Serializable {
 	 * @return list of complaints
 	 * @throws Exception if list could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<Complaint> getComplaintList() throws Exception {
 		
 		if (complaintList == null) {
@@ -143,10 +144,11 @@ public class MedicalConfig implements Serializable {
 				
 				if (!degradeComplaintName.equals("")) {
 					Iterator<Complaint> j = complaintList.iterator();
-					for (Complaint degradeComplaint : complaintList) {
-						if (degradeComplaint.getName().equals(degradeComplaintName))
-							complaint.setNextComplaint(degradeComplaint);
-					}
+                    while (j.hasNext()) {
+                        Complaint degradeComplaint = j.next();
+                        if (degradeComplaint.getName().equals(degradeComplaintName))
+                            complaint.setNextComplaint(degradeComplaint);
+                    }
 					
 					if (complaint.getNextPhase() == null){ 
 						throw new Exception("Degrade complaint " + degradeComplaintName + 
@@ -159,6 +161,7 @@ public class MedicalConfig implements Serializable {
 		return complaintList;
 	}
 
+    @SuppressWarnings("unchecked")
 	public List<Treatment> getTreatmentList() throws Exception {
 		
 		if (treatmentList == null) {

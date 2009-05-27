@@ -22,7 +22,6 @@ import org.mars_sim.msp.simulation.structure.building.function.SolarPowerSource;
 import org.mars_sim.msp.simulation.structure.building.function.SolarThermalPowerSource;
 import org.mars_sim.msp.simulation.structure.building.function.StandardPowerSource;
 import org.mars_sim.msp.simulation.structure.building.function.WindPowerSource;
-import org.w3c.dom.NodeList;
 
 
 /**
@@ -107,6 +106,7 @@ public class BuildingConfig implements Serializable {
 	 * @return building element
 	 * @throws Exception if building name could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	private Element getBuildingElement(String buildingName) throws Exception {
 		Element result = null;
 		
@@ -246,6 +246,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of research specialities as strings.
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<String> getResearchSpecialities(String buildingName) throws Exception {
 		List<String> result = new ArrayList<String>();
 		Element buildingElement = getBuildingElement(buildingName);
@@ -336,6 +337,7 @@ public class BuildingConfig implements Serializable {
 	 * @return a list of resource processes.
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<ResourceProcess> getResourceProcesses(String buildingName) throws Exception {
 		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
 		Element buildingElement = getBuildingElement(buildingName);
@@ -397,6 +399,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of storage capacities
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getStorageCapacities(String buildingName) throws Exception {
 		Map<AmountResource, Double> capacities = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
@@ -419,6 +422,7 @@ public class BuildingConfig implements Serializable {
 	 * @return map of initial resources
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public Map<AmountResource, Double> getInitialStorage(String buildingName) throws Exception {
 		Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
@@ -450,6 +454,7 @@ public class BuildingConfig implements Serializable {
 	 * @return list of power sources
 	 * @throws Exception if building name can not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<PowerSource> getPowerSources(String buildingName) throws Exception {
 		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingName);
@@ -683,6 +688,7 @@ public class BuildingConfig implements Serializable {
 		return Double.parseDouble(element3.getAttributeValue(param));
 	}
 	
+    @SuppressWarnings("unchecked")
 	private boolean hasElements(String buildingName, String child, String children) throws Exception {
 		Element element1 = getBuildingElement(buildingName);
 		Element element2 = element1.getChild(child);

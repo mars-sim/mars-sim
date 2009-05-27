@@ -19,7 +19,6 @@ import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.resource.Part;
 import org.mars_sim.msp.simulation.resource.PartPackageConfig;
-import org.w3c.dom.NodeList;
 
 
 /**
@@ -84,6 +83,7 @@ public class SettlementConfig implements Serializable {
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) 
 			throws Exception {
 		
@@ -187,6 +187,7 @@ public class SettlementConfig implements Serializable {
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadInitialSettlements(Document settlementDoc) throws Exception {
 		Element root = settlementDoc.getRootElement();
 		Element initialSettlementList = root.getChild(INITIAL_SETTLEMENT_LIST);
@@ -226,6 +227,7 @@ public class SettlementConfig implements Serializable {
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @throws Exception if XML error.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadSettlementNames(Document settlementDoc) throws Exception {
 		Element root = settlementDoc.getRootElement();
 		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);

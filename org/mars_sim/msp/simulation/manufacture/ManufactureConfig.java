@@ -51,6 +51,7 @@ public class ManufactureConfig implements Serializable {
 	 * @return list of manufacturing process information.
 	 * @throws Exception if error getting info.
 	 */
+    @SuppressWarnings("unchecked")
 	List<ManufactureProcessInfo> getManufactureProcessList() 
 			throws Exception {
 		

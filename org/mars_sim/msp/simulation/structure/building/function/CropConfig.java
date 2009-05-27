@@ -41,6 +41,7 @@ public class CropConfig implements Serializable {
 	 * @return list of crop types
 	 * @throws Exception when crops could not be parsed.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<CropType> getCropList() throws Exception {
 		
 		if (cropList == null) {

@@ -78,6 +78,7 @@ public class PersonConfig implements Serializable {
 	 * @return List of person names.
 	 * @throws Exception if person names could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<String> getPersonNameList() throws Exception {
 		
 		if (nameList == null) {
@@ -100,6 +101,7 @@ public class PersonConfig implements Serializable {
 	 * @return the gender of the person name ("male", "female", "unknown")
 	 * @throws Exception if person names could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	public String getPersonGender(String name) throws Exception {
 		String result = "unknown";
 		
@@ -246,6 +248,7 @@ public class PersonConfig implements Serializable {
 	 * @return percentage
 	 * @throws Exception if personality type could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	public double getPersonalityTypePercentage(String personalityType) throws Exception {
 		double result = 0D;
 		
@@ -333,6 +336,7 @@ public class PersonConfig implements Serializable {
 	 * @return map of natural attributes (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
+    @SuppressWarnings("unchecked")
 	public Map<String, Integer> getNaturalAttributeMap(int index) throws Exception {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
@@ -341,7 +345,7 @@ public class PersonConfig implements Serializable {
 		List<Element> naturalAttributeListNodes = personElement.getChildren(NATURAL_ATTRIBUTE_LIST);
 		
 		if ((naturalAttributeListNodes != null) && (naturalAttributeListNodes.size() > 0)) {
-			Element naturalAttributeList = (Element) naturalAttributeListNodes.get(0);
+			Element naturalAttributeList = naturalAttributeListNodes.get(0);
 			int attributeNum = naturalAttributeList.getChildren(NATURAL_ATTRIBUTE).size();
 			
 			for (int x=0; x < attributeNum; x++) {
@@ -374,6 +378,7 @@ public class PersonConfig implements Serializable {
 	 * @return map of skills (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
+    @SuppressWarnings("unchecked")
 	public Map<String, Integer> getSkillMap(int index) throws Exception {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
@@ -381,7 +386,7 @@ public class PersonConfig implements Serializable {
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> skillListNodes = personElement.getChildren(SKILL_LIST);
 		if ((skillListNodes != null) && (skillListNodes.size() > 0)) {
-			Element skillList = (Element) skillListNodes.get(0);
+			Element skillList = skillListNodes.get(0);
 			int skillNum = skillList.getChildren(SKILL).size();
 			for (int x=0; x < skillNum; x++) {
 				Element skillElement = (Element) skillList.getChildren(SKILL).get(x);
@@ -400,6 +405,7 @@ public class PersonConfig implements Serializable {
 	 * (empty map if not found).
 	 * @throws Exception if error in XML parsing.
 	 */
+    @SuppressWarnings("unchecked")
 	public Map<String, Integer> getRelationshipMap(int index) throws Exception {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
@@ -407,7 +413,7 @@ public class PersonConfig implements Serializable {
 		Element personElement = (Element) personList.getChildren(PERSON).get(index);
 		List<Element> relationshipListNodes = personElement.getChildren(RELATIONSHIP_LIST);
 		if ((relationshipListNodes != null) && (relationshipListNodes.size() > 0)) {
-			Element relationshipList = (Element) relationshipListNodes.get(0);
+			Element relationshipList = relationshipListNodes.get(0);
 			int relationshipNum = relationshipList.getChildren(RELATIONSHIP).size();
 			for (int x=0; x < relationshipNum; x++) {
 				Element relationshipElement = (Element) relationshipList.getChildren(RELATIONSHIP).get(x);

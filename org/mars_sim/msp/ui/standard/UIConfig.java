@@ -333,6 +333,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return true if displayed.
      */
+    @SuppressWarnings("unchecked")
     public boolean isInternalWindowDisplayed(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -362,6 +363,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return location.
      */
+    @SuppressWarnings("unchecked")
     public Point getInternalWindowLocation(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -392,6 +394,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return z order (lower number represents higher up)
      */
+    @SuppressWarnings("unchecked")
     public int getInternalWindowZOrder(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -419,6 +422,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return size.
      */
+    @SuppressWarnings("unchecked")
     public Dimension getInternalWindowDimension(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -449,6 +453,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return "unit" or "tool".
      */
+    @SuppressWarnings("unchecked")
     public String getInternalWindowType(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -476,6 +481,7 @@ public class UIConfig {
      * @param windowName the window name.
      * @return true if configured.
      */
+    @SuppressWarnings("unchecked")
     public boolean isInternalWindowConfigured(String windowName) {
         try {
             Element root = configDoc.getRootElement();
@@ -502,6 +508,7 @@ public class UIConfig {
      * 
      * @return list of window names.
      */
+    @SuppressWarnings("unchecked")
     public List<String> getInternalWindowNames() {
         List<String> result = new ArrayList<String>();
         try {

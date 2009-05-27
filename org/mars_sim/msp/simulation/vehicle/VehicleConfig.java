@@ -16,7 +16,6 @@ import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.simulation.resource.Part;
-import org.w3c.dom.NodeList;
 
 
 
@@ -66,6 +65,7 @@ public class VehicleConfig implements Serializable {
 	 * @return set of vehicle types as strings.
 	 * @throws Exception if error retrieving vehicle types.
 	 */
+    @SuppressWarnings("unchecked")
 	public Set<String> getVehicleTypes() throws Exception {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
@@ -82,6 +82,7 @@ public class VehicleConfig implements Serializable {
 	 * @return vehicle element
 	 * @throws Exception if vehicle type could not be found.
 	 */
+    @SuppressWarnings("unchecked")
 	private Element getVehicleElement(String vehicleType) throws Exception {
 		Element result = null;
 		
@@ -167,6 +168,7 @@ public class VehicleConfig implements Serializable {
 	 * @return vehicle capacity for resource
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public double getCargoCapacity(String vehicleType, String resource) throws Exception {
 		
 		double resourceCapacity = 0D;
@@ -188,6 +190,7 @@ public class VehicleConfig implements Serializable {
 	 * @return true if sickbay
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public boolean hasSickbay(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> sickbayNodes = vehicleElement.getChildren(SICKBAY);
@@ -235,6 +238,7 @@ public class VehicleConfig implements Serializable {
 	 * @return true if lab
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public boolean hasLab(String vehicleType) throws Exception {	
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> labNodes = vehicleElement.getChildren(LAB);
@@ -266,6 +270,7 @@ public class VehicleConfig implements Serializable {
 	 * @return list of lab tech speciality strings.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<String> getLabTechSpecialities(String vehicleType) throws Exception {
 		List<String> specialities = new ArrayList<String>();
 		
@@ -290,6 +295,7 @@ public class VehicleConfig implements Serializable {
 	 * @return true if can attach parts.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public boolean hasPartAttachments(String vehicleType) throws Exception {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> partAttachmentNodes = vehicleElement.getChildren(PART_ATTACHMENT);
@@ -320,6 +326,7 @@ public class VehicleConfig implements Serializable {
 	 * @return collection of parts that are attachable.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public Collection<Part> getAttachableParts(String vehicleType) throws Exception {
 		Collection<Part> result = new ArrayList<Part>();
 		
@@ -346,6 +353,7 @@ public class VehicleConfig implements Serializable {
 	 * @return list of rover names as strings.
 	 * @throws Exception if XML parsing error.
 	 */
+    @SuppressWarnings("unchecked")
 	public List<String> getRoverNameList() throws Exception {
 		
 		if (roverNames == null) {

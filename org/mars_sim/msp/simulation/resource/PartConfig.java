@@ -42,6 +42,7 @@ public final class PartConfig implements Serializable {
 	 * @param itemResourceDoc the configuration XML document.
 	 * @throws Exception if error loading item resources.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadItemResources(Document itemResourceDoc) throws Exception {
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);

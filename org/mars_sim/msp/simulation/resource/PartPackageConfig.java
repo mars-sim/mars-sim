@@ -48,6 +48,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document.
 	 */
+    @SuppressWarnings("unchecked")
 	private void loadPartPackages(Document partPackageDoc) throws Exception {
 		
 		Element root = partPackageDoc.getRootElement();
