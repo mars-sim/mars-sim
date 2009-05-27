@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.86 2009-05-13
+ * @version 2.86 2009-05-26
  * @author Scott Davis
  */
 
@@ -36,35 +36,11 @@ public class TaskManager implements Serializable {
     private Mind mind; // The mind of the person the task manager is responsible for.
 
     // Array of available tasks
-    private Class[] availableTasks = { Relax.class, 
-    		                           Yoga.class,
-    		                           TendGreenhouse.class,
-                                       Maintenance.class, 
-                                       MaintainGroundVehicleGarage.class,
-                                       MaintainGroundVehicleEVA.class,
-                                       Sleep.class, EatMeal.class,
-                                       MedicalAssistance.class,
-                                       ResearchAreology.class,
-                                       RepairMalfunction.class,
-                                       RepairEVAMalfunction.class,
-                                       EnterAirlock.class,
-                                       Workout.class,
-                                       ResearchBotany.class,
-                                       ResearchMedicine.class,
-                                       Teach.class, CookMeal.class,
-                                       MaintenanceEVA.class,
-                                       LoadVehicle.class, UnloadVehicle.class,
-                                       ToggleResourceProcess.class,
-                                       ResearchMaterialsScience.class,
-                                       ManufactureGood.class, 
-                                       ResearchConstruction.class,
-                                       ToggleFuelPowerSource.class, 
-                                       DigLocalRegolith.class, 
-                                       PrescribeMedication.class };
+    private Class<? extends Task>[] availableTasks = null;
     
     // Cache variables.
     private MarsClock timeCache;
-    private Map<Class, Double> taskProbCache;
+    private Map<Class<? extends Task>, Double> taskProbCache;
     private double totalProbCache;
     
     /** 
@@ -76,9 +52,40 @@ public class TaskManager implements Serializable {
         this.mind = mind;
         currentTask = null;
         
+        // Initialize available tasks.
+        availableTasks = (Class<? extends Task>[]) new Class[28];
+        availableTasks[0] = Relax.class;
+        availableTasks[1] = Yoga.class;
+        availableTasks[2] = TendGreenhouse.class;
+        availableTasks[3] = Maintenance.class;
+        availableTasks[4] = MaintainGroundVehicleGarage.class;
+        availableTasks[5] = MaintainGroundVehicleEVA.class;
+        availableTasks[6] = Sleep.class;
+        availableTasks[7] = EatMeal.class;
+        availableTasks[8] = MedicalAssistance.class;
+        availableTasks[9] = ResearchAreology.class;
+        availableTasks[10] = RepairMalfunction.class;
+        availableTasks[11] = RepairEVAMalfunction.class;
+        availableTasks[12] = EnterAirlock.class;
+        availableTasks[13] = Workout.class;
+        availableTasks[14] = ResearchBotany.class;
+        availableTasks[15] = ResearchMedicine.class;
+        availableTasks[16] = Teach.class;
+        availableTasks[17] = CookMeal.class;
+        availableTasks[18] = MaintenanceEVA.class;
+        availableTasks[19] = LoadVehicle.class;
+        availableTasks[20] = UnloadVehicle.class;
+        availableTasks[21] = ToggleResourceProcess.class;
+        availableTasks[22] = ResearchMaterialsScience.class;
+        availableTasks[23] = ManufactureGood.class;
+        availableTasks[24] = ResearchConstruction.class;
+        availableTasks[25] = ToggleFuelPowerSource.class;
+        availableTasks[26] = DigLocalRegolith.class;
+        availableTasks[27] = PrescribeMedication.class;
+        
         // Initialize cache values.
         timeCache = null;
-        taskProbCache = new HashMap<Class, Double>(availableTasks.length);
+        taskProbCache = new HashMap<Class<? extends Task>, Double>(availableTasks.length);
         totalProbCache = 0D;
     }
 
@@ -209,10 +216,10 @@ public class TaskManager implements Serializable {
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
-        Class selectedTask = null;
-        Iterator i = taskProbCache.keySet().iterator();
+        Class<? extends Task> selectedTask = null;
+        Iterator<Class<? extends Task>> i = taskProbCache.keySet().iterator();
         while (i.hasNext()) {
-        	Class task = (Class) i.next();
+        	Class<? extends Task> task = i.next();
         	double probWeight = ((Double) taskProbCache.get(task)).doubleValue();
         	if (selectedTask == null) {
         		if (r < probWeight) selectedTask = task;
@@ -225,7 +232,7 @@ public class TaskManager implements Serializable {
     	Object[] parametersForInvokingMethod = { mind.getPerson() };
         
         try {
-            Constructor construct = (selectedTask.getConstructor(parametersForFindingMethod));
+            Constructor construct = selectedTask.getConstructor(parametersForFindingMethod);
             return (Task) construct.newInstance(parametersForInvokingMethod);
         }
         catch (Exception e) {
@@ -260,7 +267,7 @@ public class TaskManager implements Serializable {
     	// Determine probabilities.
     	for (int x = 0; x < availableTasks.length; x++) {
     		try {
-    			Class probabilityClass = availableTasks[x];
+    			Class<? extends Task> probabilityClass = availableTasks[x];
     			Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
     			Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
     			taskProbCache.put(probabilityClass, probability);

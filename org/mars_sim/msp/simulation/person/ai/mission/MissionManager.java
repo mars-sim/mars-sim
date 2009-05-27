@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.85 2009-01-19
+ * @version 2.86 2009-05-26
  * @author Scott Davis
  */
 
@@ -46,13 +46,11 @@ public class MissionManager implements Serializable {
     // Cache variables.
     private Person personCache;
     private MarsClock timeCache;
-    private Map<Class, Double> missionProbCache;
+    private Map<Class<? extends Mission>, Double> missionProbCache;
     private double totalProbCache;
 
     // Array of potential new missions
-    Class[] potentialMissions = { TravelToSettlement.class, Exploration.class,
-    		CollectIce.class, RescueSalvageVehicle.class, Trade.class, 
-    		CollectRegolith.class, Mining.class, BuildingConstructionMission.class };
+    private Class<? extends Mission>[] potentialMissions = null;
     
     /** 
      * Constructor
@@ -62,10 +60,21 @@ public class MissionManager implements Serializable {
         missions = new ArrayList<Mission>();
         listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
         
+        // Initialize potential missions.
+        potentialMissions = (Class<? extends Mission>[]) new Class[8];
+        potentialMissions[0] = TravelToSettlement.class;
+        potentialMissions[1] = Exploration.class;
+        potentialMissions[2] = CollectIce.class;
+        potentialMissions[3] = RescueSalvageVehicle.class;
+        potentialMissions[4] = Trade.class;
+        potentialMissions[5] = CollectRegolith.class;
+        potentialMissions[6] = Mining.class;
+        potentialMissions[7] = BuildingConstructionMission.class;
+        
         // Initialize cache values.
         personCache = null;
         timeCache = null;
-        missionProbCache = new HashMap<Class, Double>(potentialMissions.length);
+        missionProbCache = new HashMap<Class<? extends Mission>, Double>(potentialMissions.length);
         totalProbCache = 0D;
     }
     
@@ -199,10 +208,10 @@ public class MissionManager implements Serializable {
         double r = RandomUtil.getRandomDouble(getTotalMissionProbability(person));
 
         // Determine which mission is selected.
-        Class selectedMission = null;
-        Iterator i = missionProbCache.keySet().iterator();
+        Class<? extends Mission> selectedMission = null;
+        Iterator<Class<? extends Mission>> i = missionProbCache.keySet().iterator();
         while (i.hasNext()) {
-        	Class mission = (Class) i.next();
+        	Class<? extends Mission> mission = i.next();
         	double probWeight = ((Double) missionProbCache.get(mission)).doubleValue();
         	if (selectedMission == null) {
         		if (r < probWeight) selectedMission = mission;
@@ -308,7 +317,7 @@ public class MissionManager implements Serializable {
     	// Determine probabilities.
         for (int x=0; x < potentialMissions.length; x++) {
             try {
-            	Class probabilityClass = potentialMissions[x];
+            	Class<? extends Mission> probabilityClass = potentialMissions[x];
                 Method probabilityMethod = probabilityClass.getMethod("getNewMissionProbability", parametersForFindingMethod);
                 Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
                 missionProbCache.put(probabilityClass, probability);
