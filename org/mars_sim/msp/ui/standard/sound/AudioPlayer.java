@@ -164,6 +164,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
                 currentClip.start();
             }
         } catch (Exception e) {
+            e.printStackTrace(System.err);
             logger.log(Level.SEVERE, "Issues when playing WAV sound", e);
         }
 
@@ -218,6 +219,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
                 }
 
             } catch (Exception e) {
+                e.printStackTrace(System.err);
                 logger.log(Level.SEVERE, "Issues when playing compressed sound", e);
             } finally {
                 if (din != null) {
