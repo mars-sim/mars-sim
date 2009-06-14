@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.85 2008-07-07
+ * @version 2.87 2009-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -32,13 +32,12 @@ import org.mars_sim.msp.simulation.time.MasterClock;
  */
 public class Simulation implements ClockListener, Serializable {
     
-    	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.Simulation";
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.Simulation";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Version string.
-	public final static String VERSION = "2.86";
+	public final static String VERSION = "2.87";
 	
 	// Default save file.
 	public final static String DEFAULT_FILE = "default.sim";
