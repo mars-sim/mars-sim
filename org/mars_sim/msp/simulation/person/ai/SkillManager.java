@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.85 2008-08-23
+ * @version 2.87 2009-06-12
  * @author Scott Davis
  */
 
@@ -31,7 +31,9 @@ public class SkillManager implements Serializable {
         String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
                                     Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, 
                                     Skill.COOKING, Skill.TRADING, Skill.MATERIALS_SCIENCE, 
-                                    Skill.CONSTRUCTION };
+                                    Skill.CONSTRUCTION, Skill.BIOLOGY, Skill.ASTRONOMY,
+                                    Skill.ASTROPHYSICS, Skill.PHYSICS, Skill.MATHEMATICS,
+                                    Skill.METEOROLOGY };
 
         for (int x = 0; x < startingSkills.length; x++) {
             int skillLevel = getInitialSkillLevel(0, 50);
