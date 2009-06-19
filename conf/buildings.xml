@@ -76,7 +76,7 @@
 				<research-speciality name="Construction" />
 				<research-speciality name="Biology" />
 				<research-speciality name="Astronomy" />
-				<research-speciality name="Astrophysics" />
+				<research-speciality name="Chemistry" />
 				<research-speciality name="Physics" />
 				<research-speciality name="Mathematics" />
 				<research-speciality name="Meteorology" />
@@ -393,7 +393,7 @@
 				<research-speciality name="Construction" />
 				<research-speciality name="Biology" />
 				<research-speciality name="Astronomy" />
-				<research-speciality name="Astrophysics" />
+				<research-speciality name="Chemistry" />
 				<research-speciality name="Physics" />
 				<research-speciality name="Mathematics" />
 				<research-speciality name="Meteorology" />
