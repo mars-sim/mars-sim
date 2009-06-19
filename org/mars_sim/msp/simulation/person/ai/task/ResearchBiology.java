@@ -11,10 +11,16 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
@@ -28,6 +34,9 @@ public class ResearchBiology extends ResearchScience implements Serializable {
     
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
+    // Does the researcher have a rock sample to study?
+    private boolean hasRockSample;
+    
     /** 
      * Constructor
      * This is an effort driven task.
@@ -36,6 +45,20 @@ public class ResearchBiology extends ResearchScience implements Serializable {
      */
     public ResearchBiology(Person person) throws Exception {
         super(Skill.BIOLOGY, person);
+        
+        // Check if researcher has a rock sample to study.
+        Unit container = person.getContainerUnit();
+        if (container != null) {
+            AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+            Inventory inv = container.getInventory();
+            double totalRockSampleMass = inv.getAmountResourceStored(rockSamples);
+            if (totalRockSampleMass > 0D) {
+                hasRockSample = true;
+                double rockSampleMass = RandomUtil.getRandomDouble(ExploreSite.AVERAGE_ROCK_SAMPLE_MASS * 2D);
+                if (rockSampleMass > totalRockSampleMass) rockSampleMass = totalRockSampleMass;
+                inv.retrieveAmountResource(rockSamples, rockSampleMass);
+            }
+        }
     }
     
     /** 
@@ -66,6 +89,18 @@ public class ResearchBiology extends ResearchScience implements Serializable {
                     }
                 }
             }
+            
+            // Check if rock samples are available.
+            Unit container = person.getContainerUnit();
+            if (container != null) {
+                Inventory inv = container.getInventory();
+                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                if (inv.getAmountResourceStored(rockSamples) > 0D) result *= 10D;
+            }
+            
+            // Check if on exploration mission.
+            Mission mission = person.getMind().getMission();
+            if ((mission != null) && (mission instanceof Exploration)) result *= 10D;
         }
         catch (Exception e) {
             e.printStackTrace(System.err);
@@ -79,5 +114,20 @@ public class ResearchBiology extends ResearchScience implements Serializable {
         if (job != null) result *= job.getStartTaskProbabilityModifier(ResearchBiology.class);       
 
         return result;
+    }
+    
+    @Override
+    protected double researchingPhase(double time) throws Exception {
+        
+        double remainingTime = super.researchingPhase(time);
+        
+        // Study rock samples if they are available.
+        // Rock sample study double experience and increase chance of 
+        // mineral concentration estimation improvement.
+        if (hasRockSample) {
+            addExperience(time);
+        }
+        
+        return remainingTime;
     }
 }

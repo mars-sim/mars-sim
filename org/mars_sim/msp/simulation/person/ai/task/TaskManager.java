@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.87 2009-06-13
+ * @version 2.87 2009-06-18
  * @author Scott Davis
  */
 
@@ -84,7 +84,7 @@ public class TaskManager implements Serializable {
         availableTasks[27] = PrescribeMedication.class;
         availableTasks[28] = ResearchBiology.class;
         availableTasks[29] = ResearchAstronomy.class;
-        availableTasks[30] = ResearchAstrophysics.class;
+        availableTasks[30] = ResearchChemistry.class;
         availableTasks[31] = ResearchPhysics.class;
         availableTasks[32] = ResearchMathematics.class;
         availableTasks[33] = ResearchMeteorology.class;

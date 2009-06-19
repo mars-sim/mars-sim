@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * ResearchAstrophysics.java
- * @version 2.87 2009-06-15
+ * ResearchChemistry.java
+ * @version 2.87 2009-06-18
  * @author Scott Davis
  */
 
@@ -19,12 +19,12 @@ import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 
-/**
- * The ResearchAstrophysics class is a task for researching astronophysics science.
+/** 
+ * The ResearchChemistry class is a task for researching chemistry science.
  */
-public class ResearchAstrophysics extends ResearchScience implements Serializable {
+public class ResearchChemistry extends ResearchScience implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ResearchAstrophysics";
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ResearchChemistry";
     
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
@@ -34,8 +34,8 @@ public class ResearchAstrophysics extends ResearchScience implements Serializabl
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public ResearchAstrophysics(Person person) throws Exception {
-        super(Skill.ASTROPHYSICS, person);
+    public ResearchChemistry(Person person) throws Exception {
+        super(Skill.CHEMISTRY, person);
     }
     
     /** 
@@ -47,7 +47,7 @@ public class ResearchAstrophysics extends ResearchScience implements Serializabl
         double result = 0D;
 
         try {
-            Lab lab = getLocalLab(person, Skill.ASTROPHYSICS);
+            Lab lab = getLocalLab(person, Skill.CHEMISTRY);
             if (lab != null) {
                 result = 25D; 
         
@@ -62,7 +62,7 @@ public class ResearchAstrophysics extends ResearchScience implements Serializabl
                         else result = 0D;       
                     }
                     catch (BuildingException e) {
-                        logger.log(Level.SEVERE,"ResearchAstrophysics.getProbability(): " + e.getMessage());
+                        logger.log(Level.SEVERE,"ResearchChemistry.getProbability(): " + e.getMessage());
                     }
                 }
             }
@@ -76,7 +76,7 @@ public class ResearchAstrophysics extends ResearchScience implements Serializabl
         
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null) result *= job.getStartTaskProbabilityModifier(ResearchAstrophysics.class);       
+        if (job != null) result *= job.getStartTaskProbabilityModifier(ResearchChemistry.class);       
 
         return result;
     }
