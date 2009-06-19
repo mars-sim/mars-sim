@@ -70,7 +70,8 @@
 		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->
 		<lab tech-level="1">
 			<!-- Science tech speciality -->
-			<tech-speciality value="Areology" />	
+			<tech-speciality value="Areology" />
+			<tech-speciality value="Biology" />
 		</lab>
 
 	</vehicle>
