@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SkillManager.java
- * @version 2.87 2009-06-12
+ * @version 2.87 2009-06-18
  * @author Scott Davis
  */
 
@@ -32,7 +32,7 @@ public class SkillManager implements Serializable {
                                     Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, 
                                     Skill.COOKING, Skill.TRADING, Skill.MATERIALS_SCIENCE, 
                                     Skill.CONSTRUCTION, Skill.BIOLOGY, Skill.ASTRONOMY,
-                                    Skill.ASTROPHYSICS, Skill.PHYSICS, Skill.MATHEMATICS,
+                                    Skill.CHEMISTRY, Skill.PHYSICS, Skill.MATHEMATICS,
                                     Skill.METEOROLOGY };
 
         for (int x = 0; x < startingSkills.length; x++) {

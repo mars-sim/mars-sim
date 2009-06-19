@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Skill.java
- * @version 2.87 2009-06-12
+ * @version 2.87 2009-06-18
  * @author Scott Davis
  */
 
@@ -27,7 +27,7 @@ public class Skill implements Serializable {
     public static final String CONSTRUCTION = "Construction";
     public static final String BIOLOGY = "Biology";
     public static final String ASTRONOMY = "Astronomy";
-    public static final String ASTROPHYSICS = "Astrophysics";
+    public static final String CHEMISTRY = "Chemistry";
     public static final String PHYSICS = "Physics";
     public static final String MATHEMATICS = "Mathematics";
     public static final String METEOROLOGY = "Meteorology";
