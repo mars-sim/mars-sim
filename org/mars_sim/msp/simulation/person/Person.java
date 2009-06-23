@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.85 2008-06-28
+ * @version 2.87 2009-06-24
  * @author Scott Davis
  */
 
@@ -78,6 +78,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
     private String gender; // The gender of the person (male or female).
+    private int age; // The age of the person.
     private Settlement associatedSettlement; // The settlement the person is currently associated with.
 
     /** 
@@ -94,6 +95,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		
 		// Initialize data members
 		this.gender = gender;
+		age = 20+RandomUtil.getRandomInt(10)+RandomUtil.getRandomInt(10); // set age to 10 + 2D10 for a bell curve
 		attributes = new NaturalAttributeManager(this);
 		mind = new Mind(this);
 		isBuried = false;
@@ -279,6 +281,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
     public Mind getMind() {
         return mind;
+    }
+
+    /** Returns the person's age
+     *  @return the person's age
+     */
+    public int getAge() {
+        return age;
     }
 
     /**

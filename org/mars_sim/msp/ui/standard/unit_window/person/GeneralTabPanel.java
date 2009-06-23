@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GeneralTabPanel.java
- * @version 2.77 2004-08-20
+ * @version 2.87 2009-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
@@ -38,7 +38,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(2, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(3, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -59,6 +59,15 @@ public class GeneralTabPanel extends TabPanel {
 		String personality = person.getMind().getPersonalityType().getTypeString();
 		JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
 		infoPanel.add(personalityLabel);
+
+		// Prepare age name label
+		JLabel ageNameLabel = new JLabel("Age", JLabel.LEFT);
+		infoPanel.add(ageNameLabel);
+		
+		// Prepare age label
+		String age = Integer.toString(person.getAge());
+		JLabel ageLabel = new JLabel(age, JLabel.RIGHT);
+		infoPanel.add(ageLabel);
 	}
 
 	/**

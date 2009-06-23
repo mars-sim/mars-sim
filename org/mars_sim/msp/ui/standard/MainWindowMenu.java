@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.83 2008-02-29
+ * @version 2.87 2009-06-08
  * @author Scott Davis
  */
 
@@ -27,12 +27,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
     // Data members
     private MainWindow mainWindow;                // The main window frame
+    private JMenuItem newItem;                    // New menu item
     private JMenuItem loadItem;                   // Load menu item
+    private JMenuItem prefsItem;                  // Preferences menu item
     private JMenuItem saveItem;                   // Save menu item
     private JMenuItem saveAsItem;                 // Save As menu item
     private JMenuItem exitItem;                   // Exit menu item
-    private JMenuItem newItem;                    // New menu item
-    private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
+   private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
@@ -69,6 +70,13 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         loadItem.addActionListener(this);
         loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(loadItem);
+
+        fileMenu.add(new JSeparator());
+        // Create load menu item
+        prefsItem = new JMenuItem("Preferences...");
+        prefsItem.addActionListener(this);
+        prefsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK, false));
+        fileMenu.add(prefsItem);
 
         fileMenu.add(new JSeparator());
 
