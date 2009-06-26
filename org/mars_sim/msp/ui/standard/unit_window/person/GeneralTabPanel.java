@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GeneralTabPanel.java
- * @version 2.87 2009-06-24
+ * @version 2.87 2009-06-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
@@ -38,7 +38,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(3, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -50,15 +50,15 @@ public class GeneralTabPanel extends TabPanel {
 		String gender = person.getGender().substring(0, 1).toUpperCase() + person.getGender().substring(1);
 		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
 		infoPanel.add(genderLabel);
+
+		// Prepare birthdate name label
+		JLabel birthNameLabel = new JLabel("Birth Date", JLabel.LEFT);
+		infoPanel.add(birthNameLabel);
 		
-		// Prepare personality name label
-		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
-		infoPanel.add(personalityNameLabel);
-		
-		// Prepare personality label
-		String personality = person.getMind().getPersonalityType().getTypeString();
-		JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
-		infoPanel.add(personalityLabel);
+		// Prepare birthdate label
+		String birthdate = person.getBirthDate();
+		JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
+		infoPanel.add(birthDateLabel);
 
 		// Prepare age name label
 		JLabel ageNameLabel = new JLabel("Age", JLabel.LEFT);
@@ -68,6 +68,15 @@ public class GeneralTabPanel extends TabPanel {
 		String age = Integer.toString(person.getAge());
 		JLabel ageLabel = new JLabel(age, JLabel.RIGHT);
 		infoPanel.add(ageLabel);
+		
+		// Prepare personality name label
+		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
+		infoPanel.add(personalityNameLabel);
+		
+		// Prepare personality label
+		String personality = person.getMind().getPersonalityType().getTypeString();
+		JLabel personalityLabel = new JLabel(personality, JLabel.RIGHT);
+		infoPanel.add(personalityLabel);
 	}
 
 	/**

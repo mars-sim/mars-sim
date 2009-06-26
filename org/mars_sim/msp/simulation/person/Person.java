@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.87 2009-06-26
+ * @version 2.87 2009-06-27
  * @author Scott Davis
  */
 
@@ -311,6 +311,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	long personTimeinMillis = birthTimeStamp.getTimeInMillis();
 	int age = (int)((simTimeinMillis - personTimeinMillis)/31536000)/1000; // we need to divide twice due to integer restraints
         return age;
+    }
+    /** Returns the person's birth date
+     *  @return the person's birth date
+     */
+
+    public String getBirthDate() { 
+	return birthTimeStamp.getTimeStamp();
     }
 
     /**
