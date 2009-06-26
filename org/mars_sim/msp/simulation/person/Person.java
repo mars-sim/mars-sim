@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.87 2009-06-24
+ * @version 2.87 2009-06-26
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.LifeSupport;
 import org.mars_sim.msp.simulation.RandomUtil;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.ai.Mind;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
 import org.mars_sim.msp.simulation.structure.building.function.MedicalCare;
+import org.mars_sim.msp.simulation.time.EarthClock;
 import org.mars_sim.msp.simulation.vehicle.Crewable;
 import org.mars_sim.msp.simulation.vehicle.Medical;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -78,7 +80,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
     private String gender; // The gender of the person (male or female).
-    private int age; // The age of the person.
+    private EarthClock birthTimeStamp; // The birth time of the person.
     private Settlement associatedSettlement; // The settlement the person is currently associated with.
 
     /** 
@@ -95,7 +97,24 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		
 		// Initialize data members
 		this.gender = gender;
-		age = 20+RandomUtil.getRandomInt(10)+RandomUtil.getRandomInt(10); // set age to 10 + 2D10 for a bell curve
+
+		// Set a birth time in a rather messy way - FIXME: add stuff for handling leap years
+		int year = 2003 + RandomUtil.getRandomInt(10)+ RandomUtil.getRandomInt(10);
+		int month = RandomUtil.getRandomInt(11)+1;
+		int day;		
+		if (month == 2) {day = RandomUtil.getRandomInt(27)+1;}
+		else {
+			if (month%2 == 1) {day = RandomUtil.getRandomInt(30)+1;}
+			else {day = RandomUtil.getRandomInt(29)+1;}
+		}
+
+		int hour = RandomUtil.getRandomInt(23);
+		int minute = RandomUtil.getRandomInt(59);
+		int second = RandomUtil.getRandomInt(59);
+
+		String timeString = month+"/"+day+"/"+year+" "+hour+":"+minute+":"+second; // We use this to initialize the stamp
+		birthTimeStamp = new EarthClock (timeString);
+
 		attributes = new NaturalAttributeManager(this);
 		mind = new Mind(this);
 		isBuried = false;
@@ -286,7 +305,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     /** Returns the person's age
      *  @return the person's age
      */
-    public int getAge() {
+    public int getAge() { //FIXME: add stuff for handling leap years
+	EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
+	long simTimeinMillis = simClock.getTimeInMillis();
+	long personTimeinMillis = birthTimeStamp.getTimeInMillis();
+	int age = (int)((simTimeinMillis - personTimeinMillis)/31536000)/1000; // we need to divide twice due to integer restraints
         return age;
     }
 
