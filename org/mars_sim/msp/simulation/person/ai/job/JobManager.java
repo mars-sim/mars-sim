@@ -73,7 +73,7 @@ public final class JobManager implements Serializable {
 		Iterator<Job> i = getJobs().iterator();
 		while (i.hasNext()) {
 			Job job = i.next();
-			if (job.getName().equals(jobName)) result = job;
+			if (job.getName().equalsIgnoreCase(jobName)) result = job;
 		}
 		return result;
 	}
