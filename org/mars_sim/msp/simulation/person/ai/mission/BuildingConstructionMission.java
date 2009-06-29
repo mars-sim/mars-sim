@@ -500,7 +500,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         }
         
         // Check if site preparation time has expired.
-        MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock();
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if (sitePreparationStartTime == null) sitePreparationStartTime = (MarsClock) currentTime.clone();
         if (MarsClock.getTimeDiff(currentTime, sitePreparationStartTime) >= SITE_PREPARE_TIME) 
             setPhaseEnded(true);
