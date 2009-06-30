@@ -44,6 +44,14 @@ public class ScientificStudy implements Serializable {
     // Base amount of work time (millisols) required for collaborative research.
     private static final double BASE_COLLABORATIVE_RESEARCH_WORK_TIME = 10000D;
     
+    // Base amount of work time (millisols) required for primary researcher 
+    // writing study paper.
+    private static final double BASE_PRIMARY_PAPER_WORK_TIME = 5000D;
+    
+    // Base amount of work time (millisols) required for collaborative researcher 
+    // writing study paper.
+    private static final double BASE_COLLABORATIVE_PAPER_WORK_TIME = 1000D;
+    
     // Amount of time (millisols) allotted for peer review.
     private static final double PEER_REVIEW_TIME = 10000D;
     
@@ -57,6 +65,8 @@ public class ScientificStudy implements Serializable {
     private double proposalWorkTime;
     private double primaryResearchWorkTime;
     private Map<Person, Double> collaborativeResearchWorkTime;
+    private double primaryPaperWorkTime;
+    private Map<Person, Double> collaborativePaperWorkTime;
     private MarsClock peerReviewStartTime;
     private boolean completed;
     private String completionState;
@@ -79,6 +89,8 @@ public class ScientificStudy implements Serializable {
         proposalWorkTime = 0D;
         primaryResearchWorkTime = 0D;
         collaborativeResearchWorkTime = new HashMap<Person, Double>(MAX_NUM_COLLABORATORS);
+        primaryPaperWorkTime = 0D;
+        collaborativePaperWorkTime = new HashMap<Person, Double>(MAX_NUM_COLLABORATORS);
         peerReviewStartTime = null;
         completed = false;
         completionState = null;
@@ -167,6 +179,7 @@ public class ScientificStudy implements Serializable {
     public void addCollaborativeResearcher(Person researcher, Science science) {
         collaborativeResearchers.put(researcher, science);
         collaborativeResearchWorkTime.put(researcher, 0D);
+        collaborativePaperWorkTime.put(researcher, 0D);
     }
     
     /**
@@ -285,7 +298,7 @@ public class ScientificStudy implements Serializable {
     
     /**
      * Checks if collaborative research has been completed by a given researcher.
-     * @param researcher the collaborative research.
+     * @param researcher the collaborative researcher.
      */
     public boolean isCollaborativeResearchCompleted(Person researcher) {
         if (collaborativeResearchWorkTime.containsKey(researcher)) {
@@ -316,6 +329,114 @@ public class ScientificStudy implements Serializable {
      */
     public boolean isAllResearchCompleted() {
         return (isPrimaryResearchCompleted() && isAllCollaborativeResearchCompleted());
+    }
+    
+    /**
+     * Gets the total work time required for primary researcher writing paper.
+     * @return work time (millisols).
+     */
+    public double getTotalPrimaryPaperWorkTimeRequired() {
+        return BASE_PRIMARY_PAPER_WORK_TIME * difficultyLevel;
+    }
+    
+    /**
+     * Gets the work time completed for primary researcher writing paper.
+     * @return work time (millisols).
+     */
+    public double getPrimaryPaperWorkTimeCompleted() {
+        return primaryPaperWorkTime;
+    }
+    
+    /**
+     * Adds work time for primary researcher writing paper.
+     * @param workTime work time (millisols).
+     */
+    public void addPrimaryPaperWorkTime(double workTime) {
+        primaryPaperWorkTime += workTime;
+        double requiredWorkTime = getTotalPrimaryPaperWorkTimeRequired();
+        if (primaryPaperWorkTime >= requiredWorkTime) {
+            primaryPaperWorkTime = requiredWorkTime;
+        }
+    }
+    
+    /**
+     * Checks if primary researcher paper writing has been completed.
+     * @return true if primary researcher paper writing completed.
+     */
+    public boolean isPrimaryPaperCompleted() {
+        return (primaryPaperWorkTime >= getTotalPrimaryPaperWorkTimeRequired());
+    }
+    
+    /**
+     * Gets the total work time required for a collaborative researcher writing paper.
+     * @return work time (millisols).
+     */
+    public double getTotalCollaborativePaperWorkTimeRequired() {
+        return BASE_COLLABORATIVE_PAPER_WORK_TIME * difficultyLevel;
+    }
+    
+    /**
+     * Gets the work time completed for a collaborative researcher writing paper.
+     * @param researcher the collaborative researcher.
+     * @return work time (millisols).
+     */
+    public double getCollaborativePaperWorkTimeCompleted(Person researcher) {
+        if (collaborativePaperWorkTime.containsKey(researcher))
+            return collaborativePaperWorkTime.get(researcher);
+        else throw new IllegalArgumentException(researcher + 
+                " is not a collaborative researcher in this study.");
+    }
+    
+    /**
+     * Adds work time for collaborative researcher writing paper.
+     * @param researcher the collaborative researcher.
+     * @param workTime the work time (millisols).
+     */
+    public void addCollaborativePaperWorkTime(Person researcher, double workTime) {
+        if (collaborativePaperWorkTime.containsKey(researcher)) {
+            double currentWorkTime = collaborativePaperWorkTime.get(researcher);
+            currentWorkTime += workTime;
+            double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
+            if (currentWorkTime >= requiredWorkTime) currentWorkTime = requiredWorkTime;
+            collaborativePaperWorkTime.put(researcher, currentWorkTime);
+        }
+        else throw new IllegalArgumentException(researcher + 
+                " is not a collaborative researcher in this study.");
+    }
+    
+    /**
+     * Checks if collaborative paper writing has been completed by a given researcher.
+     * @param researcher the collaborative researcher.
+     */
+    public boolean isCollaborativePaperCompleted(Person researcher) {
+        if (collaborativePaperWorkTime.containsKey(researcher)) {
+            double currentWorkTime = collaborativePaperWorkTime.get(researcher);
+            double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
+            return (currentWorkTime >= requiredWorkTime);
+        }
+        else throw new IllegalArgumentException(researcher + 
+                " is not a collaborative researcher in this study.");
+    }
+    
+    /**
+     * Checks if all collaborative paper writing has been completed.
+     * @return true if paper writing completed.
+     */
+    public boolean isAllCollaborativePaperCompleted() {
+        boolean result = true;
+        Iterator<Person> i = collaborativePaperWorkTime.keySet().iterator();
+        while (i.hasNext()) {
+            if (!isCollaborativePaperCompleted(i.next())) result = false;
+        }
+        return result;
+    }
+    
+    /**
+     * Checks if all paper writing in study has been completed.
+     * @return true if paper writing completed.
+     */
+    public boolean isAllPaperWritingCompleted() {
+        return (isPrimaryPaperCompleted() && isAllCollaborativePaperCompleted());
     }
     
     /**
