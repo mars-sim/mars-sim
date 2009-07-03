@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.78 2005-08-14
+ * @version 2.87 2009-07-03
  * @author Scott Davis
  */
 
@@ -53,6 +53,13 @@ public class EarthClock extends GregorianCalendar implements Serializable {
      */
     public String getTimeStamp() {
         return formatter.format(getTime()) + " UT";
+    }
+
+    /** Returns the date formatted in a string 
+     *  @return date formatted in a string. ex "2055-05-06"
+     */
+    public String getDateString() {
+        return getTimeStamp().substring(0,10);
     }
     
     /** Adds time to the calendar 

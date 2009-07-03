@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.87 2009-06-27
+ * @version 2.87 2009-07-03
  * @author Scott Davis
  */
 
@@ -317,7 +317,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
 
     public String getBirthDate() { 
-	return birthTimeStamp.getTimeStamp();
+	return birthTimeStamp.getDateString();
     }
 
     /**
