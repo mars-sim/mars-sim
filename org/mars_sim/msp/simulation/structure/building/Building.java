@@ -144,6 +144,9 @@ public class Building implements Malfunctionable, Serializable {
         
         // Set power storage function.
         if (config.hasPowerStorage(name)) buildingFunctions.add(new PowerStorage(this));
+        
+        //set astronomical observation function
+        if(config.hasAstronomicalObservation(name)) buildingFunctions.add(new AstronomicalObservation(this));
     	
     	return buildingFunctions;
     }

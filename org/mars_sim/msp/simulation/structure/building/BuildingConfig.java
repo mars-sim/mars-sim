@@ -82,6 +82,7 @@ public class BuildingConfig implements Serializable {
 	private static final String COMSUMPTION_RATE = "consumption-rate";
 	private static final String TOGGLE = "toggle";
     private static final String POWER_STORAGE = "power-storage";
+    private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -661,6 +662,27 @@ public class BuildingConfig implements Serializable {
 	public int getManufactureTechLevel(String buildingName) throws Exception {
 		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
 	}
+	
+	/**
+	 * Checks if the building has 
+	 * @param buildingName the name of the building.
+	 * @return true if ASTRONOMICAL_OBSERVATION.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public boolean hasAstronomicalObservation(String buildingName) throws Exception {
+		return hasElements(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION);
+	}
+	
+	/**
+	 * Gets the tech level of the manufacture facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return tech level.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getAstronomicalObservationTechLevel(String buildingName) throws Exception {
+		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
+	}
+	
 	
 	/**
 	 * Gets the concurrent process limit of the manufacture facility in the building.

@@ -472,6 +472,8 @@ public class BuildingManager implements Serializable {
                 result += ResourceProcessing.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasStorage(buildingName))
                 result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasAstronomicalObservation(buildingName))
+                result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
         
             // Multiply value.
             result *= 1000D;
