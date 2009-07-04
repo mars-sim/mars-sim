@@ -74,6 +74,7 @@
 		<building type="Garage" number="1" />
 		<building type="Workshop" number="1" />
 		<building type="MD4 Nuclear Reactor" number="2" />
+		<building type="Astronomy Observatory" number="1" />
 		<vehicle type="Explorer Rover" number="2" />
 		<vehicle type="Transport Rover" number="2" />
 		<vehicle type="Light Utility Vehicle" number="1" />

@@ -7,7 +7,7 @@
 <!ELEMENT functions (communication?, cooking?, dining?, EVA?, exercise?, farming?, 
 ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
 medical-care?, power-generation?, power-storage?, recreation?, research?, 
-resource-processing?, storage?)>
+resource-processing?, storage?, astronomical-observation? )>
 <!ELEMENT communication EMPTY>
 <!ELEMENT cooking EMPTY>
 <!ATTLIST cooking capacity CDATA #REQUIRED>
@@ -70,3 +70,5 @@ resource-processing?, storage?)>
 <!ELEMENT resource-initial EMPTY>
 <!ATTLIST resource-initial resource CDATA #REQUIRED>
 <!ATTLIST resource-initial amount CDATA #REQUIRED>
+<!ELEMENT astronomical-observation EMPTY>
+<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>

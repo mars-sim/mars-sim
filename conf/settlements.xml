@@ -127,6 +127,7 @@
 			<building type="MD4 Nuclear Reactor" number="2" />
 			<building type="Starting ERV Base" number="1" />
 			<building type="ERV Base" number="3" />
+			<building type="Astronomy Observatory" number="1" />
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />

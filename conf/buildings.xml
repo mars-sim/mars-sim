@@ -612,5 +612,19 @@
 			<power-storage capacity="500.0" />
 		</functions>
 	</building>
+	
+	<!-- a small optical telescope observatory with an astronomy laboratory -->
+	<building name="Astronomy Observatory">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<manufacture tech-level="2" concurrent-processes="1" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Astronomy" />
+				<research-speciality name="Physics" />
+				<research-speciality name="Mathematics" />
+			</research>
+		</functions>
+	</building>
 
 </building-list>
