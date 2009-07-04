@@ -98,12 +98,15 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		// Initialize data members
 		this.gender = gender;
 
-		// Set a birth time in a rather messy way - FIXME: add stuff for handling leap years
+		// Set a birth time for the person
 		int year = 2003 + RandomUtil.getRandomInt(10)+ RandomUtil.getRandomInt(10);
 		int month = RandomUtil.getRandomInt(11)+1;
 		int day;		
-		if (month == 2) {day = RandomUtil.getRandomInt(27)+1;}
-		else {
+		if (month == 2) {
+			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {day = RandomUtil.getRandomInt(28)+1;}
+		else {day = RandomUtil.getRandomInt(27)+1;}
+				}
+		else 	{
 			if (month%2 == 1) {day = RandomUtil.getRandomInt(30)+1;}
 			else {day = RandomUtil.getRandomInt(29)+1;}
 		}
