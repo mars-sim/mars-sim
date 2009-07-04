@@ -674,7 +674,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the tech level of the manufacture facility in the building.
+	 * Gets the tech level of the astronomy  facility in the building.
 	 * @param buildingName the name of the building.
 	 * @return tech level.
 	 * @throws Exception if building name can not be found or XML parsing error.
@@ -683,6 +683,25 @@ public class BuildingConfig implements Serializable {
 		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
 	}
 	
+	/**
+	 * Gets capacity of the astronomy  facility in the building.
+	 * @param buildingName the name of the building.
+	 * @return tech level.
+	 * @throws Exception if building name can not be found or XML parsing error.
+	 */
+	public int getAstronomicalObservationCapacity(String buildingName) throws Exception {
+		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,CAPACITY);
+	}
+	
+    /**
+     * Gets the power storage capacity of the building.
+     * @param buildingName the name of the building.
+     * @return power storage capacity (kW hr).
+     * @throws Exception if building name can not be found or XML parsing error.
+     */
+    public double getAstronomicalObservationPowerRequirement(String buildingName) throws Exception {
+    	return getValueAsDouble(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,POWER_REQUIRED);
+    }
 	
 	/**
 	 * Gets the concurrent process limit of the manufacture facility in the building.

@@ -1,10 +1,12 @@
 package org.mars_sim.msp.simulation.structure.building.function;
 
+
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -19,9 +21,12 @@ public class AstronomicalObservation extends Function  implements Lab {
     private static String NAME = "Astronomical Observations";
     private double powerRequired;
     private int techLevel;
-	private int researcherCapacity;
+	private int labCapacity;
+	private int observatoryCapacity;
 	private List<String> researchSpecialities;
-	private int researcherNum;
+	private int researchersInLab;
+	private int researchersInObservatory;
+	
     
 	public AstronomicalObservation(Building building) throws BuildingException {
 		super(NAME, building);
@@ -31,7 +36,8 @@ public class AstronomicalObservation extends Function  implements Lab {
 		try {
 			powerRequired = config.getBasePowerRequirement(building.getName());
 			techLevel = config.getResearchTechLevel(building.getName());
-			researcherCapacity = config.getResearchCapacity(building.getName());
+			labCapacity = config.getResearchCapacity(building.getName());
+			observatoryCapacity = config.getAstronomicalObservationCapacity(building.getName());
 			researchSpecialities = config.getResearchSpecialities(building.getName());
 		}
 		catch (Exception e) {
@@ -58,23 +64,30 @@ public class AstronomicalObservation extends Function  implements Lab {
 
 	@Override
 	public void addResearcher() throws Exception {
-		researcherNum ++;
-		if (researcherNum > researcherCapacity) {
-			researcherNum = researcherCapacity;
+		researchersInLab ++;
+		if (researchersInLab > labCapacity) {
+			researchersInLab = labCapacity;
+			throw new Exception("Observatory lab already full of researchers.");
+		}
+	}
+	
+
+	public void addResearcherToObservatory() throws Exception {
+		researchersInObservatory ++;
+		if (researchersInLab > observatoryCapacity) {
+			researchersInLab= observatoryCapacity;
 			throw new Exception("Observatory already full of researchers.");
 		}
 	}
 
-	@Override
+
 	public int getLaboratorySize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return labCapacity;
 	}
 
 	@Override
 	public int getResearcherNum() {
-		// TODO Auto-generated method stub
-		return researcherNum;
+		return researchersInLab;
 	}
 
 
@@ -96,8 +109,29 @@ public class AstronomicalObservation extends Function  implements Lab {
 
 	@Override
 	public void removeResearcher() throws Exception {
-		// TODO Auto-generated method stub
+		researchersInLab --;
+		if (getResearcherNum() < 0) {
+			researchersInLab = 0; 
+			throw new Exception("Lab is already empty of researchers.");
+		}
+				
+	}
+	
+	
+	public void removeResearcherFromObservatory() throws Exception {
+		researchersInObservatory --;
+		if (researchersInObservatory < 0) {
+			researchersInObservatory = 0; 
+			throw new Exception("Lab is already empty of researchers.");
+		}
 		
 	}
+	
+	 public static final double getFunctionValue(String buildingName, boolean newBuilding, 
+	            Settlement settlement) throws Exception {
+	        
+		   //TODO
+	       return 0;
+	    }
 
 }
