@@ -1,11 +1,20 @@
+/**
+ * Mars Simulation Project
+ * AstronomicalObservation.java
+ * @version 2.87 2009-07-04
+ * @author Sebastien Venot
+ */
+
 package org.mars_sim.msp.simulation.structure.building.function;
 
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.SimulationConfig;
+import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
@@ -129,9 +138,47 @@ public class AstronomicalObservation extends Function  implements Lab {
 	
 	 public static final double getFunctionValue(String buildingName, boolean newBuilding, 
 	            Settlement settlement) throws Exception {
+		 
+		 //copy/pasted from Research function
+		 //TODO: add observation specific stuff
+		   BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+	        List<String> specialities = config.getResearchSpecialities(buildingName);
 	        
-		   //TODO
-	       return 0;
+	        double researchDemand = 0D;
+	        Iterator<String> i = specialities.iterator();
+	        while (i.hasNext()) {
+	            String speciality = i.next();
+	            Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+	            while (j.hasNext()) 
+	                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality);
+	        }
+	        
+	        double researchSupply = 0D;
+	        boolean removedBuilding = false;
+	        Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
+	        while (k.hasNext()) {
+	            Building building = k.next();
+	            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+	                removedBuilding = true;
+	            }
+	            else {
+	                Research researchFunction = (Research) building.getFunction(NAME);
+	                int techLevel = researchFunction.getTechnologyLevel();
+	                int labSize = researchFunction.getLaboratorySize();
+	                for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
+	                    String speciality = researchFunction.getTechSpecialities()[x];
+	                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize;
+	                }
+	            }
+	        }
+	        
+	        double existingResearchValue = researchDemand / (researchSupply + 1D);
+	        
+	        int techLevel = config.getResearchTechLevel(buildingName);
+	        int labSize = config.getResearchCapacity(buildingName);
+	        double buildingResearchSupply = specialities.size() * techLevel * labSize;
+	        
+	        return buildingResearchSupply * existingResearchValue;
 	    }
 
 }
