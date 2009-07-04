@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 2.87 2009-07-03
+ * @version 2.87 2009-07-05
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Calendar;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.LifeSupport;
@@ -308,11 +309,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     /** Returns the person's age
      *  @return the person's age
      */
-    public int getAge() { //FIXME: add stuff for handling leap years
+    public int getAge() {
 	EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-	long simTimeinMillis = simClock.getTimeInMillis();
-	long personTimeinMillis = birthTimeStamp.getTimeInMillis();
-	int age = (int)((simTimeinMillis - personTimeinMillis)/31536000)/1000; // we need to divide twice due to integer restraints
+	int age = simClock.get(Calendar.YEAR) - birthTimeStamp.get(Calendar.YEAR) -1;
+	if (simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH) && simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH)) {age = age +1;}
+
         return age;
     }
     /** Returns the person's birth date
