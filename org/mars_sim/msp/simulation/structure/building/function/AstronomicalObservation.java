@@ -113,7 +113,12 @@ public class AstronomicalObservation extends Function  implements Lab {
 	}
 
 	public boolean hasSpeciality(String speciality) {
-		return researchSpecialities.contains(speciality);
+		boolean result = false;
+		Iterator<String> i = researchSpecialities.iterator();
+		while (i.hasNext()) {
+			if (i.next().equalsIgnoreCase(speciality)) result = true;
+		}
+		return result;
 	}
 
 	@Override
@@ -139,9 +144,8 @@ public class AstronomicalObservation extends Function  implements Lab {
 	 public static final double getFunctionValue(String buildingName, boolean newBuilding, 
 	            Settlement settlement) throws Exception {
 		 
-		 //copy/pasted from Research function
-		 //TODO: add observation specific stuff
-		   BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		    //TODO: to improve...
+		    BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 	        List<String> specialities = config.getResearchSpecialities(buildingName);
 	        
 	        double researchDemand = 0D;
@@ -162,11 +166,11 @@ public class AstronomicalObservation extends Function  implements Lab {
 	                removedBuilding = true;
 	            }
 	            else {
-	                Research researchFunction = (Research) building.getFunction(NAME);
-	                int techLevel = researchFunction.getTechnologyLevel();
-	                int labSize = researchFunction.getLaboratorySize();
-	                for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
-	                    String speciality = researchFunction.getTechSpecialities()[x];
+	            	AstronomicalObservation astroFunction = (AstronomicalObservation) building.getFunction(NAME);
+	                int techLevel = astroFunction.getTechnologyLevel();
+	                int labSize = astroFunction.getLaboratorySize();
+	                for (int x = 0; x < astroFunction.getTechSpecialities().length; x++) {
+	                    String speciality = astroFunction.getTechSpecialities()[x];
 	                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize;
 	                }
 	            }
