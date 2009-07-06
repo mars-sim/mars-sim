@@ -9,12 +9,13 @@ package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.Calendar;
 
 import org.mars_sim.msp.simulation.InventoryException;
 import org.mars_sim.msp.simulation.LifeSupport;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.simulation.SimulationConfig;
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.ai.Mind;
 import org.mars_sim.msp.simulation.person.medical.MedicalAid;
+import org.mars_sim.msp.simulation.science.Science;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -83,6 +85,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private String gender; // The gender of the person (male or female).
     private EarthClock birthTimeStamp; // The birth time of the person.
     private Settlement associatedSettlement; // The settlement the person is currently associated with.
+    private Map<Science, Double> scientificAchievement; // The person's achievement in scientific fields.
 
     /** 
      * Constructs a Person object at a given settlement
@@ -123,6 +126,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		mind = new Mind(this);
 		isBuried = false;
 		health = new PhysicalCondition(this);
+        scientificAchievement = new HashMap<Science, Double>(0);
 
 		// Set base mass of person.
 		setBaseMass(70D);
@@ -309,11 +313,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     /** Returns the person's age
      *  @return the person's age
      */
-    public int getAge() {
+    public int getAge() { //FIXME: add stuff for handling leap years
 	EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-	int age = simClock.get(Calendar.YEAR) - birthTimeStamp.get(Calendar.YEAR) -1;
-	if (simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH) && simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH)) {age = age +1;}
-
+	long simTimeinMillis = simClock.getTimeInMillis();
+	long personTimeinMillis = birthTimeStamp.getTimeInMillis();
+	int age = (int)((simTimeinMillis - personTimeinMillis)/31536000)/1000; // we need to divide twice due to integer restraints
         return age;
     }
     /** Returns the person's birth date
@@ -321,7 +325,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
 
     public String getBirthDate() { 
-	return birthTimeStamp.getDateString();
+	return birthTimeStamp.getTimeStamp();
     }
 
     /**
@@ -454,4 +458,43 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 				newSettlement.fireUnitUpdate(Settlement.ADD_ASSOCIATED_PERSON_EVENT, this);
 		}
 	}
+    
+    /**
+     * Gets the person's achievement credit for a given scientific field.
+     * @param science the scientific field.
+     * @return achievement credit.
+     */
+    public double getScientificAchievement(Science science) {
+        double result = 0D;
+        
+        if (scientificAchievement.containsKey(science)) 
+            result = scientificAchievement.get(science);
+        
+        return result;
+    }
+    
+    /**
+     * Gets the person's total scientific achievement credit.
+     * @return achievement credit.
+     */
+    public double getTotalScientificAchievement() {
+        double result = 0D;
+        
+        Iterator<Double> i = scientificAchievement.values().iterator();
+        while (i.hasNext()) result += i.next();
+        
+        return result;
+    }
+    
+    /**
+     * Add achievement credit to the person in a scientific field.
+     * @param achievementCredit the achievement credit.
+     * @param science the scientific field.
+     */
+    public void addScientificAchievement(double achievementCredit, Science science) {
+        if (scientificAchievement.containsKey(science)) 
+            achievementCredit += scientificAchievement.get(science);
+        
+        scientificAchievement.put(science, achievementCredit);
+    }
 }

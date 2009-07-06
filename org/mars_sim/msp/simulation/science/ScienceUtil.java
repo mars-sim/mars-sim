@@ -113,4 +113,15 @@ public class ScienceUtil {
         
         return result;
     }
+    
+    /**
+     * Gets the skill associated with the science.
+     * @param science the science.
+     * @return skill name.
+     */
+    public static String getAssociatedSkill(Science science) {
+        if (sciences == null) loadSciences();
+        
+        return science.getName();
+    }
 }

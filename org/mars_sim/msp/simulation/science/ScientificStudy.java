@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.MarsClock;
 
 /**
@@ -55,6 +56,12 @@ public class ScientificStudy implements Serializable {
     // Amount of time (millisols) allotted for peer review.
     private static final double PEER_REVIEW_TIME = 10000D;
     
+    // Amount of time (millisols) allowed as downtime for primary work.
+    static final double PRIMARY_WORK_DOWNTIME_ALLOWED = 30000D;
+    
+    // Amount of time (millisols) allowed as downtime for collaborative work.
+    static final double COLLABORATIVE_WORK_DOWNTIME_ALLOWED = 30000D;
+    
     // Data members
     private String phase;
     private Science science;
@@ -70,6 +77,9 @@ public class ScientificStudy implements Serializable {
     private MarsClock peerReviewStartTime;
     private boolean completed;
     private String completionState;
+    private Settlement primarySettlement;
+    private MarsClock lastPrimaryResearchWorkTime;
+    private Map<Person, MarsClock> lastCollaborativeResearchWorkTime;
     
     /**
      * Constructor.
@@ -94,6 +104,9 @@ public class ScientificStudy implements Serializable {
         peerReviewStartTime = null;
         completed = false;
         completionState = null;
+        primarySettlement = primaryResearcher.getAssociatedSettlement();
+        lastPrimaryResearchWorkTime = null;
+        lastCollaborativeResearchWorkTime = new HashMap<Person, MarsClock>(MAX_NUM_COLLABORATORS);
     }
     
     /**
@@ -161,6 +174,11 @@ public class ScientificStudy implements Serializable {
         double requiredWorkTime = getTotalProposalWorkTimeRequired();
         if (proposalWorkTime >= requiredWorkTime)
             proposalWorkTime = requiredWorkTime;
+        
+        // Update primary settlement.
+        Settlement settlement = primaryResearcher.getAssociatedSettlement();
+        if ((settlement != null) && !primarySettlement.equals(settlement)) 
+            primarySettlement = settlement;
     }
     
     /**
@@ -180,6 +198,18 @@ public class ScientificStudy implements Serializable {
         collaborativeResearchers.put(researcher, science);
         collaborativeResearchWorkTime.put(researcher, 0D);
         collaborativePaperWorkTime.put(researcher, 0D);
+        lastCollaborativeResearchWorkTime.put(researcher, null);
+    }
+    
+    /**
+     * Removes a collaborative researcher from a study.
+     * @param researcher the collaborative researcher.
+     */
+    public void removeCollaborativeResearcher(Person researcher) {
+        collaborativeResearchers.remove(researcher);
+        collaborativeResearchWorkTime.remove(researcher);
+        collaborativePaperWorkTime.remove(researcher);
+        lastCollaborativeResearchWorkTime.remove(researcher);
     }
     
     /**
@@ -249,6 +279,15 @@ public class ScientificStudy implements Serializable {
         if (primaryResearchWorkTime >= requiredWorkTime) {
             primaryResearchWorkTime = requiredWorkTime;
         }
+        
+        // Update primary settlement.
+        Settlement settlement = primaryResearcher.getAssociatedSettlement();
+        if ((settlement != null) && !primarySettlement.equals(settlement)) 
+            primarySettlement = settlement;
+        
+        // Update last primary work time.
+        lastPrimaryResearchWorkTime = (MarsClock) Simulation.instance().getMasterClock().
+                getMarsClock().clone();
     }
     
     /**
@@ -291,6 +330,10 @@ public class ScientificStudy implements Serializable {
             double requiredWorkTime = getTotalCollaborativeResearchWorkTimeRequired();
             if (currentWorkTime >= requiredWorkTime) currentWorkTime = requiredWorkTime;
             collaborativeResearchWorkTime.put(researcher, currentWorkTime);
+            
+            // Update last collaborative work time.
+            lastCollaborativeResearchWorkTime.put(researcher, (MarsClock) Simulation.instance().
+                    getMasterClock().getMarsClock().clone());
         }
         else throw new IllegalArgumentException(researcher + 
                 " is not a collaborative researcher in this study.");
@@ -357,6 +400,11 @@ public class ScientificStudy implements Serializable {
         if (primaryPaperWorkTime >= requiredWorkTime) {
             primaryPaperWorkTime = requiredWorkTime;
         }
+        
+        // Update primary settlement.
+        Settlement settlement = primaryResearcher.getAssociatedSettlement();
+        if ((settlement != null) && !primarySettlement.equals(settlement)) 
+            primarySettlement = settlement;
     }
     
     /**
@@ -485,5 +533,33 @@ public class ScientificStudy implements Serializable {
     public String getCompletionState() {
         if (completed) return completionState;
         else return null;
+    }
+    
+    /**
+     * Gets the settlement where primary research is conducted.
+     * @return settlement.
+     */
+    public Settlement getPrimarySettlement() {
+        return primarySettlement;
+    }
+    
+    /**
+     * Gets the last time primary research work was done on the study.
+     * @return last time or null if none.
+     */
+    public MarsClock getLastPrimaryResearchWorkTime() {
+        return lastPrimaryResearchWorkTime;
+    }
+    
+    /**
+     * Gets the last time collaborative research work was done on the study.
+     * @param researcher the collaborative researcher.
+     * @return last time or null if none.
+     */
+    public MarsClock getLastCollaborativeResearchWorkTime(Person researcher) {
+        MarsClock result = null;
+        if (lastCollaborativeResearchWorkTime.containsKey(researcher)) 
+            result = lastCollaborativeResearchWorkTime.get(researcher);
+        return result;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.85 2008-08-12
+ * @version 2.87 2009-07-05
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.simulation.structure;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +29,7 @@ import org.mars_sim.msp.simulation.person.ai.task.Maintenance;
 import org.mars_sim.msp.simulation.person.ai.task.Repair;
 import org.mars_sim.msp.simulation.person.ai.task.Task;
 import org.mars_sim.msp.simulation.resource.AmountResource;
+import org.mars_sim.msp.simulation.science.Science;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
@@ -66,6 +68,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
     private boolean missionCreationOverride; // Override flag for mission creation at settlement.
     private boolean manufactureOverride; // Override flag for manufacturing at settlement.
     private boolean resourceProcessOverride; // Override flag for resource process at settlement.
+    private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
     
     /**
      * Constructor for subclass extension.
@@ -542,5 +545,44 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
      */
     public ConstructionManager getConstructionManager() {
         return constructionManager;
+    }
+    
+    /**
+     * Gets the settlement's achievement credit for a given scientific field.
+     * @param science the scientific field.
+     * @return achievement credit.
+     */
+    public double getScientificAchievement(Science science) {
+        double result = 0D;
+        
+        if (scientificAchievement.containsKey(science)) 
+            result = scientificAchievement.get(science);
+        
+        return result;
+    }
+    
+    /**
+     * Gets the settlement's total scientific achievement credit.
+     * @return achievement credit.
+     */
+    public double getTotalScientificAchievement() {
+        double result = 0D;
+        
+        Iterator<Double> i = scientificAchievement.values().iterator();
+        while (i.hasNext()) result += i.next();
+        
+        return result;
+    }
+    
+    /**
+     * Add achievement credit to the settlement in a scientific field.
+     * @param achievementCredit the achievement credit.
+     * @param science the scientific field.
+     */
+    public void addScientificAchievement(double achievementCredit, Science science) {
+        if (scientificAchievement.containsKey(science)) 
+            achievementCredit += scientificAchievement.get(science);
+        
+        scientificAchievement.put(science, achievementCredit);
     }
 }
