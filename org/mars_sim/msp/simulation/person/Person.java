@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.person;
 
 import java.io.Serializable;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -313,19 +314,19 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     /** Returns the person's age
      *  @return the person's age
      */
-    public int getAge() { //FIXME: add stuff for handling leap years
-	EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
-	long simTimeinMillis = simClock.getTimeInMillis();
-	long personTimeinMillis = birthTimeStamp.getTimeInMillis();
-	int age = (int)((simTimeinMillis - personTimeinMillis)/31536000)/1000; // we need to divide twice due to integer restraints
+    public int getAge() {
+        EarthClock simClock = Simulation.instance().getMasterClock().getEarthClock();
+        int age = simClock.get(Calendar.YEAR) - birthTimeStamp.get(Calendar.YEAR) -1;
+        if (simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH) && simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH)) {age = age +1;}
+
         return age;
     }
+    
     /** Returns the person's birth date
      *  @return the person's birth date
      */
-
     public String getBirthDate() { 
-	return birthTimeStamp.getTimeStamp();
+        return birthTimeStamp.getDateString();
     }
 
     /**
