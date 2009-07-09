@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 2.87 2009-07-05
+ * @version 2.87 2009-07-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
@@ -246,6 +246,7 @@ public class Simulation implements ClockListener, Serializable {
 			mars.timePassing(time);
 			missionManager.timePassing(time);
 			unitManager.timePassing(time);
+            scientificStudyManager.updateStudies();
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);

@@ -562,4 +562,9 @@ public class ScientificStudy implements Serializable {
             result = lastCollaborativeResearchWorkTime.get(researcher);
         return result;
     }
+    
+    @Override
+    public String toString() {
+        return "level " + difficultyLevel + " " + science.getName().toLowerCase() + " study";
+    }
 }

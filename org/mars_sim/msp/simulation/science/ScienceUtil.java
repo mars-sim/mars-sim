@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ScienceUtil.java
- * @version 2.87 2009-06-27
+ * @version 2.87 2009-07-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -123,5 +124,39 @@ public class ScienceUtil {
         if (sciences == null) loadSciences();
         
         return science.getName();
+    }
+    
+    /**
+     * Gets all jobs related to a scientific field.
+     * @param science the scientific field.
+     * @return array of jobs (empty array if none).
+     */
+    public static Job[] getAssociatedJobs(Science science) {
+        if (sciences == null) loadSciences();
+        
+        Job[] jobs = science.getJobs();
+        return Arrays.copyOf(jobs, jobs.length);
+    }
+    
+    /**
+     * Gets a science associated with a given job if any.
+     * @param job the job.
+     * @return associated science or null if none.
+     */
+    public static Science getAssociatedScience(Job job) {
+        if (sciences == null) loadSciences();
+        
+        Science result = null;
+        
+        Iterator<Science> i = sciences.iterator();
+        while (i.hasNext()) {
+            Science science = i.next();
+            Job[] jobs = science.getJobs();
+            for (int x = 0; x < jobs.length; x++) {
+                if (jobs[x].equals(job)) result = science;
+            }
+        }
+        
+        return result;
     }
 }

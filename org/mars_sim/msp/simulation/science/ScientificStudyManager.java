@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.Person;
@@ -21,6 +22,9 @@ import org.mars_sim.msp.simulation.time.MarsClock;
  */
 public class ScientificStudyManager implements Serializable {
 
+    private static String CLASS_NAME = "org.mars_sim.msp.science.ScientificStudyManager";
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
     // Data members
     private List<ScientificStudy> studies;
     
@@ -46,6 +50,9 @@ public class ScientificStudyManager implements Serializable {
         
         ScientificStudy study = new ScientificStudy(researcher, science, difficultyLevel);
         studies.add(study);
+        
+        logger.info(researcher.getName() + " begins writing proposal for new " + study.toString());
+        
         return study;
     }
     
@@ -234,6 +241,9 @@ public class ScientificStudyManager implements Serializable {
                     // Check if proposal work time is completed, then move to invitation phase.
                     if (study.getProposalWorkTimeCompleted() >= 
                             study.getTotalProposalWorkTimeRequired()) {
+                        logger.info(study.getPrimaryResearcher().getName() + " finishes writing proposal for " 
+                                + study.toString());
+                        
                         study.setPhase(ScientificStudy.INVITATION_PHASE);
                         continue;
                     }
