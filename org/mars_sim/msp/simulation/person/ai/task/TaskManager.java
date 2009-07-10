@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.87 2009-06-18
+ * @version 2.87 2009-07-09
  * @author Scott Davis
  */
 
@@ -53,7 +53,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
         
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[35];
+        availableTasks = (Class<? extends Task>[]) new Class[36];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -89,6 +89,7 @@ public class TaskManager implements Serializable {
         availableTasks[32] = ResearchMathematics.class;
         availableTasks[33] = ResearchMeteorology.class;
         availableTasks[34] = ProposeScientificStudy.class;
+        availableTasks[35] = InviteStudyCollaborator.class;
         
         // Initialize cache values.
         timeCache = null;

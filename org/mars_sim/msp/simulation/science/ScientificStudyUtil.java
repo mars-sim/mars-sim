@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyUtil.java
- * @version 2.87 2009-07-05
+ * @version 2.87 2009-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -44,17 +44,21 @@ public class ScientificStudyUtil {
             
             if (!person.equals(study.getPrimaryResearcher()) && 
                     !study.hasResearcherBeenInvited(person)) {
-                Science[] collaborativeSciences = study.getScience().getCollaborativeSciences();
                 Job job = person.getMind().getJob();
                 if (job != null) {
-                    for (int x = 0; x < collaborativeSciences.length; x++) {
-                        Job[] associatedJobs = collaborativeSciences[x].getJobs();
-                        for (int y = 0; y < associatedJobs.length; y++) {
-                            if (job.equals(associatedJobs[y])) available = true;
+                    Science jobScience = ScienceUtil.getAssociatedScience(job);
+                    if (jobScience != null) {
+                        if (jobScience.equals(study.getScience())) available = true;
+                        else {
+                            if (ScienceUtil.isCollaborativeScience(study.getScience(), jobScience)) 
+                                available = true;
                         }
                     }
                 }
             }
+            
+            // Make sure person is alive.
+            if (person.getPhysicalCondition().isDead()) available = false;
             
             if (available) result.add(person);
         }

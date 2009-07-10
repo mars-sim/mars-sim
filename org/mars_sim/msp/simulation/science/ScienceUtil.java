@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceUtil.java
- * @version 2.87 2009-07-07
+ * @version 2.87 2009-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -155,6 +155,25 @@ public class ScienceUtil {
             for (int x = 0; x < jobs.length; x++) {
                 if (jobs[x].equals(job)) result = science;
             }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Checks if a science is collaborative to a primary science.
+     * @param primaryScience the primary science.
+     * @param science the science to check.
+     * @return true if science is collaborative to primary science.
+     */
+    public static boolean isCollaborativeScience(Science primaryScience, Science science) {
+        if (sciences == null) loadSciences();
+        
+        boolean result = false;
+        
+        Science[] collaborators = primaryScience.getCollaborativeSciences();
+        for (int x = 0; x < collaborators.length; x++) {
+            if (collaborators[x].equals(science)) result = true;
         }
         
         return result;

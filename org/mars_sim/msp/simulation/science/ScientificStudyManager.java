@@ -237,6 +237,13 @@ public class ScientificStudyManager implements Serializable {
             ScientificStudy study = i.next();
             if (!study.isCompleted()) {
                 
+                // Check if primary researcher has died.
+                if (isPrimaryResearcherDead(study)) {
+                    study.setCompleted(ScientificStudy.CANCELLED);
+                    logger.info(study.toString() + " cancelled due to primary researcher died.");
+                    continue;
+                }
+                
                 if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
                     // Check if proposal work time is completed, then move to invitation phase.
                     if (study.getProposalWorkTimeCompleted() >= 
@@ -249,14 +256,21 @@ public class ScientificStudyManager implements Serializable {
                     }
                 }
                 else if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+                    // Clean out any dead research invitees.
+                    study.cleanResearchInvitations();
+                    
                     boolean phaseEnded = false;
                     if (study.getCollaborativeResearchers().size() < ScientificStudy.MAX_NUM_COLLABORATORS) {
-                        if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() == 0)
+                        int availableInvitees = ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size();
+                        int openResearchInvitations = study.getNumOpenResearchInvitations();
+                        if ((availableInvitees + openResearchInvitations) == 0)
                             phaseEnded = true;
                     }
                     else phaseEnded = true;
                     
                     if (phaseEnded) {
+                        logger.info(study.toString() + " ending invitation phase with " + 
+                                study.getCollaborativeResearchers().size() + " collaborative researchers.");
                         study.setPhase(ScientificStudy.RESEARCH_PHASE);
                         continue;
                     }
@@ -315,5 +329,15 @@ public class ScientificStudyManager implements Serializable {
                 }
             }
         }
+    }
+    
+    /**
+     * Checks if a study's primary researcher is dead.
+     * @param study the scientific study.
+     * @return true if primary researcher dead.
+     */
+    private boolean isPrimaryResearcherDead(ScientificStudy study) {
+        Person primaryResearcher = study.getPrimaryResearcher();
+        return primaryResearcher.getPhysicalCondition().isDead();
     }
 }

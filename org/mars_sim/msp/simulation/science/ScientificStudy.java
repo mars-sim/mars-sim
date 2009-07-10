@@ -235,6 +235,32 @@ public class ScientificStudy implements Serializable {
     }
     
     /**
+     * Get number of research invitations that have not been responded to yet.
+     * @return num invitations.
+     */
+    public int getNumOpenResearchInvitations() {
+        int result = 0;
+        
+        Iterator<Person> i = invitedResearchers.keySet().iterator();
+        while (i.hasNext()) {
+            if (!invitedResearchers.get(i.next())) result++;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Cleans out any dead collaboration invitees.
+     */
+    void cleanResearchInvitations() {
+        Iterator<Person> i = invitedResearchers.keySet().iterator();
+        while (i.hasNext()) {
+            Person invitee = i.next();
+            if (invitee.getPhysicalCondition().isDead()) i.remove();
+        }
+    }
+    
+    /**
      * Adds a researcher to the list of researchers invited to collaborate 
      * on this study.
      * @param researcher the invited researcher.

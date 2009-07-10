@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Science.java
- * @version 2.87 2009-06-25
+ * @version 2.87 2009-07-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -103,5 +103,10 @@ public class Science implements Serializable, Comparable {
      */
     public int hashCode() {
         return (name.hashCode());
+    }
+    
+    @Override
+    public String toString() {
+        return name;
     }
 }
