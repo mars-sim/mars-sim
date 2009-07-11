@@ -7,20 +7,35 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Mind;
-import org.mars_sim.msp.simulation.person.ai.job.*;
+import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.mission.Mission;
 import org.mars_sim.msp.simulation.person.ai.task.TaskManager;
 import org.mars_sim.msp.simulation.person.medical.DeathInfo;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
+
 
 /** 
  * The ActivityTabPanel is a tab panel for a person's current activities.

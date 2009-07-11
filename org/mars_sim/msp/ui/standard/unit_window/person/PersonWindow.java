@@ -8,8 +8,10 @@
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 /**
  * The PersonWindow is the window for displaying a person.

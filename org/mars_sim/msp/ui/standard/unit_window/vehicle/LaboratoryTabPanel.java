@@ -7,12 +7,20 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
-import java.awt.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.vehicle.*;
-import org.mars_sim.msp.ui.standard.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
+
+
 
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.

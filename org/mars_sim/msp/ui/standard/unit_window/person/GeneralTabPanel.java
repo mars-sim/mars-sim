@@ -6,12 +6,20 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.person.Person;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
+
+
 
 /**
  * The GeneralTabPanel is a tab panel for general information about a person.

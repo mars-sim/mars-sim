@@ -7,10 +7,18 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.vehicle;
 
-import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import org.mars_sim.msp.simulation.vehicle.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Polygon;
+
+import javax.swing.JPanel;
+import javax.swing.border.LineBorder;
+
+import org.mars_sim.msp.simulation.vehicle.GroundVehicle;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
+
+
 
 
 /** 

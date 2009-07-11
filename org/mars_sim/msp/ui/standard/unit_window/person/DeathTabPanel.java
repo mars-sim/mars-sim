@@ -7,15 +7,28 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.*;
-import org.mars_sim.msp.simulation.*;
-import org.mars_sim.msp.simulation.person.*;
-import org.mars_sim.msp.simulation.person.medical.*;
-import org.mars_sim.msp.ui.standard.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.simulation.Coordinates;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.PhysicalCondition;
+import org.mars_sim.msp.simulation.person.medical.DeathInfo;
+import org.mars_sim.msp.ui.standard.ImageLoader;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
+
+
 
 /** 
  * The DeathTabPanel is a tab panel with info about a person's death.
