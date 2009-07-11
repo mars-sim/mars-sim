@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.simulation.structure.building.function.Cooking;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.simulation.structure.building.function.GroundVehicleMaintenance;
@@ -142,6 +143,18 @@ public class BuildingPanel extends JPanel {
             	BuildingFunctionPanel researchPanel = new ResearchBuildingPanel(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
+        	}
+        	catch (BuildingException e) {}
+        }
+        
+        
+        // Prepare Observation panel if building has Observatory.
+        if (building.hasFunction(AstronomicalObservation.NAME)) {
+        	try {
+        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
+            	BuildingFunctionPanel observationPanel = new AstronomicalObservationBuildingPanel(observation, desktop);
+            	functionPanels.add(observationPanel);
+            	functionListPanel.add(observationPanel);
         	}
         	catch (BuildingException e) {}
         }
