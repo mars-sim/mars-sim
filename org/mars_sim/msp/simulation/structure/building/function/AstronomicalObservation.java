@@ -23,11 +23,12 @@ import org.mars_sim.msp.simulation.structure.building.BuildingException;
 public class AstronomicalObservation extends Function  implements Lab {
 	private static final long serialVersionUID = 1L;
 	
+	
     private static String CLASS_NAME = 
     "org.mars_sim.msp.simulation.structure.building.function.AstronomicalObservation";
 
     private static Logger s_log = Logger.getLogger(CLASS_NAME);
-    private static String NAME = "Astronomical Observations";
+    public  static String NAME = "Astronomical Observations";
     private double powerRequired;
     private int techLevel;
 	private int labCapacity;
@@ -184,5 +185,13 @@ public class AstronomicalObservation extends Function  implements Lab {
 	        
 	        return buildingResearchSupply * existingResearchValue;
 	    }
+	 
+	 public int getCurrentObserversNumber(){
+		 return researchersInObservatory;
+	 }
+	 
+	 public int getObservatoryCapacity(){
+		 return observatoryCapacity;
+	 }
 
 }
