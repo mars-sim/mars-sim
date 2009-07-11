@@ -7,10 +7,14 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.equipment;
 
-import org.mars_sim.msp.simulation.equipment.*;
+import org.mars_sim.msp.simulation.equipment.Equipment;
 import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
-import org.mars_sim.msp.ui.standard.*;
-import org.mars_sim.msp.ui.standard.unit_window.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+
 
 /**
  * The EquipmentWindow is the window for displaying a piece of equipment.
