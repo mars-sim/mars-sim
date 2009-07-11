@@ -6,10 +6,15 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.mars_sim.msp.simulation.structure.building.function.Cooking;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+
 
 /**
  * The CookingBuildingPanel class is a building function panel representing 

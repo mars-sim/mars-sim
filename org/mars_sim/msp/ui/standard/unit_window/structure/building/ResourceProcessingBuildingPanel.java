@@ -11,12 +11,16 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mars_sim.msp.simulation.structure.building.function.*;
-import org.mars_sim.msp.ui.standard.*;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+
 
 /**
  * The ResourceProcessingBuildingPanel class is a building function panel representing 

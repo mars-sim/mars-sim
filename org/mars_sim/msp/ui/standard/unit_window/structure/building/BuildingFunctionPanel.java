@@ -7,9 +7,13 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import javax.swing.*;
-import org.mars_sim.msp.simulation.structure.building.*;
-import org.mars_sim.msp.ui.standard.*;
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.ui.standard.MainDesktopPane;
+import org.mars_sim.msp.ui.standard.MarsPanelBorder;
+
+
 
 /**
  * The BuildingFunctionPanel class is a panel representing a function for 

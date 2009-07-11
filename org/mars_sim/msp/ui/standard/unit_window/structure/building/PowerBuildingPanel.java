@@ -9,10 +9,14 @@ package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
 import java.awt.GridLayout;
 import java.text.DecimalFormat;
+
 import javax.swing.JLabel;
-import org.mars_sim.msp.simulation.structure.building.*;
+
+import org.mars_sim.msp.simulation.structure.building.Building;
+import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
+
 
 /**
  * The PowerBuildingPanel class is a building function panel representing 

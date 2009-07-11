@@ -6,11 +6,22 @@
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
-import org.mars_sim.msp.simulation.structure.building.function.*;
+
+import org.mars_sim.msp.simulation.structure.building.function.Crop;
+import org.mars_sim.msp.simulation.structure.building.function.Farming;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
+
+
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing 

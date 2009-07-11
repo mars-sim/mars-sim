@@ -7,13 +7,23 @@
 
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import org.mars_sim.msp.simulation.malfunction.*;
-import org.mars_sim.msp.simulation.structure.building.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.simulation.malfunction.Malfunction;
+import org.mars_sim.msp.simulation.malfunction.Malfunctionable;
+import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.unit_window.MalfunctionPanel;
+
 
 /**
  * The MalfunctionableBuildingPanel class is a building function panel representing 
