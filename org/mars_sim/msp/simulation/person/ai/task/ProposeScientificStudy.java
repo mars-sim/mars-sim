@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 2.87 2009-07-07
+ * @version 2.87 2009-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -102,6 +102,10 @@ public class ProposeScientificStudy extends Task implements Serializable {
             Job job = person.getMind().getJob();
             Science science = ScienceUtil.getAssociatedScience(job);
             if (science != null) result = 1D;
+            
+            // Modify if researcher is already collaborating in studies.
+            int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
+            result /= (numCollabStudies + 1D);
         }
         
         return result;

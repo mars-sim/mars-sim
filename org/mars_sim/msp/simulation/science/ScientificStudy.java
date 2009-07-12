@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 2.87 2009-06-29
+ * @version 2.87 2009-07-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -154,7 +154,9 @@ public class ScientificStudy implements Serializable {
      * @return work time (millisols).
      */
     public double getTotalProposalWorkTimeRequired() {
-        return BASE_PROPOSAL_WORK_TIME * difficultyLevel;
+        double result = BASE_PROPOSAL_WORK_TIME * difficultyLevel;
+        if (result == 0D) result = BASE_PROPOSAL_WORK_TIME;
+        return result;
     }
     
     /**
@@ -284,7 +286,9 @@ public class ScientificStudy implements Serializable {
      * @return work time (millisols).
      */
     public double getTotalPrimaryResearchWorkTimeRequired() {
-        return BASE_PRIMARY_RESEARCH_WORK_TIME * difficultyLevel;
+        double result = BASE_PRIMARY_RESEARCH_WORK_TIME * difficultyLevel;
+        if (result == 0D) result = BASE_PRIMARY_RESEARCH_WORK_TIME;
+        return result;
     }
     
     /**
@@ -329,7 +333,9 @@ public class ScientificStudy implements Serializable {
      * @return work time (millisols).
      */
     public double getTotalCollaborativeResearchWorkTimeRequired() {
-        return BASE_COLLABORATIVE_RESEARCH_WORK_TIME * difficultyLevel;
+        double result = BASE_COLLABORATIVE_RESEARCH_WORK_TIME * difficultyLevel;
+        if (result == 0D) result = BASE_COLLABORATIVE_RESEARCH_WORK_TIME;
+        return result;
     }
     
     /**
@@ -405,7 +411,9 @@ public class ScientificStudy implements Serializable {
      * @return work time (millisols).
      */
     public double getTotalPrimaryPaperWorkTimeRequired() {
-        return BASE_PRIMARY_PAPER_WORK_TIME * difficultyLevel;
+        double result = BASE_PRIMARY_PAPER_WORK_TIME * difficultyLevel;
+        if (result == 0D) result = BASE_PRIMARY_PAPER_WORK_TIME;
+        return result;
     }
     
     /**
@@ -446,7 +454,9 @@ public class ScientificStudy implements Serializable {
      * @return work time (millisols).
      */
     public double getTotalCollaborativePaperWorkTimeRequired() {
-        return BASE_COLLABORATIVE_PAPER_WORK_TIME * difficultyLevel;
+        double result = BASE_COLLABORATIVE_PAPER_WORK_TIME * difficultyLevel;
+        if (result == 0D) result = BASE_COLLABORATIVE_PAPER_WORK_TIME;
+        return result;
     }
     
     /**

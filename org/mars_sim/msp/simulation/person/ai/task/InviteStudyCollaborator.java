@@ -24,7 +24,11 @@ import org.mars_sim.msp.simulation.science.ScienceUtil;
 import org.mars_sim.msp.simulation.science.ScientificStudy;
 import org.mars_sim.msp.simulation.science.ScientificStudyManager;
 import org.mars_sim.msp.simulation.science.ScientificStudyUtil;
+import org.mars_sim.msp.simulation.structure.Settlement;
 
+/**
+ * A task for inviting a researcher to collaborate on a scientific study.
+ */
 public class InviteStudyCollaborator extends Task implements Serializable {
 
     private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.InviteStudyCollaborator";
@@ -148,6 +152,12 @@ public class InviteStudyCollaborator extends Task implements Serializable {
             ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
             int numCollaborativeStudies = studyManager.getOngoingCollaborativeStudies(invitee).size();
             inviteeValue /= (numCollaborativeStudies + 1D);
+            
+            // Modify based on if researcher and primary researcher are at same settlement.
+            Settlement researcherSettlement = person.getAssociatedSettlement();
+            Settlement primarySettlement = study.getPrimaryResearcher().getAssociatedSettlement();
+            if ((researcherSettlement != null) && researcherSettlement.equals(primarySettlement)) 
+                inviteeValue *= 2D;
             
             if (inviteeValue > bestValue) {
                 bestInvitee = invitee;

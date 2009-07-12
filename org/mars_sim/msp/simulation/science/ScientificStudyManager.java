@@ -229,6 +229,26 @@ public class ScientificStudyManager implements Serializable {
     }
     
     /**
+     * Gets all studies that have open invitations for collaboration for a researcher.
+     * @param collaborativeResearcher the collaborative researcher.
+     * @return list of studies.
+     */
+    public List<ScientificStudy> getOpenInvitationStudies(Person collaborativeResearcher) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        Iterator<ScientificStudy> i = studies.iterator();
+        while (i.hasNext()) {
+            ScientificStudy study = i.next();
+            if (!study.isCompleted() && study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
+                if (study.hasResearcherBeenInvited(collaborativeResearcher)) {
+                    if (!study.hasInvitedResearcherResponded(collaborativeResearcher)) 
+                        result.add(study);
+                }
+            }
+        }
+        return result;
+    }
+    
+    /**
      * Update all of the studies.
      */
     public void updateStudies() {
