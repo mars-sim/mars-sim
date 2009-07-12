@@ -72,7 +72,6 @@ public class AstronomicalObservation extends Function  implements Lab {
 		
 	}
 
-	@Override
 	public void addResearcher() throws Exception {
 		researchersInLab ++;
 		if (researchersInLab > labCapacity) {
@@ -95,7 +94,6 @@ public class AstronomicalObservation extends Function  implements Lab {
 		return labCapacity;
 	}
 
-	@Override
 	public int getResearcherNum() {
 		return researchersInLab;
 	}
@@ -122,7 +120,6 @@ public class AstronomicalObservation extends Function  implements Lab {
 		return result;
 	}
 
-	@Override
 	public void removeResearcher() throws Exception {
 		researchersInLab --;
 		if (getResearcherNum() < 0) {
