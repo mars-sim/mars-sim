@@ -48,7 +48,7 @@
 
     <!-- Compile simulation classes. -->
     <target name="compile-sim" depends="init">
-        <javac srcdir="${mars.src}" destdir="${mars.class}">
+        <javac srcdir="${mars.src}" destdir="${mars.class}" source="1.5" target="1.5">
             <include name="org/mars_sim/msp/simulation/**/*.java" />
             <classpath>
                 <fileset dir="${mars.jars}">
@@ -64,7 +64,7 @@
 
     <!-- Compile user interface classes. -->
     <target name="compile-ui" depends="compile-sim">
-        <javac srcdir="${mars.src}" destdir="${mars.class}">
+        <javac srcdir="${mars.src}" destdir="${mars.class}" source="1.5" target="1.5">
             <include name="org/mars_sim/msp/ui/standard/**/*.java" />
             <classpath>
                 <fileset dir="${mars.jars}">
@@ -84,7 +84,7 @@
 
     <!-- Compile main project class. -->
     <target name="compile-main" depends="compile-sim, compile-ui">
-        <javac srcdir="${mars.src}" destdir="${mars.class}">
+        <javac srcdir="${mars.src}" destdir="${mars.class}" source="1.5" target="1.5">
             <include name="org/mars_sim/msp/*.java" />
         </javac>
     </target>
