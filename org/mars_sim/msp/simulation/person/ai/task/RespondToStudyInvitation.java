@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.science.Science;
 import org.mars_sim.msp.simulation.science.ScienceUtil;
@@ -99,14 +100,33 @@ public class RespondToStudyInvitation extends Task implements Serializable {
             study.respondingInvitedResearcher(person);
             Job job = person.getMind().getJob();
             
+            // Get relationship between invitee and primary researcher.
+            Person primaryResearcher = study.getPrimaryResearcher();
+            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+            Relationship relationship = relationshipManager.getRelationship(person, primaryResearcher);
+            
             // Decide response to invitation.
             if (decideResponse()) {
                 Science science = ScienceUtil.getAssociatedScience(job);
                 study.addCollaborativeResearcher(person, science);
+                
+                // Add 10 points to primary researcher's opinion of invitee for accepting invitation.
+                if (relationship != null) {
+                    double currentOpinion = relationship.getPersonOpinion(primaryResearcher);
+                    relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
+                }
+                
                 logger.info(job.getName() + " " + person.getName() + 
                         " accepting invitation to collaborate on " + study.toString());
             }
             else {
+                
+                // Subtract 10 points from primary researcher's opinion of invitee for rejecting invitation.
+                if (relationship != null) {
+                    double currentOpinion = relationship.getPersonOpinion(primaryResearcher);
+                    relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
+                }
+                
                 logger.info(job.getName() + " " + person.getName() + 
                         " rejecting invitation to collaborate on " + study.toString());
             }

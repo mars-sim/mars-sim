@@ -21,6 +21,7 @@ public class Relationship implements Serializable {
 	// Types of starting relationships.
 	public static final String FIRST_IMPRESSION = "First Impression";
 	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
+    public static final String COMMUNICATION_MEETING = "Communication Meeting";
 	
 	// Relationship modifier for settlers since they are trained to get along with each other.
 	private static final double SETTLER_MODIFIER = 20D;
@@ -52,6 +53,10 @@ public class Relationship implements Serializable {
 			setPerson1Opinion(getExistingRelationship(person1, person2));
 			setPerson2Opinion(getExistingRelationship(person2, person1));
 		}
+        else if (COMMUNICATION_MEETING.equals(startingRelationship)) {
+            setPerson1Opinion(getCommunicationMeeting(person1, person2));
+            setPerson2Opinion(getCommunicationMeeting(person2, person1));
+        }
 		else throw new IllegalArgumentException("Invalid starting relationship type: " + startingRelationship);
 	}
 	
@@ -189,4 +194,19 @@ public class Relationship implements Serializable {
 		
 		return result;
 	}
+    
+    /**
+     * Gets an new relationship between two people who meet via remote communication.
+     * @param person the person who has a relationship with the target person.
+     * @param target the person who is the target of the relationship.
+     * @return the person's opinion of the target as a value from 0 to 100.
+     */
+    private double getCommunicationMeeting(Person person, Person target) {
+        double result = 0D;
+        
+        // Default to 50 for now.
+        result = 50D;
+        
+        return result;
+    }
 }

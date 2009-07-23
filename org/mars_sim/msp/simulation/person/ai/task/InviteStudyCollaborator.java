@@ -18,6 +18,7 @@ import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.science.Science;
 import org.mars_sim.msp.simulation.science.ScienceUtil;
@@ -93,7 +94,9 @@ public class InviteStudyCollaborator extends Task implements Serializable {
             if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
                 
                 // Check that there isn't a full set of open invitations already sent out.
-                if (study.getNumOpenResearchInvitations() < ScientificStudy.MAX_NUM_COLLABORATORS) {
+                int collabNum = study.getCollaborativeResearchers().size();
+                int openInvites = study.getNumOpenResearchInvitations();
+                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
                     
                     // Check that there's scientists available for invitation.
                     if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
@@ -183,6 +186,18 @@ public class InviteStudyCollaborator extends Task implements Serializable {
             
             // Add invitation to study.
             study.addInvitedResearcher(invitee);
+            
+            // Check if existing relationship between primary researcher and invitee.
+            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+            if (!relationshipManager.hasRelationship(person, invitee)) {
+                // Add new communication meeting relationship.
+                relationshipManager.addRelationship(person, invitee, Relationship.COMMUNICATION_MEETING);
+            }
+            
+            // Add 10 points to invitee's opinion of primary researcher due to invitation. 
+            Relationship relationship = relationshipManager.getRelationship(invitee, person);
+            double currentOpinion = relationship.getPersonOpinion(invitee);
+            relationship.setPersonOpinion(invitee, currentOpinion + 10D);
             
             logger.info(person.getName() + " inviting " + invitee.getName() + 
                     " to collaborate in " + study.toString());

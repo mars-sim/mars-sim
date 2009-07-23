@@ -42,7 +42,7 @@ public class RelationshipManager implements Serializable {
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.simulation.person.ai.social.RelationshipManager";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// The base % chance of a relationship change per millisol.
 	private static final double BASE_RELATIONSHIP_CHANGE_PROBABILITY = .1D;
