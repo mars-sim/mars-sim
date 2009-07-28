@@ -121,7 +121,7 @@ public class Areologist extends Job implements Serializable {
 			    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
 			}
 		}
-		
+		/*
 		// Add number of exploration-capable rovers parked at the settlement.
 		Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 		while (j.hasNext()) {
@@ -136,7 +136,8 @@ public class Areologist extends Job implements Serializable {
 				}
 			}
 		}
-		
+		*/
+        /*
 		// Add number of exploration-capable rovers out on missions for the settlement.
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator k = missionManager.getMissionsForSettlement(settlement).iterator();
@@ -153,7 +154,9 @@ public class Areologist extends Job implements Serializable {
 				}
 			}
 		}
-
+        */
+        result *= 5D;
+        
 		return result;	
 	}
 }

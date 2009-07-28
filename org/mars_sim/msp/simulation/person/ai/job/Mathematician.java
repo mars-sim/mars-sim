@@ -85,6 +85,8 @@ public class Mathematician extends Job implements Serializable {
                 logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
             }
         }
+        
+        result *= 5D;
 
         return result;  
     }

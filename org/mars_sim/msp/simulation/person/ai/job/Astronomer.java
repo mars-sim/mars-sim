@@ -1,14 +1,13 @@
 /**
  * Mars Simulation Project
  * Astronomer.java
- * @version 2.87 2009-06-18
+ * @version 2.87 2009-06-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
 
 import java.io.Serializable;
 import java.util.Iterator;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +21,8 @@ import org.mars_sim.msp.simulation.person.ai.task.ResearchAstronomy;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
+import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
 
 /** 
@@ -71,21 +72,38 @@ public class Astronomer extends Job implements Serializable {
     public double getSettlementNeed(Settlement settlement) {
         double result = 0D;
         
+        BuildingManager manager = settlement.getBuildingManager();
+        
         // Add (labspace * tech level) for all labs with astronomy specialities.
-        List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
-        Iterator i = laboratoryBuildings.iterator();
+        Iterator<Building> i = manager.getBuildings(Research.NAME).iterator();
         while (i.hasNext()) {
-            Building building = (Building) i.next();
+            Building building = i.next();
             try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.ASTRONOMY)) 
-                    result += (lab.getLaboratorySize() * lab.getTechnologyLevel());
+                    result += lab.getLaboratorySize() * lab.getTechnologyLevel();
             }
             catch (BuildingException e) {
-                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+                logger.log(Level.SEVERE,"getSettlementNeeded(): e.getMessage()", e);
             }
         }
-
+        
+        // Add astronomical observatories (observer capacity * tech level * 2).
+        Iterator<Building> j = manager.getBuildings(AstronomicalObservation.NAME).iterator();
+        while (j.hasNext()) {
+            Building building = j.next();
+            try {
+                AstronomicalObservation observatory = (AstronomicalObservation) 
+                        building.getFunction(AstronomicalObservation.NAME);
+                result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
+            }
+            catch (BuildingException e) {
+                logger.log(Level.SEVERE,"getSettlementNeeded(): e.getMessage()", e);
+            }
+        }
+        
+        result *= 5D;
+        
         return result;  
     }
 }

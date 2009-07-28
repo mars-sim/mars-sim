@@ -86,6 +86,8 @@ public class Physicist extends Job implements Serializable {
             }
         }
 
+        result *= 5D;
+        
         return result;  
     }
 }
