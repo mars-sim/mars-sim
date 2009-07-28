@@ -271,7 +271,8 @@ public class BuildingManager implements Serializable {
      * @return list of buildings that are not at or above maximum occupant capacity.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List<Building> getUncrowdedBuildings(List<Building> buildingList) throws BuildingException {
+    public static List<Building> getUncrowdedBuildings(List<Building> buildingList) 
+            throws BuildingException {
     	List<Building> result = new ArrayList<Building>();
     	
     	try {
@@ -283,7 +284,8 @@ public class BuildingManager implements Serializable {
     		}
     	}
     	catch (ClassCastException e) {
-    		throw new BuildingException("BuildingManager.getUncrowdedBuildings(): building isn't a life support building.");
+    		throw new BuildingException("BuildingManager.getUncrowdedBuildings(): " +
+                    "building isn't a life support building.");
     	}
     	
     	return result;
@@ -295,7 +297,8 @@ public class BuildingManager implements Serializable {
      * @return list of least crowded buildings.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) throws BuildingException {
+    public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) 
+            throws BuildingException {
     	List<Building> result = new ArrayList<Building>();
     	
     	try {
@@ -320,7 +323,8 @@ public class BuildingManager implements Serializable {
 			}
 		}
 		catch (ClassCastException e) {
-			throw new BuildingException("BuildingManager.getUncrowdedBuildings(): building isn't a life support building.");
+			throw new BuildingException("BuildingManager.getLeastCrowdedBuildings(): " +
+                    "building isn't a life support building.");
 		}
     	
     	return result;

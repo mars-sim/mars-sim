@@ -694,9 +694,9 @@ public class BuildingConfig implements Serializable {
 	}
 	
     /**
-     * Gets the power storage capacity of the building.
+     * Gets the power required by the astronomical observation function.
      * @param buildingName the name of the building.
-     * @return power storage capacity (kW hr).
+     * @return power required (kW).
      * @throws Exception if building name can not be found or XML parsing error.
      */
     public double getAstronomicalObservationPowerRequirement(String buildingName) throws Exception {
