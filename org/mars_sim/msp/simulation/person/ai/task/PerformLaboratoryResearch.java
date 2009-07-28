@@ -48,6 +48,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
     // Task phase.
     private static final String RESEARCHING = "Researching";
     
+    // Data members.
     private ScientificStudy study; // The scientific study the person is researching for.
     private Lab lab;         // The laboratory the person is working in.
     private Science science;  // The science that is being researched.
@@ -68,6 +69,8 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
         if (study != null) {
             science = getScience(person, study);
             if (science != null) {
+                setDescription("Perform " + science.getName().toLowerCase() + 
+                        " laboratory research");
                 lab = getLocalLab(person, science);
                 if (lab != null) {
                     addPersonToLab();
@@ -169,7 +172,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
     }
     
     /**
-     * Gets the crowding modifier for a researcher to use a giving laboratory building.
+     * Gets the crowding modifier for a researcher to use a given laboratory building.
      * @param researcher the researcher.
      * @param lab the laboratory.
      * @return crowding modifier.
@@ -410,6 +413,10 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
         if (scienceSkill == 0) researchTime /= 2D;
         if (scienceSkill > 1) researchTime += researchTime * (.2D * scienceSkill);
         
+        // Modify by tech level of laboratory.
+        int techLevel = lab.getTechnologyLevel();
+        if (techLevel > 0) researchTime *= techLevel;
+        
         return researchTime;
     }
 
@@ -448,7 +455,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
         
         // Check for laboratory malfunction.
         if (malfunctions.hasMalfunction()) endTask();
-
+        
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
