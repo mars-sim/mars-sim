@@ -68,18 +68,12 @@
 			<!-- The building has a research laboratory. -->
 			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
 			<!-- capacity: the number of researchers the lab has room for concurrently. -->
-			<research tech-level="1" capacity="4">
+			<research tech-level="1" capacity="1">
 				<!-- Sciences that can be researched at the laboratory. -->
 				<research-speciality name="Areology" />
 				<research-speciality name="Medicine" />
-				<research-speciality name="Materials Science" />
-				<research-speciality name="Construction" />
 				<research-speciality name="Biology" />
-				<research-speciality name="Astronomy" />
 				<research-speciality name="Chemistry" />
-				<research-speciality name="Physics" />
-				<research-speciality name="Mathematics" />
-				<research-speciality name="Meteorology" />
 			</research>
 			
 			<!-- The building is capable of processing resources. -->
@@ -341,7 +335,7 @@
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
 			<medical-care tech-level="5" beds="8" />
-			<research tech-level="2" capacity="10">
+			<research tech-level="2" capacity="2">
 				<research-speciality name="Medicine" />
 			</research>
 		</functions>
@@ -363,7 +357,7 @@
 		<functions>
 			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
 			<life-support capacity="10" power-required="20.0" />
-			<research tech-level="2" capacity="5">
+			<research tech-level="2" capacity="2">
 				<research-speciality name="Botany" />
 			</research>
 			<resource-processing power-down-level=".5">
@@ -387,12 +381,9 @@
 		<power-required base-power="30.0" base-power-down-power="10.0" />
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
-			<research tech-level="2" capacity="10">
+			<research tech-level="2" capacity="4">
 				<research-speciality name="Areology" />
-				<research-speciality name="Materials Science" />
-				<research-speciality name="Construction" />
 				<research-speciality name="Biology" />
-				<research-speciality name="Astronomy" />
 				<research-speciality name="Chemistry" />
 				<research-speciality name="Physics" />
 				<research-speciality name="Mathematics" />
@@ -419,10 +410,6 @@
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="4" concurrent-processes="4" />
-			<research tech-level="4" capacity="4">
-				<research-speciality name="Materials Science" />
-				<research-speciality name="Construction" />
-			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
 				<resource-storage resource="Carbon" capacity="500.0" />
@@ -560,10 +547,6 @@
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<manufacture tech-level="2" concurrent-processes="2" />
-			<research tech-level="2" capacity="2">
-				<research-speciality name="Materials Science" />
-				<research-speciality name="Construction" />
-			</research>
 			<storage>
 				<resource-storage resource="Regolith" capacity="500.0" />
 				<resource-storage resource="Carbon" capacity="250.0" />
