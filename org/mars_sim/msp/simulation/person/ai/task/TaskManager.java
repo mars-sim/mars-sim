@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.87 2009-07-11
+ * @version 2.87 2009-07-26
  * @author Scott Davis
  */
 
@@ -53,7 +53,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
         
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[28];
+        availableTasks = (Class<? extends Task>[]) new Class[29];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -63,35 +63,26 @@ public class TaskManager implements Serializable {
         availableTasks[6] = Sleep.class;
         availableTasks[7] = EatMeal.class;
         availableTasks[8] = MedicalAssistance.class;
-        //availableTasks[9] = ResearchAreology.class;
         availableTasks[9] = RepairMalfunction.class;
         availableTasks[10] = RepairEVAMalfunction.class;
         availableTasks[11] = EnterAirlock.class;
         availableTasks[12] = Workout.class;
-        //availableTasks[14] = ResearchBotany.class;
-        //availableTasks[15] = ResearchMedicine.class;
         availableTasks[13] = Teach.class;
         availableTasks[14] = CookMeal.class;
         availableTasks[15] = MaintenanceEVA.class;
         availableTasks[16] = LoadVehicle.class;
         availableTasks[17] = UnloadVehicle.class;
         availableTasks[18] = ToggleResourceProcess.class;
-        //availableTasks[22] = ResearchMaterialsScience.class;
         availableTasks[19] = ManufactureGood.class;
         availableTasks[20] = ResearchConstruction.class;
         availableTasks[21] = ToggleFuelPowerSource.class;
         availableTasks[22] = DigLocalRegolith.class;
         availableTasks[23] = PrescribeMedication.class;
-        //availableTasks[28] = ResearchBiology.class;
-        //availableTasks[29] = ResearchAstronomy.class;
-        //availableTasks[30] = ResearchChemistry.class;
-        //availableTasks[31] = ResearchPhysics.class;
-        //availableTasks[32] = ResearchMathematics.class;
-        //availableTasks[33] = ResearchMeteorology.class;
         availableTasks[24] = ProposeScientificStudy.class;
         availableTasks[25] = InviteStudyCollaborator.class;
         availableTasks[26] = RespondToStudyInvitation.class;
         availableTasks[27] = PerformLaboratoryResearch.class;
+        availableTasks[28] = ObserveAstronomicalObjects.class;
         
         // Initialize cache values.
         timeCache = null;
