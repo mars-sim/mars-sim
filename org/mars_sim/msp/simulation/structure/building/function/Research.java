@@ -15,7 +15,7 @@ import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.*;
  
 /**
- * The Resource class is a building function for research.
+ * The Research class is a building function for research.
  */
 public class Research extends Function implements Lab, Serializable {
 
