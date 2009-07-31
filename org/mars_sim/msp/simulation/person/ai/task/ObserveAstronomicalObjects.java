@@ -328,7 +328,7 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
      */
     protected double observingPhase(double time) throws Exception {
         
-        // If person is incompacitated, end task.
+        // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
         
         // Check for observatory malfunction.
