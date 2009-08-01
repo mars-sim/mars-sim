@@ -4,7 +4,6 @@
  * @version 2.87 2009-07-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.simulation.person.ai.task;
 
 import java.io.Serializable;
@@ -52,7 +51,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
     private ScientificStudy study; // The scientific study the person is researching for.
     private Lab lab;         // The laboratory the person is working in.
     private Science science;  // The science that is being researched.
-    private MalfunctionManager malfunctions; // The labs associated malfunction manager.
+    private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
     
     /**
      * Constructor

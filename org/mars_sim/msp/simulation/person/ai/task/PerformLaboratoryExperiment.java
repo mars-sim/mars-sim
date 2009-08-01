@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * StudyFieldSamples.java
- * @version 2.87 2009-07-30
+ * PerformLaboratoryExperiment.java
+ * @version 2.87 2009-08-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -10,30 +10,21 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.Inventory;
 import org.mars_sim.msp.simulation.Lab;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.Simulation;
-import org.mars_sim.msp.simulation.Unit;
 import org.mars_sim.msp.simulation.malfunction.MalfunctionManager;
-import org.mars_sim.msp.simulation.mars.ExploredLocation;
-import org.mars_sim.msp.simulation.mars.MineralMap;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
-import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
-import org.mars_sim.msp.simulation.person.ai.mission.Mission;
-import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.science.Science;
 import org.mars_sim.msp.simulation.science.ScienceUtil;
 import org.mars_sim.msp.simulation.science.ScientificStudy;
 import org.mars_sim.msp.simulation.science.ScientificStudyManager;
-import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
@@ -42,27 +33,24 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /**
- * A task for studying collected field samples (rocks, etc).
+ * A task for performing a scientific experiment in a laboratory for a scientific study.
  */
-public class StudyFieldSamples extends Task implements Serializable {
+public class PerformLaboratoryExperiment extends Task implements Serializable {
 
     private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai." + 
-        "task.PerformLaboratoryResearch";
+        "task.PerformLaboratoryExperiment";
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // The stress modified per millisol.
-    private static final double STRESS_MODIFIER = -.1D; 
+    private static final double STRESS_MODIFIER = .2D; 
 
     // Task phase.
-    private static final String STUDYING_SAMPLES = "Studying Samples";
-    
-    // Mass (kg) of field sample to study.
-    private static final double SAMPLE_MASS = 1D;
+    private static final String EXPERIMENTING = "Experimenting";
 
     // Data members.
-    private ScientificStudy study; // The scientific study the person is researching for.
+    private ScientificStudy study; // The scientific study the person is experimenting for.
     private Lab lab;         // The laboratory the person is working in.
-    private Science science;  // The science that is being researched.
+    private Science science;  // The science that is being researched with the experiment.
     private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
     
     /**
@@ -70,16 +58,18 @@ public class StudyFieldSamples extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public StudyFieldSamples(Person person) throws Exception {
-        // Use Task constructor.
-        super("Study field samples", person, true, false, STRESS_MODIFIER, true, 
-                RandomUtil.getRandomDouble(100D));
+    public PerformLaboratoryExperiment(Person person) throws Exception {
+        // Use task constructor.
+        super("Perform laboratory research", person, true, false, STRESS_MODIFIER, 
+                true, RandomUtil.getRandomDouble(500D));
         
         // Determine study.
         study = determineStudy();
         if (study != null) {
             science = getScience(person, study);
             if (science != null) {
+                setDescription("Perform " + science.getName().toLowerCase() + 
+                        " experiment in laboratory");
                 lab = getLocalLab(person, science);
                 if (lab != null) {
                     addPersonToLab();
@@ -99,24 +89,9 @@ public class StudyFieldSamples extends Task implements Serializable {
             endTask();
         }
         
-        // Take field samples from inventory.
-        if (!isDone()) {
-            Unit container = person.getContainerUnit();
-            if (container != null) {
-                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-                Inventory inv = container.getInventory();
-                double totalRockSampleMass = inv.getAmountResourceStored(rockSamples);
-                if (totalRockSampleMass >= SAMPLE_MASS) {
-                    double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
-                    if (fieldSampleMass > totalRockSampleMass) fieldSampleMass = totalRockSampleMass;
-                    inv.retrieveAmountResource(rockSamples, fieldSampleMass);
-                }
-            }
-        }
-        
         // Initialize phase
-        addPhase(STUDYING_SAMPLES);
-        setPhase(STUDYING_SAMPLES);
+        addPhase(EXPERIMENTING);
+        setPhase(EXPERIMENTING);
     }
     
     /** 
@@ -127,19 +102,19 @@ public class StudyFieldSamples extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
         
-        // Create list of possible sciences for studying field samples.
-        List<Science> fieldSciences = getFieldSciences();
+        // Create list of experimental sciences.
+        List<Science> experimentalSciences = getExperimentalSciences();
         
         // Add probability for researcher's primary study (if any).
         ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
         if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
             if (!primaryStudy.isPrimaryResearchCompleted()) {
-                if (fieldSciences.contains(primaryStudy.getScience())) {
+                if (experimentalSciences.contains(primaryStudy.getScience())) {
                     try {
                         Lab lab = getLocalLab(person, primaryStudy.getScience());
                         if (lab != null) {
-                            double primaryResult = 200D;
+                            double primaryResult = 100D;
                     
                             // Get lab building crowding modifier.
                             primaryResult *= getLabCrowdingModifier(person, lab);
@@ -168,11 +143,11 @@ public class StudyFieldSamples extends Task implements Serializable {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                 if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                     Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                    if (fieldSciences.contains(collabScience)) {
+                    if (experimentalSciences.contains(collabScience)) {
                         try {
                             Lab lab = getLocalLab(person, collabScience);
                             if (lab != null) {
-                                double collabResult = 100D;
+                                double collabResult = 50D;
                         
                                 // Get lab building crowding modifier.
                                 collabResult *= getLabCrowdingModifier(person, lab);
@@ -195,19 +170,6 @@ public class StudyFieldSamples extends Task implements Serializable {
             }
         }
         
-        // Check that there are available field samples to study.
-        try {
-            Unit container = person.getContainerUnit();
-            if (container != null) {
-                Inventory inv = container.getInventory();
-                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-                if (inv.getAmountResourceStored(rockSamples) < SAMPLE_MASS) result = 0D;
-            }
-        }
-        catch (Exception e) {
-            logger.severe("getProbability(): " + e.getMessage());
-        }
-        
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
         
@@ -215,20 +177,22 @@ public class StudyFieldSamples extends Task implements Serializable {
     }
     
     /**
-     * Gets all the sciences related to studying field samples.
+     * Gets all the sciences related to laboratory experimentation.
      * @return list of sciences.
      */
-    private static List<Science> getFieldSciences() {
+    private static List<Science> getExperimentalSciences() {
     
-        // Create list of possible sciences for studying field samples.
-        List<Science> fieldSciences = new ArrayList<Science>(3);
-        fieldSciences.add(ScienceUtil.getScience(Science.AREOLOGY));
-        fieldSciences.add(ScienceUtil.getScience(Science.BIOLOGY));
-        fieldSciences.add(ScienceUtil.getScience(Science.CHEMISTRY));
+        // Create list of possible sciences for laboratory experimentation.
+        List<Science> experimentalSciences = new ArrayList<Science>(5);
+        experimentalSciences.add(ScienceUtil.getScience(Science.BOTANY));
+        experimentalSciences.add(ScienceUtil.getScience(Science.BIOLOGY));
+        experimentalSciences.add(ScienceUtil.getScience(Science.CHEMISTRY));
+        experimentalSciences.add(ScienceUtil.getScience(Science.PHYSICS));
+        experimentalSciences.add(ScienceUtil.getScience(Science.MEDICINE));
         
-        return fieldSciences;
+        return experimentalSciences;
     }
-        
+    
     /**
      * Gets the crowding modifier for a researcher to use a given laboratory building.
      * @param researcher the researcher.
@@ -258,8 +222,8 @@ public class StudyFieldSamples extends Task implements Serializable {
         
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
         
-        // Create list of possible sciences for studying field samples.
-        List<Science> fieldSciences = getFieldSciences();
+        // Create list of experimental sciences.
+        List<Science> experimentalSciences = getExperimentalSciences();
         
         // Add primary study if appropriate science and in research phase.
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
@@ -267,7 +231,7 @@ public class StudyFieldSamples extends Task implements Serializable {
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
                     !primaryStudy.isPrimaryResearchCompleted()) {
-                if (fieldSciences.contains(primaryStudy.getScience())) {
+                if (experimentalSciences.contains(primaryStudy.getScience())) {
                     // Primary study added twice to double chance of random selection.
                     possibleStudies.add(primaryStudy);
                     possibleStudies.add(primaryStudy);
@@ -282,7 +246,7 @@ public class StudyFieldSamples extends Task implements Serializable {
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                if (fieldSciences.contains(collabScience)) {
+                if (experimentalSciences.contains(collabScience)) {
                     possibleStudies.add(collabStudy);
                 }
             }
@@ -317,7 +281,7 @@ public class StudyFieldSamples extends Task implements Serializable {
     }
     
     /**
-     * Gets a local lab for studying field samples.
+     * Gets a local lab for experimentation.
      * @param person the person checking for the lab.
      * @param science the science to research.
      * @return laboratory found or null if none.
@@ -334,7 +298,7 @@ public class StudyFieldSamples extends Task implements Serializable {
     }
     
     /**
-     * Gets a settlement lab for studying field samples.
+     * Gets a settlement lab for experimentation.
      * @param person the person looking for a lab.
      * @param science the science to research.
      * @return a valid research lab.
@@ -450,16 +414,16 @@ public class StudyFieldSamples extends Task implements Serializable {
             }
         }
         catch (Exception e) {
-            logger.log(Level.SEVERE,"addPersonToLab(): " + e.getMessage());
+            logger.log(Level.SEVERE, "addPersonToLab(): " + e.getMessage());
         }
     }
     
     @Override
     protected void addExperience(double time) {
         // Add experience to relevant science skill
-        // (1 base experience point per 10 millisols of research time)
+        // (1 base experience point per 15 millisols of research time)
         // Experience points adjusted by person's "Academic Aptitude" attribute.
-        double newPoints = time / 10D;
+        double newPoints = time / 15D;
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(
             NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
@@ -467,7 +431,7 @@ public class StudyFieldSamples extends Task implements Serializable {
         String scienceSkill = ScienceUtil.getAssociatedSkill(science);
         person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
     }
-
+    
     /**
      * Gets the effective research time based on the person's science skill.
      * @param time the real amount of time (millisol) for research.
@@ -486,7 +450,7 @@ public class StudyFieldSamples extends Task implements Serializable {
         
         return researchTime;
     }
-    
+
     @Override
     public List<String> getAssociatedSkills() {
         List<String> results = new ArrayList<String>(1);
@@ -505,17 +469,17 @@ public class StudyFieldSamples extends Task implements Serializable {
     @Override
     protected double performMappedPhase(double time) throws Exception {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (STUDYING_SAMPLES.equals(getPhase())) return studyingSamplesPhase(time);
+        if (EXPERIMENTING.equals(getPhase())) return experimentingPhase(time);
         else return time;
     }
     
     /**
-     * Performs the studying samples phase.
+     * Performs the experimenting phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double studyingSamplesPhase(double time) throws Exception {
+    private double experimentingPhase(double time) throws Exception {
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
         
@@ -538,10 +502,6 @@ public class StudyFieldSamples extends Task implements Serializable {
         if (isPrimary) study.addPrimaryResearchWorkTime(researchTime);
         else study.addCollaborativeResearchWorkTime(person, researchTime);
         
-        // If areology science, improve explored site mineral concentration estimates.
-        Science areologyScience = ScienceUtil.getScience(Science.AREOLOGY);
-        if (areologyScience.equals(science)) improveMineralConcentrationEstimates(time);
-        
         // Add experience
         addExperience(researchTime);
         
@@ -557,7 +517,7 @@ public class StudyFieldSamples extends Task implements Serializable {
      */
     private void checkForAccident(double time) {
 
-        double chance = .001D;
+        double chance = .01D;
 
         // Science skill modification.
         String scienceSkill = ScienceUtil.getAssociatedSkill(science);
@@ -566,107 +526,12 @@ public class StudyFieldSamples extends Task implements Serializable {
         else chance /= (skill - 2);
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has a lab accident while studying field samples.");
+            logger.info(person.getName() + " has a lab accident while performing " + 
+                    science.getName() + " experiment");
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
                 ((Research) lab).getBuilding().getMalfunctionManager().accident();
             else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
                 person.getVehicle().getMalfunctionManager().accident(); 
         }
-    }
-    
-    /**
-     * Improve the mineral concentration estimates of an explored site.
-     * @param time the amount of time available (millisols).
-     */
-    private void improveMineralConcentrationEstimates(double time) {
-        double probability = (time / 500D) * getEffectiveSkillLevel();
-        if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-            
-            // Determine explored site to improve estimations.
-            ExploredLocation site = determineExplorationSite();
-            if (site != null) {
-                MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
-                Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
-                Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
-                while (i.hasNext()) {
-                    String mineralType = i.next();
-                    double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-                    double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-                    double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-                    double estimationImprovement = RandomUtil.getRandomDouble(1D * getEffectiveSkillLevel());
-                    if (estimationImprovement > estimationDiff) estimationImprovement = estimationDiff;
-                    if (estimatedConcentration < actualConcentration) estimatedConcentration += estimationImprovement;
-                    else estimatedConcentration -= estimationImprovement;
-                    estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
-                }
-            }
-        }
-    }
-    
-    /**
-     * Determines an exploration site to improve mineral concentration estimates.
-     * @return exploration site or null if none.
-     */
-    private ExploredLocation determineExplorationSite() {
-        
-        // Try to use an exploration mission site.
-        ExploredLocation result = getExplorationMissionSite();
-        
-        // Try to use a site explored previously by the settlement.
-        if (result == null) result = getSettlementExploredSite();
-        
-        return result;
-    }
-    
-    /**
-     * Gets an exploration site that's been explored by the person's current 
-     * exploration mission (if any).
-     * @return exploration site or null if none.
-     */
-    private ExploredLocation getExplorationMissionSite() {
-        ExploredLocation result = null;
-        
-        Mission mission = person.getMind().getMission();
-        if ((mission != null) && (mission instanceof Exploration)) {
-            Exploration explorationMission = (Exploration) mission;
-            List<ExploredLocation> exploredSites = explorationMission.getExploredSites();
-            if (exploredSites.size() > 0) {
-                int siteIndex = RandomUtil.getRandomInt(exploredSites.size() - 1);
-                ExploredLocation location = exploredSites.get(siteIndex);
-                if (!location.isMined() && !location.isReserved())
-                    result = location;
-            }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets an exploration site that was previously explored by the person's settlement.
-     * @return exploration site or null if none.
-     */
-    private ExploredLocation getSettlementExploredSite() {
-        ExploredLocation result = null;
-        
-        Settlement settlement = person.getAssociatedSettlement();
-        if (settlement != null) {
-            List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
-            List<ExploredLocation> allExploredLocations = Simulation.instance().getMars().
-                    getSurfaceFeatures().getExploredLocations();
-            Iterator<ExploredLocation> i = allExploredLocations.iterator();
-            while (i.hasNext()) {
-                ExploredLocation location = i.next();
-                if (settlement.equals(location.getSettlement()) && !location.isMined() && 
-                        !location.isReserved())
-                    settlementExploredLocations.add(location);
-            }
-            
-            if (settlementExploredLocations.size() > 0) {
-                int siteIndex = RandomUtil.getRandomInt(settlementExploredLocations.size() - 1);
-                result = settlementExploredLocations.get(siteIndex);
-            }
-        }
-        
-        return result;
     }
 }
