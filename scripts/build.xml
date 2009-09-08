@@ -98,7 +98,7 @@
             <fileset dir="${mars.class}">
                 <include name="**/*.class" />
                 <exclude name="org/mars_sim/msp/*.class" />
-	        <exclude name="org/mars_sim/msp/ui/**/*.class" />
+	        	<exclude name="org/mars_sim/msp/ui/**/*.class" />
             </fileset>
         </jar>
     </target>
@@ -137,14 +137,14 @@
     <!-- Clean build of all jars. -->
     <target name="clean-build" depends="clean, build" />
 
-	<path id="test.classpath">
-		<pathelement location="${mars.basDir}" />
-		<pathelement location="${mars.jars}/junit.jar" />
-		<fileset dir="${mars.jars}">
-			<include name="**/*.jar"/>
-			<include name="**/*.zip"/>
-		</fileset>
-	</path>
+    <path id="test.classpath">
+        <pathelement location="${mars.baseDir}" />
+        <pathelement location="${mars.jars}/junit.jar" />
+        <fileset dir="${mars.jars}">
+            <include name="**/*.jar"/>
+            <include name="**/*.zip"/>
+        </fileset>
+    </path>
 	
     <!-- Perform Unit test. -->
     <target name="test">
