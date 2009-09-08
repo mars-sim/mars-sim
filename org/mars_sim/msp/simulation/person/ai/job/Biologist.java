@@ -12,25 +12,17 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
-import org.mars_sim.msp.simulation.person.ai.mission.Mission;
-import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchBiology;
-import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
-import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
  * The Biologist class represents a job for a biologist.
@@ -49,7 +41,6 @@ public class Biologist extends Job implements Serializable {
         super("Biologist");
         
         // Add biologist-related tasks.
-        jobTasks.add(ResearchBiology.class);
         
         // Add biologist-related missions.
         jobMissionJoins.add(Exploration.class);

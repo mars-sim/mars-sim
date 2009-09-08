@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
@@ -21,22 +20,13 @@ import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
 import org.mars_sim.msp.simulation.person.ai.mission.Mining;
-import org.mars_sim.msp.simulation.person.ai.mission.Mission;
-import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.CollectResources;
-import org.mars_sim.msp.simulation.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.simulation.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchAreology;
-import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
-import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
@@ -55,10 +45,7 @@ public class Areologist extends Job implements Serializable {
 		super("Areologist");
 		
 		// Add areologist-related tasks.
-		jobTasks.add(ResearchAreology.class);
 		jobTasks.add(CollectResources.class);
-		jobTasks.add(EnterAirlock.class);
-		jobTasks.add(ExitAirlock.class);
 		
 		// Add areologist-related missions.
 		jobMissionStarts.add(Exploration.class);

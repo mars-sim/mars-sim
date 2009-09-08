@@ -18,7 +18,6 @@ import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchMathematics;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -41,7 +40,6 @@ public class Mathematician extends Job implements Serializable {
         super("Mathematician");
         
         // Add mathematician-related tasks.
-        jobTasks.add(ResearchMathematics.class);
         
         // Add mathematician-related missions.
         jobMissionStarts.add(TravelToSettlement.class);

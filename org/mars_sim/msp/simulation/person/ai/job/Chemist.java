@@ -18,7 +18,6 @@ import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchChemistry;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -41,7 +40,6 @@ public class Chemist extends Job implements Serializable {
         super("Chemist");
         
         // Add chemist-related tasks.
-        jobTasks.add(ResearchChemistry.class);
         
         // Add chemist-related missions.
         jobMissionStarts.add(TravelToSettlement.class);

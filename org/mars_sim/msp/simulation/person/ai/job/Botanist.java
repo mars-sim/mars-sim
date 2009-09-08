@@ -18,7 +18,6 @@ import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchBotany;
 import org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse;
 import org.mars_sim.msp.simulation.resource.AmountResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
@@ -46,7 +45,6 @@ public class Botanist extends Job implements Serializable {
 		super("Botanist");
 		
 		// Add botany-related tasks.
-		jobTasks.add(ResearchBotany.class);
 		jobTasks.add(TendGreenhouse.class);
 		
 		// Add botanist-related missions.

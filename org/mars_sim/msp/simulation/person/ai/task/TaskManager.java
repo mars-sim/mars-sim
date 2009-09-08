@@ -53,7 +53,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
         
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[32];
+        availableTasks = (Class<? extends Task>[]) new Class[31];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -74,18 +74,17 @@ public class TaskManager implements Serializable {
         availableTasks[17] = UnloadVehicle.class;
         availableTasks[18] = ToggleResourceProcess.class;
         availableTasks[19] = ManufactureGood.class;
-        availableTasks[20] = ResearchConstruction.class;
-        availableTasks[21] = ToggleFuelPowerSource.class;
-        availableTasks[22] = DigLocalRegolith.class;
-        availableTasks[23] = PrescribeMedication.class;
-        availableTasks[24] = ProposeScientificStudy.class;
-        availableTasks[25] = InviteStudyCollaborator.class;
-        availableTasks[26] = RespondToStudyInvitation.class;
-        availableTasks[27] = PerformLaboratoryResearch.class;
-        availableTasks[28] = ObserveAstronomicalObjects.class;
-        availableTasks[29] = StudyFieldSamples.class;
-        availableTasks[30] = PerformLaboratoryExperiment.class;
-        availableTasks[31] = PerformMathematicalModeling.class;
+        availableTasks[20] = ToggleFuelPowerSource.class;
+        availableTasks[21] = DigLocalRegolith.class;
+        availableTasks[22] = PrescribeMedication.class;
+        availableTasks[23] = ProposeScientificStudy.class;
+        availableTasks[24] = InviteStudyCollaborator.class;
+        availableTasks[25] = RespondToStudyInvitation.class;
+        availableTasks[26] = PerformLaboratoryResearch.class;
+        availableTasks[27] = ObserveAstronomicalObjects.class;
+        availableTasks[28] = StudyFieldSamples.class;
+        availableTasks[29] = PerformLaboratoryExperiment.class;
+        availableTasks[30] = PerformMathematicalModeling.class;
         
         // Initialize cache values.
         timeCache = null;

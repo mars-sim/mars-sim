@@ -20,7 +20,6 @@ import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.MedicalAssistance;
 import org.mars_sim.msp.simulation.person.ai.task.PrescribeMedication;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchMedicine;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -45,7 +44,6 @@ public class Doctor extends Job implements Serializable {
 		
 		// Add doctor-related tasks.
 		jobTasks.add(MedicalAssistance.class);
-		jobTasks.add(ResearchMedicine.class);
         jobTasks.add(PrescribeMedication.class);
 		
 		// Add doctor-related missions.

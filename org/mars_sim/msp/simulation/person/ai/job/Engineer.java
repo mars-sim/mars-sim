@@ -20,7 +20,6 @@ import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.simulation.person.ai.task.ManufactureGood;
-import org.mars_sim.msp.simulation.person.ai.task.ResearchMaterialsScience;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
@@ -44,7 +43,6 @@ public class Engineer extends Job implements Serializable {
 		
 		// Add engineer-related tasks.
 		jobTasks.add(ManufactureGood.class);
-		jobTasks.add(ResearchMaterialsScience.class);
         jobTasks.add(DigLocalRegolith.class);
 		
 		// Add engineer-related missions.
