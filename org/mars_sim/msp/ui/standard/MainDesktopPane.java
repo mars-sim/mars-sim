@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 2.85 2008-12-13
+ * @version 2.87 2009-09-09
  * @author Scott Davis
  */
 
@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
+import org.mars_sim.msp.ui.standard.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.tool.about.AboutWindow;
 import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
@@ -215,11 +215,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
         catch (PropertyVetoException e) { }
         toolWindows.add(monitorWindow);
         
-        // Prepare sound tool window
-        SoundWindow soundWindow = new SoundWindow(this);
-        try { soundWindow.setClosed(true); }
+        // Prepare preferences tool window
+        PreferencesWindow prefsWindow = new PreferencesWindow(this);
+        try { prefsWindow.setClosed(true); }
         catch (PropertyVetoException e) { }
-        toolWindows.add(soundWindow);
+        toolWindows.add(prefsWindow);
         
         // Prepare mission tool window
         MissionWindow missionWindow = new MissionWindow(this);

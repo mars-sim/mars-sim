@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 2.81 2007-08-27
+ * @version 2.87 2009-09-09
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
+import org.mars_sim.msp.ui.standard.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
 
@@ -115,11 +115,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
 		
-		// Add sound tool button
-		ToolButton soundButton = new ToolButton(SoundWindow.NAME, "Sound");
-		soundButton.addActionListener(this);
-		add(soundButton);
-		toolButtons.addElement(soundButton);
+		// Add prefs tool button
+		ToolButton prefsButton = new ToolButton(PreferencesWindow.NAME, "Preferences");
+		prefsButton.addActionListener(this);
+		add(prefsButton);
+		toolButtons.addElement(prefsButton);
 		
 		// Add mission tool button
 		ToolButton missionButton = new ToolButton(MissionWindow.NAME, "Mission");

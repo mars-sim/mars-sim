@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.87 2009-06-08
+ * @version 2.87 2009-09-09
  * @author Scott Davis
  */
 
@@ -16,7 +16,7 @@ import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
-import org.mars_sim.msp.ui.standard.tool.sound.SoundWindow;
+import org.mars_sim.msp.ui.standard.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
 import org.mars_sim.msp.ui.standard.tool.about.AboutWindow;
 import org.mars_sim.msp.ui.standard.tool.guide.GuideWindow;
@@ -33,11 +33,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JMenuItem saveItem;                   // Save menu item
     private JMenuItem saveAsItem;                 // Save As menu item
     private JMenuItem exitItem;                   // Exit menu item
-   private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
+    private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
     private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
     private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
-    private JCheckBoxMenuItem soundToolItem;      // Sound tool menu item
+    private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
     private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
@@ -70,13 +70,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         loadItem.addActionListener(this);
         loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(loadItem);
-
-        fileMenu.add(new JSeparator());
-        // Create load menu item
-        prefsItem = new JMenuItem("Preferences...");
-        prefsItem.addActionListener(this);
-        prefsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK, false));
-        fileMenu.add(prefsItem);
 
         fileMenu.add(new JSeparator());
 
@@ -129,11 +122,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
         toolsMenu.add(monitorToolItem);
 
-        // Create sound tool menu item
-        soundToolItem = new JCheckBoxMenuItem(SoundWindow.NAME);
-        soundToolItem.addActionListener(this);
-        soundToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
-        toolsMenu.add(soundToolItem);
+        // Create prefs tool menu item
+        prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME);
+        prefsToolItem.addActionListener(this);
+        prefsToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
+        toolsMenu.add(prefsToolItem);
         
         // Create mission tool menu item
         missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME);
@@ -209,10 +202,10 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             else mainWindow.getDesktop().closeToolWindow(MonitorWindow.NAME);
         }
         
-        if (selectedItem == soundToolItem) {
-            if (soundToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(SoundWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(SoundWindow.NAME);
+        if (selectedItem == prefsToolItem) {
+            if (prefsToolItem.isSelected()) 
+                mainWindow.getDesktop().openToolWindow(PreferencesWindow.NAME);
+            else mainWindow.getDesktop().closeToolWindow(PreferencesWindow.NAME);
         }
         
         if (selectedItem == missionToolItem) {
@@ -244,8 +237,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             mainWindow.getDesktop().isToolWindowOpen(TimeWindow.NAME));
         monitorToolItem.setSelected(
             mainWindow.getDesktop().isToolWindowOpen(MonitorWindow.NAME));
-        soundToolItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen(SoundWindow.NAME));
+        prefsToolItem.setSelected(
+        	mainWindow.getDesktop().isToolWindowOpen(PreferencesWindow.NAME));
         missionToolItem.setSelected(
         	mainWindow.getDesktop().isToolWindowOpen(MissionWindow.NAME));
         aboutMspItem.setSelected(
