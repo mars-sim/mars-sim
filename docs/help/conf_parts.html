@@ -9,13 +9,13 @@
 <BODY>
 <H2>parts.xml</H2>
 <P>The parts.xml configuration file contains configuration for all the parts used in the simulation.</P>
-<P>A "part" element has a unique "name" attribute.  It has a required "mass" attribute that shows the mass of the
-  individual part in kilograms.  It also has the following child element:</P>
+<P>A "part" element has a unique "name" attribute. It has a required "mass" attribute that shows the mass of the
+ individual part in kilograms. It also has the following child element:</P>
 <P><B>maintenance-entity-list:</B> This is an optional element that is a list of all entities that may require
-  this part for periodic maintenance.</P>
-<P><B>entity:</B> This is an entity that requires this part for periodic maintenance.  The "probability" attribute is required
-  and is the percentage (0 - 100) probability that this part will be needed during a given maintenance.  The "max-number"  attribute
-  is required and is the maximum number of this part needed for a given maintenance.</P>
+ this part for periodic maintenance.</P>
+<P><B>entity:</B> This is an entity that requires this part for periodic maintenance. The "probability" attribute is required
+ and is the percentage (0 - 100) probability that this part will be needed during a given maintenance. The "max-number" attribute
+ is required and is the maximum number of this part needed for a given maintenance.</P>
 <P>The following entities types are supported for maintenance:</P>
 <UL>
   <LI><B>Vehicle:</B> Any vehicle.</LI>
@@ -40,6 +40,6 @@
   <LI><B>Manufacture:</B> A building that has the "manufacture" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
 </UL>
 <P>Basically any building function is supported as a malfunctionable entity, only replace the hyphens in the function name with spaces.
-  As we add more vehicles, equipment and building functions, they well be supported malfunctionable entities as well.</P>
+ As we add more vehicles, equipment and building functions, they well be supported malfunctionable entities as well.</P>
 </BODY>
 </HTML>
