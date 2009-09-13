@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 2.86 2009-05-27
+ * @version 2.87 2009-09-13
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.standard.sound;
@@ -12,7 +12,7 @@ package org.mars_sim.msp.ui.standard.sound;
 public interface SoundConstants {
 	
 	// The root path for sounds.
-	public final static String SOUNDS_ROOT_PATH = "sounds/";
+	public final static String SOUNDS_ROOT_PATH = "audio/";
 	
 	// Unit window sounds for rovers.
     public final static String SND_ROVER_MOVING = "rover_moving.wav";
