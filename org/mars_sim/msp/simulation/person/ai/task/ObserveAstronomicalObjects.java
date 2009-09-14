@@ -334,6 +334,12 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
         // Check for observatory malfunction.
         if (observatory.getBuilding().getMalfunctionManager().hasMalfunction())
             endTask();
+        
+        //check sunlight and end the task if sunrise
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        double sunlight = surface.getSurfaceSunlight(person.getCoordinates()); 
+        if(sunlight > 0) endTask();
+        
 
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
