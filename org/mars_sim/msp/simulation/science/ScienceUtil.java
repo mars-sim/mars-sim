@@ -135,7 +135,7 @@ public class ScienceUtil {
         if (sciences == null) loadSciences();
         
         Job[] jobs = science.getJobs();
-        return Arrays.copyOf(jobs, jobs.length);
+        return jobs.clone();
     }
     
     /**

@@ -56,7 +56,7 @@ public class Science implements Serializable, Comparable {
      * @return sciences.
      */
     Science[] getCollaborativeSciences() {
-        return Arrays.copyOf(collaborativeSciences, collaborativeSciences.length);
+        return collaborativeSciences.clone();
     }
     
     /**
@@ -72,7 +72,7 @@ public class Science implements Serializable, Comparable {
      * @return jobs.
      */
     Job[] getJobs() {
-        return Arrays.copyOf(jobs, jobs.length);
+        return jobs.clone();
     }
     
     /**
