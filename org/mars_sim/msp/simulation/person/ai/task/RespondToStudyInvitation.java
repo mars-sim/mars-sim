@@ -117,7 +117,8 @@ public class RespondToStudyInvitation extends Task implements Serializable {
                 }
                 
                 logger.info(job.getName() + " " + person.getName() + 
-                        " accepting invitation to collaborate on " + study.toString());
+                        " accepting invitation from " + primaryResearcher.getName() + 
+                        " to collaborate on " + study.toString());
             }
             else {
                 
@@ -128,7 +129,8 @@ public class RespondToStudyInvitation extends Task implements Serializable {
                 }
                 
                 logger.info(job.getName() + " " + person.getName() + 
-                        " rejecting invitation to collaborate on " + study.toString());
+                        " rejecting invitation from " + primaryResearcher.getName() + 
+                        " to collaborate on " + study.toString());
             }
         }
         
