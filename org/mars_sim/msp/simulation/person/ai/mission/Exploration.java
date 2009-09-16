@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 2.86 2009-04-27
+ * @version 2.87 2009-08-20
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.simulation.person.ai.mission;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -48,7 +49,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
  * The Exploration class is a mission to travel in a rover to several
  * random locations around a settlement and collect rock samples.
  */
-public class Exploration extends RoverMission {
+public class Exploration extends RoverMission  implements Serializable {
 
 	private static String CLASS_NAME = 
 		"org.mars_sim.msp.simulation.person.ai.mission.Exploration";
@@ -56,7 +57,7 @@ public class Exploration extends RoverMission {
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Default description.
-	public static final String DEFAULT_DESCRIPTION = "Exploration";
+	public static final String DEFAULT_DESCRIPTION = "Mineral Exploration";
 	
 	// Mission phases
 	final public static String EXPLORE_SITE = "Exploring Site";

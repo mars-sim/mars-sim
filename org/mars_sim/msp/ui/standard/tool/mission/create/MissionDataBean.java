@@ -42,7 +42,7 @@ class MissionDataBean {
 
 	// Mission type strings.
 	final static String TRAVEL_MISSION = "Travel to Settlement";
-	final static String EXPLORATION_MISSION = "Exploration";
+	final static String EXPLORATION_MISSION = "Mineral Exploration";
 	final static String ICE_MISSION = "Ice Prospecting";
 	final static String REGOLITH_MISSION = "Regolith Prospecting";
 	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
