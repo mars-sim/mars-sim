@@ -61,7 +61,7 @@ public class MissionManager implements Serializable {
         listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
         
         // Initialize potential missions.
-        potentialMissions = (Class<? extends Mission>[]) new Class[8];
+        potentialMissions = (Class<? extends Mission>[]) new Class[9];
         potentialMissions[0] = TravelToSettlement.class;
         potentialMissions[1] = Exploration.class;
         potentialMissions[2] = CollectIce.class;
@@ -70,6 +70,7 @@ public class MissionManager implements Serializable {
         potentialMissions[5] = CollectRegolith.class;
         potentialMissions[6] = Mining.class;
         potentialMissions[7] = BuildingConstructionMission.class;
+        potentialMissions[8] = AreologyStudyFieldMission.class;
         
         // Initialize cache values.
         personCache = null;

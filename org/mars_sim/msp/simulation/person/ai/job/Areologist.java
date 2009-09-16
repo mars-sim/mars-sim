@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 2.86 2009-05-10
+ * @version 2.87 2009-09-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.job;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
+import org.mars_sim.msp.simulation.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
@@ -61,6 +62,8 @@ public class Areologist extends Job implements Serializable {
 		jobMissionStarts.add(Mining.class);
 		jobMissionJoins.add(Mining.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionStarts.add(AreologyStudyFieldMission.class);
+        jobMissionJoins.add(AreologyStudyFieldMission.class);
 	}
 
 	/**
