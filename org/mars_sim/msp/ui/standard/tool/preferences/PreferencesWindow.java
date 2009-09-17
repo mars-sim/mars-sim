@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 2.87 2009-09-08
+ * @version 2.87 2009-09-18
  * @author Scott Davis
  */
 
@@ -24,8 +24,8 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.UIConfig;
 /** 
- * The SoundWindow is a tool window that allows the user to adjust the volume
- * and mute sounds.
+ * The PreferencesWindow is a tool window that allows the user to adjust general
+ * aspects of the simulation and interface.
  */
 public class PreferencesWindow extends ToolWindow {
 
@@ -78,12 +78,7 @@ public class PreferencesWindow extends ToolWindow {
                 }
         });
         volumePane.add(volumeSlider, BorderLayout.SOUTH);
-        
-        // Create mute panel.
-       // JPanel mutePane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-       // mutePane.setBorder(new MarsPanelBorder());
-        //mainPane.add(mutePane, BorderLayout.WEST);
-        
+                
         // Create mute checkbox.
         muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
         muteCheck.addActionListener(new ActionListener() {
