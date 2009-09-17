@@ -55,7 +55,7 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
      */
     public ObserveAstronomicalObjects(Person person) throws Exception {
         // Use task constructor.
-        super("Observe night sky with telescope", person, true, false, STRESS_MODIFIER, 
+        super("Observe Night Sky with Telescope", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(300D));
         
         // Determine study.

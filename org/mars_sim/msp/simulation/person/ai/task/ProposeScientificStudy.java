@@ -45,7 +45,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public ProposeScientificStudy(Person person) throws Exception {
-        super("Proposing a scientific study", person, false, true, STRESS_MODIFIER, 
+        super("Proposing a Scientific Study", person, false, true, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(100D));
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();

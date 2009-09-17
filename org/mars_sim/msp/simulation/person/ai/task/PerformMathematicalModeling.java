@@ -59,7 +59,7 @@ public class PerformMathematicalModeling extends Task implements Serializable {
      */
     public PerformMathematicalModeling(Person person) throws Exception {
         // Use task constructor.
-        super("Perform mathematical modeling", person, true, false, STRESS_MODIFIER, 
+        super("Perform Mathematical Modeling", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(200D));
         
         // Determine study.

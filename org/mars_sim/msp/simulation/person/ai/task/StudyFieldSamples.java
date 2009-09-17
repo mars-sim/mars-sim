@@ -72,7 +72,7 @@ public class StudyFieldSamples extends Task implements Serializable {
      */
     public StudyFieldSamples(Person person) throws Exception {
         // Use Task constructor.
-        super("Study field samples", person, true, false, STRESS_MODIFIER, true, 
+        super("Study Field Samples", person, true, false, STRESS_MODIFIER, true, 
                 RandomUtil.getRandomDouble(100D));
         
         // Determine study.

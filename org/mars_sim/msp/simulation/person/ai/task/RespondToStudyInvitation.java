@@ -51,7 +51,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
      * @throws Exception if error creating task.
      */
     public RespondToStudyInvitation(Person person) throws Exception {
-        super("Responding to a study invitation", person, false, true, 
+        super("Responding to a Study Invitation", person, false, true, 
                 STRESS_MODIFIER, true, DURATION);
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();

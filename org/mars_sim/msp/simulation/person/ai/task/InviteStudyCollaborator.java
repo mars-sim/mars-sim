@@ -53,7 +53,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
      * @throws Exception if error creating task.
      */
     public InviteStudyCollaborator(Person person) throws Exception {
-        super("Writing study collaboration invitation", person, false, true, 
+        super("Writing Study Collaboration Invitation", person, false, true, 
                 STRESS_MODIFIER, true, DURATION);
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();

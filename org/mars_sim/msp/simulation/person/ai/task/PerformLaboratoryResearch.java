@@ -60,7 +60,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
      */
     public PerformLaboratoryResearch(Person person) throws Exception {
         // Use task constructor.
-        super("Perform laboratory research", person, true, false, STRESS_MODIFIER, 
+        super("Perform Laboratory Research", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(100D));
         
         // Determine study.

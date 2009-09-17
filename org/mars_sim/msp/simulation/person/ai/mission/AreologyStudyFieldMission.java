@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * AreologyFieldMission.java
+ * AreologyStudyFieldMission.java
  * @version 2.87 2009-09-15
  * @author Scott Davis
  */
@@ -38,7 +38,6 @@ import org.mars_sim.msp.simulation.science.ScientificStudyManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.time.MarsClock;
 import org.mars_sim.msp.simulation.vehicle.Rover;
-import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
  * A mission to do areology research at a remote field location for a
@@ -47,7 +46,7 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 public class AreologyStudyFieldMission extends RoverMission implements Serializable {
 
     private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.mission.AreologyFieldMission";
+        "org.mars_sim.msp.simulation.person.ai.mission.AreologyStudyFieldMission";
     private static Logger logger = Logger.getLogger(CLASS_NAME);
     
     // Default description.
@@ -625,21 +624,6 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
         }
         catch(Exception e) {
             throw new MissionException(getPhase(), e);
-        }
-        
-        return result;
-    }
-    
-    @Override
-    protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws MissionException {
-        int result = super.compareVehicles(firstVehicle, secondVehicle);
-        
-        // Check of one rover has a research lab and the other one doesn't.
-        if ((result == 0) && (isUsableVehicle(firstVehicle)) && (isUsableVehicle(secondVehicle))) {
-            boolean firstLab = ((Rover) firstVehicle).hasLab();
-            boolean secondLab = ((Rover) secondVehicle).hasLab();
-            if (firstLab && !secondLab) result = 1;
-            else if (!firstLab && secondLab) result = -1;
         }
         
         return result;

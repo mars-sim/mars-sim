@@ -27,7 +27,7 @@ import org.mars_sim.msp.simulation.vehicle.Rover;
 public class AreologyStudyFieldWork extends EVAOperation implements Serializable {
 
     // Task phases
-    private static final String FIELD_WORK = "Performing field work";
+    private static final String FIELD_WORK = "Performing Field Work";
     
     // Data members
     private Person leadResearcher;
@@ -127,7 +127,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
     }
     
     /**
-     * Perform the exploring phase of the task.
+     * Perform the field work phase of the task.
      * @param time the time available (millisols).
      * @return remaining time after performing phase (millisols).
      * @throws Exception if error performing phase.
