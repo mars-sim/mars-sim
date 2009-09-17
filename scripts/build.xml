@@ -6,7 +6,7 @@
     <property name="mars.class" value="${mars.baseDir}" />
     <property name="mars.jars" value="${mars.baseDir}/jars" />
     <property name="mars.images" value="${mars.baseDir}/images" />
-    <property name="mars.sounds" value="${mars.baseDir}/sounds" />
+    <property name="mars.audio" value="${mars.baseDir}/audio" />
     <property name="mars.scripts" value="${mars.baseDir}/scripts" />
     <property name="mars.test" value="${mars.baseDir}" />
     <property name="mars.doc" value="${mars.baseDir}/docs/javadoc" />
@@ -114,9 +114,9 @@
             <fileset dir="${mars.baseDir}">
                 <include name="images/*.jpg" />
                 <include name="images/*.gif" />
-                <include name="sounds/*wav" />
-            	<include name="sounds/*ogg" />
-            	<include name="sounds/*mp3" />
+                <include name="audio/*wav" />
+            	<include name="audio/*ogg" />
+            	<include name="audio/*mp3" />
             </fileset>
         </jar>
     </target>
