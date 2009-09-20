@@ -48,7 +48,7 @@ public class Yoga extends Task implements Serializable {
             int maxPopulation = settlement.getPopulationCapacity();
             int percentange = (currentPopulation * 100) / maxPopulation;
             if (percentange > 70) {
-                result = result + 50;
+                result = result + 10;
 
                 if (result > 100) {
                     result = 100;
