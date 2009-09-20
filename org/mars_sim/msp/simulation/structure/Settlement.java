@@ -8,6 +8,7 @@
 package org.mars_sim.msp.simulation.structure;
 
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -113,6 +114,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.simulation
        
         // Add scope string to malfunction manager.
         malfunctionManager.addScopeString("Settlement");
+        
+        // Initialize scientific achievement.
+        scientificAchievement = new HashMap<Science, Double>(0);
     }
     
     /** 

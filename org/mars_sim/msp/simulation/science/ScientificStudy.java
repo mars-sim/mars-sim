@@ -539,7 +539,7 @@ public class ScientificStudy implements Serializable {
         boolean result = false;
         if (peerReviewStartTime != null) {
             MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            double peerReviewTime = MarsClock.getTimeDiff(peerReviewStartTime, currentTime);
+            double peerReviewTime = MarsClock.getTimeDiff(currentTime, peerReviewStartTime);
             if (peerReviewTime >= PEER_REVIEW_TIME) result = true;
         }
         return result;

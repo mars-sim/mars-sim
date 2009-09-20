@@ -106,7 +106,7 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
                         if (astronomy.equals(primaryStudy.getScience())) {
                             try {
-                                double primaryResult = 100D;
+                                double primaryResult = 200D;
                             
                                 // Get observatory building crowding modifier.
                                 primaryResult *= getObservatoryCrowdingModifier(person, observatory);
@@ -135,7 +135,7 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                             if (astronomy.equals(collabStudy.getCollaborativeResearchers().get(person))) {
                                 try {
-                                    double collabResult = 50D;
+                                    double collabResult = 100D;
                                 
                                     // Get observatory building crowding modifier.
                                     collabResult *= getObservatoryCrowdingModifier(person, observatory);
@@ -407,5 +407,18 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
             else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
                 person.getVehicle().getMalfunctionManager().accident(); 
         }
+    }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        super.endTask();
+        
+        // Remove person from observator so others can use it.
+        try {
+            if (observatory != null) observatory.removeObserver();
+        }
+        catch(Exception e) {}
     }
 }

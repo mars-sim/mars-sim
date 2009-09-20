@@ -133,6 +133,11 @@ public class ScientificStudyUtil {
             Person researcher = i.next();
             Science collaborativeScience = study.getCollaborativeResearchers().get(researcher);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
+            
+            // Add achievement credit to the collaborative researcher's current settlement.
+            Settlement collaboratorSettlement = researcher.getAssociatedSettlement();
+            if (collaboratorSettlement != null) collaboratorSettlement.addScientificAchievement(
+                    collaborativeAchievement, collaborativeScience);
         }
     }
 }

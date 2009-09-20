@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * ScienceUtil.java
- * @version 2.87 2009-07-09
+ * @version 2.87 2009-09-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -93,7 +92,7 @@ public class ScienceUtil {
         meteorology.setCollaborativeSciences(new Science[] { chemistry, 
                 mathematics, physics });
         
-        physics.setCollaborativeSciences(new Science[] { mathematics });
+        physics.setCollaborativeSciences(new Science[] { astronomy, mathematics });
     }
     
     /**

@@ -472,7 +472,7 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
         else study.addCollaborativeResearchWorkTime(person, researchTime);
         
         // Add experience
-        addExperience(researchTime);
+        addExperience(time);
         
         // Check for lab accident.
         checkForAccident(time);
@@ -501,5 +501,18 @@ public class PerformLaboratoryResearch extends Task implements Serializable {
             else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
                 person.getVehicle().getMalfunctionManager().accident(); 
         }
+    }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        super.endTask();
+        
+        // Remove person from lab so others can use it.
+        try {
+            if (lab != null) lab.removeResearcher();
+        }
+        catch(Exception e) {}
     }
 }

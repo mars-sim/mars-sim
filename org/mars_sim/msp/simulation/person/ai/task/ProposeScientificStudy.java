@@ -101,7 +101,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
             // Check if scientist job.
             Job job = person.getMind().getJob();
             Science science = ScienceUtil.getAssociatedScience(job);
-            if (science != null) result = 1D;
+            if (science != null) result = 5D;
             
             // Modify if researcher is already collaborating in studies.
             int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();

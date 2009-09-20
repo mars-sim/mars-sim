@@ -669,4 +669,17 @@ public class StudyFieldSamples extends Task implements Serializable {
         
         return result;
     }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        super.endTask();
+        
+        // Remove person from lab so others can use it.
+        try {
+            if (lab != null) lab.removeResearcher();
+        }
+        catch(Exception e) {}
+    }
 }

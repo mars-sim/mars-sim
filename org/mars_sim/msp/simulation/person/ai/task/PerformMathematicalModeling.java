@@ -488,4 +488,17 @@ public class PerformMathematicalModeling extends Task implements Serializable {
                 person.getVehicle().getMalfunctionManager().accident(); 
         }
     }
+    
+    /**
+     * Ends the task and performs any final actions.
+     */
+    public void endTask() {
+        super.endTask();
+        
+        // Remove person from lab so others can use it.
+        try {
+            if (lab != null) lab.removeResearcher();
+        }
+        catch(Exception e) {}
+    }
 }
