@@ -490,7 +490,7 @@ public class PhysicalCondition implements Serializable {
 
     /**
      * This Person is now dead.
-     * @param illness THe Compliant that makes person dead.
+     * @param illness The compliant that makes person dead.
      */
     public void setDead(HealthProblem illness) {
         setFatigue(0D);
