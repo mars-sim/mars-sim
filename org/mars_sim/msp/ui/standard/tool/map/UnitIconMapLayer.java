@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * UnitIconMapLayer.java
+ * @version 2.87 2009-09-23
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.standard.tool.map;
 
 import java.awt.Component;
