@@ -7,7 +7,6 @@
 package org.mars_sim.msp.simulation.science;
 
 import java.io.Serializable;
-import java.util.Arrays;
 
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 
