@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 2.87 2009-09-18
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 
@@ -36,6 +36,7 @@ public class PreferencesWindow extends ToolWindow {
 	private AudioPlayer soundPlayer;
 	private JCheckBox muteCheck;
 	private JSlider volumeSlider;
+	private JCheckBox uiCheck;
 
 	/**
 	 * Constructor
@@ -56,14 +57,14 @@ public class PreferencesWindow extends ToolWindow {
         mainPane.setBorder(new MarsPanelBorder());
         setContentPane(mainPane);
         
-        // Create volume panel.
-        JPanel volumePane = new JPanel(new BorderLayout());
-        volumePane.setBorder(new MarsPanelBorder());
-        mainPane.add(volumePane, BorderLayout.NORTH);
+        // Create audio panel.
+        JPanel audioPane = new JPanel(new BorderLayout());
+        audioPane.setBorder(new MarsPanelBorder());
+        mainPane.add(audioPane, BorderLayout.NORTH);
         
-        // Create volume label.
+        // Create audio label.
         JLabel volumeLabel = new JLabel("Volume", JLabel.CENTER);
-        volumePane.add(volumeLabel, BorderLayout.NORTH);
+        audioPane.add(volumeLabel, BorderLayout.NORTH);
         
         // Create volume slider.
         float volume = soundPlayer.getVolume();
@@ -77,7 +78,7 @@ public class PreferencesWindow extends ToolWindow {
                     soundPlayer.setVolume(newVolume);
                 }
         });
-        volumePane.add(volumeSlider, BorderLayout.SOUTH);
+        audioPane.add(volumeSlider, BorderLayout.SOUTH);
                 
         // Create mute checkbox.
         muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
@@ -86,7 +87,25 @@ public class PreferencesWindow extends ToolWindow {
         			soundPlayer.setMute(muteCheck.isSelected());
         		}
         });
-        volumePane.add(muteCheck);
+        audioPane.add(muteCheck);
+
+        // Create UI panel.
+        JPanel uiPane = new JPanel(new BorderLayout());
+        uiPane.setBorder(new MarsPanelBorder());
+        mainPane.add(uiPane, BorderLayout.SOUTH);
+
+
+        // Create UI checkbox.
+	boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
+	if (UIConfig.INSTANCE.useUIDefault()) nativeLookAndFeel = false;
+        uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
+	final MainWindow theMainwindow = desktop.getMainWindow();
+        uiCheck.addActionListener(new ActionListener() {
+        		public void actionPerformed(ActionEvent e) {
+       			theMainwindow.setLookAndFeel(uiCheck.isSelected());
+        		}
+        });
+        uiPane.add(uiCheck);
 
         // Pack window
         pack();

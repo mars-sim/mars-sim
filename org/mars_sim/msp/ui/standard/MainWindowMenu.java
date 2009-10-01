@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 2.87 2009-09-09
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 
@@ -39,7 +39,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
-    private JCheckBoxMenuItem lookAndFeelItem;    // Look and feel menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
     private JCheckBoxMenuItem guideItem;          // User Guide menu item
 
@@ -134,17 +133,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
         toolsMenu.add(missionToolItem);
         
-		// Create option menu
-		JMenu optionMenu = new JMenu("Option");
-		add(optionMenu);
-		
-		// Create look and feel menu item
-		boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
-		if (UIConfig.INSTANCE.useUIDefault()) nativeLookAndFeel = false;
-		lookAndFeelItem = new JCheckBoxMenuItem("Native Look & Feel", nativeLookAndFeel);
-		lookAndFeelItem.addActionListener(this);
-		optionMenu.add(lookAndFeelItem);
-
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
         helpMenu.addMenuListener(this);
@@ -175,8 +163,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         else if (selectedItem == saveItem) mainWindow.saveSimulation(true);
         else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
         else if (selectedItem == loadItem) mainWindow.loadSimulation();
-        else if (selectedItem == lookAndFeelItem) 
-        	mainWindow.setLookAndFeel(lookAndFeelItem.isSelected());
 
         if (selectedItem == marsNavigatorItem) {
             if (marsNavigatorItem.isSelected()) 
