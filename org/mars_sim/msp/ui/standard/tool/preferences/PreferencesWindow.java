@@ -72,6 +72,7 @@ public class PreferencesWindow extends ToolWindow {
         volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, intVolume);
         volumeSlider.setMajorTickSpacing(1);
         volumeSlider.setPaintTicks(true);
+        volumeSlider.setEnabled(!soundPlayer.isMute());
         volumeSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     float newVolume = (float) volumeSlider.getValue() / 10F;
@@ -85,6 +86,8 @@ public class PreferencesWindow extends ToolWindow {
         muteCheck.addActionListener(new ActionListener() {
         		public void actionPerformed(ActionEvent e) {
         			soundPlayer.setMute(muteCheck.isSelected());
+        			volumeSlider.setEnabled(!soundPlayer.isMute());
+;
         		}
         });
         audioPane.add(muteCheck);
