@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FarmingBuildingPanel.java
- * @version 2.81 2007-08-28
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -127,9 +127,9 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         private CropTableModel(Farming farm) {
             this.farm = farm;
             crops = farm.getCrops();
-            redDot = new ImageIcon("images/RedDot.gif");
-            yellowDot = new ImageIcon("images/YellowDot.gif");
-            greenDot = new ImageIcon("images/GreenDot.gif");
+            redDot = new ImageIcon("images/RedDot.png");
+            yellowDot = new ImageIcon("images/YellowDot.png");
+            greenDot = new ImageIcon("images/GreenDot.png");
         }
         
         public int getRowCount() {

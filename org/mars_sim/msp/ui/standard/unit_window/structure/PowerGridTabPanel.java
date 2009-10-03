@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGridTabPanel.java
- * @version 2.85 2008-11-25
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 
@@ -171,9 +171,9 @@ public class PowerGridTabPanel extends TabPanel {
         private PowerTableModel(Settlement settlement) {
             this.settlement = settlement;
             buildings = settlement.getBuildingManager().getBuildings();
-            redDot = new ImageIcon("images/RedDot.gif");
-            yellowDot = new ImageIcon("images/YellowDot.gif");
-            greenDot = new ImageIcon("images/GreenDot.gif");
+            redDot = new ImageIcon("images/RedDot.png");
+            yellowDot = new ImageIcon("images/YellowDot.png");
+            greenDot = new ImageIcon("images/GreenDot.png");
         }
         
         public int getRowCount() {

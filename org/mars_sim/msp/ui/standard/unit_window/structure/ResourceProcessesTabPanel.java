@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessTabTabPanel.java
- * @version 2.85 2008-11-26
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 
@@ -193,8 +193,8 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	        add(label);
 			
 			// Load green and red dots.
-	        greenDot = new ImageIcon("images/GreenDot.gif");
-	        redDot = new ImageIcon("images/RedDot.gif");
+	        greenDot = new ImageIcon("images/GreenDot.png");
+	        redDot = new ImageIcon("images/RedDot.png");
 	        
 			if (process.isProcessRunning()) toggleButton.setIcon(greenDot);
 			else toggleButton.setIcon(redDot);

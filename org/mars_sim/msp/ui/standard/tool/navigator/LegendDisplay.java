@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LegendDisplay.java
- * @version 2.75 2003-08-03
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  * @author Greg Whelan
  */
@@ -31,7 +31,7 @@ public class LegendDisplay extends JLabel {
     public LegendDisplay() {
         colorImg = ImageLoader.getImage("Color_Legend.jpg");
         distanceImg = ImageLoader.getImage("Map_Legend.jpg");
-        usgsDistanceImg = ImageLoader.getImage("USGSMap_Legend.gif");
+        usgsDistanceImg = ImageLoader.getImage("USGSMap_Legend.png");
         legend = new ImageIcon(distanceImg);
         setIcon(legend);
         useUSGSLegend = false;

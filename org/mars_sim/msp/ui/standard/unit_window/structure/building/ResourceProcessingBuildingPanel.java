@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessingBuildingPanel.java
- * @version 2.81 2007-08-28
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.structure.building;
@@ -64,8 +64,8 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
         add(resourceProcessesListPanel, BorderLayout.CENTER);
         
         // Load green and red dots.
-        greenDot = new ImageIcon("images/GreenDot.gif", "Process is running.");
-        redDot = new ImageIcon("images/RedDot.gif", "Process is not running");
+        greenDot = new ImageIcon("images/GreenDot.png", "Process is running.");
+        redDot = new ImageIcon("images/RedDot.png", "Process is not running");
         
         // For each resource process, add a label.
         processLabels = new ArrayList<JLabel>(processes.size());

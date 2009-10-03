@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavButtonDisplay.java
- * @version 2.75 2003-08-03
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 
@@ -58,16 +58,16 @@ public class NavButtonDisplay extends JComponent implements MouseListener {
         this.parentNavigator = parentNavigator;
 
         // Load Button Images
-        navMain = ImageLoader.getImage("NavMain.gif");
-        lightUpButtons[0] = ImageLoader.getImage("NavMainPlus.gif");
-        lightUpButtons[1] = ImageLoader.getImage("NavNorth.gif");
-        lightUpButtons[2] = ImageLoader.getImage("NavSouth.gif");
-        lightUpButtons[3] = ImageLoader.getImage("NavEast.gif");
-        lightUpButtons[4] = ImageLoader.getImage("NavWest.gif");
-        lightUpButtons[5] = ImageLoader.getImage("NavNorthPlus.gif");
-        lightUpButtons[6] = ImageLoader.getImage("NavSouthPlus.gif");
-        lightUpButtons[7] = ImageLoader.getImage("NavEastPlus.gif");
-        lightUpButtons[8] = ImageLoader.getImage("NavWestPlus.gif");
+        navMain = ImageLoader.getImage("NavMain.png");
+        lightUpButtons[0] = ImageLoader.getImage("NavMainPlus.png");
+        lightUpButtons[1] = ImageLoader.getImage("NavNorth.png");
+        lightUpButtons[2] = ImageLoader.getImage("NavSouth.png");
+        lightUpButtons[3] = ImageLoader.getImage("NavEast.png");
+        lightUpButtons[4] = ImageLoader.getImage("NavWest.png");
+        lightUpButtons[5] = ImageLoader.getImage("NavNorthPlus.png");
+        lightUpButtons[6] = ImageLoader.getImage("NavSouthPlus.png");
+        lightUpButtons[7] = ImageLoader.getImage("NavEastPlus.png");
+        lightUpButtons[8] = ImageLoader.getImage("NavWestPlus.png");
 
         MediaTracker mtrack = new MediaTracker(this);
 

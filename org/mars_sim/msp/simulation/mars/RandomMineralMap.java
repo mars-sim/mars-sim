@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 2.84 2008-04-01
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 
@@ -69,9 +69,9 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	private void determineMineralConcentrations() {
 		// Load topographical regions.
-		Set<Coordinates> craterRegionSet = getTopoRegionSet("TopographyCrater.gif");
-		Set<Coordinates> volcanicRegionSet = getTopoRegionSet("TopographyVolcanic.gif");
-		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet("TopographySedimentary.gif");
+		Set<Coordinates> craterRegionSet = getTopoRegionSet("TopographyCrater.png");
+		Set<Coordinates> volcanicRegionSet = getTopoRegionSet("TopographyVolcanic.png");
+		Set<Coordinates> sedimentaryRegionSet = getTopoRegionSet("TopographySedimentary.png");
 		
 		MineralMapConfig config = SimulationConfig.instance().getMineralMapConfiguration();
 		try {

@@ -17,7 +17,7 @@ import java.net.URL;
 /**
  * This is a static class that acts as a helper to load Images for use in the UI.
  * It is based on loading the resource form the class path via the ClassLoader
- * assuming all the Images to load a GIF. However other alternative strategies
+ * assuming all the Images to load a PNG. However other alternative strategies
  * can be easily implemented within this class.
  */
 public class ImageLoader {

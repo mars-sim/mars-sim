@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 2.85 2008-11-28
+ * @version 2.87 2009-10-04
  * @author Scott Davis
  */
 
@@ -59,7 +59,7 @@ public class ManufacturePanel extends JPanel {
         add(namePane);
         
         // Prepare cancel button.
-        JButton cancelButton = new JButton(new ImageIcon("images/CancelSmall.gif"));
+        JButton cancelButton = new JButton(new ImageIcon("images/CancelSmall.png"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {

@@ -113,7 +113,7 @@
             </fileset>
             <fileset dir="${mars.baseDir}">
                 <include name="images/*.jpg" />
-                <include name="images/*.gif" />
+                <include name="images/*.png" />
                 <include name="audio/*wav" />
             	<include name="audio/*ogg" />
             	<include name="audio/*mp3" />
