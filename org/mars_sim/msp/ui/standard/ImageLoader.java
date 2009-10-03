@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 2.83 2008-02-29
+ * @version 2.87 2009-10-04
  * @author Barry Evans
  */
 
@@ -47,7 +47,7 @@ public class ImageLoader {
     public static ImageIcon getIcon(String name) {
         ImageIcon found = iconCache.get(name);
         if (found == null) {
-            String fileName = IMAGE_DIR + name + ".gif";
+            String fileName = IMAGE_DIR + name + ".png";
             URL resource = ClassLoader.getSystemResource(fileName);
 
             found = new ImageIcon(resource);
