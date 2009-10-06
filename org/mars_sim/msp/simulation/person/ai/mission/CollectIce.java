@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 2.86 2009-04-20
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -69,11 +70,13 @@ public class CollectIce extends CollectResourcesMission {
      * @throws MissionException if error constructing mission.
      */
     public CollectIce(Collection<Person> members, Settlement startingSettlement, 
-    		List iceCollectionSites, Rover rover, String description) throws MissionException {
+    		List<Coordinates> iceCollectionSites, Rover rover, String description) 
+            throws MissionException {
     	
        	// Use CollectResourcesMission constructor.
-    	super(description, members, startingSettlement, getIceResource(), SITE_GOAL, COLLECTION_RATE, 
-    			Bag.class, REQUIRED_BAGS, iceCollectionSites.size(), 1, rover, iceCollectionSites);
+    	super(description, members, startingSettlement, getIceResource(), SITE_GOAL, 
+                COLLECTION_RATE, Bag.class, REQUIRED_BAGS, iceCollectionSites.size(), 
+                1, rover, iceCollectionSites);
     }
 	
 	/** 

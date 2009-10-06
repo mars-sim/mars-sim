@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 2.85 2008-12-14
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 
@@ -149,7 +149,8 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	CollectResourcesMission(String missionName, Collection<Person> members, Settlement startingSettlement, 
 			AmountResource resourceType, double siteResourceGoal, double resourceCollectionRate, Class containerType, 
-			int containerNum, int numSites, int minPeople, Rover rover, List collectionSites) throws MissionException {
+			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) 
+            throws MissionException {
 		
 		// Use RoverMission constructor
 		super(missionName, (Person) members.toArray()[0], minPeople, rover);
@@ -169,7 +170,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		
 		// Set collection navpoints.
 		for (int x = 0; x < collectionSites.size(); x++) 
-			addNavpoint(new NavPoint((Coordinates) collectionSites.get(x), getCollectionSiteDescription(x + 1)));
+			addNavpoint(new NavPoint(collectionSites.get(x), getCollectionSiteDescription(x + 1)));
 		
 		// Add home navpoint.
 		addNavpoint(new NavPoint(startingSettlement.getCoordinates(), startingSettlement, startingSettlement.getName()));

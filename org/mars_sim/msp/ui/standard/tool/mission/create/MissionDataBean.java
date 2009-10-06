@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.85 2008-12-31
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 
@@ -16,6 +16,8 @@ import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.mars.ExploredLocation;
 import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.simulation.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectIce;
 import org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith;
@@ -27,6 +29,7 @@ import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.simulation.person.ai.mission.Trade;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.simulation.science.ScientificStudy;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionSite;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
@@ -49,6 +52,8 @@ class MissionDataBean {
 	final static String TRADE_MISSION = "Trade";
 	final static String MINING_MISSION = "Mining";
     final static String CONSTRUCTION_MISSION = "Building Construction";
+    final static String AREOLOGY_FIELD_MISSION = "Areology Study Field Mission";
+    final static String BIOLOGY_FIELD_MISSION = "Biology Study Field Mission";
 
 	// Data members.
 	private String type;
@@ -69,6 +74,9 @@ class MissionDataBean {
     private ConstructionSite constructionSite;
     private ConstructionStageInfo constructionStageInfo;
     private List<GroundVehicle> constructionVehicles;
+    private Coordinates fieldSite;
+    private Person leadResearcher;
+    private ScientificStudy study;
 	
 	/**
 	 * Creates a mission from the mission data.
@@ -76,10 +84,13 @@ class MissionDataBean {
 	void createMission() {
 		try {
 			Mission mission = null;
-			if (TRAVEL_MISSION.equals(type)) 
-				mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, description);
-			else if (RESCUE_MISSION.equals(type))
+			if (TRAVEL_MISSION.equals(type)) {
+				mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, 
+                        description);
+            }
+			else if (RESCUE_MISSION.equals(type)) {
 				mission = new RescueSalvageVehicle(members, startingSettlement, rescueRover, rover, description);
+            }
 			else if (ICE_MISSION.equals(type)) {
 				List<Coordinates> collectionSites = new ArrayList<Coordinates>(1);
 				collectionSites.add(iceCollectionSite);
@@ -95,14 +106,24 @@ class MissionDataBean {
 				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
 				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}
-			else if (TRADE_MISSION.equals(type)) 
-				mission = new Trade(members, startingSettlement, destinationSettlement, rover, description, sellGoods, 
-						buyGoods);
-			else if (MINING_MISSION.equals(type))
+			else if (TRADE_MISSION.equals(type)) {
+				mission = new Trade(members, startingSettlement, destinationSettlement, rover, description, 
+                        sellGoods, buyGoods);
+            }
+			else if (MINING_MISSION.equals(type)) {
 				mission = new Mining(members, startingSettlement, miningSite, rover, luv, description);
+            }
             else if (CONSTRUCTION_MISSION.equals(type)) {
                 mission = new BuildingConstructionMission(members, constructionSettlement, constructionSite, 
                         constructionStageInfo, constructionVehicles);
+            }
+            else if (AREOLOGY_FIELD_MISSION.equals(type)) {
+                mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study, 
+                        rover, fieldSite, description);
+            }
+            else if (BIOLOGY_FIELD_MISSION.equals(type)) {
+                mission = new BiologyStudyFieldMission(members, startingSettlement, leadResearcher, study, 
+                        rover, fieldSite, description);
             }
             else throw new MissionException(null, "mission type: " + type + " unknown");
 		
@@ -120,7 +141,8 @@ class MissionDataBean {
 	 */
 	static final String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
-				RESCUE_MISSION, TRADE_MISSION, MINING_MISSION, CONSTRUCTION_MISSION };
+				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION, 
+                MINING_MISSION, CONSTRUCTION_MISSION };
 		return result;
 	}
 	
@@ -138,8 +160,12 @@ class MissionDataBean {
 		else if (missionType.equals(RESCUE_MISSION)) result = RescueSalvageVehicle.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(TRADE_MISSION)) result = Trade.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(MINING_MISSION)) result = Mining.DEFAULT_DESCRIPTION;
-        else if (missionType.equals(CONSTRUCTION_MISSION)) result = 
-            BuildingConstructionMission.DEFAULT_DESCRIPTION;
+        else if (missionType.equals(CONSTRUCTION_MISSION)) 
+            result = BuildingConstructionMission.DEFAULT_DESCRIPTION;
+        else if (missionType.equals(AREOLOGY_FIELD_MISSION)) 
+            result = AreologyStudyFieldMission.DEFAULT_DESCRIPTION;
+        else if (missionType.equals(BIOLOGY_FIELD_MISSION)) 
+            result = BiologyStudyFieldMission.DEFAULT_DESCRIPTION;
 		return result;
 	}
 	
@@ -429,5 +455,53 @@ class MissionDataBean {
      */
     void setConstructionVehicles(List<GroundVehicle> constructionVehicles) {
         this.constructionVehicles = constructionVehicles;
+    }
+    
+    /**
+     * Gets the field site.
+     * @return field site location.
+     */
+    Coordinates getFieldSite() {
+        return fieldSite;
+    }
+    
+    /**
+     * Sets the field site.
+     * @param fieldSite the field site location.
+     */
+    void setFieldSite(Coordinates fieldSite) {
+        this.fieldSite = fieldSite;
+    }
+    
+    /**
+     * Gets the lead researcher for the mission.
+     * @return lead researcher.
+     */
+    Person getLeadResearcher() {
+        return leadResearcher;
+    }
+    
+    /**
+     * Sets the lead researcher for the mission.
+     * @param leadResearcher the lead researcher.
+     */
+    void setLeadResearcher(Person leadResearcher) {
+        this.leadResearcher = leadResearcher;
+    }
+    
+    /**
+     * Gets the scientific study.
+     * @return the scientific study.
+     */
+    ScientificStudy getStudy() {
+        return study;
+    }
+    
+    /**
+     * Sets the scientific study.
+     * @param study the scientific study.
+     */
+    void setScientificStudy(ScientificStudy study) {
+        this.study = study;
     }
 }

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 2.87 2009-09-16
+ * @version 2.87 2009-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -123,6 +124,60 @@ public class BiologyStudyFieldMission extends RoverMission
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+    }
+    
+    /**
+     * Constructor with explicit information.
+     * @param members the mission members.
+     * @param startingSettlement the settlement the mission starts at.
+     * @param leadResearcher the lead researcher
+     * @param study the scientific study.
+     * @param rover the rover used by the mission.
+     * @param fieldSite the field site to research.
+     * @param description the mission description.
+     * @throws MissionException if error creating mission.
+     */
+    public BiologyStudyFieldMission(Collection<Person> members, Settlement startingSettlement, 
+            Person leadResearcher, ScientificStudy study, Rover rover, Coordinates fieldSite, 
+            String description) throws MissionException {
+        
+        // Use RoverMission constructor.
+        super(description, leadResearcher, MIN_PEOPLE, rover);
+        
+        setStartingSettlement(startingSettlement);
+        this.study = study;
+        this.leadResearcher = leadResearcher;
+        this.fieldSite = fieldSite;
+        addNavpoint(new NavPoint(fieldSite, "field research site"));
+        
+        // Set mission capacity.
+        setMissionCapacity(getRover().getCrewCapacity());
+        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+        if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
+        
+        // Add mission members.
+        Iterator<Person> i = members.iterator();
+        while (i.hasNext()) i.next().getMind().setMission(this);
+        
+        // Add home settlement
+        addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
+                getStartingSettlement(), getStartingSettlement().getName()));
+        
+        // Add researching site phase.
+        addPhase(RESEARCH_SITE);
+        
+        // Set initial mission phase.
+        setPhase(VehicleMission.EMBARKING);
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        
+        // Check if vehicle can carry enough supplies for the mission.
+        try {
+            if (hasVehicle() && !isVehicleLoadable()) 
+                endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
+        }
+        catch (Exception e) {
+            throw new MissionException(getPhase(), e);
+        }
     }
     
     /** 
@@ -325,7 +380,7 @@ public class BiologyStudyFieldMission extends RoverMission
             double limit = range / 4D;
             double siteDistance = RandomUtil.getRandomDouble(limit);
             fieldSite = startingLocation.getNewLocation(direction, siteDistance);
-            addNavpoint(new NavPoint(fieldSite, "field site"));
+            addNavpoint(new NavPoint(fieldSite, "field research site"));
         }
         catch (Exception e) {
             throw new MissionException(getPhase(), e);

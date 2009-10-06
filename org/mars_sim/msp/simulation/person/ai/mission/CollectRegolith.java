@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.86 2009-04-20
+ * @version 2.87 2009-10-01
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.mission;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.simulation.Coordinates;
 import org.mars_sim.msp.simulation.equipment.Bag;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.resource.AmountResource;
@@ -72,7 +73,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @throws MissionException if error constructing mission.
      */
     public CollectRegolith (Collection<Person> members, Settlement startingSettlement, 
-    		List regolithCollectionSites, Rover rover, String description) 
+    		List<Coordinates> regolithCollectionSites, Rover rover, String description) 
     		throws MissionException {
     	
        	// Use CollectResourcesMission constructor.

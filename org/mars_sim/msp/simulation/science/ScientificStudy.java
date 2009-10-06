@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 2.87 2009-07-11
+ * @version 2.87 2009-10-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -19,7 +19,7 @@ import org.mars_sim.msp.simulation.time.MarsClock;
 /**
  * A class representing a scientific study.
  */
-public class ScientificStudy implements Serializable {
+public class ScientificStudy implements Serializable, Comparable<ScientificStudy> {
 
     // Study Phases
     public static final String PROPOSAL_PHASE = "Study Proposal";
@@ -601,6 +601,16 @@ public class ScientificStudy implements Serializable {
     
     @Override
     public String toString() {
-        return "level " + difficultyLevel + " " + science.getName().toLowerCase() + " study";
+        return science.getName().toLowerCase() + " level " + difficultyLevel + " study";
+    }
+    
+    /**
+     * Compares this object with the specified object for order.
+     * @param o the Object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, 
+     * equal to, or greater than the specified object.
+     */
+    public int compareTo(ScientificStudy o) {
+        return toString().compareTo(o.toString());
     }
 }
