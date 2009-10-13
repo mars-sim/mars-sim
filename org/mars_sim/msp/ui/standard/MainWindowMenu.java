@@ -15,6 +15,7 @@ import javax.swing.event.*;
 import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.standard.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
@@ -29,7 +30,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private MainWindow mainWindow;                // The main window frame
     private JMenuItem newItem;                    // New menu item
     private JMenuItem loadItem;                   // Load menu item
-    private JMenuItem prefsItem;                  // Preferences menu item
     private JMenuItem saveItem;                   // Save menu item
     private JMenuItem saveAsItem;                 // Save As menu item
     private JMenuItem exitItem;                   // Exit menu item
@@ -39,6 +39,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
+    private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
     private JCheckBoxMenuItem guideItem;          // User Guide menu item
 
@@ -133,6 +134,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
         toolsMenu.add(missionToolItem);
         
+        // Create science tool menu item
+        scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME);
+        scienceToolItem.addActionListener(this);
+        scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
+        toolsMenu.add(scienceToolItem);
+        
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
         helpMenu.addMenuListener(this);
@@ -164,73 +171,66 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
         else if (selectedItem == loadItem) mainWindow.loadSimulation();
 
+        MainDesktopPane desktop = mainWindow.getDesktop();
+        
         if (selectedItem == marsNavigatorItem) {
-            if (marsNavigatorItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(NavigatorWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(NavigatorWindow.NAME);
+            if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
+            else desktop.closeToolWindow(NavigatorWindow.NAME);
         }
 
         if (selectedItem == searchToolItem) {
-            if (searchToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(SearchWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(SearchWindow.NAME);
+            if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
+            else desktop.closeToolWindow(SearchWindow.NAME);
         }
 
         if (selectedItem == timeToolItem) {
-            if (timeToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(TimeWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(TimeWindow.NAME);
+            if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
+            else desktop.closeToolWindow(TimeWindow.NAME);
         }
 
         if (selectedItem == monitorToolItem) {
-            if (monitorToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(MonitorWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(MonitorWindow.NAME);
+            if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
+            else desktop.closeToolWindow(MonitorWindow.NAME);
         }
         
         if (selectedItem == prefsToolItem) {
-            if (prefsToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(PreferencesWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(PreferencesWindow.NAME);
+            if (prefsToolItem.isSelected()) desktop.openToolWindow(PreferencesWindow.NAME);
+            else desktop.closeToolWindow(PreferencesWindow.NAME);
         }
         
         if (selectedItem == missionToolItem) {
-            if (missionToolItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(MissionWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(MissionWindow.NAME);
+            if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
+            else desktop.closeToolWindow(MissionWindow.NAME);
+        }
+        
+        if (selectedItem == scienceToolItem) {
+            if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
+            else desktop.closeToolWindow(ScienceWindow.NAME);
         }
 
         if (selectedItem == aboutMspItem) {
-            if (aboutMspItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(AboutWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(AboutWindow.NAME);
+            if (aboutMspItem.isSelected()) desktop.openToolWindow(AboutWindow.NAME);
+            else desktop.closeToolWindow(AboutWindow.NAME);
         }
 
         if (selectedItem == guideItem) {
-            if (guideItem.isSelected()) 
-                mainWindow.getDesktop().openToolWindow(GuideWindow.NAME);
-            else mainWindow.getDesktop().closeToolWindow(GuideWindow.NAME);
+            if (guideItem.isSelected()) desktop.openToolWindow(GuideWindow.NAME);
+            else desktop.closeToolWindow(GuideWindow.NAME);
         }
     }
 
     // MenuListener method overriding
     public void menuSelected(MenuEvent event) {
-        marsNavigatorItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen(NavigatorWindow.NAME));
-        searchToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen(SearchWindow.NAME));
-        timeToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen(TimeWindow.NAME));
-        monitorToolItem.setSelected(
-            mainWindow.getDesktop().isToolWindowOpen(MonitorWindow.NAME));
-        prefsToolItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen(PreferencesWindow.NAME));
-        missionToolItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen(MissionWindow.NAME));
-        aboutMspItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen(AboutWindow.NAME));
-        guideItem.setSelected(
-        	mainWindow.getDesktop().isToolWindowOpen(GuideWindow.NAME));
+        MainDesktopPane desktop = mainWindow.getDesktop();
+        marsNavigatorItem.setSelected(desktop.isToolWindowOpen(NavigatorWindow.NAME));
+        searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
+        timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
+        monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
+        prefsToolItem.setSelected(desktop.isToolWindowOpen(PreferencesWindow.NAME));
+        missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
+        scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
+        aboutMspItem.setSelected(desktop.isToolWindowOpen(AboutWindow.NAME));
+        guideItem.setSelected(desktop.isToolWindowOpen(GuideWindow.NAME));
    }
 
     public void menuCanceled(MenuEvent event) {}

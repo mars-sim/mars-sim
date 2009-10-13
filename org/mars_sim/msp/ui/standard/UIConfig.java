@@ -35,11 +35,6 @@ import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 
-
-
-
-// import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-
 public class UIConfig {
 
     private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.UIConfig";
@@ -60,7 +55,6 @@ public class UIConfig {
     private static final String FILE_NAME = "ui_settings.xml";
     
     private static final String FILE_NAME_DTD = "ui_settings.dtd";
-    
  
     // UI config elements and attributes.
     private static final String UI = "ui";
@@ -108,22 +102,18 @@ public class UIConfig {
      */
     public void parseFile() {
         File stream = null;
-        
-            try {
-				String path = DIRECTORY + File.separator + FILE_NAME;
-				stream = new File(path);
-				
-				SAXBuilder saxBuilder = new SAXBuilder(true);
-				
-				configDoc = saxBuilder.build(stream);
-			} catch (Exception e) {
-				if(!(e instanceof FileNotFoundException))
-			    logger.log(Level.SEVERE, "parseFile()", e);
-			} 
-            
-       
-      
-        
+
+        try {
+            String path = DIRECTORY + File.separator + FILE_NAME;
+            stream = new File(path);
+
+            SAXBuilder saxBuilder = new SAXBuilder(true);
+
+            configDoc = saxBuilder.build(stream);
+        } catch (Exception e) {
+            if(!(e instanceof FileNotFoundException))
+                logger.log(Level.SEVERE, "parseFile()", e);
+        } 
     }
 
     /**

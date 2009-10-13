@@ -15,6 +15,7 @@ import javax.swing.border.*;
 import org.mars_sim.msp.ui.standard.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.standard.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.standard.tool.navigator.NavigatorWindow;
+import org.mars_sim.msp.ui.standard.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.standard.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.standard.tool.preferences.PreferencesWindow;
 import org.mars_sim.msp.ui.standard.tool.time.TimeWindow;
@@ -126,6 +127,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);
+        
+        // Add science tool button
+        ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, "Science");
+        scienceButton.addActionListener(this);
+        add(scienceButton);
+        toolButtons.addElement(scienceButton);
 
         addSeparator();
 
