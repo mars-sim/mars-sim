@@ -36,4 +36,11 @@ public class StudyDetailPanel extends JPanel {
         JPanel mainPane = new JPanel(new BorderLayout());
         add(mainPane, BorderLayout.CENTER);
     }
+    
+    /**
+     * Updates the panel.
+     */
+    void update() {
+        // TODO
+    }
 }

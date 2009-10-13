@@ -24,6 +24,11 @@ public class ScienceWindow extends ToolWindow {
     // Tool name
     public static final String NAME = "Science Tool";
     
+    // Data members
+    private OngoingStudyListPanel ongoingStudyListPane;
+    private FinishedStudyListPanel finishedStudyListPane;
+    private StudyDetailPanel studyDetailPane;
+    
     /**
      * Constructor
      * @param desktop the main desktop panel.
@@ -46,18 +51,28 @@ public class ScienceWindow extends ToolWindow {
         mainPane.add(listsPane, BorderLayout.WEST);
         
         // Create ongoing study list panel.
-        OngoingStudyListPanel ongoingStudyListPane = new OngoingStudyListPanel(this);
+        ongoingStudyListPane = new OngoingStudyListPanel(this);
         listsPane.add(ongoingStudyListPane);
         
         // Create finished study list panel.
-        FinishedStudyListPanel finishedStudyListPane = new FinishedStudyListPanel(this);
+        finishedStudyListPane = new FinishedStudyListPanel(this);
         listsPane.add(finishedStudyListPane);
         
         // Create study detail panel.
-        StudyDetailPanel studyDetailPane = new StudyDetailPanel(this);
+        studyDetailPane = new StudyDetailPanel(this);
         mainPane.add(studyDetailPane, BorderLayout.CENTER);
         
         // Pack window.
         pack();
+    }
+    
+    /**
+     * Update the window.
+     */
+    public void update() {
+        // Update all of the panels.
+        ongoingStudyListPane.update();
+        finishedStudyListPane.update();
+        studyDetailPane.update();
     }
 }
