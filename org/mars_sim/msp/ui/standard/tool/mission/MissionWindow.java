@@ -117,7 +117,7 @@ public class MissionWindow extends ToolWindow {
         missionList.addListSelectionListener(
             	new ListSelectionListener() {
             		public void valueChanged(ListSelectionEvent e) {
-            			// Enable button is mission is selected in list.
+            			// Enable button if mission is selected in list.
             			editButton.setEnabled(missionList.getSelectedValue() != null);
             		}
             	});
