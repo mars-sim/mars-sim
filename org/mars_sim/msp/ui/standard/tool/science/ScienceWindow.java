@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ScienceWindow.java
- * @version 2.87 2009-10-11
+ * @version 2.87 2009-11-03
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.tool.science;
 
 import java.awt.BorderLayout;
@@ -13,6 +12,8 @@ import java.awt.GridLayout;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
+import org.mars_sim.msp.simulation.person.Person;
+import org.mars_sim.msp.simulation.science.ScientificStudy;
 import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.tool.ToolWindow;
 
@@ -28,6 +29,7 @@ public class ScienceWindow extends ToolWindow {
     private OngoingStudyListPanel ongoingStudyListPane;
     private FinishedStudyListPanel finishedStudyListPane;
     private StudyDetailPanel studyDetailPane;
+    private ScientificStudy selectedStudy;
     
     /**
      * Constructor
@@ -38,8 +40,7 @@ public class ScienceWindow extends ToolWindow {
         // Use ToolWindow constructor
         super(NAME, desktop);
         
-        // Set window resizable to false.
-        setResizable(false);
+        selectedStudy = null;
         
         // Create content panel.
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -67,6 +68,25 @@ public class ScienceWindow extends ToolWindow {
     }
     
     /**
+     * Sets the scientific study to display in the science window.
+     * @param study the scientific study to display.
+     */
+    public void setScientificStudy(ScientificStudy study) {
+        selectedStudy = study;
+        studyDetailPane.displayScientificStudy(study);
+        ongoingStudyListPane.selectScientificStudy(study);
+        finishedStudyListPane.selectScientificStudy(study);
+    }
+    
+    /**
+     * Gets the displayed scientific study.
+     * @return study or null if none displayed.
+     */
+    public ScientificStudy getScientificStudy() {
+        return selectedStudy;
+    }
+    
+    /**
      * Update the window.
      */
     public void update() {
@@ -74,5 +94,13 @@ public class ScienceWindow extends ToolWindow {
         ongoingStudyListPane.update();
         finishedStudyListPane.update();
         studyDetailPane.update();
+    }
+    
+    /**
+     * Opens an info window for researcher.
+     * @param researcher the researcher.
+     */
+    void openResearcherWindow(Person researcher) {
+        desktop.openUnitWindow(researcher, false);
     }
 }

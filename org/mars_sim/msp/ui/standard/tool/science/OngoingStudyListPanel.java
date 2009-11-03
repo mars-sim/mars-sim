@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * OngoingStudyListPanel.java
- * @version 2.87 2009-10-12
+ * @version 2.87 2009-10-28
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.tool.science;
 
 import java.awt.BorderLayout;
@@ -16,6 +15,8 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -31,6 +32,7 @@ public class OngoingStudyListPanel extends JPanel {
     // Data members
     private ScienceWindow scienceWindow;
     private StudyTableModel studyTableModel;
+    private JTable studyTable;
     
     /**
      * Constructor
@@ -39,6 +41,8 @@ public class OngoingStudyListPanel extends JPanel {
     OngoingStudyListPanel(ScienceWindow scienceWindow) {
         // Use JPanel constructor.
         super();
+        
+        this.scienceWindow = scienceWindow;
         
         setLayout(new BorderLayout());
         
@@ -56,11 +60,22 @@ public class OngoingStudyListPanel extends JPanel {
         studyTableModel = new StudyTableModel();
         
         // Create study table.
-        JTable studyTable = new JTable(studyTableModel);
+        studyTable = new JTable(studyTableModel);
         studyTable.setPreferredScrollableViewportSize(new Dimension(300, 200));
         studyTable.setCellSelectionEnabled(false);
         studyTable.setRowSelectionAllowed(true);
         studyTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        studyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent event) {
+                if (event.getValueIsAdjusting()) {
+                    int row = studyTable.getSelectedRow();
+                    if (row >= 0) {
+                        ScientificStudy selectedStudy = studyTableModel.getStudy(row);
+                        if (selectedStudy != null) setSelectedScientificStudy(selectedStudy);
+                    }
+                }
+            }
+        });
         listScrollPane.setViewportView(studyTable);
     }
     
@@ -69,6 +84,31 @@ public class OngoingStudyListPanel extends JPanel {
      */
     void update() {
         studyTableModel.update();
+        
+        // Make sure study is selected.
+        selectScientificStudy(scienceWindow.getScientificStudy());
+    }
+    
+    /**
+     * Sets the selected scientific study in table.
+     * @param study the scientific study.
+     */
+    void setSelectedScientificStudy(ScientificStudy study) {
+        scienceWindow.setScientificStudy(study);
+    }
+    
+    /**
+     * Selects a scientific study.
+     * @param study the scientific study.
+     */
+    void selectScientificStudy(ScientificStudy study) {
+        int studyIndex = studyTableModel.getStudyIndex(study);
+        int currentSelectedRow = studyTable.getSelectedRow();
+        if (studyIndex != currentSelectedRow) {
+            if (studyIndex >= 0) 
+                studyTable.getSelectionModel().setSelectionInterval(studyIndex, studyIndex);
+            else studyTable.clearSelection();
+        }
     }
     
     /**
@@ -136,10 +176,36 @@ public class OngoingStudyListPanel extends JPanel {
         private void update() {
             ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
             List<ScientificStudy> newStudies = manager.getOngoingStudies();
-            if (!studies.equals(newStudies)) {
-                studies = newStudies;
-                fireTableDataChanged();
+            if (!studies.equals(newStudies)) studies = newStudies;
+            fireTableDataChanged();
+        }
+        
+        /**
+         * Gets the scientific study at a given row index.
+         * @param row the row index.
+         * @return the study at the row index or null if none.
+         */
+        private ScientificStudy getStudy(int row) {
+            ScientificStudy result = null;
+            
+            if ((row >= 0) && (row < studies.size())) {
+                result = studies.get(row);
             }
+            
+            return result;
+        }
+        
+        /**
+         * Gets the row index of a given scientific study.
+         * @param study the scientific study.
+         * @return the row index of the study or -1 if not in table.
+         */
+        private int getStudyIndex(ScientificStudy study) {
+            int result = -1;
+
+            if (studies.contains(study)) result = studies.indexOf(study);
+            
+            return result;
         }
     }
 }
