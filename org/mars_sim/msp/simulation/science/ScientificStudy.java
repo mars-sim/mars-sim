@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 2.87 2009-10-02
+ * @version 2.87 2009-11-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -80,6 +80,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
     private Settlement primarySettlement;
     private MarsClock lastPrimaryResearchWorkTime;
     private Map<Person, MarsClock> lastCollaborativeResearchWorkTime;
+    private double primaryResearcherAchievementEarned;
+    private Map<Person, Double> collaborativeAchievementEarned;
     
     /**
      * Constructor.
@@ -107,6 +109,8 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         primarySettlement = primaryResearcher.getAssociatedSettlement();
         lastPrimaryResearchWorkTime = null;
         lastCollaborativeResearchWorkTime = new HashMap<Person, MarsClock>(MAX_NUM_COLLABORATORS);
+        primaryResearcherAchievementEarned = 0D;
+        collaborativeAchievementEarned = new HashMap<Person, Double>(MAX_NUM_COLLABORATORS);
     }
     
     /**
@@ -201,6 +205,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         collaborativeResearchWorkTime.put(researcher, 0D);
         collaborativePaperWorkTime.put(researcher, 0D);
         lastCollaborativeResearchWorkTime.put(researcher, null);
+        collaborativeAchievementEarned.put(researcher, 0D);
     }
     
     /**
@@ -212,6 +217,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         collaborativeResearchWorkTime.remove(researcher);
         collaborativePaperWorkTime.remove(researcher);
         lastCollaborativeResearchWorkTime.remove(researcher);
+        collaborativeAchievementEarned.remove(researcher);
     }
     
     /**
@@ -546,6 +552,27 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
     }
     
     /**
+     * Gets the amount of peer review time that has been completed so far.
+     * @return peer review time completed (millisols)..
+     */
+    public double getPeerReviewTimeCompleted() {
+        double result = 0D;
+        if (peerReviewStartTime != null) {
+            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+            result = MarsClock.getTimeDiff(currentTime, peerReviewStartTime);
+        }
+        return result;
+    }
+    
+    /**
+     * Gets the total amount of peer review time required for the study.
+     * @return the total peer review time (millisols).
+     */
+    public double getTotalPeerReviewTimeRequired() {
+        return PEER_REVIEW_TIME;
+    }
+    
+    /**
      * Sets the study as completed.
      * @param completionState the state of completion.
      */
@@ -597,6 +624,46 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         if (lastCollaborativeResearchWorkTime.containsKey(researcher)) 
             result = lastCollaborativeResearchWorkTime.get(researcher);
         return result;
+    }
+    
+    /**
+     * Gets the primary researcher's earned scientific achievement from the study.
+     * @return earned scientific achievement.
+     */
+    public double getPrimaryResearcherEarnedScientificAchievement() {
+        return primaryResearcherAchievementEarned;
+    }
+    
+    /**
+     * Sets the primary researcher's earned scientific achievement from the study.
+     * @param earned the earned scientific achievement.
+     */
+    void setPrimaryResearchEarnedScientificAchievement(double earned) {
+        primaryResearcherAchievementEarned = earned;
+    }
+    
+    /**
+     * Gets a collaborative researcher's earned scientific achievement from the study.
+     * @param researcher the collaborative researcher.
+     * @return earned scientific achievement.
+     */
+    public double getCollaborativeResearcherEarnedScientificAchievement(Person researcher) {
+        double result = 0D;
+        
+        if (collaborativeAchievementEarned.containsKey(researcher))
+            result = collaborativeAchievementEarned.get(researcher);
+        
+        return result;
+    }
+    
+    /**
+     * Sets a collaborative researcher's earned scientific achievement from the study.
+     * @param researcher the collaborative researcher.
+     * @param earned the earned scientific achievement.
+     */
+    void setCollaborativeResearcherEarnedScientificAchievement(Person researcher, double earned) {
+        if (collaborativeAchievementEarned.containsKey(researcher))
+            collaborativeAchievementEarned.put(researcher, earned);
     }
     
     @Override

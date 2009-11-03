@@ -121,6 +121,7 @@ public class ScientificStudyUtil {
         // Add achievement credit to primary researcher.
         Person primaryResearcher = study.getPrimaryResearcher();
         primaryResearcher.addScientificAchievement(baseAchievement, primaryScience);
+        study.setPrimaryResearchEarnedScientificAchievement(baseAchievement);
         
         // Add achievement credit to primary settlement.
         Settlement primarySettlement = study.getPrimarySettlement();
@@ -133,6 +134,7 @@ public class ScientificStudyUtil {
             Person researcher = i.next();
             Science collaborativeScience = study.getCollaborativeResearchers().get(researcher);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
+            study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);
             
             // Add achievement credit to the collaborative researcher's current settlement.
             Settlement collaboratorSettlement = researcher.getAssociatedSettlement();
