@@ -52,6 +52,7 @@ import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Crop;
 import org.mars_sim.msp.simulation.structure.building.function.Farming;
+import org.mars_sim.msp.simulation.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.simulation.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionStageInfo;
@@ -249,6 +250,9 @@ public class GoodsManager implements Serializable {
 			// Add life support demand if applicable.
 			demand += getLifeSupportDemand(resource);
 		
+            // Add potable water usage demand if applicable.
+            demand += getPotableWaterUsageDemand(resource);
+            
 			// Add vehicle demand if applicable.
 			demand += getVehicleDemand(resource);
 		
@@ -288,7 +292,15 @@ public class GoodsManager implements Serializable {
 	 */
 	private double getLifeSupportDemand(AmountResource resource) throws Exception {
 		if (resource.isLifeSupport()) {
-			double amountNeededSol = SimulationConfig.instance().getPersonConfiguration().getOxygenConsumptionRate();
+			double amountNeededSol = 0D;
+            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            if (resource.equals(oxygen)) amountNeededSol = config.getOxygenConsumptionRate();
+            AmountResource water = AmountResource.findAmountResource("water");
+            if (resource.equals(water)) amountNeededSol = config.getWaterConsumptionRate();
+            AmountResource food = AmountResource.findAmountResource("food");
+            if (resource.equals(food)) amountNeededSol = config.getFoodConsumptionRate();
+            
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getAllAssociatedPeople().size();
 			return numPeople * amountNeededOrbit;
@@ -296,6 +308,23 @@ public class GoodsManager implements Serializable {
 		else return 0D;
 	}
 	
+    /**
+     * Gets the potable water usage demand for an amount resource.
+     * @param resource the resource to check.
+     * @return demand (kg)
+     * @throws Exception if error getting potable water usage demand.
+     */
+    private double getPotableWaterUsageDemand(AmountResource resource) throws Exception {
+        AmountResource water = AmountResource.findAmountResource("water");
+        if (resource.equals(water)) {
+            double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
+            double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            int numPeople = settlement.getCurrentPopulationNum();
+            return numPeople * amountNeededOrbit;
+        }
+        else return 0D;
+    }
+    
 	/**
 	 * Gets vehicle demand for an amount resource.
 	 * @param resource the resource to check.
