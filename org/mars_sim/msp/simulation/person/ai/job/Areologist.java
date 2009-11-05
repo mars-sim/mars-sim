@@ -97,7 +97,7 @@ public class Areologist extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 		
-		// Add (labspace * tech level) for all labs with areology specialities.
+		// Add (labspace * tech level / 2) for all labs with areology specialities.
 		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
@@ -105,7 +105,7 @@ public class Areologist extends Job implements Serializable {
 			try {
 				Research lab = (Research) building.getFunction(Research.NAME);
 				if (lab.hasSpeciality(Skill.AREOLOGY)) 
-					result += (lab.getLaboratorySize() * lab.getTechnologyLevel());
+					result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 			}
 			catch (BuildingException e) {
 			    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);

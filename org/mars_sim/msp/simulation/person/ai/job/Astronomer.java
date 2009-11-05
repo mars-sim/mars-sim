@@ -72,14 +72,14 @@ public class Astronomer extends Job implements Serializable {
         
         BuildingManager manager = settlement.getBuildingManager();
         
-        // Add (labspace * tech level) for all labs with astronomy specialities.
+        // Add (labspace * tech level / 2) for all labs with astronomy specialities.
         Iterator<Building> i = manager.getBuildings(Research.NAME).iterator();
         while (i.hasNext()) {
             Building building = i.next();
             try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.ASTRONOMY)) 
-                    result += lab.getLaboratorySize() * lab.getTechnologyLevel();
+                    result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
             }
             catch (BuildingException e) {
                 logger.log(Level.SEVERE,"getSettlementNeeded(): e.getMessage()", e);

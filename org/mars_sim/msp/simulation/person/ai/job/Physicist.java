@@ -69,7 +69,7 @@ public class Physicist extends Job implements Serializable {
     public double getSettlementNeed(Settlement settlement) {
         double result = 0D;
         
-        // Add (labspace * tech level) for all labs with physics specialities.
+        // Add (labspace * tech level / 2D) for all labs with physics specialities.
         List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
         Iterator i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
@@ -77,7 +77,7 @@ public class Physicist extends Job implements Serializable {
             try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.PHYSICS)) 
-                    result += (lab.getLaboratorySize() * lab.getTechnologyLevel());
+                    result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
             }
             catch (BuildingException e) {
                 logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
