@@ -90,7 +90,7 @@
 					<!-- rate: the rate (kg/sol) the resource is being added to the process. -->
 					<!-- ambient: true if resource is being drown from the external environment, -->
 					<!-- false if resource is being drawn from the settlement's inventory. -->
-					<input resource="Waste Water" rate=".2" ambient="false" />
+					<input resource="Waste Water" rate="100.0" ambient="false" />
 					
 					<!-- Clean water outflux. -->
 					<!-- resource: the resource resulting from the process. -->
@@ -98,7 +98,7 @@
 					<!-- rate: the rate (kg/sol) the resource is being produced by the process. -->
 					<!-- ambient: true if resource is being released into the external environment, -->
 					<!-- false if resource is stored in the settlement's inventory. -->
-					<output resource="Water" rate=".17" ambient="false" />
+					<output resource="Water" rate="85.0" ambient="false" />
 				</process>
 				
 				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
@@ -203,7 +203,7 @@
 					<output resource="Hydrogen" rate=".011" ambient="false" />
 					<output resource="Oxygen" rate=".089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" power-required="2.0" default="on">
+				<process name="CO2 Reduction" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
 					<output resource="Oxygen" rate=".3" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
@@ -240,7 +240,7 @@
 					<output resource="Hydrogen" rate=".011" ambient="false" />
 					<output resource="Oxygen" rate=".089" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" power-required="2.0" default="on">
+				<process name="CO2 Reduction" power-required="2.0" default="off">
 					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
 					<output resource="Oxygen" rate=".3" ambient="false" />
 					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
@@ -284,14 +284,14 @@
 					<output resource="Hydrogen" rate=".11" ambient="false" />
 					<output resource="Oxygen" rate=".89" ambient="false" />
 				</process>
-				<process name="CO2 Reduction" power-required="20.0" default="on">
+				<process name="CO2 Reduction" power-required="20.0" default="off">
 					<input resource="Carbon Dioxide" rate="8.25" ambient="true" />
 					<output resource="Oxygen" rate="3.0" ambient="false" />
 					<output resource="Carbon Monoxide" rate="5.25" ambient="true" />
 				</process>
 				<process name="Water Recycling" power-required="40.0" default="off">
-					<input resource="Waste Water" rate="2.0" ambient="false" />
-					<output resource="Water" rate="1.7" ambient="false" />
+					<input resource="Waste Water" rate="100.0" ambient="false" />
+					<output resource="Water" rate="85.0" ambient="false" />
 				</process>
 				<process name="Carbon Scrubbing" power-required="20.0" default="off">
 					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
