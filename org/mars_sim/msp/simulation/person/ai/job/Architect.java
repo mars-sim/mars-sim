@@ -82,8 +82,8 @@ public class Architect extends Job implements Serializable {
             logger.log(Level.SEVERE,"Architect.getSettlementNeed()", e);
         }
         
-        // Add number of buildings currently at settlement.
-        result += settlement.getBuildingManager().getBuildingNum();
+        // Add number of buildings currently at settlement / 2.
+        result += settlement.getBuildingManager().getBuildingNum() / 2D;
         
         return result;  
     }
