@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SocialTabPanel.java
- * @version 2.81 2007-08-27
+ * @version 2.87 2009-11-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.unit_window.person;
@@ -26,9 +26,12 @@ import org.mars_sim.msp.ui.standard.MainDesktopPane;
 import org.mars_sim.msp.ui.standard.MarsPanelBorder;
 import org.mars_sim.msp.ui.standard.unit_window.TabPanel;
 
-
+/**
+ * A tab panel displaying a person's social relationships.
+ */
 public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 
+    // Data members
 	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
 	
