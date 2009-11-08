@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyManager.java
- * @version 2.87 2009-07-05
+ * @version 2.87 2009-11-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.science;
@@ -245,6 +245,33 @@ public class ScientificStudyManager implements Serializable {
                 }
             }
         }
+        return result;
+    }
+    
+    /**
+     * Gets a list of all studies a researcher is involved with.
+     * @param researcher the researcher.
+     * @return list of scientific studies.
+     */
+    public List<ScientificStudy> getAllStudies(Person researcher) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        
+        // Add ongoing primary study.
+        ScientificStudy primaryStudy = getOngoingPrimaryStudy(researcher);
+        if (primaryStudy != null) result.add(primaryStudy);
+        
+        // Add any ongoing collaborative studies.
+        List<ScientificStudy> collaborativeStudies = getOngoingCollaborativeStudies(researcher);
+        result.addAll(collaborativeStudies);
+        
+        // Add completed primary studies.
+        List<ScientificStudy> completedPrimaryStudies = getCompletedPrimaryStudies(researcher);
+        result.addAll(completedPrimaryStudies);
+        
+        // Add completed collaborative studies.
+        List<ScientificStudy> completedCollaborativeStudies = getCompletedCollaborativeStudies(researcher);
+        result.addAll(completedCollaborativeStudies);
+        
         return result;
     }
     
