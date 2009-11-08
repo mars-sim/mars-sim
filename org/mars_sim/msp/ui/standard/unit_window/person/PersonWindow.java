@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * PersonWindow.java
- * @version 2.77 2004-09-06
+ * @version 2.87 2009-11-06
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.standard.unit_window.person;
 
 import org.mars_sim.msp.simulation.person.Person;
@@ -39,6 +38,7 @@ public class PersonWindow extends UnitWindow {
         addTabPanel(new HealthTabPanel(person, desktop));
         addTabPanel(new GeneralTabPanel(person, desktop));
         addTabPanel(new SocialTabPanel(person, desktop));
+        addTabPanel(new ScienceTabPanel(person, desktop));
         
         // Add death tab panel if person is dead.
         if (person.getPhysicalCondition().isDead()) {
