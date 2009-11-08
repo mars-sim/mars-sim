@@ -276,6 +276,25 @@ public class ScientificStudyManager implements Serializable {
     }
     
     /**
+     * Gets a list of all studies a settlement is primary for.
+     * @param settlement the settlement.
+     * @return list of scientific studies.
+     */
+    public List<ScientificStudy> getAllStudies(Settlement settlement) {
+        List<ScientificStudy> result = new ArrayList<ScientificStudy>();
+        
+        // Add any ongoing primary studies.
+        List<ScientificStudy> primaryStudies = getOngoingPrimaryStudies(settlement);
+        result.addAll(primaryStudies);
+        
+        // Add any completed primary studies.
+        List<ScientificStudy> completedPrimaryStudies = getCompletedPrimaryStudies(settlement);
+        result.addAll(completedPrimaryStudies);
+        
+        return result;
+    }
+    
+    /**
      * Update all of the studies.
      */
     public void updateStudies() {
