@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * FinishedStudyListPanel.java
- * @version 2.87 2009-10-28
+ * @version 2.87 2009-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.science;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.util.List;
 
 import javax.swing.JLabel;
@@ -33,6 +34,7 @@ public class FinishedStudyListPanel extends JPanel {
     private ScienceWindow scienceWindow;
     private StudyTableModel studyTableModel;
     private JTable studyTable;
+    private JScrollPane listScrollPane;
     
     /**
      * Constructor
@@ -50,7 +52,7 @@ public class FinishedStudyListPanel extends JPanel {
         add(titleLabel, BorderLayout.NORTH);
         
         // Create list scroll pane.
-        JScrollPane listScrollPane = new JScrollPane();
+        listScrollPane = new JScrollPane();
         listScrollPane.setBorder(new MarsPanelBorder());
         listScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(listScrollPane, BorderLayout.CENTER);
@@ -85,7 +87,7 @@ public class FinishedStudyListPanel extends JPanel {
         studyTableModel.update();
         
         // Make sure study is selected.
-        selectScientificStudy(scienceWindow.getScientificStudy());
+        selectScientificStudy(scienceWindow.getScientificStudy(), false);
     }
     
     /**
@@ -99,13 +101,20 @@ public class FinishedStudyListPanel extends JPanel {
     /**
      * Selects a scientific study.
      * @param study the scientific study.
+     * @param scrollSelection true if table should be scrolled so selected row is visible.
      */
-    void selectScientificStudy(ScientificStudy study) {
+    void selectScientificStudy(ScientificStudy study, boolean scrollSelection) {
         int studyIndex = studyTableModel.getStudyIndex(study);
         int currentSelectedRow = studyTable.getSelectedRow();
         if (studyIndex != currentSelectedRow) {
-            if (studyIndex >= 0) 
+            if (studyIndex >= 0) {
                 studyTable.getSelectionModel().setSelectionInterval(studyIndex, studyIndex);
+                
+                if (scrollSelection) {
+                    Rectangle cellRect = studyTable.getCellRect(studyIndex, 0, true);
+                    listScrollPane.getViewport().setViewPosition(cellRect.getLocation());
+                }
+            }
             else studyTable.clearSelection();
         }
     }

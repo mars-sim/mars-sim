@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceWindow.java
- * @version 2.87 2009-11-03
+ * @version 2.87 2009-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.standard.tool.science;
@@ -74,8 +74,8 @@ public class ScienceWindow extends ToolWindow {
     public void setScientificStudy(ScientificStudy study) {
         selectedStudy = study;
         studyDetailPane.displayScientificStudy(study);
-        ongoingStudyListPane.selectScientificStudy(study);
-        finishedStudyListPane.selectScientificStudy(study);
+        ongoingStudyListPane.selectScientificStudy(study, true);
+        finishedStudyListPane.selectScientificStudy(study, true);
     }
     
     /**
