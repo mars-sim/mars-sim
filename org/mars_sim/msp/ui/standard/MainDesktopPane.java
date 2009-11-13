@@ -536,6 +536,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
                 (desktop_size.width - window_size.width));
         int rY = (int) Math.round(Math.random() *
                 (desktop_size.height - window_size.height));
+        
+        // Make sure y position isn't < 0.
+        if (rY < 0) rY = 0;
 
         return new Point(rX, rY);
     }
