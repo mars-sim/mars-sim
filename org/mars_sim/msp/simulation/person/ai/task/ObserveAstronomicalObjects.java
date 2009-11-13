@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 2.87 2009-07-24
+ * @version 2.87 2009-11-12
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -32,7 +32,8 @@ import org.mars_sim.msp.simulation.structure.building.function.AstronomicalObser
 /**
  * A task for observing the night sky with an astronomical observatory.
  */
-public class ObserveAstronomicalObjects extends Task implements Serializable {
+public class ObserveAstronomicalObjects extends Task implements 
+        ResearchScientificStudy, Serializable {
 
     private static String CLASS_NAME = 
             "org.mars_sim.msp.simulation.person.ai.task.ObserveAstronomicalObjects";
@@ -47,6 +48,7 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
     // Data members.
     private ScientificStudy study; // The scientific study the person is researching for.
     private AstronomicalObservation observatory; // The observatory the person is using.
+    private Person researchAssistant; // The research assistant.
     
     /**
      * Constructor
@@ -382,6 +384,14 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
         int techLevel = observatory.getTechnologyLevel();
         if (techLevel > 0) observingTime *= techLevel;
         
+        // If research assistant, modify by assistant's effective skill.
+        if (hasResearchAssistant()) {
+            SkillManager manager = getResearchAssistant().getMind().getSkillManager();
+            Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
+            int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(astronomyScience));
+            if (astronomySkill > 0) observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);
+        }
+        
         return observingTime;
     }
     
@@ -420,5 +430,45 @@ public class ObserveAstronomicalObjects extends Task implements Serializable {
             if (observatory != null) observatory.removeObserver();
         }
         catch(Exception e) {}
+    }
+    
+    /**
+     * Gets the scientific field that is being researched for the study.
+     * @return scientific field.
+     */
+    public Science getResearchScience() {
+        return ScienceUtil.getScience(Science.ASTRONOMY);
+    }
+    
+    /**
+     * Gets the researcher who is being assisted.
+     * @return researcher.
+     */
+    public Person getResearcher() {
+        return person;
+    }
+    
+    /**
+     * Checks if there is a research assistant.
+     * @return research assistant.
+     */
+    public boolean hasResearchAssistant() {
+        return (researchAssistant != null);
+    }
+    
+    /**
+     * Gets the research assistant.
+     * @return research assistant or null if none.
+     */
+    public Person getResearchAssistant() {
+        return researchAssistant;
+    }
+    
+    /**
+     * Sets the research assistant.
+     * @param researchAssistant the research assistant.
+     */
+    public void setResearchAssistant(Person researchAssistant) {
+        this.researchAssistant = researchAssistant;
     }
 }

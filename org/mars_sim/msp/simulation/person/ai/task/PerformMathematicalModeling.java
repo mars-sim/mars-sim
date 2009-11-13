@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 2.87 2009-08-06
+ * @version 2.87 2009-11-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -35,7 +35,8 @@ import org.mars_sim.msp.simulation.vehicle.Vehicle;
 /**
  * A task for performing mathematical modeling in a laboratory for a scientific study.
  */
-public class PerformMathematicalModeling extends Task implements Serializable {
+public class PerformMathematicalModeling extends Task implements 
+        ResearchScientificStudy, Serializable {
 
     private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai." + 
             "task.PerformMathematicalModeling";
@@ -51,6 +52,7 @@ public class PerformMathematicalModeling extends Task implements Serializable {
     private ScientificStudy study; // The scientific study the person is modeling for.
     private Lab lab;               // The laboratory the person is working in.
     private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
+    private Person researchAssistant; // The research assistant.
     
     /**
      * Constructor
@@ -418,6 +420,14 @@ public class PerformMathematicalModeling extends Task implements Serializable {
         int techLevel = lab.getTechnologyLevel();
         if (techLevel > 0) modelingTime *= techLevel;
         
+        // If research assistant, modify by assistant's effective skill.
+        if (hasResearchAssistant()) {
+            SkillManager manager = getResearchAssistant().getMind().getSkillManager();
+            Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
+            int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(mathematicsScience));
+            if (mathematicsSkill > 0) modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
+        }
+        
         return modelingTime;
     }
 
@@ -500,5 +510,45 @@ public class PerformMathematicalModeling extends Task implements Serializable {
             if (lab != null) lab.removeResearcher();
         }
         catch(Exception e) {}
+    }
+    
+    /**
+     * Gets the scientific field that is being researched for the study.
+     * @return scientific field.
+     */
+    public Science getResearchScience() {
+        return ScienceUtil.getScience(Science.MATHEMATICS);
+    }
+    
+    /**
+     * Gets the researcher who is being assisted.
+     * @return researcher.
+     */
+    public Person getResearcher() {
+        return person;
+    }
+    
+    /**
+     * Checks if there is a research assistant.
+     * @return research assistant.
+     */
+    public boolean hasResearchAssistant() {
+        return (researchAssistant != null);
+    }
+    
+    /**
+     * Gets the research assistant.
+     * @return research assistant or null if none.
+     */
+    public Person getResearchAssistant() {
+        return researchAssistant;
+    }
+    
+    /**
+     * Sets the research assistant.
+     * @param researchAssistant the research assistant.
+     */
+    public void setResearchAssistant(Person researchAssistant) {
+        this.researchAssistant = researchAssistant;
     }
 }
