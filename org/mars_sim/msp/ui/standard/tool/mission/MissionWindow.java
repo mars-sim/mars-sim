@@ -57,7 +57,7 @@ public class MissionWindow extends ToolWindow {
 		super(NAME, desktop);
 		
 		// Set window resizable to false.
-        setResizable(false);
+        //setResizable(false);
 		
 		// Create content panel.
         JPanel mainPane = new JPanel(new BorderLayout());
