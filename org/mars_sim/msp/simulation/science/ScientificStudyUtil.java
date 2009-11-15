@@ -16,6 +16,8 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
+import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.Settlement;
 
 /**
@@ -122,6 +124,7 @@ public class ScientificStudyUtil {
         Person primaryResearcher = study.getPrimaryResearcher();
         primaryResearcher.addScientificAchievement(baseAchievement, primaryScience);
         study.setPrimaryResearchEarnedScientificAchievement(baseAchievement);
+        modifyScientistRelationshipsFromAchievement(primaryResearcher, primaryScience, baseAchievement);
         
         // Add achievement credit to primary settlement.
         Settlement primarySettlement = study.getPrimarySettlement();
@@ -135,11 +138,35 @@ public class ScientificStudyUtil {
             Science collaborativeScience = study.getCollaborativeResearchers().get(researcher);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);
+            modifyScientistRelationshipsFromAchievement(researcher, collaborativeScience, collaborativeAchievement);
             
             // Add achievement credit to the collaborative researcher's current settlement.
             Settlement collaboratorSettlement = researcher.getAssociatedSettlement();
             if (collaboratorSettlement != null) collaboratorSettlement.addScientificAchievement(
                     collaborativeAchievement, collaborativeScience);
+        }
+    }
+    
+    /**
+     * Modify researchers relationships with other known scientists in the same field due to new achievement.
+     * @param researcher the achieving researcher.
+     * @param science the field of science.
+     * @param achievement the new achievement credit.
+     */
+    private static void modifyScientistRelationshipsFromAchievement(Person researcher, 
+            Science science, double achievement) {
+        
+        RelationshipManager manager = Simulation.instance().getRelationshipManager();
+        Iterator<Person> i = manager.getAllKnownPeople(researcher).iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            if (science.equals(ScienceUtil.getAssociatedScience(person.getMind().getJob()))) {
+                Relationship relationship = manager.getRelationship(researcher, person);
+                if (relationship != null) {
+                    double currentOpinion = relationship.getPersonOpinion(person);
+                    relationship.setPersonOpinion(person, currentOpinion + achievement);
+                }
+            }
         }
     }
 }
