@@ -79,7 +79,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
-        if (invitedStudies.size() > 0) result = 20D;
+        if (invitedStudies.size() > 0) result = 50D;
         
         return result;
     }

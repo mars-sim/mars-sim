@@ -101,11 +101,12 @@ public class InviteStudyCollaborator extends Task implements Serializable {
                     // Check that there's scientists available for invitation.
                     if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
                         
+                        result = 25D;
+                        
                         // Increase probability if person's current job is related to study's science.
                         Job job = person.getMind().getJob();
                         Science science = study.getScience();
-                        if ((job != null) && science.equals(ScienceUtil.getAssociatedScience(job))) result = 20D;
-                        else result = 2D;
+                        if (science.equals(ScienceUtil.getAssociatedScience(job))) result*= 2D;
                     }
                 }
             }
