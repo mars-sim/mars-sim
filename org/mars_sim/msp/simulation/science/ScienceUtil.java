@@ -147,6 +147,28 @@ public class ScienceUtil {
     }
     
     /**
+     * Checks if a job is associated with any science.
+     * @param job the job.
+     * @return true if job is associated with a science.
+     */
+    public static boolean isScienceJob(Job job) {
+        if (sciences == null) loadSciences();
+        
+        boolean result = false;
+        
+        Iterator<Science> i = sciences.iterator();
+        while (i.hasNext()) {
+            Science science = i.next();
+            Job[] jobs = science.getJobs();
+            for (int x = 0; x < jobs.length; x++) {
+                if (jobs[x].equals(job)) result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Gets a science associated with a given job if any.
      * @param job the job.
      * @return associated science or null if none.
