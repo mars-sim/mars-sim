@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relationship.java
- * @version 2.77 2004-09-27
+ * @version 2.87 2009-11-13
  * @author Scott Davis
  */
 
@@ -11,6 +11,8 @@ import java.io.Serializable;
 import org.mars_sim.msp.simulation.RandomUtil;
 import org.mars_sim.msp.simulation.person.*;
 import org.mars_sim.msp.simulation.person.ai.PersonalityType;
+import org.mars_sim.msp.simulation.science.Science;
+import org.mars_sim.msp.simulation.science.ScienceUtil;
 
 /**
  * The Relationship class represents a social relationship between
@@ -19,8 +21,13 @@ import org.mars_sim.msp.simulation.person.ai.PersonalityType;
 public class Relationship implements Serializable {
 
 	// Types of starting relationships.
+    // First impression if for meeting a new person.
 	public static final String FIRST_IMPRESSION = "First Impression";
+    
+    // Existing relationship is for meeting a person who is already known.
 	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
+    
+    // Communication meeting is for meeting a new person remotely (email, etc).
     public static final String COMMUNICATION_MEETING = "Communication Meeting";
 	
 	// Relationship modifier for settlers since they are trained to get along with each other.
@@ -151,9 +158,16 @@ public class Relationship implements Serializable {
 		boolean oppositeGenders = (!impressioner.getGender().equals(impressionee.getGender()));
 		if (oppositeGenders) result+= RandomUtil.getRandomDouble(attractivenessModifier);
 		
+        // Modify based on total scientific achievement.
+        result += impressionee.getTotalScientificAchievement() / 10D;
+        
+        // If impressioner is a scientist, modify based on impressionee's achievement in scientific field.
+        Science science = ScienceUtil.getAssociatedScience(impressioner.getMind().getJob());
+        result += impressionee.getScientificAchievement(science);
+        
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
-		
+        
 		return result;
 	}
 	
@@ -189,6 +203,13 @@ public class Relationship implements Serializable {
 		double personalityDiffModifier = (2D - (double) personType.getPersonalityDifference(targetType.getTypeString())) * 50D;
 		result+= RandomUtil.getRandomDouble(personalityDiffModifier);
 		
+        // Modify based on total scientific achievement.
+        result += target.getTotalScientificAchievement() / 10D;
+        
+        // If impressioner is a scientist, modify based on target's achievement in scientific field.
+        Science science = ScienceUtil.getAssociatedScience(target.getMind().getJob());
+        result += target.getScientificAchievement(science);
+        
 		// Modify as settlers are trained to try to get along with each other.
 		if (result < 50D) result+= RandomUtil.getRandomDouble(SETTLER_MODIFIER);
 		
@@ -206,6 +227,13 @@ public class Relationship implements Serializable {
         
         // Default to 50 for now.
         result = 50D;
+        
+        // Modify based on total scientific achievement.
+        result += target.getTotalScientificAchievement() / 10D;
+        
+        // If impressioner is a scientist, modify based on target's achievement in scientific field.
+        Science science = ScienceUtil.getAssociatedScience(target.getMind().getJob());
+        result += target.getScientificAchievement(science);
         
         return result;
     }
