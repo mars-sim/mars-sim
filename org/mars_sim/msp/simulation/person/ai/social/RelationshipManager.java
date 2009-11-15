@@ -84,7 +84,7 @@ public class RelationshipManager implements Serializable {
 	}
 	
 	/**
-	 * Adds an innitial settler who will have an existing relationship with all the 
+	 * Adds an initial settler who will have an existing relationship with all the 
 	 * other inhabitants if his/her settlement.
 	 * @param person the person to add.
 	 * @param settlement the settlement the person starts at.
@@ -175,7 +175,7 @@ public class RelationshipManager implements Serializable {
 	 * @param person the person 
 	 * @return a list of the person's Relationship objects.
 	 */
-	public List getAllRelationships(Person person) {
+	public List<Relationship> getAllRelationships(Person person) {
 		List<Relationship> result = new ArrayList<Relationship>();
 		Traverser traverser = relationshipGraph.traverser(person, GraphUtils.UNDIRECTED_TRAVERSER_PREDICATE);
 		while (traverser.hasNext()) {
