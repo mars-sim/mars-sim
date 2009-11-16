@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 2.81 2007-08-12
+ * @version 2.87 2009-11-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.simulation.resource.ItemResource;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingManager;
+import org.mars_sim.msp.simulation.vehicle.Towing;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
@@ -146,12 +147,19 @@ public class UnloadVehicle extends Task implements Serializable {
     		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
+                boolean needsUnloading = false;
     			try {
-    				if (!vehicle.isReserved() && (vehicle.getInventory().getTotalInventoryMass() > 0D)) result = vehicle;
+    				if (!vehicle.isReserved()) {
+                        if (vehicle.getInventory().getTotalInventoryMass() > 0D) needsUnloading = true;
+                        if (vehicle instanceof Towing) {
+                            if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
+                        }
+                    }
     			}
     			catch(InventoryException e) {
     				e.printStackTrace(System.err);
     			}
+                if (needsUnloading) result = vehicle;
     		}
     	}
     	
@@ -291,6 +299,16 @@ public class UnloadVehicle extends Task implements Serializable {
         		settlementInv.storeItemResources(resource, num);
         		amountUnloading -= (num * resource.getMassPerItem());
         	}
+        }
+        
+        // Unload towed vehicles.
+        if (vehicle instanceof Towing) {
+            Towing towingVehicle = (Towing) vehicle;
+            Vehicle towedVehicle = towingVehicle.getTowedVehicle();
+            if (towedVehicle != null) {
+                towingVehicle.setTowedVehicle(null);
+                towedVehicle.setTowingVehicle(null);
+            }
         }
 		
         if (isFullyUnloaded(vehicle)) endTask();
