@@ -12,17 +12,24 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.simulation.Lab;
+import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.Skill;
 import org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.simulation.person.ai.mission.Exploration;
+import org.mars_sim.msp.simulation.person.ai.mission.Mission;
+import org.mars_sim.msp.simulation.person.ai.mission.MissionManager;
 import org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.simulation.person.ai.mission.RoverMission;
 import org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.structure.building.Building;
 import org.mars_sim.msp.simulation.structure.building.BuildingException;
 import org.mars_sim.msp.simulation.structure.building.function.Research;
+import org.mars_sim.msp.simulation.vehicle.Rover;
+import org.mars_sim.msp.simulation.vehicle.Vehicle;
 
 /** 
  * The Biologist class represents a job for a biologist.
@@ -85,40 +92,38 @@ public class Biologist extends Job implements Serializable {
                 logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
             }
         }
-        /*
-        // Add number of exploration-capable rovers parked at the settlement.
+
+        // Add (labspace * tech level / 2) for all parked rover labs with biology specialities.
         Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
         while (j.hasNext()) {
             Vehicle vehicle = j.next();
             if (vehicle instanceof Rover) {
-                try {
-                    if (vehicle.getInventory().hasAmountResourceCapacity(
-                            AmountResource.findAmountResource("rock samples"))) result++;
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+                Rover rover = (Rover) vehicle;
+                if (rover.hasLab()) {
+                    Lab lab = rover.getLab();
+                    if (lab.hasSpeciality(Skill.BIOLOGY))
+                        result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
                 }
             }
         }
-        */
-        /*
-        // Add number of exploration-capable rovers out on missions for the settlement.
+        
+        // Add (labspace * tech level / 2) for all labs with biology specialities in rovers out on missions.
         MissionManager missionManager = Simulation.instance().getMissionManager();
         Iterator k = missionManager.getMissionsForSettlement(settlement).iterator();
         while (k.hasNext()) {
             Mission mission = (Mission) k.next();
             if (mission instanceof RoverMission) {
                 Rover rover = ((RoverMission) mission).getRover();
-                try {
-                    if ((rover != null) && rover.getInventory().hasAmountResourceCapacity(
-                            AmountResource.findAmountResource("rock samples"))) result++;
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+                if ((rover != null) && !settlement.getParkedVehicles().contains(rover)) {
+                    if (rover.hasLab()) {
+                        Lab lab = rover.getLab();
+                        if (lab.hasSpeciality(Skill.BIOLOGY))
+                            result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+                    }
                 }
             }
         }
-        */
+        
         result *= 5D;
         
         return result;  
