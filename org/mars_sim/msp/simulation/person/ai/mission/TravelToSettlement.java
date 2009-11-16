@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 2.85 2009-01-21
+ * @version 2.87 2009-11-15
  * @author Scott Davis
  */
 
@@ -24,6 +24,8 @@ import org.mars_sim.msp.simulation.person.ai.job.Driver;
 import org.mars_sim.msp.simulation.person.ai.job.Job;
 import org.mars_sim.msp.simulation.person.ai.job.JobManager;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.simulation.science.Science;
+import org.mars_sim.msp.simulation.science.ScienceUtil;
 import org.mars_sim.msp.simulation.structure.Settlement;
 import org.mars_sim.msp.simulation.vehicle.Rover;
 import org.mars_sim.msp.simulation.vehicle.Vehicle;
@@ -52,6 +54,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     private static final double JOB_MODIFIER = 1D;
 
     private static final double CROWDING_MODIFIER = 50D;
+    
+    private static final double SCIENCE_MODIFIER = 1D;
 
     private static final double RANGE_BUFFER = .8D;
 
@@ -378,12 +382,25 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         int destinationCrowding = destinationSettlement.getPopulationCapacity() - destinationSettlement.getAllAssociatedPeople().size();
         double crowdingFactor = destinationCrowding - startingCrowding;
         
+        // Determine science achievement factor for destination relative to starting settlement.
+        double totalScienceAchievementFactor = (destinationSettlement.getTotalScientificAchievement() - 
+                startingSettlement.getTotalScientificAchievement()) / 10D;
+        double jobScienceAchievementFactor = 0D;
+        Science jobScience = ScienceUtil.getAssociatedScience(person.getMind().getJob());
+        if (jobScience != null) {
+            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
+            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
+            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
+        }
+        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
+        
         if(destinationCrowding < RoverMission.MIN_PEOPLE) {
         	return 0;
         }
 
         // Return the sum of the factors with modifiers.
-        return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + (crowdingFactor * CROWDING_MODIFIER);
+        return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + 
+            (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
     }
 
     /**
