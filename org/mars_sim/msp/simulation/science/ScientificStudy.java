@@ -31,7 +31,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
     // Completion States
     public static final String SUCCESSFUL_COMPLETION = "Successful Completion";
     public static final String FAILED_COMPLETION = "Failed Completion";
-    public static final String CANCELLED = "Cancelled";
+    public static final String CANCELED = "Canceled";
     
     // Maximum number of collaborative researchers.
     public static final int MAX_NUM_COLLABORATORS = 3;

@@ -117,16 +117,16 @@ public class ScientificStudyManager implements Serializable {
     }
     
     /**
-     * Gets all cancelled scientific studies.
+     * Gets all canceled scientific studies.
      * @return list of studies.
      */
-    public List<ScientificStudy> getCancelledStudies() {
+    public List<ScientificStudy> getCanceledStudies() {
         List<ScientificStudy> result = new ArrayList<ScientificStudy>();
         Iterator<ScientificStudy> i = studies.iterator();
         while (i.hasNext()) {
             ScientificStudy study = i.next();
             if (study.isCompleted() && 
-                    study.getCompletionState().equals(ScientificStudy.CANCELLED)) 
+                    study.getCompletionState().equals(ScientificStudy.CANCELED)) 
                 result.add(study);
         }
         return result;
@@ -305,8 +305,8 @@ public class ScientificStudyManager implements Serializable {
                 
                 // Check if primary researcher has died.
                 if (isPrimaryResearcherDead(study)) {
-                    study.setCompleted(ScientificStudy.CANCELLED);
-                    logger.info(study.toString() + " cancelled due to primary researcher death.");
+                    study.setCompleted(ScientificStudy.CANCELED);
+                    logger.info(study.toString() + " canceled due to primary researcher death.");
                     continue;
                 }
                 
@@ -375,8 +375,8 @@ public class ScientificStudyManager implements Serializable {
                             MarsClock lastPrimaryWork = study.getLastPrimaryResearchWorkTime();
                             if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(currentDate, lastPrimaryWork) > 
                                     ScientificStudy.PRIMARY_WORK_DOWNTIME_ALLOWED) {
-                                study.setCompleted(ScientificStudy.CANCELLED);
-                                logger.info(study.toString() + " cancelled due to lack of primary researcher participation.");
+                                study.setCompleted(ScientificStudy.CANCELED);
+                                logger.info(study.toString() + " canceled due to lack of primary researcher participation.");
                                 continue;
                             }
                         }
