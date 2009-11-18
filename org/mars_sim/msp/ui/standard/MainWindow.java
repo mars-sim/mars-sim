@@ -101,8 +101,8 @@ public class MainWindow extends JFrame {
         	frame_size = new Dimension(screen_size);
         	if (screen_size.width > 800) {
         		frame_size = new Dimension(
-        				(int) Math.round(screen_size.getWidth() * .8D),
-        				(int) Math.round(screen_size.getHeight() * .8D));
+        				(int) Math.round(screen_size.getWidth() * .9D),
+        				(int) Math.round(screen_size.getHeight() * .9D));
         	}
         }
         else frame_size = UIConfig.INSTANCE.getMainWindowDimension();
