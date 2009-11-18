@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 2.84 2008-05-12
+ * @version 2.87 2009-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.*;
 import org.mars_sim.msp.simulation.person.*;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.structure.building.*;
 import org.mars_sim.msp.simulation.structure.building.function.LifeSupport;
@@ -33,6 +34,9 @@ public class Teach extends Task implements Serializable {
 
 	//	Static members
 	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+    
+    // The improvement in relationship opinion of the teacher from the student per millisol.
+    private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
 	private Person student;
 	private Task teachingTask;
@@ -139,7 +143,22 @@ public class Teach extends Task implements Serializable {
 		// Check if student is in a different location situation than the teacher.
 		if (!student.getLocationSituation().equals(person.getLocationSituation())) endTask();
 		
+        // Add relationship modifier for opinion of teacher from the student.
+        addRelationshipModifier(time);
+        
 		return 0D;
+    }
+    
+    /**
+     * Adds a relationship modifier for the student's opinion of the teacher.
+     * @param time the time teaching.
+     */
+    private void addRelationshipModifier(double time) {
+        RelationshipManager manager = Simulation.instance().getRelationshipManager();
+        double currentOpinion = manager.getOpinionOfPerson(student, person);
+        double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
+        Relationship relationship = manager.getRelationship(student, person);
+        if (relationship != null) relationship.setPersonOpinion(student, newOpinion);
     }
 	
 	/**

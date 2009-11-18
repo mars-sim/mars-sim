@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 2.87 2009-11-12
+ * @version 2.87 2009-11-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation.person.ai.task;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.simulation.Simulation;
 import org.mars_sim.msp.simulation.person.NaturalAttributeManager;
 import org.mars_sim.msp.simulation.person.Person;
 import org.mars_sim.msp.simulation.person.ai.SkillManager;
+import org.mars_sim.msp.simulation.person.ai.social.Relationship;
 import org.mars_sim.msp.simulation.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.simulation.science.ScienceUtil;
 import org.mars_sim.msp.simulation.structure.building.Building;
@@ -44,6 +45,9 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
     //  Static members
     private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
 
+    // The improvement in relationship opinion of the assistant from the researcher per millisol.
+    private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
+    
     // Data members
     private ResearchScientificStudy researchTask;
     private Person researcher;
@@ -324,6 +328,21 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         // Add experience
         addExperience(time);
         
+        // Add relationship modifier for opinion of assistant from the researcher.
+        addRelationshipModifier(time);
+        
         return 0D;
+    }
+    
+    /**
+     * Adds a relationship modifier for the researcher's opinion of the assistant.
+     * @param time the time assisting.
+     */
+    private void addRelationshipModifier(double time) {
+        RelationshipManager manager = Simulation.instance().getRelationshipManager();
+        double currentOpinion = manager.getOpinionOfPerson(researcher, person);
+        double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
+        Relationship relationship = manager.getRelationship(researcher, person);
+        if (relationship != null) relationship.setPersonOpinion(researcher, newOpinion);
     }
 }
