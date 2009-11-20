@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigatorWindow.java
- * @version 2.84 2008-05-15
+ * @version 2.87 2009-11-20
  * @author Scott Davis
  */
 
@@ -308,13 +308,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         		map.setMapType(TopoMarsMap.TYPE);
         		globeNav.showTopo();
 				legend.showColor();
-        		usgsItem.setEnabled(false);
+        		//usgsItem.setEnabled(false);
         	}	 
         	else {
         		map.setMapType(SurfMarsMap.TYPE);
         		globeNav.showSurf();
         		legend.showMap();
-        		usgsItem.setEnabled(true);
+        		//usgsItem.setEnabled(true);
         	} 
         }
         else if (source == usgsItem) {
@@ -375,6 +375,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		// Create USGS menu item.
 		usgsItem = new JCheckBoxMenuItem("8x Surface Map Zoom", USGSMarsMap.TYPE.equals(map.getMapType()));
 		usgsItem.addActionListener(this);
+        // Disabling this option due to problems with USGS Map-a-planet website.
+        usgsItem.setEnabled(false);
 		optionsMenu.add(usgsItem);
 		
 		// Create vehicle trails menu item.
