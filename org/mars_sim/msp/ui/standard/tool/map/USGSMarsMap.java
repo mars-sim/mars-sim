@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * USGSMarsMap.java
- * @version 2.76 2004-08-06
+ * @version 2.87 2009-11-20
  * @author Greg Whelan
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.simulation.Coordinates;
 
 import java.io.*;
 import java.net.*;
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.awt.*;
@@ -38,9 +39,16 @@ public class USGSMarsMap implements Map, ActionListener {
 	public static final int MAP_HEIGHT = 11458; // Source map height in pixels (calculated).
 	public static final int MAP_WIDTH = 22916; // Source map width in pixels (calculated).
 	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
+    
+    public static final double HALF_MAP_ANGLE_DEG = 150D / 64D;
 	
-    private static final String psdUrl = "http://pdsmaps.wr.usgs.gov";
-    private static final String psdCgi = "/explorer-bin/mapmars3.cgi";
+    private static final String psdUrl = "http://www.mapaplanet.org";
+    private static final String psdCgi = "/explorer-bin/explorer.cgi";
+    
+    // Old USGS PDS website URL's.
+    
+    //private static final String psdUrl = "http://pdsmaps.wr.usgs.gov";
+    //private static final String psdCgi = "/explorer-bin/mapmars3.cgi";
     
     //private static final String psdUrl = "http://www-pdsimage.wr.usgs.gov";
     //private static final String psdCgi = "/cgi-bin/panpic.cgi";
@@ -49,17 +57,24 @@ public class USGSMarsMap implements Map, ActionListener {
     //private static final String psdUrl = "http://63.229.31.9";
     //private static final String psdCgi = "/cgi-bin/mapmaker/mapmaker.py";
 
-    private static final String projection = "MERCATOR";
-    private static final String stretch = "AUTO";
-    private static final String gridlineFrequency = "none";
-    private static final String scale = "pixels/degree";
-    private static final String resolution = "64";
-    private static final String latbox = "5";
-    private static final String lonbox = "5";
-    private static final String bandsSelected = "1";
-    private static final String dataSet = "mars_viking_merged";
-    private static final String version = "ADVANCED";
-    private static final String pixelType = "BIT8";
+    private static final String map = "Mars";
+    private static final String layers = "mars_viking_merged";
+    private static final String info = "NO";
+    private static final String advoption = "YES";
+    private static final String lines = "2668";
+    private static final String samples = "720";
+    private static final String sizeSelector = "resolution";
+    private static final String Resolution = "64";
+    private static final String R = "1";
+    private static final String G = "2";
+    private static final String B = "3";
+    private static final String projection = "MERC";
+    private static final String grid = "none";
+    private static final String stretch = "none";
+    private static final String resamp_method = "nearest_neighbor";
+    private static final String center = "0";
+    private static final String defaultcenter = "on";
+    private static final String center_lat = "0";
 
     private boolean imageDone = false;
     private Component component;
@@ -88,8 +103,12 @@ public class USGSMarsMap implements Map, ActionListener {
      
         connectionTimeout = false;
         
-        startPdsImageRetrieval(90 - Math.toDegrees(newCenter.getPhi()),
-                               360 - Math.toDegrees(newCenter.getTheta()));
+        double lat = 90D - Math.toDegrees(newCenter.getPhi());
+        double lon = 360D - Math.toDegrees(newCenter.getTheta());
+        // Convert from lon (0 -> 360) to (-180 -> 180).
+        if (lon > 180D) lon = lon - 360D;
+        
+        startPdsImageRetrieval(lon, lat);
                                
         // Starts a 10 second timer to see if the connection times out.
         connectionTimer = new Timer(10000, this);
@@ -129,9 +148,12 @@ public class USGSMarsMap implements Map, ActionListener {
         imageDone = false;
         goodConnection = false;
         URL url = null;
+        
         try {
             // Get URL connection to PDS CGI.
             url = getPDSURL(lat, lon);
+            // System.out.println("url: " + url);
+            
             HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
             
             // Connect with PDS CGI.
@@ -157,21 +179,41 @@ public class USGSMarsMap implements Map, ActionListener {
      * @throws Exception if the URL is malformed.
      */
     private URL getPDSURL(double lat, double lon) throws Exception {
-
+        
+        // Find map rectangle boundries.
+        DecimalFormat formatter = new DecimalFormat("0.000");
+        double westSide = lon + HALF_MAP_ANGLE_DEG;
+        if (westSide > 180D) westSide = (westSide - 180D) - 180D;
+        double eastSide = lon - HALF_MAP_ANGLE_DEG;
+        if (eastSide < -180D) eastSide = (eastSide + 180D) + 180D;
+        double northSide = lat + HALF_MAP_ANGLE_DEG;
+        if (northSide > 90D) northSide = 90D + (90D - northSide);
+        double southSide = lat - HALF_MAP_ANGLE_DEG;
+        if (southSide < -90D) southSide = -90D + (-90D - southSide);
+        
         StringBuffer urlBuff = new StringBuffer(psdUrl + psdCgi + "?");
-        urlBuff.append("DATA_SET_NAME=" + dataSet);
-        urlBuff.append("&VERSION=" + version);
-        urlBuff.append("&PIXEL_TYPE=" + pixelType);
-        urlBuff.append("&PROJECTION=" + projection);
-        urlBuff.append("&STRETCH=" + stretch);
-        urlBuff.append("&GRIDLINE_FREQUENCY=" + gridlineFrequency);
-        urlBuff.append("&SCALE=" + URLEncoder.encode(scale, "UTF-8"));
-        urlBuff.append("&RESOLUTION=" + resolution);
-        urlBuff.append("&LATBOX=" + latbox);
-        urlBuff.append("&LONBOX=" + lonbox);
-        urlBuff.append("&BANDS_SELECTED=" + bandsSelected);
-        urlBuff.append("&LAT=" + lat);
-        urlBuff.append("&LON=" + lon);
+        urlBuff.append("map=" + map);
+        urlBuff.append("&layers=" + layers);
+        urlBuff.append("&info=" + info);
+        urlBuff.append("&advoption=" + advoption);
+        urlBuff.append("&lines=" + lines);
+        urlBuff.append("&samples=" + samples);
+        urlBuff.append("&sizeSelector=" + sizeSelector);
+        urlBuff.append("&Resolution=" + Resolution);
+        urlBuff.append("&R=" + R);
+        urlBuff.append("&G=" + G);
+        urlBuff.append("&B=" + B);
+        urlBuff.append("&projection=" + projection);
+        urlBuff.append("&grid=" + grid);
+        urlBuff.append("&stretch=" + stretch);
+        urlBuff.append("&resamp_method=" + resamp_method);
+        urlBuff.append("&north=" + formatter.format(northSide));
+        urlBuff.append("&west=" + formatter.format(westSide));
+        urlBuff.append("&east=" + formatter.format(eastSide));
+        urlBuff.append("&south=" + formatter.format(southSide));
+        urlBuff.append("&center=" + center);
+        urlBuff.append("&defaultcenter=" + defaultcenter);
+        urlBuff.append("&center_lat=" + center_lat);
         
         return new URL(urlBuff.toString());
     }
@@ -188,24 +230,26 @@ public class USGSMarsMap implements Map, ActionListener {
         try {
             // Create a buffered reader from the input stream.
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String result = null;
-            String line;
-            String imageSrc;
+            String imageSrc = "";
 
-            // <fragile>
-            // Get the result from the 6th line.
-            int count = 0;
+            // Parse through the returned HTML and find the image URL.
+            // This is a bit of a hack to get this working.
+            String line = null;
             while ((line = in.readLine()) != null) {
-                if (count == 6) result = line;
-                count++;
+                if (line.indexOf("View and Save") > -1) {
+                    String line2 = in.readLine();
+                    if (line2 != null) {
+                        int startIndex = line2.indexOf("/explorer");
+                        int endIndex = line2.indexOf("jpg") + 3;
+                        String relativeUrl = line2.substring(startIndex, endIndex);
+                        //System.out.println("Relative URL: " + relativeUrl);
+                        imageSrc = psdUrl + relativeUrl;
+                    }
+                }
             }
-
-            // Find the image URL based on its location within the HTML.
-            int startIndex = result.indexOf("<TH COLSPAN=2 ROWSPAN=2><IMG SRC = \"") + 36;
-            int endIndex = result.indexOf("\"", startIndex);
-            imageSrc = result.substring(startIndex, endIndex);
-            // </fragile>
-
+            
+            //System.out.println("Image source: " + imageSrc);
+            
             // Download the image at the image URL.
             URL imageUrl = new URL(imageSrc);
             img = (Toolkit.getDefaultToolkit().getImage(imageUrl));
@@ -214,6 +258,7 @@ public class USGSMarsMap implements Map, ActionListener {
             waitForMapLoaded();
         }
         catch (IOException e) {
+            e.printStackTrace(System.err);
             throw new IOException("Internet connection required");
         }
     }
