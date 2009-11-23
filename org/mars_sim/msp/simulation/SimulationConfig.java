@@ -1,15 +1,14 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 2.86 2009-03-17
+ * @version 2.87 2009-11-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.simulation;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,8 +30,6 @@ import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
 import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
 import org.mars_sim.msp.simulation.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
-
-
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
@@ -158,11 +155,12 @@ public class SimulationConfig implements Serializable {
      * @throws Exception if XML could not be parsed or file could not be found.
      */
     private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
-            InputStream stream = getInputStream(filename);
-            SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-            Document result = saxBuilder.build(stream);
-            stream.close();
-            return result;
+        //InputStream stream = getInputStream(filename);
+        URL inputURL = getInputURL(filename);
+        SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+        Document result = saxBuilder.build(inputURL);
+        //stream.close();
+        return result;
     }
     
 	/**
@@ -171,13 +169,26 @@ public class SimulationConfig implements Serializable {
 	 * @return input stream
 	 * @throws IOException if file cannot be found.
 	 */
-	private  InputStream getInputStream(String filename) throws IOException {
+    /*
+	private InputStream getInputStream(String filename) throws IOException {
 		String fullPathName = "conf" + File.separator + filename + ".xml";
 		InputStream stream = getClass().getClassLoader().getResourceAsStream(fullPathName);
 		if (stream == null) throw new IOException(fullPathName + " failed to load");
 
 		return stream;
 	}
+    */
+    
+    /**
+     * Gets the configuration file as a URL.
+     * @param filename the filename of the configuration file.
+     * @return URL.
+     */
+    private URL getInputURL(String filename) {
+        String fullPathName = "conf" + File.separator + filename + ".xml";
+        URL url = getClass().getClassLoader().getResource(fullPathName);
+        return url;
+    }
 	
 	/**
 	 * Gets the simulation time to real time ratio.
