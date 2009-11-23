@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 2.83 2008-03-01
+ * @version 2.87 2009-11-23
  * @author Dima Stepanchuk
  * @author Sebastien Venot
  */
@@ -10,6 +10,7 @@ package org.mars_sim.msp.ui.standard.sound;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -137,8 +138,9 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     public void startPlayWavSound(String filepath, boolean loop) {
         try {
             if (!audioCache.containsKey(filepath)) {
-                File soundFile = new File(filepath);
-                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundFile);
+                //File soundFile = new File(filepath);
+                URL soundURL = getClass().getClassLoader().getResource(filepath);
+                AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundURL);
                 currentClip = AudioSystem.getClip();
                 currentClip.open(audioInputStream);
                 audioCache.put(filepath, currentClip);
