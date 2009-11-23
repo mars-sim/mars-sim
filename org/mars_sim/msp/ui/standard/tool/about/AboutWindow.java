@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutWindow.java
- * @version 2.84 2008-06-24
+ * @version 2.87 2009-11-23
  * @author Lars Naesbye Christensen
  */
 
@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
+import java.io.File;
 import java.net.URL;
 
 import javax.swing.JPanel;
@@ -37,7 +38,8 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     // Data members
     private JViewport viewPort; // The view port for the text pane
     private HTMLContentPane editorPane; // our HTML content pane
-    private URL guideURL = AboutWindow.class.getResource("../../../../../../../docs/help/about.html");
+    private URL guideURL = AboutWindow.class.getClassLoader().getResource("docs" + File.separator + 
+            "help" + File.separator + "about.html");
 
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
