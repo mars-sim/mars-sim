@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE part-package-list SYSTEM "conf/dtd/part_packages.dtd">
+<!DOCTYPE part-package-list SYSTEM "dtd/part_packages.dtd">
 
 <!-- List of all part packages in the simulation. -->
 <!-- Part packages are used for settlement initial supplies -->

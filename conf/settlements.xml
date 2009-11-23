@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE settlement-configuration SYSTEM "conf/dtd/settlements.dtd">
+<!DOCTYPE settlement-configuration SYSTEM "dtd/settlements.dtd">
 
 <settlement-configuration>
 

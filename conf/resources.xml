@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE resource-list SYSTEM "conf/dtd/resources.dtd">
+<!DOCTYPE resource-list SYSTEM "dtd/resources.dtd">
 
 <!-- List of all amount resources in the simulation. -->
 <resource-list>

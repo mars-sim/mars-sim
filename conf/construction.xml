@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE construction SYSTEM "conf/dtd/construction.dtd">
+<!DOCTYPE construction SYSTEM "dtd/construction.dtd">
 
 <construction>
 	<foundation-list>

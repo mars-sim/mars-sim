@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE building-list SYSTEM "conf/dtd/buildings.dtd">
+<!DOCTYPE building-list SYSTEM "dtd/buildings.dtd">
 
 <!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list>
