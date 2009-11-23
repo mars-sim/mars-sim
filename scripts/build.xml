@@ -137,6 +137,41 @@
     <!-- Clean build of all jars. -->
     <target name="clean-build" depends="clean, build" />
 
+    <!-- Build webstart jar containing all classes and resources. -->
+    <target name="build-webstart-jar" depends="compile">
+        <jar destfile="${mars.baseDir}/msp_webstart.jar"
+            manifest="${mars.scripts}/webstart-manifest.txt">
+            <fileset dir="${mars.class}">
+                <include name="**/*.class" />
+            </fileset>
+            <fileset dir="${mars.baseDir}">
+                <include name="conf/*.xml" />
+                <include name="conf/dtd/*.dtd" />
+                <include name="docs/help/*.html" />
+                <include name="docs/help/*.css" />
+                <include name="images/*.jpg" />
+                <include name="images/*.png" />
+                <include name="audio/*wav" />
+            	<include name="audio/*ogg" />
+            	<include name="audio/*mp3" />
+            </fileset>
+            <zipfileset src="${mars.jars}/map_data.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/commons-collections-3.1.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jcommon.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jfreechart.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jl1.0.zip" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jogg-0.0.7.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/junit.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/mp3sp.1.6.zip" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/plexus-core.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/tritonus_share.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/vorbisspi1.0.2.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jdom.jar" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/jorbis-0.0.17.zip" includes="**/*" excludes="META-INF/**/*"/>
+            <zipfileset src="${mars.jars}/log4j-1.2.15.jar" includes="**/*" excludes="META-INF/**/*"/>
+        </jar>
+    </target>
+
     <path id="test.classpath">
         <pathelement location="${mars.baseDir}" />
         <pathelement location="${mars.jars}/junit.jar" />
