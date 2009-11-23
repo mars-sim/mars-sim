@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 2.87 2009-10-04
+ * @version 2.87 2009-11-23
  * @author Barry Evans
  */
 
@@ -12,6 +12,7 @@ import java.util.HashMap;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
 import java.net.URL;
 
 /**
@@ -29,7 +30,7 @@ public class ImageLoader {
     /**
      * Sub-directory/package for the images
      */
-    public final static String IMAGE_DIR = "images/";
+    public final static String IMAGE_DIR = "images" + File.separator;
 
     /**
      * Static singleton
