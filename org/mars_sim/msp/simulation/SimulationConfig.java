@@ -7,8 +7,10 @@
 package org.mars_sim.msp.simulation;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
-import java.net.URL;
+//import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -155,11 +157,11 @@ public class SimulationConfig implements Serializable {
      * @throws Exception if XML could not be parsed or file could not be found.
      */
     private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
-        //InputStream stream = getInputStream(filename);
-        URL inputURL = getInputURL(filename);
+        InputStream stream = getInputStream(filename);
+        //URL inputURL = getInputURL(filename);
         SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-        Document result = saxBuilder.build(inputURL);
-        //stream.close();
+        Document result = saxBuilder.build(stream);
+        stream.close();
         return result;
     }
     
@@ -169,7 +171,6 @@ public class SimulationConfig implements Serializable {
 	 * @return input stream
 	 * @throws IOException if file cannot be found.
 	 */
-    /*
 	private InputStream getInputStream(String filename) throws IOException {
 		String fullPathName = "conf" + File.separator + filename + ".xml";
 		InputStream stream = getClass().getClassLoader().getResourceAsStream(fullPathName);
@@ -177,19 +178,19 @@ public class SimulationConfig implements Serializable {
 
 		return stream;
 	}
-    */
     
     /**
      * Gets the configuration file as a URL.
      * @param filename the filename of the configuration file.
      * @return URL.
      */
+    /*
     private URL getInputURL(String filename) {
         String fullPathName = "conf" + File.separator + filename + ".xml";
         URL url = getClass().getClassLoader().getResource(fullPathName);
         return url;
     }
-	
+	*/
 	/**
 	 * Gets the simulation time to real time ratio.
 	 * Example: 100.0 mean 100 simulation seconds per 1 real second.

@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE crop-list SYSTEM "dtd/crops.dtd">
+<!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
 
 <!-- List of crops settlers can grow in greenhouses. -->
 <!-- Growing time is number of sols between planting and harvest. -->

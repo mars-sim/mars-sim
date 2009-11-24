@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE vehicle-configuration SYSTEM "dtd/vehicles.dtd">
+<!DOCTYPE vehicle-configuration SYSTEM "conf/dtd/vehicles.dtd">
 
 <vehicle-configuration>
 

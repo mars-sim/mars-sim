@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<!DOCTYPE malfunction-list SYSTEM "dtd/malfunctions.dtd">
+<!DOCTYPE malfunction-list SYSTEM "conf/dtd/malfunctions.dtd">
 
 <!-- List of possible malfunctions -->
 <malfunction-list>
