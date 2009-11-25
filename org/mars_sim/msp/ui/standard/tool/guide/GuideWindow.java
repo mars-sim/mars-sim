@@ -16,7 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 
-import java.io.File;
+//import java.io.File;
 import java.net.URL;
 
 import javax.swing.JButton;
@@ -46,8 +46,11 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 
     private HTMLContentPane htmlPane; // our HTML content pane
 
-    private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
-            "help" + File.separator + "userguide.html");
+    //private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
+    //        "help" + File.separator + "userguide.html");
+    
+    private URL guideURL = GuideWindow.class.
+        getResource("../../../../../../../docs/help/userguide.html");
 
     private JButton homeButton = new JButton("Home");
 
