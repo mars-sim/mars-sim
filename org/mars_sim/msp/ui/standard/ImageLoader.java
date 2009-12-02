@@ -30,7 +30,8 @@ public class ImageLoader {
     /**
      * Sub-directory/package for the images
      */
-    public final static String IMAGE_DIR = "images" + File.separator;
+    /* [landrus, 26.11.09]: use classloader compatible paths */
+    public final static String IMAGE_DIR = "/images/";
 
     /**
      * Static singleton
@@ -49,7 +50,8 @@ public class ImageLoader {
         ImageIcon found = iconCache.get(name);
         if (found == null) {
             String fileName = IMAGE_DIR + name + ".png";
-            URL resource = ClassLoader.getSystemResource(fileName);
+            /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+            URL resource = ImageLoader.class.getResource(fileName);//ClassLoader.getSystemResource(fileName);
 
             found = new ImageIcon(resource);
 
@@ -73,7 +75,8 @@ public class ImageLoader {
             if (usedToolkit == null) {
                 usedToolkit = Toolkit.getDefaultToolkit();
             }
-            URL imageURL = ClassLoader.getSystemResource(IMAGE_DIR + imagename);
+            /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+            URL imageURL = ImageLoader.class.getResource(IMAGE_DIR + imagename);//ClassLoader.getSystemResource(IMAGE_DIR + imagename);
 
             newImage = usedToolkit.createImage(imageURL);
             imageCache.put(imagename, newImage);

@@ -38,8 +38,8 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     // Data members
     private JViewport viewPort; // The view port for the text pane
     private HTMLContentPane editorPane; // our HTML content pane
-    private URL guideURL = AboutWindow.class.getClassLoader().getResource("docs" + File.separator + 
-            "help" + File.separator + "about.html");
+    /* [landrus, 26.11.09]: load the url in the contructor. */
+    private URL guideURL;
 
     /** Constructs a TableWindow object
      *  @param desktop the desktop pane
@@ -72,7 +72,8 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
 
     // Have to define a starting size
     setSize(new Dimension(475, 375));
-
+    /* [landrus, 26.11.09]: use classloader compliant paths */
+    guideURL = getClass().getResource("/docs/help/about.html");
     editorPane.goToURL(guideURL);
 
     // Prevent the window from being resized by the user.

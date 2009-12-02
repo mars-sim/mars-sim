@@ -6,9 +6,11 @@
 package org.mars_sim.msp;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.simulation.Simulation;
@@ -103,6 +105,18 @@ public class MarsProject {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
+    	/* [landrus, 27.11.09]: Read the logging configuration from the classloader, so that this gets
+    	 * webstart compatible. Also create the logs dir in user.home */
+    	new File(System.getProperty("user.home"), "mars-sim" + File.separator + "logs").mkdirs();
+    	
+    	try {
+			LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream("/logging.properties"));
+		} catch (IOException e) {
+			try {
+				LogManager.getLogManager().readConfiguration();
+			} catch (IOException e1) {
+			}
+		}
         // starting the simulation
         System.setProperty("swing.aatext", "true"); // general text antialiasing
         new MarsProject(args);

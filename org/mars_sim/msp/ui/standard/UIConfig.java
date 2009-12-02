@@ -13,6 +13,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
+import org.apache.commons.io.IOUtils;
 import org.jdom.DocType;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -50,7 +52,8 @@ public class UIConfig {
     public static final String UNIT = "unit";
 
     // Config filename.
-    private static final String DIRECTORY = "saved";
+    private static final String DIRECTORY = System.getProperty("user.home") + File.separator + "mars-sim" +
+    	File.separator + "saved";
 
     private static final String FILE_NAME = "ui_settings.xml";
     
@@ -104,8 +107,9 @@ public class UIConfig {
         File stream = null;
 
         try {
-            String path = DIRECTORY + File.separator + FILE_NAME;
-            stream = new File(path);
+        	/* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
+             * because this will work properly. */
+            stream = new File(DIRECTORY, FILE_NAME);
 
             SAXBuilder saxBuilder = new SAXBuilder(true);
 
@@ -199,10 +203,20 @@ public class UIConfig {
             }
 
             // Save to file.
-            String path = DIRECTORY + File.separator + FILE_NAME;
+            /* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
+             * because this will work properly. Also we will have to copy the ui_settings.dtd to this folder
+             * because in a webstart environment, the user has no initial data in his dirs. */
+            File configFile = new File(DIRECTORY, FILE_NAME);
+            
+            if (!configFile.getParentFile().exists()) {
+            	configFile.getParentFile().mkdirs();
+            	InputStream in = getClass().getResourceAsStream("/saved/ui_settings.dtd");
+            	IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
+            }
+            
             XMLOutputter fmt=new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat());
-            stream = new BufferedOutputStream(new FileOutputStream(path));
+            stream = new BufferedOutputStream(new FileOutputStream(configFile));
             fmt.output(outputDoc, stream);
         } 
         catch (Exception e) {

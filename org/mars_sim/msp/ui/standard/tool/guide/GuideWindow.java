@@ -48,9 +48,8 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 
     //private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
     //        "help" + File.separator + "userguide.html");
-    
-    private URL guideURL = GuideWindow.class.
-        getResource("../../../../../../../docs/help/userguide.html");
+    /* [landrus, 27.11.09]: load the url in the contructor. */
+    private URL guideURL;
 
     private JButton homeButton = new JButton("Home");
 
@@ -67,7 +66,8 @@ public class GuideWindow extends ToolWindow implements ActionListener,
 
         // Use TableWindow constructor
         super(NAME, desktop);
-
+        /* [landrus, 27.11.09]: use classloader compliant paths */
+        guideURL = getClass().getResource("/docs/help/userguide.html");
         // Create the main panel
         JPanel mainPane = new JPanel(new BorderLayout());
         mainPane.setBorder(new MarsPanelBorder());

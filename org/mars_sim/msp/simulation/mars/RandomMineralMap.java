@@ -148,8 +148,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 */
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<Coordinates>(3000);
-		
-		URL imageMapURL = ClassLoader.getSystemResource("images/" + imageMapName);
+		/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
+		URL imageMapURL = getClass().getResource("/images/" + imageMapName);//ClassLoader.getSystemResource("images/" + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
 		int[] mapPixels = new int[300 * 150];

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -44,7 +45,8 @@ public class Simulation implements ClockListener, Serializable {
 	public final static String DEFAULT_FILE = "default.sim";
 	
 	// Save directory
-	public final static String DEFAULT_DIR = "saved";
+	public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "mars-sim" +
+		File.separator + "saved";
 
 	// Singleton instance
 	private static final Simulation instance = new Simulation();
@@ -152,7 +154,8 @@ public class Simulation implements ClockListener, Serializable {
 		
 		// Use default file path if file is null.
 		if (file == null) {
-			file = new File(DEFAULT_DIR + File.separator + DEFAULT_FILE);
+			/* [landrus, 27.11.09]: use the home dir instead of unknow relative paths. */
+			file = new File(DEFAULT_DIR, DEFAULT_FILE);
 			defaultLoad = true;
 		}
 		else defaultLoad = false;
@@ -193,7 +196,15 @@ public class Simulation implements ClockListener, Serializable {
 		simulation.stop();
 		
 		// Use default file path if file is null.
-		if (file == null) file = new File(DEFAULT_DIR + File.separator + DEFAULT_FILE);
+		/* [landrus, 27.11.09]: use the home dir instead of unknow relative paths. Also check if the dirs
+		 * exist */
+		if (file == null) {
+			file = new File(DEFAULT_DIR, DEFAULT_FILE);
+            
+            if (!file.getParentFile().exists()) {
+            	file.getParentFile().mkdirs();
+            }
+		}
 		
 		ObjectOutputStream p = new ObjectOutputStream(new FileOutputStream(file));
 			

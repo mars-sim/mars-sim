@@ -158,8 +158,9 @@ public class SimulationConfig implements Serializable {
      */
     private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
         InputStream stream = getInputStream(filename);
-        //URL inputURL = getInputURL(filename);
         SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+        /* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
+        saxBuilder.setEntityResolver(new ClasspathEntityResolver());
         Document result = saxBuilder.build(stream);
         stream.close();
         return result;
@@ -172,8 +173,9 @@ public class SimulationConfig implements Serializable {
 	 * @throws IOException if file cannot be found.
 	 */
 	private InputStream getInputStream(String filename) throws IOException {
-		String fullPathName = "conf" + File.separator + filename + ".xml";
-		InputStream stream = getClass().getClassLoader().getResourceAsStream(fullPathName);
+		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
+		String fullPathName = "/conf/" + filename + ".xml";
+		InputStream stream = getClass().getResourceAsStream(fullPathName);
 		if (stream == null) throw new IOException(fullPathName + " failed to load");
 
 		return stream;
