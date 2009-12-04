@@ -8,7 +8,6 @@ import org.xml.sax.SAXException;
 
 public class ClasspathEntityResolver implements EntityResolver {
 
-	@Override
 	public InputSource resolveEntity(String publicId, String systemId) throws SAXException, IOException {
 		if (systemId.contains("/conf/")) {
 			String dtd = systemId.substring(systemId.indexOf("/conf"));
