@@ -1,4 +1,5 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
 
 <!-- List of crops settlers can grow in greenhouses. -->

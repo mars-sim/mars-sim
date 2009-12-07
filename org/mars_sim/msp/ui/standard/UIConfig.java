@@ -5,16 +5,20 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.standard;
+package org.mars_sim.msp.ui.swing;
 
 import java.awt.Dimension;
 import java.awt.Point;
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -31,10 +35,10 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.mars_sim.msp.simulation.Unit;
-import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
-import org.mars_sim.msp.ui.standard.tool.ToolWindow;
-import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
+import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
 public class UIConfig {
@@ -104,20 +108,22 @@ public class UIConfig {
      * Loads and parses the XML save file.
      */
     public void parseFile() {
-        File stream = null;
-
+    	FileInputStream stream = null;
+    	
         try {
         	/* [landrus, 27.11.09]: Hard paths are a pain with webstart, so we will use the users home dir,
              * because this will work properly. */
-            stream = new File(DIRECTORY, FILE_NAME);
-
+            stream = new FileInputStream(new File(DIRECTORY, FILE_NAME));
+            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+            InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
             SAXBuilder saxBuilder = new SAXBuilder(true);
-
-            configDoc = saxBuilder.build(stream);
+            configDoc = saxBuilder.build(reader);
         } catch (Exception e) {
             if(!(e instanceof FileNotFoundException))
                 logger.log(Level.SEVERE, "parseFile()", e);
-        } 
+        } finally {
+        	IOUtils.closeQuietly(stream);
+        }
     }
 
     /**
@@ -126,7 +132,8 @@ public class UIConfig {
      * @param window the main window.
      */
     public void saveFile(MainWindow window) {
-        OutputStream stream = null;
+        FileOutputStream stream = null;
+        
         try {
             Document outputDoc = new Document();
             DocType dtd = new DocType(UI,FILE_NAME_DTD);
@@ -214,21 +221,16 @@ public class UIConfig {
             	IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
             }
             
-            XMLOutputter fmt=new XMLOutputter();
+            XMLOutputter fmt = new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat());
-            stream = new BufferedOutputStream(new FileOutputStream(configFile));
-            fmt.output(outputDoc, stream);
-        } 
-        catch (Exception e) {
+            stream = new FileOutputStream(configFile);
+            /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+            OutputStreamWriter writer = new OutputStreamWriter(stream, "UTF-8");
+            fmt.output(outputDoc, writer);
+        } catch (Exception e) {
             logger.log(Level.SEVERE, e.getMessage());
-        } 
-        finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } 
-                catch (Exception e) {};
-            }
+        } finally {
+            IOUtils.closeQuietly(stream);
         }
     }
 

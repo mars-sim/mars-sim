@@ -4,34 +4,33 @@
  * @version 2.87 2009-11-23
  * @author Scott Davis
  */
-package org.mars_sim.msp.simulation;
+package org.mars_sim.msp.core;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.Serializable;
-//import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
-import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
-import org.mars_sim.msp.simulation.mars.LandmarkConfig;
-import org.mars_sim.msp.simulation.mars.MineralMapConfig;
-import org.mars_sim.msp.simulation.person.PersonConfig;
-import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
-import org.mars_sim.msp.simulation.resource.AmountResourceConfig;
-import org.mars_sim.msp.simulation.resource.PartConfig;
-import org.mars_sim.msp.simulation.resource.PartPackageConfig;
-import org.mars_sim.msp.simulation.structure.ResupplyConfig;
-import org.mars_sim.msp.simulation.structure.SettlementConfig;
-import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
-import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
-import org.mars_sim.msp.simulation.structure.construction.ConstructionConfig;
-import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
+import org.mars_sim.msp.core.manufacture.ManufactureConfig;
+import org.mars_sim.msp.core.mars.LandmarkConfig;
+import org.mars_sim.msp.core.mars.MineralMapConfig;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.medical.MedicalConfig;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
+import org.mars_sim.msp.core.resource.PartConfig;
+import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.structure.ResupplyConfig;
+import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.function.CropConfig;
+import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
@@ -40,9 +39,17 @@ import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
  */
 public class SimulationConfig implements Serializable {
     
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.SimulationConfig";
+    /* ---------------------------------------------------------------------------------------------------- *
+	 * SUID
+	 * ---------------------------------------------------------------------------------------------------- */
+
+	private static final long serialVersionUID = 8571791274015892904L;
+
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Constants
+	 * ---------------------------------------------------------------------------------------------------- */
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
 	
 	// Configuration files to load.
 	private static final String SIMULATION_FILE = "simulation";
@@ -68,9 +75,17 @@ public class SimulationConfig implements Serializable {
 	private static final String TIME_RATIO = "time-ratio";
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
+	
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Static Members
+	 * ---------------------------------------------------------------------------------------------------- */
 
 	// Singleton instance
 	private static SimulationConfig instance = new SimulationConfig();
+	
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Members
+	 * ---------------------------------------------------------------------------------------------------- */
 	
 	// DOM documents
 	private Document simulationDoc;
@@ -91,12 +106,15 @@ public class SimulationConfig implements Serializable {
 	private ManufactureConfig manufactureConfig;
 	private ResupplyConfig resupplyConfig;
     private ConstructionConfig constructionConfig;
+    
+    /* ---------------------------------------------------------------------------------------------------- *
+	 * Constructors
+	 * ---------------------------------------------------------------------------------------------------- */
 
 	/**
 	 * Constructor
 	 */
 	private SimulationConfig() {
-		
 		try {
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
@@ -124,6 +142,10 @@ public class SimulationConfig implements Serializable {
 		}
 	}
 	
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Public Static Methods
+	 * ---------------------------------------------------------------------------------------------------- */
+	
 	/**
 	 * Gets a singleton instance of the simulation config.
 	 * @return SimulationConfig instance
@@ -148,51 +170,10 @@ public class SimulationConfig implements Serializable {
 		setInstance(new SimulationConfig());
 	}
 	
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Getter
+	 * ---------------------------------------------------------------------------------------------------- */
 	
-	/**
-     * Parses an XML file into a DOM document.
-     * @param filename the path of the file.
-     * @param useDTD true if the XML DTD should be used.
-     * @return DOM document
-     * @throws Exception if XML could not be parsed or file could not be found.
-     */
-    private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
-        InputStream stream = getInputStream(filename);
-        SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-        /* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
-        saxBuilder.setEntityResolver(new ClasspathEntityResolver());
-        Document result = saxBuilder.build(stream);
-        stream.close();
-        return result;
-    }
-    
-	/**
-	 * Gets a configuration file as an input stream.
-	 * @param filename the filename of the configuration file.
-	 * @return input stream
-	 * @throws IOException if file cannot be found.
-	 */
-	private InputStream getInputStream(String filename) throws IOException {
-		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
-		String fullPathName = "/conf/" + filename + ".xml";
-		InputStream stream = getClass().getResourceAsStream(fullPathName);
-		if (stream == null) throw new IOException(fullPathName + " failed to load");
-
-		return stream;
-	}
-    
-    /**
-     * Gets the configuration file as a URL.
-     * @param filename the filename of the configuration file.
-     * @return URL.
-     */
-    /*
-    private URL getInputURL(String filename) {
-        String fullPathName = "conf" + File.separator + filename + ".xml";
-        URL url = getClass().getClassLoader().getResource(fullPathName);
-        return url;
-    }
-	*/
 	/**
 	 * Gets the simulation time to real time ratio.
 	 * Example: 100.0 mean 100 simulation seconds per 1 real second.
@@ -220,7 +201,7 @@ public class SimulationConfig implements Serializable {
 		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
-		Element earthStartDate = (Element) timeConfig.getChild(EARTH_START_DATE_TIME);
+		Element earthStartDate = timeConfig.getChild(EARTH_START_DATE_TIME);
 		String startDate = earthStartDate.getAttributeValue(VALUE);
 		if ((startDate == null) || startDate.trim().equals("")) 
 			throw new Exception("Earth start date time must not be blank.");
@@ -364,4 +345,42 @@ public class SimulationConfig implements Serializable {
     public ConstructionConfig getConstructionConfiguration() {
         return constructionConfig;
     }
+	
+	/* ---------------------------------------------------------------------------------------------------- *
+	 * Private Methods
+	 * ---------------------------------------------------------------------------------------------------- */
+	
+	/**
+     * Parses an XML file into a DOM document.
+     * @param filename the path of the file.
+     * @param useDTD true if the XML DTD should be used.
+     * @return DOM document
+     * @throws Exception if XML could not be parsed or file could not be found.
+     */
+    private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
+        InputStream stream = getInputStream(filename);
+        /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+        InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+        SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+        /* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
+        saxBuilder.setEntityResolver(new ClasspathEntityResolver());
+        Document result = saxBuilder.build(reader);
+        stream.close();
+        return result;
+    }
+    
+	/**
+	 * Gets a configuration file as an input stream.
+	 * @param filename the filename of the configuration file.
+	 * @return input stream
+	 * @throws IOException if file cannot be found.
+	 */
+	private InputStream getInputStream(String filename) throws IOException {
+		/* [landrus, 28.11.09]: dont use filesystem separators in classloader loading envs. */
+		String fullPathName = "/conf/" + filename + ".xml";
+		InputStream stream = getClass().getResourceAsStream(fullPathName);
+		if (stream == null) throw new IOException(fullPathName + " failed to load");
+
+		return stream;
+	}
 }
