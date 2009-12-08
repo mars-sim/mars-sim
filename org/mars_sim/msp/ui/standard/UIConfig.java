@@ -5,7 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.ui.standard;
 
 import java.awt.Dimension;
 import java.awt.Point;
@@ -35,10 +35,10 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.simulation.Unit;
+import org.mars_sim.msp.ui.standard.sound.AudioPlayer;
+import org.mars_sim.msp.ui.standard.tool.ToolWindow;
+import org.mars_sim.msp.ui.standard.unit_window.UnitWindow;
 
 
 public class UIConfig {

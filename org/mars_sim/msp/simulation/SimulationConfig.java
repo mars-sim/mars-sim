@@ -4,7 +4,7 @@
  * @version 2.87 2009-11-23
  * @author Scott Davis
  */
-package org.mars_sim.msp.core;
+package org.mars_sim.msp.simulation;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,21 +16,21 @@ import java.util.logging.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
-import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
-import org.mars_sim.msp.core.manufacture.ManufactureConfig;
-import org.mars_sim.msp.core.mars.LandmarkConfig;
-import org.mars_sim.msp.core.mars.MineralMapConfig;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.medical.MedicalConfig;
-import org.mars_sim.msp.core.resource.AmountResourceConfig;
-import org.mars_sim.msp.core.resource.PartConfig;
-import org.mars_sim.msp.core.resource.PartPackageConfig;
-import org.mars_sim.msp.core.structure.ResupplyConfig;
-import org.mars_sim.msp.core.structure.SettlementConfig;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.function.CropConfig;
-import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.simulation.malfunction.MalfunctionConfig;
+import org.mars_sim.msp.simulation.manufacture.ManufactureConfig;
+import org.mars_sim.msp.simulation.mars.LandmarkConfig;
+import org.mars_sim.msp.simulation.mars.MineralMapConfig;
+import org.mars_sim.msp.simulation.person.PersonConfig;
+import org.mars_sim.msp.simulation.person.medical.MedicalConfig;
+import org.mars_sim.msp.simulation.resource.AmountResourceConfig;
+import org.mars_sim.msp.simulation.resource.PartConfig;
+import org.mars_sim.msp.simulation.resource.PartPackageConfig;
+import org.mars_sim.msp.simulation.structure.ResupplyConfig;
+import org.mars_sim.msp.simulation.structure.SettlementConfig;
+import org.mars_sim.msp.simulation.structure.building.BuildingConfig;
+import org.mars_sim.msp.simulation.structure.building.function.CropConfig;
+import org.mars_sim.msp.simulation.structure.construction.ConstructionConfig;
+import org.mars_sim.msp.simulation.vehicle.VehicleConfig;
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
