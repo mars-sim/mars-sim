@@ -17,5 +17,5 @@
 	<classpathentry kind="lib" path="jars/plexus-core.jar"/>
 	<classpathentry kind="lib" path="jars/tritonus_share.jar"/>
 	<classpathentry kind="lib" path="jars/vorbisspi1.0.2.jar"/>
-	<classpathentry kind="output" path=""/>
+	<classpathentry kind="output" path="bin"/>
 </classpath>
