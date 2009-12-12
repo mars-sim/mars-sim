@@ -1,0 +1,45 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Configuration Guide Parts</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>parts.xml</H2>
+<P>The parts.xml configuration file contains configuration for all the parts used in the simulation.</P>
+<P>A "part" element has a unique "name" attribute. It has a required "mass" attribute that shows the mass of the
+ individual part in kilograms. It also has the following child element:</P>
+<P><B>maintenance-entity-list:</B> This is an optional element that is a list of all entities that may require
+ this part for periodic maintenance.</P>
+<P><B>entity:</B> This is an entity that requires this part for periodic maintenance. The "probability" attribute is required
+ and is the percentage (0 - 100) probability that this part will be needed during a given maintenance. The "max-number" attribute
+ is required and is the maximum number of this part needed for a given maintenance.</P>
+<P>The following entities types are supported for maintenance:</P>
+<UL>
+  <LI><B>Vehicle:</B> Any vehicle.</LI>
+  <LI><B>Rover:</B> A pressurized, long-range, all-terrain, ground vehicle that carries a crew.</LI>
+  <LI><B>EVA Suit:</B> An Extra Vehicular Activity suit.</LI>
+  <LI><B>Building:</B> This represents any building, regardless of its functions.</LI>
+  <LI><B>Life Support:</B> A building with the "life-support" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Living Accommodations:</B> A building that has the "living-accommodations" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Research:</B> A building that has the "research" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Communication:</B> A building that has the "communication" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>EVA:</B> A building that has the "EVA" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Recreation:</B> A building that has the "recreation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Dining:</B> A building that has the "dining" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Cooking:</B> A building that has the "cooking" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Exercise:</B> A building that has the "exercise" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Resource Processing:</B> A building that has the "resource-processing" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Storage:</B> A building that has the "storage" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Power Generation:</B> A building that has the "power-generation" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Medical Care:</B> A building that has the "medical-care" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Farming:</B> A building that has the "farming" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Ground Vehicle Maintenance:</B> A building that has the "ground-vehicle-maintenance" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+  <LI><B>Manufacture:</B> A building that has the "manufacture" function (see <A HREF="conf_buildings.html">buildings.xml</A>).</LI>
+</UL>
+<P>Basically any building function is supported as a malfunctionable entity, only replace the hyphens in the function name with spaces.
+ As we add more vehicles, equipment and building functions, they well be supported malfunctionable entities as well.</P>
+</BODY>
+</HTML>

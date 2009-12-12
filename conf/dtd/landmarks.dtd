@@ -1,5 +1,0 @@
-<!ELEMENT landmark-list (landmark*)>
-<!ELEMENT landmark EMPTY>
-<!ATTLIST landmark name CDATA #REQUIRED>
-<!ATTLIST landmark longitude CDATA #REQUIRED>
-<!ATTLIST landmark latitude CDATA #REQUIRED>

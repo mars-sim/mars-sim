@@ -1,0 +1,4 @@
+<!ELEMENT crop-list (crop*)>
+<!ELEMENT crop EMPTY>
+<!ATTLIST crop name CDATA #REQUIRED>
+<!ATTLIST crop growing-time CDATA #REQUIRED>

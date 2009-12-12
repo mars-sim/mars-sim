@@ -1,0 +1,76 @@
+<!ELEMENT building-list (building*)>
+<!ELEMENT building (power-required, functions)>
+<!ATTLIST building name CDATA #REQUIRED>
+<!ELEMENT power-required EMPTY>
+<!ATTLIST power-required base-power CDATA #REQUIRED>
+<!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
+<!ELEMENT functions (communication?, cooking?, dining?, EVA?, exercise?, farming?, 
+ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
+medical-care?, power-generation?, power-storage?, recreation?, research?, 
+resource-processing?, storage?,astronomical-observation? )>
+<!ELEMENT communication EMPTY>
+<!ELEMENT cooking EMPTY>
+<!ATTLIST cooking capacity CDATA #REQUIRED>
+<!ELEMENT dining EMPTY>
+<!ELEMENT EVA EMPTY>
+<!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
+<!ELEMENT exercise EMPTY>
+<!ATTLIST exercise capacity CDATA #REQUIRED>
+<!ELEMENT farming EMPTY>
+<!ATTLIST farming crops CDATA #REQUIRED>
+<!ATTLIST farming power-growing-crop CDATA #REQUIRED>
+<!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
+<!ATTLIST farming growing-area CDATA #REQUIRED>
+<!ELEMENT ground-vehicle-maintenance EMPTY>
+<!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
+<!ELEMENT life-support EMPTY>
+<!ATTLIST life-support capacity CDATA #REQUIRED>
+<!ATTLIST life-support power-required CDATA #REQUIRED>
+<!ELEMENT living-accommodations EMPTY>
+<!ATTLIST living-accommodations beds CDATA #REQUIRED>
+<!ELEMENT manufacture EMPTY>
+<!ATTLIST manufacture tech-level CDATA #REQUIRED>
+<!ATTLIST manufacture concurrent-processes CDATA #REQUIRED>
+<!ELEMENT medical-care EMPTY>
+<!ATTLIST medical-care tech-level CDATA #REQUIRED>
+<!ATTLIST medical-care beds CDATA #REQUIRED>
+<!ELEMENT power-generation (power-source+)>
+<!ELEMENT power-source EMPTY>
+<!ATTLIST power-source type CDATA #REQUIRED>
+<!ATTLIST power-source toggle (true|false) #IMPLIED>
+<!ATTLIST power-source power CDATA #REQUIRED>
+<!ATTLIST power-source fuel-type CDATA #IMPLIED>
+<!ATTLIST power-source consumption-rate CDATA #IMPLIED>
+<!ELEMENT power-storage EMPTY>
+<!ATTLIST power-storage capacity CDATA #REQUIRED>
+<!ELEMENT recreation EMPTY>
+<!ELEMENT research (research-speciality+)>
+<!ATTLIST research tech-level CDATA #REQUIRED>
+<!ATTLIST research capacity CDATA #REQUIRED>
+<!ELEMENT research-speciality EMPTY>
+<!ATTLIST research-speciality name CDATA #REQUIRED>
+<!ELEMENT resource-processing (process+)>
+<!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
+<!ELEMENT process (input+, output+)>
+<!ATTLIST process name CDATA #REQUIRED>
+<!ATTLIST process power-required CDATA #REQUIRED>
+<!ATTLIST process default (on|off) #REQUIRED>
+<!ELEMENT input EMPTY>
+<!ATTLIST input resource CDATA #REQUIRED>
+<!ATTLIST input rate CDATA #REQUIRED>
+<!ATTLIST input ambient (true|false) #REQUIRED>
+<!ELEMENT output EMPTY>
+<!ATTLIST output resource CDATA #REQUIRED>
+<!ATTLIST output rate CDATA #REQUIRED>
+<!ATTLIST output ambient (true|false) #REQUIRED>
+<!ELEMENT storage (resource-storage+, resource-initial*)>
+<!ELEMENT resource-storage EMPTY>
+<!ATTLIST resource-storage resource CDATA #REQUIRED>
+<!ATTLIST resource-storage capacity CDATA #REQUIRED>
+<!ELEMENT resource-initial EMPTY>
+<!ATTLIST resource-initial resource CDATA #REQUIRED>
+<!ATTLIST resource-initial amount CDATA #REQUIRED>
+<!ELEMENT astronomical-observation EMPTY>
+<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
+<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
+<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>

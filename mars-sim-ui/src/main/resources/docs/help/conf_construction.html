@@ -1,0 +1,74 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Configuration Guide Construction</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>construction.xml</H2>
+<P>The construction.xml configuration file contains configuration for building construction stages.  Construction stages
+can be added, edited, or deleted.</P>
+<P>The "foundation-list" element contains multiple "foundation" elements that represent a foundation construction stage.
+A "foundation" element contains the following attributes: "name", "work-time", and "skill-required".  The "name" attribute
+has to be a unique name for the stage.  The "work-time" attribute is the total amount of effective work time (millisols)
+(See <A HREF="conf_time.html">Time</A>) required to complete the foundation construction.  The "skill-required"
+attribute is the minimum construction skill required for an architect to start the foundation construction mission.</P>
+<P>The "foundation" element contains the following child elements:</P>
+<UL>
+<LI><B>resource:</B> Each "resource" element represents a type of resource needed to construct the foundation.  The "resource" 
+element has a "name" attribute for a supported type of resource (See <A HREF="conf_resources.html">resources.xml</A>).  The 
+"amount" attribute is a decimal value of the amount of the resource (kilograms) needed.</LI><BR>
+<LI><B>part:</B> Each "part" element represents a type of part needed to construct the foundation.  The "part" element has a 
+"name" attribute that must match up to a part listed in the conf/parts.xml file (See <A HREF="conf_parts.html">parts.xml</A>).  
+The "number" attribute is the number of parts required.</LI><BR>
+<LI><B>vehicle:</B> Each "vehicle" element represents a construction vehicle needed to construct the foundation.  The "vehicle" 
+element has a "type" attribute that must match up to a vehicle type listed in the conf/vehicles.xml file (See 
+<A HREF="conf_vehicles.html">vehicles.xml</A>).<BR><BR>
+The "vehicle" element can contain a list of "attachment-part" child elements that represents attachment parts needed by
+the vehicle.  Each "attachment-part" element as a "name" attribute that must match up to a part listed in the conf/parts.xml 
+file (See <A HREF="conf_parts.html">parts.xml</A>).</LI>
+</UL>
+<P>The "frame-list" element contains multiple "frame" elements that represent a frame construction stage.
+A "frame" element contains the following attributes: "name", "work-time", and "skill-required".  The "name" attribute
+has to be a unique name for the stage.  The "work-time" attribute is the total amount of effective work time (millisols)
+(See <A HREF="conf_time.html">Time</A>) required to complete the frame construction.  The "skill-required"
+attribute is the minimum construction skill required for an architect to start the frame construction mission.</P>
+<P>The "frame" element contains the following child elements:</P>
+<UL>
+<LI><B>resource:</B> Each "resource" element represents a type of resource needed to construct the frame.  The "resource" 
+element has a "name" attribute for a supported type of resource (See <A HREF="conf_resources.html">resources.xml</A>).  The 
+"amount" attribute is a decimal value of the amount of the resource (kilograms) needed.</LI><BR>
+<LI><B>part:</B> Each "part" element represents a type of part needed to construct the frame.  The "part" element has a 
+"name" attribute that must match up to a part listed in the conf/parts.xml file (See <A HREF="conf_parts.html">parts.xml</A>).  
+The "number" attribute is the number of parts required.</LI><BR>
+<LI><B>vehicle:</B> Each "vehicle" element represents a construction vehicle needed to construct the frame.  The "vehicle" 
+element has a "type" attribute that must match up to a vehicle type listed in the conf/vehicles.xml file (See 
+<A HREF="conf_vehicles.html">vehicles.xml</A>).<BR><BR>
+The "vehicle" element can contain a list of "attachment-part" child elements that represents attachment parts needed by
+the vehicle.  Each "attachment-part" element as a "name" attribute that must match up to a part listed in the conf/parts.xml 
+file (See <A HREF="conf_parts.html">parts.xml</A>).</LI>
+</UL>
+<P>The "building-list" element contains multiple "building" elements that represent a building construction stage.
+A "building" element contains the following attributes: "name", "work-time", and "skill-required".  The "name" attribute
+has to be a unique name for the stage.  The "work-time" attribute is the total amount of effective work time (millisols)
+(See <A HREF="conf_time.html">"conf/time.txt"</A>) required to complete the building construction.  The "skill-required"
+attribute is the minimum construction skill required for an architect to start the building construction mission.</P>
+<P>The "building" element contains the following child elements:</P>
+<UL>
+<LI><B>resource:</B> Each "resource" element represents a type of resource needed to construct the building.  The "resource" 
+element has a "name" attribute for a supported type of resource (See <A HREF="conf_resources.html">resources.xml</A>).  The 
+"amount" attribute is a decimal value of the amount of the resource (kilograms) needed.</LI><BR>
+<LI><B>part:</B> Each "part" element represents a type of part needed to construct the building.  The "part" element has a 
+"name" attribute that must match up to a part listed in the conf/parts.xml file (See <A HREF="conf_parts.html">parts.xml</A>).  
+The "number" attribute is the number of parts required.</LI><BR>
+<LI><B>vehicle:</B> Each "vehicle" element represents a construction vehicle needed to construct the building.  The "vehicle" 
+element has a "type" attribute that must match up to a vehicle type listed in the conf/vehicles.xml file (See 
+<A HREF="conf_vehicles.html">vehicles.xml</A>).<BR><BR>
+The "vehicle" element can contain a list of "attachment-part" child elements that represents attachment parts needed by
+the vehicle.  Each "attachment-part" element as a "name" attribute that must match up to a part listed in the conf/parts.xml 
+file (See <A HREF="conf_parts.html">parts.xml</A>).</LI>
+</UL>
+</BODY>
+</HTML>

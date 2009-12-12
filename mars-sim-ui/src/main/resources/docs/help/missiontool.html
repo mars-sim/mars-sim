@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Mars Simulation Project - Mission Tool</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>Mission Tool</H2>
+<P>The Mission tool displays information about current missions and allows you to create, modify and delete missions.</P>
+<P>The left mission list shows all current missions in the simulation.  You can select a mission and its information will 
+  be displayed in the right panel.</P>
+<P>The Info tab panel shows text information about the selected mission.</P>
+<P>The top box shows the mission description, type, and current phase.</P>
+<P>The middle box shows the current number of mission members, as well as the minimum and maximum allowed for the mission.  There's a list of
+  the names of mission members and the tasks they're currently performing.  If you click on a member in the list, the person's info window
+  will open.</P>
+<P>The bottom box shows a button with the name of the vehicle used in the mission.  If you click on the button, the vehicle info window will open.
+  To the left of the vehicle button is the center map button.  If you click on it, it will display the Mars navigator tool with the map centered
+  on the vehicle.
+  Below that the vehicle's current status and speed are displayed as well as the distance to the next navpoint as well as the total distance traveled.</P>
+<P>Some types of missions will display additional information when selected.</P>
+<P>The mining mission displays the a button for the light utility vehicle used for excavation on the mission.  It displays a table showing 
+the estimated  minerals at the mining site, and a table showing the minerals that have been collected during the mission.</P>
+<P>The trade mission displays tables showing the goods that are taken to be sold to the trading settlement, the goods that trader hopes 
+to buy, and the goods that are actually bought from the trading settlement once the trade is negotiated.</P>
+<P>The estimated trade profit for the starting settlement, as well as its actual negotiated trade profit, are displayed above the relevant 
+tables in units of value points.</P>
+<P>The construction mission displays the current construction stage with a progress bar showing its progress towards completion.</P>
+<P>The Navpoint tab panel shows information about the mission's navpoint destinations.</P>
+<P>The mission navpoints are marked by blue flags on the map.  Directional arrow buttons on the edges of the map will recenter the map to their 
+  respective direction.  Below the map is a list of the mission's navpoints.  If a mission on the list is selected, the map is recentered on that 
+  navpoint.</P>
+<BR>
+<P>The buttons at the bottom of the mission tool:</P>
+<UL>
+  <LI>Create New Mission - This button will pause the simulation and open the <A HREF="createmissionwizard.html">create new mission wizard</A>.</LI>
+  <LI>Modify Mission - This button will pause the simulation and open the edit mission dialog (see below) for the selected mission.</LI>
+  <LI>End Mission - This button will end the selected mission.  If the mission is currently outside a settlement, the vehicle's emergency
+    beacon will be turned on.</LI>
+</UL>
+<P>The Edit Mission dialog allows you to edit a current mission.</P>
+<P>The mission description text can be edited at the top.</P>
+<P>The action dropdown has one or more of the following actions that can be taken, based on the mission's current situation:</P>
+<UL>
+  <LI>None - No action will be taken (default).</LI>
+  <LI>End EVA and Continue to Next Site - The mission will end the current extra vehicular activity and, once all the mission members are back onboard
+    the rover, continue on to the next navpoint site.</LI>
+  <LI>Return to Home Settlement and End Mission - The mission will return back to its home settlement and disembark.</LI>
+  <LI>Go to Nearest Settlement and End Mission - The mission will travel to the nearest settlement and disembark.</LI>
+</UL>
+<P>The members table lists all current mission members.</P>
+<P>If there are people at the mission's current location who can be added as members, the Add Members button is enabled.  Pressing the Add Members button 
+  will open a dialog listing available people to add to the mission.  One or more can be selected from the list and added to the mission.</P>
+<P>The Remove Members button will remove any members selected in the members list from the mission.  If the mission is currently at a settlement, the 
+  removed members will remain at the settlement.  If the mission is currently away from a settlement, the removed members will remain in the rover,
+  but will not be a part of the mission.  If all mission members are removed, the mission will end and the rover emergency beacon will be turned on if
+  the mission is away from a settlement.</P>
+<P>The Modify button at the bottom of the Edit Mission dialog will close the dialog, commit any changes made to the mission and unpause the simulation.</P>
+<P>The Cancel button at the bottom of the Edit Mission dialog will close the dialog, not make any changes to the mission and unpause the simulation.</P>
+</BODY>
+</HTML>

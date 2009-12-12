@@ -1,0 +1,51 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Configuration Guide Settlements</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>settlements.xml</H2>
+<P>The settlements.xml configuration file contains configuration for settlements, settlement templates and a list of
+  random settlement names.</P>
+<P>The "settlement-template-list" element is a list of templates that define the building configuration of settlements.  Every 
+  settlement is based on a settlement template.</P>
+<P>The "template" element has a unique "name" attribute.  Settlements use this name to indicate which template they're based on.  It also
+  has the following elements:</P>
+<UL>
+  <LI><B>building:</B> A settlement template may have one or more building elements that comprise the settlement.  Each building element
+    must have a "type" attribute that matches a building name in <A HREF="conf_buildings.html">buildings.xml</A>.  The "number" attribute
+    is the number of this type of building at the settlement.  A settlement should not have more than one "building" element for a specific
+    type of building, but should use the "number" attribute for multiples of a building type.</LI>
+  <LI><B>vehicle:</B> A settlement template may have one or more vehicle elements.  Each vehicle element must have a type that matches a 
+    rover type in <A HREF="conf_vehicles.html">vehicles.xml</A>.  The "number" attribute is the number of this type of vehicle at the 
+    settlement.  A settlement should not have more than one "vehicle" element for a specific type of vehicle, but should use the "number"
+    attribute for multiples of a vehicle type.</LI>
+  <LI><B>equipment:</B> A settlement template may have one or more equipment elements.  Each equipment element must have a "type" attribute
+    that matches an equipment type.  The "number" attribute is the number of this type of equipment at the settlement.  A settlement should
+    not have more than one "equipment" element for a specific type of equipment, but should use the "number" attribute for multiples of a
+    equipment type.</LI>
+  <LI><B>part:</B> A settlement template may have one or more part elements.  Each part element must have a "type" attribute
+    that matches a part type (see <A HREF="conf_parts.html">parts.xml</A>).  The "number" attribute is the number of this type of part 
+    at the settlement.</LI>
+  <LI><B>part-package:</B> A resupply mission may provide packages of parts in addition to listing each part separately.  Each part-package
+    element must have a "name" attribute that matches a part package defined in the part packages configuration 
+    (see <A HREF="conf_part_packages.html">part_packages.xml</A>).  The "number" attribute is the number of part packages provided.</LI>
+  <LI><B>resupply:</B> The resupply element is a list of resupply missions scheduled for this settlement template.  This element is optional
+    and its absence means that the settlement template has no scheduled resupplies.  Each "resupply-mission" element must have a name that 
+    matches a resupply mission name (see <A HREF="conf_resupplies.html">resupplies.xml</A>).  The "arrival-time" is the number of Sols 
+    (see <A HREF="conf_time.html">Time</A>) from the beginning of the simulation until the resupply mission is scheduled to arrive.</LI>
+</UL>
+<P>The "initial-settlement-list" is a list of settlements in the simulation.</P>
+<P>Each "settlement" element has a "name" and a "template" attribute, as well as a "location" element.  The "name" attribute is either a
+  unique name for the settlement, or "random", indicating that the name will be randomly selected from the "settlement-name-list" below.
+  The "template" attribute must match a settlement template name (see above).</P>
+<P>The "location" element is the longitude and latitude of the settlement.  The "longitude" and "latitude" attributes must have the location 
+  degrees followed by the direction ("E" or "W" for longitude and "N" or "S" for latitude).  Alternatively they can have a value of "random", 
+  indicating a random longitude or latitude.</P>
+<P>The "settlement-name-list" is a list of settlement names that can be selected from for random settlement names.  Each "settlement-name"
+  element must have a unique value and must not match a name of a settlement in the "initial-settlement-list".</P>
+</BODY>
+</HTML>
