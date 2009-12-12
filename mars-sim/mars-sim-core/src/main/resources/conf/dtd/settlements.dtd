@@ -1,0 +1,38 @@
+<!ELEMENT settlement-configuration (settlement-template-list, 
+initial-settlement-list, settlement-name-list)>
+<!ELEMENT settlement-template-list (template*)>
+<!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, 
+part-package*, resupply?)>
+<!ATTLIST template name CDATA #REQUIRED>
+<!ELEMENT building EMPTY>
+<!ATTLIST building type CDATA #REQUIRED>
+<!ATTLIST building number CDATA #REQUIRED>
+<!ELEMENT vehicle EMPTY>
+<!ATTLIST vehicle type CDATA #REQUIRED>
+<!ATTLIST vehicle number CDATA #REQUIRED>
+<!ELEMENT equipment EMPTY>
+<!ATTLIST equipment type CDATA #REQUIRED>
+<!ATTLIST equipment number CDATA #REQUIRED>
+<!ELEMENT resource EMPTY>
+<!ATTLIST resource type CDATA #REQUIRED>
+<!ATTLIST resource amount CDATA #REQUIRED>
+<!ELEMENT part EMPTY>
+<!ATTLIST part type CDATA #REQUIRED>
+<!ATTLIST part number CDATA #REQUIRED>
+<!ELEMENT part-package EMPTY>
+<!ATTLIST part-package name CDATA #REQUIRED>
+<!ATTLIST part-package number CDATA #REQUIRED>
+<!ELEMENT resupply (resupply-mission*)>
+<!ELEMENT resupply-mission EMPTY>
+<!ATTLIST resupply-mission name CDATA #REQUIRED>
+<!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
+<!ELEMENT initial-settlement-list (settlement*)>
+<!ELEMENT settlement (location)>
+<!ATTLIST settlement name CDATA #REQUIRED>
+<!ATTLIST settlement template CDATA #REQUIRED>
+<!ELEMENT location EMPTY>
+<!ATTLIST location longitude CDATA #REQUIRED>
+<!ATTLIST location latitude CDATA #REQUIRED>
+<!ELEMENT settlement-name-list (settlement-name*)>
+<!ELEMENT settlement-name EMPTY>
+<!ATTLIST settlement-name value CDATA #REQUIRED>

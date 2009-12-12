@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+        "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+<HEAD>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<TITLE>Configuration Guide Time</TITLE>
+<LINK rel="stylesheet" href="msp.css">
+</HEAD>
+<BODY>
+<H2>Time</H2>
+<P>The Martian calendar used in this simulation is based on Shaun Moss's "Areosynchronous Calendar".<BR>
+  http://pweb.jps.net/~gangale3/moss/Virtual_Mars/Calendar.asp</P>
+<P>The Areosynchronous Calendar is heavily derived from Tom Gangale's Darian Calendar.<BR>
+  http://pweb.jps.net/~tgangale/mars/mst/darian.htm</P>
+<P>The Martian year is referred to as an "orbit". It is 668.5921 Martian days ("Sols") long.  In the
+  calendar, about half of the orbits are 668 Sols long, and the other half are "leap-orbits" with 669 
+  Sols. See the Areosynchronous Calendar for complete details on leap-orbits.</P>
+<P>The orbit has 24 months with either 27 or 28 Sols:</P>
+<PRE>Month Name          Sols
+-------------------------
+Adir                 28
+Bora                 28
+Coan                 28
+Deti                 28
+Edal                 28
+Flo                  27
+Geor                 28
+Heliba               28
+Idanon               28
+Jowani               28
+Kireal               28
+Larno                27
+Medior               28
+Neturima             28
+Ozulikan             28
+Pasurabi             28
+Rudiakel             28
+Safundo              27
+Tiunor               28
+Ulasja               28
+Vadeun               28
+Wakumi               28
+Xetual               28
+Zungo                27 or 18 if a leap-orbit</PRE>
+<P>The month names are based on Frans Blok's "The Rotterdam System".<BR>
+http://www.geocities.com/fra_nl/rotmonth.html</P>
+<P>There are seven sols in a Martian week with the following week names:</P>
+<P>Heliosol<BR>
+Neriosol<BR>
+Libersol<BR>
+Terrasol<BR>
+Venusol<BR>
+Mercusol<BR>
+Jovisol</P>
+<P>Every Martian month has 4 weeks.  On months with 27 Sols, the last week only has six Sols and Jovisol is clipped. This allows the first Sol of every month and every orbit to be Heliosol.</P>
+<P>The calendar uses metric time for Mars with the Sol broken up into the following common units:</P>
+<P>decasol  = 1/10 Sol   = 2.46 Earth hours<BR>
+centisol = 1/100 Sol  = 14.8 Earth minutes<BR>
+millisol = 1/1000 Sol = 1.48 Earth minutes</P>
+<P>Martian time of the Sol is usually written in three-digit millisol format to three decimal points.
+  ex. from "000.000" to "999.999".</P>
+<P>The common timestamp format for Mars date/time is orbit-month-sol:millisols.  ex. "17-Adir-03:523.234".</P>
+<P>The time of the day is based on Bruce Mackenzie's "Metric Time for Mars".<BR>
+  http://pweb.jps.net/~gangale3/other/mcknzfrm.htm</P>
+</BODY>
+</HTML>

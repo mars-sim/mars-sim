@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>mars-sim-parent</artifactId>
+		<groupId>net.sf.marssim</groupId>
+		<version>2.88-SNAPSHOT</version>
+	</parent>
+	<groupId>net.sf.marssim</groupId>
+	<artifactId>mars-sim-main</artifactId>
+	<version>2.88-SNAPSHOT</version>
+	<name>mars-sim-main</name>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>webstart-maven-plugin</artifactId>
+				<version>1.0-alpha-1</version>
+				<configuration>
+					<sign>
+						<keystore>../../../landrus.store</keystore>
+						<keypass>La16.4ra</keypass>
+						<storepass>La16.4ra</storepass>
+						<alias>landrus</alias>
+					</sign>
+					<jnlp>
+						<outputFile>mars-sim.jnlp</outputFile>
+						<mainClass>org.mars_sim.msp.MarsProject</mainClass>
+					</jnlp>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+	<dependencies>
+		<dependency>
+			<groupId>net.sf.marssim</groupId>
+			<artifactId>mars-sim-ui</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>net.sf.marssim</groupId>
+			<artifactId>mars-sim-mapdata</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>
