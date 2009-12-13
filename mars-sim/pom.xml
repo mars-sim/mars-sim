@@ -5,11 +5,11 @@
 	<!-- * General Section                                                                               * -->
 	<!-- ************************************************************************************************* -->
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>net.sf.marssim</groupId>
-	<artifactId>mars-sim-parent</artifactId>
+	<groupId>net.sf</groupId>
+	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
 	<version>2.88-SNAPSHOT</version>
-	<name>mars-sim-parent</name>
+	<name>mars-sim</name>
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
 	<!-- ************************************************************************************************* -->
@@ -58,9 +58,9 @@
 	<!-- * Project Tools Section                                                                         * -->
 	<!-- ************************************************************************************************* -->
 	<scm>
-		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/branches/maven-port/mars-sim-parent</connection>
-		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/branches/maven-port/mars-sim-parent</developerConnection>
-		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/branches/maven-port/mars-sim-parent</url>
+		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</connection>
+		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</developerConnection>
+		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/trunk/mars-sim</url>
 	</scm>
 	<issueManagement>
 		<system>sourceforge</system>
