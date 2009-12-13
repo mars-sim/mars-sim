@@ -20,10 +20,10 @@
 				<version>1.0-alpha-1</version>
 				<configuration>
 					<sign>
-						<keystore>../../../landrus.store</keystore>
-						<keypass>La16.4ra</keypass>
-						<storepass>La16.4ra</storepass>
-						<alias>landrus</alias>
+						<keystore>../../../mars-sim.store</keystore>
+						<keypass>marssim</keypass>
+						<storepass>marssim</storepass>
+						<alias>mars-sim</alias>
 					</sign>
 					<jnlp>
 						<outputFile>mars-sim.jnlp</outputFile>
