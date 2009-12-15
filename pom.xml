@@ -114,10 +114,13 @@
 			<notifier>
 				<address>mars-sim-ciserv@lists.sourceforge.net</address>
 				<type>mail</type>
-				<sendOnSuccess>false</sendOnSuccess>
+				<sendOnSuccess>true</sendOnSuccess>
 				<sendOnWarning>true</sendOnWarning>
 				<sendOnError>true</sendOnError>
 				<sendOnFailure>true</sendOnFailure>
+				<configuration> 
+					<recipients>mars-sim-ciserv@lists.sourceforge.net</recipients> 
+				</configuration> 
 			</notifier>
 		</notifiers>
 	</ciManagement>
