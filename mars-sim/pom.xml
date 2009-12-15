@@ -64,7 +64,7 @@
 	</scm>
 	<issueManagement>
 		<system>sourceforge</system>
-		<url>http://sourceforge.net/tracker/?group_id=3286</url>
+		<url>http://sourceforge.net/apps/mantisbt/mars-sim/</url>
 	</issueManagement>
 	<mailingLists>
 		<mailingList>
@@ -93,7 +93,34 @@
     		</archive>
 			<post>mars-sim-users@lists.sourceforge.net</post>
 		</mailingList>
+		<mailingList>
+			<name>Mars-Sim CI Mailing list</name>
+			<subscribe>
+    			http://lists.sourceforge.net/lists/listinfo/mars-sim-ciserv
+    		</subscribe>
+			<unsubscribe>
+    			http://lists.sourceforge.net/lists/listinfo/mars-sim-ciserv
+    		</unsubscribe>
+			<archive>
+    			http://sourceforge.net/mailarchive/forum.php?forum_name=mars-sim-ciserv
+    		</archive>
+			<post>mars-sim-ciserv@lists.sourceforge.net</post>
+		</mailingList>
 	</mailingLists>
+	<ciManagement>
+		<system>hudson</system>
+		<url>https://landrus.no-ip.info:8443/hudson/</url>
+		<notifiers>
+			<notifier>
+				<address>mars-sim-ciserv@lists.sourceforge.net</address>
+				<type>mail</type>
+				<sendOnSuccess>false</sendOnSuccess>
+				<sendOnWarning>true</sendOnWarning>
+				<sendOnError>true</sendOnError>
+				<sendOnFailure>true</sendOnFailure>
+			</notifier>
+		</notifiers>
+	</ciManagement>
     <!-- ************************************************************************************************* -->
 	<!-- * Module Section                                                                                * -->
 	<!-- ************************************************************************************************* -->
