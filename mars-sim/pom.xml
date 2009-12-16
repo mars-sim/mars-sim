@@ -24,7 +24,7 @@
 				<role>manager</role>
 				<role>developer</role>
 			</roles>
-			<timezone>-9</timezone>
+			<timezone>-8</timezone>
 		</developer>
 		<developer>
 			<id>lechimp</id>
