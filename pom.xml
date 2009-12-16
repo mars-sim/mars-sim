@@ -119,7 +119,7 @@
 				<sendOnError>true</sendOnError>
 				<sendOnFailure>true</sendOnFailure>
 				<configuration>
-					<address>mars-sim-ciserv@lists.sourceforge.net</address>
+					<recipients>mars-sim-ciserv@lists.sourceforge.net</recipients>
 				</configuration>
 			</notifier>
 		</notifiers>
