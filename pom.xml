@@ -117,9 +117,6 @@
 				<sendOnWarning>true</sendOnWarning>
 				<sendOnError>true</sendOnError>
 				<sendOnFailure>true</sendOnFailure>
-				<configuration>
-					<adress>mars-sim-ciserv@lists.sourceforge.net</adress>
-				</configuration>
 			</notifier>
 		</notifiers>
 	</ciManagement>
