@@ -112,14 +112,13 @@
 		<url>https://landrus.no-ip.info:8443/hudson/</url>
 		<notifiers>
 			<notifier>
-				<address>mars-sim-ciserv@lists.sourceforge.net</address>
 				<type>mail</type>
 				<sendOnSuccess>true</sendOnSuccess>
 				<sendOnWarning>true</sendOnWarning>
 				<sendOnError>true</sendOnError>
 				<sendOnFailure>true</sendOnFailure>
-				<configuration> 
-					<recipients>mars-sim-ciserv@lists.sourceforge.net</recipients> 
+				<configuration>
+					<address>mars-sim-ciserv@lists.sourceforge.net</address>
 				</configuration>
 			</notifier>
 		</notifiers>
