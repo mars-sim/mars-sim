@@ -113,6 +113,7 @@
 		<notifiers>
 			<notifier>
 				<type>mail</type>
+				<address>mars-sim-ciserv@lists.sourceforge.net</address>
 				<sendOnSuccess>true</sendOnSuccess>
 				<sendOnWarning>true</sendOnWarning>
 				<sendOnError>true</sendOnError>
