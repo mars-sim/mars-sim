@@ -118,9 +118,9 @@
 				<sendOnWarning>true</sendOnWarning>
 				<sendOnError>true</sendOnError>
 				<sendOnFailure>true</sendOnFailure>
-				<!--configuration> 
+				<configuration> 
 					<recipients>mars-sim-ciserv@lists.sourceforge.net</recipients> 
-				</configuration-->
+				</configuration>
 			</notifier>
 		</notifiers>
 	</ciManagement>
