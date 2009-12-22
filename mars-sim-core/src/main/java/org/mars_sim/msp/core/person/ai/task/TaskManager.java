@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 2.87 2009-11-12
+ * @version 2.88 2009-12-21
  * @author Scott Davis
  */
 
@@ -169,23 +169,28 @@ public class TaskManager implements Serializable {
      * Perform the current task for a given amount of time.
      * @param time amount of time to perform the action
      * @param efficiency The performance rating of person performance task.
+     * @return remaining time.
      * @throws Exception if error in performing task.
      */
-    public void performTask(double time, double efficiency) throws Exception {
+    public double performTask(double time, double efficiency) throws Exception {
+        double remainingTime = 0D;
+        
         if (currentTask != null) {
-            // For effort driven task, reduce the effective time
+            // For effort driven task, reduce the effective time based on efficiency.
             if (efficiency < .1D) efficiency = .1D; 
             if (currentTask.isEffortDriven()) time *= efficiency;
             checkForEmergency();
             
             try {
-            	currentTask.performTask(time);
+            	remainingTime = currentTask.performTask(time);
             }
             catch (Exception e) {
             	e.printStackTrace(System.err);
             	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
             }
         }
+        
+        return remainingTime;
     }
 
     /**
@@ -219,7 +224,7 @@ public class TaskManager implements Serializable {
         if (!useCache()) calculateProbability();
 
         // Get a random number from 0 to the total weight
-        double totalProbability = getTotalTaskProbability(); 
+        double totalProbability = getTotalTaskProbability(true); 
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
@@ -252,10 +257,10 @@ public class TaskManager implements Serializable {
      * Determines the total probability weight for available tasks.
      * @return total probability weight
      */
-    public double getTotalTaskProbability() {
+    public double getTotalTaskProbability(boolean useCache) {
 
     	// If cache is not current, calculate the probabilities.
-        if (!useCache()) calculateProbability();
+        if (!useCache) calculateProbability();
         
         return totalProbCache;
     }
