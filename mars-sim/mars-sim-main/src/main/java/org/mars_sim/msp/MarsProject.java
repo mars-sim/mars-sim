@@ -1,6 +1,7 @@
 /**
- * Mars Simulation Project MarsProject.java
- * @version 2.87 2009-09-23
+ * Mars Simulation Project 
+ * MarsProject.java
+ * @version 2.88 2009-12-21
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -40,7 +41,7 @@ public class MarsProject {
         SplashWindow splashWindow = new SplashWindow();
 
         // Create a simulation
-        List argList = Arrays.asList(args);
+        List<String> argList = Arrays.asList(args);
 
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
