@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 2.86 2009-04-20
+ * @version 2.88 2009-12-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -400,10 +400,16 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
     private double togglePowerSourcePhase(double time) throws Exception {
         
         // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        if (person.getPerformanceRating() == 0D) {
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
+        }
 
         // Check if toggle has already been completed.
-        if (powerSource.isToggleON() == toggleOn) endTask();
+        if (powerSource.isToggleON() == toggleOn) {
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
+        }
         
         if (isDone()) return time;
         
@@ -421,7 +427,9 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
             
         // Check if toggle has already been completed.
         if (powerSource.isToggleON() == toggleOn) {
-            endTask();
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
+            
             Settlement settlement = building.getBuildingManager().getSettlement();
             String toggle = "off";
             if (toggleOn) toggle = "on";
