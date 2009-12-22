@@ -130,7 +130,10 @@ public class EnterAirlock extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 500D;
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            result = 500D;
+            //System.out.println(person.getName() + " is outside!");
+        }
 
         return result;
     }
@@ -244,7 +247,7 @@ public class EnterAirlock extends Task implements Serializable {
         	entityInv.storeUnit(suit);
         }
         else {
-        	logger.log(Level.SEVERE, "Person doesn't have an EVA suit to put away.");
+        	logger.log(Level.SEVERE, person.getName() + " doesn't have an EVA suit to put away.");
         }
     }
 
