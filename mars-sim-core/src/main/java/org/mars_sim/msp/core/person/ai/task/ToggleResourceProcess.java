@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.86 2009-04-20
+ * @version 2.88 2009-12-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -272,7 +272,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return true if any input resources are empty.
 	 * @throws Exception if error checking input resources.
 	 */
-	private static boolean isEmptyInputResourceInProcess(Settlement settlement, ResourceProcess process) throws Exception {
+	private static boolean isEmptyInputResourceInProcess(Settlement settlement, 
+	        ResourceProcess process) throws Exception {
 		boolean result = false;
 		
 		Iterator<AmountResource> i = process.getInputResources().iterator();
@@ -405,11 +406,17 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      */
     private double toggleProcessPhase(double time) throws Exception {
     	
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        // If person is incompacitated, enter airlock.
+        if (person.getPerformanceRating() == 0D) {
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
+        }
 
         // Check if process has already been completed.
-        if (process.isProcessRunning() == toggleOn) endTask();
+        if (process.isProcessRunning() == toggleOn) {
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
+        }
         
         if (isDone()) return time;
     	
@@ -427,7 +434,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             
         // Check if process has already been completed.
         if (process.isProcessRunning() == toggleOn) {
-        	endTask();
+            if (isEVA) setPhase(ENTER_AIRLOCK);
+            else endTask();
         	// Settlement settlement = building.getBuildingManager().getSettlement();
         	// String toggle = "off";
         	// if (toggleOn) toggle = "on";
