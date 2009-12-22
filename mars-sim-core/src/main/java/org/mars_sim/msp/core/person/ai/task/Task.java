@@ -225,9 +225,9 @@ public abstract class Task implements Serializable, Comparable {
     /** 
      * Perform the task for the given number of seconds.
      * Children should override and implement this.
-     * @param time amount of time (millisol) given to perform the task (in microsols)
-     * @return amount of time (millisol) remaining after performing the task (in microsols)
-     * @throws Exception if error peforming task.
+     * @param time amount of time (millisol) given to perform the task (in millisols)
+     * @return amount of time (millisol) remaining after performing the task (in millisols)
+     * @throws Exception if error performing task.
      */
     double performTask(double time) throws Exception {
         double timeLeft = time;
