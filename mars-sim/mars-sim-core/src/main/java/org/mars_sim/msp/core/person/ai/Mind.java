@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.84 2008-05-29
+ * @version 2.88 2009-12-21
  * @author Scott Davis
  */
 
@@ -73,6 +73,9 @@ public class Mind implements Serializable {
 	 */
 	public void timePassing(double time) throws Exception {
 		
+	    // Check if this person needs to get a new job or change jobs.
+        if (!jobLock) setJob(JobManager.getNewJob(person), false);
+	    
 		// Take action as necessary.
 		takeAction(time);
 		
@@ -89,9 +92,6 @@ public class Mind implements Serializable {
      * @throws Exception if error during action.
      */
     public void takeAction(double time) throws Exception {
-        
-		// Check if this person needs to get a new job or change jobs.
-		if (!jobLock) setJob(JobManager.getNewJob(person), false);
     	
         if ((mission != null) && mission.isDone()) mission = null;
         boolean activeMission = (mission != null);
@@ -104,7 +104,8 @@ public class Mind implements Serializable {
         // Perform a task if the person has one, or determine a new task/mission.
         try {
         	if (taskManager.hasActiveTask()) {
-            	taskManager.performTask(time, person.getPerformanceRating());
+            	double remainingTime = taskManager.performTask(time, person.getPerformanceRating());
+            	if (remainingTime > 0D) takeAction(remainingTime);
         	}
         	else {
             	if (activeMission) {
@@ -119,7 +120,7 @@ public class Mind implements Serializable {
             	
             	if (!taskManager.hasActiveTask()) 
             		getNewAction(true, (!activeMission && !overrideMission));
-            	if (taskManager.hasActiveTask()) takeAction(time);
+            	if (taskManager.hasActiveTask() || hasActiveMission()) takeAction(time);
         	}
         }
         catch (Exception e) {
@@ -222,7 +223,7 @@ public class Mind implements Serializable {
      */
     public void getNewAction(boolean tasks, boolean missions) throws Exception {
 		MissionManager missionManager = Simulation.instance().getMissionManager();
-
+		
         // If this Person is too weak then they can not do Missions
         if (person.getPerformanceRating() < 0.5D) missions = false;
         
@@ -237,7 +238,7 @@ public class Mind implements Serializable {
         // Determine sum of weights based on given parameters
         double weightSum = 0D;
         if (tasks) {
-        	taskWeights = taskManager.getTotalTaskProbability();
+        	taskWeights = taskManager.getTotalTaskProbability(false);
         	weightSum += taskWeights;
         }
         if (missions) {
@@ -272,6 +273,10 @@ public class Mind implements Serializable {
             }
             else rand -= missionWeights;
         }
+        
+        // If reached this point, no task or mission has been found.
+        logger.severe(person.getName() + " couldn't determine new action - taskWeights: " + 
+                taskWeights + ", missionWeights: " + missionWeights);
     }
     
     /**
