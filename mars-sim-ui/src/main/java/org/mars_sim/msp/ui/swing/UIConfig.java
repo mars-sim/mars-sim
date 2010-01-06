@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 2.85 2008-10-13
+ * @version 2.88 2010-01-05
  * @author Scott Davis
  */
 
@@ -9,15 +9,12 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.Dimension;
 import java.awt.Point;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.List;
@@ -136,7 +133,7 @@ public class UIConfig {
         
         try {
             Document outputDoc = new Document();
-            DocType dtd = new DocType(UI,FILE_NAME_DTD);
+            DocType dtd = new DocType(UI, DIRECTORY + File.separator + FILE_NAME_DTD);
             Element uiElement = new Element(UI);
             outputDoc.setDocType(dtd);
             outputDoc.addContent(uiElement);
@@ -215,11 +212,16 @@ public class UIConfig {
              * because in a webstart environment, the user has no initial data in his dirs. */
             File configFile = new File(DIRECTORY, FILE_NAME);
             
+            // Create save directory if it doesn't exist.
             if (!configFile.getParentFile().exists()) {
             	configFile.getParentFile().mkdirs();
-            	InputStream in = getClass().getResourceAsStream("/saved/ui_settings.dtd");
-            	IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
             }
+            
+            // Copy /dtd/ui_settings.dtd resource to save directory.
+            // Always do this as we don't know when the local saved dtd file is out of date.
+            InputStream in = getClass().getResourceAsStream(File.separator + "dtd" + 
+                    File.separator + "ui_settings.dtd");
+            IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
             
             XMLOutputter fmt = new XMLOutputter();
             fmt.setFormat(Format.getPrettyFormat());
