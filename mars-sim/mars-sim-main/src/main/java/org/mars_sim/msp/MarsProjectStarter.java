@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsProjectStarter.java
- * @version 2.85 2008-07-26
+ * @version 2.88 2010-01-10
  * @author Scott Davis
  */
 
@@ -11,8 +11,9 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * MarsProjectStarter is the default main class for the MarsProject.jar executable JAR.
+ * MarsProjectStarter is the default main class for the main executable JAR.
  * It creates a new virtual machine with 256MB memory and logging properties.
+ * It isn't used in the webstart release.
  */
 public class MarsProjectStarter {
 
@@ -35,7 +36,9 @@ public class MarsProjectStarter {
 			command.append(" -Xms256m");
 			command.append(" -Xmx256m");
 			command.append(" -Djava.util.logging.config.file=logging.properties");
-			command.append(" -cp MarsProject.jar");
+			command.append(" -cp ." + File.pathSeparator);
+			command.append("*" + File.pathSeparator);
+			command.append("jars" + File.separator + "*");
 			command.append(" org.mars_sim.msp.MarsProject");
 			
 			String commandStr = command.toString();
