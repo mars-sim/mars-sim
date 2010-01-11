@@ -1,23 +1,5 @@
-The Mars Simulation Project can be built in several ways.
+The Mars Simulation Project is designed as a Maven project.  
 
-** Ant build tool **
-
-The preferred way to build the project is using the Ant build tool and 
-the build.xml file in the scripts subdirectory.
-
-Ant can be freely downloaded here: http://ant.apache.org
-
-Ant can be used by going to the scripts subdirectory of the Mars Simulation 
-Project and typing: ant <target> 
-
-The following targets are available in the project's build.xml file:
-
-compile: Compiles the source code but doesn't build the JAR files.
-
-build: Compiles the source code and builds the JAR files.
-
-clean-build: Deletes all the old class and JAR files and builds the project.
-
-test: Performs a unit test on the project.
-      
-document: Creates JavaDoc documentation for the project in the docs directory.
+For information on how to build the project using the Eclipse M2Eclipse Maven plugin, 
+see our getting started with MSP wiki page:
+http://sourceforge.net/apps/mediawiki/mars-sim/index.php?title=Getting_Started_with_MSP
