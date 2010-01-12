@@ -219,8 +219,7 @@ public class UIConfig {
             
             // Copy /dtd/ui_settings.dtd resource to save directory.
             // Always do this as we don't know when the local saved dtd file is out of date.
-            InputStream in = getClass().getResourceAsStream(File.separator + "dtd" + 
-                    File.separator + "ui_settings.dtd");
+            InputStream in = getClass().getResourceAsStream("/dtd/ui_settings.dtd");
             IOUtils.copy(in, new FileOutputStream(new File(DIRECTORY, "ui_settings.dtd")));
             
             XMLOutputter fmt = new XMLOutputter();
