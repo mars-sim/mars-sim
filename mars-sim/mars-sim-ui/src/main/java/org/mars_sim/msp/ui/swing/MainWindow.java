@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 2.85 2008-07-27
+ * @version 2.90 2010-01-13
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Simulation;
@@ -328,8 +329,18 @@ public class MainWindow extends JFrame {
 				UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
     		}
     		else {
-				MetalLookAndFeel.setCurrentTheme(new MarsTheme());
-				UIManager.setLookAndFeel(new MetalLookAndFeel());
+    		    boolean foundNimbus = false;
+                for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if ("Nimbus".equals(info.getName())) {
+                        UIManager.setLookAndFeel(info.getClassName());
+                        foundNimbus = true;
+                        break;
+                    }
+                }
+                if (!foundNimbus) {
+                    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+                    UIManager.setLookAndFeel(new MetalLookAndFeel());
+                }
     		}
 			SwingUtilities.updateComponentTreeUI(this);
 			if (desktop != null) desktop.updateToolWindowLF();
