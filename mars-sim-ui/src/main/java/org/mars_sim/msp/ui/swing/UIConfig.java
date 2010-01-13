@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 2.88 2010-01-05
+ * @version 2.90 2010-01-12
  * @author Scott Davis
  */
 
@@ -23,7 +23,6 @@ import java.util.logging.Logger;
 
 import javax.swing.JInternalFrame;
 import javax.swing.UIManager;
-import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.apache.commons.io.IOUtils;
 import org.jdom.DocType;
@@ -140,12 +139,13 @@ public class UIConfig {
             outputDoc.setRootElement(uiElement);
 
             uiElement.setAttribute(USE_DEFAULT, "false");
-
-            if (UIManager.getLookAndFeel() instanceof MetalLookAndFeel)
-                uiElement.setAttribute(LOOK_AND_FEEL, "default");
-            else
+            
+            String currentLFClassName = UIManager.getLookAndFeel().getClass().getName();
+            String systemLFClassName = UIManager.getSystemLookAndFeelClassName();
+            if (currentLFClassName.equals(systemLFClassName))
                 uiElement.setAttribute(LOOK_AND_FEEL, "native");
-
+            else uiElement.setAttribute(LOOK_AND_FEEL, "default");
+            
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
 
