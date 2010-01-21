@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.85 2008-07-09
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 
@@ -174,9 +174,9 @@ public class ManufactureGood extends Task implements Serializable {
     	
     	List<Building> result = new ArrayList<Building>();
     	
-    	Iterator i = buildingList.iterator();
+    	Iterator<Building> i = buildingList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
     		Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
     		if (manufacturingFunction.requiresWork(skill)) result.add(building);
     	}
@@ -197,9 +197,9 @@ public class ManufactureGood extends Task implements Serializable {
     	List<Building> result = new ArrayList<Building>();
     	
     	// Add all buildings with processes requiring work.
-    	Iterator i = buildingList.iterator();
+    	Iterator<Building> i = buildingList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
     		if (hasProcessRequiringWork(building, skill)) result.add(building);
     	}
     	
@@ -246,17 +246,17 @@ public class ManufactureGood extends Task implements Serializable {
     	List<Building> result = new ArrayList<Building>();
     	
     	int highestTechLevel = 0;
-    	Iterator i = buildingList.iterator();
+    	Iterator<Building> i = buildingList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
     		Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
     		if (manufacturingFunction.getTechLevel() > highestTechLevel) 
     			highestTechLevel = manufacturingFunction.getTechLevel();
     	}
     	
-    	Iterator j = buildingList.iterator();
+    	Iterator<Building> j = buildingList.iterator();
     	while (j.hasNext()) {
-    		Building building = (Building) j.next();
+    		Building building = j.next();
     		Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
     		if (manufacturingFunction.getTechLevel() == highestTechLevel) result.add(building);
     	}
@@ -475,6 +475,9 @@ public class ManufactureGood extends Task implements Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the workshop building's wear condition.
+        chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             logger.info(person.getName() + " has accident while manufacturing.");
             workshop.getBuilding().getMalfunctionManager().accident();

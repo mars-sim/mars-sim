@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 2.84 2008-05-12
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -85,10 +85,11 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         	else {
         		// If not in a garage, try to add it to a garage with empty space.
         		Settlement settlement = person.getSettlement();
-        		Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+        		Iterator<Building> j = settlement.getBuildingManager().getBuildings(
+        		        GroundVehicleMaintenance.NAME).iterator();
         		while (j.hasNext() && (garage == null)) {
         			try {
-        				Building garageBuilding = (Building) j.next();
+        				Building garageBuilding = j.next();
         				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
         				if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
         					garage = garageTemp;
@@ -150,10 +151,10 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		boolean needyVehicleInGarage = false;
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
 			Settlement settlement = person.getSettlement();
-			Iterator j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
 			while (j.hasNext() && !garageSpace) {
 				try {
-					Building building = (Building) j.next();
+					Building building = j.next();
 					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
 					
@@ -283,6 +284,9 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the vehicle's wear condition.
+        chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             logger.info(person.getName() + " has accident while performing maintenance on " 
         	    		         + vehicle.getName() 

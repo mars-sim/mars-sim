@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 2.88 2009-12-21
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -464,6 +464,9 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 
+		// Modify based on the building's wear condition.
+        chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
+		
 		if (RandomUtil.lessThanRandPercent(chance * time)) building.getMalfunctionManager().accident();
 	}
 }

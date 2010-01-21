@@ -41,8 +41,11 @@ public class MalfunctionManager implements Serializable {
     // Factor for chance of malfunction by time since last maintenance.
     private static double MAINTENANCE_MALFUNCTION_FACTOR = .0000001D;
     
-    // Factor for chance of malfunction by wear condition.
+    // Factor for chance of malfunction due to wear condition.
     private static double WEAR_MALFUNCTION_FACTOR = 9D;
+    
+    // Factor for chance of accident due to wear condition.
+    private static double WEAR_ACCIDENT_FACTOR = 1D;
     
     // Data members
     private Malfunctionable entity;          // The owning entity.
@@ -790,5 +793,14 @@ public class MalfunctionManager implements Serializable {
 	 */
 	public double getWearCondition() {
 	    return wearCondition;
+	}
+	
+	/**
+	 * Gets the multiplying modifier for the chance of an accident due to the 
+	 * malfunctionable entity's wear condition.
+	 * @return accident modifier.
+	 */
+	public double getWearConditionAccidentModifier() {
+	    return (100D - wearCondition) / 100D * WEAR_ACCIDENT_FACTOR + 1D;
 	}
 }

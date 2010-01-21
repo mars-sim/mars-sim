@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 2.83 2008-02-18
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 
@@ -67,9 +67,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     private static Malfunctionable getMalfunctionEntity(Person person) throws Exception {
         Malfunctionable result = null;
         
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext() && (result == null)) {
-            Malfunctionable entity = (Malfunctionable) i.next();
+            Malfunctionable entity = i.next();
             if (hasMalfunction(person, entity)) result = entity;
         }
         
@@ -133,9 +133,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double result = 0D;
 
         // Total probabilities for all malfunctionable entities in person's local.
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            Malfunctionable entity = (Malfunctionable) i.next();
+            Malfunctionable entity = i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
             Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
             while (j.hasNext()) {
@@ -263,6 +263,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the entity's wear condition.
+        chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // logger.info(person.getName() + " has accident while " + description);
             if (entity != null) entity.getMalfunctionManager().accident();
