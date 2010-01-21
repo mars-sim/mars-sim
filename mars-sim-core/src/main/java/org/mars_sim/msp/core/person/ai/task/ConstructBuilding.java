@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 2.85 2008-08-31
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -318,6 +318,9 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
+            
+            // Modify based on the LUV's wear condition.
+            chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
             
             if (RandomUtil.lessThanRandPercent(chance * time))
                 luv.getMalfunctionManager().accident();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 2.86 2009-04-11
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -351,6 +351,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         double lightConditions = surface.getSurfaceSunlight(vehicle.getCoordinates());
         chance *= (5D * (1D - lightConditions)) + 1D;
 
+        // Modify based on the vehicle's wear condition.
+        chance *= vehicle.getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // logger.info(person.getName() + " has accident driving " + vehicle.getName());
 	    	vehicle.getMalfunctionManager().accident();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 2.84 2008-05-17
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -209,6 +209,9 @@ public abstract class EVAOperation extends Task implements Serializable {
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
 
+            // Modify based on the suit's wear condition.
+            chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
+            
             if (RandomUtil.lessThanRandPercent(chance * time)) {
                 // logger.info(person.getName() + " has accident during EVA operation.");
                 suit.getMalfunctionManager().accident();

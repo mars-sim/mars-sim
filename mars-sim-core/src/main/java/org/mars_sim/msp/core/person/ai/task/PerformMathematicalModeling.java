@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 2.87 2009-11-12
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -307,15 +308,15 @@ public class PerformMathematicalModeling extends Task implements
      * @return research buildings with mathematics speciality.
      * @throws BuildingException if building list contains buildings without research function.
      */
-    private static List<Building> getSettlementLabsWithMathematicsSpeciality(List buildingList) 
-            throws BuildingException {
+    private static List<Building> getSettlementLabsWithMathematicsSpeciality(List<Building> buildingList) 
+                throws BuildingException {
         List<Building> result = new ArrayList<Building>();
         
         Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
         
-        Iterator i = buildingList.iterator();
+        Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
-            Building building = (Building) i.next();
+            Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
             if (lab.hasSpeciality(mathematicsScience.getName())) result.add(building);
         }
@@ -489,13 +490,22 @@ public class PerformMathematicalModeling extends Task implements
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
-        if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has a lab accident while performing " + 
-                    "mathematical modeling");
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
-                ((Research) lab).getBuilding().getMalfunctionManager().accident();
-            else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
-                person.getVehicle().getMalfunctionManager().accident(); 
+        Malfunctionable entity = null;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
+            entity = ((Research) lab).getBuilding();
+        else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
+            entity = person.getVehicle();
+        
+        if (entity != null) {
+         
+            // Modify based on the entity's wear condition.
+            chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+            
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
+                logger.info(person.getName() + " has a lab accident while performing " + 
+                        "mathematical modeling");
+                entity.getMalfunctionManager().accident();
+            }
         }
     }
     

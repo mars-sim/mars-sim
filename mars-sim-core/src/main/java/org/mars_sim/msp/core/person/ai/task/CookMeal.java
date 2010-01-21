@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 2.84 2008-05-17
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -215,6 +215,9 @@ public class CookMeal extends Task implements Serializable {
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 
+		// Modify based on the kitchen building's wear condition.
+        chance *= kitchen.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+		
 		if (RandomUtil.lessThanRandPercent(chance * time)) {
 			// logger.info(person.getName() + " has accident while cooking.");
 			kitchen.getBuilding().getMalfunctionManager().accident();
@@ -289,11 +292,12 @@ public class CookMeal extends Task implements Serializable {
 	 * @return list of kitchen buildings
 	 * @throws BuildingException if error
 	 */
-	private static List<Building> getKitchensNeedingCooks(List kitchenBuildings) throws BuildingException {
+	private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) 
+	        throws BuildingException {
 		List<Building> result = new ArrayList<Building>();
 		
 		if (kitchenBuildings != null) {
-			Iterator i = kitchenBuildings.iterator();
+			Iterator<Building> i = kitchenBuildings.iterator();
 			while (i.hasNext()) {
 				Building building = (Building) i.next();
 				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);

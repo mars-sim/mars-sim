@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 2.82 2007-11-05
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -77,9 +77,9 @@ public class Maintenance extends Task implements Serializable {
 
         try {
         	// Total probabilities for all malfunctionable entities in person's local.
-        	Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        	Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         	while (i.hasNext()) {
-        		Malfunctionable entity = (Malfunctionable) i.next();
+        		Malfunctionable entity = i.next();
         		boolean isVehicle = (entity instanceof Vehicle);
         		boolean uninhabitableBuilding = false;
         		if (entity instanceof Building) 
@@ -214,6 +214,9 @@ public class Maintenance extends Task implements Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the entity's wear condition.
+        chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             logger.info(person.getName() + " has accident while performing maintenance on " 
         	    		         + entity.getName() 
@@ -243,8 +246,8 @@ public class Maintenance extends Task implements Serializable {
 		double totalProbabilityWeight = 0D;
 		
 		// Total probabilities for all malfunctionable entities in person's local.
-		Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-		while (i.hasNext()) totalProbabilityWeight += getProbabilityWeight((Malfunctionable) i.next());
+		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		while (i.hasNext()) totalProbabilityWeight += getProbabilityWeight(i.next());
 		
 		// Randomly determine a malfunctionable entity.
 		double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);

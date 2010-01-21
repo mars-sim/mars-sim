@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 2.84 2008-06-24
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 
@@ -296,6 +296,9 @@ public class MineSite extends EVAOperation implements Serializable {
 			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
+            
+            // Modify based on the LUV's wear condition.
+            chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
             
             if (RandomUtil.lessThanRandPercent(chance * time))
     	    	luv.getMalfunctionManager().accident();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 2.87 2009-11-12
+ * @version 2.90 2010-01-21
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -410,12 +411,21 @@ public class ObserveAstronomicalObjects extends Task implements
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
-        if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has a observatory accident while observing astronomical objects.");
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
-                observatory.getBuilding().getMalfunctionManager().accident();
-            else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
-                person.getVehicle().getMalfunctionManager().accident(); 
+        Malfunctionable entity = null;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
+            entity = observatory.getBuilding();
+        else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
+            entity = person.getVehicle();
+        
+        if (entity != null) {
+         
+            // Modify based on the entity's wear condition.
+            chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+            
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
+                logger.info(person.getName() + " has a observatory accident while observing astronomical objects.");
+                entity.getMalfunctionManager().accident();
+            }
         }
     }
     

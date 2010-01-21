@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-01-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -188,6 +188,9 @@ public class TendGreenhouse extends Task implements Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the LUV's wear condition.
+        chance *= greenhouse.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // logger.info(person.getName() + " has accident while tending the greenhouse.");
             greenhouse.getBuilding().getMalfunctionManager().accident();
@@ -235,12 +238,12 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return list of farming buildings needing work.
      * @throws BuildingException if any buildings in building list don't have the farming function.
      */
-    private static List<Building> getFarmsNeedingWork(List buildingList) throws BuildingException {
+    private static List<Building> getFarmsNeedingWork(List<Building> buildingList) throws BuildingException {
     	List<Building> result = new ArrayList<Building>();
     	
-    	Iterator i = buildingList.iterator();
+    	Iterator<Building> i = buildingList.iterator();
     	while (i.hasNext()) {
-    		Building building = (Building) i.next();
+    		Building building = i.next();
     		Farming farm = (Farming) building.getFunction(Farming.NAME);
     		if (farm.requiresWork()) result.add(building);
     	}

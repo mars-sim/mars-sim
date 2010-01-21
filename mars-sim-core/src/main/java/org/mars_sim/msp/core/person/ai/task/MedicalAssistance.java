@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.81 2007-08-27
+ * @version 2.90 2010-01-21
  * @author Barry Evans
  */
 
@@ -55,10 +55,10 @@ public class MedicalAssistance extends Task implements Serializable {
         super("Medical Assistance", person, true, true, STRESS_MODIFIER, true, 0D);
 
         // Get a local medical aid that needs work.
-        List localAids = getNeedyMedicalAids(person);
+        List<MedicalAid> localAids = getNeedyMedicalAids(person);
         if (localAids.size() > 0) {
             int rand = RandomUtil.getRandomInt(localAids.size() - 1);
-            medical = (MedicalAid) localAids.get(rand);
+            medical = localAids.get(rand);
         
             // Get a curable medical problem waiting for treatment at the medical aid.
             problem = (HealthProblem) medical.getProblemsAwaitingTreatment().get(0);
@@ -268,6 +268,9 @@ public class MedicalAssistance extends Task implements Serializable {
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
+        // Modify based on the entity's wear condition.
+        chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+        
         if (RandomUtil.lessThanRandPercent(chance * time)) {
             // logger.info(person.getName() + " has accident during medical assistance.");
             entity.getMalfunctionManager().accident();
@@ -310,12 +313,12 @@ public class MedicalAssistance extends Task implements Serializable {
     	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
-			List medicalBuildings = manager.getBuildings(MedicalCare.NAME);
+			List<Building> medicalBuildings = manager.getBuildings(MedicalCare.NAME);
 			
 			List<Building> needyMedicalBuildings = new ArrayList<Building>();
-			Iterator i = medicalBuildings.iterator();
+			Iterator<Building> i = medicalBuildings.iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				MedicalCare medical = (MedicalCare) building.getFunction(MedicalCare.NAME);
 				if (isNeedyMedicalAid(medical)) needyMedicalBuildings.add(building);
 			}
