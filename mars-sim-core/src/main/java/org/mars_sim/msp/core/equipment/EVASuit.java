@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 2.85 2008-09-13
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -38,6 +38,8 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     private static final double WATER_CAPACITY = 4D; // Water capacity (kg.)
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
+    private static final double WEAR_LIFETIME = 334000D; // 334 Sols (1/2 orbit)
+    private static final double MAINTENANCE_TIME = 250D; // 250 millisols.
 
     // Data members
     protected MalfunctionManager malfunctionManager; // The equipment's malfunction manager
@@ -53,7 +55,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         super(TYPE, location);
 
         // Add scope to malfunction manager.
-        malfunctionManager = new MalfunctionManager(this);
+        malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
         malfunctionManager.addScopeString("EVA Suit");
         malfunctionManager.addScopeString("Life Support");
         

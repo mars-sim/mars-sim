@@ -28,6 +28,10 @@ public class Building implements Malfunctionable, Serializable {
     public static final String POWER_DOWN = "Power Down";
     public static final String NO_POWER = "No Power";
     
+    // Maintenance info
+    private static final double WEAR_LIFETIME = 3340000D; // 3340 Sols (5 orbits)
+    private static final double MAINTENANCE_TIME = 1000D; // 1 Sol
+    
     // Data members
     protected BuildingManager manager; 
     protected String name;
@@ -64,7 +68,7 @@ public class Building implements Malfunctionable, Serializable {
         }
         
 		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this);
+		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString("Building");
 		
 		// Add each function to the malfunction scope.

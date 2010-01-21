@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.87 2009-07-05
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -22,6 +22,8 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -45,12 +47,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The Settlement class represents a settlement unit on virtual Mars.
  * It contains information related to the state of the settlement.
  */
-public class Settlement extends Structure implements org.mars_sim.msp.core.LifeSupport {
+public class Settlement extends Structure implements Malfunctionable, 
+        org.mars_sim.msp.core.LifeSupport {
     
     private static String CLASS_NAME = 
 	    "org.mars_sim.msp.simulation.structure.Settlement";
 	
-   private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 	
 	// Unit update events.
 	public static final String ADD_ASSOCIATED_PERSON_EVENT = "add associated person";
@@ -59,6 +62,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D;        // Normal temperature (celsius)
 
+    private static final double MAINTENANCE_TIME = 3000D; // Amount of time (millisols) required
+                                                          // for periodic maintenance.
+    
     // Data members
     protected BuildingManager buildingManager; // The settlement's building manager.
     protected ResupplyManager resupplyManager; // The settlement's resupply manager.
@@ -70,6 +76,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     private boolean manufactureOverride; // Override flag for manufacturing at settlement.
     private boolean resourceProcessOverride; // Override flag for resource process at settlement.
     private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
+    protected MalfunctionManager malfunctionManager;
     
     /**
      * Constructor for subclass extension.
@@ -78,7 +85,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
      */
     protected Settlement(String name, Coordinates location) {
     	// Use Structure constructor.
-    	super(name, location);
+    	super(name, location);    	
     }
     
     /** 
@@ -111,8 +118,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
        
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-       
+        
         // Add scope string to malfunction manager.
+        malfunctionManager = new MalfunctionManager(this, Double.POSITIVE_INFINITY, MAINTENANCE_TIME);
         malfunctionManager.addScopeString("Settlement");
         
         // Initialize scientific achievement.
@@ -125,10 +133,10 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
      */
     public int getPopulationCapacity() {
         int result = 0;
-        Iterator i = buildingManager.getBuildings(LivingAccommodations.NAME).iterator();
+        Iterator<Building> i = buildingManager.getBuildings(LivingAccommodations.NAME).iterator();
         while (i.hasNext()) {
         	try {
-        		Building building = (Building) i.next();
+        		Building building = i.next();
         		LivingAccommodations livingAccommodations = 
         			(LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
         		result += livingAccommodations.getBeds();
@@ -483,9 +491,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     	Collection<Vehicle> result = getParkedVehicles();
     	
     	// Also add vehicle mission vehicles not parked at settlement.
-		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(this).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !this.equals(vehicle.getSettlement())) result.add(vehicle);
@@ -588,5 +596,13 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
             achievementCredit += scientificAchievement.get(science);
         
         scientificAchievement.put(science, achievementCredit);
+    }
+
+    /**
+     * Gets the entity's malfunction manager.
+     * @return malfunction manager
+     */
+    public MalfunctionManager getMalfunctionManager() {
+        return malfunctionManager;
     }
 }

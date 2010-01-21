@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.84 2008-04-08
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -42,6 +42,10 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     // The error margin for determining vehicle range. (actual distance / safe distance)
     public final static double RANGE_ERROR_MARGIN = 1.5D;
 
+    // Maintenance info
+    private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
+    private static final double MAINTENANCE_TIME = 1000D; // 1 Sol
+    
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
     private Direction direction; // Direction vehicle is traveling in
@@ -87,7 +91,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this);
+	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 	    malfunctionManager.addScopeString("Vehicle");
     }
     
@@ -112,7 +116,7 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this);
+	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 	    malfunctionManager.addScopeString("Vehicle");
     	
 	    // Get vehicle configuration.
