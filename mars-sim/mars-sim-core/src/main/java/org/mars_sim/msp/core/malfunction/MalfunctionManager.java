@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 2.84 2008-05-12
+ * @version 2.90 2010-01-20
  * @author Scott Davis
  */
 
@@ -29,17 +29,20 @@ public class MalfunctionManager implements Serializable {
 	
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
-  // Unit update events.
-   public static final String MALFUNCTION_EVENT = "malfunction";
-	
-	// The default time (millisols) to perform maintenance work.
-    private static double DEFAULT_MAINTENANCE_WORK_TIME = 1000D;
+    // Unit update events.
+    public static final String MALFUNCTION_EVENT = "malfunction";
     
     // Initial estimate for malfunctions per orbit for an entity.
     private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
     
     // Initial estimate for maintenances per orbit for an entity.
     private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
+    
+    // Factor for chance of malfunction by time since last maintenance.
+    private static double MAINTENANCE_MALFUNCTION_FACTOR = .0000001D;
+    
+    // Factor for chance of malfunction by wear condition.
+    private static double WEAR_MALFUNCTION_FACTOR = 9D;
     
     // Data members
     private Malfunctionable entity;          // The owning entity.
@@ -54,6 +57,10 @@ public class MalfunctionManager implements Serializable {
     private Map<Part, Integer> partsNeededForMaintenance; // The parts currently needed to maintain this entity.
     private int numberMalfunctions;          // The number of malfunctions the entity has had so far.
     private int numberMaintenances;          // The number of times the entity has been maintained so far.
+    private double wearCondition;            // The percentage representing the malfunctionable's condition
+                                             // from wear & tear.  0% = worn out -> 100% = new condition.
+    private double wearLifeTime;             // The expected life time (millisols) of active use before the
+                                             // malfunctionable is worn out.
     
     // Life support modifiers.
     private double oxygenFlowModifier = 100D;
@@ -64,8 +71,13 @@ public class MalfunctionManager implements Serializable {
     /**
      * Constructor
      * @param entity the malfunctionable entity.
+     * @param wearLifeTime the expected life time (millisols) of active use 
+     * before the entity is worn out.
+     * @param maintenanceWorkTime the amount of work time (millisols) required for 
+     * maintenance.
      */
-    public MalfunctionManager(Malfunctionable entity) {
+    public MalfunctionManager(Malfunctionable entity, double wearLifeTime, 
+            double maintenanceWorkTime) {
 
         // Initialize data members
         this.entity = entity;
@@ -73,7 +85,9 @@ public class MalfunctionManager implements Serializable {
         effectiveTimeSinceLastMaintenance = 0D;
         scope = new ArrayList<String>();
         malfunctions = new ArrayList<Malfunction>();
-        maintenanceWorkTime = DEFAULT_MAINTENANCE_WORK_TIME;
+        this.maintenanceWorkTime = maintenanceWorkTime;
+        this.wearLifeTime = wearLifeTime;
+        wearCondition = 100D;
     }
 
     /**
@@ -341,9 +355,15 @@ public class MalfunctionManager implements Serializable {
     public void activeTimePassing(double time) {
 
         effectiveTimeSinceLastMaintenance += time;
+        
+        // Add time to wear condition.
+        wearCondition -= time / wearLifeTime;
+        if (wearCondition < 0D) wearCondition = 0D;
 
-        // Check for malfunction due to lack of maintenance.
-        double chance = time * .0000001D * effectiveTimeSinceLastMaintenance;
+        // Check for malfunction due to lack of maintenance and wear condition.
+        double maintFactor = effectiveTimeSinceLastMaintenance * MAINTENANCE_MALFUNCTION_FACTOR;
+        double wearFactor = (100D - wearCondition) / 100D * WEAR_MALFUNCTION_FACTOR + 1D;
+        double chance = time * maintFactor * wearFactor;
 
         if (RandomUtil.lessThanRandPercent(chance)) {
         	int solsLastMaint =  (int) (effectiveTimeSinceLastMaintenance / 1000D);
@@ -422,15 +442,15 @@ public class MalfunctionManager implements Serializable {
             while (i.hasNext()) {
                 Malfunction malfunction = i.next();
                 if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-                    Map effects = malfunction.getLifeSupportEffects();
+                    Map<String, Double> effects = malfunction.getLifeSupportEffects();
                     if (effects.get("Oxygen") != null)
-                        tempOxygenFlowModifier += ((Double) effects.get("Oxygen")).doubleValue();
+                        tempOxygenFlowModifier += effects.get("Oxygen");
                     if (effects.get("Water") != null)
-                        tempWaterFlowModifier += ((Double) effects.get("Water")).doubleValue();
+                        tempWaterFlowModifier += effects.get("Water");
                     if (effects.get("Air Pressure") != null)
-                        tempAirPressureModifier += ((Double) effects.get("Air Pressure")).doubleValue();
+                        tempAirPressureModifier += effects.get("Air Pressure");
                     if (effects.get("Temperature") != null)
-                        tempTemperatureModifier += ((Double) effects.get("Temperature")).doubleValue();
+                        tempTemperatureModifier += effects.get("Temperature");
                 }
             }
         }
@@ -456,15 +476,15 @@ public class MalfunctionManager implements Serializable {
     public void depleteResources(double time) throws Exception {
 
         if (hasMalfunction()) {
-            Iterator i = malfunctions.iterator();
+            Iterator<Malfunction> i = malfunctions.iterator();
             while (i.hasNext()) {
-                Malfunction malfunction = (Malfunction) i.next();
+                Malfunction malfunction = i.next();
                 if (malfunction.getEmergencyWorkTime() > malfunction.getCompletedEmergencyWorkTime()) {
-                    Map effects = malfunction.getResourceEffects();
-                    Iterator i2 = effects.keySet().iterator();
+                    Map<AmountResource, Double> effects = malfunction.getResourceEffects();
+                    Iterator<AmountResource> i2 = effects.keySet().iterator();
                     while (i2.hasNext()) {
-                        AmountResource resource = (AmountResource) i2.next();
-                        double amount = ((Double) effects.get(resource)).doubleValue();
+                        AmountResource resource = i2.next();
+                        double amount = effects.get(resource);
                         double amountDepleted = amount * time;
                         Inventory inv = entity.getInventory();
                         double amountStored = inv.getAmountResourceStored(resource);
@@ -570,10 +590,10 @@ public class MalfunctionManager implements Serializable {
     public void issueMedicalComplaints(Malfunction malfunction) {
 
         // Determine medical complaints for each malfunction.
-        Iterator i1 = malfunction.getMedicalComplaints().keySet().iterator();
+        Iterator<String> i1 = malfunction.getMedicalComplaints().keySet().iterator();
         while (i1.hasNext()) {
-            String complaintName = (String) i1.next();
-            double probability = ((Double) malfunction.getMedicalComplaints().get(complaintName)).doubleValue();
+            String complaintName = i1.next();
+            double probability = malfunction.getMedicalComplaints().get(complaintName);
             MedicalManager medic = Simulation.instance().getMedicalManager();
             Complaint complaint = medic.getComplaintByName(complaintName);
             if (complaint != null) {
@@ -759,5 +779,16 @@ public class MalfunctionManager implements Serializable {
 			else if (severity1 == severity2) return 0;
 			else return 1;
 		}
+	}
+	
+	/**
+	 * Get the percentage representing the malfunctionable's condition
+     * from wear & tear.
+     * 100% = new condition
+     * 0% = worn out condition.
+	 * @return wear condition.
+	 */
+	public double getWearCondition() {
+	    return wearCondition;
 	}
 }
