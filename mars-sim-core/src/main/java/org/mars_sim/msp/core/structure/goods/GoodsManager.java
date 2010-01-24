@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-01-23
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -350,9 +351,9 @@ public class GoodsManager implements Serializable {
 		Collection<Vehicle> vehicles = settlement.getParkedVehicles();
 		
 		// Add associated vehicles out on missions.
-		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !vehicles.contains(vehicle)) vehicles.add(vehicle);
@@ -376,9 +377,9 @@ public class GoodsManager implements Serializable {
 		if (resource.equals(wasteWater) || resource.equals(carbonDioxide)) {
 			double foodValue = getGoodValuePerItem(GoodsUtil.getResourceGood(food));
 			
-			Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				if (building.hasFunction(Farming.NAME)) {
 					Farming farm = (Farming) building.getFunction(Farming.NAME);
 					
@@ -413,9 +414,9 @@ public class GoodsManager implements Serializable {
 		}
 		else {
 			// Get all resource processes at settlement.
-			Iterator i = getResourceProcesses().iterator();
+			Iterator<ResourceProcess> i = getResourceProcesses().iterator();
 			while (i.hasNext()) {
-				ResourceProcess process = (ResourceProcess) i.next();
+				ResourceProcess process = i.next();
 				double processValue = getResourceProcessValue(process, resource);
 				if (processValue > value) value = processValue;
 			}
@@ -474,9 +475,9 @@ public class GoodsManager implements Serializable {
 	 */
 	private List<ResourceProcess> getResourceProcesses() throws BuildingException {
 		List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
-		Iterator i = settlement.getBuildingManager().getBuildings().iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			if (building.hasFunction(ResourceProcessing.NAME)) {
 				ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
 				processes.addAll(processing.getProcesses());
@@ -647,9 +648,9 @@ public class GoodsManager implements Serializable {
 		amount += settlement.getInventory().getAmountResourceStored(resource);
 		
 		// Get amount of resource out on mission vehicles.
-		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
@@ -729,21 +730,24 @@ public class GoodsManager implements Serializable {
 		while (i.hasNext()) {
 			Malfunctionable entity = i.next();
 			
+			// Determine wear condition modifier.
+			double wearModifier = (entity.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+			
 			// Estimate repair parts needed per orbit for entity.
-			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity));
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitRepairParts(entity), wearModifier);
 			
 			// Add outstanding repair parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity));
+			sumPartsDemand(partsProbDemand, getOutstandingRepairParts(entity), wearModifier);
 			
 			// Estimate maintenance parts needed per orbit for entity.
-			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity));
+			sumPartsDemand(partsProbDemand, getEstimatedOrbitMaintenanceParts(entity), wearModifier);
 			
 			// Add outstanding maintenance parts required.
-			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity));
+			sumPartsDemand(partsProbDemand, getOutstandingMaintenanceParts(entity), wearModifier);
 		}
 		
 		// Add demand for vehicle attachment parts.
-		sumPartsDemand(partsProbDemand, getVehicleAttachmentParts());
+		sumPartsDemand(partsProbDemand, getVehicleAttachmentParts(), 1D);
 		
 		// Store in parts demand cache.
 		Iterator<Part> j = partsProbDemand.keySet().iterator();
@@ -753,11 +757,18 @@ public class GoodsManager implements Serializable {
 		}
 	}
 	
-	private void sumPartsDemand(Map<Part, Double> totalPartsDemand, Map<Part, Number> additionalPartsDemand) {
+	/**
+	 * Sums the additional parts number map into a total parts number map.
+	 * @param totalPartsDemand the total parts number.
+	 * @param additionalPartsDemand the additional parts number.
+	 * @param multiplier the multiplier for the additional parts number.
+	 */
+	private void sumPartsDemand(Map<Part, Double> totalPartsDemand, Map<Part, Number> additionalPartsDemand, 
+	        double multiplier) {
 		Iterator<Part> i = additionalPartsDemand.keySet().iterator();
 		while (i.hasNext()) {
 			Part part = i.next();
-			double number = additionalPartsDemand.get(part).doubleValue();
+			double number = additionalPartsDemand.get(part).doubleValue() * multiplier;
 			if (totalPartsDemand.containsKey(part)) number += totalPartsDemand.get(part);
 			totalPartsDemand.put(part, number);
 		}
@@ -995,9 +1006,9 @@ public class GoodsManager implements Serializable {
 		number += settlement.getInventory().getItemResourceNum(resource);
 		
 		// Get number of resources out on mission vehicles.
-		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
@@ -1054,7 +1065,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (# of equipment).
 	 * @throws Exception if error getting demand.
 	 */
-	private double determineEquipmentDemand(Class equipmentClass) throws Exception {
+	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) throws Exception {
 		double numDemand = 0D;
 		
 		// Determine number of EVA suits that are needed
@@ -1093,7 +1104,7 @@ public class GoodsManager implements Serializable {
 	 * @return number of non-empty containers.
 	 * @throws Exception if error determining containers.
 	 */
-	private int getNonEmptyContainers(Class equipmentClass) throws Exception {
+	private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) throws Exception {
 		int result = 0;
 		
 		Inventory inv = settlement.getInventory();
@@ -1181,16 +1192,17 @@ public class GoodsManager implements Serializable {
 	 * @return number of equipment for the settlement.
 	 * @throws InventoryException if error getting the number of the equipment.
 	 */
-	private double getNumberOfEquipmentForSettlement(Class equipmentClass) throws InventoryException {
+	private double getNumberOfEquipmentForSettlement(Class<? extends Equipment> equipmentClass) 
+	        throws InventoryException {
 		double number = 0D;
 		
 		// Get number of the equipment in settlement storage.
 		number += settlement.getInventory().findNumUnitsOfClass(equipmentClass);
 		
 		// Get number of resource out on mission vehicles.
-		Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
