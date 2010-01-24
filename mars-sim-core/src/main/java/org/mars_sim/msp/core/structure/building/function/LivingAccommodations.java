@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 2.85 2008-08-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -70,7 +70,8 @@ public class LivingAccommodations extends Function implements Serializable {
             }
             else {
                 LivingAccommodations livingFunction = (LivingAccommodations) building.getFunction(NAME);
-                supply += livingFunction.getBeds();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += livingFunction.getBeds() * wearModifier;
             }
         }
         

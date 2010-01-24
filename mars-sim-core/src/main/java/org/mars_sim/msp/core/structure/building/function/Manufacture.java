@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 2.85 2008-11-28
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 
@@ -111,7 +111,8 @@ public class Manufacture extends Function implements Serializable {
                 Manufacture manFunction = (Manufacture) building.getFunction(NAME);
                 double tech = manFunction.getTechLevel();
                 double processes = manFunction.getConcurrentProcesses();
-                supply += (tech * tech) * processes;
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += (tech * tech) * processes * wearModifier;
             }
         }
         

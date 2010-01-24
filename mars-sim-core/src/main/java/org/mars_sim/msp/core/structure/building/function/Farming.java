@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -116,7 +116,8 @@ public class Farming extends Function implements Serializable {
             }
             else {
                 Farming farmingFunction = (Farming) building.getFunction(NAME);
-                supply += farmingFunction.getEstimatedHarvestPerOrbit();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += farmingFunction.getEstimatedHarvestPerOrbit() * wearModifier;
             }
         }
         

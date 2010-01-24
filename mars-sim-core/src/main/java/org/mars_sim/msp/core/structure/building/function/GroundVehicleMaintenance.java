@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 2.85 2008-08-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -65,7 +65,8 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
             else {
                 GroundVehicleMaintenance maintFunction = 
                     (GroundVehicleMaintenance) building.getFunction(NAME);
-                supply += maintFunction.getVehicleCapacity();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += maintFunction.getVehicleCapacity() * wearModifier;
             }
         }
         

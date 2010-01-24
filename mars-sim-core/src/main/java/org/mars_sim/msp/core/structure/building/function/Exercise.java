@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exercise.java
- * @version 2.85 2008-08-18
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -67,7 +67,8 @@ public class Exercise extends Function implements Serializable {
             }
             else {
                 Exercise exerciseFunction = (Exercise) building.getFunction(NAME);
-                supply += exerciseFunction.getExerciserCapacity();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += exerciseFunction.getExerciserCapacity() * wearModifier;
             }
         }
         

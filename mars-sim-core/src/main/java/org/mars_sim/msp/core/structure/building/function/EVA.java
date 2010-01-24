@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 2.85 2008-08-18
+ * @version 2.90 2010-01-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -68,7 +68,8 @@ public class EVA extends Function implements Serializable {
             }
             else {
                 EVA evaFunction = (EVA) building.getFunction(NAME);
-                supply += evaFunction.getAirlock().getCapacity();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += evaFunction.getAirlock().getCapacity() * wearModifier;
             }
         }
         

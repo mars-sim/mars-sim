@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Recreation.java
- * @version 2.85 2008-08-22
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.*;
@@ -39,7 +40,14 @@ public class Recreation extends Function implements Serializable {
         
         // Settlements need one recreation building.
         double demand = 1D;
-        double supply = settlement.getBuildingManager().getBuildings(NAME).size();
+        
+        // Supply based on wear condition of buildings.
+        double supply = 0D;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+        while (i.hasNext()) {
+            supply += (i.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+        }
+        
         if (!newBuilding) {
             supply -= 1D;
             if (supply < 0D) supply = 0D;

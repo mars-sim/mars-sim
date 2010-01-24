@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 2.85 2008-08-18
+ * @version 2.90 2010-01-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -87,7 +87,8 @@ public class Cooking extends Function implements Serializable {
             }
             else {
                 Cooking cookingFunction = (Cooking) building.getFunction(NAME);
-                supply += cookingFunction.getCookCapacity();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += cookingFunction.getCookCapacity() * wearModifier;
             }
         }
         
