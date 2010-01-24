@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -70,7 +70,8 @@ public class PowerGeneration extends Function implements Serializable {
             }
             else {
                 PowerGeneration powerFunction = (PowerGeneration) building.getFunction(NAME);
-                supply += getPowerSourceSupply(powerFunction.powerSources, settlement);
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += getPowerSourceSupply(powerFunction.powerSources, settlement) * wearModifier;
             }
         }
         
@@ -129,9 +130,9 @@ public class PowerGeneration extends Function implements Serializable {
      */
     public double getGeneratedPower() {
     	double result = 0D;
-    	Iterator i = powerSources.iterator();
+    	Iterator<PowerSource> i = powerSources.iterator();
     	while (i.hasNext()) 
-    		result += ((PowerSource) i.next()).getCurrentPower(getBuilding());
+    		result += i.next().getCurrentPower(getBuilding());
     	return result;
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 2.85 2008-08-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -72,7 +72,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
                 MedicalCare medFunction = (MedicalCare) building.getFunction(NAME);
                 double tech = medFunction.getTechLevel();
                 double beds = medFunction.getSickBedNum();
-                supply += (tech * tech) * beds;
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += (tech * tech) * beds * wearModifier;
             }
         }
         
@@ -106,7 +107,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
      * Gets the patients at this medical station.
      * @return Collection of People.
      */
-    public Collection getPatients() {
+    public Collection<Person> getPatients() {
     	return medicalStation.getPatients();
     }
     
@@ -140,7 +141,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 *
 	 * @return list of health problems
 	 */
-	public List getProblemsAwaitingTreatment() {
+	public List<HealthProblem> getProblemsAwaitingTreatment() {
 		return medicalStation.getProblemsAwaitingTreatment();
 	}
 	
@@ -149,7 +150,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 *
 	 * @return list of health problems
 	 */
-	public List getProblemsBeingTreated() {
+	public List<HealthProblem> getProblemsBeingTreated() {
 		return medicalStation.getProblemsBeingTreated();
 	}
 	
@@ -158,7 +159,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 *
 	 * @return List of treatments.
 	 */
-	public List getSupportedTreatments() {
+	public List<Treatment> getSupportedTreatments() {
 		return medicalStation.getSupportedTreatments();
 	}
 	

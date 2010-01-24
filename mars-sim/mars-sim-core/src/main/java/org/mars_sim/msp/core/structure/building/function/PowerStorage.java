@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.PowerGrid;
@@ -62,7 +63,14 @@ public class PowerStorage extends Function implements Serializable {
         double hrInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
         double demand = grid.getRequiredPower() * hrInSol;
         
-        double supply = grid.getStoredPowerCapacity();
+        double supply = 0D;
+        Iterator<Building> iStore = settlement.getBuildingManager().getBuildings(PowerStorage.NAME).iterator();
+        while (iStore.hasNext()) {
+            Building building = iStore.next();
+            PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.NAME);
+            double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+            supply += store.getPowerStorageCapacity() * wearModifier;
+        }
         
         double existingPowerStorageValue = demand / (supply + 1D);
         

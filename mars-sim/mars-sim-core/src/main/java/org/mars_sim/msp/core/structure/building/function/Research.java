@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 2.85 2008-08-23
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -82,9 +82,10 @@ public class Research extends Function implements Lab, Serializable {
                 Research researchFunction = (Research) building.getFunction(NAME);
                 int techLevel = researchFunction.getTechnologyLevel();
                 int labSize = researchFunction.getLaboratorySize();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
                     String speciality = researchFunction.getTechSpecialities()[x];
-                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize;
+                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize * wearModifier;
                 }
             }
         }

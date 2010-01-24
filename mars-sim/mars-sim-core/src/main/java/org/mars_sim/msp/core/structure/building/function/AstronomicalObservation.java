@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AstronomicalObservation.java
- * @version 2.87 2009-07-26
+ * @version 2.90 2010-01-24
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -166,7 +166,8 @@ public class AstronomicalObservation extends Function {
                 AstronomicalObservation astroFunction = (AstronomicalObservation) building.getFunction(NAME);
                 int techLevel = astroFunction.getTechnologyLevel();
                 int observatorySize = astroFunction.getObservatoryCapacity();
-                observatorySupply += techLevel * observatorySize;
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                observatorySupply += techLevel * observatorySize * wearModifier;
             }
         }
 

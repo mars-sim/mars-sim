@@ -87,14 +87,19 @@ public class Storage extends Function implements Serializable {
             double existingStorage = 0D;
             Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
             while (j.hasNext()) {
-                Storage storageFunction = (Storage) j.next().getFunction(NAME);
+                Building building = j.next();
+                Storage storageFunction = (Storage) building.getFunction(NAME);
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 if (storageFunction.getResourceStorageCapacity().containsKey(resource))
-                    existingStorage += storageFunction.getResourceStorageCapacity().get(resource);
+                    existingStorage += storageFunction.getResourceStorageCapacity().get(resource) * wearModifier;
             }
             
             double storageAmount = storageMap.get(resource);
             
-            if (!newBuilding) existingStorage -= storageAmount;
+            if (!newBuilding) {
+                existingStorage -= storageAmount;
+                if (existingStorage < 0D) existingStorage = 0D;
+            }
             
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resourceGood);

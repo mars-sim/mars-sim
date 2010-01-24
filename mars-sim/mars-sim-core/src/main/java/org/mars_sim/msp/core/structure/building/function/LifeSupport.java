@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 2.85 2008-08-20
+ * @version 2.90 2010-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -101,7 +101,8 @@ public class LifeSupport extends Function implements Serializable {
             }
             else {
                 LifeSupport lsFunction = (LifeSupport) building.getFunction(NAME);
-                supply += lsFunction.getOccupantCapacity();
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += lsFunction.getOccupantCapacity() * wearModifier;
             }
         }
         
@@ -178,9 +179,9 @@ public class LifeSupport extends Function implements Serializable {
 	public void addPerson(Person person) throws BuildingException {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
-			Iterator i = getBuilding().getBuildingManager().getBuildings().iterator();
+			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				if (building.hasFunction(NAME)) {
 					LifeSupport lifeSupport = (LifeSupport) building.getFunction(NAME);
 					if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
