@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 2.90 2010-01-25
+ * @version 2.90 2010-01-26
  * @author Scott Davis
  */
 
@@ -64,6 +64,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         int wearConditionCache = (int) Math.round(manager.getWearCondition());
         wearConditionLabel = new JLabel("Wear Condition: " + wearConditionCache + 
                 "%", JLabel.CENTER);
+        wearConditionLabel.setToolTipText("The wear & tear condition: 100% = new; 0% = worn out");
         add(wearConditionLabel);
         
         // Create lastCompletedLabel.
