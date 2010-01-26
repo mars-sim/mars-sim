@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.82 2007-11-17
+ * @version 2.90 2010-01-25
  * @author Scott Davis
  */
 
@@ -36,6 +36,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  */
 public class MaintenanceTabPanel extends TabPanel {
     
+    private JLabel wearConditionLabel; // The wear condition label.
+    private int wearConditionCache; // The cached value for the wear condition.
     private JLabel lastCompletedLabel; // The last completed label.
     private BoundedRangeModel progressBarModel; // The progress bar model.
     private int lastCompletedTime; // The time since last completed maintenance.
@@ -58,13 +60,19 @@ public class MaintenanceTabPanel extends TabPanel {
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         
         // Create maintenance panel
-        JPanel maintenancePanel = new JPanel(new GridLayout(4, 1, 0, 0));
+        JPanel maintenancePanel = new JPanel(new GridLayout(5, 1, 0, 0));
         maintenancePanel.setBorder(new MarsPanelBorder());
         topContentPanel.add(maintenancePanel);
         
         // Create maintenance label.
         JLabel maintenanceLabel = new JLabel("Maintenance", JLabel.CENTER);
         maintenancePanel.add(maintenanceLabel);
+        
+        // Create wear condition label.
+        wearConditionCache = (int) Math.round(manager.getWearCondition());
+        wearConditionLabel = new JLabel("Wear Condition: " + wearConditionCache + 
+                "%", JLabel.CENTER);
+        maintenancePanel.add(wearConditionLabel);
         
         // Create lastCompletedLabel.
         lastCompletedTime = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
@@ -135,6 +143,13 @@ public class MaintenanceTabPanel extends TabPanel {
         Malfunctionable malfunctionable = (Malfunctionable) unit;
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
     
+        // Update the wear condition label.
+        int wearCondition = (int) Math.round(manager.getWearCondition());
+        if (wearCondition != wearConditionCache) {
+            wearConditionCache = wearCondition;
+            wearConditionLabel.setText("Wear Condition: " + wearCondition + "%");
+        }
+        
         // Update last completed label.
         int lastComplete = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
         if (lastComplete != lastCompletedTime) {
