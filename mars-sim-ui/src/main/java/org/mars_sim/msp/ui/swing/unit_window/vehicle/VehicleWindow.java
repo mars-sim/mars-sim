@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleWindow.java
- * @version 2.79 2006-07-15
+ * @version 2.90 2010-02-21
  * @author Scott Davis
  */
 
@@ -14,12 +14,16 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
  */
 public class VehicleWindow extends UnitWindow {
+    
+    // Data members
+    private boolean salvaged;
     
     /**
      * Constructor
@@ -44,5 +48,22 @@ public class VehicleWindow extends UnitWindow {
         }
         addTabPanel(new MissionTabPanel(vehicle, desktop));
         addTabPanel(new TowTabPanel(vehicle, desktop));
+        
+        salvaged = vehicle.isSalvaged();
+        if (salvaged) addTabPanel(new SalvageTabPanel(vehicle, desktop));
+    }
+    
+    /**
+     * Updates this window.
+     */
+    public void update() {
+        super.update();
+        
+        // Check if equipment has been salvaged.
+        Vehicle vehicle = (Vehicle) getUnit();
+        if (!salvaged && vehicle.isSalvaged()) {
+            addTabPanel(new SalvageTabPanel(vehicle, desktop));
+            salvaged = true;
+        }
     }
 }

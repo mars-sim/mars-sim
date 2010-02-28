@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleDisplayInfoBean.java
- * @version 2.78 2005-08-28
+ * @version 2.90 2010-02-27
  * @author Scott Davis
  */
 
@@ -42,9 +42,15 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      * @return true if unit is to be displayed on navigator map.
      */
     public boolean isMapDisplayed(Unit unit) {
+        boolean result = true;
+        
         Unit container = unit.getContainerUnit();
-        if (container == null) return true;
-        else return false;
+        if (container != null) result = false;
+        
+        Vehicle vehicle = (Vehicle) unit;
+        if (vehicle.isSalvaged()) result = false;
+        
+        return result;
     }
     
     /** 
@@ -112,9 +118,15 @@ abstract class VehicleDisplayInfoBean implements UnitDisplayInfo {
      * @return true if unit is to be displayed on globe
      */
     public boolean isGlobeDisplayed(Unit unit) {
+        boolean result = true;
+        
         Unit container = unit.getContainerUnit();
-        if (container == null) return true;
-        else return false;
+        if (container != null) result = false;
+        
+        Vehicle vehicle = (Vehicle) unit;
+        if (vehicle.isSalvaged()) result = false;
+        
+        return result;
     }
     
     /** 

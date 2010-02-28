@@ -31,13 +31,20 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.manufacture.SalvageProcess;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.structure.ManufacturePanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 
+/**
+ * A building panel displaying the manufacture building function.
+ */
 public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 
 	private static String CLASS_NAME = 
@@ -48,8 +55,10 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	private JPanel processListPane; // Panel for displaying process panels.
 	private JScrollPane processScrollPane;
 	private List<ManufactureProcess> processCache; // List of manufacture processes in building.
+	private List<SalvageProcess> salvageCache; // List of salvage processes in building.
 	private JComboBox processSelection; // Process selector.
 	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
+	private Vector<SalvageProcessInfo> salvageSelectionCache; // List of available salvage processes.
 	private JButton newProcessButton; // Process selection button.
 	
 	/**
@@ -102,6 +111,11 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         Iterator<ManufactureProcess> i = processCache.iterator();
         while (i.hasNext()) processListPane.add(new ManufacturePanel(i.next(), false, 23));
         
+        // Create salvage panels.
+        salvageCache = new ArrayList<SalvageProcess>(workshop.getSalvageProcesses());
+        Iterator<SalvageProcess> j = salvageCache.iterator();
+        while (j.hasNext()) processListPane.add(new SalvagePanel(j.next(), false, 23));
+        
         // Create interaction panel.
         JPanel interactionPanel = new JPanel(new GridLayout(2, 1, 0, 0));
         add(interactionPanel, BorderLayout.SOUTH);
@@ -113,21 +127,38 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
         processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
         
+        // Add available salvage processes.
+        salvageSelectionCache = getAvailableSalvageProcesses();
+        Iterator<SalvageProcessInfo> k = salvageSelectionCache.iterator();
+        while (k.hasNext()) processSelection.addItem(k.next());
+        
         // Create new process button.
         newProcessButton = new JButton("Create New Process");
         newProcessButton.setEnabled(processSelection.getItemCount() > 0);
-        newProcessButton.setToolTipText("Create a new manufacturing process");
+        newProcessButton.setToolTipText("Create a new manufacturing or salvage process");
         newProcessButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
-        			ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) 
-        					processSelection.getSelectedItem();
-        			if (selectedProcess != null) {
-        				if (ManufactureUtil.canProcessBeStarted(selectedProcess, getWorkshop())) {
-        					getWorkshop().addProcess(new ManufactureProcess(selectedProcess, getWorkshop()));
-        					update();
-        				}
-        			}
+        		    Object selectedItem = processSelection.getSelectedItem();
+        		    if (selectedItem != null) {
+        		        if (selectedItem instanceof ManufactureProcessInfo) {
+        		            ManufactureProcessInfo selectedProcess = (ManufactureProcessInfo) selectedItem;
+        		            if (ManufactureUtil.canProcessBeStarted(selectedProcess, getWorkshop())) {
+                                getWorkshop().addProcess(new ManufactureProcess(selectedProcess, getWorkshop()));
+                                update();
+                            }
+        		        }
+        		        else if (selectedItem instanceof SalvageProcessInfo) {
+        		            SalvageProcessInfo selectedSalvage = (SalvageProcessInfo) selectedItem;
+        		            if (ManufactureUtil.canSalvageProcessBeStarted(selectedSalvage, getWorkshop())) {
+        		                Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedSalvage, 
+        		                        getWorkshop().getBuilding().getBuildingManager().getSettlement());
+                                getWorkshop().addSalvageProcess(new SalvageProcess(selectedSalvage, 
+                                        getWorkshop(), salvagedUnit));
+                                update();
+                            }
+        		        }
+        		    }
         		}
         		catch (Exception e) {
         			logger.log(Level.SEVERE, "new process button", e);
@@ -141,9 +172,10 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	@Override
 	public void update() {
 		
-		// Update processes if necessary.
+		// Update processes and salvage processes if necessary.
 		List<ManufactureProcess> processes = workshop.getProcesses();
-		if (!processCache.equals(processes)) {
+		List<SalvageProcess> salvages = workshop.getSalvageProcesses();
+		if (!processCache.equals(processes) || !salvageCache.equals(salvages)) {
 			
 			// Add process panels for new processes.
 			Iterator<ManufactureProcess> i = processes.iterator();
@@ -151,6 +183,14 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 				ManufactureProcess process = i.next();
 				if (!processCache.contains(process)) 
 					processListPane.add(new ManufacturePanel(process, false, 23));
+			}
+			
+			// Add salvage panels for new salvage processes.
+			Iterator<SalvageProcess> k = salvages.iterator();
+			while (k.hasNext()) {
+			    SalvageProcess salvage = k.next();
+			    if (!salvageCache.contains(salvage))
+			        processListPane.add(new SalvagePanel(salvage, false, 23));
 			}
 			
 			// Remove process panels for old processes.
@@ -163,9 +203,23 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 				}
 			}
 			
+			// Remove salvage panels for old salvages.
+			Iterator<SalvageProcess> l = salvageCache.iterator();
+            while (l.hasNext()) {
+                SalvageProcess salvage = l.next();
+                if (!salvages.contains(salvage)) {
+                    SalvagePanel panel = getSalvagePanel(salvage);
+                    if (panel != null) processListPane.remove(panel);
+                }
+            }
+			
 			// Update processCache
 			processCache.clear();
 			processCache.addAll(processes);
+			
+			// Update salvageCache
+			salvageCache.clear();
+			salvageCache.addAll(salvages);
 			
 			processScrollPane.validate();
 		}
@@ -177,15 +231,28 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 			if (panel != null) panel.update();
 		}
 		
+		// Update all salvage panels.
+		Iterator<SalvageProcess> j = salvages.iterator();
+		while (j.hasNext()) {
+		    SalvagePanel panel = getSalvagePanel(j.next());
+		    if (panel != null) panel.update();
+		}
+		
 		// Update process selection list.
 		Vector<ManufactureProcessInfo> newProcesses = getAvailableProcesses();
-		if (!newProcesses.equals(processSelectionCache)) {
+		Vector<SalvageProcessInfo> newSalvages = getAvailableSalvageProcesses();
+		if (!newProcesses.equals(processSelectionCache) || 
+		        !newSalvages.equals(salvageSelectionCache)) {
 			processSelectionCache = newProcesses;
-			ManufactureProcessInfo currentSelection = (ManufactureProcessInfo) 
-					processSelection.getSelectedItem();
+			salvageSelectionCache = newSalvages;
+			Object currentSelection = processSelection.getSelectedItem();
 			processSelection.removeAllItems();
-			Iterator<ManufactureProcessInfo> j = processSelectionCache.iterator();
-			while (j.hasNext()) processSelection.addItem(j.next());
+			
+			Iterator<ManufactureProcessInfo> k = processSelectionCache.iterator();
+			while (k.hasNext()) processSelection.addItem(k.next());
+			
+			Iterator<SalvageProcessInfo> l = salvageSelectionCache.iterator();
+            while (l.hasNext()) processSelection.addItem(l.next());
 			
 			if (currentSelection != null) {
 				if (processSelectionCache.contains(currentSelection)) 
@@ -217,6 +284,25 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	}
 	
 	/**
+	 * Gets the panel for a salvage process.
+	 * @param process the salvage process.
+	 * @return the salvage panel or null if none.
+	 */
+	private SalvagePanel getSalvagePanel(SalvageProcess process) {
+	    SalvagePanel result = null;
+        
+        for (int x = 0; x < processListPane.getComponentCount(); x++) {
+            Component component = processListPane.getComponent(x);
+            if (component instanceof SalvagePanel) {
+                SalvagePanel panel = (SalvagePanel) component;
+                if (panel.getSalvageProcess().equals(process)) result = panel;
+            }
+        }
+        
+        return result;
+	}
+	
+	/**
 	 * Gets all manufacturing processes available at the workshop.
 	 * @return vector of processes.
 	 */
@@ -226,23 +312,42 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 		if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
 			try {
 				Iterator<ManufactureProcessInfo> i = Collections.unmodifiableList(
-					ManufactureUtil.getManufactureProcessesForTechLevel(
-							workshop.getTechLevel())).iterator();
+				        ManufactureUtil.getManufactureProcessesForTechLevel(
+				        workshop.getTechLevel())).iterator();
 				while (i.hasNext()) {
 					ManufactureProcessInfo process = i.next();
 					if (ManufactureUtil.canProcessBeStarted(process, workshop)) 
 						result.add(process);
 				}
 			}
-			catch (Exception e) {
-				// Note: Exceptions here are due to concurrency errors between
-				// this UI thread querying an Inventory object and the simulation
-				// thread changing it at the same time.
-				// logger.log(Level.SEVERE, "get available processes", e);
-			}
+			catch (Exception e) {}
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Gets all salvage processes available at the workshop.
+	 * @return vector of salvage processes.
+	 */
+	private Vector<SalvageProcessInfo> getAvailableSalvageProcesses() {
+	    Vector<SalvageProcessInfo> result = new Vector<SalvageProcessInfo>();
+	    
+	    if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
+            try {
+                Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
+                        ManufactureUtil.getSalvageProcessesForTechLevel(
+                        workshop.getTechLevel())).iterator();
+                while (i.hasNext()) {
+                    SalvageProcessInfo process = i.next();
+                    if (ManufactureUtil.canSalvageProcessBeStarted(process, workshop))
+                        result.add(process);
+                }
+            }
+            catch (Exception e) {}
+	    }
+	    
+	    return result;
 	}
 	
 	/**
@@ -263,12 +368,23 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 				boolean isSelected, boolean cellHasFocus) {
 			Component result = super.getListCellRendererComponent(list, value, index, isSelected, 
 					cellHasFocus);
-			ManufactureProcessInfo info = (ManufactureProcessInfo) value;
-			if (info != null) {
-				String processName = info.getName();
-				if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
-				((JLabel) result).setText(processName);
-				((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
+			if (value instanceof ManufactureProcessInfo) {
+			    ManufactureProcessInfo info = (ManufactureProcessInfo) value;
+			    if (info != null) {
+			        String processName = info.getName();
+			        if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
+			        ((JLabel) result).setText(processName);
+			        ((JComponent) result).setToolTipText(ManufacturePanel.getToolTipString(info, null));
+			    }
+			}
+			else if (value instanceof SalvageProcessInfo) {
+			    SalvageProcessInfo info = (SalvageProcessInfo) value;
+			    if (info != null) {
+			        String processName = info.toString();
+			        if (processName.length() > 28) processName = processName.substring(0, 28) + "...";
+                    ((JLabel) result).setText(processName);
+                    ((JComponent) result).setToolTipText(SalvagePanel.getToolTipString(null, info, null));
+			    }
 			}
 			return result;
 		}

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ManufacturePanel.java
- * @version 2.87 2009-10-04
+ * @version 2.90 2010-02-23
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
 import java.awt.FlowLayout;
@@ -28,6 +27,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
+/**
+ * A panel showing information about a manufacturing process.
+ */
 public class ManufacturePanel extends JPanel {
 	
 	// Data members
@@ -39,6 +41,7 @@ public class ManufacturePanel extends JPanel {
 	 * Constructor
 	 * @param process the manufacturing process.
 	 * @param showBuilding is the building name shown?
+	 * @param processStringWidth the max string width to display for the process name.
 	 */
 	public ManufacturePanel(ManufactureProcess process, boolean showBuilding, int processStringWidth) {
 		// Call JPanel constructor
@@ -64,7 +67,7 @@ public class ManufacturePanel extends JPanel {
         cancelButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
         		try {
-        			getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess());
+        			getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess(), true);
         		}
         		catch (BuildingException e) {}
 	        }
