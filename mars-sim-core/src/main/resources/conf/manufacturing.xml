@@ -773,6 +773,18 @@
 		</outputs>
 	</process>
 	
+	<!-- Creating a large bag sewn together with a fiberglass cloth and a plastic sheet liner. -->
+	<process name="large bag manufacturing" tech="2" skill="2" work-time="400" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<part name="fiberglass cloth" number="2" />
+			<part name="plastic sheet" number="2" />
+		</inputs>
+		<outputs>
+			<equipment name="large bag" number="1" />
+		</outputs>
+	</process>
+	
 	<!-- Produces 1m x 1m x 1cm (26kg) sheet of glass. -->
 	<process name="sheet glass manufacturing" tech="3" skill="3" work-time="200" process-time="300" 
 			power-required="10.0">
@@ -1781,5 +1793,138 @@
 			<part name="eva battery" number="3" />
 		</outputs>
 	</process>
+	
+	<!-- Salvage process for an EVA suit. -->
+	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
+		<part-salvage name="eva helmet" number="1" />
+		<part-salvage name="helmet visor" number="1" />
+		<part-salvage name="counter pressure suit" number="1" />
+		<part-salvage name="coveralls" number="1" />
+		<part-salvage name="eva gloves" number="1" />
+		<part-salvage name="eva boots" number="1" />
+		<part-salvage name="eva backpack" number="1" />
+		<part-salvage name="eva antenna" number="1" />
+		<part-salvage name="eva radio" number="1" />
+		<part-salvage name="eva battery" number="1" />
+		<part-salvage name="suit heating unit" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+	</salvage>
+	
+	<!-- Salvage process for an explorer rover. -->
+	<salvage item-name="explorer rover" type="vehicle" tech="4" skill="4" work-time="1000">
+		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="rover chassis panel" number="10" />
+		<part-salvage name="rover windshield" number="1" />
+		<part-salvage name="rover window" number="5" />
+		<part-salvage name="winch" number="1" />
+		<part-salvage name="rover generator" number="1" />
+		<part-salvage name="large electric motor" number="5" />
+		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="rover control panel" number="1" />
+		<part-salvage name="rover fuel tank" number="1" />
+		<part-salvage name="rover oxygen tank" number="1" />
+		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="satellite dish" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="electrical wire" number="20" />
+		<part-salvage name="wire connector" number="20" />
+		<part-salvage name="plastic tubing" number="5" />
+		<part-salvage name="plastic pipe" number="2" />
+		<part-salvage name="steel pipe" number="2" />
+		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="lubricant bottle" number="2" />
+		<part-salvage name="rover wheel" number="4" />
+	</salvage>
+	
+	<!-- Salvage process for a transport rover. -->
+	<salvage item-name="transport rover" type="vehicle" tech="4" skill="4" work-time="1000">
+		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="rover chassis panel" number="10" />
+		<part-salvage name="rover windshield" number="1" />
+		<part-salvage name="rover window" number="5" />
+		<part-salvage name="winch" number="1" />
+		<part-salvage name="rover generator" number="1" />
+		<part-salvage name="large electric motor" number="5" />
+		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="rover control panel" number="1" />
+		<part-salvage name="rover fuel tank" number="1" />
+		<part-salvage name="rover oxygen tank" number="1" />
+		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="satellite dish" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="electrical wire" number="20" />
+		<part-salvage name="wire connector" number="20" />
+		<part-salvage name="plastic tubing" number="5" />
+		<part-salvage name="plastic pipe" number="2" />
+		<part-salvage name="steel pipe" number="2" />
+		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="lubricant bottle" number="2" />
+		<part-salvage name="rover wheel" number="4" />
+	</salvage>
+	
+	<!-- Salvage process for a cargo rover. -->
+	<salvage item-name="cargo rover" type="vehicle" tech="4" skill="4" work-time="1000">
+		<part-salvage name="large vehicle frame" number="1" />
+		<part-salvage name="rover chassis panel" number="10" />
+		<part-salvage name="rover windshield" number="1" />
+		<part-salvage name="rover window" number="5" />
+		<part-salvage name="winch" number="1" />
+		<part-salvage name="rover generator" number="1" />
+		<part-salvage name="large electric motor" number="5" />
+		<part-salvage name="rover battery" number="6" />
+		<part-salvage name="rover control panel" number="1" />
+		<part-salvage name="rover fuel tank" number="1" />
+		<part-salvage name="rover oxygen tank" number="1" />
+		<part-salvage name="rover water tank" number="1" />
+		<part-salvage name="fuel pump" number="1" />
+		<part-salvage name="oxygen pump" number="1" />
+		<part-salvage name="satellite dish" number="1" />
+		<part-salvage name="radio antenna" number="1" />
+		<part-salvage name="electrical wire" number="20" />
+		<part-salvage name="wire connector" number="20" />
+		<part-salvage name="plastic tubing" number="5" />
+		<part-salvage name="plastic pipe" number="2" />
+		<part-salvage name="steel pipe" number="2" />
+		<part-salvage name="epoxy resin bottle" number="5" />
+		<part-salvage name="lubricant bottle" number="2" />
+		<part-salvage name="rover wheel" number="4" />
+	</salvage>
+	
+	<!-- Salvage process for a light utility vehicle (LUV) -->
+	<salvage item-name="light utility vehicle" type="vehicle" tech="3" skill="3" work-time="700">
+		<part-salvage name="small vehicle frame" number="1" />
+		<part-salvage name="large electric motor" number="1" />
+		<part-salvage name="rover battery" number="1" />
+		<part-salvage name="utility vehicle control panel" number="1" />
+		<part-salvage name="electrical wire" number="10" />
+		<part-salvage name="wire connector" number="10" />
+		<part-salvage name="epoxy resin bottle" number="1" />
+		<part-salvage name="lubricant bottle" number="1" />
+		<part-salvage name="small wheel" number="4" />
+		<part-salvage name="radio antenna" number="1" />
+	</salvage>
+	
+	<!-- Salvage process for a barrel. -->
+	<salvage item-name="barrel" type="equipment" tech="2" skill="2" work-time="100">
+		<part-salvage name="steel sheet" number="1" />
+	</salvage>
+	
+	<!-- Salvage process for a gas canister. -->
+	<salvage item-name="gas canister" type="equipment" tech="2" skill="3" work-time="100">
+		<part-salvage name="steel canister" number="1" />
+		<part-salvage name="valve" number="2" />
+		<part-salvage name="gasket" number="4" />
+	</salvage>
+	
+	<!-- Salvage process for a large bag. -->
+	<salvage item-name="large bag" type="equipment" tech="2" skill="2" work-time="100">
+		<part-salvage name="fiberglass cloth" number="2" />
+		<part-salvage name="plastic sheet" number="2" />
+	</salvage>
 
 </manufacturing-processes>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MspCollection.java
- * @version 2.84 12.5.2008
+ * @version 2.90 20.2.2010
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;
@@ -20,144 +20,159 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class CollectionUtils {
 
-    public synchronized static Collection<Equipment> getEquipment(Collection<Unit> units) {
+    public synchronized static Collection<Equipment> getEquipment(
+            Collection<Unit> units) {
 
-	ConcurrentLinkedQueue<Equipment> equipment = new ConcurrentLinkedQueue<Equipment>();
+        ConcurrentLinkedQueue<Equipment> equipment = 
+            new ConcurrentLinkedQueue<Equipment>();
 
-	Iterator<Unit> i = units.iterator();
-	while (i.hasNext()) {
-	    Unit unit = i.next();
-	    if (unit instanceof Equipment)
-		equipment.add((Equipment) unit);
-	}
-	return equipment;
+        Iterator<Unit> i = units.iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            if (unit instanceof Equipment) {
+                Equipment equipmentUnit = (Equipment) unit;
+                if (!equipmentUnit.isSalvaged())
+                    equipment.add(equipmentUnit);
+            }
+        }
+        return equipment;
 
     }
 
-    public synchronized static void mergeEquipments(Collection<Unit> units,
-	    			       Collection<Equipment> equipments) {
+    public synchronized static void mergeEquipments(Collection<Unit> units, 
+            Collection<Equipment> equipments) {
 
-	Iterator<Equipment> i = equipments.iterator();
+        Iterator<Equipment> i = equipments.iterator();
 
-	while (i.hasNext()) {
-	    Equipment equipmentUnit = i.next();
-	    if (!units.contains(equipmentUnit))
-		units.add(equipmentUnit);
-	}
+        while (i.hasNext()) {
+            Equipment equipmentUnit = i.next();
+            if (!units.contains(equipmentUnit))
+                units.add(equipmentUnit);
+        }
     }
 
-    
-    public synchronized static Collection<Vehicle> getVehicle(Collection<Unit> units) {
+    public synchronized static Collection<Vehicle> getVehicle(
+            Collection<Unit> units) {
 
-	ConcurrentLinkedQueue<Vehicle> vehicles = new ConcurrentLinkedQueue<Vehicle>();
+        ConcurrentLinkedQueue<Vehicle> vehicles = 
+            new ConcurrentLinkedQueue<Vehicle>();
 
-	Iterator<Unit> i = units.iterator();
-	while (i.hasNext()) {
-	    Unit unit = i.next();
-	    if (unit instanceof Vehicle)
-		vehicles.add((Vehicle) unit);
-	}
-	return vehicles;
+        Iterator<Unit> i = units.iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            if (unit instanceof Vehicle) {
+                Vehicle vehicleUnit = (Vehicle) unit;
+                if (!vehicleUnit.isSalvaged()) vehicles.add(vehicleUnit);
+            }
+        }
+        return vehicles;
     }
 
-    public synchronized static void mergeVehicles(Collection<Unit> units,
-	    			     Collection<Vehicle> vehicles) {
+    public synchronized static void mergeVehicles(Collection<Unit> units, 
+            Collection<Vehicle> vehicles) {
 
-	Iterator<Vehicle> i = vehicles.iterator();
+        Iterator<Vehicle> i = vehicles.iterator();
 
-	while (i.hasNext()) {
-	    Vehicle vehicleUnit = i.next();
-	    
-	    if (!units.contains(vehicleUnit))
-		units.add(vehicleUnit);
-	}
-    }
-    
-    public synchronized static Collection<Person> getPerson(Collection<Unit> units) {
+        while (i.hasNext()) {
+            Vehicle vehicleUnit = i.next();
 
-	ConcurrentLinkedQueue<Person> persons = new ConcurrentLinkedQueue<Person>();
-
-	Iterator<Unit> i = units.iterator();
-	while (i.hasNext()) {
-	    Unit unit = i.next();
-	    if (unit instanceof Person)
-		persons.add((Person) unit);
-	}
-	return persons;
+            if (!units.contains(vehicleUnit))
+                units.add(vehicleUnit);
+        }
     }
 
-    public synchronized static void mergePersons(Collection<Unit> units,
-	    			     Collection<Person> persons) {
+    public synchronized static Collection<Person> getPerson(
+            Collection<Unit> units) {
 
-	Iterator<Person> i = persons.iterator();
+        ConcurrentLinkedQueue<Person> persons = 
+            new ConcurrentLinkedQueue<Person>();
 
-	while (i.hasNext()) {
-	    Person personUnit = i.next();
-	    
-	    if (!units.contains(personUnit))
-		units.add(personUnit);
-	}
-    }
-    
-    public synchronized static Collection<Settlement> getSettlement(Collection<Unit> units) {
-
-	ConcurrentLinkedQueue<Settlement> settlements = new ConcurrentLinkedQueue<Settlement>();
-
-	Iterator<Unit> i = units.iterator();
-	while (i.hasNext()) {
-	    Unit unit = i.next();
-	    if (unit instanceof Settlement)
-		settlements.add((Settlement) unit);
-	}
-	return settlements;
+        Iterator<Unit> i = units.iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            if (unit instanceof Person)
+                persons.add((Person) unit);
+        }
+        return persons;
     }
 
-    public synchronized static void mergeSettlements(Collection<Unit> units,
-	    			        Collection<Settlement> settlements) {
+    public synchronized static void mergePersons(Collection<Unit> units, 
+            Collection<Person> persons) {
 
-	Iterator<Settlement> i = settlements.iterator();
+        Iterator<Person> i = persons.iterator();
 
-	while (i.hasNext()) {
-	    Settlement settlementUnit = i.next();
-	    
-	    if (!units.contains(settlementUnit))
-		units.add(settlementUnit);
-	}
+        while (i.hasNext()) {
+            Person personUnit = i.next();
+
+            if (!units.contains(personUnit))
+                units.add(personUnit);
+        }
     }
-    
- 
-    public synchronized static Settlement getRandomSettlement(Collection collection) {
-	Object [] array = collection.toArray();
+
+    public synchronized static Collection<Settlement> getSettlement(
+            Collection<Unit> units) {
+
+        ConcurrentLinkedQueue<Settlement> settlements = 
+            new ConcurrentLinkedQueue<Settlement>();
+
+        Iterator<Unit> i = units.iterator();
+        while (i.hasNext()) {
+            Unit unit = i.next();
+            if (unit instanceof Settlement)
+                settlements.add((Settlement) unit);
+        }
+        return settlements;
+    }
+
+    public synchronized static void mergeSettlements(Collection<Unit> units, 
+            Collection<Settlement> settlements) {
+
+        Iterator<Settlement> i = settlements.iterator();
+
+        while (i.hasNext()) {
+            Settlement settlementUnit = i.next();
+
+            if (!units.contains(settlementUnit))
+                units.add(settlementUnit);
+        }
+    }
+
+    public synchronized static Settlement getRandomSettlement(
+            Collection<Settlement> collection) {
+        Object[] array = collection.toArray();
         int r = RandomUtil.getRandomInt(collection.size() - 1);
-        return (Settlement)  array[r];
+        return (Settlement) array[r];
     }
 
-
-    public synchronized static Settlement getRandomRegressionSettlement(Collection collection) {
+    public synchronized static Settlement getRandomRegressionSettlement(
+            Collection<Settlement> collection) {
         Settlement result = null;
         int size = collection.size();
         if (size > 0) {
-            Object [] array = collection.toArray();
+            Object[] array = collection.toArray();
             int chosenSettlementNum = RandomUtil.getRandomRegressionInteger(size);
             result = (Settlement) array[chosenSettlementNum - 1];
         }
-        
+
         return result;
     }
-    
-    public synchronized static Settlement getSettlement(Collection collection, String name) {
-        Iterator i = collection.iterator();
+
+    public synchronized static Settlement getSettlement(Collection<Settlement> collection, 
+            String name) {
+        Iterator<Settlement> i = collection.iterator();
         Settlement result = null;
         while (i.hasNext()) {
-            Settlement settlement = (Settlement)i.next();
-            if (name.equals(settlement.getName())) result = settlement;
+            Settlement settlement = i.next();
+            if (name.equals(settlement.getName()))
+                result = settlement;
         }
         return result;
     }
-    
-    public synchronized static <T extends Unit> Collection<T> sortByName(Collection<T> collection) {
-    	ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
-	
+
+    public synchronized static <T extends Unit> Collection<T> sortByName(
+            Collection<T> collection) {
+        ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
+
         Iterator<T> outer = collection.iterator();
         while (outer.hasNext()) {
             outer.next();
@@ -167,7 +182,8 @@ public class CollectionUtils {
             while (inner.hasNext()) {
                 T tempUnit = inner.next();
                 String name = tempUnit.getName();
-                if ((name.compareToIgnoreCase(leastName) < 0) && !sorted.contains(tempUnit)) {
+                if ((name.compareToIgnoreCase(leastName) < 0) && 
+                        !sorted.contains(tempUnit)) {
                     leastName = name;
                     leastUnit = tempUnit;
                 }
@@ -177,13 +193,13 @@ public class CollectionUtils {
 
         return sorted;
     }
-    
-    public synchronized static <T extends Unit> Collection<T> sortByProximity(Collection<T> collection, 
-    		Coordinates location) {
-    	ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
 
-        Iterator outer = collection.iterator();
-        
+    public synchronized static <T extends Unit> Collection<T> sortByProximity(
+            Collection<T> collection, Coordinates location) {
+        ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
+
+        Iterator<T> outer = collection.iterator();
+
         while (outer.hasNext()) {
             outer.next();
             double closestDistance = Double.MAX_VALUE;

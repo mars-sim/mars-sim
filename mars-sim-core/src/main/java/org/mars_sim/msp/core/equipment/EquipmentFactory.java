@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 2.85 2008-09-13
+ * @version 2.90 2010-02-26
  * @author Scott Davis
  */
 
@@ -19,7 +19,8 @@ public final class EquipmentFactory {
 	
 	// Cache maps.
 	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(5);
-	private static final Map<Class, Equipment> equipmentClassCache = new HashMap<Class, Equipment>(5);
+	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache = 
+	    new HashMap<Class<? extends Equipment>, Equipment>(5);
 	
 	/**
 	 * Private constructor for static factory class.
@@ -62,7 +63,8 @@ public final class EquipmentFactory {
 	 * @return the equipment instance.
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment getEquipment(Class equipmentClass, Coordinates location, boolean temp) throws Exception {
+	public static Equipment getEquipment(Class<? extends Equipment> equipmentClass, Coordinates location, 
+	        boolean temp) throws Exception {
 		
 		if (temp) {
 			if (equipmentClassCache.containsKey(equipmentClass)) return equipmentClassCache.get(equipmentClass);
@@ -88,7 +90,7 @@ public final class EquipmentFactory {
 	 * @return the equipment class.
 	 * @throws Exception if equipment class could not be found.
 	 */
-	public static Class getEquipmentClass(String type) throws Exception {
+	public static Class<? extends Equipment> getEquipmentClass(String type) throws Exception {
 		if (Bag.TYPE.equalsIgnoreCase(type)) return Bag.class;
 		else if (Barrel.TYPE.equalsIgnoreCase(type)) return Barrel.class;
 		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return EVASuit.class;

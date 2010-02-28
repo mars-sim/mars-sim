@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConfig.java
- * @version 2.85 2008-11-28
+ * @version 2.90 2010-01-29
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jdom.Document;
@@ -33,9 +34,14 @@ public class ManufactureConfig implements Serializable {
 	private static final String NUMBER = "number";
 	private static final String EQUIPMENT = "equipment";
 	private static final String VEHICLE = "vehicle";
+	private static final String SALVAGE = "salvage";
+	private static final String ITEM_NAME = "item-name";
+	private static final String TYPE = "type";
+	private static final String PART_SALVAGE = "part-salvage";
 	
 	private Document manufactureDoc;
 	private List<ManufactureProcessInfo> manufactureProcessList;
+	private List<SalvageProcessInfo> salvageList;
 	
 	/**
 	 * Constructor
@@ -203,4 +209,66 @@ public class ManufactureConfig implements Serializable {
 			list.add(vehicleItem);
 		}
 	}
+	
+	/**
+     * Gets a list of salvage process information.
+     * @return list of salvage process information.
+     * @throws Exception if error getting info.
+     */
+    @SuppressWarnings("unchecked")
+    List<SalvageProcessInfo> getSalvageList() throws Exception {
+        
+        if (salvageList == null) {
+            
+            Element root = manufactureDoc.getRootElement();
+            List<Element> salvageNodes = root.getChildren(SALVAGE);
+            salvageList = new ArrayList<SalvageProcessInfo>(salvageNodes.size());
+            Iterator<Element> i = salvageNodes.iterator();
+            while (i.hasNext()) {
+                Element salvageElement = i.next();
+                SalvageProcessInfo salvage = new SalvageProcessInfo();
+                salvageList.add(salvage);
+                String itemName = "";
+                
+                try {    
+                    itemName = salvageElement.getAttributeValue(ITEM_NAME);
+                    salvage.setItemName(itemName);
+                    
+                    salvage.setType(salvageElement.getAttributeValue(TYPE));
+                    
+                    salvage.setTechLevelRequired(Integer.parseInt(
+                            salvageElement.getAttributeValue(TECH)));
+                    
+                    salvage.setSkillLevelRequired(Integer.parseInt(
+                            salvageElement.getAttributeValue(SKILL)));
+                    
+                    salvage.setWorkTimeRequired(Double.parseDouble(
+                            salvageElement.getAttributeValue(WORK_TIME)));
+                    
+                    List<Element> partSalvageNodes = salvageElement.getChildren(PART_SALVAGE);
+                    List<PartSalvage> partSalvageList = 
+                        new ArrayList<PartSalvage>(partSalvageNodes.size());
+                    salvage.setPartSalvageList(partSalvageList);
+            
+                    Iterator<Element> j = partSalvageNodes.iterator();
+                    while (j.hasNext()) {
+                        Element partSalvageElement = j.next();
+                        PartSalvage part = new PartSalvage();
+                        partSalvageList.add(part);
+                        
+                        part.setName(partSalvageElement.getAttributeValue(NAME));
+                        
+                        part.setNumber(Integer.parseInt(
+                                partSalvageElement.getAttributeValue(NUMBER)));
+                    }
+                }
+                catch (Exception e) {
+                    throw new Exception("Error reading salvage process "
+                            + itemName + ": " + e.getMessage());
+                }
+            }
+        }
+        
+        return salvageList;
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.90 2010-01-20
+ * @version 2.90 2010-02-20
  * @author Scott Davis
  */
 
@@ -13,6 +13,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.malfunction.*;
+import org.mars_sim.msp.core.manufacture.Salvagable;
+import org.mars_sim.msp.core.manufacture.SalvageInfo;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.*;
 import org.mars_sim.msp.core.person.ai.task.*;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -23,7 +26,8 @@ import org.mars_sim.msp.core.time.MarsClock;
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
  */
-public abstract class Vehicle extends Unit implements Serializable, Malfunctionable {
+public abstract class Vehicle extends Unit implements Serializable, 
+        Malfunctionable, Salvagable {
 
 	// Unit Event Types
 	public final static String STATUS_EVENT = "vehicle status";
@@ -62,6 +66,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     private boolean emergencyBeacon = false; // The emergency beacon for the vehicle.  True if beacon is turned on.
     private Vehicle towingVehicle; // The vehicle that is currently towing this vehicle.
     private String status; // The vehicle's status.
+    private boolean isSalvaged; // True if vehicle is salvaged.
+    private SalvageInfo salvageInfo; // The vehicle's salvage info.
 
     /**
      * Constructor to be used for testing.
@@ -89,6 +95,8 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
 	    setBaseMass(baseMass);
 	    this.fuelEfficiency = fuelEfficiency;
 	    status = PARKED;
+	    isSalvaged = false;
+	    salvageInfo = null;
 	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -495,5 +503,31 @@ public abstract class Vehicle extends Unit implements Serializable, Malfunctiona
     		emergencyBeacon = isOn;
     		fireUnitUpdate(EMERGENCY_BEACON_EVENT);
     	}
+    }
+    
+    /**
+     * Checks if the item is salvaged.
+     * @return true if salvaged.
+     */
+    public boolean isSalvaged() {
+        return isSalvaged;
+    }
+    
+    /**
+     * Indicate the start of a salvage process on the item.
+     * @param info the salvage process info.
+     * @param settlement the settlement where the salvage is taking place.
+     */
+    public void startSalvage(SalvageProcessInfo info, Settlement settlement) {
+        salvageInfo = new SalvageInfo(this, info, settlement);
+        isSalvaged = true;
+    }
+    
+    /**
+     * Gets the salvage info.
+     * @return salvage info or null if item not salvaged.
+     */
+    public SalvageInfo getSalvageInfo() {
+        return salvageInfo;
     }
 }

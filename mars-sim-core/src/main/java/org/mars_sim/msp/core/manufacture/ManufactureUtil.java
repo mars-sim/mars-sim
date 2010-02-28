@@ -1,19 +1,25 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-02-24
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.manufacture;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -26,6 +32,9 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
@@ -92,6 +101,48 @@ public final class ManufactureUtil {
 	}
 	
 	/**
+     * Gets salvage processes info within the capability of a tech level and a skill level.
+     * @param techLevel the tech level.
+     * @param skillLevel the skill level.
+     * @return list of salvage processes info.
+     * @throws Exception if error getting salvage processes info.
+     */
+	public static final List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(
+	        int techLevel, int skillLevel) throws Exception {
+	    List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+	    
+	    ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        Iterator<SalvageProcessInfo> i = config.getSalvageList().iterator();
+        while (i.hasNext()) {
+            SalvageProcessInfo process = i.next();
+            if ((process.getTechLevelRequired() <= techLevel) && 
+                    (process.getSkillLevelRequired() <= skillLevel)) result.add(process);
+        }
+	    
+	    return result;
+	}
+	
+	/**
+	 * Gets salvage processes info within the capability of a tech level.
+	 * @param techLevel the tech level.
+	 * @return list of salvage processes info.
+	 * @throws Exception if error get salvage processes info.
+	 */
+	public static final List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) 
+	        throws Exception {
+	    List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
+        
+        ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
+        Iterator<SalvageProcessInfo> i = config.getSalvageList().iterator();
+        while (i.hasNext()) {
+            SalvageProcessInfo process = i.next();
+            if (process.getTechLevelRequired() <= techLevel) result.add(process);
+        }
+        
+        return result;
+	}
+	
+	/**
 	 * Gets the goods value of a manufacturing process at a settlement.
 	 * @param process the manufacturing process.
 	 * @param settlement the settlement.
@@ -118,6 +169,67 @@ public final class ManufactureUtil {
 	}
 	
 	/**
+     * Gets the estimated goods value of a salvage process at a settlement.
+     * @param process the salvage process.
+     * @param settlement the settlement.
+     * @return goods value of estimated salvaged parts minus salvaged unit.
+     * @throws Exception if error determining good values.
+     */
+	public static final double getSalvageProcessValue(SalvageProcessInfo process, 
+	        Settlement settlement, Person salvager) throws Exception {
+	    double result = 0D;
+	    
+	    Unit salvagedUnit = findUnitForSalvage(process, settlement);
+	    if (salvagedUnit != null) {
+	        GoodsManager goodsManager = settlement.getGoodsManager();
+	        
+	        double wearConditionModifier = 1D;
+	        if (salvagedUnit instanceof Malfunctionable) {
+	            Malfunctionable salvagedMalfunctionable = (Malfunctionable) salvagedUnit;
+	            double wearCondition = salvagedMalfunctionable.getMalfunctionManager().getWearCondition();
+	            wearConditionModifier = wearCondition / 100D;
+	        }
+	        
+	        // Determine salvaged good value.
+	        double salvagedGoodValue = 0D;
+            Good salvagedGood = null;
+            if (salvagedUnit instanceof Equipment) {
+                salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+            }
+            else if (salvagedUnit instanceof Vehicle) {
+                salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+            }
+            
+            if (salvagedGood != null) salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood);
+            else throw new Exception("Salvaged good is null");
+            
+            salvagedGoodValue *= (wearConditionModifier * .75D) + .25D;
+	    
+            // Determine total estimated parts salvaged good value.
+            double totalPartsGoodValue = 0D;
+            Iterator<PartSalvage> i = process.getPartSalvageList().iterator();
+            while (i.hasNext()) {
+                PartSalvage partSalvage = i.next();
+                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
+                Good partGood = GoodsUtil.getResourceGood(part);
+                double partValue = goodsManager.getGoodValuePerItem(partGood) * partSalvage.getNumber();
+                totalPartsGoodValue += partValue;
+            }
+            
+            // Modify total parts good value by item wear and salvager skill.
+            int skill = salvager.getMind().getSkillManager().getEffectiveSkillLevel(
+                    Skill.MATERIALS_SCIENCE);
+            double valueModifier = .25D + (wearConditionModifier * .25D) + ((double) skill * .05D);
+            totalPartsGoodValue *= valueModifier;
+            
+            // Determine process value.
+            result = totalPartsGoodValue - salvagedGoodValue;
+	    }
+	    
+	    return result;
+	}
+	
+	/**
 	 * Gets the good value of a manufacturing process item for a settlement.
 	 * @param item the manufacturing process item.
 	 * @param settlement the settlement.
@@ -141,7 +253,7 @@ public final class ManufactureUtil {
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
 		else if (item.getType().equals(ManufactureProcessItem.EQUIPMENT)) {
-			Class equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			Good good = GoodsUtil.getEquipmentGood(equipmentClass);
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
@@ -166,7 +278,7 @@ public final class ManufactureUtil {
 		boolean result = true;
 		
 		// Check to see if workshop is full of processes.
-		if (workshop.getProcesses().size() >= workshop.getConcurrentProcesses()) result = false;
+		if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) result = false;
 		
 		// Check to see if process tech level is above workshop tech level.
 		if (workshop.getTechLevel() < process.getTechLevelRequired()) result = false;
@@ -181,6 +293,30 @@ public final class ManufactureUtil {
 		
 		return result;
 	}
+	
+	/**
+     * Checks to see if a salvage process can be started at a given manufacturing building.
+     * @param process the salvage process to start.
+     * @param workshop the manufacturing building.
+     * @return true if salvage process can be started.
+     * @throws Exception if error determining if salvage process can be started.
+     */
+    public static final boolean canSalvageProcessBeStarted(SalvageProcessInfo process, 
+            Manufacture workshop) throws Exception {
+        boolean result = true;
+        
+        // Check to see if workshop is full of processes.
+        if (workshop.getTotalProcessNumber() >= workshop.getConcurrentProcesses()) result = false;
+        
+        // Check to see if process tech level is above workshop tech level.
+        if (workshop.getTechLevel() < process.getTechLevelRequired()) result = false;
+        
+        // Check to see if a salvagable unit is available at the settlement.
+        Settlement settlement = workshop.getBuilding().getBuildingManager().getSettlement();
+        if (findUnitForSalvage(process, settlement) == null) result = false;
+        
+        return result;
+    }
 	
 	/**
 	 * Checks if process inputs are available in an inventory.
@@ -296,7 +432,7 @@ public final class ManufactureUtil {
 	 * @return good
 	 * @throws Exception if error determining good.
 	 */
-	public static Good getGood(ManufactureProcessItem item) throws Exception {
+	public static final Good getGood(ManufactureProcessItem item) throws Exception {
 		Good result = null;
 		if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
 			AmountResource resource = AmountResource.findAmountResource(item.getName());
@@ -307,7 +443,7 @@ public final class ManufactureUtil {
 			result = GoodsUtil.getResourceGood(part);
 		}
 		else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
-			Class equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
+			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			result = GoodsUtil.getEquipmentGood(equipmentClass);
 		}
 		else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
@@ -323,7 +459,7 @@ public final class ManufactureUtil {
      * @return mass (kg).
      * @throws Exception if error determining the mass.
      */
-    public static double getMass(ManufactureProcessItem item) throws Exception {
+    public static final double getMass(ManufactureProcessItem item) throws Exception {
         double mass = 0D;
         
         if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
@@ -343,5 +479,81 @@ public final class ManufactureUtil {
         }
         
         return mass;
+    }
+    
+    /**
+     * Finds an available unit to salvage of the type needed by a salvage process.
+     * @param info the salvage process information.
+     * @param settlement the settlement to find the unit.
+     * @return available salvagable unit, or null if none found.
+     * @throws Exception if problem finding salvagable unit.
+     */
+    public static final Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) 
+            throws Exception {
+        Unit result = null;
+        Inventory inv = settlement.getInventory();
+        Collection<Unit> salvagableUnits = new ArrayList<Unit>(0);
+        
+        if (info.getType().equalsIgnoreCase("vehicle")) {
+            if (LightUtilityVehicle.NAME.equalsIgnoreCase(info.getItemName())) {
+                salvagableUnits = inv.findAllUnitsOfClass(LightUtilityVehicle.class);
+            }
+            else {
+                salvagableUnits = inv.findAllUnitsOfClass(Rover.class);
+                
+                // Remove rovers that aren't the right type.
+                Iterator<Unit> i = salvagableUnits.iterator();
+                while (i.hasNext()) {
+                    Rover rover = (Rover) i.next();
+                    if (!rover.getDescription().equalsIgnoreCase(info.getItemName())) i.remove();
+                }
+            }
+            
+            // Remove any reserved vehicles.
+            Iterator<Unit> i = salvagableUnits.iterator();
+            while (i.hasNext()) {
+                Vehicle vehicle = (Vehicle) i.next();
+                if (vehicle.isReserved()) i.remove();
+            }
+        }
+        else if (info.getType().equalsIgnoreCase("equipment")) {
+            Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(info.getItemName());
+            salvagableUnits = inv.findAllUnitsOfClass(equipmentClass);
+        }
+        
+        // Make sure container unit is settlement.
+        Iterator<Unit> i = salvagableUnits.iterator();
+        while (i.hasNext()) {
+            if (i.next().getContainerUnit() != settlement) i.remove();
+        }
+        
+        // Make sure unit's inventory is empty.
+        Iterator<Unit> j = salvagableUnits.iterator();
+        while (j.hasNext()) {
+            if (!j.next().getInventory().isEmpty()) j.remove();
+        }
+        
+        // If malfunctionable, find most worn unit.
+        if (salvagableUnits.size() > 0) {
+            Unit firstUnit = (Unit) salvagableUnits.toArray()[0];
+            if (firstUnit instanceof Malfunctionable) {
+                Unit mostWorn = null;
+                double lowestWearCondition = Double.MAX_VALUE;
+                Iterator<Unit> k = salvagableUnits.iterator();
+                while (k.hasNext()) {
+                    Unit unit = k.next();
+                    Malfunctionable malfunctionable = (Malfunctionable) unit;
+                    double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
+                    if (wearCondition < lowestWearCondition) {
+                        mostWorn = unit;
+                        lowestWearCondition = wearCondition;
+                    }
+                }
+                result = mostWorn;
+            }
+            else result = firstUnit;
+        }
+        
+        return result;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 2.84 2008-06-01
+ * @version 2.90 2010-02-09
  * @author Scott Davis
  */
 
@@ -108,9 +108,9 @@ public class UnitManager implements Serializable {
     		List<String> personNames = personConfig.getPersonNameList();
     		personMaleNames = new ArrayList<String>();
     		personFemaleNames = new ArrayList<String>();
-    		Iterator i = personNames.iterator();
+    		Iterator<String> i = personNames.iterator();
     		while (i.hasNext()) {
-    			String name = (String) i.next();
+    			String name = i.next();
     			String gender = personConfig.getPersonGender(name);
     			if (gender.equals(Person.MALE)) personMaleNames.add(name);
     			else if (gender.equals(Person.FEMALE)) personFemaleNames.add(name);
@@ -163,6 +163,19 @@ public class UnitManager implements Serializable {
             // Fire unit manager event.
             fireUnitManagerUpdate(UnitManagerEvent.ADD_UNIT, unit);
         }		
+    }
+    
+    /**
+     * Removes a unit from the unit manager.
+     * @param unit the unit to remove.
+     */
+    public void removeUnit(Unit unit) {
+        if (units.contains(unit)) {
+            units.remove(unit);
+            
+            // Fire unit manager event.
+            fireUnitManagerUpdate(UnitManagerEvent.REMOVE_UNIT, unit);
+        }
     }
     
     /**
@@ -285,10 +298,10 @@ public class UnitManager implements Serializable {
     	    Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			List vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
-    			Iterator j = vehicleTypes.iterator();
+    			List<String> vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
+    			Iterator<String> j = vehicleTypes.iterator();
     			while (j.hasNext()) {
-    				String vehicleType = (String) j.next();
+    				String vehicleType = j.next();
     				if (LightUtilityVehicle.NAME.equals(vehicleType)) {
     					String name = getNewName(VEHICLE, "LUV", null);
     					addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
@@ -314,13 +327,13 @@ public class UnitManager implements Serializable {
 		SettlementConfig config = SimulationConfig.instance().getSettlementConfiguration();
     	
     	try {
-    	       Iterator<Settlement> i = getSettlements().iterator();
+    	    Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map equipmentMap = config.getTemplateEquipment(settlement.getTemplate());
-    			Iterator j = equipmentMap.keySet().iterator();
+    			Map<String, Integer> equipmentMap = config.getTemplateEquipment(settlement.getTemplate());
+    			Iterator<String> j = equipmentMap.keySet().iterator();
     			while (j.hasNext()) {
-    				String type = (String) j.next();
+    				String type = j.next();
     				int number = ((Integer) equipmentMap.get(type)).intValue();
     				for (int x = 0; x < number; x++) {
     					Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);
@@ -451,11 +464,11 @@ public class UnitManager implements Serializable {
 				String settlementName = personConfig.getConfiguredPersonSettlement(x);
 				Settlement settlement = null;
 				if (settlementName != null) {
-				    Collection col = CollectionUtils.getSettlement(units);
+				    Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				    settlement = CollectionUtils.getSettlement(col,settlementName);
 				}
 				else {
-				    Collection col = CollectionUtils.getSettlement(units);
+				    Collection<Settlement> col = CollectionUtils.getSettlement(units);
 				    settlement = CollectionUtils.getRandomRegressionSettlement(col);
 				}
 				   
@@ -477,22 +490,22 @@ public class UnitManager implements Serializable {
 				}
 				
 				// Set person's configured natural attributes (if any).
-				Map naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
+				Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
 				if (naturalAttributeMap != null) {
-					Iterator i = naturalAttributeMap.keySet().iterator();
+					Iterator<String> i = naturalAttributeMap.keySet().iterator();
 					while (i.hasNext()) {
-						String attributeName = (String) i.next();
+						String attributeName = i.next();
 						int value = ((Integer) naturalAttributeMap.get(attributeName)).intValue();
 						person.getNaturalAttributeManager().setAttribute(attributeName, value);
 					}
 				}
 				
 				// Set person's configured skills (if any).
-				Map skillMap = personConfig.getSkillMap(x);
+				Map<String, Integer> skillMap = personConfig.getSkillMap(x);
 				if (skillMap != null) {
-					Iterator i = skillMap.keySet().iterator();
+					Iterator<String> i = skillMap.keySet().iterator();
 					while (i.hasNext()) {
-						String skillName = (String) i.next();
+						String skillName = i.next();
 						int level = ((Integer) skillMap.get(skillName)).intValue();
 						person.getMind().getSkillManager().addNewSkill(new Skill(skillName, level));
 					}
@@ -533,11 +546,11 @@ public class UnitManager implements Serializable {
 				if (person == null) throw new Exception("Person: " + name + " not found.");
 				
 				// Set person's configured relationships (if any).
-				Map relationshipMap = personConfig.getRelationshipMap(x);
+				Map<String, Integer> relationshipMap = personConfig.getRelationshipMap(x);
 				if (relationshipMap != null) {
-					Iterator i = relationshipMap.keySet().iterator();
+					Iterator<String> i = relationshipMap.keySet().iterator();
 					while (i.hasNext()) {
-						String relationshipName = (String) i.next();
+						String relationshipName = i.next();
 						
 						// Get the other person in the relationship.
 						Person relationshipPerson = null;
@@ -677,9 +690,8 @@ public class UnitManager implements Serializable {
     public final void fireUnitManagerUpdate(String eventType, Unit unit) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
     	synchronized(listeners) {
-    		Iterator i = listeners.iterator();
-    		while (i.hasNext()) ((UnitManagerListener) i.next()).unitManagerUpdate(
-    				new UnitManagerEvent(this, eventType, unit));
+    		Iterator<UnitManagerListener> i = listeners.iterator();
+    		while (i.hasNext()) i.next().unitManagerUpdate(new UnitManagerEvent(this, eventType, unit));
     	}
     }
 

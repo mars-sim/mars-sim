@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resource.java
- * @version 2.86 2009-05-19
+ * @version 2.90 2010-02-26
  * @author Scott Davis 
  */
 
@@ -236,19 +236,29 @@ public class Inventory implements Serializable {
      */
     public Set<AmountResource> getAllAmountResourcesStored() throws InventoryException {
     	try {
-    	    if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
+    	    if (allStoredAmountResourcesCache != null) return Collections.synchronizedSet(
+    	            new HashSet<AmountResource>(allStoredAmountResourcesCache));
     		else {
                 allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
                 synchronized(allStoredAmountResourcesCache) {
-                    if (resourceStorage != null) allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
+                    if (resourceStorage != null) {
+                        synchronized(resourceStorage) {
+                            allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
+                        }
+                    }
                     if (containedUnits != null) {
                         Iterator<Unit> i = containedUnits.iterator();
                         while (i.hasNext()) {
-                            Inventory containedInv = i.next().getInventory();
-                            allStoredAmountResourcesCache.addAll(containedInv.getAllAmountResourcesStored());
+                            Set<AmountResource> containedResources = 
+                                i.next().getInventory().getAllAmountResourcesStored();
+                            synchronized(containedResources) {
+                                allStoredAmountResourcesCache.addAll(containedResources);
+                            }
                         }
                     }
-                    return Collections.synchronizedSet(new HashSet<AmountResource>(allStoredAmountResourcesCache));
+                    
+                    return Collections.synchronizedSet(
+                            new HashSet<AmountResource>(allStoredAmountResourcesCache));
                 }
     		}
     	}
@@ -664,7 +674,7 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return true if class of unit is in storage.
      */
-    private boolean containsUnitClassLocal(Class unitClass) {
+    private boolean containsUnitClassLocal(Class<? extends Unit> unitClass) {
     	boolean result = false;
     	if (containedUnits != null) {
     		Iterator<Unit> i = containedUnits.iterator();
@@ -680,7 +690,7 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return if class of unit is in storage.
      */
-    public boolean containsUnitClass(Class unitClass) {
+    public boolean containsUnitClass(Class<? extends Unit> unitClass) {
     	boolean result = false;
     	if (containedUnits != null) {
     		// Check if unit of class is in inventory.
@@ -694,7 +704,7 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return the instance of the unit class or null if none.
      */
-    public Unit findUnitOfClass(Class unitClass) {
+    public Unit findUnitOfClass(Class<? extends Unit> unitClass) {
     	Unit result = null;
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -711,7 +721,7 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public Collection<Unit> findAllUnitsOfClass(Class unitClass) {
+    public Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
     	Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -728,7 +738,7 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return number of units
      */
-    public int findNumUnitsOfClass(Class unitClass) {
+    public int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
     	int result = 0;
     	if (containsUnitClass(unitClass)) {
     	    	Iterator<Unit> i = containedUnits.iterator();
@@ -747,7 +757,7 @@ public class Inventory implements Serializable {
      * @return number of empty units.
      * @throws InventoryException if error determining number of units.
      */
-    public int findNumEmptyUnitsOfClass(Class unitClass) throws InventoryException {
+    public int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass) throws InventoryException {
     	int result = 0;
     	if (containsUnitClass(unitClass)) {
     	    	Iterator<Unit> i = containedUnits.iterator();
@@ -823,10 +833,10 @@ public class Inventory implements Serializable {
             if (owner != null) {
             	unit.setCoordinates(owner.getCoordinates());
             	owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit); 
-            	Iterator i = unit.getInventory().getAllAmountResourcesStored().iterator();
-            	while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (AmountResource) i.next());
-            	Iterator j = unit.getInventory().getAllItemResourcesStored().iterator();
-            	while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (ItemResource) j.next());
+            	Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored().iterator();
+            	while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, i.next());
+            	Iterator<ItemResource> j = unit.getInventory().getAllItemResourcesStored().iterator();
+            	while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, j.next());
             }
         }
         else throw new InventoryException("Unit: " + unit + " could not be stored.");
@@ -846,10 +856,10 @@ public class Inventory implements Serializable {
             	clearAmountResourceStoredCache();
     			if (owner != null) {
     				owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
-    				Iterator i = unit.getInventory().getAllAmountResourcesStored().iterator();
-    				while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (AmountResource) i.next());
-    				Iterator j = unit.getInventory().getAllItemResourcesStored().iterator();
-    				while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, (ItemResource) j.next());
+    				Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored().iterator();
+    				while (i.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, i.next());
+    				Iterator<ItemResource> j = unit.getInventory().getAllItemResourcesStored().iterator();
+    				while (j.hasNext()) owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, j.next());
     			}
     			retrieved = true;
     		}
