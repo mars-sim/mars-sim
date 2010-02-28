@@ -25,6 +25,7 @@ public class ManufactureProcess implements Serializable {
 	/**
 	 * Constructor
 	 * @param info information about the process.
+	 * @param workshop the manufacturing workshop where the process is taking place.
 	 */
 	public ManufactureProcess(ManufactureProcessInfo info, Manufacture workshop) {
 		this.info = info;

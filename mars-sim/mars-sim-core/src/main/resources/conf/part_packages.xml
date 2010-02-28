@@ -23,9 +23,9 @@
 		<part type="epoxy resin bottle" number="144" />
 		<part type="spark plug" number="10" />
 		<part type="coolant bottle" number="9" />
-		<part type="electrical wire" number="272" />
+		<part type="electrical wire" number="1000" />
 		<part type="power cable" number="48" />
-		<part type="wire connector" number="206" />
+		<part type="wire connector" number="1000" />
 		<part type="plastic tubing" number="44" />
 		<part type="lubricant bottle" number="6" />
 		<part type="rover battery" number="2" />
@@ -85,9 +85,9 @@
 		<part type="epoxy resin bottle" number="371" />
 		<part type="spark plug" number="46" />
 		<part type="coolant bottle" number="46" />
-		<part type="electrical wire" number="589" />
+		<part type="electrical wire" number="2000" />
 		<part type="power cable" number="69" />
-		<part type="wire connector" number="426" />
+		<part type="wire connector" number="2000" />
 		<part type="plastic tubing" number="95" />
 		<part type="lubricant bottle" number="29" />
 		<part type="rover battery" number="7" />
@@ -147,9 +147,9 @@
 		<part type="epoxy resin bottle" number="485" />
 		<part type="spark plug" number="55" />
 		<part type="coolant bottle" number="50" />
-		<part type="electrical wire" number="678" />
+		<part type="electrical wire" number="2500" />
 		<part type="power cable" number="98" />
-		<part type="wire connector" number="513" />
+		<part type="wire connector" number="2500" />
 		<part type="plastic tubing" number="135" />
 		<part type="lubricant bottle" number="32" />
 		<part type="rover battery" number="8" />
@@ -209,9 +209,9 @@
 		<part type="epoxy resin bottle" number="528" />
 		<part type="spark plug" number="55" />
 		<part type="coolant bottle" number="50" />
-		<part type="electrical wire" number="866" />
+		<part type="electrical wire" number="5000" />
 		<part type="power cable" number="143" />
-		<part type="wire connector" number="635" />
+		<part type="wire connector" number="5000" />
 		<part type="plastic tubing" number="169" />
 		<part type="lubricant bottle" number="32" />
 		<part type="rover battery" number="8" />

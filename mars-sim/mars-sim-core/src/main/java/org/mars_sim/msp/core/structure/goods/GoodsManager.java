@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 2.90 2010-01-23
+ * @version 2.90 2010-02-03
  * @author Scott Davis
  */
 

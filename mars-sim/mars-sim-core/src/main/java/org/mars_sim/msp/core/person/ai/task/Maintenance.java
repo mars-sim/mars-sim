@@ -33,7 +33,7 @@ public class Maintenance extends Task implements Serializable {
 	private static String CLASS_NAME = 
     	    "org.mars_sim.msp.simulation.person.ai.task.Maintenance";
 	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Task phase
 	private static final String MAINTAIN = "Maintain";

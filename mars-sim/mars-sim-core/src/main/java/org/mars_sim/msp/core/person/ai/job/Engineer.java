@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 2.86 2009-05-10
+ * @version 2.90 2010-02-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
+import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -44,6 +45,7 @@ public class Engineer extends Job implements Serializable {
 		// Add engineer-related tasks.
 		jobTasks.add(ManufactureGood.class);
         jobTasks.add(DigLocalRegolith.class);
+        jobTasks.add(SalvageGood.class);
 		
 		// Add engineer-related missions.
         jobMissionStarts.add(TravelToSettlement.class);
@@ -86,10 +88,10 @@ public class Engineer extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add (tech level * process number) for all manufacture buildings.
-		List manufactureBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
-		Iterator i = manufactureBuildings.iterator();
+		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
+		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			try {
 				Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
 				result += workshop.getTechLevel() * workshop.getConcurrentProcesses() * 2D;

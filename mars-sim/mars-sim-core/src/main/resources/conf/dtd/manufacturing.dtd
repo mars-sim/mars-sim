@@ -1,4 +1,4 @@
-<!ELEMENT manufacturing-processes (process*)>
+<!ELEMENT manufacturing-processes (process*, salvage*)>
 <!ELEMENT process (inputs, outputs)>
 <!ATTLIST process name CDATA #REQUIRED>
 <!ATTLIST process tech CDATA #REQUIRED>
@@ -20,3 +20,12 @@
 <!ELEMENT vehicle EMPTY>
 <!ATTLIST vehicle name CDATA #REQUIRED>
 <!ATTLIST vehicle number CDATA #REQUIRED>
+<!ELEMENT salvage (part-salvage*)>
+<!ATTLIST salvage item-name CDATA #REQUIRED>
+<!ATTLIST salvage type (equipment|vehicle) #REQUIRED>
+<!ATTLIST salvage tech CDATA #REQUIRED>
+<!ATTLIST salvage skill CDATA #REQUIRED>
+<!ATTLIST salvage work-time CDATA #REQUIRED>
+<!ELEMENT part-salvage EMPTY>
+<!ATTLIST part-salvage name CDATA #REQUIRED>
+<!ATTLIST part-salvage number CDATA #REQUIRED>

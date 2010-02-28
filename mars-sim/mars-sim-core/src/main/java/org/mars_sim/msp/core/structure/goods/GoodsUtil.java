@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsUtil.java
- * @version 2.86 2009-04-20
+ * @version 2.90 2010-02-27
  * @author Scott Davis
  */
 
@@ -13,11 +13,13 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.GasCanister;
+import org.mars_sim.msp.core.equipment.LargeBag;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -73,7 +75,7 @@ public class GoodsUtil {
 	 * @param equipmentClass the equipment class.
 	 * @return good for the resource class or null if none.
 	 */
-	public static Good getEquipmentGood(Class equipmentClass) {
+	public static Good getEquipmentGood(Class<? extends Unit> equipmentClass) {
 		if (equipmentClass != null) {
 			Good result = null;
 			
@@ -96,7 +98,7 @@ public class GoodsUtil {
 	 */
 	public static Good getVehicleGood(String vehicleType) {
 		if ((vehicleType != null) && !vehicleType.trim().equals("")) {
-			Class vehicleClass = Rover.class;
+			Class<?> vehicleClass = Rover.class;
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) 
 				vehicleClass = LightUtilityVehicle.class;
 			return new Good(vehicleType, vehicleClass, Good.VEHICLE);
@@ -138,16 +140,16 @@ public class GoodsUtil {
 	 * Populates the goods list with all amount resources.
 	 */
 	private static void populateAmountResources() {
-		Iterator i = AmountResource.getAmountResources().iterator();
-		while (i.hasNext()) goodsList.add(getResourceGood((AmountResource) i.next()));
+		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 	
 	/**
 	 * Populates the goods list with all item resources.
 	 */
 	private static void populateItemResources() {
-		Iterator i = ItemResource.getItemResources().iterator();
-		while (i.hasNext()) goodsList.add(getResourceGood((ItemResource) i.next()));
+		Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
+		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 	
 	/**
@@ -158,6 +160,7 @@ public class GoodsUtil {
 		goodsList.add(new Good(Bag.TYPE, Bag.class, Good.EQUIPMENT));
 		goodsList.add(new Good(Barrel.TYPE, Barrel.class, Good.EQUIPMENT));
 		goodsList.add(new Good(GasCanister.TYPE, GasCanister.class, Good.EQUIPMENT));
+		goodsList.add(new Good(LargeBag.TYPE, LargeBag.class, Good.EQUIPMENT));
 		goodsList.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class, Good.EQUIPMENT));
 	}
 	
@@ -168,8 +171,8 @@ public class GoodsUtil {
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
 		try {
-			Iterator i = config.getVehicleTypes().iterator();
-			while (i.hasNext()) goodsList.add(getVehicleGood((String) i.next()));
+			Iterator<String> i = config.getVehicleTypes().iterator();
+			while (i.hasNext()) goodsList.add(getVehicleGood(i.next()));
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
