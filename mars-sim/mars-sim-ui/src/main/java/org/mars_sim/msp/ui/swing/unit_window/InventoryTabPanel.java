@@ -123,8 +123,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      */
     public void valueChanged(ListSelectionEvent e) {
         int index = equipmentTable.getSelectedRow();
-        Equipment selectedEquipment = (Equipment) equipmentTable.getValueAt(index, 0);
-        if (selectedEquipment != null) desktop.openUnitWindow(selectedEquipment, false);
+        Object selectedEquipment = equipmentTable.getValueAt(index, 0);
+        if ((selectedEquipment != null) && (selectedEquipment instanceof Equipment)) 
+            desktop.openUnitWindow((Equipment) selectedEquipment, false);
     }
     
     /** 
@@ -175,7 +176,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 1) dataType = Double.class;
             return dataType;
         }
@@ -260,7 +261,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             return dataType;
         }
         

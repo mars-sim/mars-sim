@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentWindow.java
- * @version 2.75 2003-07-22
+ * @version 2.90 2010-02-21
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
@@ -20,6 +21,9 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The EquipmentWindow is the window for displaying a piece of equipment.
  */
 public class EquipmentWindow extends UnitWindow {
+    
+    // Data members
+    private boolean salvaged;
     
     /**
      * Constructor
@@ -36,5 +40,22 @@ public class EquipmentWindow extends UnitWindow {
         addTabPanel(new InventoryTabPanel(equipment, desktop));
         if (equipment instanceof Malfunctionable) 
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));
+        
+        salvaged = equipment.isSalvaged();
+        if (salvaged) addTabPanel(new SalvageTabPanel(equipment, desktop));
+    }
+    
+    /**
+     * Updates this window.
+     */
+    public void update() {
+        super.update();
+        
+        // Check if equipment has been salvaged.
+        Equipment equipment = (Equipment) getUnit();
+        if (!salvaged && equipment.isSalvaged()) {
+            addTabPanel(new SalvageTabPanel(equipment, desktop));
+            salvaged = true;
+        }
     }
 }
