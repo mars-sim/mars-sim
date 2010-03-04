@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureTabPanel.java
- * @version 2.90 2010-02-27
+ * @version 2.90 2010-03-03
  * @author Scott Davis
  */
 
@@ -217,7 +217,7 @@ public class ManufactureTabPanel extends TabPanel {
             while (k.hasNext()) {
                 SalvageProcess salvage = k.next();
                 if (!salvageCache.contains(salvage))
-                    manufactureListPane.add(new SalvagePanel(salvage, false, 23));
+                    manufactureListPane.add(new SalvagePanel(salvage, true, 23));
             }
 			
 			// Remove manufacture panels for old processes.
