@@ -84,6 +84,10 @@ public class GoodsManager implements Serializable {
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
 	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 10;
 	
+	// Value multiplyer factors for certain goods.
+	private static final double EVA_SUIT_FACTOR = 100D;
+	private static final double VEHICLE_FACTOR = 1000D;
+	
 	// Data members
 	private Settlement settlement;
 	private Map<Good, Double> goodsValues;
@@ -541,9 +545,8 @@ public class GoodsManager implements Serializable {
             double resourceItems = resourceInput.getAmount();
             
             double totalInputsValue = outputsValue / 2D;
-            //double totalInputsValue = outputsValue * .75D;
             
-            demand = (resourceItems / totalItems) * totalInputsValue;
+            demand = (resourceItems / totalItems) / resourceItems * totalInputsValue;
 		}
 		
 		return demand;
@@ -605,7 +608,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = (resourceMass / totalMass) * totalInputsValue;
+            demand = (resourceMass / totalMass) * totalInputsValue / resourceMass;
         }
         
         return demand;
@@ -693,8 +696,8 @@ public class GoodsManager implements Serializable {
 		else {
 			// Get demand for part.
 			if (resource instanceof Part) {
-                
-				Part part = (Part) resource;
+			    				
+			    Part part = (Part) resource;
 				if (partsDemandCache.size() == 0) determinePartsDemand();
 				if (partsDemandCache.containsKey(part)) demand = partsDemandCache.get(part);
 				
@@ -908,6 +911,7 @@ public class GoodsManager implements Serializable {
 	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) 
 			throws Exception {
 		double demand = 0D;
+		double totalInputNum = 0D;
 		
 		ManufactureProcessItem partInput = null;
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -915,21 +919,22 @@ public class GoodsManager implements Serializable {
 			ManufactureProcessItem item = i.next();
 			if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType()) && 
 					part.getName().equalsIgnoreCase(item.getName())) partInput = item;
+			totalInputNum += item.getAmount();
 		}
 		
 		if (partInput != null) {
+		    
 			double outputsValue = 0D;
-            double totalInputNum = 0D;
 			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
 			while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
                 outputsValue += ManufactureUtil.getManufactureProcessItemValue(item, settlement);
-                totalInputNum += item.getAmount();
             }
             
             double totalInputsValue = outputsValue / 2D;
+            double partNum = partInput.getAmount();
             
-            demand = totalInputsValue * (partInput.getAmount() / totalInputNum);
+            demand = totalInputsValue * (partNum / totalInputNum) / partNum;
 		}
 		
 		return demand;
@@ -987,7 +992,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = totalInputsValue * (partNumber / totalNumber);
+            demand = totalInputsValue * (partNumber / totalNumber) / partNumber;
         }
         
         return demand;
@@ -1048,13 +1053,16 @@ public class GoodsManager implements Serializable {
 			// Determine demand amount.
 			demand = determineEquipmentDemand(equipmentGood.getClassType());
 			
-			// Add trade value.
-			value += determineTradeValue(equipmentGood, useCache);
-			
 			goodsDemandCache.put(equipmentGood, new Double(demand));
 		}
 		
 		value = demand / (supply + 1D);
+		
+		// Add multiplyer for EVA suit.
+		if (EVASuit.class.equals(equipmentGood.getClassType())) value*= EVA_SUIT_FACTOR;
+		
+		// Add trade value.
+        value += determineTradeValue(equipmentGood, useCache);
 		
 		return value;
 	}
@@ -1279,6 +1287,9 @@ public class GoodsManager implements Serializable {
             double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
             if (constructionMissionValue > value) value = constructionMissionValue;
 			
+            // Multiply by vehicle factor.
+            value *= VEHICLE_FACTOR;
+            
 			// Add trade value.
 			double tradeValue = determineTradeValue(vehicleGood, useCache);
 			if (tradeValue > value) value = tradeValue;
