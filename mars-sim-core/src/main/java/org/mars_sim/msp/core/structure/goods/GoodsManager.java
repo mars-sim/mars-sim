@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -86,7 +87,7 @@ public class GoodsManager implements Serializable {
 	
 	// Value multiplyer factors for certain goods.
 	private static final double EVA_SUIT_FACTOR = 100D;
-	private static final double VEHICLE_FACTOR = 1000D;
+	private static final double VEHICLE_FACTOR = 100D;
 	
 	// Data members
 	private Settlement settlement;
@@ -271,7 +272,7 @@ public class GoodsManager implements Serializable {
             demand += getResourceConstructionDemand(resource);
             
 			// Add trade value.
-			demand += determineTradeValue(resourceGood, useCache);
+			demand += determineTradeDemand(resourceGood, useCache);
 			
 			// Limit demand by storage capacity.
 			double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
@@ -546,7 +547,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = outputsValue / 2D;
             
-            demand = (resourceItems / totalItems) / resourceItems * totalInputsValue;
+            demand = (resourceItems / totalItems) * totalInputsValue;
 		}
 		
 		return demand;
@@ -567,7 +568,7 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            if (stageValue > 0D) {
+            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())) {
                 double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
                 if (constructionDemand > demand) demand = constructionDemand;
             }
@@ -588,30 +589,104 @@ public class GoodsManager implements Serializable {
             double stageValue) throws Exception {
         double demand = 0D;
         
-        Map<AmountResource, Double> resources = stage.getResources();
-        Map<Part, Integer> parts = stage.getParts();
+        Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
+        Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
         
         if (resources.containsKey(resource)) {
-            double totalMass = 0D;
+            double totalItems = 0D;
             
             Iterator<AmountResource> i = resources.keySet().iterator();
-            while (i.hasNext()) totalMass += resources.get(i.next());
+            while (i.hasNext()) totalItems += resources.get(i.next());
             
             Iterator<Part> j = parts.keySet().iterator();
-            while (j.hasNext()) {
-                Part inputPart = j.next();
-                int number = parts.get(inputPart);
-                totalMass += number * inputPart.getMassPerItem();
-            }
+            while (j.hasNext()) totalItems += parts.get(j.next());
             
-            double resourceMass = resources.get(resource);
+            double resourceItems = resources.get(resource);
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = (resourceMass / totalMass) * totalInputsValue / resourceMass;
+            demand = (resourceItems / totalItems) * totalInputsValue;
         }
         
         return demand;
+    }
+    
+    private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) 
+            throws Exception {
+        Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
+        
+        ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+        if (preStage1 != null) {
+            Iterator<AmountResource> i = preStage1.getResources().keySet().iterator();
+            while (i.hasNext()) {
+                AmountResource resource = i.next();
+                double amount = preStage1.getResources().get(resource);
+                if (result.containsKey(resource)) {
+                    double totalAmount = result.get(resource) + amount;
+                    result.put(resource, totalAmount);
+                }
+                else {
+                    result.put(resource, amount);
+                }
+            }
+            
+            ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+            if (preStage2 != null) {
+                Iterator<AmountResource> j = preStage2.getResources().keySet().iterator();
+                while (j.hasNext()) {
+                    AmountResource resource = j.next();
+                    double amount = preStage2.getResources().get(resource);
+                    if (result.containsKey(resource)) {
+                        double totalAmount = result.get(resource) + amount;
+                        result.put(resource, totalAmount);
+                    }
+                    else {
+                        result.put(resource, amount);
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) 
+            throws Exception {
+        Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
+        
+        ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
+        if (preStage1 != null) {
+            Iterator<Part> i = preStage1.getParts().keySet().iterator();
+            while (i.hasNext()) {
+                Part part = i.next();
+                int number = preStage1.getParts().get(part);
+                if (result.containsKey(part)) {
+                    int totalNumber = result.get(part) + number;
+                    result.put(part, totalNumber);
+                }
+                else {
+                    result.put(part, number);
+                }
+            }
+            
+            ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
+            if (preStage2 != null) {
+                Iterator<Part> j = preStage2.getParts().keySet().iterator();
+                while (j.hasNext()) {
+                    Part part = j.next();
+                    int number = preStage2.getParts().get(part);
+                    if (result.containsKey(part)) {
+                        int totalNumber = result.get(part) + number;
+                        result.put(part, totalNumber);
+                    }
+                    else {
+                        result.put(part, number);
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
 	
 	/**
@@ -706,11 +781,10 @@ public class GoodsManager implements Serializable {
                 
                 // Add construction demand.
                 demand += getPartConstructionDemand(part);
+				
+				// Add trade demand.
+				demand += determineTradeDemand(resourceGood, useCache);
             }
-            
-            // Add trade value.
-            double tradeDemand = determineTradeValue(resourceGood, useCache);
-            if (tradeDemand > demand) demand = tradeDemand;
             
 			goodsDemandCache.put(resourceGood, new Double(demand));
 		}
@@ -934,7 +1008,8 @@ public class GoodsManager implements Serializable {
             double totalInputsValue = outputsValue / 2D;
             double partNum = partInput.getAmount();
             
-            demand = totalInputsValue * (partNum / totalInputNum) / partNum;
+            //demand = totalInputsValue * (partNum / totalInputNum) / partNum;
+            demand = totalInputsValue * (partNum / totalInputNum);
 		}
 		
 		return demand;
@@ -976,8 +1051,8 @@ public class GoodsManager implements Serializable {
             double stageValue) throws Exception {
         double demand = 0D;
         
-        Map<AmountResource, Double> resources = stage.getResources();
-        Map<Part, Integer> parts = stage.getParts();
+        Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
+        Map<Part, Integer> parts = getAllPrerequisiteConstructionParts(stage);
         
         if (parts.containsKey(part)) {
             double totalNumber = 0D;
@@ -992,7 +1067,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = totalInputsValue * (partNumber / totalNumber) / partNumber;
+            demand = totalInputsValue * (partNumber / totalNumber);
         }
         
         return demand;
@@ -1053,16 +1128,13 @@ public class GoodsManager implements Serializable {
 			// Determine demand amount.
 			demand = determineEquipmentDemand(equipmentGood.getClassType());
 			
+			// Add trade demand.
+	        demand += determineTradeDemand(equipmentGood, useCache);
+			
 			goodsDemandCache.put(equipmentGood, new Double(demand));
 		}
 		
 		value = demand / (supply + 1D);
-		
-		// Add multiplyer for EVA suit.
-		if (EVASuit.class.equals(equipmentGood.getClassType())) value*= EVA_SUIT_FACTOR;
-		
-		// Add trade value.
-        value += determineTradeValue(equipmentGood, useCache);
 		
 		return value;
 	}
@@ -1078,11 +1150,11 @@ public class GoodsManager implements Serializable {
 		
 		// Determine number of EVA suits that are needed
 		if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * 
-                settlement.getAllAssociatedPeople().size();
+                settlement.getAllAssociatedPeople().size() * EVA_SUIT_FACTOR;
 		
 		// Determine the number of containers that are needed.
 		if (Container.class.isAssignableFrom(equipmentClass)) {
-			numDemand = 10D;
+			numDemand = 10D * settlement.getBuildingManager().getBuildingNum();
 			// Add all non-empty containers.
 			numDemand += getNonEmptyContainers(equipmentClass);
 		}
@@ -1261,44 +1333,76 @@ public class GoodsManager implements Serializable {
 			}
 		}
 		else {
-			double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, 
-                    vehicleType, buy);
-			if (travelToSettlementMissionValue > value) value = travelToSettlementMissionValue;
+		    if (vehicleType.equalsIgnoreCase("light utility vehicle")) { 
+		        value = determineLUVValue(buy);
+		    }
+		    else {
+		        double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, 
+		                vehicleType, buy);
+		        if (travelToSettlementMissionValue > value) value = travelToSettlementMissionValue;
 		
-			double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
-			if (explorationMissionValue > value) value = explorationMissionValue;
+		        double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
+		        if (explorationMissionValue > value) value = explorationMissionValue;
 		
-			double collectIceMissionValue = determineMissionVehicleValue(COLLECT_ICE_MISSION, vehicleType, buy);
-			if (collectIceMissionValue > value) value = collectIceMissionValue;
+		        double collectIceMissionValue = determineMissionVehicleValue(COLLECT_ICE_MISSION, vehicleType, buy);
+		        if (collectIceMissionValue > value) value = collectIceMissionValue;
 		
-			double rescueMissionValue = determineMissionVehicleValue(RESCUE_SALVAGE_MISSION, vehicleType, buy);
-			if (rescueMissionValue > value) value = rescueMissionValue;
+		        double rescueMissionValue = determineMissionVehicleValue(RESCUE_SALVAGE_MISSION, vehicleType, buy);
+		        if (rescueMissionValue > value) value = rescueMissionValue;
 		
-			double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
-			if (tradeMissionValue > value) value = tradeMissionValue;
+		        double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
+		        if (tradeMissionValue > value) value = tradeMissionValue;
 			
-			double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, 
-                    vehicleType, buy);
-			if (collectRegolithMissionValue > value) value = collectRegolithMissionValue;
+		        double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, 
+		                vehicleType, buy);
+		        if (collectRegolithMissionValue > value) value = collectRegolithMissionValue;
 			
-			double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
-			if (miningMissionValue > value) value = miningMissionValue;
+		        double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
+		        if (miningMissionValue > value) value = miningMissionValue;
             
-            double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
-            if (constructionMissionValue > value) value = constructionMissionValue;
-			
+		        double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
+		        if (constructionMissionValue > value) value = constructionMissionValue;
+		    }
+            
             // Multiply by vehicle factor.
             value *= VEHICLE_FACTOR;
             
-			// Add trade value.
-			double tradeValue = determineTradeValue(vehicleGood, useCache);
-			if (tradeValue > value) value = tradeValue;
+            double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
+            if (tradeValue > value) value = tradeValue;
 			
 			if (buy) vehicleBuyValueCache.put(vehicleType, value);
 			else vehicleSellValueCache.put(vehicleType, value);
 		}
 		
 		return value;
+	}
+	
+	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) throws Exception {
+	    double tradeDemand = determineTradeDemand(vehicleGood, useCache);
+	    double supply = getNumberOfVehiclesForSettlement(vehicleGood.getName());
+	    return tradeDemand / (supply + 1D);
+	}
+	
+	/**
+	 * Determine the value of a light utility vehicle.
+	 * @param buy true if vehicles can be bought.
+	 * @return value (VP)
+	 */
+	private double determineLUVValue(boolean buy) throws Exception {
+	    
+	    double demand = 0D;
+	    
+	    // Add demand for mining missions.
+	    demand += getAreologistNum();
+	    
+	    // Add demand for construction missions.
+	    demand += getArchitectNum();
+	    
+	    double supply = getNumberOfVehiclesForSettlement("light utility vehicle");
+	    if (!buy) supply--;
+	    if (supply < 0D) supply = 0D;
+	    
+	    return demand / (supply + 1D);
 	}
 	
 	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) 
@@ -1308,10 +1412,10 @@ public class GoodsManager implements Serializable {
 		
 		double currentCapacity = 0D;
 		boolean soldFlag = false;
-		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
 		while (i.hasNext()) {
 			String type = i.next().getDescription().toLowerCase();
-			if (!buy && !soldFlag && (type.equals(vehicleType))) soldFlag = true;
+			if (!buy && !soldFlag && (type.equalsIgnoreCase(vehicleType))) soldFlag = true;
 			else currentCapacity += determineMissionVehicleCapacity(missionType, type);
 		}
 		
@@ -1331,7 +1435,7 @@ public class GoodsManager implements Serializable {
 					(double) settlement.getPopulationCapacity());
 		}
 		else if (EXPLORATION_MISSION.equals(missionType)) {
-			demand = getAreologistNum() / 2D;
+			demand = getAreologistNum();
 		}
 		else if (COLLECT_ICE_MISSION.equals(missionType)) {
 			AmountResource ice = AmountResource.findAmountResource("ice");
@@ -1348,10 +1452,10 @@ public class GoodsManager implements Serializable {
 			demand = getGoodValuePerItem(GoodsUtil.getResourceGood(regolith));
 		}
 		else if (MINING_MISSION.equals(missionType)) {
-			demand = getAreologistNum() / 2D;
+			demand = getAreologistNum();
 		}
         else if (CONSTRUCTION_MISSION.equals(missionType)) {
-            demand = getArchitectNum();
+            // No demand for rover vehicles.
         }
 		
 		return demand;
@@ -1419,25 +1523,16 @@ public class GoodsManager implements Serializable {
 			if (range == 0D) capacity = 0D;
 		}
 		else if (MINING_MISSION.equals(missionType)) {
-			// One light utility vehicle needed for a mining mission.
-			if (vehicleType.equalsIgnoreCase("light utility vehicle")) { 
-				capacity = 1D;
-			}
-			else {
-				if (crewCapacity >= 2) capacity = 1D;
+			if (crewCapacity >= 2) capacity = 1D;
 				
-				double cargoCapacity = config.getTotalCapacity(vehicleType);
-				if (cargoCapacity < 1000D) capacity = 0D;
+			double cargoCapacity = config.getTotalCapacity(vehicleType);
+			if (cargoCapacity < 1000D) capacity = 0D;
 				
-				double range = getVehicleRange(vehicleType);
-				if (range == 0D) capacity = 0D;
-			}
+			double range = getVehicleRange(vehicleType);
+			if (range == 0D) capacity = 0D;
 		}
         else if (CONSTRUCTION_MISSION.equals(missionType)) {
-            // Assume one light utility vehicle for now.
-            if (vehicleType.equalsIgnoreCase("light utility vehicle")) { 
-                capacity = 1D;
-            }
+            // No rover vehicles needed.
         }
 		
 		return capacity;
@@ -1506,13 +1601,13 @@ public class GoodsManager implements Serializable {
 	}
 	
 	/**
-	 * Determines the trade value for a good at a settlement.
+	 * Determines the trade demain for a good at a settlement.
 	 * @param good the good.
-	 * @param useTradeCache use the goods trade cache to determine trade value?
-	 * @return the trade value (VP).
-	 * @throws Exception if error determining trade value.
+	 * @param useTradeCache use the goods trade cache to determine trade demand?
+	 * @return the trade demand.
+	 * @throws Exception if error determining trade demand.
 	 */
-	private double determineTradeValue(Good good, boolean useTradeCache) throws Exception {
+	private double determineTradeDemand(Good good, boolean useTradeCache) throws Exception {
 		if (useTradeCache) {
 			if (goodsTradeCache.containsKey(good)) return goodsTradeCache.get(good).doubleValue();
 			else throw new IllegalArgumentException("good: " + good + " not valid.");
