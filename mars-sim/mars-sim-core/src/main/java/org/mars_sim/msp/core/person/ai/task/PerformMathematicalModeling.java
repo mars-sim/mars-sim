@@ -491,10 +491,8 @@ public class PerformMathematicalModeling extends Task implements
         else chance /= (skill - 2);
 
         Malfunctionable entity = null;
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
-            entity = ((Research) lab).getBuilding();
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
-            entity = person.getVehicle();
+        if (lab instanceof Research) entity = ((Research) lab).getBuilding();
+        else entity = person.getVehicle();
         
         if (entity != null) {
          
