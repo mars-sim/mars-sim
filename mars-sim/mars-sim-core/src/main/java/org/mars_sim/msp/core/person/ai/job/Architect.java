@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
@@ -35,6 +37,8 @@ public class Architect extends Job implements Serializable {
         super("Architect");
         
         // Add architect-related tasks.
+        jobTasks.add(DigLocalRegolith.class);
+        jobTasks.add(ManufactureConstructionMaterials.class);
         
         // Add architect-related missions.
         jobMissionStarts.add(BuildingConstructionMission.class);
@@ -69,6 +73,7 @@ public class Architect extends Job implements Serializable {
         
         double result = 0D;
         
+        /*
         try {
             // Based on settlement construction profit.
             double constructionProfit = settlement.getConstructionManager().getConstructionValues().
@@ -81,9 +86,10 @@ public class Architect extends Job implements Serializable {
             e.printStackTrace(System.err);
             logger.log(Level.SEVERE,"Architect.getSettlementNeed()", e);
         }
+        */
         
-        // Add number of buildings currently at settlement / 2.
-        result += settlement.getBuildingManager().getBuildingNum() / 2D;
+        // Add number of buildings currently at settlement.
+        result += settlement.getBuildingManager().getBuildingNum();
         
         return result;  
     }
