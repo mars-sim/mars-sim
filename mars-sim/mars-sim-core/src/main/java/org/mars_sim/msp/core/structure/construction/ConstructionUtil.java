@@ -199,4 +199,26 @@ public class ConstructionUtil {
         
         return result;
     }
+    
+    /**
+     * Gets the prerequisite construction stage info for a given stage info.
+     * @param stageInfo the construction stage info.
+     * @return the prerequisite stage info or null if none.
+     * @throws Exception if error finding prerequisite stage info.
+     */
+    public final static ConstructionStageInfo getPrerequisiteStage(ConstructionStageInfo stageInfo) 
+            throws Exception {
+        ConstructionStageInfo result = null;
+        
+        String prerequisiteStageName = stageInfo.getPrerequisiteStage();
+        if (prerequisiteStageName != null) {
+            Iterator<ConstructionStageInfo> i = getAllConstructionStageInfoList().iterator();
+            while (i.hasNext()) {
+                ConstructionStageInfo info = i.next();
+                if (info.getName().equals(prerequisiteStageName)) result = info;
+            }
+        }
+        
+        return result;
+    }
 }
