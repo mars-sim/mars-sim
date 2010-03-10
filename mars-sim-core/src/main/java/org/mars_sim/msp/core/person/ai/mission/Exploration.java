@@ -237,7 +237,7 @@ public class Exploration extends RoverMission  implements Serializable {
                     if (rover != null) {
                         // Check if any mineral locations within rover range.
                         if (hasNearbyMineralLocations(rover, settlement)) {
-                            result = 10D;
+                            result = 20D;
                         }
                     }
                 }
