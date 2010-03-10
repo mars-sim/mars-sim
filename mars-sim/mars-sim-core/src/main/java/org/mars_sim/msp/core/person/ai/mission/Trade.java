@@ -652,6 +652,17 @@ public class Trade extends RoverMission implements Serializable {
     	super.performDisembarkToSettlementPhase(person, disembarkSettlement);
     }
     
+    @Override
+    public void endMission(String reason) {
+        super.endMission(reason);
+        
+        // Unreserve any towed vehicles.
+        if (getRover().getTowedVehicle() != null) {
+            Vehicle towed = getRover().getTowedVehicle();
+            towed.setReservedForMission(false);
+        }
+    }
+    
     /** 
      * Gets the type of vehicle in a load.
      * @param buy true if buy load, false if sell load.
