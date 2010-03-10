@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 2.90 2010-02-20
+ * @version 2.90 2010-03-10
  * @author Scott Davis
  */
 
@@ -10,6 +10,8 @@ package org.mars_sim.msp.core.vehicle;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.malfunction.*;
@@ -29,6 +31,10 @@ import org.mars_sim.msp.core.time.MarsClock;
 public abstract class Vehicle extends Unit implements Serializable, 
         Malfunctionable, Salvagable {
 
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.vehicle.Vehicle";
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
 	// Unit Event Types
 	public final static String STATUS_EVENT = "vehicle status";
 	public final static String SPEED_EVENT = "vehicle speed";
@@ -395,6 +401,19 @@ public abstract class Vehicle extends Unit implements Serializable,
         	// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
         	if (getStatus().equals(MAINTENANCE)) {
             	if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
+        	}
+        	
+        	if (isReservedForMission()) {
+        	    // Set reserved for mission to false if the vehicle is not associated with a mission.
+        	    if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
+        	        logger.log(Level.SEVERE, getName() + " is mission reserved but has no mission.");
+        	        setReservedForMission(false);
+        	    }
+        	}
+        	else {
+        	    if (Simulation.instance().getMissionManager().getMissionForVehicle(this) != null) {
+        	        logger.log(Level.SEVERE, getName() + " is not mission reserved but is on a mission.");
+                }
         	}
         	
         	// If operator is dead, remove operator and stop vehicle.
