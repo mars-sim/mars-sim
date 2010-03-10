@@ -781,11 +781,11 @@ public class GoodsManager implements Serializable {
                 
                 // Add construction demand.
                 demand += getPartConstructionDemand(part);
-				
-				// Add trade demand.
-				demand += determineTradeDemand(resourceGood, useCache);
             }
             
+			// Add trade demand.
+            demand += determineTradeDemand(resourceGood, useCache);
+			
 			goodsDemandCache.put(resourceGood, new Double(demand));
 		}
 		
@@ -1030,7 +1030,7 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            if (stageValue > 0D) {
+            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())) {
                 double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
                 if (constructionStageDemand > demand) demand = constructionStageDemand;
             }
