@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 2.86 2009-05-26
+ * @version 2.90 2010-03-10
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -279,6 +280,12 @@ public class MissionManager implements Serializable {
                     if (((VehicleMission) mission).getVehicle() == vehicle) result = mission;
                     if (mission instanceof Mining) {
                         if (((Mining)mission).getLightUtilityVehicle() == vehicle) result = mission;
+                    }
+                    if (mission instanceof Trade) {
+                        Rover towingRover = (Rover) ((Trade) mission).getVehicle();
+                        if (towingRover != null) {
+                            if (towingRover.getTowedVehicle() == vehicle) result = mission;
+                        }
                     }
                 }
                 else if (mission instanceof BuildingConstructionMission) {
