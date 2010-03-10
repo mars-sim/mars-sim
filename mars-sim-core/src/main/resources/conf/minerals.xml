@@ -35,7 +35,7 @@
 		</locale-list>
 	</mineral>
 	
-	<!-- Olivine -->
+	<!-- Olivine is a magnesium iron silicate found in meteorites. -->
  	<!-- http://en.wikipedia.org/wiki/Olivine -->
 	<mineral name="olivine" frequency="uncommon">
 		<locale-list>
@@ -69,17 +69,19 @@
 	
 	<!-- Chalcopyrite is a copper sulfide mineral. -->
 	<!-- http://en.wikipedia.org/wiki/Chalcopyrite -->
-	<mineral name="chalcopyrite" frequency="rare">
+	<mineral name="chalcopyrite" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
+			<locale name="volcanic" />
 		</locale-list>
 	</mineral>
 	
 	<!-- Malachite is a copper carbonate mineral. -->
 	<!-- http://en.wikipedia.org/wiki/Malachite -->
-	<mineral name="malachite" frequency="rare">
+	<mineral name="malachite" frequency="uncommon">
 		<locale-list>
 			<locale name="sedimentary" />
+			<locale name="volcanic" />
 		</locale-list>
 	</mineral>
 	
