@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
@@ -46,6 +47,7 @@ public class Chef extends Job implements Serializable {
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -78,10 +80,10 @@ public class Chef extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add all kitchen work space in settlement.
-		List kitchenBuildings = settlement.getBuildingManager().getBuildings(Cooking.NAME);
-		Iterator i = kitchenBuildings.iterator();
+		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(Cooking.NAME);
+		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			try {
 				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME); 
 				result += (double) kitchen.getCookCapacity();

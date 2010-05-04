@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -47,6 +48,7 @@ public class Meteorologist extends Job implements Serializable {
         jobMissionStarts.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
     }
     
     @Override
@@ -70,10 +72,10 @@ public class Meteorologist extends Job implements Serializable {
         double result = 0D;
         
         // Add (labspace * tech level / 2) for all labs with meteorology specialities.
-        List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
-        Iterator i = laboratoryBuildings.iterator();
+        List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+        Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
-            Building building = (Building) i.next();
+            Building building = i.next();
             try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.METEOROLOGY)) 

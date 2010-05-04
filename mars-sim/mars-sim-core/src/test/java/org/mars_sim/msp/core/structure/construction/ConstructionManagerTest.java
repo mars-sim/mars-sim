@@ -47,9 +47,9 @@ public class ConstructionManagerTest extends TestCase {
         manager.createNewConstructionSite();
         ConstructionSite site2 = manager.createNewConstructionSite();
         manager.createNewConstructionSite();
-        assertEquals(3, manager.getConstructionSitesNeedingMission().size());
+        assertEquals(3, manager.getConstructionSitesNeedingConstructionMission().size());
         site2.setUndergoingConstruction(true);
-        assertEquals(2, manager.getConstructionSitesNeedingMission().size());
+        assertEquals(2, manager.getConstructionSitesNeedingConstructionMission().size());
     }
 
     /*

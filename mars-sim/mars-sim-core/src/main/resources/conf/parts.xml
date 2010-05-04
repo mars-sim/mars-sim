@@ -481,4 +481,10 @@
 	<!-- Construction brick (215mm x 102.5mm x 65mm) 2.86kg (UK Standard according to Wikipedia) -->
 	<part name="brick" mass="2.86" />
 	
+	<!-- A 25 kg piece of salvaged steel scrap. -->
+	<part name="steel scrap" mass="25.0" />
+	
+	<!-- A 5 kg piece of salvaged aluminum scrap. -->
+	<part name="aluminum scrap" mass="5.0" />
+	
 </part-list>

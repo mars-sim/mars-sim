@@ -482,6 +482,7 @@ public class Manufacture extends Function implements Serializable {
                 // Add the average materal science skill of the salvagers.
                 salvageChance += process.getAverageSkillLevel() * 5D;
             
+                // Salvage parts.
                 List<PartSalvage> partsToSalvage = process.getInfo().getPartSalvageList();
                 Iterator<PartSalvage> i = partsToSalvage.iterator();
                 while (i.hasNext()) {

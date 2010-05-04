@@ -88,8 +88,8 @@ public class LifeSupport extends Function implements Serializable {
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
             Settlement settlement) throws Exception {
         
-        // Demand is one and a half occupant capacity for every inhabitant. 
-        double demand = settlement.getAllAssociatedPeople().size() * 1.5D;
+        // Demand is 2 occupant capacity for every inhabitant. 
+        double demand = settlement.getAllAssociatedPeople().size() * 2D;
         
         double supply = 0D;
         boolean removedBuilding = false;

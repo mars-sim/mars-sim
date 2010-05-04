@@ -21,8 +21,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
  
 /**
@@ -95,15 +93,10 @@ public class Farming extends Function implements Serializable {
             Settlement settlement) throws Exception {
         
         // Demand is value of estimated food needed by population per orbit.
-        AmountResource foodResource = AmountResource.findAmountResource("food");
-        Good foodGood = GoodsUtil.getResourceGood(foodResource);
-        double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
-        double personFoodConsumption = 
-            SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
-        int personNum = settlement.getAllAssociatedPeople().size();
-        double foodConsumptionOrbit = personNum * personFoodConsumption * 
-                MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        double demand = foodValue * foodConsumptionOrbit;
+        double foodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
+        int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        double foodPerOrbit = foodPerSol * solsInOrbit;
+        double demand = foodPerOrbit * settlement.getAllAssociatedPeople().size();
         
         // Supply is total estimate harvest per orbit.
         double supply = 0D;

@@ -25,6 +25,24 @@ public class ConstructionUtil {
     }
     
     /**
+     * Gets a construction stage info matching a given name.
+     * @param stageName the stage info name.
+     * @return construction stage info or null if none found.
+     * @throws Exception if error finding construction stage info.
+     */
+    public final static ConstructionStageInfo getConstructionStageInfo(String stageName) throws Exception {
+        ConstructionStageInfo result = null;
+        
+        Iterator<ConstructionStageInfo> i = getAllConstructionStageInfoList().iterator(); 
+        while (i.hasNext()) {
+            ConstructionStageInfo stageInfo = i.next();
+            if (stageInfo.getName().equalsIgnoreCase(stageName.trim())) result = stageInfo;
+        }
+        
+        return result;
+    }
+    
+    /**
      * Gets a list of all construction stage info of a given type.
      * @param stageType the type of stage.
      * @return list of construction stage info.
@@ -191,7 +209,7 @@ public class ConstructionUtil {
             Iterator<ConstructionStageInfo> i = config.getConstructionStageInfoList(nextStageName).iterator();
             while (i.hasNext()) {
                 ConstructionStageInfo buildingStage = i.next();
-                if (stageInfo.getName().equals(buildingStage.getPrerequisiteStage())) {
+                if (stageInfo.getName().equals(buildingStage.getPrerequisiteStage()) && buildingStage.isConstructable()) {
                     result.add(buildingStage);
                 }
             }

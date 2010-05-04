@@ -27,6 +27,8 @@ public class ConstructionStageInfo implements Serializable {
     // Data members
     private String name;
     private String type;
+    private boolean constructable;
+    private boolean salvagable;
     private double workTime;
     private int architectConstructionSkill;
     private String prerequisiteStage;
@@ -38,6 +40,8 @@ public class ConstructionStageInfo implements Serializable {
      * Constructor
      * @param name the name of the stage.
      * @param type the stage type.
+     * @param constructable true if stage can be constructed.
+     * @param salvagable true if stage can be salvaged.
      * @param workTime the work time (millisols) required for construction.
      * @param architectConstructionSkill the construction skill required.
      * @param prerequisiteStage the name of the prerequisite stage.
@@ -45,13 +49,16 @@ public class ConstructionStageInfo implements Serializable {
      * @param resources map of resources required and their amount.
      * @param vehicles list of construction vehicles required.
      */
-    ConstructionStageInfo(String name, String type, double workTime, 
+    ConstructionStageInfo(String name, String type, boolean constructable, 
+            boolean salvagable, double workTime, 
             int architectConstructionSkill, String prerequisiteStage, 
             Map<Part, Integer> parts, Map<AmountResource, Double> resources, 
             List<ConstructionVehicleType> vehicles) {
         
         this.name = name;
         this.type = type;
+        this.constructable = constructable;
+        this.salvagable = salvagable;
         this.workTime = workTime;
         this.architectConstructionSkill = architectConstructionSkill;
         this.prerequisiteStage = prerequisiteStage;
@@ -74,6 +81,22 @@ public class ConstructionStageInfo implements Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Check if the stage can be constructed.
+     * @return true if stage can be constructed.
+     */
+    public boolean isConstructable() {
+        return constructable;
+    }
+    
+    /**
+     * Checks if the stage can be salvaged.
+     * @return true if stage can be salvaged.
+     */
+    public boolean isSalvagable() {
+        return salvagable;
     }
 
     /**

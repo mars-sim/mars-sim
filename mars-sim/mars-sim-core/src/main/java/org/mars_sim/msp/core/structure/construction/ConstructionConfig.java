@@ -29,6 +29,8 @@ public class ConstructionConfig implements Serializable {
 
     // Element names
     private static final String NAME = "name";
+    private static final String CONSTRUCTABLE = "constructable";
+    private static final String SALVAGABLE = "salvagable";
     private static final String WORK_TIME = "work-time";
     private static final String SKILL_REQUIRED = "skill-required";
     private static final String PART = "part";
@@ -119,6 +121,14 @@ public class ConstructionConfig implements Serializable {
                     
                 // Get name.
                 name = stageInfoElement.getAttributeValue(NAME);
+                
+                // Get constructable.
+                // Note should be false if constructable attribute doesn't exist.
+                boolean constructable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(CONSTRUCTABLE));
+                
+                // Get salvagable.
+                // Note should be false if salvagable attribute doesn't exist.
+                boolean salvagable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(SALVAGABLE));
                     
                 double workTime = Double.parseDouble(stageInfoElement.getAttributeValue(WORK_TIME));
                 // convert work time from Sols to millisols.
@@ -179,10 +189,9 @@ public class ConstructionConfig implements Serializable {
                     vehicles.add(new ConstructionVehicleType(vehicleType, vehicleClass, attachmentParts));
                 }
                     
-                ConstructionStageInfo foundationInfo = new ConstructionStageInfo(name, 
-                        stageType, workTime, skillRequired, prerequisiteStage, parts, 
-                        resources, vehicles);
-                stageInfoList.add(foundationInfo);
+                ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, constructable, 
+                        salvagable, workTime, skillRequired, prerequisiteStage, parts, resources, vehicles);
+                stageInfoList.add(stageInfo);
             }
             catch (Exception e) {
                 throw new Exception("Error reading construction stage " + name + ": " + e.getMessage());

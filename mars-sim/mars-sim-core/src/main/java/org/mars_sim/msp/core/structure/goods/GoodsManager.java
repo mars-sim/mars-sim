@@ -568,7 +568,8 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())) {
+            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) 
+                    && stage.isConstructable()) {
                 double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
                 if (constructionDemand > demand) demand = constructionDemand;
             }
@@ -616,7 +617,7 @@ public class GoodsManager implements Serializable {
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-        if (preStage1 != null) {
+        if ((preStage1 != null) && preStage1.isConstructable()) {
             Iterator<AmountResource> i = preStage1.getResources().keySet().iterator();
             while (i.hasNext()) {
                 AmountResource resource = i.next();
@@ -631,7 +632,7 @@ public class GoodsManager implements Serializable {
             }
             
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-            if (preStage2 != null) {
+            if ((preStage2 != null) && preStage2.isConstructable()) {
                 Iterator<AmountResource> j = preStage2.getResources().keySet().iterator();
                 while (j.hasNext()) {
                     AmountResource resource = j.next();
@@ -655,7 +656,7 @@ public class GoodsManager implements Serializable {
         Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
-        if (preStage1 != null) {
+        if ((preStage1 != null) && preStage1.isConstructable()) {
             Iterator<Part> i = preStage1.getParts().keySet().iterator();
             while (i.hasNext()) {
                 Part part = i.next();
@@ -670,7 +671,7 @@ public class GoodsManager implements Serializable {
             }
             
             ConstructionStageInfo preStage2 = ConstructionUtil.getPrerequisiteStage(preStage1);
-            if (preStage2 != null) {
+            if ((preStage2 != null) && preStage2.isConstructable()) {
                 Iterator<Part> j = preStage2.getParts().keySet().iterator();
                 while (j.hasNext()) {
                     Part part = j.next();
@@ -1030,7 +1031,8 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
-            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType())) {
+            if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) && 
+                    stage.isConstructable()) {
                 double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
                 if (constructionStageDemand > demand) demand = constructionStageDemand;
             }

@@ -657,9 +657,11 @@ public class Trade extends RoverMission implements Serializable {
         super.endMission(reason);
         
         // Unreserve any towed vehicles.
-        if (getRover().getTowedVehicle() != null) {
-            Vehicle towed = getRover().getTowedVehicle();
-            towed.setReservedForMission(false);
+        if (getRover() != null) {
+            if (getRover().getTowedVehicle() != null) {
+                Vehicle towed = getRover().getTowedVehicle();
+                towed.setReservedForMission(false);
+            }
         }
     }
     

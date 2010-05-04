@@ -34,6 +34,7 @@ public class BuildingManager implements Serializable {
     
 	// Unit update events.
 	public static final String ADD_BUILDING_EVENT = "add building";
+	public static final String REMOVE_BUILDING_EVENT = "remove building";
 	
     // Data members
     private Settlement settlement; // The manager's settlement.
@@ -95,6 +96,17 @@ public class BuildingManager implements Serializable {
         if (!buildings.contains(newBuilding)) {
         	buildings.add(newBuilding);
         	settlement.fireUnitUpdate(ADD_BUILDING_EVENT, newBuilding);
+        }
+    }
+    
+    /**
+     * Removes a building from the settlement.
+     * @param oldBuilding the building to remove.
+     */
+    public void removeBuilding(Building oldBuilding) {
+        if (buildings.contains(oldBuilding)) {
+            buildings.remove(oldBuilding);
+            settlement.fireUnitUpdate(REMOVE_BUILDING_EVENT, oldBuilding);
         }
     }
     
@@ -496,5 +508,23 @@ public class BuildingManager implements Serializable {
             
             return result;
         }
+    }
+    
+    /**
+     * Gets the value of a building at the settlement.
+     * @param building the building.
+     * @return building value (VP).
+     * @throws Exception if error getting building value.
+     */
+    public double getBuildingValue(Building building) throws Exception {
+        double result = 0D;
+        
+        result = getBuildingValue(building.getName(), false);
+        
+        // Modify building value by its wear condition.
+        double wearCondition = building.getMalfunctionManager().getWearCondition();
+        result *= (wearCondition / 100D) * .75D + .25D;
+        
+        return result;
     }
 }
