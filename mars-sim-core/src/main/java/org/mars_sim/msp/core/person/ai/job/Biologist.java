@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -56,6 +57,7 @@ public class Biologist extends Job implements Serializable {
         jobMissionStarts.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
     }
     
     @Override
@@ -79,10 +81,10 @@ public class Biologist extends Job implements Serializable {
         double result = 0D;
         
         // Add (labspace * tech level / 2) for all labs with biology specialities.
-        List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
-        Iterator i = laboratoryBuildings.iterator();
+        List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+        Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
-            Building building = (Building) i.next();
+            Building building = i.next();
             try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.BIOLOGY)) 
@@ -109,9 +111,9 @@ public class Biologist extends Job implements Serializable {
         
         // Add (labspace * tech level / 2) for all labs with biology specialities in rovers out on missions.
         MissionManager missionManager = Simulation.instance().getMissionManager();
-        Iterator k = missionManager.getMissionsForSettlement(settlement).iterator();
+        Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
         while (k.hasNext()) {
-            Mission mission = (Mission) k.next();
+            Mission mission = k.next();
             if (mission instanceof RoverMission) {
                 Rover rover = ((RoverMission) mission).getRover();
                 if ((rover != null) && !settlement.getParkedVehicles().contains(rover)) {

@@ -7,13 +7,13 @@
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
@@ -43,6 +43,8 @@ public class Architect extends Job implements Serializable {
         // Add architect-related missions.
         jobMissionStarts.add(BuildingConstructionMission.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionStarts.add(BuildingSalvageMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
         jobMissionStarts.add(TravelToSettlement.class);
         jobMissionJoins.add(TravelToSettlement.class);  
         jobMissionStarts.add(RescueSalvageVehicle.class);
@@ -72,21 +74,6 @@ public class Architect extends Job implements Serializable {
     public double getSettlementNeed(Settlement settlement) {
         
         double result = 0D;
-        
-        /*
-        try {
-            // Based on settlement construction profit.
-            double constructionProfit = settlement.getConstructionManager().getConstructionValues().
-                    getSettlementConstructionProfit();
-            result = constructionProfit / 1000D;
-            if (result < 0D) result = 0D;
-            if (result > 100D) result = 100D;
-        }
-        catch (Exception e) {
-            e.printStackTrace(System.err);
-            logger.log(Level.SEVERE,"Architect.getSettlementNeed()", e);
-        }
-        */
         
         // Add number of buildings currently at settlement.
         result += settlement.getBuildingManager().getBuildingNum();

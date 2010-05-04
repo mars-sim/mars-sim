@@ -99,7 +99,7 @@ public class ConstructionValues implements Serializable {
         double result = 0D;
         
         ConstructionManager manager = settlement.getConstructionManager();
-        Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission().iterator();
+        Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
         while (i.hasNext()) {
             double profit = getConstructionSiteProfit(i.next(), constructionSkill);
             if (profit > result) result = profit;
@@ -280,7 +280,7 @@ public class ConstructionValues implements Serializable {
      * @return value (VP).
      * @throws Exception if error getting value.
      */
-    private double getConstructionStageValue(ConstructionStageInfo stageInfo) throws Exception {
+    double getConstructionStageValue(ConstructionStageInfo stageInfo) throws Exception {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((stageInfoValueCacheTime == null) || 
@@ -373,7 +373,12 @@ public class ConstructionValues implements Serializable {
         return settlement.getBuildingManager().getBuildingValue(buildingName, true);
     }
     
-    // TODO: add comments
+    /**
+     * Checks if there are enough construction materials at the settlement to construct a stage.
+     * @param stageInfo the construction stage.
+     * @return true if enough construction materials available.
+     * @throws Exception if error determining construction materials.
+     */
     private boolean hasConstructionMaterials(ConstructionStageInfo stageInfo) throws Exception {
         boolean result = true;
         

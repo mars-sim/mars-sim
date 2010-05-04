@@ -53,15 +53,18 @@ public class ConstructionSiteTest extends TestCase {
                 attachments));
         
         ConstructionStageInfo foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionStageInfo.FOUNDATION, 10000D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.FOUNDATION, false, false, 10000D, 0, null, parts, 
+                resources, vehicles);
         foundationStage = new ConstructionStage(foundationInfo, site);
         
         ConstructionStageInfo frameInfo = new ConstructionStageInfo("test frame info", 
-                ConstructionStageInfo.FRAME, 10000D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.FRAME, false, false, 10000D, 0, null, parts, 
+                resources, vehicles);
         frameStage = new ConstructionStage(frameInfo, site);
         
         ConstructionStageInfo buildingInfo = new ConstructionStageInfo("Workshop", 
-                ConstructionStageInfo.BUILDING, 10000D, 0, null, parts, resources, vehicles);
+                ConstructionStageInfo.BUILDING, false, false, 10000D, 0, null, parts, 
+                resources, vehicles);
         buildingStage = new ConstructionStage(buildingInfo, site);
     }
     

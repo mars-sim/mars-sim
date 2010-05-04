@@ -1794,6 +1794,28 @@
 		</outputs>
 	</process>
 	
+	<!-- Recycling steel scrap back into steel ingots. -->
+	<process name="steel scrap recycling" tech="2" skill="3" work-time="100" process-time="100" 
+			power-required="10.0">
+		<inputs>
+			<part name="steel scrap" number="1" />
+		</inputs>
+		<outputs>
+			<part name="steel ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- Recycling aluminum scrap back into aluminum ingots. -->
+	<process name="aluminum scrap recycling" tech="2" skill="3" work-time="100" process-time="100" 
+			power-required="10.0">
+		<inputs>
+			<part name="aluminum scrap" number="1" />
+		</inputs>
+		<outputs>
+			<part name="aluminum ingot" number="5" />
+		</outputs>
+	</process>
+	
 	<!-- Salvage process for an EVA suit. -->
 	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
 		<part-salvage name="eva helmet" number="1" />

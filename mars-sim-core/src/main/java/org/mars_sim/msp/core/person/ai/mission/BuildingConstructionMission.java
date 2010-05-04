@@ -115,7 +115,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 if (existingSitesProfit > newSiteProfit) {
                     // Determine which existing construction site to work on.
                     double topSiteProfit = 0D;
-                    Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingMission().iterator();
+                    Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
                     while (i.hasNext()) {
                         ConstructionSite site = i.next();
                         double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
@@ -281,7 +281,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                         ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                         double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                        result = constructionProfit / 1000D;
+                        if (constructionProfit > 0D) {
+                            result = 10D;
+                        }
                     }
                 }
                 catch (Exception e) {

@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
@@ -33,7 +34,7 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
  */
 public class Botanist extends Job implements Serializable {
     
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Botanist";
+    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Botanist";
 	
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
@@ -53,6 +54,7 @@ public class Botanist extends Job implements Serializable {
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -87,10 +89,10 @@ public class Botanist extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add (labspace * tech level) / 2 for all labs with botany specialities.
-		List laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
-		Iterator i = laboratoryBuildings.iterator();
+		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			try {
 				Research lab = (Research) building.getFunction(Research.NAME);
 				if (lab.hasSpeciality(Skill.BOTANY)) 
@@ -102,10 +104,10 @@ public class Botanist extends Job implements Serializable {
 		}
 		
 		// Add (growing area in greenhouses) / 100
-		List greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
-		Iterator j = greenhouseBuildings.iterator();
+		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
+		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
-			Building building = (Building) j.next();
+			Building building = j.next();
 			try {
 				Farming farm = (Farming) building.getFunction(Farming.NAME);
 				result += (farm.getGrowingArea() / 100D);

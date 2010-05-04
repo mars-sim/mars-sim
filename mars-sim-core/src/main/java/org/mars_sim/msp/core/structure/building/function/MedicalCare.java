@@ -57,7 +57,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
             Settlement settlement) throws Exception {
         
-        // Demand if 5 medical points per inhabitant.
+        // Demand is 5 medical points per inhabitant.
         double demand = settlement.getAllAssociatedPeople().size() * 5D;
         
         double supply = 0D;

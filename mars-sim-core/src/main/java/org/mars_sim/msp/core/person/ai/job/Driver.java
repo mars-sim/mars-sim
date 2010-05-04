@@ -49,6 +49,7 @@ public class Driver extends Job implements Serializable {
 		jobMissionJoins.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(Mining.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
 	}
 
 	/**
@@ -86,9 +87,9 @@ public class Driver extends Job implements Serializable {
 		
 		// Add number of vehicles out on missions for the settlement.
 		MissionManager missionManager = Simulation.instance().getMissionManager();
-		Iterator i = missionManager.getMissionsForSettlement(settlement).iterator();
+		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		

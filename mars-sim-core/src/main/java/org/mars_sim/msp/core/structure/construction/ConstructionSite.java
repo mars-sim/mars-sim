@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.85 2008-10-23
+ * @version 2.91 2010-04-06
  * @author Scott Davis
  */
 
@@ -26,14 +26,19 @@ public class ConstructionSite implements Serializable {
     // Construction site events.
     public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
     public static final String END_UNDERGOING_CONSTRUCTION_EVENT = "end undergoing construction";
+    public static final String START_UNDERGOING_SALVAGE_EVENT = "start undergoing salvage";
+    public static final String END_UNDERGOING_SALVAGE_EVENT = "end undergoing salvage";
     public static final String ADD_CONSTRUCTION_STAGE_EVENT = "adding construction stage";
+    public static final String REMOVE_CONSTRUCTION_STAGE_EVENT = "removing construction stage";
     public static final String CREATE_BUILDING_EVENT = "creating new building";
+    public static final String REMOVE_BUILDING_EVENT = "removing old building";
     
     // Data members
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
     private boolean undergoingConstruction;
+    private boolean undergoingSalvage;
     private transient List<ConstructionListener> listeners;
     
     /**
@@ -44,6 +49,7 @@ public class ConstructionSite implements Serializable {
         frameStage = null;
         buildingStage = null;
         undergoingConstruction = false;
+        undergoingSalvage = false;
         listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
     }
     
@@ -52,7 +58,19 @@ public class ConstructionSite implements Serializable {
      * @return true if construction is complete.
      */
     public boolean isAllConstructionComplete() {
-        if (buildingStage != null) return buildingStage.isComplete();
+        if ((buildingStage != null) && !undergoingSalvage) return buildingStage.isComplete();
+        else return false;
+    }
+    
+    /**
+     * Checks if all salvage is complete at the site.
+     * @return true if salvage is complete.
+     */
+    public boolean isAllSalvageComplete() {
+        if (undergoingSalvage) {
+            if (foundationStage == null) return true;
+            else return foundationStage.isComplete();
+        }
         else return false;
     }
     
@@ -65,6 +83,14 @@ public class ConstructionSite implements Serializable {
     }
     
     /**
+     * Checks if site is currently undergoing salvage.
+     * @return true if undergoing salvage.
+     */
+    public boolean isUndergoingSalvage() {
+        return undergoingSalvage;
+    }
+    
+    /**
      * Sets if site is currently undergoing construction.
      * @param undergoingConstruction true if undergoing construction.
      */
@@ -72,6 +98,16 @@ public class ConstructionSite implements Serializable {
         this.undergoingConstruction = undergoingConstruction;
         if (undergoingConstruction) fireConstructionUpdate(START_UNDERGOING_CONSTRUCTION_EVENT);
         else fireConstructionUpdate(END_UNDERGOING_CONSTRUCTION_EVENT);
+    }
+    
+    /**
+     * Sets if site is currently undergoing salvage.
+     * @param undergoingSalvage true if undergoing salvage.
+     */
+    public void setUndergoingSalvage(boolean undergoingSalvage) {
+        this.undergoingSalvage = undergoingSalvage;
+        if (undergoingSalvage) fireConstructionUpdate(START_UNDERGOING_SALVAGE_EVENT);
+        else fireConstructionUpdate(END_UNDERGOING_SALVAGE_EVENT);
     }
     
     /**
@@ -127,6 +163,41 @@ public class ConstructionSite implements Serializable {
         
         // Fire construction event.
         fireConstructionUpdate(ADD_CONSTRUCTION_STAGE_EVENT, stage);
+    }
+    
+    /**
+     * Remove a salvaged stage from the construction site.
+     * @param stage the salvaged construction stage.
+     * @throws Exception if error removing the stage.
+     */
+    public void removeSalvagedStage(ConstructionStage stage) throws Exception {
+        if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
+            buildingStage = null;
+        }
+        else if (ConstructionStageInfo.FRAME.equals(stage.getInfo().getType())) {
+            frameStage = null;
+        }
+        else if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
+            foundationStage = null;
+        }
+        else throw new Exception("Stage type: " + stage.getInfo().getType() + " not valid");
+        
+        // Fire construction event.
+        fireConstructionUpdate(REMOVE_CONSTRUCTION_STAGE_EVENT, stage);
+    }
+    
+    /**
+     * Removes the current salvaged construction stage.
+     * @throws Exception if error removing salvaged construction stage.
+     */
+    public void removeSalvagedStage() throws Exception {
+        if (undergoingSalvage) {
+            if (buildingStage != null) buildingStage = null;
+            else if (frameStage != null) frameStage = null;
+            else if (foundationStage != null) foundationStage = null;
+            else throw new Exception("Construction site has no stage to remove");
+        }
+        else throw new Exception("Construction site is not undergoing salvage");
     }
     
     /**
@@ -225,8 +296,8 @@ public class ConstructionSite implements Serializable {
         if (listeners == null) 
             listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
         synchronized(listeners) {
-            Iterator i = listeners.iterator();
-            while (i.hasNext()) ((ConstructionListener) i.next()).constructionUpdate(
+            Iterator<ConstructionListener> i = listeners.iterator();
+            while (i.hasNext()) i.next().constructionUpdate(
                     new ConstructionEvent(this, updateType, target));
         }
     }

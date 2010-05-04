@@ -57,8 +57,8 @@ public class LivingAccommodations extends Function implements Serializable {
     public static final double getFunctionValue(String buildingName, boolean newBuilding, 
             Settlement settlement) throws Exception {
         
-        // Demand is one bed for every inhabitant. 
-        double demand = settlement.getAllAssociatedPeople().size();
+        // Demand is two beds for every inhabitant (with population expansion in mind). 
+        double demand = settlement.getAllAssociatedPeople().size() * 2D;
         
         double supply = 0D;
         boolean removedBuilding = false;
