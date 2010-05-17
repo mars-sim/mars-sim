@@ -139,6 +139,64 @@
 			<part name="solar panel" number="4" />
 		</frame>
 		
+		<!-- Note: the md4 nuclear reactor frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="md4 nuclear reactor frame" constructable="false" salvagable="true" work-time="400.0" skill-required="3" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="100" />
+			<part name="steel pipe" number="20" />
+			<part name="valve" number="20" />
+			<part name="gasket" number="20" />
+		</frame>
+		
+		<!-- Note: the atmospheric processor frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="atmospheric processor frame" constructable="false" salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="100" />
+			<part name="aluminum scrap" number="100" />
+			<part name="plastic pipe" number="50" />
+			<part name="valve" number="20" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="power cable" number="10" />
+			<part name="steel pipe" number="10" />
+			<part name="gasket" number="20" />
+		</frame>
+		
+		<!-- Note: the large habitation frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="large habitation frame" constructable="false" salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="25" />
+			<part name="aluminum scrap" number="25" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="power cable" number="2" />
+			<part name="gasket" number="4" />
+		</frame>
+		
+		<!-- Note: the large greenhouse frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="large greenhouse frame" constructable="false" salvagable="true" work-time="300.0" skill-required="3" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="10" />
+			<part name="aluminum scrap" number="15" />
+			<part name="glass sheet" number="20" />
+			<part name="plastic pipe" number="15" />
+			<part name="valve" number="9" />
+			<part name="gasket" number="9" />
+			<part name="electrical wire" number="12" />
+			<part name="wire connector" number="12" />
+			<part name="power cable" number="6" />
+		</frame>
+		
+		<!-- Note: the garage frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="garage frame" constructable="false" salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="25" />
+			<part name="aluminum scrap" number="25" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="power cable" number="2" />
+			<part name="gasket" number="4" />
+		</frame>
+		
 	</frame-list>
 
 	<building-list>
@@ -274,7 +332,83 @@
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="5" />
-			<part name="fiberglass" number="50" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="25" />
+			<part name="wire connector" number="25" />
+		</building>
+		
+		<!-- Storage hab building project that is a modified lander hab. -->
+		<building name="storage hab" constructable="true" salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+			<resource name="polyester resin" amount="5.0" />
+			<resource name="styrene" amount="3.0" />
+			<resource name="polyethylene" amount="20.0" />
+			<part name="steel sheet" number="20" />
+			<part name="aluminum sheet" number="15" />
+			<part name="plastic sheet" number="20" />
+			<part name="fiberglass" number="10" />
+			<part name="fiberglass cloth" number="10" />
+			<part name="plastic pipe" number="15" />
+			<part name="valve" number="15" />
+			<part name="electrical wire" number="15" />
+			<part name="wire connector" number="15" />
+		</building>
+		
+		<!-- Research hab building project that is a modified lander hab. -->
+		<building name="research hab" constructable="true" salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="5" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="25" />
+			<part name="wire connector" number="25" />
+		</building>
+		
+		<!-- Residential hab building project that is a modified lander hab. -->
+		<building name="residential hab" constructable="true" salvagable="true" work-time="50.0" skill-required="2" frame="lander hab frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="5" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="3" />
+			<part name="valve" number="3" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</building>
+		
+		<!-- Medical hab building project that is a modified lander hab. -->
+		<building name="medical hab" constructable="true" salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="5" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="25" />
+			<part name="wire connector" number="25" />
+		</building>
+		
+		<!-- Machinery hab building project that is a modified lander hab. -->
+		<building name="machinery hab" constructable="true" salvagable="true" work-time="100.0" skill-required="2" frame="lander hab frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="5" />
+			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="25" />
@@ -311,7 +445,7 @@
 		<building name="starting erv base" constructable="false" salvagable="true" work-time="75.0" skill-required="2" frame="erv base frame" >
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
-			<part name="fiberglass" number="25" />
+			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="steel pipe" number="10" />
 			<part name="copper pipe" number="5" />
@@ -325,7 +459,7 @@
 		<building name="erv base" constructable="true" salvagable="true" work-time="75.0" skill-required="2" frame="erv base frame" >
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
-			<part name="fiberglass" number="25" />
+			<part name="fiberglass" number="5" />
 			<part name="plastic pipe" number="7" />
 			<part name="steel pipe" number="10" />
 			<part name="copper pipe" number="5" />
@@ -333,6 +467,148 @@
 			<part name="valve" number="20" />
 			<part name="electrical wire" number="25" />
 			<part name="wire connector" number="25" />
+		</building>
+		
+		<!-- MD4 nuclear reactor building project for salvaging (cannot be refitted). -->
+		<building name="md4 nuclear reactor" constructable="false" salvagable="true" work-time="400.0" skill-required="5" frame="md4 nuclear reactor frame" >
+			<part name="steel sheet" number="40" />
+			<part name="aluminum sheet" number="6" />
+			<part name="fiberglass" number="20" />
+			<part name="steel pipe" number="10" />
+			<part name="valve" number="10" />
+			<part name="copper wire" number="200" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</building>
+		
+		<!-- Atmospheric processor building project for refitting or salvaging. -->
+		<building name="atmospheric processor" constructable="true" salvagable="true" work-time="400.0" skill-required="5" frame="atmospheric processor frame" >
+			<part name="steel sheet" number="40" />
+			<part name="aluminum sheet" number="20" />
+			<part name="fiberglass" number="20" />
+			<part name="plastic pipe" number="30" />
+			<part name="steel pipe" number="30" />
+			<part name="copper pipe" number="15" />
+			<part name="plastic pipe" number="15" />
+			<part name="valve" number="50" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+		</building>
+		
+		<!-- Residential quarters building project for refitting or salvaging. -->
+		<building name="residential quarters" constructable="true" salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Lounge building project for refitting or salvaging. -->
+		<building name="lounge" constructable="true" salvagable="true" work-time="100.0" skill-required="3" frame="large habitation frame" >
+			<resource name="polyester resin" amount="5.0" />
+			<resource name="styrene" amount="5.0" />
+			<resource name="polyethylene" amount="10.0" />
+			<part name="steel sheet" number="2" />
+			<part name="aluminum sheet" number="2" />
+			<part name="fiberglass" number="5" />
+			<part name="electrical wire" number="2" />
+			<part name="wire connector" number="2" />
+		</building>
+		
+		<!-- Infirmary building project for refitting or salvaging. -->
+		<building name="infirmary" constructable="true" salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Command and control building project for refitting or salvaging. -->
+		<building name="command and control" constructable="true" salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Large greenhouse building project for refitting or salvaging. -->
+		<building name="large greenhouse" constructable="true" salvagable="true" work-time="200.0" skill-required="4" frame="large greenhouse frame" >
+			<resource name="polyester resin" amount="15.0" />
+			<resource name="styrene" amount="3.0" />
+			<resource name="polyethylene" amount="30.0" />
+			<part name="aluminum sheet" number="9" />
+			<part name="plastic sheet" number="30" />
+			<part name="fiberglass" number="15" />
+			<part name="plastic pipe" number="15" />
+			<part name="valve" number="15" />
+			<part name="electrical wire" number="15" />
+			<part name="wire connector" number="15" />
+		</building>
+		
+		<!-- Laboratory building project for refitting or salvaging. -->
+		<building name="laboratory" constructable="true" salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Garage building project for refitting or salvaging. -->
+		<building name="garage" constructable="true" salvagable="true" work-time="100.0" skill-required="3" frame="garage frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="large electric motor" number="1" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Workshop building project for refitting or salvaging. -->
+		<building name="workshop" constructable="true" salvagable="true" work-time="200.0" skill-required="4" frame="large habitation frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
 		</building>
 
 	</building-list>
