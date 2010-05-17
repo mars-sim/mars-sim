@@ -1623,7 +1623,7 @@ public class GoodsManager implements Serializable {
 				if (tempSettlement != settlement) {
 					double baseValue = tempSettlement.getGoodsManager().getGoodValuePerItem(good);
 					double distance = settlement.getCoordinates().getDistance(tempSettlement.getCoordinates());
-					double tradeValue = baseValue / (1D + (distance / 1000D));
+					double tradeValue = baseValue / (1D + (distance / 100D));
 					if (tradeValue > bestTradeValue) bestTradeValue = tradeValue;
 				}
 			}
