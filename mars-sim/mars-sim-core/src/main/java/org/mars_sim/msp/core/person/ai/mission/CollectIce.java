@@ -95,8 +95,8 @@ public class CollectIce extends CollectResourcesMission {
 				GoodsManager manager = person.getSettlement().getGoodsManager();
 				AmountResource iceResource = AmountResource.findAmountResource("ice");
 				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-				result *= value * 100D;
-                if (result > 100D) result = 100D;
+				result *= value;
+                if (result > 10D) result = 10D;
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE, "Error checking good value of ice.");
