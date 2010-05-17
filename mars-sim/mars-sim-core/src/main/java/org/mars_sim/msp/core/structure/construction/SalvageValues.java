@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.structure.construction;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -22,7 +23,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * Calculates values for salvaging buildings at a settlement.
  */
-public class SalvageValues {
+public class SalvageValues implements Serializable {
 
     // Data members
     private Settlement settlement;
