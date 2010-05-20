@@ -197,6 +197,18 @@
 			<part name="gasket" number="4" />
 		</frame>
 		
+		<!-- Note: the observatory frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="observatory frame" constructable="false" salvagable="true" work-time="200.0" skill-required="2" foundation="unprepared surface foundation" >
+			<part name="steel scrap" number="25" />
+			<part name="aluminum scrap" number="25" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="power cable" number="2" />
+			<part name="gasket" number="4" />
+		</frame>
+		
 	</frame-list>
 
 	<building-list>
@@ -601,6 +613,22 @@
 			<resource name="polyester resin" amount="25.0" />
 			<resource name="styrene" amount="15.0" />
 			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Astronomy observatory building project for refitting or salvaging. -->
+		<building name="astronomy observatory" constructable="true" salvagable="true" work-time="2300.0" skill-required="5" frame="observatory frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="glass sheet" number="10" />
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
 			<part name="plastic sheet" number="10" />
