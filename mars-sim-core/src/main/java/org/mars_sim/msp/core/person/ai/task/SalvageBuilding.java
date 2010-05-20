@@ -55,7 +55,7 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     public SalvageBuilding(Person person, ConstructionStage stage, 
             List<GroundVehicle> vehicles) throws Exception {
         // Use EVAOperation parent constructor.
-        super("Construct Building", person);
+        super("Salvage Building", person);
         
         // Initialize data members.
         this.stage = stage;
