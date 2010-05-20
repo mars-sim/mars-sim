@@ -164,7 +164,8 @@ public class SalvageValues implements Serializable {
         BuildingManager buildingManager = settlement.getBuildingManager();
         Iterator<Building> i = buildingManager.getBuildings().iterator();
         while (i.hasNext()) {
-            double salvageProfit = getNewBuildingSalvageProfit(i.next(), constructionSkill);
+            Building building = i.next();
+            double salvageProfit = getNewBuildingSalvageProfit(building, constructionSkill);
             if (salvageProfit > result) result = salvageProfit;
         }
         
