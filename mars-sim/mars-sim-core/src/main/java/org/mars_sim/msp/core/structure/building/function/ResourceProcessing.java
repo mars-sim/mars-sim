@@ -98,9 +98,6 @@ public class ResourceProcessing extends Function implements Serializable {
             result += processValue;
         }
         
-        // Divide result by 100 because value is too high.
-        result /= 100D;
-        
         return result;
     }
 	
