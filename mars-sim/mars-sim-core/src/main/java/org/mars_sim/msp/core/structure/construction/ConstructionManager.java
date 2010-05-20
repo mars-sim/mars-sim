@@ -66,8 +66,10 @@ public class ConstructionManager implements Serializable {
             ConstructionSite site = i.next();
             if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() && 
                     !site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
-                if (site.getCurrentConstructionStage() != null) {
-                    if (!site.getCurrentConstructionStage().isSalvaging()) result.add(site);
+                ConstructionStage currentStage = site.getCurrentConstructionStage();
+                if (currentStage != null) {
+                    if (currentStage.isComplete()) result.add(site);
+                    else if (!currentStage.isSalvaging()) result.add(site);
                 }
                 else result.add(site);
             }
@@ -86,10 +88,11 @@ public class ConstructionManager implements Serializable {
             ConstructionSite site = i.next();
             if (!site.isUndergoingConstruction() && !site.isUndergoingSalvage() && 
                     !site.isAllConstructionComplete() && !site.isAllSalvageComplete()) {
-                if (site.getCurrentConstructionStage() != null) {
-                    if (site.getCurrentConstructionStage().isSalvaging()) result.add(site);
+                ConstructionStage currentStage = site.getCurrentConstructionStage();
+                if (currentStage != null) {
+                    if (currentStage.isComplete()) result.add(site);
+                    else if (currentStage.isSalvaging()) result.add(site);
                 }
-                else result.add(site);
             }
         }
         return result;
