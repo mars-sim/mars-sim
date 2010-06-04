@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 2.86 2009-05-26
+ * @version 2.90 2010-06-02
  * @author Sebastien Venot
  */
 
@@ -46,6 +46,7 @@ public class Yoga extends Task implements Serializable {
         if (settlement != null) {
             int currentPopulation = settlement.getCurrentPopulationNum();
             int maxPopulation = settlement.getPopulationCapacity();
+            if (maxPopulation <= 0) maxPopulation = 1;
             int percentange = (currentPopulation * 100) / maxPopulation;
             if (percentange > 70) {
                 result = result + 10;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 2.85 2008-10-20
+ * @version 2.90 2010-06-02
  * @author Scott Davis
  */
 
@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -66,6 +67,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private final static String TRADE = "trade";
 	private final static String MINING = "mining";
     private final static String CONSTRUCTION = "construction";
+    private final static String SALVAGE = "salvage";
 	
 	// Private members
 	private Mission currentMission;
@@ -89,6 +91,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private MissionCustomInfoPanel tradePanel;
 	private MissionCustomInfoPanel miningPanel;
     private MissionCustomInfoPanel constructionPanel;
+    private MissionCustomInfoPanel salvagePanel;
 	
 	/**
 	 * Constructor
@@ -261,8 +264,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		missionCustomPane.add(miningPanel, MINING);
        
         // Create custom construction mission panel.
-        constructionPanel = new ConstructionMissionCustomInfoPanel();
+        constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
         missionCustomPane.add(constructionPanel, CONSTRUCTION);
+        
+        // Create custom salvage mission panel.
+        salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
+        missionCustomPane.add(salvagePanel, SALVAGE);
 	}
 	
 	/**
@@ -369,6 +376,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
             else if (mission instanceof BuildingConstructionMission) {
                 customPanelLayout.show(missionCustomPane, CONSTRUCTION);
                 constructionPanel.updateMission(mission);
+            }
+            else if (mission instanceof BuildingSalvageMission) {
+                customPanelLayout.show(missionCustomPane, SALVAGE);
+                salvagePanel.updateMission(mission);
             }
 			else customPanelLayout.show(missionCustomPane, EMPTY);
 		}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 2.90 2009-04-29
+ * @version 2.90 2010-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -705,5 +705,21 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                 settlement.getGoodsManager().updateGoodValue(GoodsUtil.getResourceGood(part), false);
             }
         }
+    }
+    
+    /**
+     * Gets the mission's construction site.
+     * @return construction site.
+     */
+    public ConstructionSite getConstructionSite() {
+        return constructionSite;
+    }
+    
+    /**
+     * Gets the mission's construction stage.
+     * @return construction stage.
+     */
+    public ConstructionStage getConstructionStage() {
+        return constructionStage;
     }
 }
