@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSitesPanel.java
- * @version 2.85 2008-10-13
+ * @version 2.90 2010-06-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -30,6 +30,9 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
+/**
+ * A panel displaying a list of construction sites at a settlement.
+ */
 public class ConstructionSitesPanel extends JPanel {
 
     // Data members
@@ -38,6 +41,10 @@ public class ConstructionSitesPanel extends JPanel {
     private JPanel sitesListPane;
     private JScrollPane sitesScrollPane;
     
+    /**
+     * Constructor
+     * @param manager the settlement construction manager.
+     */
     public ConstructionSitesPanel(ConstructionManager manager) {
         // Use JPanel constructor.
         super();
@@ -115,6 +122,11 @@ public class ConstructionSitesPanel extends JPanel {
         }
     }
     
+    /**
+     * Gets a construction site panel for a particular construction site.
+     * @param site the construction site.
+     * @return construction site panel or null if none found.
+     */
     private ConstructionSitePanel getConstructionSitePanel(ConstructionSite site) {
         ConstructionSitePanel result = null;
         
@@ -129,6 +141,9 @@ public class ConstructionSitesPanel extends JPanel {
         return result;
     }
     
+    /**
+     * A panel displaying information about a particular construction site.
+     */
     private class ConstructionSitePanel extends JPanel {
         
         // Data members
@@ -136,20 +151,28 @@ public class ConstructionSitesPanel extends JPanel {
         private JLabel statusLabel;
         private BoundedRangeModel workBarModel;
         
+        /**
+         * Constructor.
+         * @param site the construction site.
+         */
         private ConstructionSitePanel(ConstructionSite site) {
             // Use JPanel constructor
             super();
             
+            // Initialize data members.
             this.site = site;
             
+            // Set the layout.
             setLayout(new BorderLayout(5, 5));
             
             // Set border
             setBorder(new MarsPanelBorder());
             
+            // Create the status panel.
             statusLabel = new JLabel("Status: ", JLabel.LEFT);
             add(statusLabel, BorderLayout.NORTH);
             
+            // Create the progress bar panel.
             JPanel progressBarPanel = new JPanel();
             add(progressBarPanel, BorderLayout.CENTER);
             
@@ -166,10 +189,17 @@ public class ConstructionSitesPanel extends JPanel {
             setToolTipText(getToolTipString());
         }
         
+        /**
+         * Gets the construction site for this panel.
+         * @return construction site.
+         */
         private ConstructionSite getConstructionSite() {
             return site;
         }
         
+        /**
+         * Updates the panel information.
+         */
         private void update() {
             
             // Update status label.
@@ -178,6 +208,7 @@ public class ConstructionSitesPanel extends JPanel {
             // Make sure status label isn't too long.
             if (statusString.length() > 31) statusString = statusString.substring(0, 31) + "...";
             
+            // Set the text in the status label.
             statusLabel.setText(statusString);
             
             // Update work progress bar.
@@ -204,8 +235,14 @@ public class ConstructionSitesPanel extends JPanel {
             if (stage != null) {
                 if (site.isUndergoingConstruction()) statusString = "Status: constructing " + 
                         stage.getInfo().getName();
-                else if (site.hasUnfinishedStage()) statusString = "Status: " + 
-                        stage.getInfo().getName() + " unfinished";
+                else if (site.isUndergoingSalvage()) statusString = "Status: salvaging " + 
+                        stage.getInfo().getName();
+                else if (site.hasUnfinishedStage()) {
+                    if (stage.isSalvaging()) statusString = "Status: salvaging" + 
+                            stage.getInfo().getName() + " unfinished";
+                    else statusString = "Status: constructing" + 
+                            stage.getInfo().getName() + " unfinished";
+                }
                 else statusString = "Status: " + stage.getInfo().getName() + " completed";
             }
             else statusString = "No construction";
@@ -224,6 +261,8 @@ public class ConstructionSitesPanel extends JPanel {
             if (stage != null) {
                 ConstructionStageInfo info = stage.getInfo();
                 result.append("Stage Type: " + info.getType() + "<br>");
+                if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
+                else result.append("Work Type: Construction<br>");
                 DecimalFormat formatter = new DecimalFormat("0.0");
                 String requiredWorkTime = formatter.format(info.getWorkTime() / 1000D);
                 result.append("Work Time Required: " + requiredWorkTime + " Sols<br>");
@@ -233,7 +272,7 @@ public class ConstructionSitesPanel extends JPanel {
                         info.getArchitectConstructionSkill() + "<br>");
                 
                 // Add construction resources.
-                if (info.getResources().size() > 0) {
+                if ((info.getResources().size() > 0) && !stage.isSalvaging()) {
                     result.append("<br>Construction Resources:<br>");
                     Iterator<AmountResource> i = info.getResources().keySet().iterator();
                     while (i.hasNext()) {
@@ -245,7 +284,8 @@ public class ConstructionSitesPanel extends JPanel {
                 
                 // Add construction parts.
                 if (info.getParts().size() > 0) {
-                    result.append("<br>Construction Parts:<br>");
+                    if (stage.isSalvaging()) result.append("<br>Salvagable Parts:<br>");
+                    else result.append("<br>Construction Parts:<br>");
                     Iterator<Part> j = info.getParts().keySet().iterator();
                     while (j.hasNext()) {
                         Part part = j.next();
@@ -256,7 +296,8 @@ public class ConstructionSitesPanel extends JPanel {
                 
                 // Add construction vehicles.
                 if (info.getVehicles().size() > 0) {
-                    result.append("<br>Construction Vehicles:<br>");
+                    if (stage.isSalvaging()) result.append("<br>Salvage Vehicles:<br>");
+                    else result.append("<br>Construction Vehicles:<br>");
                     Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                     while (k.hasNext()) {
                         ConstructionVehicleType vehicle = k.next();

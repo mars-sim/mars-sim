@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageValues.java
- * @version 2.90 2010-04-26
+ * @version 2.90 2010-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.construction;
@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -24,6 +26,10 @@ import org.mars_sim.msp.core.time.MarsClock;
  * Calculates values for salvaging buildings at a settlement.
  */
 public class SalvageValues implements Serializable {
+    
+    // Static members
+    // Value for salvaging a foundation.
+    private static final double FOUNDATION_SALVAGE_VALUE = 10D;
 
     // Data members
     private Settlement settlement;
@@ -130,7 +136,11 @@ public class SalvageValues implements Serializable {
             
             if (site.hasUnfinishedStage()) {
                 if (stage.getInfo().getArchitectConstructionSkill() <= constructionSkill) {
-                    result = getSalvageStageValue(prerequisiteStage);
+                    if (prerequisiteStage != null) result = getSalvageStageValue(prerequisiteStage);
+                    else {
+                        // If stage is foundation and has no prerequisite stage, use foundation salvage value.
+                        result = FOUNDATION_SALVAGE_VALUE;
+                    }
                     
                     // Determine estimated salvaged parts value.
                     result += getEstimatedSalvagedPartsValue(stage.getInfo(), constructionSkill, 1D);
@@ -138,7 +148,13 @@ public class SalvageValues implements Serializable {
             }
             else {
                 double currentValue = getSalvageStageValue(stage.getInfo());
-                double preValue = getSalvageStageValue(prerequisiteStage);
+                
+                double preValue = 0D;
+                if (prerequisiteStage != null) preValue = getSalvageStageValue(prerequisiteStage);
+                else {
+                    // If stage is foundation and has no prerequisite stage, use foundation salvage value.
+                    preValue = FOUNDATION_SALVAGE_VALUE;
+                }
                 
                 // Determine estimated construction parts returned.
                 double partsValue = getEstimatedSalvagedPartsValue(stage.getInfo(), constructionSkill, 1D);
@@ -201,6 +217,19 @@ public class SalvageValues implements Serializable {
             
             double salvageProfit = frameStageValue - buildingValue + partsValue;
             result = salvageProfit;
+        }
+        
+        // Check that building doesn't have remaining life support at settlement.
+        if (building.hasFunction(LifeSupport.NAME)) {
+            LifeSupport buildingLS = (LifeSupport) building.getFunction(LifeSupport.NAME);
+            int buildingLSCapacity = buildingLS.getOccupantCapacity();
+            int settlementLSCapacity = settlement.getLifeSupportCapacity();
+            if (buildingLSCapacity >= settlementLSCapacity) result = 0D;
+        }
+        
+        // Check that building doesn't have only airlock at settlement.
+        if (building.hasFunction(EVA.NAME)) {
+            if (settlement.getAirlockNum() == 1) result = 0D;
         }
         
         return result;

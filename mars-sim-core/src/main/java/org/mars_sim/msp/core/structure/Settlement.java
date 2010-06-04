@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 2.90 2010-01-20
+ * @version 2.90 2010-06-02
  * @author Scott Davis
  */
 
@@ -449,6 +449,14 @@ public class Settlement extends Structure implements Malfunctionable,
         }
         
         return result;
+    }
+    
+    /**
+     * Gets the number of airlocks at the settlement.
+     * @return number of airlocks.
+     */
+    public int getAirlockNum() {
+        return getBuildingManager().getBuildings(EVA.NAME).size();
     }
     
     /**

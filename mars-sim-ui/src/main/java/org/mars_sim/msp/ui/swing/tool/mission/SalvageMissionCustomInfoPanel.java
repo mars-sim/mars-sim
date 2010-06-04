@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * ConstructionMissionCustomInfoPanel.java
+ * SalvageMissionCustomInfoPanel.java
  * @version 2.90 2010-06-02
  * @author Scott Davis
  */
@@ -20,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -35,14 +35,14 @@ import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
- * A panel for displaying construction custom mission information.
+ * A panel for displaying salvage custom mission information.
  */
-public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel 
+public class SalvageMissionCustomInfoPanel extends MissionCustomInfoPanel 
         implements ConstructionListener {
 
     // Data members.
     private MainDesktopPane desktop;
-    private BuildingConstructionMission mission;
+    private BuildingSalvageMission mission;
     private ConstructionSite site;
     private JLabel stageLabel;
     private BoundedRangeModel progressBarModel;
@@ -52,7 +52,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
      * Constructor
      * @param desktop the main desktop panel.
      */
-    ConstructionMissionCustomInfoPanel(MainDesktopPane desktop) {
+    public SalvageMissionCustomInfoPanel(MainDesktopPane desktop) {
         // Use MissionCustomInfoPanel constructor.
         super();
         
@@ -68,7 +68,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         contentsPanel.add(titlePanel);
         
-        JLabel titleLabel = new JLabel("Building Construction Site");
+        JLabel titleLabel = new JLabel("Salvage Construction Site");
         titlePanel.add(titleLabel);
         
         JPanel settlementPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
@@ -111,8 +111,8 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
         // Remove as construction listener if necessary.
         if (site != null) site.removeConstructionListener(this);
         
-        if (mission instanceof BuildingConstructionMission) {
-            this.mission = (BuildingConstructionMission) mission;
+        if (mission instanceof BuildingSalvageMission) {
+            this.mission = (BuildingSalvageMission) mission;
             site = this.mission.getConstructionSite();
             if (site != null) site.addConstructionListener(this);
             
@@ -129,13 +129,10 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
     public void updateMissionEvent(MissionEvent e) {
         stageLabel.setText(getStageString());
     }
-    
-    /**
-     * Catch construction update event.
-     * @param event the mission event.
-     */
+
+    @Override
     public void constructionUpdate(ConstructionEvent event) {
-        if (ConstructionStage.ADD_CONSTRUCTION_WORK_EVENT.equals(event.getType())) {
+        if (ConstructionStage.ADD_SALVAGE_WORK_EVENT.equals(event.getType())) {
             updateProgressBar();
             
             // Update the tool tip string.
@@ -191,7 +188,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
         if (site != null) stage = site.getCurrentConstructionStage();
         if (stage != null) {
             ConstructionStageInfo info = stage.getInfo();
-            result.append("Status: building " + info.getName() + "<br>");
+            result.append("Status: salvaging " + info.getName() + "<br>");
             result.append("Stage Type: " + info.getType() + "<br>");
             if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
             else result.append("Work Type: Construction<br>");
@@ -203,20 +200,9 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
             result.append("Architect Construction Skill Required: " + 
                     info.getArchitectConstructionSkill() + "<br>");
             
-            // Add construction resources.
-            if (info.getResources().size() > 0) {
-                result.append("<br>Construction Resources:<br>");
-                Iterator<AmountResource> i = info.getResources().keySet().iterator();
-                while (i.hasNext()) {
-                    AmountResource resource = i.next();
-                    double amount = info.getResources().get(resource);
-                    result.append("&nbsp;&nbsp;" + resource.getName() + ": " + amount + " kg<br>");
-                }
-            }
-            
             // Add construction parts.
             if (info.getParts().size() > 0) {
-                result.append("<br>Construction Parts:<br>");
+                result.append("<br>Salvagable Parts:<br>");
                 Iterator<Part> j = info.getParts().keySet().iterator();
                 while (j.hasNext()) {
                     Part part = j.next();
@@ -227,7 +213,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
             
             // Add construction vehicles.
             if (info.getVehicles().size() > 0) {
-                result.append("<br>Construction Vehicles:<br>");
+                result.append("<br>Salvage Vehicles:<br>");
                 Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                 while (k.hasNext()) {
                     ConstructionVehicleType vehicle = k.next();
