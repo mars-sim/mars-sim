@@ -238,9 +238,9 @@ public class ConstructionSitesPanel extends JPanel {
                 else if (site.isUndergoingSalvage()) statusString = "Status: salvaging " + 
                         stage.getInfo().getName();
                 else if (site.hasUnfinishedStage()) {
-                    if (stage.isSalvaging()) statusString = "Status: salvaging" + 
+                    if (stage.isSalvaging()) statusString = "Status: salvaging " + 
                             stage.getInfo().getName() + " unfinished";
-                    else statusString = "Status: constructing" + 
+                    else statusString = "Status: constructing " + 
                             stage.getInfo().getName() + " unfinished";
                 }
                 else statusString = "Status: " + stage.getInfo().getName() + " completed";
