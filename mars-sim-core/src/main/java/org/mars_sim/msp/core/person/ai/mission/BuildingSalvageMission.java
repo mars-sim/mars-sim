@@ -293,7 +293,18 @@ public class BuildingSalvageMission extends Mission implements Serializable {
             // Check if LUV attachment parts available.
             boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
             
-            if (reservableLUV && availableAttachmentParts) {         
+            // Check if enough available people at settlement for mission.
+            int availablePeopleNum = 0;
+            Iterator<Person> i = settlement.getInhabitants().iterator();
+            while (i.hasNext()) {
+                Person member = i.next();
+                boolean noMission = !member.getMind().hasActiveMission();
+                boolean isFit = !member.getPhysicalCondition().hasSeriousMedicalProblems();
+                if (noMission && isFit) availablePeopleNum++;
+            }
+            boolean enoughPeople = (availablePeopleNum >= MIN_PEOPLE);
+            
+            if (reservableLUV && availableAttachmentParts && enoughPeople) {         
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
                             Skill.CONSTRUCTION);
