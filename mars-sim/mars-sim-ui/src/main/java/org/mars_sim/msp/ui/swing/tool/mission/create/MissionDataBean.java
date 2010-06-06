@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 2.87 2009-10-01
+ * @version 2.90 2010-06-5
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
 import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
@@ -31,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -54,6 +56,7 @@ class MissionDataBean {
     final static String CONSTRUCTION_MISSION = "Building Construction";
     final static String AREOLOGY_FIELD_MISSION = "Areology Study Field Mission";
     final static String BIOLOGY_FIELD_MISSION = "Biology Study Field Mission";
+    final static String SALVAGE_MISSION = "Building Salvage";
 
 	// Data members.
 	private String type;
@@ -74,6 +77,10 @@ class MissionDataBean {
     private ConstructionSite constructionSite;
     private ConstructionStageInfo constructionStageInfo;
     private List<GroundVehicle> constructionVehicles;
+    private Settlement salvageSettlement;
+    private ConstructionSite salvageSite;
+    private Building salvageBuilding;
+    private List<GroundVehicle> salvageVehicles;
     private Coordinates fieldSite;
     private Person leadResearcher;
     private ScientificStudy study;
@@ -125,6 +132,10 @@ class MissionDataBean {
                 mission = new BiologyStudyFieldMission(members, startingSettlement, leadResearcher, study, 
                         rover, fieldSite, description);
             }
+            else if (SALVAGE_MISSION.equals(type)) {
+                mission = new BuildingSalvageMission(members, salvageSettlement, salvageBuilding, salvageSite, 
+                        salvageVehicles);
+            }
             else throw new MissionException(null, "mission type: " + type + " unknown");
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
@@ -142,7 +153,7 @@ class MissionDataBean {
 	static final String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
 				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION, 
-                MINING_MISSION, CONSTRUCTION_MISSION };
+                MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION };
 		return result;
 	}
 	
@@ -166,6 +177,8 @@ class MissionDataBean {
             result = AreologyStudyFieldMission.DEFAULT_DESCRIPTION;
         else if (missionType.equals(BIOLOGY_FIELD_MISSION)) 
             result = BiologyStudyFieldMission.DEFAULT_DESCRIPTION;
+        else if (missionType.equals(SALVAGE_MISSION))
+            result = BuildingSalvageMission.DEFAULT_DESCRIPTION;
 		return result;
 	}
 	
@@ -392,6 +405,70 @@ class MissionDataBean {
 	void setMiningSite(ExploredLocation miningSite) {
 		this.miningSite = miningSite;
 	}
+    
+    /**
+     * Gets the salvage settlement.
+     * @return settlement.
+     */
+    Settlement getSalvageSettlement() {
+        return salvageSettlement;
+    }
+    
+    /**
+     * Sets the salvage settlement.
+     * @param salvageSettlement the salvage settlement.
+     */
+    void setSalvageSettlement(Settlement salvageSettlement) {
+        this.salvageSettlement = salvageSettlement;
+    }
+    
+    /**
+     * Gets the salvage site.
+     * @return salvage site.
+     */
+    ConstructionSite getSalvageSite() {
+        return salvageSite;
+    }
+    
+    /**
+     * Sets the salvage site.
+     * @param salvageSite the salvage site.
+     */
+    void setSalvageSite(ConstructionSite salvageSite) {
+        this.salvageSite = salvageSite;
+    }
+    
+    /**
+     * Gets the salvage building.
+     * @return salvage building.
+     */
+    Building getSalvageBuilding() {
+        return salvageBuilding;
+    }
+    
+    /**
+     * Sets the salvage building.
+     * @param salvageBuilding the salvage building.
+     */
+    void setSalvageBuilding(Building salvageBuilding) {
+        this.salvageBuilding = salvageBuilding;
+    }
+    
+    /**
+     * Gets the salvage vehicles.
+     * @return list of ground vehicles.
+     */
+    List<GroundVehicle> getSalvageVehicles() {
+        return salvageVehicles;
+    }
+    
+    /**
+     * Sets the salvage vehicles.
+     * @param salvageVehicles list of ground vehicles.
+     */
+    void setSalvageVehicles(List<GroundVehicle> salvageVehicles) {
+        this.salvageVehicles = salvageVehicles;
+    }
     
     /**
      * Gets the construction settlement.
