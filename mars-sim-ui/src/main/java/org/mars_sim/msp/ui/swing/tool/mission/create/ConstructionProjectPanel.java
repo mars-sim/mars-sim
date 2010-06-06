@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @version 2.85 2009-01-17
+ * @version 2.90 2010-06-05
  * @author Scott Davis
  */
 
@@ -212,6 +212,7 @@ class ConstructionProjectPanel extends WizardPanel {
         projectListModel.clear();
         materialsTableModel.update();
         getWizard().setButtons(false);
+        errorMessageLabel.setText(" ");
     }
 
     @Override
@@ -293,8 +294,12 @@ class ConstructionProjectPanel extends WizardPanel {
                 if (site.isUndergoingConstruction()) {
                     siteListModel.addElement("Site: " + stage + " - under construction");
                 }
+                else if (site.isUndergoingSalvage()) {
+                    siteListModel.addElement("Site: " + stage + " - under salvage");
+                }
                 else if (site.hasUnfinishedStage()) {
-                    siteListModel.addElement("Site: " + stage + " unfinished");
+                    if (stage.isSalvaging()) siteListModel.addElement("Site: " + stage + " salvage unfinished");
+                    else siteListModel.addElement("Site: " + stage + " construction unfinished");
                 }
                 else {
                     siteListModel.addElement("Site: " + stage);
@@ -317,7 +322,10 @@ class ConstructionProjectPanel extends WizardPanel {
                     // Show all foundation projects.
                     Iterator<ConstructionStageInfo> i = ConstructionUtil.
                             getFoundationConstructionStageInfoList().iterator();
-                    while (i.hasNext()) projectListModel.addElement(i.next());
+                    while (i.hasNext()) {
+                        ConstructionStageInfo info = i.next();
+                        if (info.isConstructable()) projectListModel.addElement(info);
+                    }
                 }
                 catch (Exception e) {
                     e.printStackTrace(System.err);
@@ -325,6 +333,10 @@ class ConstructionProjectPanel extends WizardPanel {
             }
             else if (selectedSite.indexOf(" - under construction") >= 0) {
                 errorMessageLabel.setText("Cannot start mission on site already undergoing construction.");
+                // Do nothing.
+            }
+            else if (selectedSite.indexOf(" - under salvage") >= 0) {
+                errorMessageLabel.setText("Cannot start mission on site already undergoing salvage.");
                 // Do nothing.
             }
             else {
@@ -344,7 +356,10 @@ class ConstructionProjectPanel extends WizardPanel {
                                 ConstructionStageInfo info = site.getCurrentConstructionStage().getInfo();
                                 Iterator<ConstructionStageInfo> i = ConstructionUtil.
                                         getNextPossibleStages(info).iterator();
-                                while (i.hasNext()) projectListModel.addElement(i.next());
+                                while (i.hasNext()) {
+                                    ConstructionStageInfo stageInfo = i.next();
+                                    if (stageInfo.isConstructable()) projectListModel.addElement(stageInfo);
+                                }
                             }
                             catch (Exception e) {
                                 e.printStackTrace(System.err);

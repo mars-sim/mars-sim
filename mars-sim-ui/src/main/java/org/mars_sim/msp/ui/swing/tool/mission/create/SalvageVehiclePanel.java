@@ -1,9 +1,10 @@
 /**
  * Mars Simulation Project
- * ConstructionVehiclePanel.java
- * @version 2.85 2009-01-18
+ * SalvageVehiclePanel.java
+ * @version 2.90 2010-06-05
  * @author Scott Davis
  */
+
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import java.awt.BorderLayout;
@@ -30,18 +31,22 @@ import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
- * A wizard panel for selecting the construction vehicles for a mission.
+ * A wizard panel for selecting the salvage vehicles for a mission.
  */
-class ConstructionVehiclePanel extends WizardPanel {
+public class SalvageVehiclePanel extends WizardPanel {
 
     // The wizard panel name.
-    private final static String NAME = "Construction Vehicles";
+    private final static String NAME = "Salvage Vehicles";
     
     // Data members.
     private VehicleTableModel vehicleTableModel;
@@ -54,7 +59,7 @@ class ConstructionVehiclePanel extends WizardPanel {
      * Constructor
      * @param wizard the create mission wizard.
      */
-    ConstructionVehiclePanel(CreateMissionWizard wizard) {
+    SalvageVehiclePanel(CreateMissionWizard wizard) {
         // User WizardPanel constructor.
         super(wizard);
         
@@ -105,8 +110,7 @@ class ConstructionVehiclePanel extends WizardPanel {
                         boolean goodVehicles = false;
                         errorMessageLabel.setText(" ");
                         
-                        int requiredVehicles = getWizard().getMissionData().
-                                getConstructionStageInfo().getVehicles().size();
+                        int requiredVehicles = getRequiredVehiclesNum();
                         
                         // Get the selected vehicle index.
                         int[] indexes = vehicleTable.getSelectedRows();
@@ -150,17 +154,17 @@ class ConstructionVehiclePanel extends WizardPanel {
 
     @Override
     boolean commitChanges() {
-        List<GroundVehicle> constructionVehicles = new ArrayList<GroundVehicle>();
+        List<GroundVehicle> salvageVehicles = new ArrayList<GroundVehicle>();
         int[] selectedIndexs = vehicleTable.getSelectedRows();
-        int requiredVehicles = getWizard().getMissionData().
-                getConstructionStageInfo().getVehicles().size();
+        int requiredVehicles = getRequiredVehiclesNum();
         for (int x = 0; x < selectedIndexs.length && x < requiredVehicles; x++) {
             LightUtilityVehicle selectedVehicle = 
                 (LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndexs[x]);
-            constructionVehicles.add(selectedVehicle);
+            
+            salvageVehicles.add(selectedVehicle);
         }
         
-        getWizard().getMissionData().setConstructionVehicles(constructionVehicles);
+        getWizard().getMissionData().setSalvageVehicles(salvageVehicles);
         return true;
     }
 
@@ -174,11 +178,36 @@ class ConstructionVehiclePanel extends WizardPanel {
         vehicleTableModel.updateTable();
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         
-        int requiredVehicles = getWizard().getMissionData().
-                getConstructionStageInfo().getVehicles().size();
-        requiredLabel.setText("Required vehicles: " + requiredVehicles);
+        requiredLabel.setText("Required vehicles: " + getRequiredVehiclesNum());
         
-        if (requiredVehicles == 0) getWizard().setButtons(true);
+        if (getRequiredVehiclesNum() == 0) getWizard().setButtons(true);
+    }
+    
+    /**
+     * Gets the number of required salvage vehicles.
+     * @return number of vehicles.
+     */
+    private int getRequiredVehiclesNum() {
+        int result = 0;
+        
+        ConstructionStageInfo salvageInfo = null;
+        Building salvageBuilding = getWizard().getMissionData().getSalvageBuilding();
+        if (salvageBuilding != null) {
+            try {
+                salvageInfo = ConstructionUtil.getConstructionStageInfo(salvageBuilding.getName());
+            }
+            catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        else {
+            ConstructionSite salvageSite = getWizard().getMissionData().getSalvageSite();
+            salvageInfo = salvageSite.getCurrentConstructionStage().getInfo();
+        }
+        
+        if (salvageInfo != null) result = salvageInfo.getVehicles().size();
+        
+        return result;
     }
     
     /**
@@ -234,7 +263,7 @@ class ConstructionVehiclePanel extends WizardPanel {
          */
         void updateTable() {
             units.clear();
-            Settlement settlement = getWizard().getMissionData().getConstructionSettlement();
+            Settlement settlement = getWizard().getMissionData().getSalvageSettlement();
             Collection<Vehicle> vehicles = CollectionUtils.sortByName(
                     settlement.getParkedVehicles());
             Iterator<Vehicle> i = vehicles.iterator();

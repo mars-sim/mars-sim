@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 2.85 2009-01-05
+ * @version 2.90 2010-06-06
  * @author Scott Davis
  */
 
@@ -287,6 +287,8 @@ class MembersPanel extends WizardPanel {
         String type = getWizard().getMissionData().getType();
         if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) 
             roverCapacityLabel.setText(" ");
+        if (MissionDataBean.SALVAGE_MISSION.equals(type)) 
+            roverCapacityLabel.setText(" ");
         else roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
 	}
 	
@@ -297,6 +299,7 @@ class MembersPanel extends WizardPanel {
 	int getRemainingRoverCapacity() {
         String type = getWizard().getMissionData().getType();
         if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) return Integer.MAX_VALUE;
+        else if (MissionDataBean.SALVAGE_MISSION.equals(type)) return Integer.MAX_VALUE;
         else {
             int roverCapacity = ((Crewable) getWizard().getMissionData().getRover()).getCrewCapacity();
             int memberNum = membersTableModel.getRowCount();
@@ -366,6 +369,8 @@ class MembersPanel extends WizardPanel {
     		Settlement settlement = missionData.getStartingSettlement();
             if (MissionDataBean.CONSTRUCTION_MISSION.equals(missionData.getType()))
                 settlement = missionData.getConstructionSettlement();
+            else if (MissionDataBean.SALVAGE_MISSION.equals(missionData.getType()))
+                settlement = missionData.getSalvageSettlement();
     		Collection<Person> people = CollectionUtils.sortByName(settlement.getInhabitants());
     		Iterator<Person> i = people.iterator();
     		while (i.hasNext()) units.add(i.next());
