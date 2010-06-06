@@ -301,4 +301,22 @@ public class ConstructionSite implements Serializable {
                     new ConstructionEvent(this, updateType, target));
         }
     }
+    
+    @Override
+    public String toString() {
+        StringBuffer result = new StringBuffer("Site");
+        
+        ConstructionStage stage = getCurrentConstructionStage();
+        if (stage != null) {
+            result.append(": " + stage.getInfo().getName());
+            if (isUndergoingConstruction()) result.append(" - under construction");
+            else if (isUndergoingSalvage()) result.append(" - under salvage");
+            else if (hasUnfinishedStage()) {
+                if (stage.isSalvaging()) result.append(" - salvage unfinished");
+                else result.append(" - construction unfinished");
+            }
+        }
+        
+        return result.toString();
+    }
 }
