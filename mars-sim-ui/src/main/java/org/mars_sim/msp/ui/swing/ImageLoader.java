@@ -12,7 +12,6 @@ import java.util.HashMap;
 import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.io.File;
 import java.net.URL;
 
 /**

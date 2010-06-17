@@ -226,6 +226,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         String[] latStrings = { "N", "S" };
         latDir = new JComboBox(latStrings);
         latDir.setEditable(false);
+        latDir.setPreferredSize(new Dimension(45, -1));
         positionPane.add(latDir);
 
         // Put glue and strut spacers in
@@ -243,6 +244,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         String[] longStrings = { "E", "W" };
         longDir = new JComboBox(longStrings);
         longDir.setEditable(false);
+        longDir.setPreferredSize(new Dimension(45, -1));
         positionPane.add(longDir);
 
         // Put glue and strut spacers in

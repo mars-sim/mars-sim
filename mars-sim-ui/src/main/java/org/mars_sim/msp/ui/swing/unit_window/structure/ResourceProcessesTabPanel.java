@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
@@ -41,7 +42,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 public class ResourceProcessesTabPanel extends TabPanel {
 
 	// Data members
-	private List processingBuildings;
+	private List<Building> processingBuildings;
 	private JScrollPane processesScrollPanel;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
@@ -104,11 +105,11 @@ public class ResourceProcessesTabPanel extends TabPanel {
     	
     	try {
     		// Add a label for each process in each processing building.
-    		Iterator i = processingBuildings.iterator();
+    		Iterator<Building> i = processingBuildings.iterator();
     		while (i.hasNext()) {
     			Building building = (Building) i.next();
     			ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
-    			Iterator j = processing.getProcesses().iterator();
+    			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
     			while (j.hasNext()) {
     				ResourceProcess process = (ResourceProcess) j.next();
     				processListPanel.add(new ResourceProcessPanel(process, building));
@@ -125,7 +126,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		
 		// Check if building list has changed.
 		Settlement settlement = (Settlement) unit;
-		List tempBuildings = settlement.getBuildingManager().getBuildings(ResourceProcessing.NAME);
+		List<Building> tempBuildings = settlement.getBuildingManager().getBuildings(ResourceProcessing.NAME);
 		if (!tempBuildings.equals(processingBuildings)) {
 			// Populate process list.
 			processingBuildings = tempBuildings;
@@ -193,8 +194,8 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	        add(label);
 			
 			// Load green and red dots.
-	        greenDot = new ImageIcon("images/GreenDot.png");
-	        redDot = new ImageIcon("images/RedDot.png");
+	        greenDot = ImageLoader.getIcon("GreenDot");
+	        redDot = ImageLoader.getIcon("RedDot");
 	        
 			if (process.isProcessRunning()) toggleButton.setIcon(greenDot);
 			else toggleButton.setIcon(redDot);

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
@@ -62,7 +63,7 @@ public class ManufacturePanel extends JPanel {
         add(namePane);
         
         // Prepare cancel button.
-        JButton cancelButton = new JButton(new ImageIcon("images/CancelSmall.png"));
+        JButton cancelButton = new JButton(ImageLoader.getIcon("CancelSmall"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
