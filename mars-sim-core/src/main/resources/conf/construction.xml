@@ -59,6 +59,7 @@
 			<resource name="concrete" amount="25.0" />
 			<resource name="water" amount="10.0" />
 			<part name="steel truss" number="10" />
+			<part name="steel sheet" number="5" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
