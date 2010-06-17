@@ -19,6 +19,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 
@@ -76,7 +77,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         
         // Create scroll panel for crop table
         JScrollPane cropScrollPanel = new JScrollPane();
-        cropScrollPanel.setPreferredSize(new Dimension(160, 100));
+        cropScrollPanel.setPreferredSize(new Dimension(200, 100));
         add(cropScrollPanel, BorderLayout.CENTER);
         
         // Prepare crop table model
@@ -85,7 +86,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         // Prepare crop table
         JTable cropTable = new JTable(cropTableModel);
         cropTable.setCellSelectionEnabled(false);
-        cropTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+        cropTable.getColumnModel().getColumn(0).setPreferredWidth(20);
         cropTable.getColumnModel().getColumn(1).setPreferredWidth(90);
         cropTable.getColumnModel().getColumn(2).setPreferredWidth(50);
         cropTable.getColumnModel().getColumn(3).setPreferredWidth(40);
@@ -119,7 +120,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
     private class CropTableModel extends AbstractTableModel {
         
         Farming farm;
-        java.util.List crops;
+        java.util.List<Crop> crops;
         ImageIcon redDot;
         ImageIcon yellowDot;
         ImageIcon greenDot;
@@ -127,9 +128,9 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         private CropTableModel(Farming farm) {
             this.farm = farm;
             crops = farm.getCrops();
-            redDot = new ImageIcon("images/RedDot.png");
-            yellowDot = new ImageIcon("images/YellowDot.png");
-            greenDot = new ImageIcon("images/GreenDot.png");
+            redDot = ImageLoader.getIcon("RedDot");
+            yellowDot = ImageLoader.getIcon("YellowDot");
+            greenDot = ImageLoader.getIcon("GreenDot");
         }
         
         public int getRowCount() {

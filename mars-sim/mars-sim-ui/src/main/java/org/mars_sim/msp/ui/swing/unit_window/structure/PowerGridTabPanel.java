@@ -113,7 +113,7 @@ public class PowerGridTabPanel extends TabPanel {
         JTable powerTable = new JTable(powerTableModel);
         powerTable.setCellSelectionEnabled(false);
         powerTable.setDefaultRenderer(Double.class, new NumberCellRenderer());
-        powerTable.getColumnModel().getColumn(0).setPreferredWidth(10);
+        powerTable.getColumnModel().getColumn(0).setPreferredWidth(20);
         powerTable.getColumnModel().getColumn(1).setPreferredWidth(120);
         powerTable.getColumnModel().getColumn(2).setPreferredWidth(40);
         powerTable.getColumnModel().getColumn(3).setPreferredWidth(40);
@@ -164,7 +164,7 @@ public class PowerGridTabPanel extends TabPanel {
     private class PowerTableModel extends AbstractTableModel {
         
         Settlement settlement;
-        java.util.List buildings;
+        java.util.List<Building> buildings;
         ImageIcon redDot;
         ImageIcon yellowDot;
         ImageIcon greenDot;
@@ -172,9 +172,9 @@ public class PowerGridTabPanel extends TabPanel {
         private PowerTableModel(Settlement settlement) {
             this.settlement = settlement;
             buildings = settlement.getBuildingManager().getBuildings();
-            redDot = new ImageIcon("images/RedDot.png");
-            yellowDot = new ImageIcon("images/YellowDot.png");
-            greenDot = new ImageIcon("images/GreenDot.png");
+            redDot = ImageLoader.getIcon("RedDot");
+            yellowDot = ImageLoader.getIcon("YellowDot");
+            greenDot = ImageLoader.getIcon("GreenDot");
         }
         
         public int getRowCount() {

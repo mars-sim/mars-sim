@@ -75,7 +75,7 @@ public class CreditTabPanel extends TabPanel {
         creditTable.setDefaultRenderer(Double.class, new NumberCellRenderer(2));
         creditTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         creditTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-        creditTable.getColumnModel().getColumn(2).setPreferredWidth(35);
+        creditTable.getColumnModel().getColumn(2).setPreferredWidth(40);
         creditTablePanel.add(creditTable.getTableHeader(), BorderLayout.NORTH);
         creditTablePanel.add(creditTable, BorderLayout.CENTER);
 	}
