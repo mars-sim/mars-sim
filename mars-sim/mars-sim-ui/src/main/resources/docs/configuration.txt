@@ -38,6 +38,8 @@ people.xml:       Modify properties related to people, or add new
                   names to the person name list.
                   
 resources.xml:    Modify or create new resources.
+
+resupplies.xml:   Modify or create settlement resupplies from Earth.
                   
 settlements.xml:  Modify or create new settlement templates an
                   define individual settlements.  Add new settlement
