@@ -114,8 +114,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
         htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
         JScrollPane scrollPane = new JScrollPane(htmlPane);
-        scrollPane.setBorder(new CompoundBorder(new BevelBorder(BevelBorder.LOWERED), 
-                new LineBorder(Color.green)));
+        scrollPane.setBorder(new MarsPanelBorder());
         viewPort = scrollPane.getViewport();
         viewPort.addComponentListener(this);
         viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);

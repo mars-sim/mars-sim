@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutWindow.java
- * @version 2.87 2009-11-23
+ * @version 2.90 2010-07-27
  * @author Lars Naesbye Christensen
  */
 
@@ -25,6 +25,7 @@ import javax.swing.border.*;
 
 import org.mars_sim.msp.ui.swing.HTMLContentPane;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /** The AboutWindow is a tool window that displays credits
@@ -62,8 +63,7 @@ public class AboutWindow extends ToolWindow implements ActionListener, Component
     editorPane.setEditable(false);
 
     JScrollPane scrollPane = new JScrollPane(editorPane);
-        scrollPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-                new LineBorder(Color.green)));
+        scrollPane.setBorder(new MarsPanelBorder());
     viewPort = scrollPane.getViewport();
     viewPort.addComponentListener(this);
     viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
