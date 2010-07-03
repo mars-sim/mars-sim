@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<!-- ************************************************************************************************* -->
 	<!-- * General Section                                                                               * -->
 	<!-- ************************************************************************************************* -->
@@ -8,7 +7,7 @@
 	<groupId>net.sf</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>2.90-SNAPSHOT</version>
+	<version>2.90</version>
 	<name>mars-sim</name>
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
@@ -58,9 +57,9 @@
 	<!-- * Project Tools Section                                                                         * -->
 	<!-- ************************************************************************************************* -->
 	<scm>
-		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</connection>
-		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</developerConnection>
-		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/trunk/mars-sim</url>
+		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/tags/mars-sim-2.90</connection>
+		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/tags/mars-sim-2.90</developerConnection>
+		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/tags/mars-sim-2.90</url>
 	</scm>
 	<issueManagement>
 		<system>sourceforge</system>
