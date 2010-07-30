@@ -45,7 +45,7 @@ public class PersonTableModel extends UnitTableModel {
     private final static int HUNGER = 4;         // Hunger column
     private final static int FATIGUE = 5;        // Fatigue column
     private final static int STRESS = 6;         // Stress column
-    private final static int PERFORMANCE = 7;    // Performance conlumn
+    private final static int PERFORMANCE = 7;    // Performance column
     private final static int JOB = 8;            // Job column
     private final static int TASK = 9;           // Task column
     private final static int MISSION = 10;       // Mission column
@@ -55,7 +55,7 @@ public class PersonTableModel extends UnitTableModel {
     private static Class columnTypes[];          // Types of Columns
     
     /**
-     * The static initialisier creates the name & type arrays.
+     * The static initializer creates the name & type arrays.
      */
     static {
         columnNames = new String[COLUMNCOUNT];
