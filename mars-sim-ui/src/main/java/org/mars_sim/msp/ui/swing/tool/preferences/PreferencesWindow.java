@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 2.87 2009-10-01
+ * @version 3.00 2010-08-01
  * @author Scott Davis
  */
 
@@ -23,15 +23,16 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.UIConfig;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-/** 
+
+/**
  * The PreferencesWindow is a tool window that allows the user to adjust general
  * aspects of the simulation and interface.
  */
 public class PreferencesWindow extends ToolWindow {
 
 	// Tool name
-	public static final String NAME = "Preferences Tool";	
-	
+	public static final String NAME = "Preferences Tool";
+
 	// Data members
 	private AudioPlayer soundPlayer;
 	private JCheckBox muteCheck;
@@ -42,108 +43,114 @@ public class PreferencesWindow extends ToolWindow {
 
 	/**
 	 * Constructor
+	 * 
 	 * @param desktop
 	 */
 	public PreferencesWindow(MainDesktopPane desktop) {
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-		
+
 		// Set window resizable to false.
-        setResizable(false);
-		
+		setResizable(false);
+
 		// Initialize data members.
 		soundPlayer = desktop.getSoundPlayer();
-		
-        // Get content pane
-        JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new MarsPanelBorder());
-        setContentPane(mainPane);
-        
-        // Create audio panel.
-        JPanel audioPane = new JPanel(new BorderLayout());
-        audioPane.setBorder(new MarsPanelBorder());
-        mainPane.add(audioPane, BorderLayout.NORTH);
-        
-        // Create audio label.
-        JLabel volumeLabel = new JLabel("Volume", JLabel.CENTER);
-        audioPane.add(volumeLabel, BorderLayout.NORTH);
-        
-        // Create volume slider.
-        float volume = soundPlayer.getVolume();
-        int intVolume = Math.round(volume * 10F);
-        volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, intVolume);
-        volumeSlider.setMajorTickSpacing(1);
-        volumeSlider.setPaintTicks(true);
-        volumeSlider.setEnabled(!soundPlayer.isMute());
-        volumeSlider.addChangeListener(new ChangeListener() {
-                public void stateChanged(ChangeEvent e) {
-                    float newVolume = (float) volumeSlider.getValue() / 10F;
-                    soundPlayer.setVolume(newVolume);
-                }
-        });
-        audioPane.add(volumeSlider, BorderLayout.SOUTH);
-                
-        // Create mute checkbox.
-        muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
-        muteCheck.addActionListener(new ActionListener() {
-        		public void actionPerformed(ActionEvent e) {
-        			soundPlayer.setMute(muteCheck.isSelected());
-        			volumeSlider.setEnabled(!soundPlayer.isMute());
-;
-        		}
-        });
-        audioPane.add(muteCheck);
 
-        // Create UI panel.
-        JPanel uiPane = new JPanel(new BorderLayout());
-        uiPane.setBorder(new MarsPanelBorder());
-        mainPane.add(uiPane, BorderLayout.SOUTH);
+		// Get content pane
+		JPanel mainPane = new JPanel(new BorderLayout());
+		mainPane.setBorder(new MarsPanelBorder());
+		setContentPane(mainPane);
 
+		// Create audio panel.
+		JPanel audioPane = new JPanel(new BorderLayout());
+		audioPane.setBorder(new MarsPanelBorder());
+		mainPane.add(audioPane, BorderLayout.NORTH);
 
-        // Create UI checkbox.
-	boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
-	if (UIConfig.INSTANCE.useUIDefault()) nativeLookAndFeel = false;
-        uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
-	final MainWindow theMainwindow = desktop.getMainWindow();
-        uiCheck.addActionListener(new ActionListener() {
-        		public void actionPerformed(ActionEvent e) {
-       			theMainwindow.setLookAndFeel(uiCheck.isSelected());
-        		}
-        });
-        uiPane.add(uiCheck, BorderLayout.NORTH);
-        
-        // Create Unit Toolbar Visibility checkbox.
-    	boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
-    	unitToolBarCheck = new JCheckBox("Show Unit Toolbar", unitToolBarVisible);
-            unitToolBarCheck.addActionListener(new ActionListener() {
-            		public void actionPerformed(ActionEvent e) {
-           			theMainwindow.getUnitToolBar().setVisible(unitToolBarCheck.isSelected());
-            		}
-            });
-            
-            uiPane.add(unitToolBarCheck, BorderLayout.CENTER);
+		// Create audio label.
+		JLabel volumeLabel = new JLabel("Volume", JLabel.CENTER);
+		audioPane.add(volumeLabel, BorderLayout.NORTH);
 
-         // Create Toolbar Visibility checkbox.
-        boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
-        toolToolBarCheck = new JCheckBox("Show Toolbar", toolToolBarVisible);
-             unitToolBarCheck.addActionListener(new ActionListener() {
-                	public void actionPerformed(ActionEvent e) {
-               		theMainwindow.getToolToolBar().setVisible(toolToolBarCheck.isSelected());
-// FIXME: this doesn't update immediately; oddly both toolbars' settings come into effect only when the Unit Toolbars button is clicked...[Lars]
-                	}
-            });
-                
-                uiPane.add(toolToolBarCheck, BorderLayout.SOUTH);
+		// Create volume slider.
+		float volume = soundPlayer.getVolume();
+		int intVolume = Math.round(volume * 10F);
+		volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, intVolume);
+		volumeSlider.setMajorTickSpacing(1);
+		volumeSlider.setPaintTicks(true);
+		volumeSlider.setEnabled(!soundPlayer.isMute());
+		volumeSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent e) {
+				float newVolume = (float) volumeSlider.getValue() / 10F;
+				soundPlayer.setVolume(newVolume);
+			}
+		});
+		audioPane.add(volumeSlider, BorderLayout.SOUTH);
 
-            // Pack window
-        pack();
+		// Create mute checkbox.
+		muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
+		muteCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				soundPlayer.setMute(muteCheck.isSelected());
+				volumeSlider.setEnabled(!soundPlayer.isMute());
+				;
+			}
+		});
+		audioPane.add(muteCheck);
+
+		// Create UI panel.
+		JPanel uiPane = new JPanel(new BorderLayout());
+		uiPane.setBorder(new MarsPanelBorder());
+		mainPane.add(uiPane, BorderLayout.SOUTH);
+
+		// Create UI checkbox.
+		boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
+		if (UIConfig.INSTANCE.useUIDefault())
+			nativeLookAndFeel = false;
+		uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
+		final MainWindow theMainwindow = desktop.getMainWindow();
+		uiCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				theMainwindow.setLookAndFeel(uiCheck.isSelected());
+			}
+		});
+		uiPane.add(uiCheck, BorderLayout.NORTH);
+
+		// Create Unit Toolbar Visibility checkbox.
+		boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
+		unitToolBarCheck = new JCheckBox("Show Unit Toolbar",
+				unitToolBarVisible);
+		unitToolBarCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				theMainwindow.getUnitToolBar().setVisible(
+						unitToolBarCheck.isSelected());
+			}
+		});
+
+		uiPane.add(unitToolBarCheck, BorderLayout.CENTER);
+
+		// Create Toolbar Visibility checkbox.
+		boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
+		toolToolBarCheck = new JCheckBox("Show Toolbar", toolToolBarVisible);
+		unitToolBarCheck.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				theMainwindow.getToolToolBar().setVisible(
+						toolToolBarCheck.isSelected());
+				// FIXME: this doesn't update immediately; oddly both toolbars'
+				// settings come into effect only when the Unit Toolbars button
+				// is clicked...[Lars]
+			}
+		});
+
+		uiPane.add(toolToolBarCheck, BorderLayout.SOUTH);
+
+		// Pack window
+		pack();
 	}
-	
+
 	/**
 	 * Prepare tool window for deletion.
 	 */
 	public void destroy() {
-	    	soundPlayer.cleanAudioPlayer();
+		soundPlayer.cleanAudioPlayer();
 		soundPlayer = null;
 	}
 }
