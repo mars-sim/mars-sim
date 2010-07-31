@@ -37,6 +37,8 @@ public class PreferencesWindow extends ToolWindow {
 	private JCheckBox muteCheck;
 	private JSlider volumeSlider;
 	private JCheckBox uiCheck;
+	private JCheckBox toolToolBarCheck;
+	private JCheckBox unitToolBarCheck;
 
 	/**
 	 * Constructor
@@ -108,9 +110,32 @@ public class PreferencesWindow extends ToolWindow {
        			theMainwindow.setLookAndFeel(uiCheck.isSelected());
         		}
         });
-        uiPane.add(uiCheck);
+        uiPane.add(uiCheck, BorderLayout.NORTH);
+        
+        // Create Unit Toolbar Visibility checkbox.
+    	boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
+    	unitToolBarCheck = new JCheckBox("Show Unit Toolbar", unitToolBarVisible);
+            unitToolBarCheck.addActionListener(new ActionListener() {
+            		public void actionPerformed(ActionEvent e) {
+           			theMainwindow.getUnitToolBar().setVisible(unitToolBarCheck.isSelected());
+            		}
+            });
+            
+            uiPane.add(unitToolBarCheck, BorderLayout.CENTER);
 
-        // Pack window
+         // Create Toolbar Visibility checkbox.
+        boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
+        toolToolBarCheck = new JCheckBox("Show Toolbar", toolToolBarVisible);
+             unitToolBarCheck.addActionListener(new ActionListener() {
+                	public void actionPerformed(ActionEvent e) {
+               		theMainwindow.getToolToolBar().setVisible(toolToolBarCheck.isSelected());
+// FIXME: this doesn't update immediately; oddly both toolbars' settings come into effect only when the Unit Toolbars button is clicked...[Lars]
+                	}
+            });
+                
+                uiPane.add(toolToolBarCheck, BorderLayout.SOUTH);
+
+            // Pack window
         pack();
 	}
 	
