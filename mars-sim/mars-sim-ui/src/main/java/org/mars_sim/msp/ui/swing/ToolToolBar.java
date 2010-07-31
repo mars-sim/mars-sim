@@ -21,18 +21,23 @@ import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-/** The ToolToolBar class is a UI toolbar for holding tool buttons.
- *  The should only be one instance and is contained in the MainWindow instance.
+/**
+ * The ToolToolBar class is a UI toolbar for holding tool buttons. The should
+ * only be one instance and is contained in the MainWindow instance.
  */
 public class ToolToolBar extends JToolBar implements ActionListener {
 
 	// Data members
-	private Vector<ToolButton> toolButtons;          // List of tool buttons
-	private MainWindow parentMainWindow; // Main window that contains this toolbar.
+	private Vector<ToolButton> toolButtons; // List of tool buttons
+	private MainWindow parentMainWindow; // Main window that contains this
+											// toolbar.
 
-	/** Constructs a ToolToolBar object
-     *  @param parentMainWindow the main window pane
-     */
+	/**
+	 * Constructs a ToolToolBar object
+	 * 
+	 * @param parentMainWindow
+	 *            the main window pane
+	 */
 	public ToolToolBar(MainWindow parentMainWindow) {
 
 		// Use JToolBar constructor
@@ -58,39 +63,39 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	/** Prepares tool buttons */
 	private void prepareToolButtons() {
 
-        // Add utilise buttons
- 		ToolButton newButton = new ToolButton("New", "New");
+		// Add utilise buttons
+		ToolButton newButton = new ToolButton("New", "New");
 		newButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        parentMainWindow.newSimulation();
-                    };
-                } );
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.newSimulation();
+			};
+		});
 		add(newButton);
 
-        ToolButton openButton = new ToolButton("Open", "Open");
+		ToolButton openButton = new ToolButton("Open", "Open");
 		openButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        parentMainWindow.loadSimulation();
-                    };
-                } );
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.loadSimulation();
+			};
+		});
 		add(openButton);
 
- 		ToolButton saveButton = new ToolButton("Save", "Save");
+		ToolButton saveButton = new ToolButton("Save", "Save");
 		saveButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        parentMainWindow.saveSimulation(true);
-                    };
-                } );
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.saveSimulation(true);
+			};
+		});
 		add(saveButton);
 
-        ToolButton saveAsButton = new ToolButton("Save As", "SaveAs");
+		ToolButton saveAsButton = new ToolButton("Save As", "SaveAs");
 		saveAsButton.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                        parentMainWindow.saveSimulation(false);
-                    };
-                } );
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.saveSimulation(false);
+			};
+		});
 		add(saveAsButton);
-        addSeparator();
+		addSeparator();
 
 		// Add Mars navigator button
 		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, "Planet");
@@ -115,26 +120,27 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
-		
+
 		// Add prefs tool button
-		ToolButton prefsButton = new ToolButton(PreferencesWindow.NAME, "Preferences");
+		ToolButton prefsButton = new ToolButton(PreferencesWindow.NAME,
+				"Preferences");
 		prefsButton.addActionListener(this);
 		add(prefsButton);
 		toolButtons.addElement(prefsButton);
-		
+
 		// Add mission tool button
 		ToolButton missionButton = new ToolButton(MissionWindow.NAME, "Mission");
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);
-        
-        // Add science tool button
-        ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, "Science");
-        scienceButton.addActionListener(this);
-        add(scienceButton);
-        toolButtons.addElement(scienceButton);
 
-        addSeparator();
+		// Add science tool button
+		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, "Science");
+		scienceButton.addActionListener(this);
+		add(scienceButton);
+		toolButtons.addElement(scienceButton);
+
+		addSeparator();
 
 		// Add guide button
 		ToolButton guideButton = new ToolButton(GuideWindow.NAME, "Guide");
@@ -149,6 +155,6 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 
 		// show tool window on desktop
 		parentMainWindow.getDesktop().openToolWindow(
-            ((ToolButton) event.getSource()).getToolName());
+				((ToolButton) event.getSource()).getToolName());
 	}
 }
