@@ -43,6 +43,7 @@ public class MainWindow extends JFrame {
 
     // Data members
     private UnitToolBar unitToolbar; // The unit tool bar
+    private ToolToolBar toolToolbar; // The tool bar
     private MainDesktopPane desktop; // The main desktop
 
     private Thread newSimThread;
@@ -83,7 +84,7 @@ public class MainWindow extends JFrame {
         setContentPane(mainPane);
 
         // Prepare tool toolbar
-        ToolToolBar toolToolbar = new ToolToolBar(this);
+        toolToolbar = new ToolToolBar(this);
         mainPane.add(toolToolbar, "North");
 
         // Prepare unit toolbar
@@ -357,4 +358,13 @@ public class MainWindow extends JFrame {
     public UnitToolBar getUnitToolBar() {
     	return unitToolbar;
     }
+    /**
+     * Gets the tool toolbar.
+     * @return tool toolbar.
+     */
+    
+    public ToolToolBar getToolToolBar() {
+    	return toolToolbar;
+    }
+
 }
