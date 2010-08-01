@@ -18,7 +18,7 @@ import javax.swing.ImageIcon;
 public class SplashWindow extends Window {
 
     // Constant data member
-    private static String[] IMAGE_NAMES = { "SplashImage.jpg", "SplashImage2.jpg" };
+    private static String[] IMAGE_NAMES = { "SplashImage.jpg", "SplashImage2.jpg", "SplashImage3.jpg" };
 
     private Image splashImage;
     private int width;
