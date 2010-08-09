@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 3.00 2010-08-01
+ * @version 3.00 2010-08-09
  * @author Scott Davis
  */
 
@@ -76,6 +76,7 @@ public class PreferencesWindow extends ToolWindow {
 		volumeSlider = new JSlider(JSlider.HORIZONTAL, 0, 10, intVolume);
 		volumeSlider.setMajorTickSpacing(1);
 		volumeSlider.setPaintTicks(true);
+		volumeSlider.setToolTipText("Adjust the volume of sound output.");
 		volumeSlider.setEnabled(!soundPlayer.isMute());
 		volumeSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -87,6 +88,7 @@ public class PreferencesWindow extends ToolWindow {
 
 		// Create mute checkbox.
 		muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
+		muteCheck.setToolTipText("Mute all sound output.");
 		muteCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				soundPlayer.setMute(muteCheck.isSelected());
@@ -107,6 +109,7 @@ public class PreferencesWindow extends ToolWindow {
 			nativeLookAndFeel = false;
 		uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
 		final MainWindow theMainwindow = desktop.getMainWindow();
+		uiCheck.setToolTipText("Use OS native Look&Feel (may look wrong).");
 		uiCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				theMainwindow.setLookAndFeel(uiCheck.isSelected());
@@ -118,6 +121,7 @@ public class PreferencesWindow extends ToolWindow {
 		boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
 		unitToolBarCheck = new JCheckBox("Show Unit Toolbar",
 				unitToolBarVisible);
+		unitToolBarCheck.setToolTipText("Show the Unit Bar at the bottom.");
 		unitToolBarCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				theMainwindow.getUnitToolBar().setVisible(
@@ -130,7 +134,8 @@ public class PreferencesWindow extends ToolWindow {
 		// Create Toolbar Visibility checkbox.
 		boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
 		toolToolBarCheck = new JCheckBox("Show Toolbar", toolToolBarVisible);
-		unitToolBarCheck.addActionListener(new ActionListener() {
+		toolToolBarCheck.setToolTipText("Show the Tool Bar at the top.");
+		toolToolBarCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				theMainwindow.getToolToolBar().setVisible(
 						toolToolBarCheck.isSelected());
