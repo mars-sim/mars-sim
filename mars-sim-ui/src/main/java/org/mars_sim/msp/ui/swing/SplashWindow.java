@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SplashWindow.java
- * @version 2.73 2001-12-10
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

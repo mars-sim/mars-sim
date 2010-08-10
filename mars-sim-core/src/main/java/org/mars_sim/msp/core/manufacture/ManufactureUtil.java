@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 2.90 2010-02-24
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

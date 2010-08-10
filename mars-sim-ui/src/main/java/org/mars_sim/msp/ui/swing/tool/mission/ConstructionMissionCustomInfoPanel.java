@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionMissionCustomInfoPanel.java
- * @version 2.90 2010-06-02
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;

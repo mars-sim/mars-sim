@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TerrainDisplayPanel.java
- * @version 2.75 2003-06-28
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

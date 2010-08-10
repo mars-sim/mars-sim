@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Towing.java
- * @version 2.79 2006-07-15
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

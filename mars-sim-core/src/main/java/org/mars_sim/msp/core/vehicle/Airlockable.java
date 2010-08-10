@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlockable.java
- * @version 2.75 2003-04-20
+ * @version 3.00 2010-08-10
  * @author Scott Davis 
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Part.java
- * @version 2.82 2007-10-08
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

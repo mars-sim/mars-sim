@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AboutWindow.java
- * @version 2.90 2010-07-27
+ * @version 3.00 2010-08-10
  * @author Lars Naesbye Christensen
  */
 

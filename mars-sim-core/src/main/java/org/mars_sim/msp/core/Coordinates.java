@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 2.76 2004-08-06
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

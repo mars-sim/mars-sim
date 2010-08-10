@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTab.java
- * @version 2.75 2004-01-17
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;

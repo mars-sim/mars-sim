@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 2.84 2008-06-04
+ * @version 3.00 2010-08-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;

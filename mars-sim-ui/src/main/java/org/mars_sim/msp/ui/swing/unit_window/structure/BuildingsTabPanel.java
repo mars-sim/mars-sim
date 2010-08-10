@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingsTabPanel.java
- * @version 2.81 2007-08-26
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

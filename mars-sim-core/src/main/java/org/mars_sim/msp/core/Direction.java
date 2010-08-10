@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Direction.java
- * @version 2.85 2008-07-23
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

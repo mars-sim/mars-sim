@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LargeBag.java
- * @version 2.85 2008-09-13
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

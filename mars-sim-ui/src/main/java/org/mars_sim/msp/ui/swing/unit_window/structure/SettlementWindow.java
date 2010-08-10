@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 2.87 2009-11-08
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

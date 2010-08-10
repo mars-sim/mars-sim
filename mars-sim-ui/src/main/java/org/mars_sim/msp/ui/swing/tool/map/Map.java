@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Map.java
- * @version 2.75 2003-10-12
+ * @version 3.00 2010-08-10
  * @author Greg Whelan
  */
 

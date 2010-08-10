@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 2.86 2009-03-15
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 
