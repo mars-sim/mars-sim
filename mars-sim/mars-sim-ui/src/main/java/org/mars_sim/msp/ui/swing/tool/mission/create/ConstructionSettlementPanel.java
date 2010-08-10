@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSettlementPanel.java
- * @version 2.85 2009-01-01
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

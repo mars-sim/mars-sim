@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorTab.java
- * @version 2.75 2005-08-03
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

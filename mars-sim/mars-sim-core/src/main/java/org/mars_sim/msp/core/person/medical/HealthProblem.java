@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HealthProblem.java
- * @version 2.76 2004-06-01
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

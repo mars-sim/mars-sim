@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ImageLoader.java
- * @version 2.87 2009-11-23
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

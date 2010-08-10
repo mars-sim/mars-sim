@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 2.76 2004-10-12
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

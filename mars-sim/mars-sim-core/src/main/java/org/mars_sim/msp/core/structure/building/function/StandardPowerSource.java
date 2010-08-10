@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 2.75 2004-03-29
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;

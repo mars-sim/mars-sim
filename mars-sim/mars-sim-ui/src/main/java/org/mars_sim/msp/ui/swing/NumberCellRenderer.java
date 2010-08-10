@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NumberCellRenderer.java
- * @version 2.83 2008-02-29
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

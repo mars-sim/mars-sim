@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.00 2010-08-01
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

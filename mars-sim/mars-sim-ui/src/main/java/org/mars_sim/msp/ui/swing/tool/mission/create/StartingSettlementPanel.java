@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 2.84 2008-06-11
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

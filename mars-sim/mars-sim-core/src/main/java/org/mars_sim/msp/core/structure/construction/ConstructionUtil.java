@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionUtil.java
- * @version 2.85 2008-08-17
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavigationTabPanel.java
- * @version 2.79 2006-07-015
+ * @version 3.00 2010-08-105
  * @author Scott Davis
  */
 

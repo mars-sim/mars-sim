@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RandomUtil.java
- * @version 2.78 2005-09-10
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

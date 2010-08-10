@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitEvent.java
- * @version 2.80 2006-09-08
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;

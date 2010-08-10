@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 2.77 2004-10-01
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

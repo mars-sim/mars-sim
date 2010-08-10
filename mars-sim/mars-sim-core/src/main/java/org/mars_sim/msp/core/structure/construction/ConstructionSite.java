@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 2.91 2010-04-06
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

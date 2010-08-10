@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PartConfig.java
- * @version 2.84 2008-05-17
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;

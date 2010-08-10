@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MonitorWindow.java
- * @version 2.86 2009-05-21
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

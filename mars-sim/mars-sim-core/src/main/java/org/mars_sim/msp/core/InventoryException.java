@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryException.java
- * @version 2.79 2005-11-28
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

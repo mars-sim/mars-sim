@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 2.90 2010-06-05
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

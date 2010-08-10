@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageTest.java
- * @version 2.85 2008-10-23
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

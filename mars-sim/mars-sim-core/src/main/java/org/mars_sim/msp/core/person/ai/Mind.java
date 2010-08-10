@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 2.88 2009-12-21
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

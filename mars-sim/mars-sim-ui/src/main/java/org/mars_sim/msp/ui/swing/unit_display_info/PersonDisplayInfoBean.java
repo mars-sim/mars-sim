@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonDisplayInfo.java
- * @version 2.85 2008-06-28
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

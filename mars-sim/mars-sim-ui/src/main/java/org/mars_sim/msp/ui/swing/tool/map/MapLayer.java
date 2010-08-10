@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MapLayer.java
- * @version 2.80 2006-10-28
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

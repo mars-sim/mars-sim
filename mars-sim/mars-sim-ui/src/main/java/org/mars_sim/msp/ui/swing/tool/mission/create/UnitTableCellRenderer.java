@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableCellRenderer.java
- * @version 2.80 2007-03-22
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

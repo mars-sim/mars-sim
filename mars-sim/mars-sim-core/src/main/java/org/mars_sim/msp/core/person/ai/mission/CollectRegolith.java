@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 2.87 2009-10-01
+ * @version 3.00 2010-08-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;

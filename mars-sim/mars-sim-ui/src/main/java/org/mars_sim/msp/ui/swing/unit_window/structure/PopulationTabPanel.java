@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PopulationTabPanel.java
- * @version 2.77 2004-09-13
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

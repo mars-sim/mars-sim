@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionableBuildingPanel.java
- * @version 2.82 2007-11-17
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

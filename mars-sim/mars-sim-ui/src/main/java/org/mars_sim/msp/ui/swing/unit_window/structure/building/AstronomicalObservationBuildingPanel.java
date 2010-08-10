@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AstronomicalObservationBuildingPanel.java
- * @version 2.87 2009-07-26
+ * @version 3.00 2010-08-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;

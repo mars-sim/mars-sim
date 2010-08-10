@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthClock.java
- * @version 2.87 2009-07-03
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

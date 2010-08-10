@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessItem.java
- * @version 2.83 2008-01-19
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

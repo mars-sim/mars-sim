@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 2.87 2009-07-11
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

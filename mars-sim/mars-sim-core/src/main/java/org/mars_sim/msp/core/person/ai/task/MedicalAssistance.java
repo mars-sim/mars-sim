@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalHelp.java
- * @version 2.90 2010-01-21
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

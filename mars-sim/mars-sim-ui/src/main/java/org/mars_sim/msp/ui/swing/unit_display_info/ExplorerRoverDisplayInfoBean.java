@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorerRoverDisplayInfoBean.java
- * @version 2.78 2005-08-28
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

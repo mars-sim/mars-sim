@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTabPanel.java
- * @version 2.75 2003-09-10
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

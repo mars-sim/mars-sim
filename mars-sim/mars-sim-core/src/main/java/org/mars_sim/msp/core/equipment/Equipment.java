@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Equipment.java
- * @version 2.90 2010-02-20
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
  

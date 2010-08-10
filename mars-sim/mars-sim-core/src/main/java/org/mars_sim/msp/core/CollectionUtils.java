@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MspCollection.java
- * @version 2.90 20.2.2010
+ * CollectionUtils.java
+ * @version 3.00 2010-08-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core;

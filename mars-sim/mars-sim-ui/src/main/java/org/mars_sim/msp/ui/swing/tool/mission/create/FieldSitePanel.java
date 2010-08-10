@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FieldSitePanel.java
- * @version 2.87 2009-10-06
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;

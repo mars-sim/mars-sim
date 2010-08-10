@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MSPEvent.java
- * @version 2.75 2004-01-14
+ * @version 3.00 2010-08-10
  * @author Barry Evans
  */
 

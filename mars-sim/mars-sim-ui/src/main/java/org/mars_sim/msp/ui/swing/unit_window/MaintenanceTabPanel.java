@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 2.90 2010-01-26
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

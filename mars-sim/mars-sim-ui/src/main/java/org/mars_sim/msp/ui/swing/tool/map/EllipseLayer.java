@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EllipseLayer.java
- * @version 2.80 2007-03-23
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

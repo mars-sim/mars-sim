@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TypePanel.java
- * @version 2.85 2009-01-10
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 

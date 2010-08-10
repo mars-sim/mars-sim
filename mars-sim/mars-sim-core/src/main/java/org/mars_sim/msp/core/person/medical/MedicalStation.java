@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 2.84 2008-05-12
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */

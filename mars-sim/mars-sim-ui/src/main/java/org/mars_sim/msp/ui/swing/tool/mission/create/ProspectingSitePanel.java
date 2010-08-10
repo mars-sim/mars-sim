@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 2.83 2008-02-10
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 
