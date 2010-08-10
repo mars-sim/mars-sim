@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PreferencesWindow.java
- * @version 3.00 2010-08-09
+ * @version 3.00 2010-08-10
  * @author Scott Davis
  */
 
@@ -139,9 +139,6 @@ public class PreferencesWindow extends ToolWindow {
 			public void actionPerformed(ActionEvent e) {
 				theMainwindow.getToolToolBar().setVisible(
 						toolToolBarCheck.isSelected());
-				// FIXME: this doesn't update immediately; oddly both toolbars'
-				// settings come into effect only when the Unit Toolbars button
-				// is clicked...[Lars]
 			}
 		});
 
