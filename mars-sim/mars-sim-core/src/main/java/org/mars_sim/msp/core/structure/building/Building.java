@@ -35,6 +35,8 @@ public class Building implements Malfunctionable, Serializable {
     // Data members
     protected BuildingManager manager; 
     protected String name;
+    protected double width;
+    protected double length;
     protected String powerMode;
     protected MalfunctionManager malfunctionManager;
     protected List<Function> functions;
@@ -59,9 +61,13 @@ public class Building implements Malfunctionable, Serializable {
         	
         	// Get base power requirements.
 			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-				
+			
 			basePowerRequirement = config.getBasePowerRequirement(name);
 			basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
+			
+			// Get building's dimensions.
+			width = config.getWidth(name);
+			length = config.getLength(name);
         }
         catch (Exception e) {
         	throw new BuildingException("Building " + name + " cannot be constructed: " + e.getMessage());
@@ -202,6 +208,22 @@ public class Building implements Malfunctionable, Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Gets the building's width.
+     * @return width (meters).
+     */
+    public double getWidth() {
+        return width;
+    }
+    
+    /**
+     * Gets the building's length.
+     * @return length (meters).
+     */
+    public double getLength() {
+        return length;
     }
     
     /**
