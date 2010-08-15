@@ -27,6 +27,9 @@ public class ConstructionStageInfo implements Serializable {
     // Data members
     private String name;
     private String type;
+    private double width;
+    private double length;
+    private boolean unsetDimensions;
     private boolean constructable;
     private boolean salvagable;
     private double workTime;
@@ -40,6 +43,9 @@ public class ConstructionStageInfo implements Serializable {
      * Constructor
      * @param name the name of the stage.
      * @param type the stage type.
+     * @param width the construction stage width (meters).
+     * @param length the construction stage length (meters).
+     * @param unsetDimensions true if stage dimensions are not initially set.
      * @param constructable true if stage can be constructed.
      * @param salvagable true if stage can be salvaged.
      * @param workTime the work time (millisols) required for construction.
@@ -49,14 +55,17 @@ public class ConstructionStageInfo implements Serializable {
      * @param resources map of resources required and their amount.
      * @param vehicles list of construction vehicles required.
      */
-    ConstructionStageInfo(String name, String type, boolean constructable, 
-            boolean salvagable, double workTime, 
-            int architectConstructionSkill, String prerequisiteStage, 
+    ConstructionStageInfo(String name, String type, double width, double length, 
+    		boolean unsetDimensions, boolean constructable, boolean salvagable, 
+    		double workTime, int architectConstructionSkill, String prerequisiteStage, 
             Map<Part, Integer> parts, Map<AmountResource, Double> resources, 
             List<ConstructionVehicleType> vehicles) {
         
         this.name = name;
         this.type = type;
+        this.width = width;
+        this.length = length;
+        this.unsetDimensions = unsetDimensions;
         this.constructable = constructable;
         this.salvagable = salvagable;
         this.workTime = workTime;
@@ -81,6 +90,30 @@ public class ConstructionStageInfo implements Serializable {
      */
     public String getName() {
         return name;
+    }
+    
+    /**
+     * Gets the width of the stage.
+     * @return the stage width (meters).
+     */
+    public double getWidth() {
+        return width;
+    }
+    
+    /**
+     * Gets the length of the stage.
+     * @return the stage length (meters).
+     */
+    public double getLength() {
+        return length;
+    }
+    
+    /**
+     * Checks if the stage dimensions are initially unset.
+     * @return true if dimensions unset.
+     */
+    public boolean isUnsetDimensions() {
+        return unsetDimensions;
     }
     
     /**

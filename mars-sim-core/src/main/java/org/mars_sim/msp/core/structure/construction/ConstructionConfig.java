@@ -29,6 +29,8 @@ public class ConstructionConfig implements Serializable {
 
     // Element names
     private static final String NAME = "name";
+    private static final String WIDTH = "width";
+    private static final String LENGTH = "length";
     private static final String CONSTRUCTABLE = "constructable";
     private static final String SALVAGABLE = "salvagable";
     private static final String WORK_TIME = "work-time";
@@ -122,6 +124,17 @@ public class ConstructionConfig implements Serializable {
                 // Get name.
                 name = stageInfoElement.getAttributeValue(NAME);
                 
+                double width = 0D;
+                String widthStr = stageInfoElement.getAttributeValue(WIDTH);
+                if (!widthStr.equals("*")) width = Double.parseDouble(widthStr);
+                
+                double length = 0D;
+                String lengthStr = stageInfoElement.getAttributeValue(LENGTH);
+                if (!lengthStr.equals("*")) length = Double.parseDouble(lengthStr);
+                
+                boolean unsetDimensions = false;
+                if (widthStr.equals("*") || lengthStr.equals("*")) unsetDimensions = true;
+                
                 // Get constructable.
                 // Note should be false if constructable attribute doesn't exist.
                 boolean constructable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(CONSTRUCTABLE));
@@ -189,8 +202,9 @@ public class ConstructionConfig implements Serializable {
                     vehicles.add(new ConstructionVehicleType(vehicleType, vehicleClass, attachmentParts));
                 }
                     
-                ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, constructable, 
-                        salvagable, workTime, skillRequired, prerequisiteStage, parts, resources, vehicles);
+                ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, width, length, 
+                        unsetDimensions, constructable, salvagable, workTime, skillRequired, prerequisiteStage, 
+                        parts, resources, vehicles);
                 stageInfoList.add(stageInfo);
             }
             catch (Exception e) {

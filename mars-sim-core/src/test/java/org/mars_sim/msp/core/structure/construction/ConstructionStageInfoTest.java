@@ -45,8 +45,8 @@ public class ConstructionStageInfoTest extends TestCase {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
                 attachments));
         
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, false, false, 
-                10000D, 1, null, parts, resources, vehicles);
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 
+                false, false, 10000D, 1, null, parts, resources, vehicles);
     }
     
     /*

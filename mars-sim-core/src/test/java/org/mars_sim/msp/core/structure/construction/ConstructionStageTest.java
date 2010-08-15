@@ -45,8 +45,8 @@ public class ConstructionStageTest extends TestCase {
                 attachments));
         
         foundationInfo = new ConstructionStageInfo("test foundation info", 
-                ConstructionStageInfo.FOUNDATION, false, false, 10000D, 0, null, parts, resources, 
-                vehicles);
+                ConstructionStageInfo.FOUNDATION, 10D, 10D, false, false, false, 10000D, 0, null, 
+                parts, resources, vehicles);
     }
     
     /*

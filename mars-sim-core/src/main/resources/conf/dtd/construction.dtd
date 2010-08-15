@@ -2,6 +2,8 @@
 <!ELEMENT foundation-list (foundation*)>
 <!ELEMENT foundation (resource*, part*, vehicle*)>
 <!ATTLIST foundation name CDATA #REQUIRED>
+<!ATTLIST foundation width CDATA #REQUIRED>
+<!ATTLIST foundation length CDATA #REQUIRED>
 <!ATTLIST foundation constructable (true|false) #REQUIRED>
 <!ATTLIST foundation salvagable (true|false) #REQUIRED>
 <!ATTLIST foundation work-time CDATA #REQUIRED>
@@ -19,6 +21,8 @@
 <!ELEMENT frame-list (frame*)>
 <!ELEMENT frame (resource*, part*, vehicle*)>
 <!ATTLIST frame name CDATA #REQUIRED>
+<!ATTLIST frame width CDATA #REQUIRED>
+<!ATTLIST frame length CDATA #REQUIRED>
 <!ATTLIST frame constructable (true|false) #REQUIRED>
 <!ATTLIST frame salvagable (true|false) #REQUIRED>
 <!ATTLIST frame work-time CDATA #REQUIRED>
@@ -27,6 +31,8 @@
 <!ELEMENT building-list (building*)>
 <!ELEMENT building (resource*, part*, vehicle*)>
 <!ATTLIST building name CDATA #REQUIRED>
+<!ATTLIST building width CDATA #REQUIRED>
+<!ATTLIST building length CDATA #REQUIRED>
 <!ATTLIST building constructable (true|false) #REQUIRED>
 <!ATTLIST building salvagable (true|false) #REQUIRED>
 <!ATTLIST building work-time CDATA #REQUIRED>
