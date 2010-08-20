@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-18
  * @author Scott Davis
  */
 
@@ -34,6 +34,8 @@ public class ConstructionSite implements Serializable {
     public static final String REMOVE_BUILDING_EVENT = "removing old building";
     
     // Data members
+    private double width;
+    private double length;
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
@@ -45,12 +47,30 @@ public class ConstructionSite implements Serializable {
      * Constructor
      */
     ConstructionSite() {
+        width = 0D;
+        length = 0D;
         foundationStage = null;
         frameStage = null;
         buildingStage = null;
         undergoingConstruction = false;
         undergoingSalvage = false;
         listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
+    }
+    
+    /**
+     * Gets the width of the construction site.
+     * @return width (meters).
+     */
+    public double getWidth() {
+        return width;
+    }
+    
+    /**
+     * Gets the length of the construction site.
+     * @return length (meters).
+     */
+    public double getLength() {
+        return length;
     }
     
     /**
@@ -161,8 +181,22 @@ public class ConstructionSite implements Serializable {
         }
         else throw new Exception("Stage type: " + stage.getInfo().getType() + " not valid");
         
+        // Update construction site dimensions.
+        updateDimensions(stage);
+        
         // Fire construction event.
         fireConstructionUpdate(ADD_CONSTRUCTION_STAGE_EVENT, stage);
+    }
+    
+    /**
+     * Updates the width and length dimensions to a construction stage.
+     * @param stage the construction stage.
+     */
+    private void updateDimensions(ConstructionStage stage) {
+        if (!stage.getInfo().isUnsetDimensions()) {
+            if (stage.getInfo().getWidth() != width) width = stage.getInfo().getWidth();
+            if (stage.getInfo().getLength() != length) length = stage.getInfo().getLength();
+        }
     }
     
     /**
