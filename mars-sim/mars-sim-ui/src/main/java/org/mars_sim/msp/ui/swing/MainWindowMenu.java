@@ -18,6 +18,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
+import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
@@ -39,6 +40,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
+    private JCheckBoxMenuItem settlementToolItem;    // Science tool menu item
     private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
     private JCheckBoxMenuItem guideItem;          // User Guide menu item
@@ -135,9 +137,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         toolsMenu.add(missionToolItem);
         
         // Create science tool menu item
+        settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME);
+        settlementToolItem.addActionListener(this);
+        settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
+        toolsMenu.add(settlementToolItem);
+
+        // Create science tool menu item
         scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME);
         scienceToolItem.addActionListener(this);
-        scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
+        scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
         toolsMenu.add(scienceToolItem);
         
         // Create help menu
@@ -203,6 +211,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             else desktop.closeToolWindow(MissionWindow.NAME);
         }
         
+        if (selectedItem == settlementToolItem) {
+            if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
+            else desktop.closeToolWindow(SettlementWindow.NAME);
+        }
+
         if (selectedItem == scienceToolItem) {
             if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
             else desktop.closeToolWindow(ScienceWindow.NAME);
@@ -228,6 +241,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
         prefsToolItem.setSelected(desktop.isToolWindowOpen(PreferencesWindow.NAME));
         missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
+        settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
         scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
         aboutMspItem.setSelected(desktop.isToolWindowOpen(AboutWindow.NAME));
         guideItem.setSelected(desktop.isToolWindowOpen(GuideWindow.NAME));
