@@ -60,14 +60,16 @@ public class MainWindow extends JFrame {
 		// Load UI configuration.
 		UIConfig.INSTANCE.parseFile();
 
+		// Set look and feel of UI.
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
-		// Set look and feel of UI.
 		if (!useDefault)
 			setLookAndFeel(UIConfig.INSTANCE.useNativeLookAndFeel());
 		else
 			setLookAndFeel(false);
 
+		
+		
 		// Prepare frame
 		setVisible(false);
 
@@ -92,6 +94,11 @@ public class MainWindow extends JFrame {
 		unitToolbar = new UnitToolBar(this);
 		mainPane.add(unitToolbar, "South");
 
+		// set the visibility of tool and unit bars from preferences
+		
+		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
+		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());		
+			
 		// Prepare desktop
 		desktop = new MainDesktopPane(this);
 		mainPane.add(desktop, "Center");
