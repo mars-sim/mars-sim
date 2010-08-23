@@ -136,7 +136,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		toolButtons.addElement(missionButton);
 
 		// Add settlement tool button
-		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, "PieChart");
+		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, "SettlementMapTool");
 		settlementButton.addActionListener(this);
 		add(settlementButton);
 		toolButtons.addElement(settlementButton);
