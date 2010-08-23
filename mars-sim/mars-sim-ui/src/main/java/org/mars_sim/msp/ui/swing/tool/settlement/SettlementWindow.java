@@ -8,8 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
+import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -60,6 +59,7 @@ public class SettlementWindow extends ToolWindow {
 
 		Object settlements[] = Simulation.instance().getUnitManager()
 				.getSettlements().toArray();
+		Arrays.sort(settlements);
 
 		settlementListBox = new JComboBox(settlements);
 		settlementListBox.setSelectedIndex(0);
