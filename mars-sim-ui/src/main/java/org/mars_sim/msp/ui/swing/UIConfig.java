@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-
+import org.mars_sim.msp.ui.swing.MainWindow;
 
 public class UIConfig {
 
@@ -65,6 +65,10 @@ public class UIConfig {
     private static final String USE_DEFAULT = "use-default";
 
     private static final String LOOK_AND_FEEL = "look-and-feel";
+
+    private static final String SHOW_UNIT_BAR = "show-unit-bar";
+
+    private static final String SHOW_TOOL_BAR = "show-tool-bar";
 
     private static final String MAIN_WINDOW = "main-window";
 
@@ -138,8 +142,12 @@ public class UIConfig {
             outputDoc.addContent(uiElement);
             outputDoc.setRootElement(uiElement);
 
-            uiElement.setAttribute(USE_DEFAULT, "false");
+            uiElement.setAttribute(USE_DEFAULT, "false"); // lechimp asks: why is this always set to false?
+    		
             
+            uiElement.setAttribute(SHOW_TOOL_BAR, new Boolean (window.getToolToolBar().isVisible()).toString());
+            uiElement.setAttribute(SHOW_UNIT_BAR, new Boolean (window.getUnitToolBar().isVisible()).toString());
+
             String currentLFClassName = UIManager.getLookAndFeel().getClass().getName();
             String systemLFClassName = UIManager.getSystemLookAndFeelClassName();
             if (currentLFClassName.equals(systemLFClassName))
@@ -266,6 +274,37 @@ public class UIConfig {
         }
     }
 
+    /**
+     * Checks if UI should show the Tool bar.
+     * 
+     * @return true if default.
+     */
+    public boolean showToolBar(){
+        try {
+            Element root = configDoc.getRootElement();
+            return Boolean.parseBoolean(root.getAttributeValue(SHOW_TOOL_BAR));
+        } 
+        catch (Exception e) {
+            return true;
+        }
+    }
+
+    /**
+     * Checks if UI should show the Unit bar.
+     * 
+     * @return true if default.
+     */
+    public boolean showUnitBar(){
+        try {
+            Element root = configDoc.getRootElement();
+            return Boolean.parseBoolean(root.getAttributeValue(SHOW_UNIT_BAR));
+        } 
+        catch (Exception e) {
+            return true;
+        }
+    }
+    
+    
     /**
      * Gets the screen location of the main window origin.
      * 
