@@ -11,6 +11,7 @@ import java.awt.BorderLayout;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -32,6 +33,7 @@ public class SettlementWindow extends ToolWindow {
     private JComboBox settlementListBox; // Lists all settlements
     private JComboBox zoomBox; // Lists zoom levels
     private JLabel zoomLabel; // Label for Zoom box
+    private JSlider zoomSlider; // Slider for Zoom level
     /**
      * Constructor
      * @param desktop the main desktop panel.
@@ -62,27 +64,44 @@ public class SettlementWindow extends ToolWindow {
 		Arrays.sort(settlements);
 
 		settlementListBox = new JComboBox(settlements);
+		settlementListBox.setToolTipText("Select settlement");
 		settlementListBox.setSelectedIndex(0);
 		widgetPane.add(settlementListBox, BorderLayout.WEST);
 
-		// Create zoom label and combobox
+		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
 		zoomLabel = new JLabel("Zoom: ");
 		zoomPane.add(zoomLabel, BorderLayout.CENTER);
 
+		zoomSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
+		zoomSlider.setMajorTickSpacing(50);
+		zoomSlider.setMinorTickSpacing(10);
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setPaintLabels(true);
+		zoomSlider.setToolTipText("Zoom view of settlement");
+		zoomPane.add(zoomSlider, BorderLayout.EAST);
+		
+
+		/* This is the old zoombox code
 		String[] zoomLevels = { "50%", "100%", "200%", "400%" };
 		zoomBox = new JComboBox(zoomLevels);
-		zoomPane.add(zoomBox, BorderLayout.EAST);
+		zoomPane.add(zoomBox, BorderLayout.EAST);*/
 
 		widgetPane.add(zoomPane);
 
 		JPanel buttonsPane = new JPanel();
 		JButton rotateButton = new JButton("Rotate");
+		rotateButton.setToolTipText("Free Rotation of view");
 		JButton recenterButton = new JButton("Recenter");
+		recenterButton.setToolTipText("Recenter view to center, normal zoom");
 		JButton labelsButton = new JButton("Labels");
+		labelsButton.setToolTipText("Add/remove label overlays");
+		JButton openInfoButton = new JButton("Open Info");
+		openInfoButton.setToolTipText("Opens the Settlement Info Window");
 		buttonsPane.add(rotateButton);
 		buttonsPane.add(recenterButton);
 		buttonsPane.add(labelsButton);
+		buttonsPane.add(openInfoButton);
 		widgetPane.add(buttonsPane);
 
 		// Add placeholder for upcoming map
