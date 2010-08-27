@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -33,6 +33,9 @@ public class SettlementConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String BUILDING = "building";
 	private static final String TYPE = "type";
+	private static final String X_LOCATION = "x-location";
+	private static final String Y_LOCATION = "y-location";
+	private static final String FACING = "facing";
 	private static final String NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
@@ -91,19 +94,19 @@ public class SettlementConfig implements Serializable {
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
 		List<Element> templateNodes = templateList.getChildren(TEMPLATE);
 		for (Element templateElement : templateNodes) {
-			SettlementTemplate template = new SettlementTemplate();
+		    String name = templateElement.getAttributeValue(NAME);
+		    
+			SettlementTemplate template = new SettlementTemplate(name);
 			settlementTemplates.add(template);
-			
-			template.name = templateElement.getAttributeValue(NAME);
 			
 			// Load buildings
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
 				String buildingType = buildingElement.getAttributeValue(TYPE);
-				int buildingNumber = Integer.parseInt(buildingElement.getAttributeValue(NUMBER));
-				if (template.buildings.containsKey(buildingType)) 
-					buildingNumber += template.buildings.get(buildingType);
-				template.buildings.put(buildingType, buildingNumber);
+				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
+				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
+				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
+				template.addBuildingTemplate(new BuildingTemplate(buildingType, xLoc, yLoc, facing));
 			}
 			
 			// Load vehicles
@@ -111,9 +114,7 @@ public class SettlementConfig implements Serializable {
 			for (Element vehicleElement : vehicleNodes) {
 				String vehicleType = vehicleElement.getAttributeValue(TYPE);
 				int vehicleNumber = Integer.parseInt(vehicleElement.getAttributeValue(NUMBER));
-				if (template.vehicles.containsKey(vehicleType)) 
-					vehicleNumber += template.vehicles.get(vehicleType);
-				template.vehicles.put(vehicleType, vehicleNumber);
+				template.addVehicles(vehicleType, vehicleNumber);
 			}
 			
 			// Load equipment
@@ -121,9 +122,7 @@ public class SettlementConfig implements Serializable {
 			for (Element equipmentElement : equipmentNodes) {
 				String equipmentType = equipmentElement.getAttributeValue(TYPE);
 				int equipmentNumber = Integer.parseInt(equipmentElement.getAttributeValue(NUMBER));
-				if (template.equipment.containsKey(equipmentType)) 
-					equipmentNumber += template.equipment.get(equipmentType);
-				template.equipment.put(equipmentType, equipmentNumber);
+				template.addEquipment(equipmentType, equipmentNumber);
 			}
 			
 			// Load resources
@@ -132,9 +131,7 @@ public class SettlementConfig implements Serializable {
 				String resourceType = resourceElement.getAttributeValue(TYPE);
 				AmountResource resource = AmountResource.findAmountResource(resourceType);
 				double resourceAmount = Double.parseDouble(resourceElement.getAttributeValue(AMOUNT));
-				if (template.resources.containsKey(resource)) 
-					resourceAmount += template.resources.get(resource);
-				template.resources.put(resource, resourceAmount);
+				template.addAmountResource(resource, resourceAmount);
 			}
 			
 			// Load parts
@@ -143,8 +140,7 @@ public class SettlementConfig implements Serializable {
 				String partType = partElement.getAttributeValue(TYPE);
 				Part part = (Part) Part.findItemResource(partType);
 				int partNumber = Integer.parseInt(partElement.getAttributeValue(NUMBER));
-				if (template.parts.containsKey(part)) partNumber += template.parts.get(part);
-				template.parts.put(part, partNumber);
+				template.addPart(part, partNumber);
 			}
 			
 			// Load part packages
@@ -159,9 +155,7 @@ public class SettlementConfig implements Serializable {
 						while (i.hasNext()) {
 							Part part = i.next();
 							int partNumber = partPackage.get(part);
-							if (template.parts.containsKey(part)) 
-								partNumber += template.parts.get(part);
-							template.parts.put(part, partNumber);
+							template.addPart(part, partNumber);
 						}
 					}
 				}
@@ -172,11 +166,12 @@ public class SettlementConfig implements Serializable {
 			if (resupplyList != null) {
 				List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
 				for (Element resupplyMissionElement: resupplyNodes) {
-					ResupplyMission resupplyMission = new ResupplyMission();
-					resupplyMission.name = resupplyMissionElement.getAttributeValue(NAME);
-					resupplyMission.arrivalTime = 
-						Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
-					template.resupplies.add(resupplyMission);
+				    String resupplyName = resupplyMissionElement.getAttributeValue(NAME);
+                    double arrivalTime = 
+                        Double.parseDouble(resupplyMissionElement.getAttributeValue(ARRIVAL_TIME));
+				    ResupplyMissionTemplate resupplyMissionTemplate = 
+				        new ResupplyMissionTemplate(resupplyName, arrivalTime);
+				    template.addResupplyMissionTemplate(resupplyMissionTemplate);
 				}
 			}
 		}
@@ -242,121 +237,19 @@ public class SettlementConfig implements Serializable {
 	 * @param templateName the template name.
 	 * @return settlement template
 	 */
-	private SettlementTemplate getSettlementTemplate(String templateName) {
+	public SettlementTemplate getSettlementTemplate(String templateName) {
 		SettlementTemplate result = null;
 		
 		Iterator<SettlementTemplate> i = settlementTemplates.iterator();
 		while (i.hasNext()) {
 			SettlementTemplate template = i.next();
-			if (template.name.equals(templateName)) result = template; 
+			if (template.getTemplateName().equals(templateName)) result = template; 
 		}
 		
 		if (result == null) throw new IllegalArgumentException("templateName: " 
 				+ templateName + " not found.");
 		
 		return result;
-	}
-	
-	/**
-	 * Gets the building types in a settlement template.
-	 * If there are multiple buildings of the same type, they are separately listed.
-	 * @param templateName the name of the settlement template.
-	 * @return list of building types as strings.
-	 */
-	public List<String> getTemplateBuildingTypes(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		List<String> result = new ArrayList<String>();
-		Iterator<String> j = foundTemplate.buildings.keySet().iterator();
-		while (j.hasNext()) {
-			String buildingType = j.next();
-			int buildingNumber = foundTemplate.buildings.get(buildingType);
-			for (int x = 0; x < buildingNumber; x++) result.add(buildingType);
-		}
-		return result;
-	}
-	
-	/**
-	 * Gets the vehicle types in a settlement template.
-	 * If there are multiple vehicles of the same type, they are separately listed.
-	 * @param templateName the name of the settlement template.
-	 * @return list of vehicle types as strings.
-	 */
-	public List<String> getTemplateVehicleTypes(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		List<String> result = new ArrayList<String>();
-		Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
-		while (j.hasNext()) {
-			String vehicleType = j.next();
-			int vehicleNumber = foundTemplate.vehicles.get(vehicleType);
-			for (int x = 0; x < vehicleNumber; x++) result.add(vehicleType);
-		}
-		return result;	
-	}
-	
-	/**
-	 * Gets the equipment types in a settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @return map of equipment types and number.
-	 */
-	public Map<String, Integer> getTemplateEquipment(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		return new HashMap<String, Integer>(foundTemplate.equipment);
-	}
-	
-	/**
-	 * Gets the resource types in a settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @return map of resources and amounts.
-	 */
-	public Map<AmountResource, Double> getTemplateResources(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		return new HashMap<AmountResource, Double>(foundTemplate.resources);
-	}
-	
-	/**
-	 * Gets the part types in a settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @return map of parts and number.
-	 */
-	public Map<Part, Integer> getTemplateParts(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		return new HashMap<Part, Integer>(foundTemplate.parts);
-	}
-	
-	/**
-	 * Gets the number of resupplies for a settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @return number of resupplies
-	 */
-	public int getNumberOfTemplateResupplies(String templateName) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		return foundTemplate.resupplies.size();
-	}
-	
-	/**
-	 * Gets the name of a settlement resupply for a particular settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @param index the index of the resupply mission.
-	 * @return name of the resupply mission.
-	 */
-	public String getTemplateResupplyName(String templateName, int index) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		if ((index >= 0) && (index < foundTemplate.resupplies.size()))
-			return foundTemplate.resupplies.get(index).name;
-		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
-	}
-	
-	/**
-	 * Gets the arrival time of a settlement resupply for a particular settlement template.
-	 * @param templateName the name of the settlement template.
-	 * @param index then index of the resupply mission.
-	 * @return arrival time for the resupply mission (in Sols from when simulation starts).
-	 */
-	public double getTemplateResupplyArrivalTime(String templateName, int index) {
-		SettlementTemplate foundTemplate = getSettlementTemplate(templateName);
-		if ((index >= 0) && (index < foundTemplate.resupplies.size()))
-			return foundTemplate.resupplies.get(index).arrivalTime;
-		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
 	}
 	
 	/**
@@ -429,36 +322,6 @@ public class SettlementConfig implements Serializable {
 	 */
 	public List<String> getSettlementNameList() throws Exception {
 		return new ArrayList<String>(settlementNames);
-	}
-	
-	/**
-	 * Private inner class for holding a settlement template.
-	 */
-	private class SettlementTemplate implements Serializable {
-		private String name;
-		private Map<String, Integer> buildings;
-		private Map<String, Integer> vehicles;
-		private Map<String, Integer> equipment;
-		private Map<AmountResource, Double> resources;
-		private Map<Part, Integer> parts;
-		private List<ResupplyMission> resupplies;
-		
-		private SettlementTemplate() {
-			buildings = new HashMap<String, Integer>();
-			vehicles = new HashMap<String, Integer>();
-			equipment = new HashMap<String, Integer>();
-			resources = new HashMap<AmountResource, Double>();
-			parts = new HashMap<Part, Integer>();
-			resupplies = new ArrayList<ResupplyMission>();
-		}
-	}
-	
-	/**
-	 * Private inner class for holding a resupply mission info.
-	 */
-	private class ResupplyMission implements Serializable {
-		private String name;
-		private double arrivalTime;
 	}
 	
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-25
  * @author Scott Davis
  */
  
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.*;
 import org.mars_sim.msp.core.person.*;
 import org.mars_sim.msp.core.person.ai.task.*;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.*;
 
 /**
@@ -37,6 +38,9 @@ public class Building implements Malfunctionable, Serializable {
     protected String name;
     protected double width;
     protected double length;
+    protected double xLoc;
+    protected double yLoc;
+    protected double facing;
     protected String powerMode;
     protected MalfunctionManager malfunctionManager;
     protected List<Function> functions;
@@ -45,15 +49,34 @@ public class Building implements Malfunctionable, Serializable {
     
     /**
      * Constructs a Building object.
-     * @param name the building's name.
+     * @param template the building template.
      * @param manager the building's building manager.
      * @throws BuildingException if building can not be created.
      */
-    public Building(String name, BuildingManager manager) throws BuildingException {
+    public Building(BuildingTemplate template, BuildingManager manager) 
+            throws BuildingException {
+        this(template.getType(), template.getXLoc(), template.getYLoc(), 
+                template.getFacing(), manager);
+    }
+    
+    /**
+     * Constructs a Building object.
+     * @param name the building's name.
+     * @param xLoc the x location of the building in the settlement.
+     * @param yLoc the y location of the building in the settlement.
+     * @param facing the facing of the building (degrees clockwise from North).
+     * @param manager the building's building manager.
+     * @throws BuildingException if building can not be created.
+     */
+    public Building(String name, double xLoc, double yLoc, double facing, 
+            BuildingManager manager) throws BuildingException {
         
         this.name = name;
         this.manager = manager;
-        this.powerMode = FULL_POWER;
+        powerMode = FULL_POWER;
+        this.xLoc = xLoc;
+        this.yLoc = yLoc;
+        this.facing = facing;
         
         try {
         	// Get the building's functions
@@ -224,6 +247,30 @@ public class Building implements Malfunctionable, Serializable {
      */
     public double getLength() {
         return length;
+    }
+    
+    /**
+     * Gets the x location of the building in the settlement.
+     * @return x location (meters from settlement center - West: positive, East: negative).
+     */
+    public double getXLocation() {
+        return xLoc;
+    }
+    
+    /**
+     * Gets the y location of the building in the settlement.
+     * @return y location (meters from settlement center - North: positive, South: negative).
+     */
+    public double getYLocation() {
+        return yLoc;
+    }
+    
+    /**
+     * Gets the facing of the building.
+     * @return facing (degrees from North clockwise).
+     */
+    public double getFacing() {
+        return facing;
     }
     
     /**
