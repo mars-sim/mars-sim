@@ -36,6 +36,9 @@ public class ConstructionSite implements Serializable {
     // Data members
     private double width;
     private double length;
+    private double xLocation;
+    private double yLocation;
+    private double facing;
     private ConstructionStage foundationStage;
     private ConstructionStage frameStage;
     private ConstructionStage buildingStage;
@@ -49,6 +52,9 @@ public class ConstructionSite implements Serializable {
     ConstructionSite() {
         width = 0D;
         length = 0D;
+        xLocation = 0D;
+        yLocation = 0D;
+        facing = 0D;
         foundationStage = null;
         frameStage = null;
         buildingStage = null;
@@ -71,6 +77,54 @@ public class ConstructionSite implements Serializable {
      */
     public double getLength() {
         return length;
+    }
+    
+    /**
+     * Gets the X location of the construction site.
+     * @return x location in meters from center of settlement (West: positive, East: negative).
+     */
+    public double getXLocation() {
+        return xLocation;
+    }
+    
+    /**
+     * Sets the X location of the construction site.
+     * @param xLocation x location in meters from center of settlement (West: positive, East: negative).
+     */
+    public void setXLocation(double xLocation) {
+        this.xLocation = xLocation;
+    }
+    
+    /**
+     * Gets the Y location of the construction site.
+     * @return y location in meters from center of settlement (North: positive, South: negative).
+     */
+    public double getYLocation() {
+        return yLocation;
+    }
+    
+    /**
+     * Sets the Y location of the construction site.
+     * @param yLocation y location in meters from center of settlement (North: positive, South: negative).
+     */
+    public void setYLocation(double yLocation) {
+        this.yLocation = yLocation;
+    }
+    
+    /**
+     * Gets the facing of the construction site.
+     * @return facing in degrees clockwise from North.
+     */
+    public double getFacing() {
+        return facing;
+    }
+    
+    /**
+     * Sets the facing of the construction site.
+     * @param facing
+     */
+    public void setFacing(double facing) {
+        this.facing = facing;
     }
     
     /**
@@ -242,7 +296,9 @@ public class ConstructionSite implements Serializable {
      */
     public Building createBuilding(BuildingManager manager) throws Exception {
         if (buildingStage == null) throw new Exception("Building stage doesn't exist");
-        Building newBuilding = new Building(buildingStage.getInfo().getName(), manager);
+        
+        Building newBuilding = new Building(buildingStage.getInfo().getName(), getXLocation(), 
+                getYLocation(), getFacing(), manager);
         manager.addBuilding(newBuilding);
         
         // Record completed building name.

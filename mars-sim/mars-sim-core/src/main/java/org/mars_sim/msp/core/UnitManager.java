@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-26
  * @author Scott Davis
  */
 
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
+import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -298,17 +299,22 @@ public class UnitManager implements Serializable {
     	    Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			List<String> vehicleTypes = config.getTemplateVehicleTypes(settlement.getTemplate());
-    			Iterator<String> j = vehicleTypes.iterator();
+    			SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+    			Map<String, Integer> vehicleMap = template.getVehicles();
+    			Iterator<String> j = vehicleMap.keySet().iterator();
     			while (j.hasNext()) {
     				String vehicleType = j.next();
-    				if (LightUtilityVehicle.NAME.equals(vehicleType)) {
-    					String name = getNewName(VEHICLE, "LUV", null);
-    					addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-    				}
-    				else {
-    					String name = getNewName(VEHICLE, null, null);
-    					addUnit(new Rover(name, vehicleType, settlement));
+    				int number = vehicleMap.get(vehicleType);
+    				
+    				for (int x = 0; x < number; x++) {
+    				    if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+    				        String name = getNewName(VEHICLE, "LUV", null);
+    				        addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
+    				    }
+    				    else {
+    				        String name = getNewName(VEHICLE, null, null);
+    				        addUnit(new Rover(name, vehicleType, settlement));
+    				    }
     				}
     			}
     		}
@@ -330,7 +336,8 @@ public class UnitManager implements Serializable {
     	    Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map<String, Integer> equipmentMap = config.getTemplateEquipment(settlement.getTemplate());
+    			SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+    			Map<String, Integer> equipmentMap = template.getEquipment();
     			Iterator<String> j = equipmentMap.keySet().iterator();
     			while (j.hasNext()) {
     				String type = j.next();
@@ -362,7 +369,8 @@ public class UnitManager implements Serializable {
     		Iterator<Settlement> i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map<AmountResource, Double> resourceMap = config.getTemplateResources(settlement.getTemplate());
+    			SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+    			Map<AmountResource, Double> resourceMap = template.getResources();
     			Iterator<AmountResource> j = resourceMap.keySet().iterator();
     			while (j.hasNext()) {
     				AmountResource resource = j.next();
@@ -390,7 +398,8 @@ public class UnitManager implements Serializable {
     		Iterator<Settlement>i = getSettlements().iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
-    			Map<Part, Integer> partMap = config.getTemplateParts(settlement.getTemplate());
+    			SettlementTemplate template = config.getSettlementTemplate(settlement.getTemplate());
+    			Map<Part, Integer> partMap = template.getParts();
     			Iterator<Part> j = partMap.keySet().iterator();
     			while (j.hasNext()) {
     				Part part = j.next();

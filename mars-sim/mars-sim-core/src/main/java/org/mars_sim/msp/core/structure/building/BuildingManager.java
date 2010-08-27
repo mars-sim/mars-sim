@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-25
  * @author Scott Davis
  */
  
@@ -49,27 +49,28 @@ public class BuildingManager implements Serializable {
      * @throws Exception if buildings cannot be constructed.
      */
     public BuildingManager(Settlement settlement) throws Exception {
-        this(settlement, SimulationConfig.instance().getSettlementConfiguration()
-        	.getTemplateBuildingTypes(settlement.getTemplate()));
+        this(settlement, SimulationConfig.instance().getSettlementConfiguration().
+                getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
     }
     
     /**
      * Constructor to construct buildings from name list.
      * @param settlement the manager's settlement
-     * @param buildingNames the names of the settlement's buildings.
+     * @param buildingTemplates the settlement's building templates.
      * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement, List<String> buildingNames) throws Exception {
+    public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) 
+            throws Exception {
     	
     	this.settlement = settlement;
     	
     	// Construct all buildings in the settlement.
     	buildings = new ArrayList<Building>();
-    	if (buildingNames != null) {
-    		Iterator<String> i = buildingNames.iterator();
+    	if (buildingTemplates != null) {
+    		Iterator<BuildingTemplate> i = buildingTemplates.iterator();
     		while (i.hasNext()) {
-    			String buildingType = i.next();
-    			addBuilding(buildingType);
+    		    BuildingTemplate template = i.next();
+    			addBuilding(template);
     		}
         }
         
@@ -111,12 +112,12 @@ public class BuildingManager implements Serializable {
     }
     
     /**
-     * Adds a building of a specific building type to the settlement.
-     * @param buildingType the type of building.
+     * Adds a building with a template to the settlement.
+     * @param template the building template.
      * @throws Exception if error creating or adding building.
      */
-    public void addBuilding(String buildingType) throws Exception {
-    	Building newBuilding = new Building(buildingType, this);
+    public void addBuilding(BuildingTemplate template) throws Exception {
+    	Building newBuilding = new Building(template, this);
     	addBuilding(newBuilding);
     }
     

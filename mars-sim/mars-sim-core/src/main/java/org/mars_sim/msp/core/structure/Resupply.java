@@ -32,7 +32,7 @@ public class Resupply implements Serializable {
 	private Settlement settlement;
 	private MarsClock arrivalDate;
 	private boolean isDelivered;
-	private List<String> newBuildings;
+	private List<BuildingTemplate> newBuildings;
 	private List<String> newVehicles;
 	private Map<String, Integer> newEquipment;
 	private int newImmigrantNum;
@@ -57,7 +57,7 @@ public class Resupply implements Serializable {
 		ResupplyConfig config = SimulationConfig.instance().getResupplyConfiguration();
 		
 		// Get new building types.
-		newBuildings = config.getResupplyBuildingTypes(resupplyName);
+		newBuildings = config.getResupplyBuildings(resupplyName);
 			
 		// Get new vehicle types.
 		newVehicles = config.getResupplyVehicleTypes(resupplyName);
@@ -107,7 +107,7 @@ public class Resupply implements Serializable {
 		
 		// Deliver buildings.
 		BuildingManager buildingManager = settlement.getBuildingManager();
-		Iterator<String> buildingI = newBuildings.iterator();
+		Iterator<BuildingTemplate> buildingI = newBuildings.iterator();
 		while (buildingI.hasNext()) buildingManager.addBuilding(buildingI.next());
 		
 		// Deliver vehicles.

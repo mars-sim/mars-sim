@@ -129,6 +129,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 else if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                     // Create new site.
                     constructionSite = manager.createNewConstructionSite();
+                    // TODO Determine construction site location and facing.
                     logger.log(Level.INFO, "New construction site added at " + settlement.getName());
                 }
                 
@@ -205,6 +206,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         else {
             logger.log(Level.INFO, "New construction site added at " + settlement.getName());
             constructionSite = manager.createNewConstructionSite();
+            // TODO determine location and facing of construction site.
             if (constructionSite == null) endMission("Construction site could not be created.");
         }
         

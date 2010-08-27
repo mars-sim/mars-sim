@@ -33,6 +33,9 @@ public class ResupplyConfig implements Serializable {
 	private static final String RESUPPLY = "resupply";
 	private static final String NAME = "name";
 	private static final String BUILDING = "building";
+	private static final String X_LOCATION = "x-location";
+	private static final String Y_LOCATION = "y-location";
+	private static final String FACING = "facing";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
 	private static final String PERSON = "person";
@@ -80,10 +83,10 @@ public class ResupplyConfig implements Serializable {
 			List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
 				String buildingType = buildingElement.getAttributeValue(TYPE);
-				int buildingNumber = Integer.parseInt(buildingElement.getAttributeValue(NUMBER));
-				if (template.buildings.containsKey(buildingType)) 
-					buildingNumber += template.buildings.get(buildingType);
-				template.buildings.put(buildingType, buildingNumber);
+				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
+				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
+				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
+				template.buildings.add(new BuildingTemplate(buildingType, xLoc, yLoc, facing));
 			}
 			
 			// Load vehicles
@@ -178,20 +181,15 @@ public class ResupplyConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of building types in the resupply mission.
-	 * @param resupplyName name of the resupply mission.
-	 * @return list of building types as strings.
+	 * Gets a list of all building templates in the resupply mission.
+	 * @param resupplyName the resupply mission name.
+	 * @return list of building templates.
 	 */
-	public List<String> getResupplyBuildingTypes(String resupplyName) {
-		ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-		List<String> result = new ArrayList<String>();
-		Iterator<String> j = foundTemplate.buildings.keySet().iterator();
-		while (j.hasNext()) {
-			String buildingType = j.next();
-			int buildingNumber = foundTemplate.buildings.get(buildingType);
-			for (int x = 0; x < buildingNumber; x++) result.add(buildingType);
-		}
-		return result;
+	public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
+	    List<BuildingTemplate> result = new ArrayList<BuildingTemplate>();
+	    ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
+	    if (foundTemplate != null) result.addAll(foundTemplate.buildings);
+	    return result;
 	}
 	
 	/**
@@ -256,7 +254,7 @@ public class ResupplyConfig implements Serializable {
 	 */
 	private class ResupplyTemplate implements Serializable {
 		private String name;
-		private Map<String, Integer> buildings;
+		private List<BuildingTemplate> buildings;
 		private Map<String, Integer> vehicles;
 		private Map<String, Integer> equipment;
 		private int people;
@@ -264,7 +262,7 @@ public class ResupplyConfig implements Serializable {
 		private Map<Part, Integer> parts;
 		
 		private ResupplyTemplate() {
-			buildings = new HashMap<String, Integer>();
+			buildings = new ArrayList<BuildingTemplate>();
 			vehicles = new HashMap<String, Integer>();
 			equipment = new HashMap<String, Integer>();
 			resources = new HashMap<AmountResource, Double>();

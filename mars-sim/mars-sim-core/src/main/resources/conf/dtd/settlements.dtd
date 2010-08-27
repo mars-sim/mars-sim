@@ -6,7 +6,9 @@ part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
 <!ELEMENT building EMPTY>
 <!ATTLIST building type CDATA #REQUIRED>
-<!ATTLIST building number CDATA #REQUIRED>
+<!ATTLIST building x-location CDATA #REQUIRED>
+<!ATTLIST building y-location CDATA #REQUIRED>
+<!ATTLIST building facing CDATA #REQUIRED>
 <!ELEMENT vehicle EMPTY>
 <!ATTLIST vehicle type CDATA #REQUIRED>
 <!ATTLIST vehicle number CDATA #REQUIRED>

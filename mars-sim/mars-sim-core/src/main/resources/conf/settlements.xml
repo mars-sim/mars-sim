@@ -12,22 +12,23 @@
 		<template name="Mars Direct Base (phase 1)">
 		
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
-			<building type="Lander Hab" number="1" />
+			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
 			
 			<!-- Inflatable greenhouse can be used to grow crops. -->
-			<building type="Inflatable Greenhouse" number="1" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
 			
 			<!-- Small nuclear reactor power generator. -->
-			<building type="MD1 Nuclear Reactor" number="2" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen. 
 			     The starting ERV base has a full load of hydrogen and has not reacted yet. -->
-			<building type="Starting ERV Base" number="1" />
+			<building type="Starting ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
 			
 			<!-- Earth Return Vehicle base building with Sabatier reactor for converting
 			     hydrogen and carbon dioxide into methane, water and oxygen.  -->
-			<building type="ERV Base" number="1" />
+			<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			
 			<!-- A rover for collecting rock samples from remote sites
 			     and ice prospecting. -->
@@ -66,11 +67,16 @@
 		</template>
 	
 		<template name="Mars Direct Base (phase 2)">
-			<building type="Lander Hab" number="2" />
-			<building type="Inflatable Greenhouse" number="2" />
-			<building type="MD1 Nuclear Reactor" number="3" />
-			<building type="Starting ERV Base" number="1" />
-			<building type="ERV Base" number="2" />
+			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
+			<building type="Starting ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<equipment type="EVA Suit" number="16" />
@@ -89,11 +95,20 @@
 		</template>
 		
 		<template name="Mars Direct Base (phase 3)">
-			<building type="Lander Hab" number="3" />
-			<building type="Inflatable Greenhouse" number="3" />
-			<building type="MD1 Nuclear Reactor" number="4" />
-			<building type="Starting ERV Base" number="1" />
-			<building type="ERV Base" number="3" />
+			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="18.0" facing="0.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="18.0" facing="270.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
+			<building type="Starting ERV Base" x-location="70.0" y-location="15.0" facing="90.0" />
+			<building type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Transport Rover" number="1" />
 			<vehicle type="Cargo Rover" number="1" />
@@ -113,22 +128,32 @@
 		</template>
 		
 		<template name="Alpha Base (MD phase 4)">
-			<building type="Atmospheric Processor" number="1" />
-			<building type="Residential Quarters" number="1" />
-			<building type="Lounge" number="1" />
-			<building type="Infirmary" number="1" />
-			<building type="Command and Control" number="1" />
-			<building type="Large Greenhouse" number="1" />
-			<building type="Laboratory" number="1" />
-			<building type="Garage" number="1" />
-			<building type="Workshop" number="1" />
-			<building type="Lander Hab" number="3" />
-			<building type="Inflatable Greenhouse" number="3" />
-			<building type="MD1 Nuclear Reactor" number="4" />
-			<building type="MD4 Nuclear Reactor" number="2" />
-			<building type="Starting ERV Base" number="1" />
-			<building type="ERV Base" number="3" />
-			<building type="Astronomy Observatory" number="1" />
+			<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
+			<building type="Residential Quarters" x-location="-18.0" y-location="26.0" facing="270.0" />
+			<building type="Lounge" x-location="-9.0" y-location="26.0" facing="270.0" />
+			<building type="Infirmary" x-location="-27.0" y-location="26.0" facing="270.0" />
+			<building type="Command and Control" x-location="0.0" y-location="26.0" facing="270.0" />
+			<building type="Large Greenhouse" x-location="-36.0" y-location="13.5" facing="0.0" />
+			<building type="Laboratory" x-location="-36.0" y-location="26.0" facing="270.0" />
+			<building type="Garage" x-location="-45.0" y-location="37.5" facing="0.0" />
+			<building type="Workshop" x-location="-45.0" y-location="26.0" facing="270.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="18.0" facing="0.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="18.0" facing="270.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
+			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
+			<building type="MD4 Nuclear Reactor" x-location="25.0" y-location="-57.5" facing="0.0" />
+			<building type="MD4 Nuclear Reactor" x-location="40.0" y-location="-57.5" facing="0.0" />
+			<building type="ERV Base" x-location="70.0" y-location="15.0" facing="90.0" />
+			<building type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
+			<building type="ERV Base" x-location="40.0" y-location="-15.0" facing="45.0" />
+			<building type="Astronomy Observatory" x-location="-62.5" y-location="-17.5" facing="90.0" />
 			<vehicle type="Explorer Rover" number="3" />
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />

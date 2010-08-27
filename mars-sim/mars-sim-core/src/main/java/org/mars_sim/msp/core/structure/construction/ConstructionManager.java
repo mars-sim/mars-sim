@@ -182,6 +182,9 @@ public class ConstructionManager implements Serializable {
         
         // Add construction site.
         ConstructionSite site = createNewConstructionSite();
+        site.setXLocation(salvagedBuilding.getXLocation());
+        site.setYLocation(salvagedBuilding.getYLocation());
+        site.setFacing(salvagedBuilding.getFacing());
         ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(salvagedBuilding.getName());
         if (buildingStageInfo != null) {
             String frameName = buildingStageInfo.getPrerequisiteStage();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2010-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -35,17 +35,13 @@ public class ResupplyManager implements Serializable {
 		String templateName = settlement.getTemplate();
 		MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
 		
-		try {
-			for (int x = 0; x < config.getNumberOfTemplateResupplies(templateName); x++ ) {
-				String resupplyName = config.getTemplateResupplyName(templateName, x);
-				double timeUntilArrival = config.getTemplateResupplyArrivalTime(templateName, x);
-				MarsClock arrivalDate = (MarsClock) currentTime.clone();
-				arrivalDate.addTime(timeUntilArrival * 1000D);
-				resupplies.add(new Resupply(arrivalDate, resupplyName, settlement));
-			}
-		}
-		catch (Exception e) {
-			throw new Exception("ResupplyManager.constructor: " + e.getMessage());
+		Iterator<ResupplyMissionTemplate> i = 
+		    config.getSettlementTemplate(templateName).getResupplyMissionTemplates().iterator();
+		while (i.hasNext()) {
+		    ResupplyMissionTemplate template = i.next();
+		    MarsClock arrivalDate = (MarsClock) currentTime.clone();
+		    arrivalDate.addTime(template.getArrivalTime() * 1000D);
+		    resupplies.add(new Resupply(arrivalDate, template.getName(), settlement));
 		}
 	}
 	
