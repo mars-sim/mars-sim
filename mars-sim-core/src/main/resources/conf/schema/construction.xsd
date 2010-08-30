@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/construction"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:cons="http://mars-sim.sourceforge.net/construction"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+	
+    <xs:element name="construction">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="cons:foundation-list"></xs:element>
+    			<xs:element ref="cons:frame-list"></xs:element>
+    			<xs:element ref="cons:building-list"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="foundation-list">
+    	<xs:complexType>
+    		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+    			<xs:element ref="cons:foundation"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="foundation">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="cons:resource" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="amount" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="vehicle">
+    	<xs:complexType>
+    		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+    			<xs:element ref="cons:attachment-part"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="attachment-part">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="frame-list">
+    	<xs:complexType>
+    		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+    			<xs:element ref="cons:frame"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="frame">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="cons:resource" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
+    		<xs:attribute name="foundation" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="building-list">
+    	<xs:complexType>
+    		<xs:sequence minOccurs="0" maxOccurs="unbounded">
+    			<xs:element ref="cons:building"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="building">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="cons:resource" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
+    		<xs:attribute name="frame" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>
