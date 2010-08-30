@@ -15,6 +15,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 
@@ -46,6 +47,7 @@ public class MarsProject {
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
             try {
+            	SimulationConfig.loadConfig();
                 Simulation.createNewSimulation();
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Problem creating new simulation", e);
@@ -57,7 +59,7 @@ public class MarsProject {
             try {
                 int index = argList.indexOf("-load");
                 // Get the next argument as the filename.
-                File loadFile = new File((String) argList.get(index + 1));
+                File loadFile = new File(argList.get(index + 1));
                 if (loadFile.exists()) Simulation.instance().loadSimulation(loadFile);
                 else {
                     logger.log(Level.SEVERE, "Problem loading simulation");

@@ -111,35 +111,8 @@ public class SimulationConfig implements Serializable {
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
 
-	/**
-	 * Constructor
-	 */
 	private SimulationConfig() {
-		try {
-			// Load simulation document
-			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-		
-			// Load subset configuration classes.
-			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
-			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
-			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
-			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
-			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
-			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
-			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
-			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
-			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
-			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
-			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
-			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
-			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
-			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
-            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
-		}
-		catch (Exception e) {
-			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
-			e.printStackTrace(System.err);
-		}
+		loadDefaultConfiguration();
 	}
 	
 	/* ---------------------------------------------------------------------------------------------------- *
@@ -166,8 +139,8 @@ public class SimulationConfig implements Serializable {
 	 * Reloads all of the configuration files.
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
-	public static void reloadConfig() throws Exception {
-		setInstance(new SimulationConfig());
+	public static void loadConfig() throws Exception {
+		instance.loadDefaultConfiguration();
 	}
 	
 	/* ---------------------------------------------------------------------------------------------------- *
@@ -230,7 +203,7 @@ public class SimulationConfig implements Serializable {
 	 * Gets the part config subset.
 	 * @return part config
 	 */
-	public PartConfig getPartConfig() {
+	public PartConfig getPartConfiguration() {
 		return partConfig;
 	}
 	
@@ -238,7 +211,7 @@ public class SimulationConfig implements Serializable {
 	 * Gets the part package configuration.
 	 * @return part package config
 	 */
-	public PartPackageConfig getPartPackageConfig() {
+	public PartPackageConfig getPartPackageConfiguration() {
 		return partPackageConfig;
 	}
 	
@@ -246,7 +219,7 @@ public class SimulationConfig implements Serializable {
 	 * Gets the resource config subset.
 	 * @return resource config
 	 */
-	public AmountResourceConfig getResourceConfig() {
+	public AmountResourceConfig getResourceConfiguration() {
 		return resourceConfig;
 	}
 	
@@ -349,6 +322,33 @@ public class SimulationConfig implements Serializable {
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Private Methods
 	 * ---------------------------------------------------------------------------------------------------- */
+    
+    private void loadDefaultConfiguration() {
+    	try {
+			// Load simulation document
+			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
+		
+			// Load subset configuration classes.
+			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
+			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
+			partPackageConfig = new PartPackageConfig(parseXMLFileAsJDOMDocument(PART_PACKAGE_FILE, true));
+			personConfig = new PersonConfig(parseXMLFileAsJDOMDocument(PEOPLE_FILE, true));
+			medicalConfig = new MedicalConfig(parseXMLFileAsJDOMDocument(MEDICAL_FILE, true));
+			landmarkConfig = new LandmarkConfig(parseXMLFileAsJDOMDocument(LANDMARK_FILE, true));
+			mineralMapConfig = new MineralMapConfig(parseXMLFileAsJDOMDocument(MINERAL_MAP_FILE, true));
+			malfunctionConfig = new MalfunctionConfig(parseXMLFileAsJDOMDocument(MALFUNCTION_FILE, true));
+			cropConfig = new CropConfig(parseXMLFileAsJDOMDocument(CROP_FILE, true));
+			vehicleConfig = new VehicleConfig(parseXMLFileAsJDOMDocument(VEHICLE_FILE, true));
+			buildingConfig = new BuildingConfig(parseXMLFileAsJDOMDocument(BUILDING_FILE, true));
+			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
+			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
+			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
+            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
+			e.printStackTrace();
+		}
+    }
 	
 	/**
      * Parses an XML file into a DOM document.
@@ -383,4 +383,5 @@ public class SimulationConfig implements Serializable {
 
 		return stream;
 	}
+	
 }

@@ -26,8 +26,10 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 /**
@@ -36,14 +38,17 @@ import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
  */
 public class MainWindow extends JFrame {
 
+	/** DOCME: documentation is missing */
+	private static final long serialVersionUID = 1L;
+
 	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.MainWindow";
 
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Data members
-	private UnitToolBar unitToolbar; // The unit tool bar
-	private ToolToolBar toolToolbar; // The tool bar
-	private MainDesktopPane desktop; // The main desktop
+	private final UnitToolBar unitToolbar; // The unit tool bar
+	private final ToolToolBar toolToolbar; // The tool bar
+	private final MainDesktopPane desktop; // The main desktop
 
 	private Thread newSimThread;
 	private Thread loadSimThread;
@@ -63,17 +68,19 @@ public class MainWindow extends JFrame {
 		// Set look and feel of UI.
 		boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
-		if (!useDefault)
+		if (!useDefault) {
 			setLookAndFeel(UIConfig.INSTANCE.useNativeLookAndFeel());
-		else
+		} else {
 			setLookAndFeel(false);
+		}
 
-		
-		
+
+
 		// Prepare frame
 		setVisible(false);
 
 		addWindowListener(new WindowAdapter() {
+			@Override
 			public void windowClosing(WindowEvent event) {
 				exitSimulation();
 			}
@@ -95,10 +102,10 @@ public class MainWindow extends JFrame {
 		mainPane.add(unitToolbar, "South");
 
 		// set the visibility of tool and unit bars from preferences
-		
+
 		unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
 		toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());		
-			
+
 		// Prepare desktop
 		desktop = new MainDesktopPane(this);
 		mainPane.add(desktop, "Center");
@@ -112,10 +119,11 @@ public class MainWindow extends JFrame {
 			if (screen_size.width > 800) {
 				frame_size = new Dimension((int) Math.round(screen_size
 						.getWidth() * .9D), (int) Math.round(screen_size
-						.getHeight() * .9D));
+								.getHeight() * .9D));
 			}
-		} else
+		} else {
 			frame_size = UIConfig.INSTANCE.getMainWindowDimension();
+		}
 		setSize(frame_size);
 
 		// Set frame location.
@@ -123,8 +131,9 @@ public class MainWindow extends JFrame {
 			// Center frame on screen
 			setLocation(((screen_size.width - frame_size.width) / 2),
 					((screen_size.height - frame_size.height) / 2));
-		} else
+		} else {
 			setLocation(UIConfig.INSTANCE.getMainWindowLocation());
+		}
 
 		// Show frame
 		setVisible(true);
@@ -148,6 +157,7 @@ public class MainWindow extends JFrame {
 	public void loadSimulation() {
 		if ((loadSimThread == null) || !loadSimThread.isAlive()) {
 			loadSimThread = new Thread() {
+				@Override
 				public void run() {
 					loadSimulationProcess();
 				}
@@ -169,8 +179,11 @@ public class MainWindow extends JFrame {
 				desktop.openAnnouncementWindow("Loading simulation...");
 				MasterClock clock = Simulation.instance().getMasterClock();
 				clock.loadSimulation(chooser.getSelectedFile());
-				while (clock.isLoadingSimulation())
+				while (clock.isLoadingSimulation()) {
 					Thread.sleep(100L);
+				}
+
+				desktop.clearDesktop();
 				desktop.resetDesktop();
 				desktop.disposeAnnouncementWindow();
 
@@ -191,6 +204,7 @@ public class MainWindow extends JFrame {
 	public void newSimulation() {
 		if ((newSimThread == null) || !newSimThread.isAlive()) {
 			newSimThread = new Thread() {
+				@Override
 				public void run() {
 					newSimulationProcess();
 				}
@@ -207,13 +221,23 @@ public class MainWindow extends JFrame {
 	 */
 	private void newSimulationProcess() {
 		try {
-			desktop.openAnnouncementWindow("Creating new simulation...");
-			Simulation.createNewSimulation();
-			desktop.resetDesktop();
-			desktop.disposeAnnouncementWindow();
-
-			// Open navigator tool after creating new simulation.
-			desktop.openToolWindow(NavigatorWindow.NAME);
+			if (JOptionPane.showInternalConfirmDialog(desktop,
+					"Do you really want to create a new simulation and abandon the current running?",
+					UIManager.getString("OptionPane.titleText"),
+					JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				desktop.openAnnouncementWindow("Creating new simulation...");
+				/* Break up the creation of the new simulation, to allow intefering with the single steps.*/
+				desktop.clearDesktop();
+				Simulation.stopSimulation();
+				SimulationConfig.loadConfig();
+				SimulationConfigEditor editor = new SimulationConfigEditor(getOwner(), SimulationConfig.instance());
+				editor.setVisible(true);
+				Simulation.createNewSimulation();
+				desktop.resetDesktop();
+				desktop.disposeAnnouncementWindow();
+				/* Open navigator tool after creating new simulation. */
+				desktop.openToolWindow(NavigatorWindow.NAME);
+			}
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "Problem creating new simulation: " + e);
 			e.printStackTrace(System.err);
@@ -230,6 +254,7 @@ public class MainWindow extends JFrame {
 	public void saveSimulation(final boolean useDefault) {
 		if ((saveSimThread == null) || !saveSimThread.isAlive()) {
 			saveSimThread = new Thread() {
+				@Override
 				public void run() {
 					saveSimulationProcess(useDefault);
 				}
@@ -250,17 +275,19 @@ public class MainWindow extends JFrame {
 			if (!useDefault) {
 				JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
 				chooser.setDialogTitle("Select save location");
-				if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+				if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 					fileLocn = chooser.getSelectedFile();
-				else
+				} else {
 					return;
+				}
 			}
 
 			desktop.openAnnouncementWindow("Saving simulation...");
 			MasterClock clock = Simulation.instance().getMasterClock();
 			clock.saveSimulation(fileLocn);
-			while (clock.isSavingSimulation())
+			while (clock.isSavingSimulation()) {
 				Thread.sleep(100L);
+			}
 			desktop.disposeAnnouncementWindow();
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, "Problem saving simulation",
@@ -354,8 +381,9 @@ public class MainWindow extends JFrame {
 				}
 			}
 			SwingUtilities.updateComponentTreeUI(this);
-			if (desktop != null)
+			if (desktop != null) {
 				desktop.updateToolWindowLF();
+			}
 		} catch (Exception e) {
 			e.printStackTrace(System.err);
 		}
