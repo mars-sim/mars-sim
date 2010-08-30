@@ -33,7 +33,10 @@ import org.mars_sim.msp.core.time.MasterClock;
  */
 public class Simulation implements ClockListener, Serializable {
     
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.Simulation";
+    /** DOCME: documentation is missing */
+	private static final long serialVersionUID = -631308653510974249L;
+
+	private static String CLASS_NAME = "org.mars_sim.msp.simulation.Simulation";
 	
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
@@ -88,19 +91,22 @@ public class Simulation implements ClockListener, Serializable {
 		return instance;
 	}
 	
-	/**
-	 * Creates a new simulation instance.
-	 * @throws Exception if new simulation could not be created.
-	 */
-	public static void createNewSimulation() throws Exception {
+	public static void stopSimulation() throws Exception {
 		Simulation simulation = instance();
 		simulation.defaultLoad = false;
 		simulation.stop();
 		
 		// Wait until current time pulse runs it course.
 		Thread.sleep(MasterClock.TIME_PULSE_LENGTH);
-		
+	}
+	
+	/**
+	 * Creates a new simulation instance.
+	 * @throws Exception if new simulation could not be created.
+	 */
+	public static void createNewSimulation() throws Exception {
 		try {
+			Simulation simulation = instance();
 			// Initialize intransient data members.
 			simulation.initializeIntransientData();
 			
@@ -127,7 +133,6 @@ public class Simulation implements ClockListener, Serializable {
 	 * @throws Exception if intransient data could not be loaded.
 	 */
 	private void initializeIntransientData() throws Exception {
-		SimulationConfig.reloadConfig();
 		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
 		mars = new Mars();
 		missionManager = new MissionManager();
@@ -251,6 +256,7 @@ public class Simulation implements ClockListener, Serializable {
 	 * Clock pulse from master clock
 	 * @param time amount of time passing (in millisols)
 	 */
+	@Override
 	public void clockPulse(double time) {
 		try {
 			mars.timePassing(time);
