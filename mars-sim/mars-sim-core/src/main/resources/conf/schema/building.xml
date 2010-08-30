@@ -5,7 +5,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://mars-sim.sourceforge.net/building building.xsd">
 	
-		<!-- The lander hab is a general purpose habitat for 4 people. -->
+	<!-- The lander hab is a general purpose habitat for 4 people. -->
 	<!-- It serves as a sort of jack-of-all-trades building. -->
 	<!-- name: the name of the building. -->
 	<!-- width: the width of the building in meters. -->

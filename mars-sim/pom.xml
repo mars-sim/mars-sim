@@ -124,6 +124,7 @@
 	<!-- * Module Section                                                                                * -->
 	<!-- ************************************************************************************************* -->
 	<modules>
+		<module>mars-sim-config</module>
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>

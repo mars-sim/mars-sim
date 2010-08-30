@@ -2,7 +2,8 @@
 <xs:schema targetNamespace="http://mars-sim.sourceforge.net/building"
 	elementFormDefault="qualified" attributeFormDefault="unqualified"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	xmlns:bld="http://mars-sim.sourceforge.net/building" xmlns:conf="http://mars-sim.sourceforge.net/configuration">
+	xmlns:bld="http://mars-sim.sourceforge.net/building"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration">
 
 	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
 	
