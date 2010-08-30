@@ -1,0 +1,706 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<building-list
+	xmlns="http://mars-sim.sourceforge.net/building"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mars-sim.sourceforge.net/building building.xsd">
+	
+		<!-- The lander hab is a general purpose habitat for 4 people. -->
+	<!-- It serves as a sort of jack-of-all-trades building. -->
+	<!-- name: the name of the building. -->
+	<!-- width: the width of the building in meters. -->
+	<!-- length: the length of the building in meters. -->
+	<building name="Lander Hab" width="9.0" length="9.0">
+		
+		<!-- The power requirements of the building. -->
+		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
+		<!-- base-power-down-power: the baseline power (kW) required by this building in 'power down' mode. -->
+		<!-- There can be additional power requirements by the building's functions. -->
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		
+		<!-- The functions the building is capable of performing/fulfilling. -->
+		<functions>
+		
+			<!-- The building has communication capabilities. -->
+			<communication/>
+			
+			<!-- The building has facilities for cooking/preparing meals. -->
+			<cooking capacity="1" />
+		
+			<!-- The building has facilities for eating meals. -->
+			<dining />
+		
+			<!-- The building has an airlock and changing room for EVA operations. -->
+			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
+			<EVA airlock-capacity="4" />
+			
+			<!-- The building has exercise facilities. -->
+			<exercise capacity="1" />
+		
+			<!-- The building is inhabitable and can provide life support for people. -->
+			<!-- capacity: number of people the building can normally support without crowding. -->
+			<!-- power-required: power (kW) required for life support. -->
+			<life-support capacity="4" power-required="8.0" />
+		
+			<!-- The building provides sleeping quarters for people. -->
+			<!-- beds: the number of sleeping quarters provided. -->
+			<living-accommodations beds="4" />
+		
+			<!-- The building has manufacturing capacity. -->
+			<!-- tech-level: the technology level in manufacturing. (see tech_level.txt) -->
+			<!-- concurrent-processes: the number of concurrent manufacturing processes the building 
+			     can support -->
+			<manufacture tech-level="1" concurrent-processes="1" />
+		
+			<!-- The building has a medical infirmary. -->
+			<!-- tech-level: the treatment level capability of the infirmary. (see tech_level.txt) -->
+			<!-- beds: the number of patients the infirmary can support. -->
+			<medical-care tech-level="4" beds="2" />
+		
+			<!-- The building if capable of producing electrical power. -->
+			<power-generation>
+				<!-- A solar cell on top of the lander hab. -->
+				<!-- type: the type of power source. -->
+				<!-- power: the maximum power (kW) produced by the power source. -->
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+		
+			<!-- The building has recreation facilities (movies, games, music, etc.). -->
+			<recreation />
+		
+			<!-- The building has a research laboratory. -->
+			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
+			<!-- capacity: the number of researchers the lab has room for concurrently. -->
+			<research tech-level="1" capacity="1">
+				<!-- Sciences that can be researched at the laboratory. -->
+				<research-speciality name="Areology" />
+				<research-speciality name="Medicine" />
+				<research-speciality name="Biology" />
+				<research-speciality name="Chemistry" />
+			</research>
+			
+			<!-- The building is capable of processing resources. -->
+			<!-- power-down-level: the efficiency of the resource processes -->
+			<!-- when building is in 'power down' mode. -->
+			<resource-processing power-down-level=".5">
+				
+				<!-- Water recycling process for cleaning waste water. -->
+				<process name="Water Recycling" power-required="4.0" default="off">
+				
+					<!-- Waste water influx. -->
+					<!-- resource: the resource added to the process. -->
+					<!-- See resources.xml -->
+					<!-- rate: the rate (kg/sol) the resource is being added to the process. -->
+					<!-- ambient: true if resource is being drown from the external environment, -->
+					<!-- false if resource is being drawn from the settlement's inventory. -->
+					<input resource="Waste Water" rate="100.0" ambient="false" />
+					
+					<!-- Clean water outflux. -->
+					<!-- resource: the resource resulting from the process. -->
+					<!-- See resources.xml -->
+					<!-- rate: the rate (kg/sol) the resource is being produced by the process. -->
+					<!-- ambient: true if resource is being released into the external environment, -->
+					<!-- false if resource is stored in the settlement's inventory. -->
+					<output resource="Water" rate="85.0" ambient="false" />
+				</process>
+				
+				<!-- Carbon scrubbing process for cleaning carbon dioxide from the air. -->
+				<process name="Carbon Scrubbing" power-required="2.0" default="off">
+					<input resource="Carbon Dioxide" rate=".067" ambient="false" />
+					<output resource="Oxygen" rate=".05" ambient="false" />
+				</process>
+				
+			</resource-processing>
+			
+			<!-- The building is capable of storing resources. -->
+			<storage>
+			
+				<!-- The building's storage capacity for oxygen. -->
+				<!-- resource: the resource that the building can store. -->
+				<!-- See resources.txt -->
+				<!-- capacity: the building's capacity (kg) for the resource. -->
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Ice" capacity="100.0" />
+				
+				<!-- The initial resources in the building. -->
+				<!-- resource: the resource initially in the building. -->
+				<!-- See resources.xml -->
+				<!-- amount: the amount (kg) of the resource. -->
+				<resource-initial resource="Water" amount="500.0" />
+				<resource-initial resource="Oxygen" amount="500.0" />
+				<resource-initial resource="Food" amount="500.0" /> 
+			</storage>
+			
+		</functions>
+		
+	</building>
+	
+	<!-- The inflatable greenhouse is a small building for growing various plant crops. --> 
+	<building name="Inflatable Greenhouse" width="6.0" length="9.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>		
+			
+			<!-- The building is capable of growing plant crops. -->
+			<!-- crops: the number of different crops grown in the building. -->
+			<!-- power-growing-crop: the power (kW) required for each crop to grow an flourish. -->
+			<!-- power-sustaining-crop: the minimum power (kW) required for each crop just to keep it 
+			     alive. -->
+			<!-- growing-area: the total area (square meters) for growing crops. -->
+			<farming crops="5" power-growing-crop=".05" power-sustaining-crop=".05" growing-area="75.0" />
+			
+			<life-support capacity="3" power-required="6.0" />
+			<research tech-level="1" capacity="1">
+				<research-speciality name="Botany" />
+			</research>	
+			
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
+					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
+				</process>
+			</resource-processing>
+			
+			<storage>
+				<resource-storage resource="Water" capacity="500.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>
+			
+		</functions>
+	</building>
+	
+	<!-- A small, self-contained 80kW nuclear reactor that requires minimum maintenance. -->
+	<building name="MD1 Nuclear Reactor" width="4.0" length="6.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Standard Power Source" power="80.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A ERV (Earth Return Vehicle) base building with Sabatier chemical reactor. -->
+	<!-- The starting ERV base has a full load of hydrogen and has not generated any -->
+	<!-- carbon dioxide, water or oxygen yet. -->
+	<building name="Starting ERV Base" width="10.0" length="10.0">
+		<power-required base-power="2.0" base-power-down-power="1.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<resource-processing power-down-level=".5">
+				<process name="Sabatier" power-required="2.0" default="on">
+					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
+					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<output resource="Methane" rate="7.2" ambient="false" />
+					<output resource="Water" rate="16.0" ambient="false" />
+				</process>
+				<process name="Water Electrolysis" power-required="4.0" default="off">
+					<input resource="Water" rate=".1" ambient="false" />
+					<output resource="Hydrogen" rate=".011" ambient="false" />
+					<output resource="Oxygen" rate=".089" ambient="false" />
+				</process>
+				<process name="CO2 Reduction" power-required="2.0" default="off">
+					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
+					<output resource="Oxygen" rate=".3" ambient="false" />
+					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="6300.0" />
+				<resource-storage resource="Methane" capacity="21000.0" />
+				<resource-storage resource="Oxygen" capacity="74000.0" />
+				<resource-storage resource="Water" capacity="9000.0" />
+				<resource-initial resource="Hydrogen" amount="6300.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A ERV (Earth Return Vehicle) base building with Sabatier chemical reactor. -->
+	<!-- The ERV base has already converted its initial load of hydrogen into carbon dioxide, 
+	     water and oxygen. -->
+	<building name="ERV Base" width="10.0" length="10.0">
+		<power-required base-power="8.0" base-power-down-power="1.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<resource-processing power-down-level=".5">
+				<process name="Sabatier" power-required="2.0" default="on">
+					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
+					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<output resource="Methane" rate="7.2" ambient="false" />
+					<output resource="Water" rate="16.0" ambient="false" />
+				</process>
+				<process name="Water Electrolysis" power-required="4.0" default="off">
+					<input resource="Water" rate=".1" ambient="false" />
+					<output resource="Hydrogen" rate=".011" ambient="false" />
+					<output resource="Oxygen" rate=".089" ambient="false" />
+				</process>
+				<process name="CO2 Reduction" power-required="2.0" default="off">
+					<input resource="Carbon Dioxide" rate=".825" ambient="true" />
+					<output resource="Oxygen" rate=".3" ambient="false" />
+					<output resource="Carbon Monoxide" rate=".525" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="6300.0" />
+				<resource-storage resource="Methane" capacity="21000.0" />
+				<resource-storage resource="Oxygen" capacity="74000.0" />
+				<resource-storage resource="Water" capacity="9000.0" />
+				<resource-initial resource="Methane" amount="21000.0" />
+				<resource-initial resource="Oxygen" amount="74000.0" />
+				<resource-initial resource="Water" amount="9000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A medium-sized, self-contained 200kW nuclear reactor that requires minimum maintenance. -->
+	<building name="MD4 Nuclear Reactor" width="10.0" length="15.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Standard Power Source" power="200.0" />
+			</power-generation>
+		</functions>
+	</building>	
+	
+	<!-- An uninhabitable specialized building for water and air processing and recycling. -->
+	<building name="Atmospheric Processor" width="8.0" length="11.0">
+		<power-required base-power="5.0" base-power-down-power="1.0" />
+		<functions>
+			<resource-processing power-down-level=".5">
+				<process name="Sabatier" power-required="5.0" default="on">
+					<input resource="Carbon Dioxide" rate="48.0" ambient="true" />
+					<input resource="Hydrogen" rate="8.0" ambient="false" />
+					<output resource="Methane" rate="18.0" ambient="false" />
+					<output resource="Water" rate="40.0" ambient="false" />
+				</process>
+				<process name="Water Electrolysis" power-required="40.0" default="off">
+					<input resource="Water" rate="1.0" ambient="false" />
+					<output resource="Hydrogen" rate=".11" ambient="false" />
+					<output resource="Oxygen" rate=".89" ambient="false" />
+				</process>
+				<process name="CO2 Reduction" power-required="20.0" default="off">
+					<input resource="Carbon Dioxide" rate="8.25" ambient="true" />
+					<output resource="Oxygen" rate="3.0" ambient="false" />
+					<output resource="Carbon Monoxide" rate="5.25" ambient="true" />
+				</process>
+				<process name="Water Recycling" power-required="40.0" default="off">
+					<input resource="Waste Water" rate="100.0" ambient="false" />
+					<output resource="Water" rate="85.0" ambient="false" />
+				</process>
+				<process name="Carbon Scrubbing" power-required="20.0" default="off">
+					<input resource="Carbon Dioxide" rate=".67" ambient="false" />
+					<output resource="Oxygen" rate=".5" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Hydrogen" capacity="10000.0" />
+				<resource-storage resource="Methane" capacity="10000.0" />
+				<resource-storage resource="Oxygen" capacity="10000.0" />
+				<resource-storage resource="Water" capacity="10000.0" />
+				<resource-storage resource="Ice" capacity="1000.0" />
+			</storage>
+		</functions>
+	</building>		
+	
+	<!-- A specialized living accommodations building for 12 people -->
+	<building name="Residential Quarters" width="7.0" length="9.0">
+		<power-required base-power="20.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="12" power-required="24.0" />
+			<living-accommodations beds="12" />
+		</functions> 
+	</building>
+	
+	<!-- A specialized rest and relaxation building with dining tables and exercise equipment. -->
+	<building name="Lounge" width="7.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<cooking capacity="4" />
+			<dining />
+			<exercise capacity="10" />
+			<life-support capacity="20" power-required="40.0" />
+			<recreation />
+		</functions>
+	</building>
+	
+	<!-- A medical building for medical care and research. -->
+	<building name="Infirmary" width="7.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<medical-care tech-level="5" beds="8" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Medicine" />
+			</research>
+		</functions>
+	</building>
+	
+	<!-- A specialized building for communications and EVA operations. -->
+	<building name="Command and Control" width="7.0" length="9.0">
+		<power-required base-power="50.0" base-power-down-power="10.0" />
+		<functions>
+			<communication />
+			<EVA airlock-capacity="8" />
+			<life-support capacity="10" power-required="20.0" />
+		</functions>
+	</building>
+	
+	<!-- A large greenhouse and botany lab. -->
+	<building name="Large Greenhouse" width="12.0" length="18.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Botany" />
+			</research>
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
+					<input resource="Carbon Dioxide" rate="50.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="50.0" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Water" capacity="1000.0" />
+				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>				
+		</functions>
+	</building>
+	
+	<!-- A general scientific laboratory. -->
+	<building name="Laboratory" width="7.0" length="9.0">
+		<power-required base-power="30.0" base-power-down-power="10.0" />
+		<functions>
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="4">
+				<research-speciality name="Areology" />
+				<research-speciality name="Biology" />
+				<research-speciality name="Chemistry" />
+				<research-speciality name="Physics" />
+				<research-speciality name="Mathematics" />
+				<research-speciality name="Meteorology" />
+			</research>
+		</functions>
+	</building>
+	
+	<!-- A maintenance garage for rovers. -->
+	<building name="Garage" width="12.0" length="16.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<ground-vehicle-maintenance vehicle-capacity="2" />
+			<life-support capacity="4" power-required="8.0" />
+			<storage>
+				<resource-storage resource="Methane" capacity="1000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A manufacturing workshop -->
+	<building name="Workshop" width="7.0" length="9.0">
+		<power-required base-power="7.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<manufacture tech-level="4" concurrent-processes="4" />
+			<storage>
+				<resource-storage resource="Regolith" capacity="1000.0" />
+				<resource-storage resource="Carbon" capacity="500.0" />
+				<resource-storage resource="Iron Oxide" capacity="500.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="50.0" />
+				<resource-storage resource="Sand" capacity="1000.0" />
+				<resource-storage resource="Iron Powder" capacity="100.0" />
+				<resource-storage resource="Ethylene" capacity="100.0" />
+				<resource-storage resource="Polyethylene" capacity="100.0" />
+				<resource-storage resource="Gypsum" capacity="100.0" />
+				<resource-storage resource="Calcium Carbonate" capacity="100.0" />
+				<resource-storage resource="Lime" capacity="100.0" />
+				<resource-storage resource="Styrene" capacity="100.0" />
+				<resource-storage resource="Polyester Resin" capacity="100.0" />
+				<resource-storage resource="Cement" capacity="500.0" />
+				<resource-storage resource="Concrete" capacity="500.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- Methane-powered power generator. -->
+	<building name="Methane Power Generator" width="5.0" length="5.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Fuel Power Source" toggle="false" power="15.0" fuel-type="methane" 
+				consumption-rate="6.0" />
+			</power-generation>
+		</functions>
+	</building>
+
+	<!-- Wind turbine power generator. -->
+	<building name="Wind Turbine" width="5.0" length="5.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Wind Power Source" power="5.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- Array of solar photovoltaic panels. -->
+	<building name="Solar Photovoltaic Array" width="5.0" length="10.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Power Source" power="10.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- Array of solar thermal mirrors with steam power generator. -->
+	<building name="Solar Thermal Array" width="5.0" length="10.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Solar Thermal Power Source" power="10.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing dry concrete. -->
+	<building name="Concrete Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Concrete" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing dry cement. -->
+	<building name="Cement Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Cement" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing dry mortar. -->
+	<building name="Mortar Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Mortar" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing lime. -->
+	<building name="Lime Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Lime" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing carbon. -->
+	<building name="Carbon Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Carbon" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing regolith. -->
+	<building name="Regolith Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Regolith" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick bin for storing sand. -->
+	<building name="Sand Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Sand" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick manufacturing building. -->
+	<building name="Manufacturing Shed" width="5.0" length="5.0">
+		<power-required base-power="3.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<manufacture tech-level="2" concurrent-processes="2" />
+			<storage>
+				<resource-storage resource="Regolith" capacity="500.0" />
+				<resource-storage resource="Carbon" capacity="250.0" />
+				<resource-storage resource="Iron Oxide" capacity="250.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
+				<resource-storage resource="Sand" capacity="500.0" />
+				<resource-storage resource="Iron Powder" capacity="50.0" />
+				<resource-storage resource="Gypsum" capacity="50.0" />
+				<resource-storage resource="Calcium Carbonate" capacity="50.0" />
+				<resource-storage resource="Lime" capacity="50.0" />
+				<resource-storage resource="Cement" capacity="500.0" />
+				<resource-storage resource="Concrete" capacity="500.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick building containing two living quarters. -->
+	<building name="Bunkhouse" width="5.0" length="5.0">
+		<power-required base-power="2.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="2.0" />
+			<living-accommodations beds="2" />
+		</functions>
+	</building>
+	
+	<!-- A small sabatier processor building. -->
+	<building name="Small Sabatier Processor" width="5.0" length="5.0">
+		<power-required base-power="5.0" base-power-down-power="2.0" />
+		<functions>
+			<resource-processing power-down-level=".5">
+				<process name="Sabatier" power-required="2.0" default="on">
+					<input resource="Carbon Dioxide" rate="19.2" ambient="true" />
+					<input resource="Hydrogen" rate="3.2" ambient="false" />
+					<output resource="Methane" rate="7.2" ambient="false" />
+					<output resource="Water" rate="16.0" ambient="false" />
+				</process>
+			</resource-processing>
+		</functions>
+	</building>
+	
+	<!-- Array of rover batteries -->
+	<building name="Small Battery Array" width="5.0" length="10.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<!-- power storage capacity in kW hr. -->
+			<power-storage capacity="500.0" />
+		</functions>
+	</building>
+	
+	<!-- A small optical telescope observatory with an astronomy laboratory -->
+	<building name="Astronomy Observatory" width="7.0" length="7.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Astronomy" />
+				<research-speciality name="Physics" />
+				<research-speciality name="Mathematics" />
+			</research>
+			<astronomical-observation tech-level="2" capacity="1" power-required="4.0"/>
+		</functions>
+	</building>
+	
+	<!-- A lander hab refitted for storage. -->
+	<building name="Storage Hab" width="9.0" length="9.0">
+		<power-required base-power="2.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<storage>
+				<resource-storage resource="Oxygen" capacity="5000.0" />
+				<resource-storage resource="Water" capacity="25000.0" />
+				<resource-storage resource="Waste Water" capacity="2500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="2500.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
+				<resource-storage resource="Food" capacity="2500.0" />
+				<resource-storage resource="Ice" capacity="500.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A lander hab refitted as a laboratory. -->
+	<building name="Research Hab" width="9.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<research tech-level="2" capacity="4">
+				<research-speciality name="Areology" />
+				<research-speciality name="Biology" />
+				<research-speciality name="Chemistry" />
+				<research-speciality name="Physics" />
+				<research-speciality name="Mathematics" />
+				<research-speciality name="Meteorology" />
+			</research>
+		</functions>
+	</building>
+	
+	<!-- A lander hab refitted as a residence. -->
+	<building name="Residential Hab" width="9.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="8" power-required="16.0" />
+			<living-accommodations beds="8" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A lander hab refitted as a medical facility. -->
+	<building name="Medical Hab" width="9.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<medical-care tech-level="4" beds="4" />
+			<power-generation>
+				<power-source type="Solar Power Source" power="5.0" />
+			</power-generation>
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Medicine" />
+			</research>
+		</functions>
+	</building>
+	
+	<!-- A lander hab refitted as a manufacturing workshop. -->
+	<building name="Machinery Hab" width="9.0" length="9.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="4" power-required="8.0" />
+			<manufacture tech-level="2" concurrent-processes="3" />
+			<storage>
+				<resource-storage resource="Regolith" capacity="500.0" />
+				<resource-storage resource="Carbon" capacity="250.0" />
+				<resource-storage resource="Iron Oxide" capacity="5250.0" />
+				<resource-storage resource="Aluminum Oxide" capacity="25.0" />
+				<resource-storage resource="Sand" capacity="500.0" />
+				<resource-storage resource="Iron Powder" capacity="50.0" />
+				<resource-storage resource="Ethylene" capacity="50.0" />
+				<resource-storage resource="Polyethylene" capacity="50.0" />
+				<resource-storage resource="Gypsum" capacity="50.0" />
+				<resource-storage resource="Calcium Carbonate" capacity="50.0" />
+				<resource-storage resource="Lime" capacity="50.0" />
+				<resource-storage resource="Styrene" capacity="50.0" />
+				<resource-storage resource="Polyester Resin" capacity="50.0" />
+				<resource-storage resource="Cement" capacity="250.0" />
+				<resource-storage resource="Concrete" capacity="250.0" />
+			</storage>
+		</functions>
+	</building>
+</building-list>

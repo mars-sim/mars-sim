@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/building"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:bld="http://mars-sim.sourceforge.net/building" xmlns:conf="http://mars-sim.sourceforge.net/configuration">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+	
+    <xs:element name="building-list">
+    	<xs:complexType>
+    		<xs:sequence minOccurs="1" maxOccurs="unbounded">
+    			<xs:element ref="bld:building"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="building">
+   	 	<xs:complexType>
+   	 		<xs:sequence>
+   	 			<xs:element ref="bld:power-required"></xs:element>
+   	 			<xs:element ref="bld:functions"></xs:element>
+   	 		</xs:sequence>
+   	 		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+   	 		<xs:attributeGroup ref="conf:editorAttributes"></xs:attributeGroup>
+		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="power-required">
+    	<xs:complexType>
+    		<xs:attribute name="base-power" type="xs:float"></xs:attribute>
+    		<xs:attribute name="base-power-down-power" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="functions">
+    	<xs:complexType>
+    		<xs:all>
+    			<xs:element ref="bld:communication" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:cooking" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:dining" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:EVA" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:exercise" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:farming" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:ground-vehicle-maintenance" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:life-support" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:living-accommodations" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:manufacture" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:medical-care" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:power-generation" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:power-storage" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:recreation" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:research" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:resource-processing" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:storage" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:astronomical-observation" minOccurs="0"></xs:element>
+    		</xs:all>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="communication" type="conf:emptyType"></xs:element>
+    
+    <xs:element name="cooking">
+   		<xs:complexType>
+   			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="dining" type="conf:emptyType"></xs:element>
+    
+    
+    <xs:element name="EVA">
+   		<xs:complexType>
+   			<xs:attribute name="airlock-capacity" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="exercise">
+   		<xs:complexType>
+   			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="farming">
+   		<xs:complexType>
+   			<xs:attribute name="crops" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="power-growing-crop" type="xs:float"></xs:attribute>
+   			<xs:attribute name="power-sustaining-crop" type="xs:float"></xs:attribute>
+   			<xs:attribute name="growing-area" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="ground-vehicle-maintenance">
+   		<xs:complexType>
+   			<xs:attribute name="vehicle-capacity" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="life-support">
+   		<xs:complexType>
+   			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="power-required" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="living-accommodations">
+   		<xs:complexType>
+   			<xs:attribute name="beds" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="manufacture">
+   		<xs:complexType>
+   			<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="concurrent-processes" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="medical-care">
+   		<xs:complexType>
+   			<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="beds" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="power-generation">
+   		<xs:complexType>
+   			<xs:sequence>
+   				<xs:element ref="bld:power-source"></xs:element>
+   			</xs:sequence>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="power-source">
+   		<xs:complexType>
+   			<xs:attribute name="type" type="xs:string"></xs:attribute>
+   			<xs:attribute name="toggle" type="xs:boolean"></xs:attribute>
+   			<xs:attribute name="power" type="xs:float"></xs:attribute>
+   			<xs:attribute name="fuel-type" type="xs:string"></xs:attribute>
+   			<xs:attribute name="consumption-rate" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="power-storage">
+   		<xs:complexType>
+   			<xs:attribute name="capacity" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="recreation" type="conf:emptyType"></xs:element>
+    
+    <xs:element name="research">
+   		<xs:complexType>
+   			<xs:sequence maxOccurs="unbounded">
+   				<xs:element ref="bld:research-speciality"></xs:element>
+   			</xs:sequence>
+   			<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="research-speciality">
+   		<xs:complexType>
+   			<xs:attribute name="name" type="xs:string"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource-processing">
+   		<xs:complexType>
+   			<xs:sequence maxOccurs="unbounded">
+   				<xs:element ref="bld:process"></xs:element>
+   			</xs:sequence>
+   			<xs:attribute name="power-down-level" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="process">
+   		<xs:complexType>
+   			<xs:sequence>
+   				<xs:element ref="bld:input" maxOccurs="unbounded"></xs:element>
+   				<xs:element ref="bld:output" maxOccurs="unbounded"></xs:element>
+   			</xs:sequence>
+   			<xs:attribute name="name" type="xs:string"></xs:attribute>
+   			<xs:attribute name="power-required" type="xs:float"></xs:attribute>
+   			<xs:attribute name="default">
+   				<xs:simpleType>
+   					<xs:restriction base="xs:string">
+   						<xs:enumeration value="on"></xs:enumeration>
+   						<xs:enumeration value="off"></xs:enumeration>
+   					</xs:restriction>
+   				</xs:simpleType>
+   			</xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="input">
+   		<xs:complexType>
+   			<xs:attribute name="resource" type="xs:string"></xs:attribute>
+   			<xs:attribute name="rate" type="xs:float"></xs:attribute>
+   			<xs:attribute name="ambient" type="xs:boolean"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="output">
+   		<xs:complexType>
+   			<xs:attribute name="resource" type="xs:string"></xs:attribute>
+   			<xs:attribute name="rate" type="xs:float"></xs:attribute>
+   			<xs:attribute name="ambient" type="xs:boolean"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="storage">
+   		<xs:complexType>
+   			<xs:sequence>
+   				<xs:element ref="bld:resource-storage" maxOccurs="unbounded"></xs:element>
+   				<xs:element ref="bld:resource-initial" minOccurs="0" maxOccurs="unbounded"></xs:element>
+   			</xs:sequence>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource-storage">
+   		<xs:complexType>
+   			<xs:attribute name="resource" type="xs:string"></xs:attribute>
+   			<xs:attribute name="capacity" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource-initial">
+   		<xs:complexType>
+   			<xs:attribute name="resource" type="xs:string"></xs:attribute>
+   			<xs:attribute name="amount" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="astronomical-observation">
+   		<xs:complexType>
+   			<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+   			<xs:attribute name="power-required" type="xs:float"></xs:attribute>
+   		</xs:complexType>
+    </xs:element>
+    
+</xs:schema>

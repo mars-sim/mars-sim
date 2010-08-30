@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema
+	targetNamespace="http://mars-sim.sourceforge.net/configuration"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration">
+	
+	<xs:complexType name="emptyType">
+		<xs:complexContent>
+			<xs:restriction base="xs:anyType"></xs:restriction>
+		</xs:complexContent>
+	</xs:complexType>
+
+    <xs:attributeGroup name="itemAttributes">
+    	<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	<xs:attribute name="width" type="xs:float"></xs:attribute>
+    	<xs:attribute name="length" type="xs:float"></xs:attribute>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="editorAttributes">
+    	<xs:attribute name="enabled" type="xs:boolean"></xs:attribute>
+    	<xs:attribute name="editable" type="xs:boolean"></xs:attribute>
+    </xs:attributeGroup>
+</xs:schema>
