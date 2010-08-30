@@ -3,9 +3,9 @@
 <construction
 	xmlns="http://mars-sim.sourceforge.net/construction"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://mars-sim.sourceforge.net/construction construction.xsd">
+	xsi:schemaLocation="http://mars-sim.sourceforge.net/construction schema/construction.xsd">
+	
 	<foundation-list>
-
 		<foundation name="surface foundation 3m x 2m" width="2.0" length="3.0" constructable="true" salvagable="true" 
 		 work-time=".5" skill-required="1" >
 			<vehicle type="light utility vehicle" >
