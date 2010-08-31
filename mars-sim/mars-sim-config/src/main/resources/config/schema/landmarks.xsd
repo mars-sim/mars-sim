@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/landmarks"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:lm="http://mars-sim.sourceforge.net/landmarks">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="landmark-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="lm:landmark" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="landmark">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="longitude" type="lm:angle"></xs:attribute>
+    		<xs:attribute name="latitude" type="lm:angle"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:simpleType name="angle">
+    	<xs:restriction base="xs:string">
+    		<xs:pattern value="\d{1,3}\.\d (N|S|E|W)"></xs:pattern>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+</xs:schema>

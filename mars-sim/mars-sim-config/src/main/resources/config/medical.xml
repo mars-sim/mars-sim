@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<medical
+	xmlns="http://mars-sim.sourceforge.net/medical"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mars-sim.sourceforge.net/medical schema/medical.xsd">
+
+	<!-- List of medical complaints -->
+	<medical-complaint-list>
+
+		<!-- Appendicitis is a painful infection of the appendix, 
+		     which, if left untreated, can lead to a ruptured appendix. -->
+		<medical-complaint name="Appendicitis">
+		
+			<!-- Seriousness of complaint (required) -->
+			<!-- Values: 1 (not serious) to 100 (most serious) -->
+			<seriousness value="60" />
+		
+			<!-- Degradation time to next complaint (sols) (optional) -->
+			<degrade-time value="7.0" />
+			
+			<!-- Recovery time (once cured, if necessary) (sols) (required) -->
+			<recovery-time value="14.0" />
+			
+			<!-- Random probability of this complaint occurring on its own. (required) -->
+			<!-- Values: 0.0 (no chance) to 100.0 (very likely) -->
+			<probability value="0.5" />
+			
+			<!-- Percentage of person's normal performance when disabled by this illness. (required) -->
+			<!-- Values: 0.0 (bedridden) to 100.0 (normal fitness) -->
+			<performance-percent value="10.0" />
+			
+			<!-- Treatment to cure the illness (see treatment list below). (optional) -->
+			<!-- If no treatment is listed, then illness immediately goes to recovery.  -->
+			<treatment-type value="Minor Operation" />
+			
+			<!-- The next complaint changed to when this complaint exceeds its degrading time. (optional) -->
+			<!-- If no degrade-complaint is listed, this complaint causes death after degrade time. -->
+			<!-- Exception: if no treatment is listed, illness does not degrade at all. -->
+			<degrade-complaint value="Ruptured Appendix" />
+		
+		</medical-complaint>		
+		
+		<!-- A ruptured appendix happens when appendicitis is left untreated. -->
+		<!-- If left untreated, it will cause death. -->
+		<!-- It requires an major operation to treat it. -->
+		<medical-complaint name="Ruptured Appendix">
+			<seriousness value="100" />
+			<degrade-time value="2.0" />
+			<recovery-time value="14.0" />
+			<probability value="0.0" />
+			<performance-percent value="0.0" />
+			<treatment-type value="Major Operation" />
+		</medical-complaint>
+		
+		<!-- Meningitis is an inflamation of the membranes covering the brain and spinal cord. -->
+		<!-- If left untreated, it will cause death. -->
+		<!-- It requires antibiotics to treat it. -->
+		<medical-complaint name="Meningitis">
+			<seriousness value="90" />
+			<degrade-time value="2.0" />
+			<recovery-time value="10.0" />
+			<probability value="0.1" />
+			<performance-percent value="0.0" />
+			<treatment-type value="Antibiotics" />
+		</medical-complaint>
+		
+		<!-- A pulled/muscle is a minor and common medical complaint. -->
+		<!-- It affects performance but does not require medical treatment. -->
+		<medical-complaint name="Pulled Muscle/Tendon">
+			<seriousness value="1" />
+			<recovery-time value="2.0" />
+			<probability value="40.0" />
+			<performance-percent value="70.0" />
+		</medical-complaint>
+		
+		<!-- A cold is a minor and common medical complaint. -->
+		<!-- It affects performance but does not required medical treatment. -->
+		<medical-complaint name="Cold">
+			<seriousness value="10" />
+			<recovery-time value="12.0" />
+			<probability value="20.0" />
+			<performance-percent value="80.0" />
+		</medical-complaint>
+		
+		<!-- A flu is more serious than a cold but has a shorter duration. -->
+		<medical-complaint name="Flu">
+			<seriousness value="30" />
+			<recovery-time value="3.0" />
+			<probability value="5.0" />
+			<performance-percent value="30.0" />
+		</medical-complaint>
+		
+		<!-- A fever doesn't last long but reduces a person's performance quite a bit.  -->
+		<medical-complaint name="Fever">
+			<seriousness value="40" />
+			<recovery-time value="1.0" />
+			<probability value="5.0" />
+			<performance-percent value="20.0" />
+		</medical-complaint>
+		
+		<!-- A broken bone can result in gangrene if left untreated. -->
+		<medical-complaint name="Broken Bone">
+			<seriousness value="60" />
+			<degrade-time value="7.0" />
+			<recovery-time value="14.0" />
+			<probability value="8.0" />
+			<performance-percent value="10.0" />
+			<treatment-type value="Plaster Cast" />
+			<degrade-complaint value="Gangrene" />
+		</medical-complaint>
+		
+		<!-- A laceration is a deep cut that can result in gangrene if left untreated. -->
+		<medical-complaint name="Laceration">
+			<seriousness value="50" />
+			<degrade-time value="7.0" />
+			<recovery-time value="2.0" />
+			<probability value="14.0" />
+			<performance-percent value="60.0" />
+			<treatment-type value="Dressing" />
+			<degrade-complaint value="Gangrene" />
+		</medical-complaint>
+		
+		<!-- Gangrene is death and decay of body tissue due to lack of blood flow.  -->
+		<!-- It is extremely dangerous but can be treated by antibiotics. -->
+		<medical-complaint name="Gangrene">
+			<seriousness value="100" />
+			<degrade-time value="7.0" />
+			<recovery-time value="15.0" />
+			<probability value="0.0" />
+			<performance-percent value="10.0" />
+			<treatment-type value="Antibiotics" />
+		</medical-complaint>
+
+		<!-- Minor burns are painful but not serious and will heal in time. -->
+		<medical-complaint name="Minor Burns">
+			<seriousness value="20" />
+			<recovery-time value="10.0" />
+			<probability value="10.0" />
+			<performance-percent value="75.0" />
+		</medical-complaint>
+		
+		<!-- Burns are very painful but will not cause death. -->
+		<!-- They must be dressed properly to begin healing. -->
+		<medical-complaint name="Burns">
+			<seriousness value="50" />
+			<recovery-time value="20.0" />
+			<probability value="0.0" />
+			<performance-percent value="40.0" />
+			<treatment-type value="Dressing" />
+		</medical-complaint>
+		
+		<!-- Major burns involve 3rd-degree burns over much of the body. -->
+		<!-- It is very serious and can lead to death if not treated. -->
+		<medical-complaint name="Major Burns">
+			<seriousness value="100" />
+			<degrade-time value="10.0" />
+			<recovery-time value="40.0" />
+			<probability value="0.0" />
+			<performance-percent value="0.0" />
+			<treatment-type value="Skin Graft" />
+		</medical-complaint>	
+		
+		<!-- Frostnip is damaged tissue due to exposure to freezing conditions -->
+		<!-- and possibly low air pressure. -->
+		<medical-complaint name="Frostnip">
+			<seriousness value="20" />
+			<recovery-time value="1.0" />
+			<probability value="0.0" />
+			<performance-percent value="80.0" />
+		</medical-complaint>		
+		
+		<!-- Frostbite is damaged tissue due to exposure to freezing conditions -->
+		<!-- and possibly low air pressure. It is more serious than frostnip and -->
+		<!-- can turn into gangrene if left untreated. -->
+		<medical-complaint name="Frostbite">
+			<seriousness value="50" />
+			<degrade-time value="10.0" />
+			<recovery-time value="10.0" />
+			<probability value="0.0" />
+			<performance-percent value="40.0" />
+			<treatment-type value="Dressing" />
+			<degrade-complaint value="Gangrene" />
+		</medical-complaint>			
+		
+		<!-- An anxiety attack happens when a person is at maximum stress for too long. -->
+		<!-- It is a mental breakdown, reducing the person's performance on activities -->
+		<!-- to minimal and forcing them to relax and destress.  The effects do not last -->
+		<!-- long, however. (See "stress-breakdown-chance" in person.xml.) -->
+		<medical-complaint name="Anxiety Attack">
+			<seriousness value="30" />
+			<recovery-time value="1.0" />
+			<probability value="0.0" />
+			<performance-percent value="0.0" />
+		</medical-complaint>	
+
+	</medical-complaint-list>
+	
+	<!-- List of medical treatments -->
+	<treatment-list>
+	
+		<!-- Wrapping a broken limb in a cast to support it. -->
+		<treatment name="Plaster Cast">
+     
+            <!-- Medical skill level required. (optional) -->
+            <!-- Values: 0+ medical skill level -->
+            <skill value="2" />
+
+            <!-- Required medical tech level of facility. (optional) -->
+            <!-- (see tech_level.txt) -->
+            <!-- Values: 0 - 10 -->
+            <medical-tech-level value="2" />
+    
+            <!-- Time required for the treatment. (millisols) (optional) -->
+            <treatment-time value="40.0" />
+
+			<!-- Is the medical facility required during recovery process? (optional) -->
+            <!-- Values: True or False -->
+            <retainaid value="false" />
+
+        </treatment>
+        
+        <!-- Shot of antibiotics. -->
+        <treatment name="Antibiotics">
+        	<skill value="1" />
+        	<medical-tech-level value="1" />
+        	<treatment-time value="5.0" />
+        	<retainaid value="false" />
+        </treatment>
+	
+		<!-- Dressing a wound. -->
+		<treatment name="Dressing">
+			<skill value="0" />
+			<medical-tech-level value="1" />
+			<treatment-time value="10.0" />
+			<retainaid value="false" />
+		</treatment>
+		
+		<!-- A relatively simple surgical operation. -->
+		<treatment name="Minor Operation">
+			<skill value="3" />
+			<medical-tech-level value="3" />
+			<treatment-time value="80.0" />
+			<retainaid value="true" />
+		</treatment>
+		
+		<!-- A complex surgical operation. -->
+		<treatment name="Major Operation">
+			<skill value="4" />
+			<medical-tech-level value="4" />
+			<treatment-time value="160.0" />
+			<retainaid value="true" />
+		</treatment>
+		
+		<!-- Extended bedrest in the care of a medical facility. -->
+		<treatment name="Hospitalization">
+			<skill value="3" />
+			<medical-tech-level value="3" />
+			<treatment-time value="1000.0" />
+			<retainaid value="true" />
+		</treatment>
+		
+		<!-- Skin graft for extensive, third-degree burns. -->
+		<treatment name="Skin Graft">
+			<skill value="5" />
+			<medical-tech-level value="5" />
+			<treatment-time value="500.0" />
+			<retainaid value="true" />
+		</treatment>
+	
+	</treatment-list>
+
+</medical>
