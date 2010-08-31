@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<!-- List of buildings that can be used in a settlement template (see settlements.xml) -->
 <building-list
 	xmlns="http://mars-sim.sourceforge.net/building"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

@@ -44,7 +44,7 @@
 			</vehicle>
 		</foundation>
 		
-		<foundation name="unprepared surface foundation" width="*" length="*" constructable="false" salvagable="true" 
+		<foundation name="unprepared surface foundation" width="1" length="1" constructable="false" salvagable="true" 
 		 work-time="0.0" skill-required="0" />
 
 	</foundation-list>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Landmark coordinates from USGS Astrogeology Research Program. -->
+<!-- http://planetarynames.wr.usgs.gov/jsp/SystemSearch2.jsp?System=Mars -->
+
+<!-- Landmarks to be displayed in the user interface. -->
+<landmark-list
+	xmlns="http://mars-sim.sourceforge.net/landmarks"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mars-sim.sourceforge.net/landmarks schema/landmarks.xsd">
+	
+	<!-- Mountains -->
+	<landmark name="Anseris Mons" longitude="86.6 E" latitude="30.1 S" />
+	<landmark name="Arsia Mons" longitude="121.1 W" latitude="8.4 S" />
+	<landmark name="Ascraeus Mons" longitude="104.5 W" latitude="11.9 N" />
+	<landmark name="Elysium Mons" longitude="146.9 E" latitude="25.0 N" /> 
+	<landmark name="Euripus Mons" longitude="105.0 E" latitude="45.1 S" />
+	<landmark name="Gonnus Mons" longitude="91.0 W" latitude="41.6 N" />
+	<landmark name="Horarum Mons" longitude="36.6 W" latitude="51.4 S" />
+	<landmark name="Labeatis Mons" longitude="76.2 W" latitude="37.8 N" />
+	<landmark name="Oceanidum Mons" longitude="41.3 W" latitude="55.2 S" />
+	<landmark name="Octantis Mons" longitude="42.9 W" latitude="55.6 S" />
+	<landmark name="Olympus Mons" longitude="134.0 W" latitude="18.6 N" />
+	<landmark name="Pavonis Mons" longitude="113.4 W" latitude="0.8 N" />
+	<landmark name="Peneus Mons" longitude="86.1 E" latitude="31.2 S" />
+	<landmark name="Peraea Mons" longitude="86.0 E" latitude="31.4 S" />
+	<landmark name="Pindus Mons" longitude="88.7 W" latitude="39.8 N" />
+	<landmark name="Tyrrhena Mons" longitude="101.1 E" latitude="24.4 S" />
+	
+	<!-- Small domical mountains or hills -->
+	<landmark name="Albor Tholus" longitude="150.4 E" latitude="19.0 N" />
+	<landmark name="Apollinaris Tholus" longitude="175.7 E" latitude="17.9 S" />
+	<landmark name="Australis Tholus" longitude="37.0 E" latitude="59.0 S" />
+	<landmark name="Ceraunius Tholus" longitude="97.4 W" latitude="24.2 N" />
+	<landmark name="Charitum Tholus" longitude="41.0 W" latitude="55.0 S" />
+	<landmark name="E. Mareotis Tholus" longitude="85.3 W" latitude="36.2 N" />
+	<landmark name="Hecates Tholus" longitude="150.2 E" latitude="32.4 N" />
+	<landmark name="Iaxartes Tholus" longitude="15.0 W" latitude="72.0 N" />
+	<landmark name="Issedon Tholus" longitude="95.0 W" latitude="36.3 N" />
+	<landmark name="Jovis Tholus" longitude="117.5 W" latitude="18.4 N" />
+	<landmark name="Kison Tholus" longitude="2.0 E" latitude="73.0 N" />
+	<landmark name="N. Mareotis Tholus" longitude="86.3 W" latitude="36.7 N" />
+	<landmark name="Ortygia Tholus" longitude="8.0 W" latitude="70.0 N" />
+	<landmark name="Scandia Tholi" longitude="162.0 W" latitude="74.0 N" />
+	<landmark name="Tharsis Tholus" longitude="90.8 W" latitude="13.5 N" />
+	<landmark name="Uranius Tholus" longitude="97.7 W" latitude="26.4 N" />
+	<landmark name="W. Mareotis Tholus" longitude="88.1 W" latitude="35.8 N" />
+	<landmark name="Zephyria Tholus" longitude="172.8 E" latitude="20.0 S" />
+	
+	<!-- Craters -->
+	<landmark name="Airy Crater" longitude="0.1 E" latitude="5.1 S" />
+	<landmark name="Huygens Crater" longitude="55.2 E" latitude="13.7 S" />
+	<landmark name="Schiaparelli Crater" longitude="16.4 E" latitude="2.3 S" />
+	<landmark name="Cassini Crater" longitude="31.8 E" latitude="24.0 N" />
+	<landmark name="Antoniadi Crater" longitude="60.8 E" latitude="21.8 N" />
+	<landmark name="Tikhonravov Crater" longitude="35.8 E" latitude="13.6 N" />
+	<landmark name="Koval'sky Crater" longitude="141.3 W" latitude="29.9 S" />
+	<landmark name="Herschel Crater" longitude="130.0 E" latitude="14.5 S" />
+	<landmark name="Newton Crater" longitude="158.0 W" latitude="40.6 S" />
+	<landmark name="Copernicus Crater" longitude="169.3 W" latitude="49.4 S" />
+	<landmark name="Schroeter Crater" longitude="56.0 E" latitude="1.9 S" />
+	<landmark name="Flaugergues Crater" longitude="19.3 E" latitude="17.0 S" />
+	<landmark name="Newcomb Crater" longitude="0.6 E" latitude="24.1 S" />
+	<landmark name="Vinogradov Crater" longitude="37.6 W" latitude="20.1 S" />
+	<landmark name="Secchi Crater" longitude="102.4 E" latitude="58.2 S" />
+	<landmark name="Kepler Crater" longitude="141.4 E" latitude="47.1 S" />
+	<landmark name="Lyot Crater" longitude="29.6 E" latitude="50.7 N" />
+	<landmark name="Galle Crater" longitude="30.9 W" latitude="51.0 S" />
+	<landmark name="Lowell Crater" longitude="81.3 W" latitude="52.3 S" />
+	<landmark name="Schmidt Crater" longitude="77.4 W" latitude="72.2 S" />
+	<landmark name="Kaiser Crater" longitude="19.4 E" latitude="46.5 S" />
+	<landmark name="Phillips Crater" longitude="45.2 W" latitude="66.5 S" />
+	<landmark name="Mutch Crater" longitude="55.1 W" latitude="0.7 N" />
+	<landmark name="Schoner Crater" longitude="50.5 E" latitude="20.3 N" />
+	<landmark name="Dawes Crater" longitude="38.0 E" latitude="9.2 S" />
+	<landmark name="Baldet Crater" longitude="65.5 E" latitude="23.1 N" />
+	<landmark name="Ptolemaeus Crater" longitude="157.4 W" latitude="46.3 S" />
+	<landmark name="Proctor Crater" longitude="30.0 E" latitude="47.5 S" />
+	<landmark name="Darwin Crater" longitude="19.0 W" latitude="57.3 S" />
+	<landmark name="Flammarion Crater" longitude="48.2 E" latitude="25.5 N" />
+	<landmark name="Stoney Crater" longitude="138.8 W" latitude="70.0 S" />
+	<landmark name="Wallace Crater" longitude="110.9 E" latitude="52.7 S" />
+	<landmark name="Terby Crater" longitude="74.2 E" latitude="28.4 S" />
+	<landmark name="Molesworth Crater" longitude="149.2 E" latitude="27.6 S" />
+	<landmark name="Green Crater" longitude="8.2 W" latitude="52.5 S" />
+	<landmark name="Mariner Crater" longitude="164.4 W" latitude="35.0 S" />
+	<landmark name="Denning Crater" longitude="33.4 E" latitude="17.6 S" />
+	<landmark name="Becquerel Crater" longitude="8.0 W" latitude="22.2 N" />
+	<landmark name="Henry Crater" longitude="23.3 E" latitude="11.0 N" />
+	<landmark name="Gusev Crater" longitude="175.4 E" latitude="14.5 S" />
+	<landmark name="Gale Crater" longitude="137.6 E" latitude="5.3 S" />
+	
+	<!-- Martian Landers (http://www.google.com/mars/) -->
+	<landmark name="Viking Lander 1" longitude="48.0 W" latitude="22.5 N" />
+	<landmark name="Viking Lander 2" longitude="133.7 E" latitude="47.9 N" />
+	<landmark name="Mars Pathfinder Rover" longitude="33.3 W" latitude="19.3 N" />
+	<landmark name="MER Spirit Rover" longitude="175.5 E" latitude="14.6 S" />
+	<landmark name="MER Opportunity Rover" longitude="5.5 W" latitude="2.0 S" />
+	<landmark name="Mars 2 Lander" longitude="47.0 E" latitude="45.0 S" />
+	<landmark name="Mars 3 Lander" longitude="158.0 W" latitude="45.0 S" />
+	<landmark name="Mars 6 Lander" longitude="19.5 W" latitude="23.9 S" />
+	<landmark name="Mars Polar Lander" longitude="164.7 E" latitude="76.7 S" />
+	<landmark name="Beagle 2 Lander" longitude="90.0 E" latitude="10.6 N" />
+	<landmark name="Phoenix Mars Lander" longitude="123.0 W" latitude="68.0 N" />
+</landmark-list>

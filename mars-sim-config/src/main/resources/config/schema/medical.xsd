@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/medical"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:med="http://mars-sim.sourceforge.net/medical">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="medical">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="med:medical-complaint-list"></xs:element>
+    			<xs:element ref="med:treatment-list"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="medical-complaint-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="med:medical-complaint" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="medical-complaint">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="med:seriousness"></xs:element>
+    			<xs:element ref="med:degrade-time" minOccurs="0"></xs:element>
+    			<xs:element ref="med:recovery-time"></xs:element>
+    			<xs:element ref="med:probability"></xs:element>
+    			<xs:element ref="med:performance-percent"></xs:element>
+    			<xs:element ref="med:treatment-type" minOccurs="0"></xs:element>
+    			<xs:element ref="med:degrade-complaint" minOccurs="0"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="seriousness">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="degrade-time">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="recovery-time">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="probability">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="performance-percent">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="treatment-type">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="degrade-complaint">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="treatment-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="med:treatment" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="treatment">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="med:skill" minOccurs="0"></xs:element>
+    			<xs:element ref="med:medical-tech-level" minOccurs="0"></xs:element>
+    			<xs:element ref="med:treatment-time" minOccurs="0"></xs:element>
+    			<xs:element ref="med:retainaid" minOccurs="0"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="skill">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="medical-tech-level">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="treatment-time">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="retainaid">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:boolean"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>
