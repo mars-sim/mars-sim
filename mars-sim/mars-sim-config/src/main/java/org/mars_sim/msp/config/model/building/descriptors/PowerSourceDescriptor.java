@@ -154,7 +154,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         //-- _power
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_power", "power", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_power", "power", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -162,7 +162,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             {
                 PowerSource target = (PowerSource) object;
                 if (!target.hasPower()) { return null; }
-                return new java.lang.Float(target.getPower());
+                return new java.lang.Double(target.getPower());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -175,7 +175,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                         target.deletePower();
                         return;
                     }
-                    target.setPower( ((java.lang.Float) value).floatValue());
+                    target.setPower( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -186,7 +186,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -194,11 +194,11 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         //-- validation code for: _power
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- _fuelType
@@ -244,7 +244,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         }
         desc.setValidator(fieldValidator);
         //-- _consumptionRate
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_consumptionRate", "consumption-rate", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_consumptionRate", "consumption-rate", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -252,7 +252,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
             {
                 PowerSource target = (PowerSource) object;
                 if (!target.hasConsumptionRate()) { return null; }
-                return new java.lang.Float(target.getConsumptionRate());
+                return new java.lang.Double(target.getConsumptionRate());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -265,7 +265,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                         target.deleteConsumptionRate();
                         return;
                     }
-                    target.setConsumptionRate( ((java.lang.Float) value).floatValue());
+                    target.setConsumptionRate( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -276,7 +276,7 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -284,11 +284,11 @@ public class PowerSourceDescriptor extends org.exolab.castor.xml.util.XMLClassDe
         //-- validation code for: _consumptionRate
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

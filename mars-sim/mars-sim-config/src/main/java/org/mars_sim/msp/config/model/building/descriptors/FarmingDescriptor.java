@@ -112,7 +112,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         }
         desc.setValidator(fieldValidator);
         //-- _powerGrowingCrop
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_powerGrowingCrop", "power-growing-crop", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_powerGrowingCrop", "power-growing-crop", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -120,7 +120,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             {
                 Farming target = (Farming) object;
                 if (!target.hasPowerGrowingCrop()) { return null; }
-                return new java.lang.Float(target.getPowerGrowingCrop());
+                return new java.lang.Double(target.getPowerGrowingCrop());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -133,7 +133,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                         target.deletePowerGrowingCrop();
                         return;
                     }
-                    target.setPowerGrowingCrop( ((java.lang.Float) value).floatValue());
+                    target.setPowerGrowingCrop( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -144,7 +144,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -152,15 +152,15 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         //-- validation code for: _powerGrowingCrop
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- _powerSustainingCrop
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_powerSustainingCrop", "power-sustaining-crop", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_powerSustainingCrop", "power-sustaining-crop", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -168,7 +168,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             {
                 Farming target = (Farming) object;
                 if (!target.hasPowerSustainingCrop()) { return null; }
-                return new java.lang.Float(target.getPowerSustainingCrop());
+                return new java.lang.Double(target.getPowerSustainingCrop());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -181,7 +181,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                         target.deletePowerSustainingCrop();
                         return;
                     }
-                    target.setPowerSustainingCrop( ((java.lang.Float) value).floatValue());
+                    target.setPowerSustainingCrop( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -192,7 +192,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -200,15 +200,15 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         //-- validation code for: _powerSustainingCrop
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- _growingArea
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_growingArea", "growing-area", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_growingArea", "growing-area", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -216,7 +216,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             {
                 Farming target = (Farming) object;
                 if (!target.hasGrowingArea()) { return null; }
-                return new java.lang.Float(target.getGrowingArea());
+                return new java.lang.Double(target.getGrowingArea());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -229,7 +229,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                         target.deleteGrowingArea();
                         return;
                     }
-                    target.setGrowingArea( ((java.lang.Float) value).floatValue());
+                    target.setGrowingArea( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -240,7 +240,7 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -248,11 +248,11 @@ public class FarmingDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         //-- validation code for: _growingArea
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

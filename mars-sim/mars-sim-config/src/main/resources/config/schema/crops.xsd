@@ -18,7 +18,7 @@
     <xs:element name="crop">
     	<xs:complexType>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
-    		<xs:attribute name="growing-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="growing-time" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     

@@ -23,7 +23,7 @@ public class PowerRequired implements java.io.Serializable {
     /**
      * Field _basePower.
      */
-    private float _basePower;
+    private double _basePower;
 
     /**
      * keeps track of state for field: _basePower
@@ -33,7 +33,7 @@ public class PowerRequired implements java.io.Serializable {
     /**
      * Field _basePowerDownPower.
      */
-    private float _basePowerDownPower;
+    private double _basePowerDownPower;
 
     /**
      * keeps track of state for field: _basePowerDownPower
@@ -73,7 +73,7 @@ public class PowerRequired implements java.io.Serializable {
      * 
      * @return the value of field 'BasePower'.
      */
-    public float getBasePower(
+    public double getBasePower(
     ) {
         return this._basePower;
     }
@@ -83,7 +83,7 @@ public class PowerRequired implements java.io.Serializable {
      * 
      * @return the value of field 'BasePowerDownPower'.
      */
-    public float getBasePowerDownPower(
+    public double getBasePowerDownPower(
     ) {
         return this._basePowerDownPower;
     }
@@ -161,7 +161,7 @@ public class PowerRequired implements java.io.Serializable {
      * @param basePower the value of field 'basePower'.
      */
     public void setBasePower(
-            final float basePower) {
+            final double basePower) {
         this._basePower = basePower;
         this._has_basePower = true;
     }
@@ -173,7 +173,7 @@ public class PowerRequired implements java.io.Serializable {
      * 'basePowerDownPower'.
      */
     public void setBasePowerDownPower(
-            final float basePowerDownPower) {
+            final double basePowerDownPower) {
         this._basePowerDownPower = basePowerDownPower;
         this._has_basePowerDownPower = true;
     }

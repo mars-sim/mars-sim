@@ -69,7 +69,7 @@ public class ResourceProcessingDescriptor extends org.exolab.castor.xml.util.XML
         //-- initialize attribute descriptors
 
         //-- _powerDownLevel
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_powerDownLevel", "power-down-level", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_powerDownLevel", "power-down-level", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -77,7 +77,7 @@ public class ResourceProcessingDescriptor extends org.exolab.castor.xml.util.XML
             {
                 ResourceProcessing target = (ResourceProcessing) object;
                 if (!target.hasPowerDownLevel()) { return null; }
-                return new java.lang.Float(target.getPowerDownLevel());
+                return new java.lang.Double(target.getPowerDownLevel());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -90,7 +90,7 @@ public class ResourceProcessingDescriptor extends org.exolab.castor.xml.util.XML
                         target.deletePowerDownLevel();
                         return;
                     }
-                    target.setPowerDownLevel( ((java.lang.Float) value).floatValue());
+                    target.setPowerDownLevel( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -101,7 +101,7 @@ public class ResourceProcessingDescriptor extends org.exolab.castor.xml.util.XML
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -109,11 +109,11 @@ public class ResourceProcessingDescriptor extends org.exolab.castor.xml.util.XML
         //-- validation code for: _powerDownLevel
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

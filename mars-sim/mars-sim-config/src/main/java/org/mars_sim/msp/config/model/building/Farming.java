@@ -33,7 +33,7 @@ public class Farming implements java.io.Serializable {
     /**
      * Field _powerGrowingCrop.
      */
-    private float _powerGrowingCrop;
+    private double _powerGrowingCrop;
 
     /**
      * keeps track of state for field: _powerGrowingCrop
@@ -43,7 +43,7 @@ public class Farming implements java.io.Serializable {
     /**
      * Field _powerSustainingCrop.
      */
-    private float _powerSustainingCrop;
+    private double _powerSustainingCrop;
 
     /**
      * keeps track of state for field: _powerSustainingCrop
@@ -53,7 +53,7 @@ public class Farming implements java.io.Serializable {
     /**
      * Field _growingArea.
      */
-    private float _growingArea;
+    private double _growingArea;
 
     /**
      * keeps track of state for field: _growingArea
@@ -117,7 +117,7 @@ public class Farming implements java.io.Serializable {
      * 
      * @return the value of field 'GrowingArea'.
      */
-    public float getGrowingArea(
+    public double getGrowingArea(
     ) {
         return this._growingArea;
     }
@@ -127,7 +127,7 @@ public class Farming implements java.io.Serializable {
      * 
      * @return the value of field 'PowerGrowingCrop'.
      */
-    public float getPowerGrowingCrop(
+    public double getPowerGrowingCrop(
     ) {
         return this._powerGrowingCrop;
     }
@@ -137,7 +137,7 @@ public class Farming implements java.io.Serializable {
      * 
      * @return the value of field 'PowerSustainingCrop'.
      */
-    public float getPowerSustainingCrop(
+    public double getPowerSustainingCrop(
     ) {
         return this._powerSustainingCrop;
     }
@@ -247,7 +247,7 @@ public class Farming implements java.io.Serializable {
      * @param growingArea the value of field 'growingArea'.
      */
     public void setGrowingArea(
-            final float growingArea) {
+            final double growingArea) {
         this._growingArea = growingArea;
         this._has_growingArea = true;
     }
@@ -258,7 +258,7 @@ public class Farming implements java.io.Serializable {
      * @param powerGrowingCrop the value of field 'powerGrowingCrop'
      */
     public void setPowerGrowingCrop(
-            final float powerGrowingCrop) {
+            final double powerGrowingCrop) {
         this._powerGrowingCrop = powerGrowingCrop;
         this._has_powerGrowingCrop = true;
     }
@@ -270,7 +270,7 @@ public class Farming implements java.io.Serializable {
      * 'powerSustainingCrop'.
      */
     public void setPowerSustainingCrop(
-            final float powerSustainingCrop) {
+            final double powerSustainingCrop) {
         this._powerSustainingCrop = powerSustainingCrop;
         this._has_powerSustainingCrop = true;
     }

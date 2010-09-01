@@ -1,0 +1,11 @@
+#Wed Sep 01 11:57:17 CEST 2010
+org.mars_sim.msp.config.model.MaintenanceEntityList=org.mars_sim.msp.config.model.descriptors.MaintenanceEntityListDescriptor
+org.mars_sim.msp.config.model.Entity=org.mars_sim.msp.config.model.descriptors.EntityDescriptor
+org.mars_sim.msp.config.model.Mineral=org.mars_sim.msp.config.model.descriptors.MineralDescriptor
+org.mars_sim.msp.config.model.MineralConcentrations=org.mars_sim.msp.config.model.descriptors.MineralConcentrationsDescriptor
+org.mars_sim.msp.config.model.Part=org.mars_sim.msp.config.model.descriptors.PartDescriptor
+org.mars_sim.msp.config.model.PartList=org.mars_sim.msp.config.model.descriptors.PartListDescriptor
+org.mars_sim.msp.config.model.Locale=org.mars_sim.msp.config.model.descriptors.LocaleDescriptor
+org.mars_sim.msp.config.model.PartPackageList=org.mars_sim.msp.config.model.descriptors.PartPackageListDescriptor
+org.mars_sim.msp.config.model.PartPackage=org.mars_sim.msp.config.model.descriptors.PartPackageDescriptor
+org.mars_sim.msp.config.model.LocaleList=org.mars_sim.msp.config.model.descriptors.LocaleListDescriptor

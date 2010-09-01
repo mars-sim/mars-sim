@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/settlements"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:set="http://mars-sim.sourceforge.net/settlements">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="settlement-configuration">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:settlement-template-list"></xs:element>
+    			<xs:element ref="set:initial-settlement-list"></xs:element>
+    			<xs:element ref="set:settlement-name-list"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="settlement-template-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:template" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="template">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:building" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:equipment" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:resource" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:part-package" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:resupply" minOccurs="0"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="building">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attributeGroup ref="conf:positionAttributes"></xs:attributeGroup>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="vehicle">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="equipment">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resource">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attribute name="amount" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part-package">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resupply">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:resupply-mission" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="resupply-mission">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="arrival-time" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="initial-settlement-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:settlement" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="settlement">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:location"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="template" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="location">
+    	<xs:complexType>
+    		<xs:attribute name="longitude" type="xs:string"></xs:attribute>
+    		<xs:attribute name="latitude" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="settlement-name-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:settlement-name" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="settlement-name">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>

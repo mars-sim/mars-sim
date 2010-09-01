@@ -33,7 +33,7 @@ public class Effect implements java.io.Serializable {
     /**
      * Field _changeRate.
      */
-    private float _changeRate;
+    private double _changeRate;
 
     /**
      * keeps track of state for field: _changeRate
@@ -66,7 +66,7 @@ public class Effect implements java.io.Serializable {
      * 
      * @return the value of field 'ChangeRate'.
      */
-    public float getChangeRate(
+    public double getChangeRate(
     ) {
         return this._changeRate;
     }
@@ -154,7 +154,7 @@ public class Effect implements java.io.Serializable {
      * @param changeRate the value of field 'changeRate'.
      */
     public void setChangeRate(
-            final float changeRate) {
+            final double changeRate) {
         this._changeRate = changeRate;
         this._has_changeRate = true;
     }

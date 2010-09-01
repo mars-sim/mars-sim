@@ -28,7 +28,7 @@ public class Crop implements java.io.Serializable {
     /**
      * Field _growingTime.
      */
-    private float _growingTime;
+    private double _growingTime;
 
     /**
      * keeps track of state for field: _growingTime
@@ -61,7 +61,7 @@ public class Crop implements java.io.Serializable {
      * 
      * @return the value of field 'GrowingTime'.
      */
-    public float getGrowingTime(
+    public double getGrowingTime(
     ) {
         return this._growingTime;
     }
@@ -139,7 +139,7 @@ public class Crop implements java.io.Serializable {
      * @param growingTime the value of field 'growingTime'.
      */
     public void setGrowingTime(
-            final float growingTime) {
+            final double growingTime) {
         this._growingTime = growingTime;
         this._has_growingTime = true;
     }

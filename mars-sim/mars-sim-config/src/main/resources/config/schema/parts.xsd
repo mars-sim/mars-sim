@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/parts"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:pa="http://mars-sim.sourceforge.net/parts">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="part-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="pa:part" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="pa:maintenance-entity-list" minOccurs="0"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="mass" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="maintenance-entity-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="pa:entity" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="mass" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="entity">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="probability" type="xs:integer"></xs:attribute>
+    		<xs:attribute name="max-number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>

@@ -111,7 +111,7 @@ public class ProcessDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         }
         desc.setValidator(fieldValidator);
         //-- _powerRequired
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_powerRequired", "power-required", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_powerRequired", "power-required", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -119,7 +119,7 @@ public class ProcessDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             {
                 Process target = (Process) object;
                 if (!target.hasPowerRequired()) { return null; }
-                return new java.lang.Float(target.getPowerRequired());
+                return new java.lang.Double(target.getPowerRequired());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -132,7 +132,7 @@ public class ProcessDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                         target.deletePowerRequired();
                         return;
                     }
-                    target.setPowerRequired( ((java.lang.Float) value).floatValue());
+                    target.setPowerRequired( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -143,7 +143,7 @@ public class ProcessDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -151,11 +151,11 @@ public class ProcessDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
         //-- validation code for: _powerRequired
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- _default

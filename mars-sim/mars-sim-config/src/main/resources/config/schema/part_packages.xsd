@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/part-packages"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:pp="http://mars-sim.sourceforge.net/part-packages">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="part-package-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="pp:part-package" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part-package">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="pp:part" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part">
+    	<xs:complexType>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>
