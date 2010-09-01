@@ -1,0 +1,11 @@
+#Wed Sep 01 15:13:44 CEST 2010
+org.mars_sim.msp.config.model.resupply.Ressuply=org.mars_sim.msp.config.model.resupply.descriptors.RessuplyDescriptor
+org.mars_sim.msp.config.model.resupply.Resupply=org.mars_sim.msp.config.model.resupply.descriptors.ResupplyDescriptor
+org.mars_sim.msp.config.model.resupply.Vehicle=org.mars_sim.msp.config.model.resupply.descriptors.VehicleDescriptor
+org.mars_sim.msp.config.model.resupply.Building=org.mars_sim.msp.config.model.resupply.descriptors.BuildingDescriptor
+org.mars_sim.msp.config.model.resupply.Person=org.mars_sim.msp.config.model.resupply.descriptors.PersonDescriptor
+org.mars_sim.msp.config.model.resupply.Equipment=org.mars_sim.msp.config.model.resupply.descriptors.EquipmentDescriptor
+org.mars_sim.msp.config.model.resupply.PartPackage=org.mars_sim.msp.config.model.resupply.descriptors.PartPackageDescriptor
+org.mars_sim.msp.config.model.resupply.Resource=org.mars_sim.msp.config.model.resupply.descriptors.ResourceDescriptor
+org.mars_sim.msp.config.model.resupply.Part=org.mars_sim.msp.config.model.resupply.descriptors.PartDescriptor
+org.mars_sim.msp.config.model.resupply.ResupplyList=org.mars_sim.msp.config.model.resupply.descriptors.ResupplyListDescriptor

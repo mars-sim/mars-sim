@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://mars-sim.sourceforge.net/vehicles"
+	elementFormDefault="qualified" attributeFormDefault="unqualified"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:conf="http://mars-sim.sourceforge.net/configuration"
+	xmlns:v="http://mars-sim.sourceforge.net/vehicles">
+
+	<xs:import schemaLocation="configuration.xsd" namespace="http://mars-sim.sourceforge.net/configuration"></xs:import>
+    
+    <xs:element name="vehicle-configuration">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:vehicle" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="v:rover-name-list"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="vehicle">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:fuel-efficiency"></xs:element>
+    			<xs:element ref="v:base-speed"></xs:element>
+    			<xs:element ref="v:empty-mass"></xs:element>
+    			<xs:element ref="v:crew-size" minOccurs="0"></xs:element>
+    			<xs:element ref="v:cargo" minOccurs="0"></xs:element>
+    			<xs:element ref="v:part-attachment" minOccurs="0"></xs:element>
+    			<xs:element ref="v:sickbay" minOccurs="0"></xs:element>
+    			<xs:element ref="v:lab" minOccurs="0"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="fuel-efficiency">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="base-speed">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="empty-mass">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="crew-size">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="cargo">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:capacity" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="total-capacity" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="capacity">
+    	<xs:complexType>
+    		<xs:attribute name="resource" type="xs:string"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part-attachment">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:part" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="number-slots" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="part">
+    	<xs:complexType>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="sickbay">
+    	<xs:complexType>
+    		<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+    		<xs:attribute name="beds" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="lab">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:tech-speciality" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="tech-speciality">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="rover-name-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="v:rover-name" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="rover-name">
+    	<xs:complexType>
+    		<xs:attribute name="value" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+</xs:schema>

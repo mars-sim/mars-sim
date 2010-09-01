@@ -38,7 +38,7 @@ public class Part implements java.io.Serializable {
     /**
      * Field _probability.
      */
-    private float _probability;
+    private double _probability;
 
     /**
      * keeps track of state for field: _probability
@@ -98,7 +98,7 @@ public class Part implements java.io.Serializable {
      * 
      * @return the value of field 'Probability'.
      */
-    public float getProbability(
+    public double getProbability(
     ) {
         return this._probability;
     }
@@ -197,7 +197,7 @@ public class Part implements java.io.Serializable {
      * @param probability the value of field 'probability'.
      */
     public void setProbability(
-            final float probability) {
+            final double probability) {
         this._probability = probability;
         this._has_probability = true;
     }

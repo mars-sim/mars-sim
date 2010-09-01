@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<vehicle-configuration
+	xmlns="http://mars-sim.sourceforge.net/vehicles"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://mars-sim.sourceforge.net/vehicles schema/vehicles.xsd">
+
+	<!-- Explorer rover -->
+	<!-- A rover for collecting rock samples from remote sites
+		 and ice prospecting. -->
+	<vehicle type="Explorer Rover">
+
+		<!-- The fuel efficiency of the rover (km/kg) (required) -->
+		<!-- Default: 2.0 -->
+		<fuel-efficiency value="2.0" />
+
+		<!-- Base speed of rover (km/hr) (required) -->
+		<!-- Default: 30.0 -->
+		<base-speed value="30.0" />
+
+		<!-- Empty mass of rover (kg) (required) -->
+		<!-- Default: 10000.0 -->
+		<empty-mass value="10000.0" />
+
+		<!-- The crew size of an rover -->
+		<!-- Default: 4 -->
+		<crew-size value="4" />
+
+		<!-- Cargo capacity list -->
+		<!-- total-capacity: total cargo capacity of rover. (kg) -->
+		<!-- Default: 5500.0 -->
+		<cargo total-capacity="5500.0">
+ 
+			<!-- The methane cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 1600.0 -->
+			<capacity resource="Methane" value="1600.0" />
+
+			<!-- The oxygen cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 140.0 -->
+			<capacity resource="Oxygen" value="140.0" />
+
+			<!-- The water cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 560.0 -->
+			<capacity resource="Water" value="560.0" />
+
+			<!-- The food cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 210.0 -->
+			<capacity resource="Food" value="210.0" />
+
+			<!-- The rock samples cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 2000.0 -->
+			<!-- <capacity resource="Rock Samples" value="2000.0" /> -->
+
+			<!-- The ice cargo capacity of the rover (kg) -->
+			<!-- See resources.txt -->
+			<!-- Default: 2000.0 -->
+			<!-- <capacity resource="Ice" value="2000.0" /> -->
+
+		</cargo>
+
+		<!-- Sickbay -->
+		<!-- Medical tech level of sickbay (see tech_level.txt) - default: 1 -->
+		<!-- Number of beds in sickbay - default: 1 -->
+		<sickbay tech-level="1" beds="1" />
+
+		<!-- Lab -->
+		<!-- Science tech level of lab (see tech_level.txt) - default: 1 -->
+		<lab tech-level="1">
+			<!-- Science tech speciality -->
+			<tech-speciality value="Areology" />
+			<tech-speciality value="Biology" />
+		</lab>
+
+	</vehicle>
+
+	<!-- Transport rover -->
+	<!-- A rover for transporting people from one settlement to another. -->
+	<vehicle type="Transport Rover">
+		<fuel-efficiency value="2.0" />
+		<base-speed value="30.0" />
+		<empty-mass value="10000.0" />
+		<crew-size value="8" />
+		<cargo total-capacity="7000.0">
+			<capacity resource="Methane" value="2000.0" />
+			<capacity resource="Oxygen" value="350.0" />
+			<capacity resource="Water" value="1400.0" />
+			<capacity resource="Food" value="525.0" />            
+		</cargo>
+		<sickbay tech-level="3" beds="2" />
+	</vehicle>
+	
+	<!-- Cargo rover -->
+	<!-- A rover for transporting cargo from one settlement to another. -->
+	<vehicle type="Cargo Rover">
+		<fuel-efficiency value="2.0" />
+		<base-speed value="30.0" />
+		<empty-mass value="10000.0" />
+		<crew-size value="2" />
+		<cargo total-capacity="10000.0">
+			<capacity resource="Methane" value="2000.0" />
+			<capacity resource="Oxygen" value="350.0" />
+			<capacity resource="Water" value="1400.0" />
+			<capacity resource="Food" value="525.0" />            
+		</cargo>
+		<sickbay tech-level="1" beds="1" />
+	</vehicle>
+	
+	<!-- Light Utility Vehicle -->
+	<!-- A small, unpressurized, one crew utility vehicle with attachable parts. -->
+	<vehicle type="Light Utility Vehicle">
+		<fuel-efficiency value="0.0" />
+		<base-speed value="0.0" />
+		<empty-mass value="300.0" />
+		<crew-size value="1" />
+		<cargo total-capacity="300.0" />
+		<part-attachment number-slots="3">
+			<part name="pneumatic drill" />
+			<part name="backhoe" />
+			<part name="bulldozer blade" />
+			<part name="soil compactor" />
+			<part name="crane boom" />
+		</part-attachment>
+	</vehicle>
+	
+	<!-- List of rover names -->
+	<rover-name-list>		
+
+		<rover-name value="Dune Drifter" />
+		<rover-name value="Oasis" />
+		<rover-name value="Sun Dancer" />
+		<rover-name value="Desert Fox" />
+		<rover-name value="Serenity" />
+		<rover-name value="Gypsea" />
+		<rover-name value="Martian Cloud" />	
+		<rover-name value="Sand Spirit" />
+		<rover-name value="Dust Sprite" />
+		<rover-name value="Phobos Drifter" />
+		<rover-name value="Osprey" />
+		<rover-name value="Dune Runner" />
+		<rover-name value="Wind Runner" />
+		<rover-name value="Sand Dancer" />	
+		<rover-name value="Nomad" />
+		<rover-name value="Spice Trader" />
+		<rover-name value="Solitude" />
+		<rover-name value="Dust Storm" />
+		<rover-name value="Martian Escape" />
+		<rover-name value="Odyssey" />
+		<rover-name value="Deimos Tide" />	
+		<rover-name value="Red Mariner" />
+		<rover-name value="Shooting Star" />
+		<rover-name value="Dust Devil" />
+		<rover-name value="Desert Star" />
+		<rover-name value="Windstorm" />
+		<rover-name value="Drift Wood" />
+		<rover-name value="Desertfarer" />
+		<rover-name value="Dream Chaser" />	
+		<rover-name value="Bedouin" />	
+		<rover-name value="Fremen Wanderer" />
+		<rover-name value="Beagle IV" />	
+		<rover-name value="Firefly" />
+		<rover-name value="Desert Pearl" />
+		<rover-name value="Princess of the Sands" />
+		<rover-name value="Ridge Runner" />
+		<rover-name value="Desert Rose" />
+		<rover-name value="Crater Crab" />
+		<rover-name value="Red Moon" />
+		<rover-name value="Sand Crawler" />
+		<rover-name value="Sojourner II" />
+		<rover-name value="Spirit II" />
+		<rover-name value="Opportunity II" />
+		<rover-name value="Fire Star" />
+		<rover-name value="Rahu" /> <!-- Hindi for "Mars" (not certain) -->
+		<rover-name value="Vayu" /> <!-- Hindi for "wind" -->
+		<rover-name value="Agni" /> <!-- Hindi for "fire" -->
+		<rover-name value="Prithvi" /> <!-- Hindi for "earth" -->
+		<rover-name value="Reth" /> <!-- Hindi for "sand" -->
+		<rover-name value="Naag" /> <!-- Hindi for "snake" -->
+		<rover-name value="Mangala" /> <!-- Mars in Jyotish astrology -->
+		<rover-name value="Angaraka" /> <!-- Mars in Jyotish astrology (alternate name) -->
+		<rover-name value="Ma'adim" /> <!-- Hebrew for "Mars" -->
+		<rover-name value="al-Mirrikh" /> <!-- Arabic/Persian for "Mars" -->
+		<rover-name value="Bahram" /> <!-- Ancient Persian for "Mars" -->
+		<rover-name value="Merih" /> <!-- Turkish for "Mars" -->
+		<rover-name value="Sakit" /> <!-- Ancient Turkish for "Mars" -->
+		<rover-name value="Nergal" /> <!-- Babylonian for "Mars" -->
+		<rover-name value="Areos Aster" /> <!-- Greek for "star of Ares" -->
+		<rover-name value="Blodstjarna" /> <!-- Viking for "Mars" (not certain) -->
+																						
+	</rover-name-list>
+
+</vehicle-configuration>

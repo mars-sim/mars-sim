@@ -1,4 +1,4 @@
-#Tue Aug 31 15:45:59 CEST 2010
+#Wed Sep 01 15:13:44 CEST 2010
 org.mars_sim.msp.config.model.construction.Frame=org.mars_sim.msp.config.model.construction.descriptors.FrameDescriptor
 org.mars_sim.msp.config.model.construction.Part=org.mars_sim.msp.config.model.construction.descriptors.PartDescriptor
 org.mars_sim.msp.config.model.construction.FoundationList=org.mars_sim.msp.config.model.construction.descriptors.FoundationListDescriptor

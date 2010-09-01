@@ -23,7 +23,7 @@ public class TreatmentTime implements java.io.Serializable {
     /**
      * Field _value.
      */
-    private float _value;
+    private double _value;
 
     /**
      * keeps track of state for field: _value
@@ -56,7 +56,7 @@ public class TreatmentTime implements java.io.Serializable {
      * 
      * @return the value of field 'Value'.
      */
-    public float getValue(
+    public double getValue(
     ) {
         return this._value;
     }
@@ -124,7 +124,7 @@ public class TreatmentTime implements java.io.Serializable {
      * @param value the value of field 'value'.
      */
     public void setValue(
-            final float value) {
+            final double value) {
         this._value = value;
         this._has_value = true;
     }

@@ -108,7 +108,7 @@ public class MedicalComplaintDescriptor extends org.exolab.castor.xml.util.XMLCl
         }
         desc.setValidator(fieldValidator);
         //-- _probability
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Float.TYPE, "_probability", "probability", org.exolab.castor.xml.NodeType.Attribute);
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_probability", "probability", org.exolab.castor.xml.NodeType.Attribute);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
@@ -116,7 +116,7 @@ public class MedicalComplaintDescriptor extends org.exolab.castor.xml.util.XMLCl
             {
                 MedicalComplaint target = (MedicalComplaint) object;
                 if (!target.hasProbability()) { return null; }
-                return new java.lang.Float(target.getProbability());
+                return new java.lang.Double(target.getProbability());
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -129,7 +129,7 @@ public class MedicalComplaintDescriptor extends org.exolab.castor.xml.util.XMLCl
                         target.deleteProbability();
                         return;
                     }
-                    target.setProbability( ((java.lang.Float) value).floatValue());
+                    target.setProbability( ((java.lang.Double) value).doubleValue());
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -140,7 +140,7 @@ public class MedicalComplaintDescriptor extends org.exolab.castor.xml.util.XMLCl
                 return null;
             }
         };
-        desc.setSchemaType("float");
+        desc.setSchemaType("double");
         desc.setHandler(handler);
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
@@ -148,11 +148,11 @@ public class MedicalComplaintDescriptor extends org.exolab.castor.xml.util.XMLCl
         //-- validation code for: _probability
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
-            org.exolab.castor.xml.validators.FloatValidator typeValidator;
-            typeValidator = new org.exolab.castor.xml.validators.FloatValidator();
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.setMinInclusive((float) -3.4028235E38);
-            typeValidator.setMaxInclusive((float) 3.4028235E38);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

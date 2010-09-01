@@ -40,25 +40,25 @@
     
     <xs:element name="probability">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="repair-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="emergency-repair-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="eva-repair-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -95,7 +95,7 @@
    					</xs:restriction>
    				</xs:simpleType>
     		</xs:attribute>
-    		<xs:attribute name="change-rate" type="xs:float"></xs:attribute>
+    		<xs:attribute name="change-rate" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -110,7 +110,7 @@
     <xs:element name="medical-complaint">
     	<xs:complexType>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
-    		<xs:attribute name="probability" type="xs:float"></xs:attribute>
+    		<xs:attribute name="probability" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -126,7 +126,7 @@
     	<xs:complexType>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
     		<xs:attribute name="number" type="xs:integer"></xs:attribute>
-    		<xs:attribute name="probability" type="xs:float"></xs:attribute>
+    		<xs:attribute name="probability" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     

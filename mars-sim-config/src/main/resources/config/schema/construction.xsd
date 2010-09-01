@@ -32,10 +32,11 @@
     			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
     			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
     		</xs:sequence>
-    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+   	 		<xs:attributeGroup ref="conf:rectangleAttributes"></xs:attributeGroup>
     		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
     		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
-    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:double"></xs:attribute>
     		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
     	</xs:complexType>
     </xs:element>
@@ -43,7 +44,7 @@
     <xs:element name="resource">
     	<xs:complexType>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
-    		<xs:attribute name="amount" type="xs:float"></xs:attribute>
+    		<xs:attribute name="amount" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -84,10 +85,11 @@
     			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
     			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
     		</xs:sequence>
-    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+   	 		<xs:attributeGroup ref="conf:rectangleAttributes"></xs:attributeGroup>
     		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
     		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
-    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:double"></xs:attribute>
     		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
     		<xs:attribute name="foundation" type="xs:string"></xs:attribute>
     	</xs:complexType>
@@ -108,10 +110,11 @@
     			<xs:element ref="cons:part" minOccurs="0" maxOccurs="unbounded"></xs:element>
     			<xs:element ref="cons:vehicle" minOccurs="0" maxOccurs="unbounded"></xs:element>
     		</xs:sequence>
-    		<xs:attributeGroup ref="conf:itemAttributes"></xs:attributeGroup>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+   	 		<xs:attributeGroup ref="conf:rectangleAttributes"></xs:attributeGroup>
     		<xs:attribute name="constructable" type="xs:boolean"></xs:attribute>
     		<xs:attribute name="salvagable" type="xs:boolean"></xs:attribute>
-    		<xs:attribute name="work-time" type="xs:float"></xs:attribute>
+    		<xs:attribute name="work-time" type="xs:double"></xs:attribute>
     		<xs:attribute name="skill-required" type="xs:integer"></xs:attribute>
     		<xs:attribute name="frame" type="xs:string"></xs:attribute>
     	</xs:complexType>

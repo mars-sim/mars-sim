@@ -38,7 +38,7 @@ public class PowerSource implements java.io.Serializable {
     /**
      * Field _power.
      */
-    private float _power;
+    private double _power;
 
     /**
      * keeps track of state for field: _power
@@ -53,7 +53,7 @@ public class PowerSource implements java.io.Serializable {
     /**
      * Field _consumptionRate.
      */
-    private float _consumptionRate;
+    private double _consumptionRate;
 
     /**
      * keeps track of state for field: _consumptionRate
@@ -100,7 +100,7 @@ public class PowerSource implements java.io.Serializable {
      * 
      * @return the value of field 'ConsumptionRate'.
      */
-    public float getConsumptionRate(
+    public double getConsumptionRate(
     ) {
         return this._consumptionRate;
     }
@@ -120,7 +120,7 @@ public class PowerSource implements java.io.Serializable {
      * 
      * @return the value of field 'Power'.
      */
-    public float getPower(
+    public double getPower(
     ) {
         return this._power;
     }
@@ -238,7 +238,7 @@ public class PowerSource implements java.io.Serializable {
      * @param consumptionRate the value of field 'consumptionRate'.
      */
     public void setConsumptionRate(
-            final float consumptionRate) {
+            final double consumptionRate) {
         this._consumptionRate = consumptionRate;
         this._has_consumptionRate = true;
     }
@@ -259,7 +259,7 @@ public class PowerSource implements java.io.Serializable {
      * @param power the value of field 'power'.
      */
     public void setPower(
-            final float power) {
+            final double power) {
         this._power = power;
         this._has_power = true;
     }

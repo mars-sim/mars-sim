@@ -5,16 +5,36 @@
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	xmlns:conf="http://mars-sim.sourceforge.net/configuration">
 	
+	<!-- ************************************************************************************************* -->
+	<!-- * Global Types                                                                                  * -->
+	<!-- ************************************************************************************************* -->
+	
 	<xs:complexType name="emptyType">
 		<xs:complexContent>
 			<xs:restriction base="xs:anyType"></xs:restriction>
 		</xs:complexContent>
 	</xs:complexType>
+	
+	<xs:simpleType name="gender">
+    	<xs:restriction base="xs:string">
+    		<xs:enumeration value="male"></xs:enumeration>
+    		<xs:enumeration value="female"></xs:enumeration>
+    	</xs:restriction>
+    </xs:simpleType>
+    
+    <!-- ************************************************************************************************* -->
+	<!-- * Global Attribute Groups                                                                       * -->
+	<!-- ************************************************************************************************* -->
 
-    <xs:attributeGroup name="itemAttributes">
-    	<xs:attribute name="name" type="xs:string"></xs:attribute>
-    	<xs:attribute name="width" type="xs:float"></xs:attribute>
-    	<xs:attribute name="length" type="xs:float"></xs:attribute>
+    <xs:attributeGroup name="rectangleAttributes">
+    	<xs:attribute name="width" type="xs:double"></xs:attribute>
+    	<xs:attribute name="length" type="xs:double"></xs:attribute>
+    </xs:attributeGroup>
+    
+    <xs:attributeGroup name="positionAttributes">
+    	<xs:attribute name="x-location" type="xs:double"></xs:attribute>
+    	<xs:attribute name="y-location" type="xs:double"></xs:attribute>
+    	<xs:attribute name="facing" type="xs:double"></xs:attribute>
     </xs:attributeGroup>
     
     <xs:attributeGroup name="editorAttributes">

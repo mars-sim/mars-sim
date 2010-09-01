@@ -28,7 +28,7 @@ public class Building implements java.io.Serializable {
     /**
      * Field _width.
      */
-    private float _width;
+    private double _width;
 
     /**
      * keeps track of state for field: _width
@@ -38,7 +38,7 @@ public class Building implements java.io.Serializable {
     /**
      * Field _length.
      */
-    private float _length;
+    private double _length;
 
     /**
      * keeps track of state for field: _length
@@ -152,7 +152,7 @@ public class Building implements java.io.Serializable {
      * 
      * @return the value of field 'Length'.
      */
-    public float getLength(
+    public double getLength(
     ) {
         return this._length;
     }
@@ -182,7 +182,7 @@ public class Building implements java.io.Serializable {
      * 
      * @return the value of field 'Width'.
      */
-    public float getWidth(
+    public double getWidth(
     ) {
         return this._width;
     }
@@ -332,7 +332,7 @@ public class Building implements java.io.Serializable {
      * @param length the value of field 'length'.
      */
     public void setLength(
-            final float length) {
+            final double length) {
         this._length = length;
         this._has_length = true;
     }
@@ -363,7 +363,7 @@ public class Building implements java.io.Serializable {
      * @param width the value of field 'width'.
      */
     public void setWidth(
-            final float width) {
+            final double width) {
         this._width = width;
         this._has_width = true;
     }

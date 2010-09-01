@@ -28,7 +28,7 @@ public class Output implements java.io.Serializable {
     /**
      * Field _rate.
      */
-    private float _rate;
+    private double _rate;
 
     /**
      * keeps track of state for field: _rate
@@ -88,7 +88,7 @@ public class Output implements java.io.Serializable {
      * 
      * @return the value of field 'Rate'.
      */
-    public float getRate(
+    public double getRate(
     ) {
         return this._rate;
     }
@@ -197,7 +197,7 @@ public class Output implements java.io.Serializable {
      * @param rate the value of field 'rate'.
      */
     public void setRate(
-            final float rate) {
+            final double rate) {
         this._rate = rate;
         this._has_rate = true;
     }

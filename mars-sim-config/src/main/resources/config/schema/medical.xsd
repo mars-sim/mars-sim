@@ -41,31 +41,31 @@
     
     <xs:element name="seriousness">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="degrade-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="recovery-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="probability">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
     <xs:element name="performance-percent">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -115,7 +115,7 @@
     
     <xs:element name="treatment-time">
     	<xs:complexType>
-    		<xs:attribute name="value" type="xs:float"></xs:attribute>
+    		<xs:attribute name="value" type="xs:double"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     

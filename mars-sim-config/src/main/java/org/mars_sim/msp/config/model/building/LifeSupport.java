@@ -33,7 +33,7 @@ public class LifeSupport implements java.io.Serializable {
     /**
      * Field _powerRequired.
      */
-    private float _powerRequired;
+    private double _powerRequired;
 
     /**
      * keeps track of state for field: _powerRequired
@@ -83,7 +83,7 @@ public class LifeSupport implements java.io.Serializable {
      * 
      * @return the value of field 'PowerRequired'.
      */
-    public float getPowerRequired(
+    public double getPowerRequired(
     ) {
         return this._powerRequired;
     }
@@ -172,7 +172,7 @@ public class LifeSupport implements java.io.Serializable {
      * @param powerRequired the value of field 'powerRequired'.
      */
     public void setPowerRequired(
-            final float powerRequired) {
+            final double powerRequired) {
         this._powerRequired = powerRequired;
         this._has_powerRequired = true;
     }

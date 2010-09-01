@@ -1,0 +1,6 @@
+#Wed Sep 01 15:13:44 CEST 2010
+org.mars_sim.msp.config.model.simulation.SimulationConfiguration=org.mars_sim.msp.config.model.simulation.descriptors.SimulationConfigurationDescriptor
+org.mars_sim.msp.config.model.simulation.TimeRatio=org.mars_sim.msp.config.model.simulation.descriptors.TimeRatioDescriptor
+org.mars_sim.msp.config.model.simulation.MarsStartDateTime=org.mars_sim.msp.config.model.simulation.descriptors.MarsStartDateTimeDescriptor
+org.mars_sim.msp.config.model.simulation.TimeConfiguration=org.mars_sim.msp.config.model.simulation.descriptors.TimeConfigurationDescriptor
+org.mars_sim.msp.config.model.simulation.EarthStartDateTime=org.mars_sim.msp.config.model.simulation.descriptors.EarthStartDateTimeDescriptor

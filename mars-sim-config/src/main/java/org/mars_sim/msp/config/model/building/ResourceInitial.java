@@ -28,7 +28,7 @@ public class ResourceInitial implements java.io.Serializable {
     /**
      * Field _amount.
      */
-    private float _amount;
+    private double _amount;
 
     /**
      * keeps track of state for field: _amount
@@ -61,7 +61,7 @@ public class ResourceInitial implements java.io.Serializable {
      * 
      * @return the value of field 'Amount'.
      */
-    public float getAmount(
+    public double getAmount(
     ) {
         return this._amount;
     }
@@ -139,7 +139,7 @@ public class ResourceInitial implements java.io.Serializable {
      * @param amount the value of field 'amount'.
      */
     public void setAmount(
-            final float amount) {
+            final double amount) {
         this._amount = amount;
         this._has_amount = true;
     }

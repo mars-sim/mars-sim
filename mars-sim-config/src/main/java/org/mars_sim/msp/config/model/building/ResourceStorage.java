@@ -28,7 +28,7 @@ public class ResourceStorage implements java.io.Serializable {
     /**
      * Field _capacity.
      */
-    private float _capacity;
+    private double _capacity;
 
     /**
      * keeps track of state for field: _capacity
@@ -61,7 +61,7 @@ public class ResourceStorage implements java.io.Serializable {
      * 
      * @return the value of field 'Capacity'.
      */
-    public float getCapacity(
+    public double getCapacity(
     ) {
         return this._capacity;
     }
@@ -139,7 +139,7 @@ public class ResourceStorage implements java.io.Serializable {
      * @param capacity the value of field 'capacity'.
      */
     public void setCapacity(
-            final float capacity) {
+            final double capacity) {
         this._capacity = capacity;
         this._has_capacity = true;
     }

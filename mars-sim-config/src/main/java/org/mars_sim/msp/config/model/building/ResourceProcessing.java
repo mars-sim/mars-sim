@@ -23,7 +23,7 @@ public class ResourceProcessing implements java.io.Serializable {
     /**
      * Field _powerDownLevel.
      */
-    private float _powerDownLevel;
+    private double _powerDownLevel;
 
     /**
      * keeps track of state for field: _powerDownLevel
@@ -101,7 +101,7 @@ public class ResourceProcessing implements java.io.Serializable {
      * 
      * @return the value of field 'PowerDownLevel'.
      */
-    public float getPowerDownLevel(
+    public double getPowerDownLevel(
     ) {
         return this._powerDownLevel;
     }
@@ -257,7 +257,7 @@ public class ResourceProcessing implements java.io.Serializable {
      * @param powerDownLevel the value of field 'powerDownLevel'.
      */
     public void setPowerDownLevel(
-            final float powerDownLevel) {
+            final double powerDownLevel) {
         this._powerDownLevel = powerDownLevel;
         this._has_powerDownLevel = true;
     }

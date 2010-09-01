@@ -21,6 +21,11 @@ public class Foundation implements java.io.Serializable {
     //--------------------------/
 
     /**
+     * Field _name.
+     */
+    private java.lang.String _name;
+
+    /**
      * Field _constructable.
      */
     private boolean _constructable;
@@ -43,7 +48,7 @@ public class Foundation implements java.io.Serializable {
     /**
      * Field _workTime.
      */
-    private float _workTime;
+    private double _workTime;
 
     /**
      * keeps track of state for field: _workTime
@@ -61,14 +66,9 @@ public class Foundation implements java.io.Serializable {
     private boolean _has_skillRequired;
 
     /**
-     * Field _name.
-     */
-    private java.lang.String _name;
-
-    /**
      * Field _width.
      */
-    private float _width;
+    private double _width;
 
     /**
      * keeps track of state for field: _width
@@ -78,7 +78,7 @@ public class Foundation implements java.io.Serializable {
     /**
      * Field _length.
      */
-    private float _length;
+    private double _length;
 
     /**
      * keeps track of state for field: _length
@@ -291,7 +291,7 @@ public class Foundation implements java.io.Serializable {
      * 
      * @return the value of field 'Length'.
      */
-    public float getLength(
+    public double getLength(
     ) {
         return this._length;
     }
@@ -469,7 +469,7 @@ public class Foundation implements java.io.Serializable {
      * 
      * @return the value of field 'Width'.
      */
-    public float getWidth(
+    public double getWidth(
     ) {
         return this._width;
     }
@@ -479,7 +479,7 @@ public class Foundation implements java.io.Serializable {
      * 
      * @return the value of field 'WorkTime'.
      */
-    public float getWorkTime(
+    public double getWorkTime(
     ) {
         return this._workTime;
     }
@@ -754,7 +754,7 @@ public class Foundation implements java.io.Serializable {
      * @param length the value of field 'length'.
      */
     public void setLength(
-            final float length) {
+            final double length) {
         this._length = length;
         this._has_length = true;
     }
@@ -902,7 +902,7 @@ public class Foundation implements java.io.Serializable {
      * @param width the value of field 'width'.
      */
     public void setWidth(
-            final float width) {
+            final double width) {
         this._width = width;
         this._has_width = true;
     }
@@ -913,7 +913,7 @@ public class Foundation implements java.io.Serializable {
      * @param workTime the value of field 'workTime'.
      */
     public void setWorkTime(
-            final float workTime) {
+            final double workTime) {
         this._workTime = workTime;
         this._has_workTime = true;
     }

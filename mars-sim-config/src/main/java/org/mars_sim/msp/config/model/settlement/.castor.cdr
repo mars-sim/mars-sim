@@ -1,0 +1,17 @@
+#Wed Sep 01 15:13:44 CEST 2010
+org.mars_sim.msp.config.model.settlement.ResupplyMission=org.mars_sim.msp.config.model.settlement.descriptors.ResupplyMissionDescriptor
+org.mars_sim.msp.config.model.settlement.Resupply=org.mars_sim.msp.config.model.settlement.descriptors.ResupplyDescriptor
+org.mars_sim.msp.config.model.settlement.Building=org.mars_sim.msp.config.model.settlement.descriptors.BuildingDescriptor
+org.mars_sim.msp.config.model.settlement.SettlementConfiguration=org.mars_sim.msp.config.model.settlement.descriptors.SettlementConfigurationDescriptor
+org.mars_sim.msp.config.model.settlement.Location=org.mars_sim.msp.config.model.settlement.descriptors.LocationDescriptor
+org.mars_sim.msp.config.model.settlement.Template=org.mars_sim.msp.config.model.settlement.descriptors.TemplateDescriptor
+org.mars_sim.msp.config.model.settlement.InitialSettlementList=org.mars_sim.msp.config.model.settlement.descriptors.InitialSettlementListDescriptor
+org.mars_sim.msp.config.model.settlement.Equipment=org.mars_sim.msp.config.model.settlement.descriptors.EquipmentDescriptor
+org.mars_sim.msp.config.model.settlement.Settlement=org.mars_sim.msp.config.model.settlement.descriptors.SettlementDescriptor
+org.mars_sim.msp.config.model.settlement.SettlementTemplateList=org.mars_sim.msp.config.model.settlement.descriptors.SettlementTemplateListDescriptor
+org.mars_sim.msp.config.model.settlement.PartPackage=org.mars_sim.msp.config.model.settlement.descriptors.PartPackageDescriptor
+org.mars_sim.msp.config.model.settlement.Vehicle=org.mars_sim.msp.config.model.settlement.descriptors.VehicleDescriptor
+org.mars_sim.msp.config.model.settlement.Resource=org.mars_sim.msp.config.model.settlement.descriptors.ResourceDescriptor
+org.mars_sim.msp.config.model.settlement.SettlementName=org.mars_sim.msp.config.model.settlement.descriptors.SettlementNameDescriptor
+org.mars_sim.msp.config.model.settlement.Part=org.mars_sim.msp.config.model.settlement.descriptors.PartDescriptor
+org.mars_sim.msp.config.model.settlement.SettlementNameList=org.mars_sim.msp.config.model.settlement.descriptors.SettlementNameListDescriptor
