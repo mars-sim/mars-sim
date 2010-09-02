@@ -181,7 +181,8 @@ public class MaintenanceEntityListDescriptor extends org.exolab.castor.xml.util.
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     MaintenanceEntityList target = (MaintenanceEntityList) object;
                     target.removeAllEntity();
@@ -304,7 +305,8 @@ public class MaintenanceEntityListDescriptor extends org.exolab.castor.xml.util.
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

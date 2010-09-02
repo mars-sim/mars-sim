@@ -97,7 +97,7 @@ public class BuildingList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getBuilding: Index value '" + index + "' not in range [0.." + (this._buildingList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.building.Building) _buildingList.get(index);
+        return _buildingList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class BuildingList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.Building[] getBuilding(
     ) {
         org.mars_sim.msp.config.model.building.Building[] array = new org.mars_sim.msp.config.model.building.Building[0];
-        return (org.mars_sim.msp.config.model.building.Building[]) this._buildingList.toArray(array);
+        return this._buildingList.toArray(array);
     }
 
     /**

@@ -97,7 +97,7 @@ public class SettlementNameList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getSettlementName: Index value '" + index + "' not in range [0.." + (this._settlementNameList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.SettlementName) _settlementNameList.get(index);
+        return _settlementNameList.get(index);
     }
 
     /**
@@ -113,7 +113,7 @@ public class SettlementNameList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.SettlementName[] getSettlementName(
     ) {
         org.mars_sim.msp.config.model.settlement.SettlementName[] array = new org.mars_sim.msp.config.model.settlement.SettlementName[0];
-        return (org.mars_sim.msp.config.model.settlement.SettlementName[]) this._settlementNameList.toArray(array);
+        return this._settlementNameList.toArray(array);
     }
 
     /**

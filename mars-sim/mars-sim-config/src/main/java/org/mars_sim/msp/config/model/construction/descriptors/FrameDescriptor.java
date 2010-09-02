@@ -457,7 +457,8 @@ public class FrameDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Frame target = (Frame) object;
                     target.removeAllResource();
@@ -506,7 +507,8 @@ public class FrameDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Frame target = (Frame) object;
                     target.removeAllPart();
@@ -555,7 +557,8 @@ public class FrameDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Frame target = (Frame) object;
                     target.removeAllVehicle();
@@ -677,7 +680,8 @@ public class FrameDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

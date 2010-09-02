@@ -124,7 +124,7 @@ public class ResourceProcessing implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getProcess: Index value '" + index + "' not in range [0.." + (this._processList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.building.Process) _processList.get(index);
+        return _processList.get(index);
     }
 
     /**
@@ -139,7 +139,7 @@ public class ResourceProcessing implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.Process[] getProcess(
     ) {
         org.mars_sim.msp.config.model.building.Process[] array = new org.mars_sim.msp.config.model.building.Process[0];
-        return (org.mars_sim.msp.config.model.building.Process[]) this._processList.toArray(array);
+        return this._processList.toArray(array);
     }
 
     /**

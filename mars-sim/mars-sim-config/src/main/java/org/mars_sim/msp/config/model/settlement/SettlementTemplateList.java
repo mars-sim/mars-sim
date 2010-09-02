@@ -97,7 +97,7 @@ public class SettlementTemplateList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getTemplate: Index value '" + index + "' not in range [0.." + (this._templateList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Template) _templateList.get(index);
+        return _templateList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class SettlementTemplateList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Template[] getTemplate(
     ) {
         org.mars_sim.msp.config.model.settlement.Template[] array = new org.mars_sim.msp.config.model.settlement.Template[0];
-        return (org.mars_sim.msp.config.model.settlement.Template[]) this._templateList.toArray(array);
+        return this._templateList.toArray(array);
     }
 
     /**

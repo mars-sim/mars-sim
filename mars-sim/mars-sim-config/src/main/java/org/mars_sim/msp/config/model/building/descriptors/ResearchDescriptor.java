@@ -183,7 +183,8 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Research target = (Research) object;
                     target.removeAllResearchSpeciality();
@@ -306,7 +307,8 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

@@ -97,7 +97,7 @@ public class FoundationList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getFoundation: Index value '" + index + "' not in range [0.." + (this._foundationList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.construction.Foundation) _foundationList.get(index);
+        return _foundationList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class FoundationList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.Foundation[] getFoundation(
     ) {
         org.mars_sim.msp.config.model.construction.Foundation[] array = new org.mars_sim.msp.config.model.construction.Foundation[0];
-        return (org.mars_sim.msp.config.model.construction.Foundation[]) this._foundationList.toArray(array);
+        return this._foundationList.toArray(array);
     }
 
     /**

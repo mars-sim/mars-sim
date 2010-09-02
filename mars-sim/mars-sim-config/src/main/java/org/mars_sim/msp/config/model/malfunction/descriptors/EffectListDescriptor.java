@@ -91,7 +91,8 @@ public class EffectListDescriptor extends org.exolab.castor.xml.util.XMLClassDes
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     EffectList target = (EffectList) object;
                     target.removeAllEffect();
@@ -214,7 +215,8 @@ public class EffectListDescriptor extends org.exolab.castor.xml.util.XMLClassDes
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

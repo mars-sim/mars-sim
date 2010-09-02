@@ -133,7 +133,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllBuilding();
@@ -182,7 +183,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllVehicle();
@@ -231,7 +233,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllEquipment();
@@ -280,7 +283,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllResource();
@@ -329,7 +333,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllPart();
@@ -378,7 +383,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Template target = (Template) object;
                     target.removeAllPartPackage();
@@ -539,7 +545,8 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

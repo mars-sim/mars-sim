@@ -123,7 +123,7 @@ public class PartAttachment implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPart: Index value '" + index + "' not in range [0.." + (this._partList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.vehicle.Part) _partList.get(index);
+        return _partList.get(index);
     }
 
     /**
@@ -138,7 +138,7 @@ public class PartAttachment implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.Part[] getPart(
     ) {
         org.mars_sim.msp.config.model.vehicle.Part[] array = new org.mars_sim.msp.config.model.vehicle.Part[0];
-        return (org.mars_sim.msp.config.model.vehicle.Part[]) this._partList.toArray(array);
+        return this._partList.toArray(array);
     }
 
     /**

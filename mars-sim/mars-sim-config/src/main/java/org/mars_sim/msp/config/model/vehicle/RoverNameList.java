@@ -97,7 +97,7 @@ public class RoverNameList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getRoverName: Index value '" + index + "' not in range [0.." + (this._roverNameList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.vehicle.RoverName) _roverNameList.get(index);
+        return _roverNameList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class RoverNameList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.RoverName[] getRoverName(
     ) {
         org.mars_sim.msp.config.model.vehicle.RoverName[] array = new org.mars_sim.msp.config.model.vehicle.RoverName[0];
-        return (org.mars_sim.msp.config.model.vehicle.RoverName[]) this._roverNameList.toArray(array);
+        return this._roverNameList.toArray(array);
     }
 
     /**

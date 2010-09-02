@@ -97,7 +97,7 @@ public class LandmarkList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getLandmark: Index value '" + index + "' not in range [0.." + (this._landmarkList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.landmark.Landmark) _landmarkList.get(index);
+        return _landmarkList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class LandmarkList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.landmark.Landmark[] getLandmark(
     ) {
         org.mars_sim.msp.config.model.landmark.Landmark[] array = new org.mars_sim.msp.config.model.landmark.Landmark[0];
-        return (org.mars_sim.msp.config.model.landmark.Landmark[]) this._landmarkList.toArray(array);
+        return this._landmarkList.toArray(array);
     }
 
     /**

@@ -97,7 +97,7 @@ public class MineralConcentrations implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getMineral: Index value '" + index + "' not in range [0.." + (this._mineralList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.mineral.Mineral) _mineralList.get(index);
+        return _mineralList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class MineralConcentrations implements java.io.Serializable {
     public org.mars_sim.msp.config.model.mineral.Mineral[] getMineral(
     ) {
         org.mars_sim.msp.config.model.mineral.Mineral[] array = new org.mars_sim.msp.config.model.mineral.Mineral[0];
-        return (org.mars_sim.msp.config.model.mineral.Mineral[]) this._mineralList.toArray(array);
+        return this._mineralList.toArray(array);
     }
 
     /**

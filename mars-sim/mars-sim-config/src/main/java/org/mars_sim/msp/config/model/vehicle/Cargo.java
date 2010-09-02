@@ -114,7 +114,7 @@ public class Cargo implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getCapacity: Index value '" + index + "' not in range [0.." + (this._capacityList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.vehicle.Capacity) _capacityList.get(index);
+        return _capacityList.get(index);
     }
 
     /**
@@ -129,7 +129,7 @@ public class Cargo implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.Capacity[] getCapacity(
     ) {
         org.mars_sim.msp.config.model.vehicle.Capacity[] array = new org.mars_sim.msp.config.model.vehicle.Capacity[0];
-        return (org.mars_sim.msp.config.model.vehicle.Capacity[]) this._capacityList.toArray(array);
+        return this._capacityList.toArray(array);
     }
 
     /**

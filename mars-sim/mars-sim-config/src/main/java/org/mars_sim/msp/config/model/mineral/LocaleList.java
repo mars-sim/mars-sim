@@ -97,7 +97,7 @@ public class LocaleList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getLocale: Index value '" + index + "' not in range [0.." + (this._localeList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.mineral.Locale) _localeList.get(index);
+        return _localeList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class LocaleList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.mineral.Locale[] getLocale(
     ) {
         org.mars_sim.msp.config.model.mineral.Locale[] array = new org.mars_sim.msp.config.model.mineral.Locale[0];
-        return (org.mars_sim.msp.config.model.mineral.Locale[]) this._localeList.toArray(array);
+        return this._localeList.toArray(array);
     }
 
     /**

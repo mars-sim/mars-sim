@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.config.model.building.descriptors;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import org.mars_sim.msp.config.model.building.Communication;
-
 /**
  * Class CommunicationDescriptor.
  * 
@@ -158,7 +152,8 @@ public class CommunicationDescriptor extends org.mars_sim.msp.config.model.confi
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

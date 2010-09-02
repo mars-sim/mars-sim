@@ -133,7 +133,8 @@ public class VehicleDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Vehicle target = (Vehicle) object;
                     target.removeAllAttachmentPart();
@@ -255,7 +256,8 @@ public class VehicleDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

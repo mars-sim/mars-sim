@@ -133,7 +133,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllBuilding();
@@ -182,7 +183,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllVehicle();
@@ -231,7 +233,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllEquipment();
@@ -280,7 +283,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllPerson();
@@ -329,7 +333,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllResource();
@@ -378,7 +383,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllPart();
@@ -427,7 +433,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Resupply target = (Resupply) object;
                     target.removeAllPartPackage();
@@ -549,7 +556,8 @@ public class ResupplyDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

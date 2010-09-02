@@ -97,7 +97,7 @@ public class ResourceList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResource: Index value '" + index + "' not in range [0.." + (this._resourceList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resource.Resource) _resourceList.get(index);
+        return _resourceList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class ResourceList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resource.Resource[] getResource(
     ) {
         org.mars_sim.msp.config.model.resource.Resource[] array = new org.mars_sim.msp.config.model.resource.Resource[0];
-        return (org.mars_sim.msp.config.model.resource.Resource[]) this._resourceList.toArray(array);
+        return this._resourceList.toArray(array);
     }
 
     /**

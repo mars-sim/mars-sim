@@ -29,9 +29,26 @@
 				</execution>
 			</executions>
   		</plugin>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-jar-plugin</artifactId>
+  			<version>2.3.1</version>
+  			<configuration>
+  				<archive>
+  					<manifestEntries>
+						<Tapestry-Module-Classes>org.mars_sim.msp.config.MarsSimConfigModule</Tapestry-Module-Classes>
+					</manifestEntries>
+  				</archive>
+  			</configuration>
+  		</plugin>
   	</plugins>
   </build>
   <dependencies>
+  	<dependency>
+  		<groupId>net.sf.mars-sim</groupId>
+  		<artifactId>mars-sim-services</artifactId>
+  		<version>${project.version}</version>
+  	</dependency>
   	<dependency>
   		<groupId>org.codehaus.castor</groupId>
   		<artifactId>castor-xml</artifactId>

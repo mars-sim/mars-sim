@@ -118,7 +118,7 @@ public class MaintenanceEntityList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getEntity: Index value '" + index + "' not in range [0.." + (this._entityList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.part.Entity) _entityList.get(index);
+        return _entityList.get(index);
     }
 
     /**
@@ -133,7 +133,7 @@ public class MaintenanceEntityList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.part.Entity[] getEntity(
     ) {
         org.mars_sim.msp.config.model.part.Entity[] array = new org.mars_sim.msp.config.model.part.Entity[0];
-        return (org.mars_sim.msp.config.model.part.Entity[]) this._entityList.toArray(array);
+        return this._entityList.toArray(array);
     }
 
     /**

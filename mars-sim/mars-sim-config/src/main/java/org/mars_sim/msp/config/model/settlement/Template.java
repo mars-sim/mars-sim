@@ -332,7 +332,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getBuilding: Index value '" + index + "' not in range [0.." + (this._buildingList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Building) _buildingList.get(index);
+        return _buildingList.get(index);
     }
 
     /**
@@ -347,7 +347,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Building[] getBuilding(
     ) {
         org.mars_sim.msp.config.model.settlement.Building[] array = new org.mars_sim.msp.config.model.settlement.Building[0];
-        return (org.mars_sim.msp.config.model.settlement.Building[]) this._buildingList.toArray(array);
+        return this._buildingList.toArray(array);
     }
 
     /**
@@ -378,7 +378,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getEquipment: Index value '" + index + "' not in range [0.." + (this._equipmentList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Equipment) _equipmentList.get(index);
+        return _equipmentList.get(index);
     }
 
     /**
@@ -393,7 +393,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Equipment[] getEquipment(
     ) {
         org.mars_sim.msp.config.model.settlement.Equipment[] array = new org.mars_sim.msp.config.model.settlement.Equipment[0];
-        return (org.mars_sim.msp.config.model.settlement.Equipment[]) this._equipmentList.toArray(array);
+        return this._equipmentList.toArray(array);
     }
 
     /**
@@ -434,7 +434,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPart: Index value '" + index + "' not in range [0.." + (this._partList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Part) _partList.get(index);
+        return _partList.get(index);
     }
 
     /**
@@ -449,7 +449,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Part[] getPart(
     ) {
         org.mars_sim.msp.config.model.settlement.Part[] array = new org.mars_sim.msp.config.model.settlement.Part[0];
-        return (org.mars_sim.msp.config.model.settlement.Part[]) this._partList.toArray(array);
+        return this._partList.toArray(array);
     }
 
     /**
@@ -480,7 +480,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPartPackage: Index value '" + index + "' not in range [0.." + (this._partPackageList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.PartPackage) _partPackageList.get(index);
+        return _partPackageList.get(index);
     }
 
     /**
@@ -495,7 +495,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.PartPackage[] getPartPackage(
     ) {
         org.mars_sim.msp.config.model.settlement.PartPackage[] array = new org.mars_sim.msp.config.model.settlement.PartPackage[0];
-        return (org.mars_sim.msp.config.model.settlement.PartPackage[]) this._partPackageList.toArray(array);
+        return this._partPackageList.toArray(array);
     }
 
     /**
@@ -526,7 +526,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResource: Index value '" + index + "' not in range [0.." + (this._resourceList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Resource) _resourceList.get(index);
+        return _resourceList.get(index);
     }
 
     /**
@@ -541,7 +541,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Resource[] getResource(
     ) {
         org.mars_sim.msp.config.model.settlement.Resource[] array = new org.mars_sim.msp.config.model.settlement.Resource[0];
-        return (org.mars_sim.msp.config.model.settlement.Resource[]) this._resourceList.toArray(array);
+        return this._resourceList.toArray(array);
     }
 
     /**
@@ -582,7 +582,7 @@ public class Template implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getVehicle: Index value '" + index + "' not in range [0.." + (this._vehicleList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Vehicle) _vehicleList.get(index);
+        return _vehicleList.get(index);
     }
 
     /**
@@ -597,7 +597,7 @@ public class Template implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Vehicle[] getVehicle(
     ) {
         org.mars_sim.msp.config.model.settlement.Vehicle[] array = new org.mars_sim.msp.config.model.settlement.Vehicle[0];
-        return (org.mars_sim.msp.config.model.settlement.Vehicle[]) this._vehicleList.toArray(array);
+        return this._vehicleList.toArray(array);
     }
 
     /**

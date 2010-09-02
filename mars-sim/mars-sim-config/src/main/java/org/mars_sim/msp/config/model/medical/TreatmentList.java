@@ -97,7 +97,7 @@ public class TreatmentList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getTreatment: Index value '" + index + "' not in range [0.." + (this._treatmentList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.medical.Treatment) _treatmentList.get(index);
+        return _treatmentList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class TreatmentList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.medical.Treatment[] getTreatment(
     ) {
         org.mars_sim.msp.config.model.medical.Treatment[] array = new org.mars_sim.msp.config.model.medical.Treatment[0];
-        return (org.mars_sim.msp.config.model.medical.Treatment[]) this._treatmentList.toArray(array);
+        return this._treatmentList.toArray(array);
     }
 
     /**

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>mars-sim</artifactId>
+    <groupId>net.sf</groupId>
+    <version>3.00-SNAPSHOT</version>
+  </parent>
+  <groupId>net.sf.mars-sim</groupId>
+  <artifactId>mars-sim-services</artifactId>
+  <version>3.00-SNAPSHOT</version>
+  <name>mars-sim-services</name>
+  <build>
+  	<plugins>
+  		<plugin>
+  			<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-jar-plugin</artifactId>
+  			<version>2.3.1</version>
+  			<configuration>
+  				<archive>
+  					<manifestEntries>
+						<Tapestry-Module-Classes>org.mars_sim.msp.service.MarsSimServiceModule</Tapestry-Module-Classes>
+					</manifestEntries>
+  				</archive>
+  			</configuration>
+  		</plugin>
+  	</plugins>
+  </build>
+  <dependencies>
+  	<dependency>
+  		<groupId>org.apache.tapestry</groupId>
+  		<artifactId>tapestry-ioc</artifactId>
+  		<version>5.2.0</version>
+  	</dependency>
+  </dependencies>
+</project>

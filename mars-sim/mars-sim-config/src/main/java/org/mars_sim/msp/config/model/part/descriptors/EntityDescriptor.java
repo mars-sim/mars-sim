@@ -295,7 +295,8 @@ public class EntityDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

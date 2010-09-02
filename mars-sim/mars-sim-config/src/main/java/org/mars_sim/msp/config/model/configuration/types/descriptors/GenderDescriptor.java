@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.config.model.configuration.types.descriptors;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import org.mars_sim.msp.config.model.configuration.types.Gender;
-
 /**
  * Class GenderDescriptor.
  * 
@@ -154,7 +148,8 @@ public class GenderDescriptor extends org.exolab.castor.xml.util.XMLClassDescrip
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

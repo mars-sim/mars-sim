@@ -457,7 +457,8 @@ public class BuildingDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Building target = (Building) object;
                     target.removeAllResource();
@@ -506,7 +507,8 @@ public class BuildingDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Building target = (Building) object;
                     target.removeAllPart();
@@ -555,7 +557,8 @@ public class BuildingDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Building target = (Building) object;
                     target.removeAllVehicle();
@@ -677,7 +680,8 @@ public class BuildingDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }
