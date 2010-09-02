@@ -97,7 +97,7 @@ public class MedicalComplaintList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getMedicalComplaint: Index value '" + index + "' not in range [0.." + (this._medicalComplaintList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.malfunction.MedicalComplaint) _medicalComplaintList.get(index);
+        return _medicalComplaintList.get(index);
     }
 
     /**
@@ -113,7 +113,7 @@ public class MedicalComplaintList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.malfunction.MedicalComplaint[] getMedicalComplaint(
     ) {
         org.mars_sim.msp.config.model.malfunction.MedicalComplaint[] array = new org.mars_sim.msp.config.model.malfunction.MedicalComplaint[0];
-        return (org.mars_sim.msp.config.model.malfunction.MedicalComplaint[]) this._medicalComplaintList.toArray(array);
+        return this._medicalComplaintList.toArray(array);
     }
 
     /**

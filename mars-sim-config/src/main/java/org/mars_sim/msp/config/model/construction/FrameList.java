@@ -97,7 +97,7 @@ public class FrameList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getFrame: Index value '" + index + "' not in range [0.." + (this._frameList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.construction.Frame) _frameList.get(index);
+        return _frameList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class FrameList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.Frame[] getFrame(
     ) {
         org.mars_sim.msp.config.model.construction.Frame[] array = new org.mars_sim.msp.config.model.construction.Frame[0];
-        return (org.mars_sim.msp.config.model.construction.Frame[]) this._frameList.toArray(array);
+        return this._frameList.toArray(array);
     }
 
     /**

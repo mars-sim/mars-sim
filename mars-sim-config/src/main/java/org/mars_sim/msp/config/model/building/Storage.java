@@ -142,7 +142,7 @@ public class Storage implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResourceInitial: Index value '" + index + "' not in range [0.." + (this._resourceInitialList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.building.ResourceInitial) _resourceInitialList.get(index);
+        return _resourceInitialList.get(index);
     }
 
     /**
@@ -158,7 +158,7 @@ public class Storage implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.ResourceInitial[] getResourceInitial(
     ) {
         org.mars_sim.msp.config.model.building.ResourceInitial[] array = new org.mars_sim.msp.config.model.building.ResourceInitial[0];
-        return (org.mars_sim.msp.config.model.building.ResourceInitial[]) this._resourceInitialList.toArray(array);
+        return this._resourceInitialList.toArray(array);
     }
 
     /**
@@ -189,7 +189,7 @@ public class Storage implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResourceStorage: Index value '" + index + "' not in range [0.." + (this._resourceStorageList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.building.ResourceStorage) _resourceStorageList.get(index);
+        return _resourceStorageList.get(index);
     }
 
     /**
@@ -205,7 +205,7 @@ public class Storage implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.ResourceStorage[] getResourceStorage(
     ) {
         org.mars_sim.msp.config.model.building.ResourceStorage[] array = new org.mars_sim.msp.config.model.building.ResourceStorage[0];
-        return (org.mars_sim.msp.config.model.building.ResourceStorage[]) this._resourceStorageList.toArray(array);
+        return this._resourceStorageList.toArray(array);
     }
 
     /**

@@ -97,7 +97,7 @@ public class EffectList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getEffect: Index value '" + index + "' not in range [0.." + (this._effectList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.malfunction.Effect) _effectList.get(index);
+        return _effectList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class EffectList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.malfunction.Effect[] getEffect(
     ) {
         org.mars_sim.msp.config.model.malfunction.Effect[] array = new org.mars_sim.msp.config.model.malfunction.Effect[0];
-        return (org.mars_sim.msp.config.model.malfunction.Effect[]) this._effectList.toArray(array);
+        return this._effectList.toArray(array);
     }
 
     /**

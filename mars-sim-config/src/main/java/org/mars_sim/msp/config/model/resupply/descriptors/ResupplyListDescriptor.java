@@ -91,7 +91,8 @@ public class ResupplyListDescriptor extends org.exolab.castor.xml.util.XMLClassD
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     ResupplyList target = (ResupplyList) object;
                     target.removeAllResupply();
@@ -214,7 +215,8 @@ public class ResupplyListDescriptor extends org.exolab.castor.xml.util.XMLClassD
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

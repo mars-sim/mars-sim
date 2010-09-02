@@ -13,99 +13,102 @@ package org.mars_sim.msp.config.model.building;
  * @version $Revision$ $Date$
  */
 @SuppressWarnings("serial")
-public class Communication extends org.mars_sim.msp.config.model.configuration.EmptyType 
-implements java.io.Serializable
+public class Communication extends org.mars_sim.msp.config.model.configuration.EmptyType
 {
 
 
-      //----------------/
-     //- Constructors -/
-    //----------------/
+	//----------------/
+	//- Constructors -/
+	//----------------/
 
-    public Communication() {
-        super();
-    }
+	public Communication() {
+		super();
+	}
 
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+	//-----------/
+	//- Methods -/
+	//-----------/
 
-    /**
-     * Method isValid.
-     * 
-     * @return true if this object is valid according to the schema
-     */
-    public boolean isValid(
-    ) {
-        try {
-            validate();
-        } catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    }
+	/**
+	 * Method isValid.
+	 * 
+	 * @return true if this object is valid according to the schema
+	 */
+	@Override
+	public boolean isValid(
+	) {
+		try {
+			validate();
+		} catch (org.exolab.castor.xml.ValidationException vex) {
+			return false;
+		}
+		return true;
+	}
 
-    /**
-     * 
-     * 
-     * @param out
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void marshal(
-            final java.io.Writer out)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Marshaller.marshal(this, out);
-    }
+	/**
+	 * 
+	 * 
+	 * @param out
+	 * @throws org.exolab.castor.xml.MarshalException if object is
+	 * null or if any SAXException is thrown during marshaling
+	 * @throws org.exolab.castor.xml.ValidationException if this
+	 * object is an invalid instance according to the schema
+	 */
+	@Override
+	public void marshal(
+			final java.io.Writer out)
+	throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+		org.exolab.castor.xml.Marshaller.marshal(this, out);
+	}
 
-    /**
-     * 
-     * 
-     * @param handler
-     * @throws java.io.IOException if an IOException occurs during
-     * marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     */
-    public void marshal(
-            final org.xml.sax.ContentHandler handler)
-    throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Marshaller.marshal(this, handler);
-    }
+	/**
+	 * 
+	 * 
+	 * @param handler
+	 * @throws java.io.IOException if an IOException occurs during
+	 * marshaling
+	 * @throws org.exolab.castor.xml.ValidationException if this
+	 * object is an invalid instance according to the schema
+	 * @throws org.exolab.castor.xml.MarshalException if object is
+	 * null or if any SAXException is thrown during marshaling
+	 */
+	@Override
+	public void marshal(
+			final org.xml.sax.ContentHandler handler)
+	throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+		org.exolab.castor.xml.Marshaller.marshal(this, handler);
+	}
 
-    /**
-     * Method unmarshal.
-     * 
-     * @param reader
-     * @throws org.exolab.castor.xml.MarshalException if object is
-     * null or if any SAXException is thrown during marshaling
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     * @return the unmarshaled
-     * org.mars_sim.msp.config.model.building.Communication
-     */
-    public static org.mars_sim.msp.config.model.building.Communication unmarshal(
-            final java.io.Reader reader)
-    throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
-        return (org.mars_sim.msp.config.model.building.Communication) org.exolab.castor.xml.Unmarshaller.unmarshal(org.mars_sim.msp.config.model.building.Communication.class, reader);
-    }
+	/**
+	 * Method unmarshal.
+	 * 
+	 * @param reader
+	 * @throws org.exolab.castor.xml.MarshalException if object is
+	 * null or if any SAXException is thrown during marshaling
+	 * @throws org.exolab.castor.xml.ValidationException if this
+	 * object is an invalid instance according to the schema
+	 * @return the unmarshaled
+	 * org.mars_sim.msp.config.model.building.Communication
+	 */
+	public static org.mars_sim.msp.config.model.building.Communication unmarshal(
+			final java.io.Reader reader)
+	throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
+		return (org.mars_sim.msp.config.model.building.Communication) org.exolab.castor.xml.Unmarshaller.unmarshal(org.mars_sim.msp.config.model.building.Communication.class, reader);
+	}
 
-    /**
-     * 
-     * 
-     * @throws org.exolab.castor.xml.ValidationException if this
-     * object is an invalid instance according to the schema
-     */
-    public void validate(
-    )
-    throws org.exolab.castor.xml.ValidationException {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    }
+	/**
+	 * 
+	 * 
+	 * @throws org.exolab.castor.xml.ValidationException if this
+	 * object is an invalid instance according to the schema
+	 */
+	@Override
+	public void validate(
+	)
+	throws org.exolab.castor.xml.ValidationException {
+		org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
+		validator.validate(this);
+	}
 
 }

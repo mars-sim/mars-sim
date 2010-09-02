@@ -23,7 +23,7 @@ import junit.framework.Assert;
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.junit.Test;
-import org.mars_sim.msp.config.SimulationConfig;
+import org.mars_sim.msp.config.SimulationConfigImpl;
 import org.mars_sim.msp.config.model.building.Building;
 
 /**
@@ -38,7 +38,7 @@ public class Load {
 	@Test
 	public void load() {
 		try {
-			SimulationConfig config = new SimulationConfig();
+			SimulationConfigImpl config = new SimulationConfigImpl();
 
 			for (Building building : config.getBuildings().getBuilding()) {
 				System.out.println(building.getName());

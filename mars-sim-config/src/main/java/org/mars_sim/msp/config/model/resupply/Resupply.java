@@ -372,7 +372,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getBuilding: Index value '" + index + "' not in range [0.." + (this._buildingList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Building) _buildingList.get(index);
+        return _buildingList.get(index);
     }
 
     /**
@@ -387,7 +387,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Building[] getBuilding(
     ) {
         org.mars_sim.msp.config.model.resupply.Building[] array = new org.mars_sim.msp.config.model.resupply.Building[0];
-        return (org.mars_sim.msp.config.model.resupply.Building[]) this._buildingList.toArray(array);
+        return this._buildingList.toArray(array);
     }
 
     /**
@@ -418,7 +418,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getEquipment: Index value '" + index + "' not in range [0.." + (this._equipmentList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Equipment) _equipmentList.get(index);
+        return _equipmentList.get(index);
     }
 
     /**
@@ -433,7 +433,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Equipment[] getEquipment(
     ) {
         org.mars_sim.msp.config.model.resupply.Equipment[] array = new org.mars_sim.msp.config.model.resupply.Equipment[0];
-        return (org.mars_sim.msp.config.model.resupply.Equipment[]) this._equipmentList.toArray(array);
+        return this._equipmentList.toArray(array);
     }
 
     /**
@@ -473,7 +473,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPart: Index value '" + index + "' not in range [0.." + (this._partList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Part) _partList.get(index);
+        return _partList.get(index);
     }
 
     /**
@@ -488,7 +488,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Part[] getPart(
     ) {
         org.mars_sim.msp.config.model.resupply.Part[] array = new org.mars_sim.msp.config.model.resupply.Part[0];
-        return (org.mars_sim.msp.config.model.resupply.Part[]) this._partList.toArray(array);
+        return this._partList.toArray(array);
     }
 
     /**
@@ -519,7 +519,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPartPackage: Index value '" + index + "' not in range [0.." + (this._partPackageList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.PartPackage) _partPackageList.get(index);
+        return _partPackageList.get(index);
     }
 
     /**
@@ -534,7 +534,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.PartPackage[] getPartPackage(
     ) {
         org.mars_sim.msp.config.model.resupply.PartPackage[] array = new org.mars_sim.msp.config.model.resupply.PartPackage[0];
-        return (org.mars_sim.msp.config.model.resupply.PartPackage[]) this._partPackageList.toArray(array);
+        return this._partPackageList.toArray(array);
     }
 
     /**
@@ -565,7 +565,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPerson: Index value '" + index + "' not in range [0.." + (this._personList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Person) _personList.get(index);
+        return _personList.get(index);
     }
 
     /**
@@ -580,7 +580,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Person[] getPerson(
     ) {
         org.mars_sim.msp.config.model.resupply.Person[] array = new org.mars_sim.msp.config.model.resupply.Person[0];
-        return (org.mars_sim.msp.config.model.resupply.Person[]) this._personList.toArray(array);
+        return this._personList.toArray(array);
     }
 
     /**
@@ -611,7 +611,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResource: Index value '" + index + "' not in range [0.." + (this._resourceList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Resource) _resourceList.get(index);
+        return _resourceList.get(index);
     }
 
     /**
@@ -626,7 +626,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Resource[] getResource(
     ) {
         org.mars_sim.msp.config.model.resupply.Resource[] array = new org.mars_sim.msp.config.model.resupply.Resource[0];
-        return (org.mars_sim.msp.config.model.resupply.Resource[]) this._resourceList.toArray(array);
+        return this._resourceList.toArray(array);
     }
 
     /**
@@ -657,7 +657,7 @@ public class Resupply implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getVehicle: Index value '" + index + "' not in range [0.." + (this._vehicleList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.resupply.Vehicle) _vehicleList.get(index);
+        return _vehicleList.get(index);
     }
 
     /**
@@ -672,7 +672,7 @@ public class Resupply implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Vehicle[] getVehicle(
     ) {
         org.mars_sim.msp.config.model.resupply.Vehicle[] array = new org.mars_sim.msp.config.model.resupply.Vehicle[0];
-        return (org.mars_sim.msp.config.model.resupply.Vehicle[]) this._vehicleList.toArray(array);
+        return this._vehicleList.toArray(array);
     }
 
     /**

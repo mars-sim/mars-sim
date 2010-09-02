@@ -97,7 +97,7 @@ public class InitialSettlementList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getSettlement: Index value '" + index + "' not in range [0.." + (this._settlementList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.settlement.Settlement) _settlementList.get(index);
+        return _settlementList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class InitialSettlementList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.Settlement[] getSettlement(
     ) {
         org.mars_sim.msp.config.model.settlement.Settlement[] array = new org.mars_sim.msp.config.model.settlement.Settlement[0];
-        return (org.mars_sim.msp.config.model.settlement.Settlement[]) this._settlementList.toArray(array);
+        return this._settlementList.toArray(array);
     }
 
     /**

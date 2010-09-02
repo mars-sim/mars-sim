@@ -96,7 +96,7 @@ public class PersonalityTypes implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getMbti: Index value '" + index + "' not in range [0.." + (this._mbtiList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.people.Mbti) _mbtiList.get(index);
+        return _mbtiList.get(index);
     }
 
     /**
@@ -111,7 +111,7 @@ public class PersonalityTypes implements java.io.Serializable {
     public org.mars_sim.msp.config.model.people.Mbti[] getMbti(
     ) {
         org.mars_sim.msp.config.model.people.Mbti[] array = new org.mars_sim.msp.config.model.people.Mbti[0];
-        return (org.mars_sim.msp.config.model.people.Mbti[]) this._mbtiList.toArray(array);
+        return this._mbtiList.toArray(array);
     }
 
     /**

@@ -112,7 +112,7 @@ public class PartPackage implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPart: Index value '" + index + "' not in range [0.." + (this._partList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.partpackage.Part) _partList.get(index);
+        return _partList.get(index);
     }
 
     /**
@@ -127,7 +127,7 @@ public class PartPackage implements java.io.Serializable {
     public org.mars_sim.msp.config.model.partpackage.Part[] getPart(
     ) {
         org.mars_sim.msp.config.model.partpackage.Part[] array = new org.mars_sim.msp.config.model.partpackage.Part[0];
-        return (org.mars_sim.msp.config.model.partpackage.Part[]) this._partList.toArray(array);
+        return this._partList.toArray(array);
     }
 
     /**

@@ -91,7 +91,8 @@ public class FoundationListDescriptor extends org.exolab.castor.xml.util.XMLClas
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     FoundationList target = (FoundationList) object;
                     target.removeAllFoundation();
@@ -213,7 +214,8 @@ public class FoundationListDescriptor extends org.exolab.castor.xml.util.XMLClas
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

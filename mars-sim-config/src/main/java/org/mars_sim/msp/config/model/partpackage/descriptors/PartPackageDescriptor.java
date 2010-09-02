@@ -133,7 +133,8 @@ public class PartPackageDescriptor extends org.exolab.castor.xml.util.XMLClassDe
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     PartPackage target = (PartPackage) object;
                     target.removeAllPart();
@@ -256,7 +257,8 @@ public class PartPackageDescriptor extends org.exolab.castor.xml.util.XMLClassDe
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

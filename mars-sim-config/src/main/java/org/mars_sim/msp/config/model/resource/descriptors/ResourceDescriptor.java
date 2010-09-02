@@ -288,7 +288,8 @@ public class ResourceDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

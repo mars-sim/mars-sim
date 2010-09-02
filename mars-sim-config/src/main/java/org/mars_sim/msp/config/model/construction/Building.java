@@ -339,7 +339,7 @@ public class Building implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPart: Index value '" + index + "' not in range [0.." + (this._partList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.construction.Part) _partList.get(index);
+        return _partList.get(index);
     }
 
     /**
@@ -354,7 +354,7 @@ public class Building implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.Part[] getPart(
     ) {
         org.mars_sim.msp.config.model.construction.Part[] array = new org.mars_sim.msp.config.model.construction.Part[0];
-        return (org.mars_sim.msp.config.model.construction.Part[]) this._partList.toArray(array);
+        return this._partList.toArray(array);
     }
 
     /**
@@ -385,7 +385,7 @@ public class Building implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResource: Index value '" + index + "' not in range [0.." + (this._resourceList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.construction.Resource) _resourceList.get(index);
+        return _resourceList.get(index);
     }
 
     /**
@@ -400,7 +400,7 @@ public class Building implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.Resource[] getResource(
     ) {
         org.mars_sim.msp.config.model.construction.Resource[] array = new org.mars_sim.msp.config.model.construction.Resource[0];
-        return (org.mars_sim.msp.config.model.construction.Resource[]) this._resourceList.toArray(array);
+        return this._resourceList.toArray(array);
     }
 
     /**
@@ -451,7 +451,7 @@ public class Building implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getVehicle: Index value '" + index + "' not in range [0.." + (this._vehicleList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.construction.Vehicle) _vehicleList.get(index);
+        return _vehicleList.get(index);
     }
 
     /**
@@ -466,7 +466,7 @@ public class Building implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.Vehicle[] getVehicle(
     ) {
         org.mars_sim.msp.config.model.construction.Vehicle[] array = new org.mars_sim.msp.config.model.construction.Vehicle[0];
-        return (org.mars_sim.msp.config.model.construction.Vehicle[]) this._vehicleList.toArray(array);
+        return this._vehicleList.toArray(array);
     }
 
     /**

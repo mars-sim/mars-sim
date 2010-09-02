@@ -91,7 +91,8 @@ public class StorageDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Storage target = (Storage) object;
                     target.removeAllResourceStorage();
@@ -141,7 +142,8 @@ public class StorageDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            @Override
+			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Storage target = (Storage) object;
                     target.removeAllResourceInitial();
@@ -263,7 +265,8 @@ public class StorageDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
      * of a global
      * element or element with anonymous type definition.
      */
-    public boolean isElementDefinition(
+    @Override
+	public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }
