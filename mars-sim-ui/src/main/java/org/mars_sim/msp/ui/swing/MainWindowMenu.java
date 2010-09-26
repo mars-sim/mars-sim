@@ -40,7 +40,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
     private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
-    private JCheckBoxMenuItem settlementToolItem;    // Science tool menu item
+    private JCheckBoxMenuItem settlementToolItem; // Settlement tool menu item
     private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
     private JCheckBoxMenuItem guideItem;          // User Guide menu item
@@ -136,7 +136,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
         toolsMenu.add(missionToolItem);
         
-        // Create science tool menu item
+        // Create settlement map tool menu item
         settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME);
         settlementToolItem.addActionListener(this);
         settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
@@ -147,7 +147,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         scienceToolItem.addActionListener(this);
         scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
         toolsMenu.add(scienceToolItem);
-        
+          
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
         helpMenu.addMenuListener(this);
@@ -170,7 +170,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
 
     // ActionListener method overriding
     public void actionPerformed(ActionEvent event) {
-
+// This method always runs through an awful lot of if-then-else statements 
+// when it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
         JMenuItem selectedItem = (JMenuItem) event.getSource();
 
         if (selectedItem == exitItem) mainWindow.exitSimulation();
