@@ -8,6 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -17,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -34,6 +37,8 @@ public class SettlementWindow extends ToolWindow {
     private JComboBox zoomBox; // Lists zoom levels
     private JLabel zoomLabel; // Label for Zoom box
     private JSlider zoomSlider; // Slider for Zoom level
+    private SettlementMapPanel mapPane; // Map panel.
+    
     /**
      * Constructor
      * @param desktop the main desktop panel.
@@ -53,11 +58,11 @@ public class SettlementWindow extends ToolWindow {
 		// Create top widget pane
 		JPanel widgetPane = new JPanel();
 		widgetPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		mainPane.add(widgetPane, BorderLayout.WEST);
+		mainPane.add(widgetPane, BorderLayout.NORTH);
 
 		// Create bottom (map) pane
-		JPanel mapPane = new JPanel(new BorderLayout());
-		mainPane.add(mapPane, BorderLayout.SOUTH);
+		mapPane = new SettlementMapPanel();
+		mainPane.add(mapPane, BorderLayout.CENTER);
 
 		Object settlements[] = Simulation.instance().getUnitManager()
 				.getSettlements().toArray();
@@ -66,7 +71,15 @@ public class SettlementWindow extends ToolWindow {
 		settlementListBox = new JComboBox(settlements);
 		settlementListBox.setToolTipText("Select settlement");
 		settlementListBox.setSelectedIndex(0);
+		settlementListBox.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent event) {
+                Settlement settlement = (Settlement) event.getItem();
+                mapPane.setSettlement(settlement);
+            } 
+		});
 		widgetPane.add(settlementListBox, BorderLayout.WEST);
+		mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
 
 		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
@@ -103,8 +116,6 @@ public class SettlementWindow extends ToolWindow {
 		buttonsPane.add(labelsButton);
 		buttonsPane.add(openInfoButton);
 		widgetPane.add(buttonsPane);
-
-		// Add placeholder for upcoming map
 
 		// Pack window.
 		pack();
