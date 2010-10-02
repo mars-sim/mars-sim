@@ -7,6 +7,12 @@
 
 package org.mars_sim.msp.config.model.building.descriptors;
 
+  //---------------------------------/
+ //- Imported classes and packages -/
+//---------------------------------/
+
+import org.mars_sim.msp.config.model.building.Dining;
+
 /**
  * Class DiningDescriptor.
  * 
@@ -152,8 +158,7 @@ public class DiningDescriptor extends org.mars_sim.msp.config.model.configuratio
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

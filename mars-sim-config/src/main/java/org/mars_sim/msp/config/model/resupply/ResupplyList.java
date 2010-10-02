@@ -97,7 +97,7 @@ public class ResupplyList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResupply: Index value '" + index + "' not in range [0.." + (this._resupplyList.size() - 1) + "]");
         }
 
-        return _resupplyList.get(index);
+        return (org.mars_sim.msp.config.model.resupply.Resupply) _resupplyList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class ResupplyList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.resupply.Resupply[] getResupply(
     ) {
         org.mars_sim.msp.config.model.resupply.Resupply[] array = new org.mars_sim.msp.config.model.resupply.Resupply[0];
-        return this._resupplyList.toArray(array);
+        return (org.mars_sim.msp.config.model.resupply.Resupply[]) this._resupplyList.toArray(array);
     }
 
     /**

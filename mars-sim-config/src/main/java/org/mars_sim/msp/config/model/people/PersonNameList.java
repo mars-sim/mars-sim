@@ -97,7 +97,7 @@ public class PersonNameList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getPersonName: Index value '" + index + "' not in range [0.." + (this._personNameList.size() - 1) + "]");
         }
 
-        return _personNameList.get(index);
+        return (org.mars_sim.msp.config.model.people.PersonName) _personNameList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class PersonNameList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.people.PersonName[] getPersonName(
     ) {
         org.mars_sim.msp.config.model.people.PersonName[] array = new org.mars_sim.msp.config.model.people.PersonName[0];
-        return this._personNameList.toArray(array);
+        return (org.mars_sim.msp.config.model.people.PersonName[]) this._personNameList.toArray(array);
     }
 
     /**

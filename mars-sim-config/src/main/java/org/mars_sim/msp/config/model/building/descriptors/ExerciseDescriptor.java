@@ -207,8 +207,7 @@ public class ExerciseDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

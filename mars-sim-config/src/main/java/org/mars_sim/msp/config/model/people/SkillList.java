@@ -96,7 +96,7 @@ public class SkillList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getSkill: Index value '" + index + "' not in range [0.." + (this._skillList.size() - 1) + "]");
         }
 
-        return _skillList.get(index);
+        return (org.mars_sim.msp.config.model.people.Skill) _skillList.get(index);
     }
 
     /**
@@ -111,7 +111,7 @@ public class SkillList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.people.Skill[] getSkill(
     ) {
         org.mars_sim.msp.config.model.people.Skill[] array = new org.mars_sim.msp.config.model.people.Skill[0];
-        return this._skillList.toArray(array);
+        return (org.mars_sim.msp.config.model.people.Skill[]) this._skillList.toArray(array);
     }
 
     /**

@@ -112,7 +112,7 @@ public class VehicleConfiguration implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getVehicle: Index value '" + index + "' not in range [0.." + (this._vehicleList.size() - 1) + "]");
         }
 
-        return _vehicleList.get(index);
+        return (org.mars_sim.msp.config.model.vehicle.Vehicle) _vehicleList.get(index);
     }
 
     /**
@@ -127,7 +127,7 @@ public class VehicleConfiguration implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.Vehicle[] getVehicle(
     ) {
         org.mars_sim.msp.config.model.vehicle.Vehicle[] array = new org.mars_sim.msp.config.model.vehicle.Vehicle[0];
-        return this._vehicleList.toArray(array);
+        return (org.mars_sim.msp.config.model.vehicle.Vehicle[]) this._vehicleList.toArray(array);
     }
 
     /**

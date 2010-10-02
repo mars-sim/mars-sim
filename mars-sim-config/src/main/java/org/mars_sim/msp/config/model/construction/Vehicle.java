@@ -102,7 +102,7 @@ public class Vehicle implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getAttachmentPart: Index value '" + index + "' not in range [0.." + (this._attachmentPartList.size() - 1) + "]");
         }
 
-        return _attachmentPartList.get(index);
+        return (org.mars_sim.msp.config.model.construction.AttachmentPart) _attachmentPartList.get(index);
     }
 
     /**
@@ -118,7 +118,7 @@ public class Vehicle implements java.io.Serializable {
     public org.mars_sim.msp.config.model.construction.AttachmentPart[] getAttachmentPart(
     ) {
         org.mars_sim.msp.config.model.construction.AttachmentPart[] array = new org.mars_sim.msp.config.model.construction.AttachmentPart[0];
-        return this._attachmentPartList.toArray(array);
+        return (org.mars_sim.msp.config.model.construction.AttachmentPart[]) this._attachmentPartList.toArray(array);
     }
 
     /**

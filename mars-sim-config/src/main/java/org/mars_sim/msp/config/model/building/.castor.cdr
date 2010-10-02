@@ -1,4 +1,4 @@
-#Wed Sep 01 15:13:44 CEST 2010
+#Sat Oct 02 00:49:13 CDT 2010
 org.mars_sim.msp.config.model.building.MedicalCare=org.mars_sim.msp.config.model.building.descriptors.MedicalCareDescriptor
 org.mars_sim.msp.config.model.building.Exercise=org.mars_sim.msp.config.model.building.descriptors.ExerciseDescriptor
 org.mars_sim.msp.config.model.building.GroundVehicleMaintenance=org.mars_sim.msp.config.model.building.descriptors.GroundVehicleMaintenanceDescriptor
@@ -21,10 +21,10 @@ org.mars_sim.msp.config.model.building.ResourceInitial=org.mars_sim.msp.config.m
 org.mars_sim.msp.config.model.building.LifeSupport=org.mars_sim.msp.config.model.building.descriptors.LifeSupportDescriptor
 org.mars_sim.msp.config.model.building.ResearchSpeciality=org.mars_sim.msp.config.model.building.descriptors.ResearchSpecialityDescriptor
 org.mars_sim.msp.config.model.building.PowerGeneration=org.mars_sim.msp.config.model.building.descriptors.PowerGenerationDescriptor
-org.mars_sim.msp.config.model.building.Cooking=org.mars_sim.msp.config.model.building.descriptors.CookingDescriptor
 org.mars_sim.msp.config.model.building.Manufacture=org.mars_sim.msp.config.model.building.descriptors.ManufactureDescriptor
-org.mars_sim.msp.config.model.building.ResourceStorage=org.mars_sim.msp.config.model.building.descriptors.ResourceStorageDescriptor
+org.mars_sim.msp.config.model.building.Cooking=org.mars_sim.msp.config.model.building.descriptors.CookingDescriptor
 org.mars_sim.msp.config.model.building.ResourceProcessing=org.mars_sim.msp.config.model.building.descriptors.ResourceProcessingDescriptor
+org.mars_sim.msp.config.model.building.ResourceStorage=org.mars_sim.msp.config.model.building.descriptors.ResourceStorageDescriptor
 org.mars_sim.msp.config.model.building.Output=org.mars_sim.msp.config.model.building.descriptors.OutputDescriptor
-org.mars_sim.msp.config.model.building.Recreation=org.mars_sim.msp.config.model.building.descriptors.RecreationDescriptor
 org.mars_sim.msp.config.model.building.Farming=org.mars_sim.msp.config.model.building.descriptors.FarmingDescriptor
+org.mars_sim.msp.config.model.building.Recreation=org.mars_sim.msp.config.model.building.descriptors.RecreationDescriptor

@@ -91,8 +91,7 @@ public class MalfunctionListDescriptor extends org.exolab.castor.xml.util.XMLCla
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            @Override
-			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     MalfunctionList target = (MalfunctionList) object;
                     target.removeAllMalfunction();
@@ -214,8 +213,7 @@ public class MalfunctionListDescriptor extends org.exolab.castor.xml.util.XMLCla
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

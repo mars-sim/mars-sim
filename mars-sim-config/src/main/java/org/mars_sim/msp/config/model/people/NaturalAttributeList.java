@@ -97,7 +97,7 @@ public class NaturalAttributeList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getNaturalAttribute: Index value '" + index + "' not in range [0.." + (this._naturalAttributeList.size() - 1) + "]");
         }
 
-        return _naturalAttributeList.get(index);
+        return (org.mars_sim.msp.config.model.people.NaturalAttribute) _naturalAttributeList.get(index);
     }
 
     /**
@@ -113,7 +113,7 @@ public class NaturalAttributeList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.people.NaturalAttribute[] getNaturalAttribute(
     ) {
         org.mars_sim.msp.config.model.people.NaturalAttribute[] array = new org.mars_sim.msp.config.model.people.NaturalAttribute[0];
-        return this._naturalAttributeList.toArray(array);
+        return (org.mars_sim.msp.config.model.people.NaturalAttribute[]) this._naturalAttributeList.toArray(array);
     }
 
     /**

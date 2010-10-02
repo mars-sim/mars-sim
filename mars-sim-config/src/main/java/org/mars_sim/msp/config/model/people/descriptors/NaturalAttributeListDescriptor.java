@@ -91,8 +91,7 @@ public class NaturalAttributeListDescriptor extends org.exolab.castor.xml.util.X
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            @Override
-			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     NaturalAttributeList target = (NaturalAttributeList) object;
                     target.removeAllNaturalAttribute();
@@ -215,8 +214,7 @@ public class NaturalAttributeListDescriptor extends org.exolab.castor.xml.util.X
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

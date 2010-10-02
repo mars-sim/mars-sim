@@ -139,8 +139,7 @@ public class CargoDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            @Override
-			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Cargo target = (Cargo) object;
                     target.removeAllCapacity();
@@ -262,8 +261,7 @@ public class CargoDescriptor extends org.exolab.castor.xml.util.XMLClassDescript
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

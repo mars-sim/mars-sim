@@ -97,7 +97,7 @@ public class MalfunctionList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getMalfunction: Index value '" + index + "' not in range [0.." + (this._malfunctionList.size() - 1) + "]");
         }
 
-        return _malfunctionList.get(index);
+        return (org.mars_sim.msp.config.model.malfunction.Malfunction) _malfunctionList.get(index);
     }
 
     /**
@@ -112,7 +112,7 @@ public class MalfunctionList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.malfunction.Malfunction[] getMalfunction(
     ) {
         org.mars_sim.msp.config.model.malfunction.Malfunction[] array = new org.mars_sim.msp.config.model.malfunction.Malfunction[0];
-        return this._malfunctionList.toArray(array);
+        return (org.mars_sim.msp.config.model.malfunction.Malfunction[]) this._malfunctionList.toArray(array);
     }
 
     /**
