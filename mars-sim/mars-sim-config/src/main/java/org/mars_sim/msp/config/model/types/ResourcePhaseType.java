@@ -13,93 +13,92 @@ package org.mars_sim.msp.config.model.types;
  * @version $Revision$ $Date$
  */
 @SuppressWarnings("serial")
-public enum ResourcePhaseType {
+public enum ResourcePhaseType implements java.io.Serializable {
 
 
-	//------------------/
-	//- Enum Constants -/
-	//------------------/
+      //------------------/
+     //- Enum Constants -/
+    //------------------/
 
-	/**
-	 * Constant SOLID
-	 */
-	SOLID("solid"),
-	/**
-	 * Constant LIQUID
-	 */
-	LIQUID("liquid"),
-	/**
-	 * Constant GAS
-	 */
-	GAS("gas");
+    /**
+     * Constant SOLID
+     */
+    SOLID("solid"),
+    /**
+     * Constant LIQUID
+     */
+    LIQUID("liquid"),
+    /**
+     * Constant GAS
+     */
+    GAS("gas");
 
-	//--------------------------/
-	//- Class/Member Variables -/
-	//--------------------------/
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
 
-	/**
-	 * Field value.
-	 */
-	private final java.lang.String value;
-
-
-	//----------------/
-	//- Constructors -/
-	//----------------/
-
-	private ResourcePhaseType(final java.lang.String value) {
-		this.value = value;
-	}
+    /**
+     * Field value.
+     */
+    private final java.lang.String value;
 
 
-	//-----------/
-	//- Methods -/
-	//-----------/
+      //----------------/
+     //- Constructors -/
+    //----------------/
 
-	/**
-	 * Method fromValue.
-	 * 
-	 * @param value
-	 * @return the constant for this value
-	 */
-	public static org.mars_sim.msp.config.model.types.ResourcePhaseType fromValue(
-			final java.lang.String value) {
-		for (ResourcePhaseType c: ResourcePhaseType.values()) {
-			if (c.value.equals(value)) {
-				return c;
-			}
-		}
-		throw new IllegalArgumentException(value);
-	}
+    private ResourcePhaseType(final java.lang.String value) {
+        this.value = value;
+    }
 
-	/**
-	 * 
-	 * 
-	 * @param value
-	 */
-	public void setValue(
-			final java.lang.String value) {
-	}
 
-	/**
-	 * Method toString.
-	 * 
-	 * @return the value of this constant
-	 */
-	@Override
-	public java.lang.String toString(
-	) {
-		return this.value;
-	}
+      //-----------/
+     //- Methods -/
+    //-----------/
 
-	/**
-	 * Method value.
-	 * 
-	 * @return the value of this constant
-	 */
-	public java.lang.String value(
-	) {
-		return this.value;
-	}
+    /**
+     * Method fromValue.
+     * 
+     * @param value
+     * @return the constant for this value
+     */
+    public static org.mars_sim.msp.config.model.types.ResourcePhaseType fromValue(
+            final java.lang.String value) {
+        for (ResourcePhaseType c: ResourcePhaseType.values()) {
+            if (c.value.equals(value)) {
+                return c;
+            }
+        }
+        throw new IllegalArgumentException(value);
+    }
+
+    /**
+     * 
+     * 
+     * @param value
+     */
+    public void setValue(
+            final java.lang.String value) {
+    }
+
+    /**
+     * Method toString.
+     * 
+     * @return the value of this constant
+     */
+    public java.lang.String toString(
+    ) {
+        return this.value;
+    }
+
+    /**
+     * Method value.
+     * 
+     * @return the value of this constant
+     */
+    public java.lang.String value(
+    ) {
+        return this.value;
+    }
 
 }

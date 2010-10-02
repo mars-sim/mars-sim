@@ -141,7 +141,7 @@ public class Research implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getResearchSpeciality: Index value '" + index + "' not in range [0.." + (this._researchSpecialityList.size() - 1) + "]");
         }
 
-        return _researchSpecialityList.get(index);
+        return (org.mars_sim.msp.config.model.building.ResearchSpeciality) _researchSpecialityList.get(index);
     }
 
     /**
@@ -157,7 +157,7 @@ public class Research implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.ResearchSpeciality[] getResearchSpeciality(
     ) {
         org.mars_sim.msp.config.model.building.ResearchSpeciality[] array = new org.mars_sim.msp.config.model.building.ResearchSpeciality[0];
-        return this._researchSpecialityList.toArray(array);
+        return (org.mars_sim.msp.config.model.building.ResearchSpeciality[]) this._researchSpecialityList.toArray(array);
     }
 
     /**

@@ -1,11 +1,11 @@
-#Wed Sep 01 15:13:44 CEST 2010
+#Sat Oct 02 00:49:12 CDT 2010
 org.mars_sim.msp.config.model.people.FoodConsumptionRate=org.mars_sim.msp.config.model.people.descriptors.FoodConsumptionRateDescriptor
 org.mars_sim.msp.config.model.people.PersonList=org.mars_sim.msp.config.model.people.descriptors.PersonListDescriptor
 org.mars_sim.msp.config.model.people.RelationshipList=org.mars_sim.msp.config.model.people.descriptors.RelationshipListDescriptor
 org.mars_sim.msp.config.model.people.Mbti=org.mars_sim.msp.config.model.people.descriptors.MbtiDescriptor
 org.mars_sim.msp.config.model.people.MaxTemperature=org.mars_sim.msp.config.model.people.descriptors.MaxTemperatureDescriptor
-org.mars_sim.msp.config.model.people.WaterDeprivationTime=org.mars_sim.msp.config.model.people.descriptors.WaterDeprivationTimeDescriptor
 org.mars_sim.msp.config.model.people.OxygenConsumptionRate=org.mars_sim.msp.config.model.people.descriptors.OxygenConsumptionRateDescriptor
+org.mars_sim.msp.config.model.people.WaterDeprivationTime=org.mars_sim.msp.config.model.people.descriptors.WaterDeprivationTimeDescriptor
 org.mars_sim.msp.config.model.people.PersonName=org.mars_sim.msp.config.model.people.descriptors.PersonNameDescriptor
 org.mars_sim.msp.config.model.people.Relationship=org.mars_sim.msp.config.model.people.descriptors.RelationshipDescriptor
 org.mars_sim.msp.config.model.people.GenderMalePercentage=org.mars_sim.msp.config.model.people.descriptors.GenderMalePercentageDescriptor
@@ -15,14 +15,14 @@ org.mars_sim.msp.config.model.people.MinAirPressure=org.mars_sim.msp.config.mode
 org.mars_sim.msp.config.model.people.NaturalAttributeList=org.mars_sim.msp.config.model.people.descriptors.NaturalAttributeListDescriptor
 org.mars_sim.msp.config.model.people.OxygenDeprivationTime=org.mars_sim.msp.config.model.people.descriptors.OxygenDeprivationTimeDescriptor
 org.mars_sim.msp.config.model.people.StarvationStartTime=org.mars_sim.msp.config.model.people.descriptors.StarvationStartTimeDescriptor
-org.mars_sim.msp.config.model.people.NaturalAttribute=org.mars_sim.msp.config.model.people.descriptors.NaturalAttributeDescriptor
 org.mars_sim.msp.config.model.people.PersonNameList=org.mars_sim.msp.config.model.people.descriptors.PersonNameListDescriptor
+org.mars_sim.msp.config.model.people.NaturalAttribute=org.mars_sim.msp.config.model.people.descriptors.NaturalAttributeDescriptor
 org.mars_sim.msp.config.model.people.Skill=org.mars_sim.msp.config.model.people.descriptors.SkillDescriptor
 org.mars_sim.msp.config.model.people.FreezingTime=org.mars_sim.msp.config.model.people.descriptors.FreezingTimeDescriptor
 org.mars_sim.msp.config.model.people.SkillList=org.mars_sim.msp.config.model.people.descriptors.SkillListDescriptor
 org.mars_sim.msp.config.model.people.StressBreakdownChance=org.mars_sim.msp.config.model.people.descriptors.StressBreakdownChanceDescriptor
 org.mars_sim.msp.config.model.people.Person=org.mars_sim.msp.config.model.people.descriptors.PersonDescriptor
-org.mars_sim.msp.config.model.people.DecompressionTime=org.mars_sim.msp.config.model.people.descriptors.DecompressionTimeDescriptor
 org.mars_sim.msp.config.model.people.PeopleConfiguration=org.mars_sim.msp.config.model.people.descriptors.PeopleConfigurationDescriptor
+org.mars_sim.msp.config.model.people.DecompressionTime=org.mars_sim.msp.config.model.people.descriptors.DecompressionTimeDescriptor
 org.mars_sim.msp.config.model.people.FoodDeprivationTime=org.mars_sim.msp.config.model.people.descriptors.FoodDeprivationTimeDescriptor
 org.mars_sim.msp.config.model.people.MinTemperature=org.mars_sim.msp.config.model.people.descriptors.MinTemperatureDescriptor

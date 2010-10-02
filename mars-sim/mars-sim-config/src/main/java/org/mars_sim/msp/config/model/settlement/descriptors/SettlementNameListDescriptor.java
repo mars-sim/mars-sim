@@ -91,8 +91,7 @@ public class SettlementNameListDescriptor extends org.exolab.castor.xml.util.XML
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            @Override
-			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     SettlementNameList target = (SettlementNameList) object;
                     target.removeAllSettlementName();
@@ -215,8 +214,7 @@ public class SettlementNameListDescriptor extends org.exolab.castor.xml.util.XML
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

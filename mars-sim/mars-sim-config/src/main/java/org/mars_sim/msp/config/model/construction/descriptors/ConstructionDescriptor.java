@@ -287,8 +287,7 @@ public class ConstructionDescriptor extends org.exolab.castor.xml.util.XMLClassD
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

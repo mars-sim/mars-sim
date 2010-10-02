@@ -179,7 +179,7 @@ public class Process implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getInput: Index value '" + index + "' not in range [0.." + (this._inputList.size() - 1) + "]");
         }
 
-        return _inputList.get(index);
+        return (org.mars_sim.msp.config.model.building.Input) _inputList.get(index);
     }
 
     /**
@@ -194,7 +194,7 @@ public class Process implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.Input[] getInput(
     ) {
         org.mars_sim.msp.config.model.building.Input[] array = new org.mars_sim.msp.config.model.building.Input[0];
-        return this._inputList.toArray(array);
+        return (org.mars_sim.msp.config.model.building.Input[]) this._inputList.toArray(array);
     }
 
     /**
@@ -235,7 +235,7 @@ public class Process implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getOutput: Index value '" + index + "' not in range [0.." + (this._outputList.size() - 1) + "]");
         }
 
-        return _outputList.get(index);
+        return (org.mars_sim.msp.config.model.building.Output) _outputList.get(index);
     }
 
     /**
@@ -250,7 +250,7 @@ public class Process implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.Output[] getOutput(
     ) {
         org.mars_sim.msp.config.model.building.Output[] array = new org.mars_sim.msp.config.model.building.Output[0];
-        return this._outputList.toArray(array);
+        return (org.mars_sim.msp.config.model.building.Output[]) this._outputList.toArray(array);
     }
 
     /**

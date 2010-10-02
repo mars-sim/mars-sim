@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.00 2010-08-10
+ * @version 2.82 2007-11-09
  * @author Scott Davis
  */
 
@@ -24,6 +24,21 @@ import org.mars_sim.msp.core.SimulationConfig;
  *  delivers a clock pulse the virtual Mars every second or so, which
  *  represents a pulse of simulated time.  All actions taken with
  *  virtual Mars and its units are synchronized with this clock pulse.
+ *  
+ *  Update: The pulse is now tied to the system clock. This means that each time
+ *  a timePulse is generated, it is the following length: 
+ *  
+ *  	(realworldseconds since last call ) * timeRatio
+ *  
+ *  update: with regard to pauses.. 
+ *  
+ *  they work. the sim will completely pause when setPause(true) is called, and will
+ *  resume with setPause(false);
+ *  However ! Do not make any calls to System.currenttimemillis(), instead use 
+ *  uptimer.getuptimemillis(), as this is "shielded" from showing any passed time
+ *  while the game is paused. Thank you. 
+ *  
+ *  
  */
 public class MasterClock implements Runnable, Serializable {
     
@@ -39,15 +54,18 @@ public class MasterClock implements Runnable, Serializable {
     private UpTimer uptimer;      // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
     private transient volatile boolean isPaused; // Pausing clock.
-    private volatile double timeRatio;     // Simulation/real-time ratio
+    private volatile double timeRatio=1;     // Simulation/real-time ratio
     private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
     private transient volatile File file;            // The file to save or load the simulation.
     private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
     private transient List<ClockListener> listeners; // Clock listeners.
-
+    private transient volatile long totalpulses=1;
+    private transient volatile double pulsespersec=0.0;
+   // private transient long pausestart=System.currentTimeMillis(),pauseend=System.currentTimeMillis(),pausetime=0;
+    private transient long elapsedlast;// = uptimer.getUptimeMillis();//System.currentTimeMillis();;
     // Sleep duration in milliseconds 
-    public final static long TIME_PULSE_LENGTH = 1000L;
+    //public final static long TIME_PULSE_LENGTH = 1000L;
     
     static final long serialVersionUID = -1688463735489226494L;
 
@@ -71,6 +89,8 @@ public class MasterClock implements Runnable, Serializable {
         
         // Create listener list.
         listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
+        elapsedlast = uptimer.getUptimeMillis();//System.currentTimeMillis();
+//        elapsedlast = System.currentTimeMillis();
     }
 
     /** Returns the Martian clock
@@ -163,33 +183,62 @@ public class MasterClock implements Runnable, Serializable {
 
     /** 
      * Gets the time pulse length
+     * in other words, the number of realworld seconds that have elapsed since it was last called 
      * @return time pulse length in millisols
      * @throws Exception if time pulse length could not be determined.
      */
     public double getTimePulse() throws Exception {
 
 		// Get time ratio from simulation configuration.
-		if (timeRatio == 0) setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
+    	
+		if (timeRatio == 0) setTimeRatio((int)SimulationConfig.instance().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {
-            double timePulseSeconds = timeRatio * (TIME_PULSE_LENGTH / 1000D);
+           double timePulseSeconds = ((double)this.getElapsedmillis() * timeRatio/1000);// * (TIME_PULSE_LENGTH / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
         else timePulse = 1D;
     
+        totalpulses++;
         return timePulse;
+    }
+    public long gettotalpulses() 
+    {
+    	return totalpulses;
     }
     
     /** 
      * Sets the simulation/real-time ratio.
-     * Value cannot be 0 or less.
+     * accepts input in the range 1..100. It will do the rest. 
      * @param ratio the simulation/real-time ratio.
      * @throws Exception if parameter is invalid.
      */
-    public void setTimeRatio(double ratio) throws Exception {
-    	if (ratio > 0D) timeRatio = ratio;
-    	else throw new Exception("Time ratio cannot be zero or less.");
+    public void setTimeRatio(int slidervalue) throws Exception {
+    	// ratio should be in the range 1..100 inclusive
+    	/*
+    	 * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
+    	 * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
+    	 * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be 
+    	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
+    	 * and lots of settlers die. 
+    	 * */
+    	
+    	if ( (slidervalue > 0)&&(slidervalue <= 100) )
+    	{if (slidervalue >= 20 ) 
+    		{timeRatio = Math.round( Math.pow(1.135, (slidervalue-20)*1.2)  );
+
+    		} 
+    		else 
+    		{
+    		 timeRatio = Math.pow(1.232, (slidervalue-19)*1.8);	
+    		 if (timeRatio < 0.001) timeRatio = 0.001;
+    		}
+    	} 
+    	else {
+    		timeRatio = 15;
+    		throw new Exception("Time ratio should be in 1..100");
+    		} 
     }
     
     /**
@@ -204,28 +253,27 @@ public class MasterClock implements Runnable, Serializable {
     public void run() {
         keepRunning = true;
         long lastTimeDiff = 1000L;
-
+        elapsedlast = uptimer.getUptimeMillis();// System.currentTimeMillis();
         // Keep running until told not to
         while (keepRunning) {
         	
-        	long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
-        	if (pauseTime < 10L) pauseTime = 10L;
+        	//long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
+        	//if (pauseTime < 10L) pauseTime = 10L;
         	
         	try {
-        		Thread.sleep(pauseTime);
+//        		Thread.sleep(pauseTime);
+        		Thread.sleep(50);
+        		//Thread.yield();
         	} 
         	catch (InterruptedException e) {}
             
         	if (!isPaused()) {
         		try {
-        			//Increment the uptimer
-        			uptimer.addTime(TIME_PULSE_LENGTH);
-
         			// Get the time pulse length in millisols.
         			double timePulse = getTimePulse();
-
+        	//		System.out.println("gettimePulse() "+timePulse);
         			long startTime = System.nanoTime();
-        		
+
         			// Add time pulse length to Earth and Mars clocks. 
         			earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
         			marsTime.addTime(timePulse);
@@ -233,7 +281,12 @@ public class MasterClock implements Runnable, Serializable {
         			synchronized(listeners) {
         				// Send clock pulse to listeners.
         				Iterator<ClockListener> i = listeners.iterator();
-        				while (i.hasNext()) i.next().clockPulse(timePulse);
+//        				while (i.hasNext()) i.next().clockPulse(timePulse);
+        				while (i.hasNext()) {
+            				ClockListener cl = i.next();
+        					cl.clockPulse(timePulse);
+        					//System.out.println("Master clock sending pulse to object: "+cl.toString());
+        				}
         			}
 				
         			long endTime = System.nanoTime();
@@ -287,6 +340,13 @@ public class MasterClock implements Runnable, Serializable {
      * @param isPaused true if simulation is paused.
      */
     public void setPaused(boolean isPaused) {
+    	/*if (isPaused ) {pausestart = System.currentTimeMillis();} 
+    	else {pauseend = System.currentTimeMillis();
+    	pausetime = pausetime + pauseend - pausestart;
+    	System.out.println("pausetime = "+pausetime);
+    	}
+    	*/
+    	uptimer.setPaused(isPaused);
     	this.isPaused = isPaused;
     }
     
@@ -296,5 +356,51 @@ public class MasterClock implements Runnable, Serializable {
      */
     public boolean isPaused() {
     	return isPaused;
+    }
+    
+
+    public double getPulsesPerSecond()
+    	{
+    	//System.out.println("pulsespersecond: "+((double) totalpulses / (uptimer.getUptimeMillis()/1000 ) ));
+    	return ((double) totalpulses / (uptimer.getUptimeMillis()/1000 ) );}
+ 
+    private long getElapsedmillis() {        
+    	long tnow = uptimer.getUptimeMillis();// System.currentTimeMillis();
+    	long jelapsed = tnow - elapsedlast ;
+    	elapsedlast = tnow;
+    //	System.out.println("getElapsedmillis "+jelapsed);
+    	return jelapsed;
+    	}
+
+    /**
+     * the following is a utility. It may be slow. It returns a string in YY:DDD:HH:MM:SS.SSS format
+     * note: it is set up currently to only return hh:mm:ss.s
+     * */
+    public String gettimestring(double seconds) 
+    {
+        final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
+    	long years,days,hours,minutes;
+    	double secs;
+    	String YY="",DD="",HH="",MM="",SS="";
+    	
+    	years = (int)Math.floor(seconds/secsperyear);
+		days = (int)((seconds%secsperyear)/secspday);		
+		hours=(int)((seconds%secspday)/secsphour);
+		minutes=(int)((seconds%secsphour)/secspmin);
+		secs=(double)((seconds%secspmin));
+
+	
+	if (years > 0) {YY=""+years+":";} else {YY="";};	
+	
+	if (days > 0 ) {DD=String.format("%03d",days)+":";} else {DD="0:";} 
+	
+	if (hours > 0) {HH = String.format("%02d",hours)+":";} else {HH = "00:";}
+	
+	if (minutes > 0){ MM = String.format("%02d",minutes)+":";}else {MM="00:";} 
+
+	SS = String.format("%5.3f", secs);
+   	//******* change here for more complete string *****
+	return /*YY+*/DD+HH+MM+SS;
+    	
     }
 }

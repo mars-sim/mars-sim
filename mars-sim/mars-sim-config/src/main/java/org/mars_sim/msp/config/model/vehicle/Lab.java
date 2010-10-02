@@ -124,7 +124,7 @@ public class Lab implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getTechSpeciality: Index value '" + index + "' not in range [0.." + (this._techSpecialityList.size() - 1) + "]");
         }
 
-        return _techSpecialityList.get(index);
+        return (org.mars_sim.msp.config.model.vehicle.TechSpeciality) _techSpecialityList.get(index);
     }
 
     /**
@@ -140,7 +140,7 @@ public class Lab implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.TechSpeciality[] getTechSpeciality(
     ) {
         org.mars_sim.msp.config.model.vehicle.TechSpeciality[] array = new org.mars_sim.msp.config.model.vehicle.TechSpeciality[0];
-        return this._techSpecialityList.toArray(array);
+        return (org.mars_sim.msp.config.model.vehicle.TechSpeciality[]) this._techSpecialityList.toArray(array);
     }
 
     /**

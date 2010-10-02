@@ -96,8 +96,10 @@ public class Simulation implements ClockListener, Serializable {
 		simulation.defaultLoad = false;
 		simulation.stop();
 		
-		// Wait until current time pulse runs it course.
-		Thread.sleep(MasterClock.TIME_PULSE_LENGTH);
+		// Wait until current time pulse runs it course
+		// we have no idea how long it will take it to 
+		// run its course. But this might be enough. 
+		Thread.sleep(300);
 	}
 	
 	/**

@@ -1,4 +1,4 @@
-#Wed Sep 01 15:13:44 CEST 2010
+#Sat Oct 02 00:49:10 CDT 2010
 org.mars_sim.msp.config.model.mineral.Locale=org.mars_sim.msp.config.model.mineral.descriptors.LocaleDescriptor
 org.mars_sim.msp.config.model.mineral.MineralConcentrations=org.mars_sim.msp.config.model.mineral.descriptors.MineralConcentrationsDescriptor
 org.mars_sim.msp.config.model.mineral.LocaleList=org.mars_sim.msp.config.model.mineral.descriptors.LocaleListDescriptor

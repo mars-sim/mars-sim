@@ -96,7 +96,7 @@ public class CropList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getCrop: Index value '" + index + "' not in range [0.." + (this._cropList.size() - 1) + "]");
         }
 
-        return _cropList.get(index);
+        return (org.mars_sim.msp.config.model.crop.Crop) _cropList.get(index);
     }
 
     /**
@@ -111,7 +111,7 @@ public class CropList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.crop.Crop[] getCrop(
     ) {
         org.mars_sim.msp.config.model.crop.Crop[] array = new org.mars_sim.msp.config.model.crop.Crop[0];
-        return this._cropList.toArray(array);
+        return (org.mars_sim.msp.config.model.crop.Crop[]) this._cropList.toArray(array);
     }
 
     /**

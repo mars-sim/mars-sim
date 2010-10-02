@@ -137,8 +137,7 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
                     throw new IllegalStateException(ex.toString());
                 }
             }
-            @Override
-			public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Lab target = (Lab) object;
                     target.removeAllTechSpeciality();
@@ -261,8 +260,7 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
      * of a global
      * element or element with anonymous type definition.
      */
-    @Override
-	public boolean isElementDefinition(
+    public boolean isElementDefinition(
     ) {
         return _elementDefinition;
     }

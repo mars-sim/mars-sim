@@ -1,13 +1,18 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.00 2010-08-10
+ * @version 2.85 2008-07-19
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.time;
  
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Formatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +21,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
 import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.time.*;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -34,7 +40,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	// Tool name
 	public static final String NAME = "Time Tool";		
 	
-    private final static int RATIO_SCALE = 200;
+    //private final static int RATIO_SCALE = 10;
 
     // Data members
     private MasterClock master;      // Master Clock
@@ -48,8 +54,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     private JLabel southernSeasonLabel; // JLabel for Southern hemisphere season
     private JLabel earthTimeLabel;   // JLabel for Earth time
     private JLabel uptimeLabel;      // JLabel for uptimer
+    private JLabel pulsespersecondLabel;      // JLabel for pulses per second label 
     private JSlider pulseSlider;     // JSlider for pulse
-
+    private int sliderpos = 35;
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
      */
@@ -147,44 +154,102 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         simulationPane.add(uptimePane, "North");
 
+        JPanel pulsespersecondPane = new JPanel(new BorderLayout());
+        pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        uptimePane.add(pulsespersecondPane, "South");
+
+        JPanel pausePane = new JPanel( new BorderLayout());
+        southPane.add(pausePane, "North");
+        
+        final JButton pauseButton = new JButton("Pause");
+        
+        pauseButton.addMouseListener(new MouseInputListener() {
+			@Override
+			public void mouseMoved(MouseEvent e) {			}
+			@Override
+			public void mouseDragged(MouseEvent e) {		}
+			@Override
+			public void mouseReleased(MouseEvent e) { 
+				if (e.getButton() == MouseEvent.BUTTON1) {
+					master.setPaused(!master.isPaused());
+					if (master.isPaused()) {pauseButton.setText("Resume");}
+					else {pauseButton.setText("Pause");}
+				}
+			}
+			@Override
+			public void mousePressed(MouseEvent e) {		}
+			@Override
+			public void mouseExited(MouseEvent e) {	}
+			@Override
+			public void mouseEntered(MouseEvent e) {	}
+			@Override
+			public void mouseClicked(MouseEvent e) {	}
+		});
+        
         // Create uptime header label
         JLabel uptimeHeaderLabel = new JLabel("Simulation Uptime", JLabel.CENTER);
         uptimePane.add(uptimeHeaderLabel, "North");
 
+        JLabel pulsespersecondHeaderLabel = new JLabel("Ticks Per Second", JLabel.CENTER);
+        pulsespersecondPane.add(pulsespersecondHeaderLabel, "North");
+
         // Create uptime label
         uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
         uptimePane.add(uptimeLabel, "Center");
+
+        pulsespersecondLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
+        pulsespersecondPane.add(pulsespersecondLabel, "Center");
 
         // Create uptime panel
         JPanel pulsePane = new JPanel(new BorderLayout());
         pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         simulationPane.add(pulsePane, "South");
 
+
         // Create pulse header label
-        JLabel pulseHeaderLabel = new JLabel("Simulation Speed", JLabel.CENTER);
+        final JLabel pulseHeaderLabel = new JLabel("1 realsec : sim Time", JLabel.CENTER);
         pulsePane.add(pulseHeaderLabel, "North");
+        
+        pulsespersecondPane.add(pauseButton, "South");
+        
+        // create time ratio readout showing real / earth / mars time ratios currently set
+        try {
+			master.setTimeRatio(sliderpos);
+		} catch (Exception e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+        //String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
+    	//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
+        String s =master.gettimestring(master.getTimeRatio());
+        final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
+        pulsePane.add(pulseCurRatioLabel, "Center");
 
         // Create pulse slider
-        double existingRatio = master.getTimeRatio();
-        int currentPosition = (int) (existingRatio) / RATIO_SCALE;
-        if (currentPosition > 10) currentPosition = 10;
-        pulseSlider = new JSlider(0, 10, currentPosition);
-        pulseSlider.setMajorTickSpacing(1);
+        pulseSlider = new JSlider(1, 100, sliderpos);
+        pulseSlider.setMajorTickSpacing(10);
+        pulseSlider.setMinorTickSpacing(2);
         pulseSlider.setPaintTicks(true);
         pulseSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
-                    double ratio = (double)(pulseSlider.getValue() * RATIO_SCALE);
-                    if (ratio <= 0D) ratio = 1;
                     try {
-                    	master.setTimeRatio(ratio);
+                    	master.setTimeRatio(pulseSlider.getValue());
+//                    	String s = String.format("1 : %1.3f : %1.3f", master.getTimeRatio(),
+//                   			MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
+                    	String s =master.gettimestring(master.getTimeRatio());
+                    	pulseCurRatioLabel.setText(""+s);
+//                    	pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()));
+                    	
                     }
                     catch (Exception e2) {
                     	logger.log(Level.SEVERE,e2.getMessage());
                     }
+                    
                 }
         });
         pulsePane.add(pulseSlider, "South");
-
+        
+        
         // Pack window
         pack();
 
@@ -207,6 +272,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		        northernSeasonLabel.setText("Northern Hemisphere: " + marsTime.getSeason(MarsClock.NORTHERN_HEMISPHERE));
 		        southernSeasonLabel.setText("Southern Hemisphere: " + marsTime.getSeason(MarsClock.SOUTHERN_HEMISPHERE)); 
 		        calendarDisplay.update();
+		        String s = String.format("%8.4f",master.getPulsesPerSecond());
+		        pulsespersecondLabel.setText(s);
 			}
 		});
 	}

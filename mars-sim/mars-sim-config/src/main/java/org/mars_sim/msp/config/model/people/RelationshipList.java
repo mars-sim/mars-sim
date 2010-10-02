@@ -97,7 +97,7 @@ public class RelationshipList implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getRelationship: Index value '" + index + "' not in range [0.." + (this._relationshipList.size() - 1) + "]");
         }
 
-        return _relationshipList.get(index);
+        return (org.mars_sim.msp.config.model.people.Relationship) _relationshipList.get(index);
     }
 
     /**
@@ -113,7 +113,7 @@ public class RelationshipList implements java.io.Serializable {
     public org.mars_sim.msp.config.model.people.Relationship[] getRelationship(
     ) {
         org.mars_sim.msp.config.model.people.Relationship[] array = new org.mars_sim.msp.config.model.people.Relationship[0];
-        return this._relationshipList.toArray(array);
+        return (org.mars_sim.msp.config.model.people.Relationship[]) this._relationshipList.toArray(array);
     }
 
     /**
