@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2010-09-30
+ * @version 3.00 2010-10-01
  * @author Scott Davis
  */
 
@@ -18,15 +18,20 @@ import java.util.Iterator;
 
 import javax.swing.JPanel;
 
+import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 
-
+/**
+ * A panel for displaying the settlement map.
+ */
 public class SettlementMapPanel extends JPanel {
 
     // Static members.
     private static final double DEFAULT_SCALE = 5D;
+    private static final Color BUILDING_COLOR = Color.BLUE;
+    private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     
     // Data members.
     private Settlement settlement;
@@ -74,8 +79,6 @@ public class SettlementMapPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
-        //g2d.drawString("test", getWidth() / 2, getHeight() / 2);
-        
         // Translate map from settlement center point.
         g2d.translate(xPos * scale, yPos * scale);
         
@@ -107,10 +110,18 @@ public class SettlementMapPanel extends JPanel {
      */
     private void drawBuilding(Building building, Graphics2D g2d) {
         
-        // TODO: Use SVG image for building if available.
-        
-        drawRectangleStructure(g2d, building.getXLocation(), building.getYLocation(), 
-                building.getWidth(), building.getLength(), building.getFacing(), Color.BLUE);
+        // Use SVG image for building if available.
+        GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName());
+        if (svg != null) {
+            drawSVGStructure(g2d, building.getXLocation(), building.getYLocation(), 
+                    building.getWidth(), building.getLength(), building.getFacing(), svg);
+        }
+        else {
+            // Otherwise draw colored rectangle for building.
+            drawRectangleStructure(g2d, building.getXLocation(), building.getYLocation(), 
+                    building.getWidth(), building.getLength(), building.getFacing(), 
+                    BUILDING_COLOR);
+        }
     }
     
     /**
@@ -131,10 +142,36 @@ public class SettlementMapPanel extends JPanel {
      * @param g2d the graphics context.
      */
     private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
-        // TODO: Use SVG image for construction site if available.
         
-        drawRectangleStructure(g2d, site.getXLocation(), site.getYLocation(), 
-                site.getWidth(), site.getLength(), site.getFacing(), Color.BLACK);
+        // Use SVG image for construction site if available.
+        String stageName = site.getCurrentConstructionStage().getInfo().getName();
+        GraphicsNode svg = SVGMapUtil.getConstructionSiteSVG(stageName);
+        if (svg != null) {
+            drawSVGStructure(g2d, site.getXLocation(), site.getYLocation(), 
+                    site.getWidth(), site.getLength(), site.getFacing(), svg);
+        }
+        else {
+            // Else draw colored rectangle for construction site.
+            drawRectangleStructure(g2d, site.getXLocation(), site.getYLocation(), 
+                    site.getWidth(), site.getLength(), site.getFacing(), 
+                    CONSTRUCTION_SITE_COLOR);
+        }
+    }
+    
+    /**
+     * Draws a structure as a SVG image on the map.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param facing the structure facing (degrees from North clockwise).
+     * @param svg the SVG graphics node.
+     */
+    private void drawSVGStructure(Graphics2D g2d, double xLoc, double yLoc,
+            double width, double length, double facing, GraphicsNode svg) {
+        
+        drawStructure(true, g2d, xLoc, yLoc, width, length, facing, svg, null);
     }
     
     /**
@@ -150,9 +187,33 @@ public class SettlementMapPanel extends JPanel {
     private void drawRectangleStructure(Graphics2D g2d, double xLoc, double yLoc, 
             double width, double length, double facing, Color color) {
         
+        drawStructure(false, g2d, xLoc, yLoc, width, length, facing, null, color);
+    }
+    
+    /**
+     * Draws a structure on the map.
+     * @param isSVG true if using a SVG image.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param facing the structure facing (degrees from North clockwise).
+     * @param svg the SVG graphics node.
+     * @param color the color to display the rectangle if no SVG image.
+     */
+    private void drawStructure(boolean isSVG, Graphics2D g2d, double xLoc, double yLoc,
+            double width, double length, double facing, GraphicsNode svg, Color color) {
+        
+        // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
         
-        Rectangle2D bounds = new Rectangle2D.Double(0, 0, width, length);
+        // Determine bounds.
+        Rectangle2D bounds = null;
+        if (isSVG) bounds = svg.getBounds();
+        else bounds = new Rectangle2D.Double(0, 0, width, length);
+        
+        // Determine transform information.
         double scalingWidth = width / bounds.getWidth() * scale;
         double scalingLength = length / bounds.getHeight() * scale;
         double boundsPosX = bounds.getX() * scalingWidth;
@@ -165,15 +226,24 @@ public class SettlementMapPanel extends JPanel {
         double translationY = (-1D * yLoc * scale) - centerY - boundsPosY + centerMapY;
         double facingRadian = facing / 180D * Math.PI;
         
+        // Apply graphic transforms for structure.
         AffineTransform newTransform = new AffineTransform();
         newTransform.translate(translationX, translationY);
         newTransform.rotate(facingRadian, centerX, centerY);
         newTransform.scale(scalingWidth, scalingLength);
         g2d.transform(newTransform);
         
-        g2d.setColor(color);
-        g2d.fill(bounds);
+        if (isSVG) {
+            // Draw SVG image.
+            svg.paint(g2d);
+        }
+        else {
+            // Draw filled rectangle.
+            g2d.setColor(color);
+            g2d.fill(bounds);
+        }
         
+        // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
     }
 }
