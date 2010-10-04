@@ -41,9 +41,14 @@ public final class SVGMapUtil {
         buildingSVGMap.put("Starting ERV Base", "erv_base");
         buildingSVGMap.put("ERV Base", "erv_base");
         buildingSVGMap.put("Regolith Storage Bin", "regolith_storage_bin");
+        buildingSVGMap.put("Wind Turbine", "wind_turbine");
         buildingSVGMap.put("Sand Storage Bin", "sand_storage_bin");
         buildingSVGMap.put("Lime Storage Bin", "lime_storage_bin");
         buildingSVGMap.put("Carbon Storage Bin", "carbon_storage_bin");
+        buildingSVGMap.put("Cement Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        buildingSVGMap.put("Mortar Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        buildingSVGMap.put("Concrete Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+
         // TODO: Add more mapped entities.
     }
     
