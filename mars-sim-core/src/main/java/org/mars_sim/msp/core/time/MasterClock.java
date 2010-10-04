@@ -53,7 +53,7 @@ public class MasterClock implements Runnable, Serializable {
     private EarthClock earthTime; // Earth Clock
     private UpTimer uptimer; // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
-    private transient volatile boolean isPaused; // Pausing clock.
+    private transient volatile boolean isPaused = false; // Pausing clock.
     private volatile double timeRatio=1;     // Simulation/real-time ratio
     private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
@@ -145,6 +145,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param file the file to load from.
      */
     public void loadSimulation(File file) {
+    	this.setPaused(false);
     	loadSimulation = true;
     	this.file = file;
     }
@@ -178,6 +179,7 @@ public class MasterClock implements Runnable, Serializable {
      * Sets the exit program flag.
      */
     public void exitProgram() {
+    	this.setPaused(true);
     	exitProgram = true;
     }
 
@@ -341,12 +343,6 @@ public class MasterClock implements Runnable, Serializable {
      * @param isPaused true if simulation is paused.
      */
     public void setPaused(boolean isPaused) {
-    	/*if (isPaused ) {pausestart = System.currentTimeMillis();} 
-    	else {pauseend = System.currentTimeMillis();
-    	pausetime = pausetime + pauseend - pausestart;
-    	System.out.println("pausetime = "+pausetime);
-    	}
-    	*/
     	uptimer.setPaused(isPaused);
     	this.isPaused = isPaused;
     }

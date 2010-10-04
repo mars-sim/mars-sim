@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.time;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Formatter;
 import java.util.Locale;
@@ -24,9 +25,9 @@ public class UpTimer implements Serializable {
 	/**
 	 * 
 	 */
-	private long thiscall=System.currentTimeMillis();
-    private long lastcall = thiscall;
-	
+	private transient long thiscall=System.currentTimeMillis();
+    private transient long lastcall=System.currentTimeMillis();
+  
     private final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
 	private long years,days,hours,minutes,seconds;
 	
@@ -34,13 +35,20 @@ public class UpTimer implements Serializable {
     private long uptime = 1; //in case it gets divided by 0 right away
     private long utsec = 0;
 
-	private boolean paused = false;
+	private transient boolean paused = true;
 
     public UpTimer() 
     {
-    	
+    	this.setPaused(false);
+    	lastcall = System.currentTimeMillis();
     }
-    
+    private void readObject(java.io.ObjectInputStream in)
+    throws IOException, ClassNotFoundException 
+    {
+    	in.defaultReadObject();
+    	lastcall=System.currentTimeMillis();
+    };
+
     /**
      * This method adds a period of time to the running time of the 
      * simulation.
@@ -79,14 +87,17 @@ public class UpTimer implements Serializable {
     }
     
     public long getUptimeMillis() {
-
+		thiscall = System.currentTimeMillis();
+		System.out.println("getUptimeMillis is paused: "+this.paused);
+		System.out.println("getUptimeMillis thiscall: "+thiscall);
+		System.out.println("getUptimeMillis is lastcall: "+lastcall);
+		System.out.println("getUptimeMillis is uptime: "+uptime);
     	if (paused ) 
     	{	return uptime;	} 
     	else {
         	//uptime = System.currentTimeMillis()-firstcall;
-    			thiscall = System.currentTimeMillis();
-    	    	uptime = uptime + ( thiscall-lastcall);
-    	    	lastcall = thiscall;
+    	    uptime = uptime + ( thiscall-lastcall);
+    	    lastcall = thiscall;
         	return uptime ;
     	}
     }
@@ -98,7 +109,7 @@ public class UpTimer implements Serializable {
 		if (isPaused) {
 			
 		} else {
-			lastcall = System.currentTimeMillis();
+			thiscall = lastcall = System.currentTimeMillis();
 		}
 	}
 }
