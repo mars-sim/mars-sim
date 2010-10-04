@@ -172,6 +172,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			public void mouseReleased(MouseEvent e) { 
 				if (e.getButton() == MouseEvent.BUTTON1) {
 					master.setPaused(!master.isPaused());
+					
 					if (master.isPaused()) {pauseButton.setText("Resume");}
 					else {pauseButton.setText("Pause");}
 				}
