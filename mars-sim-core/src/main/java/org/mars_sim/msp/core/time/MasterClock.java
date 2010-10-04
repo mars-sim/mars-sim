@@ -51,7 +51,7 @@ public class MasterClock implements Runnable, Serializable {
     private MarsClock marsTime;   // Martian Clock
     private MarsClock initialMarsTime; // Initial Martian time.
     private EarthClock earthTime; // Earth Clock
-    private UpTimer uptimer;      // Uptime Timer
+    private UpTimer uptimer; // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
     private transient volatile boolean isPaused; // Pausing clock.
     private volatile double timeRatio=1;     // Simulation/real-time ratio
@@ -251,6 +251,7 @@ public class MasterClock implements Runnable, Serializable {
 
     /** Run clock */
     public void run() {
+  
         keepRunning = true;
         long lastTimeDiff = 1000L;
         elapsedlast = uptimer.getUptimeMillis();// System.currentTimeMillis();
