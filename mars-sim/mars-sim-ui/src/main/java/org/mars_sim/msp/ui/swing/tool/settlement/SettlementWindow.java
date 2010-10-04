@@ -17,6 +17,8 @@ import javax.swing.JSlider;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -92,13 +94,19 @@ public class SettlementWindow extends ToolWindow {
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setToolTipText("Zoom view of settlement");
+		zoomSlider.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent arg0) {
+                int sliderValue = zoomSlider.getValue();
+                double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
+                double newScale = defaultScale;
+                if (sliderValue > 0) newScale += defaultScale * 
+                        ((double) sliderValue / 10D);
+                else if (sliderValue < 0) newScale = defaultScale / 
+                        (1D + ((double) sliderValue / -10D));
+                mapPane.setScale(newScale);
+            }
+		});
 		zoomPane.add(zoomSlider, BorderLayout.EAST);
-		
-
-		/* This is the old zoombox code
-		String[] zoomLevels = { "50%", "100%", "200%", "400%" };
-		zoomBox = new JComboBox(zoomLevels);
-		zoomPane.add(zoomBox, BorderLayout.EAST);*/
 
 		widgetPane.add(zoomPane);
 

@@ -29,7 +29,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 public class SettlementMapPanel extends JPanel {
 
     // Static members.
-    private static final double DEFAULT_SCALE = 5D;
+    public static final double DEFAULT_SCALE = 5D;
     private static final Color BUILDING_COLOR = Color.BLUE;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     
@@ -69,6 +69,15 @@ public class SettlementMapPanel extends JPanel {
      */
     public void setSettlement(Settlement settlement) {
         this.settlement = settlement;
+        repaint();
+    }
+    
+    /**
+     * Sets the map scale.
+     * @param scale (meters per pixel).
+     */
+    public void setScale(double scale) {
+        this.scale = scale;
         repaint();
     }
     
