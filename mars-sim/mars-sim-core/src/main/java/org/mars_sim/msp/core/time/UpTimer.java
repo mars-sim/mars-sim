@@ -14,8 +14,16 @@ import java.util.Locale;
 /** The UpTimer class keeps track of how long an instance of the simulation 
  *  has been running in real time.
  */
-public class UpTimer {//implements Serializable {
+public class UpTimer implements Serializable {
 	
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4992839027918134952L;
+	/**
+	 * 
+	 */
 	private transient  long thiscall=System.currentTimeMillis();
     private transient long lastcall = thiscall;
 	

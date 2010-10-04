@@ -1,4 +1,4 @@
-#Sat Oct 02 00:49:10 CDT 2010
+#Sat Oct 02 10:43:33 CDT 2010
 org.mars_sim.msp.config.model.vehicle.Capacity=org.mars_sim.msp.config.model.vehicle.descriptors.CapacityDescriptor
 org.mars_sim.msp.config.model.vehicle.FuelEfficiency=org.mars_sim.msp.config.model.vehicle.descriptors.FuelEfficiencyDescriptor
 org.mars_sim.msp.config.model.vehicle.RoverNameList=org.mars_sim.msp.config.model.vehicle.descriptors.RoverNameListDescriptor
@@ -8,9 +8,9 @@ org.mars_sim.msp.config.model.vehicle.RoverName=org.mars_sim.msp.config.model.ve
 org.mars_sim.msp.config.model.vehicle.EmptyMass=org.mars_sim.msp.config.model.vehicle.descriptors.EmptyMassDescriptor
 org.mars_sim.msp.config.model.vehicle.Vehicle=org.mars_sim.msp.config.model.vehicle.descriptors.VehicleDescriptor
 org.mars_sim.msp.config.model.vehicle.Part=org.mars_sim.msp.config.model.vehicle.descriptors.PartDescriptor
-org.mars_sim.msp.config.model.vehicle.PartAttachment=org.mars_sim.msp.config.model.vehicle.descriptors.PartAttachmentDescriptor
 org.mars_sim.msp.config.model.vehicle.VehicleConfiguration=org.mars_sim.msp.config.model.vehicle.descriptors.VehicleConfigurationDescriptor
+org.mars_sim.msp.config.model.vehicle.PartAttachment=org.mars_sim.msp.config.model.vehicle.descriptors.PartAttachmentDescriptor
 org.mars_sim.msp.config.model.vehicle.Sickbay=org.mars_sim.msp.config.model.vehicle.descriptors.SickbayDescriptor
 org.mars_sim.msp.config.model.vehicle.CrewSize=org.mars_sim.msp.config.model.vehicle.descriptors.CrewSizeDescriptor
-org.mars_sim.msp.config.model.vehicle.TechSpeciality=org.mars_sim.msp.config.model.vehicle.descriptors.TechSpecialityDescriptor
 org.mars_sim.msp.config.model.vehicle.BaseSpeed=org.mars_sim.msp.config.model.vehicle.descriptors.BaseSpeedDescriptor
+org.mars_sim.msp.config.model.vehicle.TechSpeciality=org.mars_sim.msp.config.model.vehicle.descriptors.TechSpecialityDescriptor
