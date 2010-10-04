@@ -24,15 +24,15 @@ public class UpTimer implements Serializable {
 	/**
 	 * 
 	 */
-	private transient  long thiscall=System.currentTimeMillis();
-    private transient long lastcall = thiscall;
+	private long thiscall=System.currentTimeMillis();
+    private long lastcall = thiscall;
 	
     private final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
 	private long years,days,hours,minutes,seconds;
 	
 	// Data members
-    private transient long uptime = 1; //in case it gets divided by 0 right away
-    private transient long utsec = 0;
+    private long uptime = 1; //in case it gets divided by 0 right away
+    private long utsec = 0;
 
 	private boolean paused = false;
 
