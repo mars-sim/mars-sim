@@ -42,7 +42,8 @@ public class UpTimer implements Serializable {
     	this.setPaused(false);
     	lastcall = System.currentTimeMillis();
     }
-    private void readObject(java.io.ObjectInputStream in)
+    
+    private  void readObject(java.io.ObjectInputStream in)
     throws IOException, ClassNotFoundException 
     {
     	in.defaultReadObject();

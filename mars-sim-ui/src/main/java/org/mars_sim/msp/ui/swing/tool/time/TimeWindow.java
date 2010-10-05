@@ -226,6 +226,19 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
         pulsePane.add(pulseCurRatioLabel, "Center");
 
+        pulseCurRatioLabel.addMouseListener(new MouseInputAdapter() {
+        	@Override
+        	public void mouseClicked(MouseEvent e) {
+        		// TODO Auto-generated method stub
+        		super.mouseClicked(e);
+        		if (pulseCurRatioLabel.getText().contains(":")) {
+            		pulseCurRatioLabel.setText(String.format("%8.4f", master.getTimeRatio() ) );
+        		} else {
+            		pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()) );
+        		}
+        	}
+		});
+        
         // Create pulse slider
         pulseSlider = new JSlider(1, 100, sliderpos);
         pulseSlider.setMajorTickSpacing(10);
@@ -235,12 +248,10 @@ public class TimeWindow extends ToolWindow implements ClockListener {
                 public void stateChanged(ChangeEvent e) {
                     try {
                     	master.setTimeRatio(pulseSlider.getValue());
-//                    	String s = String.format("1 : %1.3f : %1.3f", master.getTimeRatio(),
-//                   			MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-                    	String s =master.gettimestring(master.getTimeRatio());
-                    	pulseCurRatioLabel.setText(""+s);
-//                    	pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()));
-                    	
+                    	if (pulseCurRatioLabel.getText().contains(":") ) 
+                    	{pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()));} 
+                    	else 
+                    	{pulseCurRatioLabel.setText(String.format("%8.4f", master.getTimeRatio() ) );}
                     }
                     catch (Exception e2) {
                     	logger.log(Level.SEVERE,e2.getMessage());
@@ -259,6 +270,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
     }
     
+    public void setTimeRatioSlider(int r)
+    {
+    	//moves the slider bar appropriately given the ratio 
+    	if (r>=pulseSlider.getMinimum() && r <= pulseSlider.getMaximum()) 
+    		{pulseSlider.setValue(r);}
+    }
 	/**
 	 * Change in time.
 	 * param time the amount of time changed. (millisols)
