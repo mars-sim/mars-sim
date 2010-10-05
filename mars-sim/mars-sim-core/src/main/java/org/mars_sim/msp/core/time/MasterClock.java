@@ -228,12 +228,12 @@ public class MasterClock implements Runnable, Serializable {
     	
     	if ( (slidervalue > 0)&&(slidervalue <= 100) )
     	{if (slidervalue >= 20 ) 
-    		{timeRatio = Math.round( Math.pow(1.135, (slidervalue-20)*1.2)  );
+    		{timeRatio = Math.round( Math.pow(1.145, (slidervalue-20))  );
 
     		} 
     		else 
     		{
-    		 timeRatio = Math.pow(1.232, (slidervalue-19)*1.8);	
+    		 timeRatio = Math.pow(1.092, (slidervalue-19));	
     		 if (timeRatio < 0.001) timeRatio = 0.001;
     		}
     	} 
@@ -242,7 +242,19 @@ public class MasterClock implements Runnable, Serializable {
     		throw new Exception("Time ratio should be in 1..100");
     		} 
     }
-    
+    /**
+     * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
+     * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
+     * each real-world minute. 
+     * */
+    public void setTimeRatio (double ratio) throws Exception 
+    {
+    	if ( ratio >= 0.0001 && ratio <= 500000) {
+    		timeRatio = ratio;
+    		//need to set slider bar in the correct position. 
+    		
+    	} else throw new Exception ("Time ratio out of bounds ");
+    }
     /**
      * Gets the simulation/real-time ratio.
      * @return ratio
