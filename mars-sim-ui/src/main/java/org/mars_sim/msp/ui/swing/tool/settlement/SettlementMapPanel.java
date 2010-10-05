@@ -30,6 +30,8 @@ public class SettlementMapPanel extends JPanel {
 
     // Static members.
     public static final double DEFAULT_SCALE = 5D;
+    public static final double MAX_SCALE = 55D;
+    public static final double MIN_SCALE = 5D / 11D;
     private static final Color BUILDING_COLOR = Color.BLUE;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     

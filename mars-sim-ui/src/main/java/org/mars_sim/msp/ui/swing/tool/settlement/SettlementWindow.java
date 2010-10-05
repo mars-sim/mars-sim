@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 import java.awt.BorderLayout;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.util.Arrays;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -36,7 +38,6 @@ public class SettlementWindow extends ToolWindow {
     public static final String NAME = "Settlement Map Tool";
 
     private JComboBox settlementListBox; // Lists all settlements
-    private JComboBox zoomBox; // Lists zoom levels
     private JLabel zoomLabel; // Label for Zoom box
     private JSlider zoomSlider; // Slider for Zoom level
     private SettlementMapPanel mapPane; // Map panel.
@@ -88,9 +89,9 @@ public class SettlementWindow extends ToolWindow {
 		zoomLabel = new JLabel("Zoom: ");
 		zoomPane.add(zoomLabel, BorderLayout.CENTER);
 
-		zoomSlider = new JSlider(JSlider.HORIZONTAL, -100, 100, 0);
-		zoomSlider.setMajorTickSpacing(50);
-		zoomSlider.setMinorTickSpacing(10);
+		zoomSlider = new JSlider(JSlider.HORIZONTAL, -10, 10, 0);
+		zoomSlider.setMajorTickSpacing(5);
+		zoomSlider.setMinorTickSpacing(1);
 		zoomSlider.setPaintTicks(true);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setToolTipText("Zoom view of settlement");
@@ -99,15 +100,29 @@ public class SettlementWindow extends ToolWindow {
                 int sliderValue = zoomSlider.getValue();
                 double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
                 double newScale = defaultScale;
-                if (sliderValue > 0) newScale += defaultScale * 
-                        ((double) sliderValue / 10D);
+                if (sliderValue > 0) newScale += defaultScale * (double) sliderValue;
                 else if (sliderValue < 0) newScale = defaultScale / 
-                        (1D + ((double) sliderValue / -10D));
+                        (1D + ((double) sliderValue * -1D));
                 mapPane.setScale(newScale);
             }
 		});
 		zoomPane.add(zoomSlider, BorderLayout.EAST);
 
+	    // Add mouse wheel listener for zooming.
+        addMouseWheelListener(new MouseWheelListener() {
+            public void mouseWheelMoved(MouseWheelEvent evt) {
+                int numClicks = evt.getWheelRotation();
+                if (numClicks > 0) {
+                    if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
+                        zoomSlider.setValue(zoomSlider.getValue() + 1);
+                }
+                else if (numClicks < 0) {
+                    if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
+                        zoomSlider.setValue(zoomSlider.getValue() - 1);
+                }
+            }
+        });
+		
 		widgetPane.add(zoomPane);
 
 		JPanel buttonsPane = new JPanel();
@@ -124,9 +139,8 @@ public class SettlementWindow extends ToolWindow {
 		buttonsPane.add(labelsButton);
 		buttonsPane.add(openInfoButton);
 		widgetPane.add(buttonsPane);
-
+		
 		// Pack window.
 		pack();
 	}
-
 }
