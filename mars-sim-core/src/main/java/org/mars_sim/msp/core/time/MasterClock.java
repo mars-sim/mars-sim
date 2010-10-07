@@ -225,24 +225,30 @@ public class MasterClock implements Runnable, Serializable {
     	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
     	 * and lots of settlers die. 
     	 * */
-    	final double scalefactor=1.23;
     	double ratioatmid = 1000.0;
     	//double maxratiooutput = 300000;
     	final double minslider = 20.0;
-    	final double mid = (50.0 - minslider);
+    	final double midslider = (50.0 - minslider);
     	double base = 1.14; double exp = 0.0;
-    	//final double maxslider = 100-minslider;
-    	double expmult ;
+    	final double maxslider = 100-minslider;
+    	final double maxratio = 300000.0;
+    	double slope,offset, e1,e2;
     	if ( (slidervalue > 0)&&(slidervalue <= 100) )
     	{
+    		offset = Math.pow(Math.E,((Math.log(ratioatmid))/midslider) );
+    		e1 = Math.pow( Math.E,((Math.log(maxratio))/maxslider) ) ;
+    		e2 = Math.pow( Math.E,((Math.log(ratioatmid))/midslider) );
+    		slope = (e1-e2)/(maxslider-midslider);
+    		base = (slidervalue-minslider-30)*slope + offset;
+
     		if (slidervalue >= minslider ) 
     		{	
-    			timeRatio = Math.pow(base, (slidervalue-minslider)*scalefactor );
+    			timeRatio = Math.pow(base, (slidervalue-minslider) );
     			timeRatio = Math.round(timeRatio );
     		} 
     		else 
     		{
-    		 timeRatio = Math.pow(1.192, (slidervalue-minslider-1));	
+    		 timeRatio = Math.pow(1.237, (slidervalue-minslider-1));	
     		 if (timeRatio < 0.001) timeRatio = 0.001;
     		}
     	} 
