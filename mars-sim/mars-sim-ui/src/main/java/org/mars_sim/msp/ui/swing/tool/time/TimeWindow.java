@@ -56,7 +56,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     private JLabel uptimeLabel;      // JLabel for uptimer
     private JLabel pulsespersecondLabel;      // JLabel for pulses per second label 
     private JSlider pulseSlider;     // JSlider for pulse
-    private int sliderpos = 35;
+    private int sliderpos = 50;
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
      */

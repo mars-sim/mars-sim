@@ -89,10 +89,6 @@ public class UpTimer implements Serializable {
     
     public long getUptimeMillis() {
 		thiscall = System.currentTimeMillis();
-		System.out.println("getUptimeMillis is paused: "+this.paused);
-		System.out.println("getUptimeMillis thiscall: "+thiscall);
-		System.out.println("getUptimeMillis is lastcall: "+lastcall);
-		System.out.println("getUptimeMillis is uptime: "+uptime);
     	if (paused ) 
     	{	return uptime;	} 
     	else {
