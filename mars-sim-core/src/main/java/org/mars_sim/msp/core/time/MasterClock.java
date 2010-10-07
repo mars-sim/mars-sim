@@ -225,22 +225,31 @@ public class MasterClock implements Runnable, Serializable {
     	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
     	 * and lots of settlers die. 
     	 * */
-    	
+    	final double scalefactor=1.23;
+    	double ratioatmid = 1000.0;
+    	//double maxratiooutput = 300000;
+    	final double minslider = 20.0;
+    	final double mid = (50.0 - minslider);
+    	double base = 1.14; double exp = 0.0;
+    	//final double maxslider = 100-minslider;
+    	double expmult ;
     	if ( (slidervalue > 0)&&(slidervalue <= 100) )
-    	{if (slidervalue >= 20 ) 
-    		{timeRatio = Math.round( Math.pow(1.145, (slidervalue-20))  );
-
+    	{
+    		if (slidervalue >= minslider ) 
+    		{	
+    			timeRatio = Math.pow(base, (slidervalue-minslider)*scalefactor );
+    			timeRatio = Math.round(timeRatio );
     		} 
     		else 
     		{
-    		 timeRatio = Math.pow(1.092, (slidervalue-19));	
+    		 timeRatio = Math.pow(1.192, (slidervalue-minslider-1));	
     		 if (timeRatio < 0.001) timeRatio = 0.001;
     		}
     	} 
     	else {
     		timeRatio = 15;
     		throw new Exception("Time ratio should be in 1..100");
-    		} 
+    	} 
     }
     /**
      * setTimeRatio is for setting the Masterclock's time ratio directly. It is a double
@@ -277,10 +286,13 @@ public class MasterClock implements Runnable, Serializable {
         	
         	try {
 //        		Thread.sleep(pauseTime);
-        		Thread.sleep(50);
-        		//Thread.yield();
+        		//Thread.sleep(50);
+        		Thread.yield();
         	} 
-        	catch (InterruptedException e) {}
+        	catch (Exception e) 
+        	{
+        		logger.fine("Problem with Thread.yield() in MasterClock.run() ");
+        	}
             
         	if (!isPaused()) {
         		try {
