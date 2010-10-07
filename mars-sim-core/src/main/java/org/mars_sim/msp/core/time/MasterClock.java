@@ -217,7 +217,8 @@ public class MasterClock implements Runnable, Serializable {
      * @throws Exception if parameter is invalid.
      */
     public void setTimeRatio(int slidervalue) throws Exception {
-    	// ratio should be in the range 1..100 inclusive
+    	// slidervalue should be in the range 1..100 inclusive, if not it defaults to
+    	// 1:15 real:sim ratio 
     	/*
     	 * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
     	 * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
@@ -225,31 +226,44 @@ public class MasterClock implements Runnable, Serializable {
     	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
     	 * and lots of settlers die. 
     	 * */
-    	double ratioatmid = 1000.0;
-    	//double maxratiooutput = 300000;
+    	//you can change these to suit: 
+    	final double ratioatmid = 1000.0; //the "default" ratio that will be set at 50, the middle of the scale
+    	final double maxratio = 300000.0; //the max ratio the sim can be set at
+    	final double minfracratio = 0.001; //the minimum ratio the sim can be set at
+    	final double maxfracratio = 0.9; //the largest fractional ratio the sim can be set at
+    	
+    	//don't recommend changing these: 
     	final double minslider = 20.0;
     	final double midslider = (50.0 - minslider);
-    	double base = 1.14; double exp = 0.0;
+    	double base ;
     	final double maxslider = 100-minslider;
-    	final double maxratio = 300000.0;
+    	final double minfracpos = 1;
+    	final double maxfracpos = minslider - 1;
     	double slope,offset, e1,e2;
+
     	if ( (slidervalue > 0)&&(slidervalue <= 100) )
     	{
-    		offset = Math.pow(Math.E,((Math.log(ratioatmid))/midslider) );
+/*    		offset = Math.pow(Math.E,((Math.log(ratioatmid))/midslider) );
     		e1 = Math.pow( Math.E,((Math.log(maxratio))/maxslider) ) ;
     		e2 = Math.pow( Math.E,((Math.log(ratioatmid))/midslider) );
     		slope = (e1-e2)/(maxslider-midslider);
     		base = (slidervalue-minslider-30)*slope + offset;
+*/
+    		if (slidervalue >= minslider ) //generates ratios >= 1 
+    		{	    		
+    			offset = Math.pow(Math.E,((Math.log(ratioatmid))/midslider) );
+    			e1 = Math.pow( Math.E,((Math.log(maxratio))/maxslider) ) ;
+    			e2 = Math.pow( Math.E,((Math.log(ratioatmid))/midslider) );
+    			slope = (e1-e2)/(maxslider-midslider);
+    			base = (slidervalue-minslider-30)*slope + offset;
 
-    		if (slidervalue >= minslider ) 
-    		{	
     			timeRatio = Math.pow(base, (slidervalue-minslider) );
     			timeRatio = Math.round(timeRatio );
     		} 
-    		else 
-    		{
-    		 timeRatio = Math.pow(1.237, (slidervalue-minslider-1));	
-    		 if (timeRatio < 0.001) timeRatio = 0.001;
+    		else //generates ratios < 1
+    		{   offset = minfracratio;
+    			slope = (maxfracratio-minfracratio)/(maxfracpos-minfracpos);
+    			timeRatio = (slidervalue-minfracpos)*slope + offset;
     		}
     	} 
     	else {
