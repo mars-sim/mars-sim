@@ -91,17 +91,20 @@ public class MarsProject {
                 }
             }
         }
-
-        // Start the simulation.
-        Simulation.instance().start();
-
         // Create the main desktop window.
         new MainWindow();
 
+        // (the main window will call Simulation.getInstance().start(); 
+        // when it is finished loading. 
+        this.simstart();
         // Dispose the splash window.
         splashWindow.dispose();
     }
-
+    public void simstart() {
+        // Start the simulation.
+        Simulation.instance().start();
+    	
+    }
     /**
      * The starting method for the application
      * 

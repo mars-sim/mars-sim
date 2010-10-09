@@ -60,8 +60,7 @@ public class MasterClock implements Runnable, Serializable {
     private transient volatile File file;            // The file to save or load the simulation.
     private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
     private transient List<ClockListener> listeners; // Clock listeners.
-    private transient volatile long totalpulses=1;
-    private transient volatile double pulsespersec=0.0;
+    private long totalpulses=1;
    // private transient long pausestart=System.currentTimeMillis(),pauseend=System.currentTimeMillis(),pausetime=0;
     private transient long elapsedlast;// = uptimer.getUptimeMillis();//System.currentTimeMillis();;
     // Sleep duration in milliseconds 
@@ -89,8 +88,7 @@ public class MasterClock implements Runnable, Serializable {
         
         // Create listener list.
         listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
-        elapsedlast = uptimer.getUptimeMillis();//System.currentTimeMillis();
-//        elapsedlast = System.currentTimeMillis();
+        elapsedlast = uptimer.getUptimeMillis();
     }
 
     /** Returns the Martian clock
@@ -197,7 +195,7 @@ public class MasterClock implements Runnable, Serializable {
 
         double timePulse;
         if (timeRatio > 0D) {
-           double timePulseSeconds = ((double)this.getElapsedmillis() * timeRatio/1000);// * (TIME_PULSE_LENGTH / 1000D);
+           double timePulseSeconds = ((double)this.getElapsedmillis() *(timeRatio/1000));// * (TIME_PULSE_LENGTH / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         }
         else timePulse = 1D;
@@ -230,7 +228,7 @@ public class MasterClock implements Runnable, Serializable {
     	final double ratioatmid = 1000.0; //the "default" ratio that will be set at 50, the middle of the scale
     	final double maxratio = 300000.0; //the max ratio the sim can be set at
     	final double minfracratio = 0.001; //the minimum ratio the sim can be set at
-    	final double maxfracratio = 0.9; //the largest fractional ratio the sim can be set at
+    	final double maxfracratio = 0.98; //the largest fractional ratio the sim can be set at
     	
     	//don't recommend changing these: 
     	final double minslider = 20.0;
@@ -285,7 +283,7 @@ public class MasterClock implements Runnable, Serializable {
     	} else throw new Exception ("Time ratio out of bounds ");
     }
     /**
-     * Gets the simulation/real-time ratio.
+     * Gets the real-time/simulation ratio.
      * @return ratio
      */
     public double getTimeRatio() {
@@ -322,7 +320,8 @@ public class MasterClock implements Runnable, Serializable {
         			long startTime = System.nanoTime();
 
         			// Add time pulse length to Earth and Mars clocks. 
-        			earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+        			//earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
+        			earthTime.addTime(this.getElapsedmillis()*(timeRatio/1000));
         			marsTime.addTime(timePulse);
 				
         			synchronized(listeners) {
@@ -332,16 +331,19 @@ public class MasterClock implements Runnable, Serializable {
         				while (i.hasNext()) {
             				ClockListener cl = i.next();
         					cl.clockPulse(timePulse);
-        					//System.out.println("Master clock sending pulse to object: "+cl.toString());
         				}
         			}
 				
         			long endTime = System.nanoTime();
         			lastTimeDiff = (endTime - startTime) / 1000000L;
-        			
+        			        			       			
         			if(logger.isLoggable(Level.FINEST)) {
         			    logger.finest("time: " + lastTimeDiff);
         			}
+        			Simulation.instance().updateGUI();
+                	try {	Thread.yield();}
+                	catch (Exception e) {logger.fine("Problem with Thread.yield() in MasterClock.run() ");}
+
         		}
         		catch (Exception e) {
         			e.printStackTrace(System.err);
