@@ -140,6 +140,8 @@ public class MainWindow extends JFrame {
 
 		// Open all initial windows.
 		desktop.openInitialWindows();
+		
+		//this.notifySimStartOK(true);
 	}
 
 	/**
@@ -353,7 +355,19 @@ public class MainWindow extends JFrame {
 
 		sim.getMasterClock().exitProgram();
 	}
-
+/*
+	public void notifySimStartOK(boolean itsokaytostart) {
+		//System.out.println("mainWindow: simulation notified it can start");
+		Simulation sim = Simulation.instance();
+		try {
+			sim.mainWindowSimStartOK(itsokaytostart);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "MainWindow: Problem notifying sim it was OK to start simulation " + e);
+			e.printStackTrace(System.err);
+		}
+	}
+	
+*/	
 	/**
 	 * Sets the look and feel of the UI
 	 * 

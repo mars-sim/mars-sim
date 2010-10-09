@@ -27,6 +27,9 @@ import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 
+//import org.mars_sim.msp.ui.swing.*;
+
+
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -99,7 +102,7 @@ public class Simulation implements ClockListener, Serializable {
 		// Wait until current time pulse runs it course
 		// we have no idea how long it will take it to 
 		// run its course. But this might be enough. 
-		Thread.sleep(300);
+		Thread.yield();
 	}
 	
 	/**
@@ -114,8 +117,9 @@ public class Simulation implements ClockListener, Serializable {
 			
 			// Initialize transient data members.
 			simulation.initializeTransientData();
-			
-			simulation.start();
+		
+		//note: the following code is in MarsProject, to keep it in one place 	
+		//	simulation.start();
 		}
 		catch (Exception e) {
 			throw new Exception("New simulation could not be created: " + e.getMessage());
@@ -186,7 +190,8 @@ public class Simulation implements ClockListener, Serializable {
 		catch(FileNotFoundException e) {
 			throw new Exception("Saved file: " + file.getAbsolutePath() + " not found.");
 		}
-		
+
+		//note: the following code is in MarsProject, to keep it in one place 	
 		simulation.start();
 	}
 	
@@ -261,10 +266,18 @@ public class Simulation implements ClockListener, Serializable {
 	@Override
 	public void clockPulse(double time) {
 		try {
-			mars.timePassing(time);
-			missionManager.timePassing(time);
-			unitManager.timePassing(time);
-            scientificStudyManager.updateStudies();
+			System.out.println(masterClock.getUpTimer().getUptime()+  
+					" Master clock sending pulse to object: mars "+mars.toString() );
+		mars.timePassing(time);
+			System.out.println(masterClock.getUpTimer().getUptime()+  
+					" Master clock sending pulse to object: missionManager "+missionManager.toString());
+		missionManager.timePassing(time);
+			System.out.println(masterClock.getUpTimer().getUptime()+  
+					" Master clock sending pulse to object: unitManager "+unitManager.toString());
+		unitManager.timePassing(time);
+			System.out.println(masterClock.getUpTimer().getUptime()+  
+					" Master clock sending pulse to object: scientificStudyManager "+scientificStudyManager );
+        scientificStudyManager.updateStudies();
 		}
 		catch (Exception e) {
 			e.printStackTrace(System.err);
@@ -358,5 +371,20 @@ public class Simulation implements ClockListener, Serializable {
 	 */
 	public boolean isDefaultLoad() {
 		return defaultLoad;
+	}
+/*
+	public void mainWindowSimStartOK(boolean itsokaytostart) {
+		// TODO Auto-generated method stub
+		//if (mainwindow == null) 
+		//	logger.severe("Simulation.instance: MainWindow appeared to be null..");
+		if (itsokaytostart)
+			{ this.start(); }
+		else 
+			logger.severe("Simulation.instance: MainWindow told me not to start");
+	}
+*/	
+	
+	public void updateGUI() {
+		
 	}
 }

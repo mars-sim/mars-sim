@@ -9,8 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Formatter;
-import java.util.Locale;
+
 
 /** The UpTimer class keeps track of how long an instance of the simulation 
  *  has been running in real time.
