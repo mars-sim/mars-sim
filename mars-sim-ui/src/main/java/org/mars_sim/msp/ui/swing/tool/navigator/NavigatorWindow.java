@@ -106,7 +106,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         topMainPane.add(leftTopPane);
 
         // Prepare globe display
-        globeNav = new GlobeDisplay(150, 150);
+        globeNav = new GlobeDisplay(this,150, 150);
         JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
                 new LineBorder(Color.green)));

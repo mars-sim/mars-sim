@@ -14,6 +14,11 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
 import java.awt.image.MemoryImageSource;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -44,6 +49,8 @@ class GlobeDisplay extends JComponent implements Runnable {
     private MarsGlobe topoSphere; // Topographical sphere object
     private Coordinates centerCoords; // Spherical coordinates for globe center
     private Thread showThread; // Refresh thread
+    private NavigatorWindow navwin;
+    
     private boolean topo; // True if in topographical mode, false if in real surface mode
     private boolean recreate; // True if globe needs to be regenerated
     private int width; // width of the globe display component
@@ -52,7 +59,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private int[] shadingArray; // Array used to generate day/night shading image
     private boolean showDayNightShading; // True if day/night shading is to be used
     private boolean update; // True if globe should be updated.
-
+    private static int dragx,dragy;
     private static final double HALF_PI = (Math.PI / 2);
 
     /** 
@@ -61,8 +68,9 @@ class GlobeDisplay extends JComponent implements Runnable {
      * @param width the width of the globe display
      * @param height the height of the globe display
      */
-    public GlobeDisplay(int width, int height) {
+    public GlobeDisplay(final NavigatorWindow navwin,int width, int height) {
 
+    	this.navwin = navwin;
         this.width = width;
         this.height = height;
 
@@ -83,7 +91,63 @@ class GlobeDisplay extends JComponent implements Runnable {
         useUSGSMap = false;
         shadingArray = new int[width * height];
         showDayNightShading = false;
+        
+        this.addMouseMotionListener(new MouseAdapter(){
+        	int lastx,lasty;
+        	@Override
+        	public void mouseDragged(MouseEvent e)
+        	{	
+        		int difx,dify,x=e.getX(),y=e.getY(); ;
+        		if (y>dragy){if (y<lasty) {dragy=y;}  		}
+        		else{		if (y>lasty) {dragy=y;}	       		}
 
+        		if (x>dragx){if (x<lastx) {dragx=x;}  		}
+        		else{		if (x>lastx) {dragx=x;}	       		}
+        		dify=dragy-y;
+        		difx=dragx-x;
+        		lastx =x;lasty=y;
+/*				System.out.println("GlobeDisplay mouseDragged difx = "+difx);
+    			System.out.println("GlobeDisplay mouseDragged dify = "+dify);
+				System.out.println("GlobeDisplay mouseDragged dragx = "+dragx);
+    			System.out.println("GlobeDisplay mouseDragged dragy = "+dragy);
+				System.out.println("GlobeDisplay mouseDragged X = "+e.getX());
+    			System.out.println("GlobeDisplay mouseDragged Y = "+e.getY());
+*/
+    			if (dragx != 0 && dragy != 0) {
+    				centerCoords = 
+					new Coordinates((centerCoords.getPhi()+dify*0.0025)%(Math.PI) ,
+							(centerCoords.getTheta()+difx*0.0025)%(Math.PI*2) );
+                    if (topo) {
+                        topoSphere.drawSphere(centerCoords);
+                    } else {
+                        marsSphere.drawSphere(centerCoords);
+                    }
+                    recreate = false;
+                   
+                    repaint();
+    			}
+    			super.mouseDragged(e);
+
+        	} 
+
+        });
+       this.addMouseListener(new MouseAdapter() {
+       	@Override
+		public void mousePressed(MouseEvent e) {
+			System.out.println("mousepressed X = "+e.getX());
+			System.out.println("             Y = "+e.getY());
+			dragx = e.getX();dragy=e.getY();
+			
+			super.mousePressed(e);
+		}
+		@Override
+		public void mouseReleased(MouseEvent e){
+			dragx = 0;dragy=0;
+			navwin.updateCoords(centerCoords);
+			super.mouseReleased(e);
+		} 
+
+	});
         // Initially show real surface globe
         showSurf();
     }
@@ -310,6 +374,8 @@ class GlobeDisplay extends JComponent implements Runnable {
     public void setDayNightTracking(boolean showDayNightShading) {
         this.showDayNightShading = showDayNightShading;
     }
+    
+    
     
     /**
      * Prepare globe for deletion.
