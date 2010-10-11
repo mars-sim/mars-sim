@@ -170,13 +170,14 @@ public class MapPanel extends JPanel implements Runnable {
 	    			}
 	    			wait = false;
 	    			repaint();
+	    	        if (navWin != null ) {navWin.centerViewOnMap();}
 	    		}
 			});
 			createMapThread.start();
 		}
 		
         updateDisplay();
-        if (navWin != null ) {navWin.centerViewOnMap();}
+
     }
 	
 	/** 
@@ -194,11 +195,13 @@ public class MapPanel extends JPanel implements Runnable {
 	public void run() {
 		while (update) {
         	try {
-                Thread.sleep(1000);
+            //    Thread.sleep(1000);
+        		Thread.sleep(50);
             } 
 	        catch (InterruptedException e) {}
 	        repaint();
         }
+
 	}
 	
 	public void paintComponent(Graphics g) {
@@ -211,7 +214,7 @@ public class MapPanel extends JPanel implements Runnable {
         	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
         	String message = "Generating Map";
         	drawCenteredMessage(message, g);
-           	if (navWin != null ) {navWin.centerViewOnMap();}
+           //	if (navWin != null ) {navWin.centerViewOnMap();}
         }
         else {
         	if (mapError) {
