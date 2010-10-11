@@ -46,7 +46,7 @@ public class MineralMapLayer implements MapLayer {
      */
     public MineralMapLayer(Component displayComponent) {
     	this.displayComponent = displayComponent;
-    	mineralConcentrationArray = new int[Map.DISPLAY_WIDTH * Map.DISPLAY_HEIGHT];
+    	mineralConcentrationArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
     	updateMineralsDisplayed();
     }
     
@@ -78,8 +78,8 @@ public class MineralMapLayer implements MapLayer {
 			updateMineralsDisplayed();
 			
 			Coordinates location = new Coordinates(0D, 0D);
-			for (int x = 0; x < Map.DISPLAY_WIDTH; x+=2) {
-				for (int y = 0; y < Map.DISPLAY_HEIGHT; y+=2) {
+			for (int x = 0; x < Map.MAP_VIS_WIDTH; x+=2) {
+				for (int y = 0; y < Map.MAP_VIS_HEIGHT; y+=2) {
 					mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
 					java.util.Map<String, Double> mineralConcentrations = 
 						mineralMap.getAllMineralConcentrations(location);
@@ -91,11 +91,11 @@ public class MineralMapLayer implements MapLayer {
 								double concentration = mineralConcentrations.get(mineralType);
 								if (concentration > 0D) {
 									Color baseColor = mineralColors.get(mineralType);
-									int index = x + (y * Map.DISPLAY_WIDTH);
+									int index = x + (y * Map.MAP_VIS_WIDTH);
 									addColorToMineralConcentrationArray(index, baseColor, concentration);
 									addColorToMineralConcentrationArray((index + 1), baseColor, concentration);
-									if (y < Map.DISPLAY_HEIGHT -1) {
-										int indexNextLine = x + ((y + 1) * Map.DISPLAY_WIDTH);
+									if (y < Map.MAP_VIS_HEIGHT -1) {
+										int indexNextLine = x + ((y + 1) * Map.MAP_VIS_WIDTH);
 										addColorToMineralConcentrationArray(indexNextLine, baseColor, concentration);
 										addColorToMineralConcentrationArray((indexNextLine + 1), baseColor, concentration);
 									}
@@ -108,8 +108,8 @@ public class MineralMapLayer implements MapLayer {
         
 			// Create mineral concentration image for map
 			mineralConcentrationMap = displayComponent.createImage(
-					new MemoryImageSource(Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT, 
-							mineralConcentrationArray, 0, Map.DISPLAY_WIDTH));
+					new MemoryImageSource(Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT, 
+							mineralConcentrationArray, 0, Map.MAP_VIS_WIDTH));
 
 			MediaTracker mt = new MediaTracker(displayComponent);
 			mt.addImage(mineralConcentrationMap, 0);

@@ -41,8 +41,8 @@ public class Coordinates implements Serializable {
     public Coordinates(double phi, double theta) {
 
         // Set Coordinates
-        this.phi = phi;
-        this.theta = theta;
+        this.phi = phi%TWO_PI;
+        this.theta = theta%TWO_PI;
 
         // Set trigonometric functions
         setTrigFunctions();
@@ -150,8 +150,8 @@ public class Coordinates implements Serializable {
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
-        phi = newCoordinates.getPhi();
-        theta = newCoordinates.getTheta();
+        phi = newCoordinates.getPhi()%TWO_PI;
+        theta = newCoordinates.getTheta()%TWO_PI;
 
         // Update trigonometric functions
         setTrigFunctions();
@@ -165,7 +165,7 @@ public class Coordinates implements Serializable {
 
         if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
         	Coordinates other = (Coordinates) otherCoords;
-            if ((phi == other.getPhi()) && (theta == other.getTheta()))
+            if ((phi%TWO_PI == other.getPhi()%TWO_PI) && (theta%TWO_PI == other.getTheta()%TWO_PI))
                 return true;
         }
 
@@ -381,8 +381,8 @@ public class Coordinates implements Serializable {
                 theta_new = TWO_PI + theta_new;
         }
 
-        newCoordinates.setPhi(phi_new);
-        newCoordinates.setTheta(theta_new);
+        newCoordinates.setPhi(phi_new%TWO_PI);
+        newCoordinates.setTheta(theta_new%TWO_PI);
     }
 
     /** Returns angle direction to another location on surface of

@@ -44,7 +44,7 @@ public class ShadingMapLayer implements MapLayer {
         Mars mars = Simulation.instance().getMars();
         surfaceFeatures = mars.getSurfaceFeatures();
         this.displayComponent = displayComponent;
-        shadingArray = new int[Map.DISPLAY_WIDTH * Map.DISPLAY_HEIGHT];
+        shadingArray = new int[Map.MAP_VIS_WIDTH * Map.MAP_VIS_HEIGHT];
     }
     
 	/**
@@ -67,18 +67,18 @@ public class ShadingMapLayer implements MapLayer {
         boolean nightTime = true;
         boolean dayTime = true;
         Coordinates location = new Coordinates(0D, 0D);
-        for (int x = 0; x < Map.DISPLAY_WIDTH; x+=2) {
-            for (int y = 0; y < Map.DISPLAY_HEIGHT; y+=2) {
+        for (int x = 0; x < Map.MAP_VIS_WIDTH; x+=2) {
+            for (int y = 0; y < Map.MAP_VIS_HEIGHT; y+=2) {
                 mapCenter.convertRectToSpherical(x - centerX, y - centerY, rho, location);
                 double sunlight = surfaceFeatures.getSurfaceSunlight(location);
                 int sunlightInt = (int) (127 * sunlight);
                 int shadeColor = ((127 - sunlightInt) << 24) & 0xFF000000;
                
-                shadingArray[x + (y * Map.DISPLAY_WIDTH)] = shadeColor;
-                shadingArray[x + 1 + (y * Map.DISPLAY_WIDTH)] = shadeColor;
-                if (y < Map.DISPLAY_HEIGHT -1) {
-                    shadingArray[x + ((y + 1) * Map.DISPLAY_WIDTH)] = shadeColor;
-                    shadingArray[x + 1 + ((y + 1) * Map.DISPLAY_WIDTH)] = shadeColor;
+                shadingArray[x + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
+                shadingArray[x + 1 + (y * Map.MAP_VIS_WIDTH)] = shadeColor;
+                if (y < Map.MAP_VIS_HEIGHT -1) {
+                    shadingArray[x + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
+                    shadingArray[x + 1 + ((y + 1) * Map.MAP_VIS_WIDTH)] = shadeColor;
                 }
        
                 if (sunlight > 0) nightTime = false;
@@ -88,13 +88,13 @@ public class ShadingMapLayer implements MapLayer {
         
         if (nightTime) {
             g.setColor(new Color(0, 0, 0, 128));
-            g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+            g.fillRect(0, 0, Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT);
         }
         else if (!dayTime) {
             // Create shading image for map
             Image shadingMap = displayComponent.createImage(
-            	new MemoryImageSource(Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT, 
-            	shadingArray, 0, Map.DISPLAY_WIDTH));
+            	new MemoryImageSource(Map.MAP_VIS_WIDTH, Map.MAP_VIS_HEIGHT, 
+            	shadingArray, 0, Map.MAP_VIS_WIDTH));
 
             MediaTracker mt = new MediaTracker(displayComponent);
             mt.addImage(shadingMap, 0);

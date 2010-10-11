@@ -388,8 +388,11 @@ class GlobeDisplay extends JComponent implements Runnable {
         this.showDayNightShading = showDayNightShading;
     }
     
-    
-    
+    public Coordinates getCoordinates() {return centerCoords;}
+
+    public void setCoordinates(Coordinates c) {
+    	if (c != null ) centerCoords=c;
+    }
     /**
      * Prepare globe for deletion.
      *

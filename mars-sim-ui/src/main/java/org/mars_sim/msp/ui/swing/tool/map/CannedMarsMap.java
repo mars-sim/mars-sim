@@ -16,6 +16,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
 
 import org.mars_sim.msp.core.*;
 
@@ -23,26 +26,21 @@ import org.mars_sim.msp.core.*;
  * The CannedMarsMap class reads in data from files in the map_data
  * jar file in order to generate a map image.
  */
-public abstract class CannedMarsMap implements Map {
+public abstract class CannedMarsMap extends JPanel implements Map {
     
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.tool.map.CannedMarsMap";
 	
     	private static Logger logger = Logger.getLogger(CLASS_NAME);
-	
-	public static final double HALF_MAP_ANGLE = .48587D;
-	public static final int MAP_HEIGHT = 1440; // Source map height in pixels.
-	public static final int MAP_WIDTH = 2880; // Source map width in pixels.
-	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
-	private static final double TWO_PI = Math.PI * 2D;
-    
 	// Data members
 	protected List<int[]> surfaceColors = null;
 	private JComponent displayArea = null;
 	private Coordinates currentCenter = null;
 	private Image mapImage = null;
 	private boolean mapImageDone = false;
-    
+	private Rectangle mapViewLoc ;
+	private Rectangle mapViewLocNew ;
+	
     /**
      * Constructor with surface colors array list parameter.
      * 
@@ -54,7 +52,8 @@ public abstract class CannedMarsMap implements Map {
     	this.surfaceColors = surfaceColors;
     }
     
-    /**
+
+	/**
      * Constructor with data file parameters.
      * 
      * @param displayArea the display component.
@@ -62,8 +61,10 @@ public abstract class CannedMarsMap implements Map {
      * @param indexFile the map index filename within map_data.jar.
      */
     public CannedMarsMap(JComponent displayArea, String dataFile, String indexFile, List<int[]> mapColors) {
+
         this.displayArea = displayArea;
-        
+
+    	    	
         if (mapColors == null) {
         	// Load data files
         	try {
@@ -252,7 +253,8 @@ public abstract class CannedMarsMap implements Map {
 		}
         
 		// Create new map image.
-		return displayArea.createImage(new MemoryImageSource(DISPLAY_WIDTH, DISPLAY_WIDTH, mapArray, 0, DISPLAY_WIDTH));
+		
+		return displayArea.createImage(new MemoryImageSource(DISPLAY_WIDTH, DISPLAY_HEIGHT, mapArray, 0, DISPLAY_WIDTH));
 	}
 	
 	/** 
@@ -264,6 +266,9 @@ public abstract class CannedMarsMap implements Map {
 		
 		if ((newCenter != null) && (!newCenter.equals(currentCenter))) {
 			mapImage = createMapImage(newCenter);
+			
+			displayArea.repaint();
+			
 		
 			MediaTracker mt = new MediaTracker(displayArea);
 			mt.addImage(mapImage, 0);
@@ -275,7 +280,57 @@ public abstract class CannedMarsMap implements Map {
 			}
 			mapImageDone = true;
 			currentCenter = new Coordinates(newCenter);
+	    	mapViewLoc = new Rectangle(displayArea.getBounds());
 		}
+	}
+	public void mapViewportMove(int xoffset, int yoffset)
+	{
+		/* Creating a way to move the SurfMarsMap image by dragging within the window: 
+		 * 
+		 * 1. createmapimage() makes a map 3x the width and height necessary for immediate
+		 *    usage. call it backdropmap; 
+		 * 2. drawMapFast, when called, puts an immediate, quick image down by selecting
+		 *    a section of this map to display, during the mouse drag operation. 
+		 * 2.1 the user lets go of their dragging mouse. 
+		 * 2.2 the on-screen image is then decorated with all the other things it may 
+		 *    have on it. 
+		 * 
+		 * 3. drawBackDropMap() is called to create a new backdropmap.
+		 *     	
+		 * */	
+		System.out.println("drawMapFast was reached with your message ! "+xoffset+","+yoffset);
+		int curx,cury;
+		curx=mapViewLoc.getBounds().x;cury=mapViewLoc.getBounds().y;
+		mapViewLocNew = new Rectangle(curx +xoffset, cury + yoffset, MAP_VIS_WIDTH, MAP_VIS_HEIGHT);
+		displayArea.setBounds(mapViewLocNew);
+		
+		//displayArea.repaint();
+		
+	};
+	
+	public void mapViewportLock() {
+		//this should only be called when the user who is dragging their mouse on the 
+		//mars navigation pane lets go of their mouse. 
+		
+		//update current center 
+		mapViewLoc=mapViewLocNew;
+		drawMap(currentCenter);
+		displayArea.setBounds(mapViewLocNew);
+	}
+    public Rectangle getMapViewLoc() {
+		return mapViewLoc;
+	}
+
+	public void setMapViewLoc(Rectangle mapViewLoc) {
+		this.mapViewLoc = mapViewLoc;
+	}
+
+	public Rectangle getMapViewLocNew() {
+		return mapViewLocNew;
+	}
+
+	public void setMapViewLocNew(Rectangle mapViewLocNew) {
+		this.mapViewLocNew = mapViewLocNew;
 	}
 	
 	/** 

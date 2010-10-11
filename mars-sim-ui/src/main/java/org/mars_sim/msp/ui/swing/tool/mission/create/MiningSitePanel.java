@@ -329,8 +329,8 @@ public class MiningSitePanel extends WizardPanel {
 		
 		Coordinates center = getCenterCoords();
 		if (center != null) {
-			int xValue = xLoc - (Map.DISPLAY_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
-			int yValue = yLoc - (Map.DISPLAY_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
+			int xValue = xLoc - (Map.MAP_VIS_WIDTH / 2) - 1 + (exploredSiteLayer.getIconWidth() / 2);
+			int yValue = yLoc - (Map.MAP_VIS_HEIGHT / 2) - 1 + (exploredSiteLayer.getIconHeight() / 2);
 			Coordinates clickedPosition = center.convertRectToSpherical((double) xValue,
 					(double) yValue, CannedMarsMap.PIXEL_RHO);
 

@@ -49,6 +49,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 
     // Data members
     private MapPanel map; // map navigation
+    private JScrollPane mapscroll;
     private GlobeDisplay globeNav; // Globe navigation
     private NavButtonDisplay navButtons; // Compass navigation buttons
     private LegendDisplay legend; // Topographical and distance legend
@@ -77,8 +78,12 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private MapLayer navpointLayer;
     private MapLayer landmarkLayer;
     private MapLayer exploredSiteLayer;
-    
 
+    //the following are necessary for map drag operations: 
+    private int dragx,dragy; //the origin for the drag 
+    private Coordinates currentCenter = new Coordinates(0,0);
+    private Point origpos = new Point(0,0);
+    int difx,dify;
     /** Constructs a NavigatorWindow object 
      *  @param desktop the desktop pane
      */
@@ -136,7 +141,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
         mapPaneInner.setBackground(Color.black);
         
-        map = new MapPanel();
+        map = new MapPanel(this);
         map.addMouseListener(new mapClickListener());
         
         // Create map layers.
@@ -156,9 +161,23 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         map.addMapLayer(navpointLayer);
         map.addMapLayer(trailLayer);
         map.addMapLayer(landmarkLayer);
+
+        mapscroll = new JScrollPane(map);
+        mapscroll.setViewportView(map);
+        mapscroll.setCursor(new Cursor(Cursor.HAND_CURSOR));
         
+        /* Pick one of the following. May work better/worse on different platforms.*/
+        mapscroll.getViewport().setScrollMode(JViewport.BLIT_SCROLL_MODE);
+//      mapscroll.getViewport().setScrollMode(JViewport.SIMPLE_SCROLL_MODE);
+//      mapscroll.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+
+        mapscroll.setPreferredSize(new Dimension(Map.MAP_VIS_WIDTH,Map.MAP_VIS_WIDTH));
+        mapscroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        mapscroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+        this.centerViewOnMap();
         map.showMap(new Coordinates((Math.PI / 2D), 0D));
-        mapPaneInner.add(map, BorderLayout.CENTER);
+//        mapPaneInner.add(map, BorderLayout.CENTER);
+        mapPaneInner.add(mapscroll, BorderLayout.CENTER);
         mapPane.add(mapPaneInner, BorderLayout.CENTER);
 
         // Create map layers.
@@ -257,6 +276,77 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         goThere.setAlignmentY(.5F);
         positionPane.add(goThere);
 
+      //draggable stuff for NavigatorWindow        
+    //  this works, but doesn't update the screen fast enough to be practical 
+            map.addMouseMotionListener(new MouseAdapter(){
+            	int lastx,lasty;
+            	@Override
+            	public void mouseDragged(MouseEvent e)
+            	{	
+            		
+            		int x=e.getX(),y=e.getY(); ;
+            		x=e.getXOnScreen();y=e.getYOnScreen();
+            		if (y>dragy){if (y<lasty) {dragy=y;}  		}
+            		else{		if (y>lasty) {dragy=y;}	       		}
+
+            		if (x>dragx){if (x<lastx) {dragx=x;}  		}
+            		else{		if (x>lastx) {dragx=x;}	       		}
+            		dify=y-dragy;
+            		difx=x-dragx;
+            		lastx =x;lasty=y;
+   /* 				System.out.println("NavigatorWindow mouseDragged difx = "+difx);
+        			System.out.println("	 mouseDragged dify = "+dify);
+    				System.out.println("	 mouseDragged dragx = "+dragx);
+        			System.out.println("	mouseDragged dragy = "+dragy);
+    				System.out.println("	 mouseDragged X = "+e.getX());
+        			System.out.println("	mouseDragged Y = "+e.getY());
+*/
+        			if (dragx != 0 && dragy != 0) {
+        				difx=(int)Math.round(difx*0.8);dify=(int)Math.round(dify*0.8);
+        				Point pos = new Point();
+        				pos.x=origpos.x-difx; pos.y=origpos.y-dify;
+        				mapscroll.getViewport().setViewPosition(pos);
+        				mapscroll.repaint();
+        			}
+        			super.mouseDragged(e);
+            	} 
+            });
+           map.addMouseListener(new MouseAdapter() {
+           	@Override
+    		public void mousePressed(MouseEvent e) {
+    	//		System.out.println("mousepressed X = "+e.getX());
+    	//		System.out.println("             Y = "+e.getY());
+    			currentCenter = new Coordinates(map.getCenterLocation() );
+        		dragx=e.getXOnScreen();dragy=e.getYOnScreen();
+        		origpos = new Point(mapscroll.getViewport().getViewPosition());
+    			super.mousePressed(e);
+    		}
+    		@Override
+    		public void mouseReleased(MouseEvent e){
+    	//		System.out.println("mouseReleased was called difx, dify "+difx+","+dify);
+    			dragx = 0;dragy=0;
+/*
+    			Coordinates clickedPosition = new Coordinates (
+    					currentCenter.getPhi()+(dify*0.0024D),
+    					currentCenter.getTheta()+(difx*0.0024D)
+    					);
+  */  			
+    			
+    Coordinates			clickedPosition = new Coordinates (
+    					currentCenter.convertRectToSpherical((double)-difx,(double)-dify)
+    					);
+
+    			
+    			
+    			updateCoords(clickedPosition);
+    			mapscroll.repaint();
+    			super.mouseReleased(e);
+    		} 
+    		@Override
+    		public void mouseEntered(MouseEvent e){
+    			super.mouseEntered(e);
+    		} 
+    	});
         // Pack window
         pack();
     }
@@ -467,38 +557,57 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     
     private class mapClickListener extends MouseAdapter {
     	public void mouseClicked(MouseEvent event) {
-
-    		if (map.getCenterLocation() != null) {
-    			double rho;
-    			if (USGSMarsMap.TYPE.equals(map.getMapType())) rho = USGSMarsMap.PIXEL_RHO;
-    			else rho = CannedMarsMap.PIXEL_RHO;
-
-    			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
-    					(double)(event.getX() - (Map.DISPLAY_HEIGHT / 2) - 1),
-    					(double)(event.getY() - (Map.DISPLAY_HEIGHT / 2) - 1), rho);
-    			boolean unitsClicked = false;
-
-    			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
-
-    			// Open window if unit is clicked on the map
-    			while (i.hasNext()) {
-    				Unit unit = i.next();
-    				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-    				if (displayInfo.isMapDisplayed(unit)) {
-    					Coordinates unitCoords = unit.getCoordinates();
-    					double clickRange = unitCoords.getDistance(clickedPosition);
-    					double unitClickRange = displayInfo.getMapClickRange();
-    					if (USGSMarsMap.TYPE.equals(map.getMapType())) unitClickRange *= .1257D;
-    					if (clickRange < unitClickRange) {
-    						openUnitWindow(unit);
-    						unitsClicked = true;
-    					}
-                    }
-                }
-    			
-    			if (!unitsClicked) updateCoords(clickedPosition);
-    		}
+    		MouseClickonNavWin(event);
         }
+    }
+ 
+    public void MouseClickonNavWin(MouseEvent event) {
+
+		if (map.getCenterLocation() != null) {
+			double rho;
+			if (USGSMarsMap.TYPE.equals(map.getMapType())) rho = USGSMarsMap.PIXEL_RHO;
+			else rho = CannedMarsMap.PIXEL_RHO;
+
+//			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
+//					(double)(event.getX() - (Map.MAP_VIS_WIDTH / 2) - 1),
+//					(double)(event.getY() - (Map.MAP_VIS_HEIGHT / 2) - 1), rho);
+			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
+			(double)(event.getX() - ((double)Map.MAP_VIS_WIDTH / 2) - 1),
+			(double)(event.getY() - ((double)Map.MAP_VIS_HEIGHT / 2) - 1), rho);
+
+			boolean unitsClicked = false;
+
+			Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+
+			// Open window if unit is clicked on the map
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+				if (displayInfo.isMapDisplayed(unit)) {
+					Coordinates unitCoords = unit.getCoordinates();
+					double clickRange = unitCoords.getDistance(clickedPosition);
+					double unitClickRange = displayInfo.getMapClickRange();
+					if (USGSMarsMap.TYPE.equals(map.getMapType())) unitClickRange *= 0.1257D;
+					if (clickRange < unitClickRange) {
+						openUnitWindow(unit);
+						unitsClicked = true;
+					}
+                }
+            }
+			
+			if (!unitsClicked) updateCoords(clickedPosition);
+		}    	
+    }
+    public void centerViewOnMap() {
+    	Point p = new Point(
+    		1+(Map.DISPLAY_WIDTH-Map.MAP_VIS_WIDTH)/2,
+    		1+(Map.DISPLAY_HEIGHT-Map.MAP_VIS_HEIGHT)/2
+    	);
+    	this.mapscroll.getViewport().setViewPosition(p);
+    	System.out.println("centerViewonMap() was called x,y: "+p.x+" , "+p.y);
+   
+	mapscroll.repaint();
+
     }
     
     public void destroy() {
