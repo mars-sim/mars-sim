@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.navigator;
  
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -144,6 +145,18 @@ class GlobeDisplay extends JComponent implements Runnable {
 		public void mouseReleased(MouseEvent e){
 			dragx = 0;dragy=0;
 			navwin.updateCoords(centerCoords);
+			super.mouseReleased(e);
+		} 
+
+		@Override
+		public void mouseEntered(MouseEvent e){
+			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+			super.mouseReleased(e);
+		} 
+
+		@Override
+		public void mouseExited(MouseEvent e){
+			navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			super.mouseReleased(e);
 		} 
 
