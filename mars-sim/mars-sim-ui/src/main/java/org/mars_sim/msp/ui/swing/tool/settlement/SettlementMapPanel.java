@@ -50,8 +50,8 @@ public class SettlementMapPanel extends JPanel {
         super();
         
         // Initialize data members.
-        xPos = 0D;
-        yPos = 0D;
+        xPos = 50D;
+        yPos = 50D;
         rotation = 0D;
         scale = DEFAULT_SCALE;
         settlement = null;
@@ -75,11 +75,36 @@ public class SettlementMapPanel extends JPanel {
     }
     
     /**
+     * Gets the map scale.
+     * @return scale (meters per pixel).
+     */
+    public double getScale() {
+        return scale;
+    }
+    
+    /**
      * Sets the map scale.
      * @param scale (meters per pixel).
      */
     public void setScale(double scale) {
         this.scale = scale;
+        repaint();
+    }
+    
+    /**
+     * Gets the map rotation.
+     * @return rotation (radians).
+     */
+    public double getRotation() {
+        return rotation;
+    }
+    
+    /**
+     * Sets the map rotation.
+     * @param rotation (radians).
+     */
+    public void setRotation(double rotation) {
+        this.rotation = rotation;
         repaint();
     }
     
@@ -90,11 +115,14 @@ public class SettlementMapPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         
+        double mapCenterX = getWidth() / 2D;
+        double mapCenterY = getHeight() / 2D;
+        
         // Translate map from settlement center point.
         g2d.translate(xPos * scale, yPos * scale);
         
         // Rotate map from North.
-        g2d.rotate(rotation, xPos * scale, yPos * scale);
+        g2d.rotate(rotation, mapCenterX - (xPos * scale), mapCenterY - (yPos * scale));
         
         // Draw each building.
         drawBuildings(g2d);

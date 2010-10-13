@@ -8,6 +8,8 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseWheelEvent;
@@ -24,6 +26,7 @@ import javax.swing.event.ChangeListener;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -81,19 +84,19 @@ public class SettlementWindow extends ToolWindow {
                 mapPane.setSettlement(settlement);
             } 
 		});
-		widgetPane.add(settlementListBox, BorderLayout.WEST);
+		widgetPane.add(settlementListBox);
 		mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
 
 		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
-		zoomLabel = new JLabel("Zoom: ");
-		zoomPane.add(zoomLabel, BorderLayout.CENTER);
+		zoomLabel = new JLabel("Zoom", JLabel.CENTER);
+		zoomPane.add(zoomLabel, BorderLayout.NORTH);
 
 		zoomSlider = new JSlider(JSlider.HORIZONTAL, -10, 10, 0);
 		zoomSlider.setMajorTickSpacing(5);
 		zoomSlider.setMinorTickSpacing(1);
-		zoomSlider.setPaintTicks(true);
-		zoomSlider.setPaintLabels(true);
+		//zoomSlider.setPaintTicks(true);
+		//zoomSlider.setPaintLabels(true);
 		zoomSlider.setToolTipText("Zoom view of settlement");
 		zoomSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent arg0) {
@@ -106,7 +109,7 @@ public class SettlementWindow extends ToolWindow {
                 mapPane.setScale(newScale);
             }
 		});
-		zoomPane.add(zoomSlider, BorderLayout.EAST);
+		zoomPane.add(zoomSlider, BorderLayout.CENTER);
 
 	    // Add mouse wheel listener for zooming.
         addMouseWheelListener(new MouseWheelListener() {
@@ -126,19 +129,37 @@ public class SettlementWindow extends ToolWindow {
 		widgetPane.add(zoomPane);
 
 		JPanel buttonsPane = new JPanel();
-		JButton rotateButton = new JButton("Rotate");
-		rotateButton.setToolTipText("Free Rotation of view");
+		widgetPane.add(buttonsPane);
+		
+		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon("Clockwise"));
+		rotateClockwiseButton.setToolTipText("Rotate map clockwise");
+		rotateClockwiseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                mapPane.setRotation(mapPane.getRotation() + (Math.PI / 20D));
+            }
+		});
+		buttonsPane.add(rotateClockwiseButton);
+		
+		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon("CounterClockwise"));
+        rotateCounterClockwiseButton.setToolTipText("Rotate map counter-clockwise");
+        rotateCounterClockwiseButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                mapPane.setRotation(mapPane.getRotation() - (Math.PI / 20D));
+            }
+        });
+        buttonsPane.add(rotateCounterClockwiseButton);
+        
 		JButton recenterButton = new JButton("Recenter");
 		recenterButton.setToolTipText("Recenter view to center, normal zoom");
+		buttonsPane.add(recenterButton);
+		
 		JButton labelsButton = new JButton("Labels");
 		labelsButton.setToolTipText("Add/remove label overlays");
+		buttonsPane.add(labelsButton);
+		
 		JButton openInfoButton = new JButton("Open Info");
 		openInfoButton.setToolTipText("Opens the Settlement Info Window");
-		buttonsPane.add(rotateButton);
-		buttonsPane.add(recenterButton);
-		buttonsPane.add(labelsButton);
 		buttonsPane.add(openInfoButton);
-		widgetPane.add(buttonsPane);
 		
 		// Pack window.
 		pack();
