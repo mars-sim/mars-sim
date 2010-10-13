@@ -50,8 +50,8 @@ public class SettlementMapPanel extends JPanel {
         super();
         
         // Initialize data members.
-        xPos = 50D;
-        yPos = 50D;
+        xPos = 0D;
+        yPos = 0D;
         rotation = 0D;
         scale = DEFAULT_SCALE;
         settlement = null;
