@@ -153,11 +153,13 @@ public class NavpointEditLayer implements MapLayer {
 			g2d.setColor(Color.GREEN);
 			IntPoint currentPosition = navpointPositions.get(x);
 			if ((x == 0) || (x == (navpointPositions.size() - 1))) 
-				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), 150, 150);
+				g2d.drawLine(currentPosition.getiX()+MAP_X_OFFSET, currentPosition.getiY()+
+						MAP_Y_OFFSET, 150+MAP_X_OFFSET, 150+MAP_Y_OFFSET);
 			
 			if (x != 0) {
 				IntPoint prevPosition = navpointPositions.get(x - 1);
-				g2d.drawLine(currentPosition.getiX(), currentPosition.getiY(), prevPosition.getiX(), prevPosition.getiY());
+				g2d.drawLine(currentPosition.getiX()+MAP_X_OFFSET, currentPosition.getiY()+MAP_Y_OFFSET, 
+						prevPosition.getiX()+MAP_X_OFFSET, prevPosition.getiY()+MAP_Y_OFFSET);
 			}
 		}
 

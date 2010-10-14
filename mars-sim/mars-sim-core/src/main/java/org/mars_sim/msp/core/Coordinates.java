@@ -98,8 +98,8 @@ public class Coordinates implements Serializable {
      *  @param newPhi the new phi angle value for the coordinate
      */
     public void setPhi(double newPhi) {
-       // if (newPhi < 0) {phi = 0;} else if (newPhi > Math.PI) { phi = Math.PI;} else phi=newPhi;
-       phi  = newPhi;
+       if (newPhi < 0) {phi = 0;} else if (newPhi > Math.PI) { phi = Math.PI;} else phi=newPhi;
+       //phi  = newPhi;
     	setTrigFunctions();
     }
 
@@ -114,8 +114,8 @@ public class Coordinates implements Serializable {
      *  @param newTheta the new theta angle value for the coordinate
      */
     public void setTheta(double newTheta) {
-        //theta = Math.abs(newTheta%TWO_PI);
-       theta = newTheta;
+       theta = Math.abs(newTheta%TWO_PI);
+       //theta = newTheta;
     	setTrigFunctions();
     }
 
@@ -155,9 +155,10 @@ public class Coordinates implements Serializable {
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
-        phi = newCoordinates.getPhi();
-        theta = newCoordinates.getTheta();
-
+        //phi = newCoordinates.getPhi();
+        //theta = newCoordinates.getTheta();
+    	this.setPhi(newCoordinates.getPhi());
+    	this.setTheta(newCoordinates.getTheta());
         // Update trigonometric functions
         setTrigFunctions();
     }
@@ -498,7 +499,7 @@ public class Coordinates implements Serializable {
 		else if (direction == 'S') latValue += 90D;
 		else throw new ParseException("Latitude direction wrong: " + direction, 0);
 
-		double phi = Math.PI * (latValue / 180D);
+		double phi = Math.PI * ((latValue%180) / 180D);
 		return phi;
 	}
 	
