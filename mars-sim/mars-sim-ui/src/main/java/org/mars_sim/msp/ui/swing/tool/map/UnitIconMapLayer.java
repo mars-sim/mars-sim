@@ -42,8 +42,8 @@ public class UnitIconMapLayer extends UnitMapLayer {
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
         
         IntPoint imageLocation = getUnitDrawLocation(location, displayInfo.getSurfMapIcon(unit));
-        int locX = imageLocation.getiX();
-        int locY = imageLocation.getiY();
+        int locX = imageLocation.getiX()+300;
+        int locY = imageLocation.getiY()+300;
         
         if (!(displayInfo.isMapBlink(unit) && getBlinkFlag())) {
         	Icon displayIcon = null;

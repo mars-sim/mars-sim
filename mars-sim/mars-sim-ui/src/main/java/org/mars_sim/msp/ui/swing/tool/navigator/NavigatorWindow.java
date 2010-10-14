@@ -276,8 +276,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         goThere.setAlignmentY(.5F);
         positionPane.add(goThere);
 
-      //draggable stuff for NavigatorWindow        
-    //  this works, but doesn't update the screen fast enough to be practical 
+        //draggable stuff for NavigatorWindow        
+        //  this works, but doesn't update the screen fast enough to be practical 
             map.addMouseMotionListener(new MouseAdapter(){
             	int lastx,lasty;
             	@Override
@@ -294,13 +294,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
             		dify=y-dragy;
             		difx=x-dragx;
             		lastx =x;lasty=y;
-   /* 				System.out.println("NavigatorWindow mouseDragged difx = "+difx);
-        			System.out.println("	 mouseDragged dify = "+dify);
-    				System.out.println("	 mouseDragged dragx = "+dragx);
-        			System.out.println("	mouseDragged dragy = "+dragy);
-    				System.out.println("	 mouseDragged X = "+e.getX());
-        			System.out.println("	mouseDragged Y = "+e.getY());
-*/
+
         			if (dragx != 0 && dragy != 0) {
         				difx=(int)Math.round(difx*0.8);dify=(int)Math.round(dify*0.8);
         				Point pos = new Point();
@@ -314,8 +308,6 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
            map.addMouseListener(new MouseAdapter() {
            	@Override
     		public void mousePressed(MouseEvent e) {
-    	//		System.out.println("mousepressed X = "+e.getX());
-    	//		System.out.println("             Y = "+e.getY());
     			currentCenter = new Coordinates(map.getCenterLocation() );
         		dragx=e.getXOnScreen();dragy=e.getYOnScreen();
         		origpos = new Point(mapscroll.getViewport().getViewPosition());
@@ -323,23 +315,13 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     		}
     		@Override
     		public void mouseReleased(MouseEvent e){
-    	//		System.out.println("mouseReleased was called difx, dify "+difx+","+dify);
     			dragx = 0;dragy=0;
-/*
-    			Coordinates clickedPosition = new Coordinates (
-    					currentCenter.getPhi()+(dify*0.0024D),
-    					currentCenter.getTheta()+(difx*0.0024D)
-    					);
-  */  			
-    			
-    Coordinates			clickedPosition = new Coordinates (
+    			Coordinates	clickedPosition = new Coordinates (
     					currentCenter.convertRectToSpherical((double)-difx,(double)-dify)
     					);
-
-    			
-    			
     			updateCoords(clickedPosition);
     			mapscroll.repaint();
+    			
     			super.mouseReleased(e);
     		} 
     		@Override
@@ -348,6 +330,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     		} 
     	});
         // Pack window
+           this.centerViewOnMap();
         pack();
     }
 
@@ -361,6 +344,17 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         globeNav.showGlobe(newCoords);
     }
 
+    /**
+     * updateCoordsNO_REDRAW is necessary because CannedMarsMap has to change the 
+     * new center that is sent to it . 
+     * */
+    public void updateCoordsNO_REDRAW(Coordinates newCoords) {
+        navButtons.updateCoords(newCoords);
+ //       map.showMap(newCoords);
+        map.setCoords( newCoords);
+        globeNav.showGlobe(newCoords);
+    	
+    }
     /** Update coordinates on globe only. Redraw globe if necessary 
      *  @param newCoords the new center location
      */
@@ -599,11 +593,15 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		}    	
     }
     public void centerViewOnMap() {
-    	Point p = new Point(
-    		1+(Map.DISPLAY_WIDTH-Map.MAP_VIS_WIDTH)/2,
-    		1+(Map.DISPLAY_HEIGHT-Map.MAP_VIS_HEIGHT)/2
-    	);
+    //	Point p = new Point(
+     //   		1+(Map.DISPLAY_WIDTH-Map.MAP_VIS_WIDTH)/2,
+      //  		1+(Map.DISPLAY_HEIGHT-Map.MAP_VIS_HEIGHT)/2
+       // 	);
+    	 Point p = new Point(
+        		301,301);
     	this.mapscroll.getViewport().setViewPosition(p);
+    	this.mapscroll.getViewport().setSize(300,300);
+
     	System.out.println("centerViewonMap() was called x,y: "+p.x+" , "+p.y);
    
 	mapscroll.repaint();
