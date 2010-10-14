@@ -81,7 +81,7 @@ public class EllipseLayer implements MapLayer {
 		    g2d.transform(rat);
 			
 		    // Draw the ellipse.
-			Ellipse2D ellipse = new Ellipse2D.Double(startX, startY, width, height);
+			Ellipse2D ellipse = new Ellipse2D.Double(startX+MAP_X_OFFSET, startY+MAP_Y_OFFSET, width, height);
 			g2d.draw(ellipse);
 			
 			// Rotate graphics back to where it was originally.

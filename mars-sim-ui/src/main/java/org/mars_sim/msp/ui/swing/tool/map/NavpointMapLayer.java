@@ -130,7 +130,8 @@ public class NavpointMapLayer implements MapLayer {
 			// Determine the draw location for the icon.
 			IntPoint location = MapUtils.getRectPosition(navpoint.getLocation(), mapCenter, mapType);
 //			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
-			IntPoint drawLocation = new IntPoint(location.getiX(), (location.getiY() - navIcon.getIconHeight()));
+			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
+					(location.getiY() - navIcon.getIconHeight())+MAP_Y_OFFSET);
 	        
 			// Draw the navpoint icon.
 	        navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());

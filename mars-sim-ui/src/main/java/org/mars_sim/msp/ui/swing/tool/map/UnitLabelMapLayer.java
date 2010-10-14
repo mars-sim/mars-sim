@@ -36,7 +36,8 @@ public class UnitLabelMapLayer extends UnitMapLayer {
         g.setFont(displayInfo.getMapLabelFont());
         
         if (!displayInfo.isMapBlink(unit) || (displayInfo.isMapBlink(unit) && getBlinkFlag())) {
-        	g.drawString(unit.getName(), labelLocation.getiX(), labelLocation.getiY());
+        	g.drawString(unit.getName(), 
+        	labelLocation.getiX()+MAP_X_OFFSET, labelLocation.getiY()+MAP_Y_OFFSET);
         }
 	}
 	

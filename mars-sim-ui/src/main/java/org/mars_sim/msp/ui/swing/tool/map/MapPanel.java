@@ -228,8 +228,8 @@ public class MapPanel extends JPanel implements Runnable {
             }
         	else {
         		// Paint black background
-              g.setColor(Color.black);
-              g.fillRect(0, 0, Map.MAP_VIS_HEIGHT, Map.MAP_VIS_WIDTH);
+//              g.setColor(Color.black);
+ //             g.fillRect(0, 0, Map.MAP_VIS_HEIGHT, Map.MAP_VIS_WIDTH);
               
                 if (centerCoords != null) {
                 	if (map.isImageDone()) {
@@ -239,10 +239,7 @@ public class MapPanel extends JPanel implements Runnable {
                 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-                	Coordinates adjusted = new Coordinates(centerCoords.convertRectToSpherical
-                			(centerCoords.getPhi()+285,centerCoords.getTheta()+285 ));
                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
- //               	while (i.hasNext()) i.next().displayLayer(adjusted, mapType, g);
 
                 }
         	}
