@@ -15,6 +15,10 @@ import org.mars_sim.msp.core.mars.Mars;
  * Static class for map utilities. 
  */
 public class MapUtils {
+	private static final int MAP_OFFSET_X = 300;
+	private static final int MAP_OFFSET_Y = 300; //map's actual size is 900x900, but 300x300 is shown on the screen, 
+	//upper left corner of view window starts at 301,301
+	// see CannedMarsMap.createMapImageLarge()
 
 	/**
 	 * Private constructor for utility class.
@@ -37,7 +41,8 @@ public class MapUtils {
         double rho = mapHeight / Math.PI;
         int halfMap = mapHeight / 2;
         int low_edge = halfMap - 150;
-
+       // IntPoint p = Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, low_edge); 
+       // p.setLocation(p.getiX()+MAP_OFFSET_X, p.getiY()+MAP_OFFSET_Y);
         return Coordinates.findRectPosition(coords, mapCenter, rho, halfMap, low_edge);
     }
     

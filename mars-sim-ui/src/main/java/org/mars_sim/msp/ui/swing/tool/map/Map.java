@@ -27,6 +27,9 @@ public interface Map {
 	public static final int MAP_WIDTH = 2880; // Source map width in pixels.
 	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
 	public static final double TWO_PI = Math.PI * 2D;
+	public static final int SCREEN_OFFSET_X=300; // how far off center in the surface map are things placed
+	public static final int SCREEN_OFFSET_Y=300; // how far off center in the surface map are things placed
+	
     
 	
     /** 

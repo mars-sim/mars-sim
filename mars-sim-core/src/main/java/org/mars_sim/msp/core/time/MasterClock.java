@@ -89,7 +89,7 @@ public class MasterClock implements Runnable, Serializable {
         // Create listener list.
         listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
         elapsedlast = uptimer.getUptimeMillis();
-        this.setPaused(true);
+
     }
 
     /** Returns the Martian clock
