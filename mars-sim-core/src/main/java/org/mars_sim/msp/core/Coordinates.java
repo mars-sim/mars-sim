@@ -16,12 +16,15 @@ import org.mars_sim.msp.core.mars.Mars;
  *  spherical coordinates. It provides some useful methods involving
  *  those coordinates, as well as some static methods for general
  *  coordinate calculations.
+ *  THETA is longitute in (0-2PI) radians
+ *  PHI is latitude in (-PI - PI) radians (although only 0-PI) makes any sense for the renderer
+ 	RHO rho diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0
  */
 public class Coordinates implements Serializable {
 
     // Data members
-    private double phi; // Phi value of coordinates
-    private double theta; // Theta value of coordinates
+    private double phi; // Phi value of coordinates PHI is latitude in (-PI - PI) radians (although only 0-PI) seem to be legal values 
+    private double theta; // Theta value of coordinates, THETA is longitute in (0-2PI) radians
 
     private double sinPhi; // Sine of phi (stored for efficiency)
     private double sinTheta; // Sine of theta (stored for efficiency)
@@ -41,8 +44,8 @@ public class Coordinates implements Serializable {
     public Coordinates(double phi, double theta) {
 
         // Set Coordinates
-        this.phi = phi%TWO_PI;
-        this.theta = theta%TWO_PI;
+        this.setPhi(phi);
+        this.setTheta(theta);
 
         // Set trigonometric functions
         setTrigFunctions();
@@ -95,8 +98,9 @@ public class Coordinates implements Serializable {
      *  @param newPhi the new phi angle value for the coordinate
      */
     public void setPhi(double newPhi) {
-        phi = newPhi;
-        setTrigFunctions();
+       // if (newPhi < 0) {phi = 0;} else if (newPhi > Math.PI) { phi = Math.PI;} else phi=newPhi;
+       phi  = newPhi;
+    	setTrigFunctions();
     }
 
     /** theta accessor
@@ -110,8 +114,9 @@ public class Coordinates implements Serializable {
      *  @param newTheta the new theta angle value for the coordinate
      */
     public void setTheta(double newTheta) {
-        theta = newTheta;
-        setTrigFunctions();
+        //theta = Math.abs(newTheta%TWO_PI);
+       theta = newTheta;
+    	setTrigFunctions();
     }
 
     /** sine of phi.
@@ -150,8 +155,8 @@ public class Coordinates implements Serializable {
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
-        phi = newCoordinates.getPhi()%TWO_PI;
-        theta = newCoordinates.getTheta()%TWO_PI;
+        phi = newCoordinates.getPhi();
+        theta = newCoordinates.getTheta();
 
         // Update trigonometric functions
         setTrigFunctions();
@@ -165,7 +170,7 @@ public class Coordinates implements Serializable {
 
         if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
         	Coordinates other = (Coordinates) otherCoords;
-            if ((phi%TWO_PI == other.getPhi()%TWO_PI) && (theta%TWO_PI == other.getTheta()%TWO_PI))
+            if ((phi == other.getPhi()) && (theta == other.getTheta()))
                 return true;
         }
 
@@ -381,8 +386,8 @@ public class Coordinates implements Serializable {
                 theta_new = TWO_PI + theta_new;
         }
 
-        newCoordinates.setPhi(phi_new%TWO_PI);
-        newCoordinates.setTheta(theta_new%TWO_PI);
+        newCoordinates.setPhi(phi_new);
+        newCoordinates.setTheta(theta_new);
     }
 
     /** Returns angle direction to another location on surface of

@@ -72,7 +72,7 @@ public class MapPanel extends JPanel implements Runnable {
 		update = true;
 		
 		
-		setPreferredSize(new Dimension(Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT));
+		this.setPreferredSize(new Dimension(3*Map.DISPLAY_WIDTH, 3*Map.DISPLAY_HEIGHT));
 		
 		setBackground(Color.BLACK);
 	}
@@ -196,7 +196,7 @@ public class MapPanel extends JPanel implements Runnable {
 		while (update) {
         	try {
             //    Thread.sleep(1000);
-        		Thread.sleep(50);
+        		Thread.sleep(300);
             } 
 	        catch (InterruptedException e) {}
 	        repaint();
@@ -239,7 +239,10 @@ public class MapPanel extends JPanel implements Runnable {
                 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
+                	Coordinates adjusted = new Coordinates(centerCoords.convertRectToSpherical
+                			(centerCoords.getPhi()+285,centerCoords.getTheta()+285 ));
+               	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
+ //               	while (i.hasNext()) i.next().displayLayer(adjusted, mapType, g);
 
                 }
         	}
@@ -274,17 +277,6 @@ public class MapPanel extends JPanel implements Runnable {
         g.drawString(message, x, y);
     }
 
-    public void mapViewportMove(int xoffset, int yoffset) 
-    {
-    	surfMap.mapViewportMove(xoffset, yoffset);
-    }
-	public void mapLockNewView() {
-		//causes the CannedMap to lock into the new viewport location that the user is 
-		//selecting by dragging their mouse. it would be executed when the user 
-		//lets go of their mouse click that they are dragging with. 
-		surfMap.mapViewportLock();
-		
-	}
 
     /**
      * Prepares map panel for deletion.
@@ -296,5 +288,9 @@ public class MapPanel extends JPanel implements Runnable {
     	usgsMap = null;
     	update = false;
     }
+	public void setCoords(Coordinates newCoords) {
+		this.centerCoords = new Coordinates(newCoords);
+		navWin.updateCoordsNO_REDRAW(newCoords);
+	}
 
 }

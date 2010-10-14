@@ -54,6 +54,9 @@ public class MainWindow extends JFrame {
 	private Thread loadSimThread;
 	private Thread saveSimThread;
 
+	public static void main(String[] args) {
+		new MainWindow();
+	}
 	/**
 	 * Constructor
 	 */
