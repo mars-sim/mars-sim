@@ -8,6 +8,7 @@
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -80,6 +81,7 @@ public class SettlementWindow extends ToolWindow {
 
 		// Create bottom (map) pane
 		mapPane = new SettlementMapPanel();
+		mapPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		mapPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent evt) {
