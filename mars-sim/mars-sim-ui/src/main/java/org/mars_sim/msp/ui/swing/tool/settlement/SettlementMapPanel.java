@@ -107,6 +107,17 @@ public class SettlementMapPanel extends JPanel {
         this.rotation = rotation;
         repaint();
     }
+    /**
+     * Resets the position, scale and rotation of the map.
+     * Separate function that only uses one repaint.
+     */
+    public void reCenter() {        
+        xPos = 0D;
+        yPos = 0D;
+        setRotation(0D);
+        scale = DEFAULT_SCALE;
+        repaint();
+    }
     
     /**
      * Moves the center of the map by a given number of pixels.
