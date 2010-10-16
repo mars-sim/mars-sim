@@ -196,6 +196,12 @@ public class SettlementWindow extends ToolWindow {
         // Create recenter button.
 		JButton recenterButton = new JButton("Recenter");
 		recenterButton.setToolTipText("Recenter view to center, normal zoom");
+		recenterButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
+                mapPane.reCenter();
+            }
+        });
+		
 		buttonsPane.add(recenterButton);
 		
 		// Create labels button.
