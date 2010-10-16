@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.00 2010-08-22
+ * @version 3.00 2010-10-15
  * @author Lars Naesbye Christensen
  */
 
@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.Arrays;
@@ -39,11 +42,19 @@ public class SettlementWindow extends ToolWindow {
 	
     // Tool name
     public static final String NAME = "Settlement Map Tool";
+    
+    // Rotation change (radians per rotation button press).
+    private static final double ROTATION_CHANGE = Math.PI / 20D;
+    
+    // Zoom change.
+    private static final double ZOOM_CHANGE = 1D;
 
     private JComboBox settlementListBox; // Lists all settlements
     private JLabel zoomLabel; // Label for Zoom box
     private JSlider zoomSlider; // Slider for Zoom level
     private SettlementMapPanel mapPane; // Map panel.
+    private int xLast; // Last X mouse drag position.
+    private int yLast; // Last Y mouse drag position.
     
     /**
      * Constructor
@@ -53,7 +64,8 @@ public class SettlementWindow extends ToolWindow {
 
 		// Use ToolWindow constructor
 		super(NAME, desktop);
-
+		
+		// Set the tool window to be maximizable.
 		setMaximizable(true);
 
 		// Create content pane
@@ -68,6 +80,25 @@ public class SettlementWindow extends ToolWindow {
 
 		// Create bottom (map) pane
 		mapPane = new SettlementMapPanel();
+		mapPane.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent evt) {
+                // Set initial mouse drag position.
+                xLast = evt.getX();
+                yLast = evt.getY();
+            }
+		});
+		mapPane.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseDragged(MouseEvent evt) {
+                // Move map center based on mouse drag difference.
+                double xDiff = evt.getX() - xLast;
+                double yDiff = evt.getY() - yLast;
+                mapPane.moveCenter(xDiff, yDiff);
+                xLast = evt.getX();
+                yLast = evt.getY();
+            }
+		});
 		mainPane.add(mapPane, BorderLayout.CENTER);
 
 		Object settlements[] = Simulation.instance().getUnitManager()
@@ -80,8 +111,10 @@ public class SettlementWindow extends ToolWindow {
 		settlementListBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent event) {
+                // Set settlement to draw map for.
                 Settlement settlement = (Settlement) event.getItem();
                 mapPane.setSettlement(settlement);
+                // Note: should we recenter map each time we change settlements?
             } 
 		});
 		widgetPane.add(settlementListBox);
@@ -95,17 +128,21 @@ public class SettlementWindow extends ToolWindow {
 		zoomSlider = new JSlider(JSlider.HORIZONTAL, -10, 10, 0);
 		zoomSlider.setMajorTickSpacing(5);
 		zoomSlider.setMinorTickSpacing(1);
-		//zoomSlider.setPaintTicks(true);
-		//zoomSlider.setPaintLabels(true);
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setPaintLabels(true);
 		zoomSlider.setToolTipText("Zoom view of settlement");
 		zoomSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent arg0) {
+                // Change scale of map based on slider position.
                 int sliderValue = zoomSlider.getValue();
                 double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
                 double newScale = defaultScale;
-                if (sliderValue > 0) newScale += defaultScale * (double) sliderValue;
-                else if (sliderValue < 0) newScale = defaultScale / 
-                        (1D + ((double) sliderValue * -1D));
+                if (sliderValue > 0) {
+                    newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
+                }
+                else if (sliderValue < 0) {
+                    newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
+                }
                 mapPane.setScale(newScale);
             }
 		});
@@ -116,10 +153,12 @@ public class SettlementWindow extends ToolWindow {
             public void mouseWheelMoved(MouseWheelEvent evt) {
                 int numClicks = evt.getWheelRotation();
                 if (numClicks > 0) {
+                    // Move zoom slider up.
                     if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
                         zoomSlider.setValue(zoomSlider.getValue() + 1);
                 }
                 else if (numClicks < 0) {
+                    // Move zoom slider down.
                     if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
                         zoomSlider.setValue(zoomSlider.getValue() - 1);
                 }
@@ -128,35 +167,41 @@ public class SettlementWindow extends ToolWindow {
 		
 		widgetPane.add(zoomPane);
 
+		// Create buttons panel.
 		JPanel buttonsPane = new JPanel();
 		widgetPane.add(buttonsPane);
 		
+		// Create rotate clockwise button.
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon("Clockwise"));
 		rotateClockwiseButton.setToolTipText("Rotate map clockwise");
 		rotateClockwiseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                mapPane.setRotation(mapPane.getRotation() + (Math.PI / 20D));
+                mapPane.setRotation(mapPane.getRotation() + ROTATION_CHANGE);
             }
 		});
 		buttonsPane.add(rotateClockwiseButton);
 		
+		// Create rotate counter-clockwise button.
 		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon("CounterClockwise"));
         rotateCounterClockwiseButton.setToolTipText("Rotate map counter-clockwise");
         rotateCounterClockwiseButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                mapPane.setRotation(mapPane.getRotation() - (Math.PI / 20D));
+                mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
             }
         });
         buttonsPane.add(rotateCounterClockwiseButton);
         
+        // Create recenter button.
 		JButton recenterButton = new JButton("Recenter");
 		recenterButton.setToolTipText("Recenter view to center, normal zoom");
 		buttonsPane.add(recenterButton);
 		
+		// Create labels button.
 		JButton labelsButton = new JButton("Labels");
 		labelsButton.setToolTipText("Add/remove label overlays");
 		buttonsPane.add(labelsButton);
 		
+		// Create open info button.
 		JButton openInfoButton = new JButton("Open Info");
 		openInfoButton.setToolTipText("Opens the Settlement Info Window");
 		buttonsPane.add(openInfoButton);

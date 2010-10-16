@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2010-10-01
+ * @version 3.00 2010-10-15
  * @author Scott Davis
  */
 
@@ -76,7 +76,7 @@ public class SettlementMapPanel extends JPanel {
     
     /**
      * Gets the map scale.
-     * @return scale (meters per pixel).
+     * @return scale (pixels per meter).
      */
     public double getScale() {
         return scale;
@@ -84,7 +84,7 @@ public class SettlementMapPanel extends JPanel {
     
     /**
      * Sets the map scale.
-     * @param scale (meters per pixel).
+     * @param scale (pixels per meter).
      */
     public void setScale(double scale) {
         this.scale = scale;
@@ -108,6 +108,21 @@ public class SettlementMapPanel extends JPanel {
         repaint();
     }
     
+    /**
+     * Moves the center of the map by a given number of pixels.
+     * @param xDiff the X axis pixels.
+     * @param yDiff the Y axis pixels.
+     */
+    public void moveCenter(double xDiff, double yDiff) {
+        // Correct due to rotation of map.
+        double realXDiff = (Math.cos(rotation) * xDiff) + (Math.sin(rotation) * yDiff);
+        double realYDiff = (Math.cos(rotation) * yDiff) - (Math.sin(rotation) * xDiff);
+        
+        xPos += realXDiff;
+        yPos += realYDiff;
+        repaint();
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -119,10 +134,10 @@ public class SettlementMapPanel extends JPanel {
         double mapCenterY = getHeight() / 2D;
         
         // Translate map from settlement center point.
-        g2d.translate(xPos * scale, yPos * scale);
+        g2d.translate(xPos, yPos);
         
         // Rotate map from North.
-        g2d.rotate(rotation, mapCenterX - (xPos * scale), mapCenterY - (yPos * scale));
+        g2d.rotate(rotation, mapCenterX - xPos, mapCenterY - yPos);
         
         // Draw each building.
         drawBuildings(g2d);
