@@ -49,6 +49,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("Mortar Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
         buildingSVGMap.put("Concrete Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
         buildingSVGMap.put("Atmospheric Processor", "atmospheric_processor");
+        buildingSVGMap.put("Residential Quarters", "residential_quarters");
         
         // TODO: Add more mapped entities.
     }
