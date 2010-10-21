@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.00 2010-10-01
+ * @version 3.00 2010-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -50,6 +50,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("Concrete Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
         buildingSVGMap.put("Atmospheric Processor", "atmospheric_processor");
         buildingSVGMap.put("Residential Quarters", "residential_quarters");
+        buildingSVGMap.put("Lounge", "lounge");
         
         // TODO: Add more mapped entities.
     }
