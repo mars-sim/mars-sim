@@ -199,6 +199,7 @@ public class SettlementWindow extends ToolWindow {
 		recenterButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 mapPane.reCenter();
+                zoomSlider.setValue(0);
             }
         });
 		
