@@ -51,6 +51,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("Atmospheric Processor", "atmospheric_processor");
         buildingSVGMap.put("Residential Quarters", "residential_quarters");
         buildingSVGMap.put("Lounge", "lounge");
+        buildingSVGMap.put("Command and Control", "command_and_control");
         
         // TODO: Add more mapped entities.
     }
