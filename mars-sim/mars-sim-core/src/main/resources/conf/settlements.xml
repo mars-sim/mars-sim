@@ -147,8 +147,8 @@
 			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-68.0" facing="0.0" />
-			<building type="MD4 Nuclear Reactor" x-location="25.0" y-location="-57.5" facing="0.0" />
-			<building type="MD4 Nuclear Reactor" x-location="40.0" y-location="-57.5" facing="0.0" />
+			<building type="MD4 Nuclear Reactor" x-location="-25.0" y-location="-57.5" facing="0.0" />
+			<building type="MD4 Nuclear Reactor" x-location="-40.0" y-location="-57.5" facing="0.0" />
 			<building type="ERV Base" x-location="70.0" y-location="15.0" facing="90.0" />
 			<building type="ERV Base" x-location="40.0" y-location="45.0" facing="135.0" />
 			<building type="ERV Base" x-location="40.0" y-location="15.0" facing="135.0" />
