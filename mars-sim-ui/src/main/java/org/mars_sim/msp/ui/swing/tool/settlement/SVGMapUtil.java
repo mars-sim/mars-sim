@@ -52,7 +52,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("Residential Quarters", "residential_quarters");
         buildingSVGMap.put("Lounge", "lounge");
         buildingSVGMap.put("Command and Control", "command_and_control");
-        
+        buildingSVGMap.put("Infirmary", "infirmary");
         // TODO: Add more mapped entities.
     }
     
