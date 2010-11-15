@@ -63,6 +63,10 @@ public class SettlementMapPanel extends JPanel {
         setOpaque(true);
         setBackground(new Color(54, 13, 0));
         setForeground(Color.WHITE);
+        
+        // Set Apache Batik library system property so that it doesn't output: 
+        // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
+        System.setProperty("org.apache.batik.warn_destination", "false");
     }
     
     /**
@@ -176,7 +180,7 @@ public class SettlementMapPanel extends JPanel {
     private void drawBuilding(Building building, Graphics2D g2d) {
         
         // Use SVG image for building if available.
-        GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName());
+        GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName().toLowerCase());
         if (svg != null) {
             drawSVGStructure(g2d, building.getXLocation(), building.getYLocation(), 
                     building.getWidth(), building.getLength(), building.getFacing(), svg);
@@ -209,7 +213,7 @@ public class SettlementMapPanel extends JPanel {
     private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
         
         // Use SVG image for construction site if available.
-        String stageName = site.getCurrentConstructionStage().getInfo().getName();
+        String stageName = site.getCurrentConstructionStage().getInfo().getName().toLowerCase();
         GraphicsNode svg = SVGMapUtil.getConstructionSiteSVG(stageName);
         if (svg != null) {
             drawSVGStructure(g2d, site.getXLocation(), site.getYLocation(), 

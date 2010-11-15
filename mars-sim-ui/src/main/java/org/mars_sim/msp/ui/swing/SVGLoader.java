@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * SVGLoader.java
- * @version 3.00 2010-10-01
+ * @version 3.00 2010-11-13
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,7 +63,8 @@ public class SVGLoader {
                 
                 svgCache.put(name, found);
             }
-            catch (IOException e) {
+            catch (Exception e) {
+                System.err.println("getSVGImage error: " + fileName);
                 e.printStackTrace(System.err);
             }
         }
