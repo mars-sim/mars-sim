@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.00 2010-10-20
+ * @version 3.00 2010-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -35,25 +35,26 @@ public final class SVGMapUtil {
         buildingSVGMap = new HashMap<String, String>();
         
         // Add mapped building entries (do not include .svg suffix).
-        buildingSVGMap.put("Lander Hab", "lander_hab");
-        buildingSVGMap.put("Inflatable Greenhouse", "inflatable_greenhouse");
-        buildingSVGMap.put("MD1 Nuclear Reactor", "md1_nuclear_reactor");
-        buildingSVGMap.put("Starting ERV Base", "erv_base");
-        buildingSVGMap.put("ERV Base", "erv_base");
-        buildingSVGMap.put("Regolith Storage Bin", "regolith_storage_bin");
-        buildingSVGMap.put("Wind Turbine", "wind_turbine");
-        buildingSVGMap.put("Sand Storage Bin", "sand_storage_bin");
-        buildingSVGMap.put("Lime Storage Bin", "lime_storage_bin");
-        buildingSVGMap.put("Carbon Storage Bin", "carbon_storage_bin");
-        buildingSVGMap.put("Cement Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("Mortar Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("Concrete Storage Bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("Atmospheric Processor", "atmospheric_processor");
-        buildingSVGMap.put("Residential Quarters", "residential_quarters");
-        buildingSVGMap.put("Lounge", "lounge");
-        buildingSVGMap.put("Command and Control", "command_and_control");
-        buildingSVGMap.put("Infirmary", "infirmary");
-        buildingSVGMap.put("Laboratory", "laboratory");
+        buildingSVGMap.put("lander hab", "lander_hab");
+        buildingSVGMap.put("inflatable greenhouse", "inflatable_greenhouse");
+        buildingSVGMap.put("md1 nuclear reactor", "md1_nuclear_reactor");
+        buildingSVGMap.put("starting erv base", "erv_base");
+        buildingSVGMap.put("erv base", "erv_base");
+        buildingSVGMap.put("regolith storage bin", "regolith_storage_bin");
+        buildingSVGMap.put("wind turbine", "wind_turbine");
+        buildingSVGMap.put("sand storage bin", "sand_storage_bin");
+        buildingSVGMap.put("lime storage bin", "lime_storage_bin");
+        buildingSVGMap.put("carbon storage bin", "carbon_storage_bin");
+        buildingSVGMap.put("cement storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        buildingSVGMap.put("mortar storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        buildingSVGMap.put("concrete storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        buildingSVGMap.put("atmospheric processor", "atmospheric_processor");
+        buildingSVGMap.put("residential quarters", "residential_quarters");
+        buildingSVGMap.put("lounge", "lounge");
+        buildingSVGMap.put("command and control", "command_and_control");
+        buildingSVGMap.put("infirmary", "infirmary");
+        buildingSVGMap.put("laboratory", "laboratory");
+        buildingSVGMap.put("workshop", "workshop");
         // TODO: Add more mapped entities.
     }
     
@@ -64,6 +65,14 @@ public final class SVGMapUtil {
         constructionSiteSVGMap = new HashMap<String, String>();
         
         // Add mapped construction site entries (do not include .svg suffix).
+        constructionSiteSVGMap.put("residential quarters", "large_habitation_building_const");
+        constructionSiteSVGMap.put("lounge", "large_habitation_building_const");
+        constructionSiteSVGMap.put("command and control", "large_habitation_building_const");
+        constructionSiteSVGMap.put("infirmary", "large_habitation_building_const");
+        constructionSiteSVGMap.put("laboratory", "large_habitation_building_const");
+        constructionSiteSVGMap.put("workshop", "large_habitation_building_const");
+        constructionSiteSVGMap.put("large habitation frame", "large_habitation_frame_const");
+        constructionSiteSVGMap.put("unprepared surface foundation", "unprepared_surface_foundation_const");
         // TODO: add more mapped entities.
     }
     
