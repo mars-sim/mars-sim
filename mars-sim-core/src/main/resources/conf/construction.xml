@@ -117,8 +117,8 @@
 			<part name="solar panel" number="4" />
 		</frame>
 		
-		<!-- Note: the transparant inflatable frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="transparant inflatable frame" width="6.0" length="9.0" constructable="false" salvagable="true" 
+		<!-- Note: the transparent inflatable frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="transparent inflatable frame" width="6.0" length="9.0" constructable="false" salvagable="true" 
 		 work-time="100.0" skill-required="2" foundation="unprepared surface foundation" >
 			<part name="aluminum scrap" number="5" />
 			<part name="plastic sheet" number="100" />
@@ -472,7 +472,7 @@
 		
 		<!-- Inflatable greenhouse building project for refitting or salvaging. -->
 		<building name="inflatable greenhouse" width="6.0" length="9.0" constructable="true" salvagable="true" 
-		 work-time="50.0" skill-required="2" frame="transparant inflatable frame" >
+		 work-time="50.0" skill-required="2" frame="transparent inflatable frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
