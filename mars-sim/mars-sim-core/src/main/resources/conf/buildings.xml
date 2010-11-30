@@ -602,8 +602,8 @@
 	<building name="Astronomy Observatory" width="7.0" length="7.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<life-support capacity="2" power-required="4.0" />
-			<research tech-level="2" capacity="2">
+			<life-support capacity="4" power-required="8.0" />
+			<research tech-level="2" capacity="4">
 				<research-speciality name="Astronomy" />
 				<research-speciality name="Physics" />
 				<research-speciality name="Mathematics" />
