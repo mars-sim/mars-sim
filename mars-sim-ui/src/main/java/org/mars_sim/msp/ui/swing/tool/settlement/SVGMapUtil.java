@@ -58,6 +58,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("garage", "garage");
         buildingSVGMap.put("large greenhouse", "large_greenhouse");
         buildingSVGMap.put("astronomy observatory", "astronomy_observatory");
+        buildingSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor");
         // TODO: Add more mapped entities.
     }
     
@@ -82,6 +83,8 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("large greenhouse frame", "large_greenhouse_frame_const");
         constructionSiteSVGMap.put("astronomy observatory", "astronomy_observatory_const");
         constructionSiteSVGMap.put("astronomy observatory frame", "astronomy_observatory_frame_const");
+        constructionSiteSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor_const");
+        constructionSiteSVGMap.put("md4 nuclear reactor frame", "md4_nuclear_reactor_frame_const");
         // TODO: add more mapped entities.
     }
     
