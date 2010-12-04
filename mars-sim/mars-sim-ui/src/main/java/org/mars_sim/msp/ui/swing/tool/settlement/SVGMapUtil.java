@@ -85,6 +85,15 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("astronomy observatory frame", "astronomy_observatory_frame_const");
         constructionSiteSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor_const");
         constructionSiteSVGMap.put("md4 nuclear reactor frame", "md4_nuclear_reactor_frame_const");
+        constructionSiteSVGMap.put("md1 nuclear reactor", "md1_nuclear_reactor_const");
+        constructionSiteSVGMap.put("md1 nuclear reactor frame", "md1_nuclear_reactor_frame_const");
+        constructionSiteSVGMap.put("atmospheric processor", "atmospheric_processor_const");
+        constructionSiteSVGMap.put("atmospheric processor frame", "atmospheric_processor_frame_const");
+        constructionSiteSVGMap.put("erv base", "erv_base_const");
+        constructionSiteSVGMap.put("starting erv base", "erv_base_const");
+        constructionSiteSVGMap.put("erv base frame", "erv_base_frame_const");
+        constructionSiteSVGMap.put("inflatable greenhouse", "inflatable_greenhouse_const");
+        constructionSiteSVGMap.put("inflatable greenhouse frame", "inflatable_greenhouse_frame_const");
         // TODO: add more mapped entities.
     }
     
