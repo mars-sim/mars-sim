@@ -19,17 +19,6 @@
   <defs
      id="defs2879">
     <linearGradient
-       id="linearGradient4493">
-      <stop
-         style="stop-color:#74706c;stop-opacity:1;"
-         offset="0"
-         id="stop4495" />
-      <stop
-         style="stop-color:#dadcda;stop-opacity:1;"
-         offset="1"
-         id="stop4497" />
-    </linearGradient>
-    <linearGradient
        id="linearGradient4001">
       <stop
          style="stop-color:#d00000;stop-opacity:1;"
@@ -262,45 +251,6 @@
        y1="148.69334"
        x2="66.159607"
        y2="125.07957" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4493"
-       id="linearGradient4499"
-       x1="9.7125"
-       y1="105"
-       x2="35.2875"
-       y2="105"
-       gradientUnits="userSpaceOnUse" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4493"
-       id="linearGradient4503"
-       gradientUnits="userSpaceOnUse"
-       x1="9.7125"
-       y1="105"
-       x2="35.2875"
-       y2="105"
-       gradientTransform="translate(-100,902.36218)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4493"
-       id="linearGradient4539"
-       gradientUnits="userSpaceOnUse"
-       x1="9.7125"
-       y1="105"
-       x2="35.2875"
-       y2="105"
-       gradientTransform="translate(0,840.92922)" />
-    <linearGradient
-       inkscape:collect="always"
-       xlink:href="#linearGradient4493"
-       id="linearGradient4541"
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="translate(-100,840.92922)"
-       x1="9.7125"
-       y1="105"
-       x2="35.2875"
-       y2="105" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -839,24 +789,6 @@
        id="rect4395"
        style="fill:url(#linearGradient4401);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        transform="scale(-1,1)" />
-    <rect
-       style="fill:url(#linearGradient4499);fill-opacity:1;fill-rule:evenodd;stroke:#6a6664;stroke-width:0.57499999000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect4491"
-       width="25"
-       height="10"
-       x="10"
-       y="100"
-       transform="translate(0,902.36218)"
-       ry="0.024731189" />
-    <rect
-       ry="0.024731189"
-       y="1002.3622"
-       x="-90"
-       height="10"
-       width="25"
-       id="rect4501"
-       style="fill:url(#linearGradient4503);fill-opacity:1;fill-rule:evenodd;stroke:#6a6664;stroke-width:0.57499999000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       transform="scale(-1,1)" />
     <path
        sodipodi:type="arc"
        style="fill:#050100;fill-opacity:1;fill-rule:evenodd;stroke:#3e4441;stroke-width:2.47974419999999984;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -867,23 +799,6 @@
        sodipodi:ry="21.813286"
        d="m 71.813286,105.02693 c 0,12.04715 -9.766141,21.81329 -21.813286,21.81329 -12.047145,0 -21.813286,-9.76614 -21.813286,-21.81329 0,-12.047143 9.766141,-21.813284 21.813286,-21.813284 12.047145,0 21.813286,9.766141 21.813286,21.813284 z"
        transform="matrix(1.0935846,0,0,1.0935846,-4.6792288,893.07188)" />
-    <rect
-       ry="0.024731189"
-       y="940.9292"
-       x="10"
-       height="10"
-       width="25"
-       id="rect4505"
-       style="fill:url(#linearGradient4539);fill-opacity:1;fill-rule:evenodd;stroke:#6a6664;stroke-width:0.57499999000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
-    <rect
-       transform="scale(-1,1)"
-       style="fill:url(#linearGradient4541);fill-opacity:1;fill-rule:evenodd;stroke:#6a6664;stroke-width:0.57499999000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect4507"
-       width="25"
-       height="10"
-       x="-90"
-       y="940.9292"
-       ry="0.024731189" />
     <path
        transform="matrix(1.1063246,0,0,1.1063246,-5.3162307,830.30088)"
        d="m 71.813286,105.02693 c 0,12.04715 -9.766141,21.81329 -21.813286,21.81329 -12.047145,0 -21.813286,-9.76614 -21.813286,-21.81329 0,-12.047143 9.766141,-21.813284 21.813286,-21.813284 12.047145,0 21.813286,9.766141 21.813286,21.813284 z"
