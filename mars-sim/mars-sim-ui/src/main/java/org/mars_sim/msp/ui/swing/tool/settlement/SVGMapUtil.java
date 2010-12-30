@@ -60,6 +60,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("astronomy observatory", "astronomy_observatory");
         buildingSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor");
         buildingSVGMap.put("storage hab", "storage_hab");
+        buildingSVGMap.put("residential hab", "residential_hab");
         // TODO: Add more mapped entities.
     }
     
