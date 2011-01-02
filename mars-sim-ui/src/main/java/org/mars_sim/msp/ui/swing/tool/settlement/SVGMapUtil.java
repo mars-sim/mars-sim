@@ -62,6 +62,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("storage hab", "storage_hab");
         buildingSVGMap.put("residential hab", "residential_hab");
         buildingSVGMap.put("medical hab", "medical_hab");
+        buildingSVGMap.put("research hab", "research_hab");
         // TODO: Add more mapped entities.
     }
     
