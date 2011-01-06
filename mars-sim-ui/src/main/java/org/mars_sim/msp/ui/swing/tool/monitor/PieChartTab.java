@@ -7,22 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.*;
-
-import javax.swing.Icon;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
-
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
 import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.AbstractDataset;
 import org.jfree.data.PieDataset;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+import java.util.*;
 
 /**
  * This class presents a Pie chart as a Monitor tab. The data for the Pie
@@ -48,7 +46,7 @@ class PieChartTab extends MonitorTab {
     /**
      *  Basic Pie Dataset with a method to recalculate.
      */
-    class TablePieDataset extends AbstractDataset
+    static class TablePieDataset extends AbstractDataset
             implements PieDataset, TableModelListener {
 
         private TableModel model;
@@ -87,11 +85,11 @@ class PieChartTab extends MonitorTab {
         			Comparable category = (Comparable) model.getValueAt(i, column);
         			if (category == null) category = NONECAT;
         			else if (!(category instanceof String)) category = category.toString();
-        			if (((String) category).trim().equals("")) category = "None";
+        			if (((String) category).trim().length() == 0) category = "None";
 
         			Integer value = tempMap.get(category);
         			int count = 1;
-        			if (value != null) count = value.intValue() + 1;
+        			if (value != null) count = value + 1;
 
         			// Put updated value in data map.
         			tempMap.put(category, count);
@@ -177,7 +175,7 @@ class PieChartTab extends MonitorTab {
          * @return the value.
          */
         public Number getValue(Comparable key) {
-            return (Number) dataMap.get(key);
+            return dataMap.get(key);
         }
         
         /**

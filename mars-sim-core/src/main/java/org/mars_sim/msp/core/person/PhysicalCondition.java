@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.core.person;
 
+import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.person.medical.*;
+import org.mars_sim.msp.core.resource.AmountResource;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.medical.*;
-import org.mars_sim.msp.core.resource.AmountResource;
 
 /**
  * This class represents the Physical Condition of a Person. It models the
@@ -226,21 +226,21 @@ public class PhysicalCondition implements Serializable {
      * @param container unit to get food from
      * @throws Exception if error consuming food.
      */
-    public void consumeFood(double amount, Unit container) throws Exception {
+    public void consumeFood(double amount, Unit container) {
     	if (container == null) throw new IllegalArgumentException("container is null");
     	AmountResource food = AmountResource.findAmountResource("food");
     	double foodEaten = amount;
         double foodAvailable = container.getInventory().getAmountResourceStored(food);
-        if (foodAvailable == 0D) throw new Exception("No food available.");
+        if (foodAvailable == 0D) throw new IllegalStateException("No food available.");
         if (foodEaten > foodAvailable) foodEaten = foodAvailable;
-        try {
+//        try {
         	container.getInventory().retrieveAmountResource(food, foodEaten);
         	// if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
-        }
-        catch (InventoryException e) {
-        	logger.log(Level.SEVERE,person.getName() + " could not retrieve food.");
-        	e.printStackTrace(System.err);
-        }
+//        }
+//        catch (InventoryException e) {
+//        	logger.log(Level.SEVERE,person.getName() + " could not retrieve food.");
+//        	e.printStackTrace(System.err);
+//        }
     }
     
     /**
@@ -259,7 +259,7 @@ public class PhysicalCondition implements Serializable {
      * @return new problem added.
      * @throws Exception if error consuming oxygen.
      */
-    private boolean consumeOxygen(LifeSupport support, double amount) throws Exception {
+    private boolean consumeOxygen(LifeSupport support, double amount) {
         double amountRecieved = support.provideOxygen(amount);
 
         return checkResourceConsumption(amountRecieved, amount / 2D,
@@ -273,7 +273,7 @@ public class PhysicalCondition implements Serializable {
      * @return new problem added.
      * @throws Exception if error consuming water.
      */
-    private boolean consumeWater(LifeSupport support, double amount) throws Exception {
+    private boolean consumeWater(LifeSupport support, double amount) {
         double amountReceived = support.provideWater(amount);
 
         return checkResourceConsumption(amountReceived, amount / 2D,
@@ -604,7 +604,7 @@ public class PhysicalCondition implements Serializable {
      * @return oxygen consumed (kg/Sol)
      * @throws Exception if error in configuration.
      */
-    public static double getOxygenConsumptionRate() throws Exception {
+    public static double getOxygenConsumptionRate() {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getOxygenConsumptionRate();
     }
@@ -614,7 +614,7 @@ public class PhysicalCondition implements Serializable {
      * @return water consumed (kg/Sol)
      * @throws Exception if error in configuration.
      */
-    public static double getWaterConsumptionRate() throws Exception {
+    public static double getWaterConsumptionRate() {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getWaterConsumptionRate();
     }
@@ -624,7 +624,7 @@ public class PhysicalCondition implements Serializable {
      * @return food consumed (kg/Sol)
      * @throws Exception if error in configuration.
      */
-    public static double getFoodConsumptionRate() throws Exception {
+    public static double getFoodConsumptionRate() {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getFoodConsumptionRate();
     }

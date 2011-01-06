@@ -7,7 +7,10 @@
 
 package org.mars_sim.msp.core.mars;
 
-import java.awt.Color;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -15,9 +18,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
 
 /** The TerrainElevation class represents the surface terrain of the
  *  virtual Mars. It can provide information about elevation and
@@ -147,7 +147,7 @@ public class TerrainElevation {
 		int row = (int) Math.round(phi * (MAP_HEIGHT / Math.PI));
 		if (row == topoColors.size()) row--;
         
-		int[] colorRow = (int[]) topoColors.get(row);
+		int[] colorRow = topoColors.get(row);
 		int column = (int) Math.round(theta * ((double) colorRow.length / TWO_PI));
 		if (column == colorRow.length) column--;
         

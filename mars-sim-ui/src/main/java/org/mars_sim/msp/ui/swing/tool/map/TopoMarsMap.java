@@ -10,7 +10,7 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import org.mars_sim.msp.core.Simulation;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
 /**
  *  The TopoMarsMap class is a map of the topography of Mars that can be generated

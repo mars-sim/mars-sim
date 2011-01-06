@@ -29,8 +29,8 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error adding capacity.
      */
-    void addAmountResourcePhaseCapacity(Phase phase, double capacity) throws ResourceException {
-    	if (capacity < 0D) throw new ResourceException("Cannot add negative phase capacity: " + capacity);
+    void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+    	if (capacity < 0D) throw new IllegalStateException("Cannot add negative phase capacity: " + capacity);
     	if (amountResourcePhaseCapacities == null) amountResourcePhaseCapacities = new HashMap<Phase, Double>();
     	if (hasAmountResourcePhaseCapacity(phase)) {
     		double current = amountResourcePhaseCapacities.get(phase);
@@ -130,8 +130,8 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param amount the amount to store (kg)
      * @throws ResourceException if error storing resource.
      */
-    void storeAmountResourcePhase(AmountResource resource, double amount) throws ResourceException {
-    	if (amount < 0D) throw new ResourceException("Cannot store negative amount of phase: " + amount);
+    void storeAmountResourcePhase(AmountResource resource, double amount) {
+    	if (amount < 0D) throw new IllegalStateException("Cannot store negative amount of phase: " + amount);
     	if (amount > 0D) {
     		Phase resourcePhase = resource.getPhase();
     		boolean storable = false;
@@ -149,7 +149,7 @@ class AmountResourcePhaseStorage implements Serializable {
                     updateTotalAmountResourcePhasesStored();
                 }
     		}
-    		else throw new ResourceException("Amount resource could not be added in phase storage.");
+    		else throw new IllegalStateException("Amount resource could not be added in phase storage.");
     	}
     }
     
@@ -159,8 +159,8 @@ class AmountResourcePhaseStorage implements Serializable {
      * @param amount the amount to retrieve.
      * @throws ResourceException if error retrieving amount from phase.
      */
-    void retrieveAmountResourcePhase(Phase phase, double amount) throws ResourceException {
-    	if (amount < 0D) throw new ResourceException("Cannot retrieve negative amount of phase: " + amount); 
+    void retrieveAmountResourcePhase(Phase phase, double amount) {
+    	if (amount < 0D) throw new IllegalStateException("Cannot retrieve negative amount of phase: " + amount); 
     	boolean retrievable = false;
     	if (getAmountResourcePhaseStored(phase) >= amount) {
     		StoredPhase stored = amountResourcePhaseStored.get(phase);
@@ -173,14 +173,14 @@ class AmountResourcePhaseStorage implements Serializable {
     			updateTotalAmountResourcePhasesStored();
     		}
     	}
-    	if (!retrievable) throw new ResourceException("Amount resource (" + phase.getName() +  ":" + 
+    	if (!retrievable) throw new IllegalStateException("Amount resource (" + phase.getName() +  ":" + 
     			amount + ") could not be retrieved from phase storage");
     }
     
     /**
      * Internal class for a stored phase.
      */
-    private class StoredPhase implements Serializable {
+    private static class StoredPhase implements Serializable {
     	private AmountResource resource;
     	private double amount;
     	

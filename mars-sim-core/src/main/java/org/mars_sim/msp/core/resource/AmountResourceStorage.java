@@ -8,12 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Storage for amount resources.
@@ -40,7 +35,7 @@ public class AmountResourceStorage implements Serializable {
      * @throws ResourceException if error setting capacity.
      */
 	public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) 
-            throws ResourceException {
+            {
 		if (typeStorage == null) typeStorage = new AmountResourceTypeStorage();
 		typeStorage.addAmountResourceTypeCapacity(resource, capacity);
 		resourceCapacityKeyCache = null;
@@ -58,7 +53,7 @@ public class AmountResourceStorage implements Serializable {
     		while (i.hasNext()) {
     			AmountResource resource = i.next();
     			double capacity = typeStorage.getAmountResourceTypeCapacity(resource);
-    			if (capacity > 0D) typeCapacities.put(resource, new Double(capacity));
+    			if (capacity > 0D) typeCapacities.put(resource, capacity);
     		}
     	}
     	
@@ -72,7 +67,7 @@ public class AmountResourceStorage implements Serializable {
      * @throws ResourceException if error adding capacity.
      */
     public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) 
-            throws ResourceException {
+            {
     	if (phaseStorage == null)  phaseStorage = new AmountResourcePhaseStorage();
     	phaseStorage.addAmountResourcePhaseCapacity(phase, capacity);
     	resourceCapacityKeyCache = null;
@@ -90,7 +85,7 @@ public class AmountResourceStorage implements Serializable {
     		while (i.hasNext()) {
     			Phase phase = i.next();
     			double capacity = phaseStorage.getAmountResourcePhaseCapacity(phase);
-    			if (capacity > 0D) phaseCapacities.put(phase, new Double(capacity));
+    			if (capacity > 0D) phaseCapacities.put(phase, capacity);
     		}
     	}
     	
@@ -211,8 +206,8 @@ public class AmountResourceStorage implements Serializable {
      * @throws ResourceException if error storing resource.
      */
     public synchronized void storeAmountResource(AmountResource resource, double amount) 
-            throws ResourceException {
-    	if (amount < 0D) throw new ResourceException("Cannot store negative amount of resource: " + amount);
+            {
+    	if (amount < 0D) throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
     	if (amount > 0D) {
     		boolean storable = false;
     		if (hasAmountResourceCapacity(resource)) {
@@ -247,7 +242,7 @@ public class AmountResourceStorage implements Serializable {
     				}
     			}
     		}
-    		if (!storable) throw new ResourceException("Amount resource: " + resource + " of amount: " + amount + 
+    		if (!storable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount + 
     			" could not be stored in inventory.");
     	}
     }
@@ -259,8 +254,8 @@ public class AmountResourceStorage implements Serializable {
      * @throws ResourceException if error retrieving resource.
      */
     public synchronized void retrieveAmountResource(AmountResource resource, double amount) 
-            throws ResourceException {
-    	if (amount < 0D) throw new ResourceException("Cannot retrieve negative amount of resource: " + amount);
+            {
+    	if (amount < 0D) throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
     	boolean retrievable = false;
     	if (getAmountResourceStored(resource) >= amount) {
     		double remainingAmount = amount;
@@ -289,7 +284,7 @@ public class AmountResourceStorage implements Serializable {
     			clearStoredCache();
     		}
     	}
-    	if (!retrievable) throw new ResourceException("Amount resource: " + resource + " of amount: " + amount + 
+    	if (!retrievable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount + 
     			" could not be retrieved from inventory.");
     }
     

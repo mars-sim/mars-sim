@@ -7,17 +7,20 @@
 
 package org.mars_sim.msp.core.person.ai;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.job.*;
-import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.core.person.ai.task.*;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** The Mind class represents a person's mind.
  *  It keeps track of missions and tasks which
@@ -48,7 +51,7 @@ public class Mind implements Serializable {
      * @param person the person owning this mind
      * @throws Exception if mind could not be created.
      */
-    public Mind(Person person) throws Exception {
+    public Mind(Person person) {
 
         // Initialize data members
         this.person = person;
@@ -71,7 +74,7 @@ public class Mind implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) throws Exception {
+	public void timePassing(double time) {
 		
 	    // Check if this person needs to get a new job or change jobs.
         if (!jobLock) setJob(JobManager.getNewJob(person), false);
@@ -91,7 +94,7 @@ public class Mind implements Serializable {
      * @param time time in millisols
      * @throws Exception if error during action.
      */
-    public void takeAction(double time) throws Exception {
+    public void takeAction(double time) {
     	
         if ((mission != null) && mission.isDone()) mission = null;
         boolean activeMission = (mission != null);
@@ -102,31 +105,31 @@ public class Mind implements Serializable {
         	overrideMission = person.getSettlement().getMissionCreationOverride();
         
         // Perform a task if the person has one, or determine a new task/mission.
-        try {
+//        try {
         	if (taskManager.hasActiveTask()) {
             	double remainingTime = taskManager.performTask(time, person.getPerformanceRating());
             	if (remainingTime > 0D) takeAction(remainingTime);
         	}
         	else {
             	if (activeMission) {
-            		try {
+//            		try {
             			mission.performMission(person);
-            		}
-            		catch (MissionException e) {
-                        logger.log(Level.SEVERE, "Error performing mission.", e);
-            			mission.endMission(e.getMessage());
-            		}
+//            		}
+//            		catch (MissionException e) {
+//                        logger.log(Level.SEVERE, "Error performing mission.", e);
+//            			mission.endMission(e.getMessage());
+//            		}
             	}
             	
             	if (!taskManager.hasActiveTask()) 
-            		getNewAction(true, (!activeMission && !overrideMission));
+            		try{getNewAction(true, (!activeMission && !overrideMission));}catch(Exception e){logger.log(Level.WARNING, "Could not get new action", e);}
             	if (taskManager.hasActiveTask() || hasActiveMission()) takeAction(time);
         	}
-        }
-        catch (Exception e) {
-        	e.printStackTrace(System.err);
-        	throw new Exception("Mind.takeAction(): " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//        	e.printStackTrace(System.err);
+//        	throw new IllegalStateException("Mind.takeAction(): " + e.getMessage());
+//        }
     }
 
     /** Returns the person owning this mind.
@@ -185,8 +188,7 @@ public class Mind implements Serializable {
      *  @return true for active mission
      */
     public boolean hasActiveMission() {
-        if ((mission != null) && !mission.isDone()) return true;
-        else return false;
+        return (mission != null) && !mission.isDone();
     }
 
     /**
@@ -221,7 +223,7 @@ public class Mind implements Serializable {
      * @param missions can actions be new missions?
      * @throws Exception if new action cannot be found.
      */
-    public void getNewAction(boolean tasks, boolean missions) throws Exception {
+    public void getNewAction(boolean tasks, boolean missions) {
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		
         // If this Person is too weak then they can not do Missions
@@ -245,7 +247,7 @@ public class Mind implements Serializable {
         	missionWeights = missionManager.getTotalMissionProbability(person);
         	weightSum += missionWeights;
         }
-		if (weightSum <= 0D) throw new Exception("Mind.getNewAction(): weight sum: " + weightSum);
+		if (weightSum <= 0D) throw new IllegalStateException("Mind.getNewAction(): weight sum: " + weightSum);
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
@@ -284,19 +286,19 @@ public class Mind implements Serializable {
      * have person leave vehicle and enter settlement.
      */
     private void enterSettlementIfInRover() {
-    	if (getMission() == null) {
+    	if (mission == null) {
     		if (person.getLocationSituation().equals(Person.INVEHICLE)) {
     			Vehicle vehicle = person.getVehicle();
     			if (vehicle.getSettlement() != null) {
     				Settlement settlement = vehicle.getSettlement();
     				// Move person from vehicle to settlement.
-    				try {
+//    				try {
     	        		vehicle.getInventory().retrieveUnit(person);
     	        		settlement.getInventory().storeUnit(person);
-    	        	}
-    	        	catch (InventoryException e) {
-    	        		e.printStackTrace(System.err);
-    	        	}
+//    	        	}
+//    	        	catch (InventoryException e) {
+//    	        		e.printStackTrace(System.err);
+//    	        	}
     			}
     		}
     	}

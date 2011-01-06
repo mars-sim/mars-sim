@@ -65,7 +65,7 @@ public class Complaint implements Serializable {
         this.performanceFactor = (performance / 100D);
         this.nextPhase = next;
         this.nextPhaseStr = "";
-        if (next != null) this.nextPhaseStr = next.getName();
+        if (next != null) this.nextPhaseStr = next.name;
         this.probability = probability;
         this.recoveryTreatment = recoveryTreatment;
     }

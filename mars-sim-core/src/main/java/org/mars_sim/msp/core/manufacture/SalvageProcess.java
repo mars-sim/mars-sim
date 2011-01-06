@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.core.manufacture;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
+import java.io.Serializable;
 
 /**
  * A process for salvaging a piece of equipment or vehicle.

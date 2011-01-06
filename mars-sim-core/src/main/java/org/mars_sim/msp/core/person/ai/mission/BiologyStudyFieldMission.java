@@ -6,22 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
@@ -39,6 +24,10 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Logger;
 
 /** 
  * A mission to do biology research at a remote field location for a
@@ -75,7 +64,7 @@ public class BiologyStudyFieldMission extends RoverMission
      * @param startingPerson the person starting the mission.
      * @throws MissionException if problem constructing mission.
      */
-    public BiologyStudyFieldMission(Person startingPerson) throws MissionException {
+    public BiologyStudyFieldMission(Person startingPerson) {
         
         // Use RoverMission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
@@ -99,15 +88,15 @@ public class BiologyStudyFieldMission extends RoverMission
             recruitPeopleForMission(startingPerson);
             
             // Determine field site location.
-            try {
+//            try {
                 if (hasVehicle()) {
                     double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
                     determineFieldSite(getVehicle().getRange(), tripTimeLimit);
                 }
-            }
-            catch (Exception e) {
-                throw new MissionException(getPhase(), e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException(getPhase(), e);
+//            }
             
             // Add home settlement
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
@@ -139,7 +128,7 @@ public class BiologyStudyFieldMission extends RoverMission
      */
     public BiologyStudyFieldMission(Collection<Person> members, Settlement startingSettlement, 
             Person leadResearcher, ScientificStudy study, Rover rover, Coordinates fieldSite, 
-            String description) throws MissionException {
+            String description) {
         
         // Use RoverMission constructor.
         super(description, leadResearcher, MIN_PEOPLE, rover);
@@ -171,13 +160,13 @@ public class BiologyStudyFieldMission extends RoverMission
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
         // Check if vehicle can carry enough supplies for the mission.
-        try {
+//        try {
             if (hasVehicle() && !isVehicleLoadable()) 
                 endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
-        }
-        catch (Exception e) {
-            throw new MissionException(getPhase(), e);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new MissionException(getPhase(), e);
+//        }
     }
     
     /** 
@@ -214,7 +203,7 @@ public class BiologyStudyFieldMission extends RoverMission
             
             if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources 
                     && enoughSuits) {
-                try {
+//                try {
                     // Get available rover.
                     Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
                     if (rover != null) {
@@ -250,10 +239,10 @@ public class BiologyStudyFieldMission extends RoverMission
                             if (!biology.equals(jobScience)) result /= 2D;
                         }
                     }
-                }
-                catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error determining rover.", e);
-                }
+//                }
+//                catch (Exception e) {
+//                    logger.log(Level.SEVERE, "Error determining rover.", e);
+//                }
             }
             
             // Crowding modifier
@@ -316,7 +305,7 @@ public class BiologyStudyFieldMission extends RoverMission
      * @throws MissionException if error determining time limit.
      */
     public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
-            throws MissionException {
+             {
         
         Inventory vInv = rover.getInventory();
         
@@ -324,7 +313,7 @@ public class BiologyStudyFieldMission extends RoverMission
         
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         
-        try {
+//        try {
             // Check food capacity as time limit.
             AmountResource food = AmountResource.findAmountResource("food");
             double foodConsumptionRate = config.getFoodConsumptionRate();
@@ -345,10 +334,10 @@ public class BiologyStudyFieldMission extends RoverMission
             double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
             double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
             if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
-        }
-        catch (Exception e) {
-            throw new MissionException(null, e);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new MissionException(null, e);
+//        }
         
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
@@ -364,14 +353,14 @@ public class BiologyStudyFieldMission extends RoverMission
      * @throws MissionException of site can not be determined.
      */
     private void determineFieldSite(double roverRange, double tripTimeLimit) 
-            throws MissionException {
+             {
         
         // Determining the actual traveling range.
         double range = roverRange;
         double timeRange = getTripTimeRange(tripTimeLimit, true);
         if (timeRange < range) range = timeRange;
         
-        try {
+//        try {
             // Get the current location.
             Coordinates startingLocation = getCurrentMissionLocation();
         
@@ -381,10 +370,10 @@ public class BiologyStudyFieldMission extends RoverMission
             double siteDistance = RandomUtil.getRandomDouble(limit);
             fieldSite = startingLocation.getNewLocation(direction, siteDistance);
             addNavpoint(new NavPoint(fieldSite, "field research site"));
-        }
-        catch (Exception e) {
-            throw new MissionException(getPhase(), e);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new MissionException(getPhase(), e);
+//        }
     }
     
     /**
@@ -418,7 +407,7 @@ public class BiologyStudyFieldMission extends RoverMission
     }
     
     @Override
-    protected double getMissionQualification(Person person) throws MissionException {  
+    protected double getMissionQualification(Person person) {  
         double result = 0D;
         
         if (isCapableOfMission(person)) {
@@ -451,13 +440,13 @@ public class BiologyStudyFieldMission extends RoverMission
     
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
-            boolean useBuffer) throws MissionException {
+            boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
         
             // Include one EVA suit per person on mission.
-            result.put(EVASuit.class, new Integer(getPeopleNumber()));
+            result.put(EVASuit.class, getPeopleNumber());
         
             equipmentNeededCache = result;
             return result;
@@ -470,7 +459,7 @@ public class BiologyStudyFieldMission extends RoverMission
     }
     
     @Override
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
@@ -495,7 +484,7 @@ public class BiologyStudyFieldMission extends RoverMission
     }
     
     @Override
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
         super.performPhase(person);
         if (RESEARCH_SITE.equals(getPhase())) researchFieldSitePhase(person);
     }
@@ -520,7 +509,7 @@ public class BiologyStudyFieldMission extends RoverMission
      * @param person the person currently performing the mission
      * @throws MissionException if problem performing phase.
      */
-    private final void researchFieldSitePhase(Person person) throws MissionException {
+    private void researchFieldSitePhase(Person person) {
 
         // Check if field site research has just started.
         if (fieldSiteStartTime == null) {
@@ -554,31 +543,31 @@ public class BiologyStudyFieldMission extends RoverMission
         
             // If no one can research the site and this is not due to it just being
             // night time, end the field work phase.
-            try {
+//            try {
                 Mars mars = Simulation.instance().getMars();
                 boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
                         getCurrentMissionLocation());
                 double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
                 if (nobodyFieldWork && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
-            } 
-            catch (Exception e) {
-                throw new MissionException(getPhase(), e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException(getPhase(), e);
+//            }
             
             // Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
             if (hasEmergency()) setPhaseEnded(true);
             
-            try {
+//            try {
                 // Check if enough resources for remaining trip.
                 if (!hasEnoughResourcesForRemainingMission(false)) {
                     // If not, determine an emergency destination.
                     determineEmergencyDestination(person);
                     setPhaseEnded(true);
                 }
-            }
-            catch (Exception e) {
-                throw new MissionException(getPhase(), e.getMessage());
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException(getPhase(), e.getMessage());
+//            }
         }
         else {
             // If research time has expired for the site, have everyone end their field work tasks.
@@ -597,13 +586,13 @@ public class BiologyStudyFieldMission extends RoverMission
             if (!endFieldSite && !timeExpired) {
                 // If person can research the site, start that task.
                 if (BiologyStudyFieldWork.canResearchSite(person, getRover())) {
-                    try {
+//                    try {
                         assignTask(person, new BiologyStudyFieldWork(person, leadResearcher, study, 
                                 (Rover) getVehicle()));
-                    }
-                    catch(Exception e) {
-                        throw new MissionException(getPhase(), e);
-                    }
+//                    }
+//                    catch(Exception e) {
+//                        throw new MissionException(getPhase(), e);
+//                    }
                 }
             }
         }
@@ -620,7 +609,7 @@ public class BiologyStudyFieldMission extends RoverMission
     }
     
     @Override
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) {
         double result = super.getEstimatedRemainingMissionTime(useBuffer);
         result += getEstimatedRemainingFieldSiteTime();
         return result;
@@ -631,7 +620,7 @@ public class BiologyStudyFieldMission extends RoverMission
      * @return time (millisols)
      * @throws MissionException if error estimating time.
      */
-    private final double getEstimatedRemainingFieldSiteTime() throws MissionException {
+    private double getEstimatedRemainingFieldSiteTime() {
         double result = 0D;
         
         // Add estimated remaining field work time at field site if still there.
@@ -650,7 +639,7 @@ public class BiologyStudyFieldMission extends RoverMission
     
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-            boolean parts) throws MissionException {
+            boolean parts) {
         Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
         
         double fieldSiteTime = getEstimatedRemainingFieldSiteTime();
@@ -659,28 +648,28 @@ public class BiologyStudyFieldMission extends RoverMission
         int crewNum = getPeopleNumber();
         
         // Determine life support supplies needed for trip.
-        try {
+//        try {
             AmountResource oxygen = AmountResource.findAmountResource("oxygen");
             double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
             if (result.containsKey(oxygen)) 
-                oxygenAmount += ((Double) result.get(oxygen)).doubleValue();
-            result.put(oxygen, new Double(oxygenAmount));
+                oxygenAmount += (Double) result.get(oxygen);
+            result.put(oxygen, oxygenAmount);
             
             AmountResource water = AmountResource.findAmountResource("water");
             double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
             if (result.containsKey(water)) 
-                waterAmount += ((Double) result.get(water)).doubleValue();
-            result.put(water, new Double(waterAmount));
+                waterAmount += (Double) result.get(water);
+            result.put(water, waterAmount);
             
             AmountResource food = AmountResource.findAmountResource("food");
             double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
             if (result.containsKey(food)) 
-                foodAmount += ((Double) result.get(food)).doubleValue();
-            result.put(food, new Double(foodAmount));
-        }
-        catch(Exception e) {
-            throw new MissionException(getPhase(), e);
-        }
+                foodAmount += (Double) result.get(food);
+            result.put(food, foodAmount);
+//        }
+//        catch(Exception e) {
+//            throw new MissionException(getPhase(), e);
+//        }
         
         return result;
     }

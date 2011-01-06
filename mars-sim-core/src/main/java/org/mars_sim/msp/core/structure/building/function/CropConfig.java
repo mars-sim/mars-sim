@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jdom.Document;
-import org.jdom.Element;
 
 
 /**
@@ -42,7 +42,7 @@ public class CropConfig implements Serializable {
 	 * @throws Exception when crops could not be parsed.
 	 */
     @SuppressWarnings("unchecked")
-	public List<CropType> getCropList() throws Exception {
+	public List<CropType> getCropList() {
 		
 		if (cropList == null) {
 			cropList = new ArrayList<CropType>();
@@ -53,7 +53,7 @@ public class CropConfig implements Serializable {
 			for (Element crop : crops) {
 				String name = "";
 				
-				try {
+//				try {
 					// Get name.
 					name = crop.getAttributeValue(NAME);
 				
@@ -65,10 +65,10 @@ public class CropConfig implements Serializable {
 					CropType cropType = new CropType(name, growingTime * 1000D);
 				
 					cropList.add(cropType);
-				}
-				catch (Exception e) {
-					throw new Exception("Problems reading crop " + name + ": " + e.getMessage());
-				}
+//				}
+//				catch (Exception e) {
+//					throw new IllegalStateException("Problems reading crop " + name + ": " + e.getMessage());
+//				}
 			}
 		}
 		

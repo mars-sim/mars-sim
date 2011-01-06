@@ -7,45 +7,28 @@
 
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
-import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.manufacture.PartSalvage;
-import org.mars_sim.msp.core.manufacture.Salvagable;
-import org.mars_sim.msp.core.manufacture.SalvageProcess;
+import org.mars_sim.msp.core.manufacture.*;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A building function for manufacturing.
@@ -68,19 +51,19 @@ public class Manufacture extends Function implements Serializable {
 	 * @param building the building the function is for.
 	 * @throws BuildingException if error constructing function.
 	 */
-	public Manufacture(Building building) throws BuildingException {
+	public Manufacture(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			techLevel = config.getManufactureTechLevel(building.getName());
 			concurrentProcesses = config.getManufactureConcurrentProcesses(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("Manufacture.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Manufacture.constructor: " + e.getMessage());
+//		}
 		
 		processes = new ArrayList<ManufactureProcess>();
 		salvages = new ArrayList<SalvageProcess>();
@@ -94,8 +77,8 @@ public class Manufacture extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         double buildingTech = config.getManufactureTechLevel(buildingName);
@@ -122,8 +105,8 @@ public class Manufacture extends Function implements Serializable {
             }
             else {
                 Manufacture manFunction = (Manufacture) building.getFunction(NAME);
-                double tech = manFunction.getTechLevel();
-                double processes = manFunction.getConcurrentProcesses();
+                double tech = manFunction.techLevel;
+                double processes = manFunction.concurrentProcesses;
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 supply += (tech * tech) * processes * wearModifier;
             }
@@ -174,16 +157,16 @@ public class Manufacture extends Function implements Serializable {
 	 * @param process the new manufacturing process.
 	 * @throws BuildingException if error adding process.
 	 */
-	public void addProcess(ManufactureProcess process) throws BuildingException {
+	public void addProcess(ManufactureProcess process) {
 		if (process == null) throw new IllegalArgumentException("process is null");
 		
 		if (getTotalProcessNumber() >= concurrentProcesses) 
-		    throw new BuildingException("No space to add new manufacturing process.");
+		    throw new IllegalStateException("No space to add new manufacturing process.");
 		
 		processes.add(process);
 		
 		// Consume inputs.
-		try {
+//		try {
 			Inventory inv = getBuilding().getInventory();
 			Iterator<ManufactureProcessItem> i = process.getInfo().getInputList().iterator();
 			while (i.hasNext()) {
@@ -196,17 +179,17 @@ public class Manufacture extends Function implements Serializable {
 					Part part = (Part) ItemResource.findItemResource(item.getName());
 					inv.retrieveItemResources(part, (int) item.getAmount());
 				}
-				else throw new BuildingException("Manufacture process input: " + 
+				else throw new IllegalStateException("Manufacture process input: " +
 						item.getType() + " not a valid type.");
 				
 				// Recalculate settlement good value for input item.
 				GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
 				goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
 			}
-		}
-		catch (Exception e) {
-			throw new BuildingException("Problem adding manufacturing process.", e);
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Problem adding manufacturing process.", e);
+//		}
 		
 		// Log manufacturing process starting.
 		if (logger.isLoggable(Level.FINEST)) {
@@ -231,22 +214,22 @@ public class Manufacture extends Function implements Serializable {
      * @param process the new salvage process.
      * @throws BuildingException if error adding process.
      */
-    public void addSalvageProcess(SalvageProcess process) throws BuildingException {
+    public void addSalvageProcess(SalvageProcess process) {
         if (process == null) throw new IllegalArgumentException("process is null");
         
         if (getTotalProcessNumber() >= concurrentProcesses) 
-            throw new BuildingException("No space to add new salvage process.");
+            throw new IllegalStateException("No space to add new salvage process.");
         
         salvages.add(process);
         
-        try {
+//        try {
             // Retrieve salvaged unit from inventory and remove from unit manager.
             Inventory inv = getBuilding().getInventory();
             Unit salvagedUnit = process.getSalvagedUnit();
             if (salvagedUnit != null) {
                 inv.retrieveUnit(salvagedUnit);
             }
-            else throw new BuildingException("Salvaged unit is null");
+            else throw new IllegalStateException("Salvaged unit is null");
             
             // Set the salvage process info for the salvaged unit.
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
@@ -262,17 +245,17 @@ public class Manufacture extends Function implements Serializable {
                 salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
             }
             if (salvagedGood != null) goodsManager.updateGoodValue(salvagedGood, false);
-            else throw new BuildingException("Salvaged good is null");
-        }
-        catch (Exception e) {
-            throw new BuildingException("Problem adding salvage process.", e);
-        }
+            else throw new IllegalStateException("Salvaged good is null");
+//        }
+//        catch (Exception e) {
+//            throw new IllegalStateException("Problem adding salvage process.", e);
+//        }
         
         // Log salvage process starting.
         if (logger.isLoggable(Level.FINEST)) {
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            Settlement stl = getBuilding().getBuildingManager().getSettlement();
             logger.finest(getBuilding() + " at " 
-                            + settlement
+                            + stl
                             + " starting salvage process: " 
                             + process.toString());
         }
@@ -303,7 +286,7 @@ public class Manufacture extends Function implements Serializable {
 	}
 
 	@Override
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 		
 		List<ManufactureProcess> finishedProcesses = new ArrayList<ManufactureProcess>();
 		
@@ -375,11 +358,11 @@ public class Manufacture extends Function implements Serializable {
      * @param premature true if the process has ended prematurely.
      * @throws BuildingException if error ending process.
      */
-    public void endManufacturingProcess(ManufactureProcess process, boolean premature) throws BuildingException {
+    public void endManufacturingProcess(ManufactureProcess process, boolean premature) {
     	
         if (!premature) {
             // Produce outputs.
-            try {
+//            try {
                 Settlement settlement = getBuilding().getBuildingManager().getSettlement();
                 UnitManager manager = Simulation.instance().getUnitManager();
                 Inventory inv = getBuilding().getInventory();
@@ -429,7 +412,7 @@ public class Manufacture extends Function implements Serializable {
                                 }
                             }
                         }
-                        else throw new BuildingException("Manufacture.addProcess(): output: " + 
+                        else throw new IllegalStateException("Manufacture.addProcess(): output: " +
                                 item.getType() + " not a valid type.");
 					
                         // Recalculate settlement good value for output item.
@@ -437,10 +420,10 @@ public class Manufacture extends Function implements Serializable {
                         goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
                     }
                 }
-            }
-            catch (Exception e) {
-                throw new BuildingException("Problem completing manufacturing process.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new BuildingException("Problem completing manufacturing process.", e);
+//            }
         }
         
         processes.remove(process);
@@ -459,13 +442,13 @@ public class Manufacture extends Function implements Serializable {
      * @param premature true if process is ended prematurely.
      * @throws BuildingException if error ending process.
      */
-    public void endSalvageProcess(SalvageProcess process, boolean premature) throws BuildingException {
+    public void endSalvageProcess(SalvageProcess process, boolean premature) {
         
         Map<Part, Integer> partsSalvaged = new HashMap<Part, Integer>(0);
         
         if (!premature) {    
             // Produce salvaged parts.
-            try {
+//            try {
                 Settlement settlement = getBuilding().getBuildingManager().getSettlement();
                 GoodsManager goodsManager = settlement.getGoodsManager();
                 Inventory inv = getBuilding().getInventory();
@@ -505,10 +488,10 @@ public class Manufacture extends Function implements Serializable {
                         goodsManager.updateGoodValue(GoodsUtil.getResourceGood(part), false);
                     }
                 }
-            }
-            catch (Exception e) {
-                throw new BuildingException("Problem completing manufacturing process.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new BuildingException("Problem completing manufacturing process.", e);
+//            }
         }
             
         // Finish the salvage.

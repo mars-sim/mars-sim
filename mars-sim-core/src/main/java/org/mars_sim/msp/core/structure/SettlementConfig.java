@@ -6,19 +6,14 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 /**
@@ -70,7 +65,7 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
 	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) 
-			throws Exception {
+			{
 		settlementTemplates = new ArrayList<SettlementTemplate>();
 		initialSettlements = new ArrayList<InitialSettlement>();
 		settlementNames = new ArrayList<String>();
@@ -88,7 +83,7 @@ public class SettlementConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) 
-			throws Exception {
+			{
 		
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
@@ -162,7 +157,7 @@ public class SettlementConfig implements Serializable {
 			}
 			
 			// Load resupplies
-			Element resupplyList = (Element) templateElement.getChild(RESUPPLY);
+			Element resupplyList = templateElement.getChild(RESUPPLY);
 			if (resupplyList != null) {
 				List<Element> resupplyNodes = resupplyList.getChildren(RESUPPLY_MISSION);
 				for (Element resupplyMissionElement: resupplyNodes) {
@@ -183,7 +178,7 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if XML error.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadInitialSettlements(Document settlementDoc) throws Exception {
+	private void loadInitialSettlements(Document settlementDoc) {
 		Element root = settlementDoc.getRootElement();
 		Element initialSettlementList = root.getChild(INITIAL_SETTLEMENT_LIST);
 		List<Element> settlementNodes = initialSettlementList.getChildren(SETTLEMENT);
@@ -223,7 +218,7 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if XML error.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadSettlementNames(Document settlementDoc) throws Exception {
+	private void loadSettlementNames(Document settlementDoc) {
 		Element root = settlementDoc.getRootElement();
 		Element settlementNameList = root.getChild(SETTLEMENT_NAME_LIST);
 		List<Element> settlementNameNodes = settlementNameList.getChildren(SETTLEMENT_NAME);
@@ -320,14 +315,14 @@ public class SettlementConfig implements Serializable {
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
 	 */
-	public List<String> getSettlementNameList() throws Exception {
+	public List<String> getSettlementNameList() {
 		return new ArrayList<String>(settlementNames);
 	}
 	
 	/**
 	 * Private inner class for holding a initial settlement info.
 	 */
-	private class InitialSettlement implements Serializable {
+	private static class InitialSettlement implements Serializable {
 		private String name;
 		private boolean randomName = false;
 		private String template;

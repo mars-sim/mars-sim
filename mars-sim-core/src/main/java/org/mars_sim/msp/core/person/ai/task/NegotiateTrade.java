@@ -7,11 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -21,11 +16,15 @@ import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Task to perform a trade negotiation between the buyer and seller for a Trade mission.
@@ -57,7 +56,7 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * @throws Exception if error creating the task.
 	 */
 	public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
-			Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) throws Exception {
+			Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
 		
 		// Use trade constructor.
 		super("Negotiation Trade", buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
@@ -81,7 +80,7 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * @return time remaining after performing the phase.
 	 * @throws Exception if error performing the phase.
 	 */
-	private double negotiatingPhase(double time) throws Exception {
+	private double negotiatingPhase(double time) {
 		
 		// Follow selling trader to his/her building if necessary.
 		followSeller();
@@ -122,7 +121,7 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * Has the buying trader follow the selling trader if he/she has moved to a different building.
 	 * @throws BuildingException if error following the selling trader.
 	 */
-	private void followSeller() throws BuildingException {
+	private void followSeller() {
 		Building buyerBuilding = BuildingManager.getBuilding(buyingTrader);
 		Building sellerBuilding = BuildingManager.getBuilding(sellingTrader);
 		if ((buyerBuilding != sellerBuilding) && (sellerBuilding != null)) 
@@ -134,7 +133,7 @@ public class NegotiateTrade extends Task implements Serializable {
 	 * @return value (value points)
 	 * @throws Exception if error determining modified sold load value.
 	 */
-	private double determineModifiedSoldLoadValue() throws Exception {
+	private double determineModifiedSoldLoadValue() {
 		
 		double modifier = 1D;
 		
@@ -219,7 +218,7 @@ public class NegotiateTrade extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-	protected double performMappedPhase(double time) throws Exception {
+	protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (NEGOTIATING.equals(getPhase())) return negotiatingPhase(time);
     	else return time;

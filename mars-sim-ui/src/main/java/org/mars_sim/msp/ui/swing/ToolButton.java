@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 
 /** The ToolButton class is a UI button for a tool window.
  *  It is displayed in the unit tool bar.
@@ -30,7 +30,7 @@ public class ToolButton extends JButton {
 		super(ImageLoader.getIcon(imageName));
 
 		// Initialize toolName
-		this.toolName = new String(toolName);
+		this.toolName = toolName;
 
 		// Initialize tool tip for button
 		toolButtonTip = new JToolTip();
@@ -46,7 +46,7 @@ public class ToolButton extends JButton {
 	/** Returns tool name.
      *  @return tool name
      */
-	public String getToolName() { return new String(toolName); }
+	public String getToolName() { return toolName; }
 
 	/** Overrides JComponent's createToolTip() method
      *  @return tool tip for tool

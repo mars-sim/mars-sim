@@ -6,25 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.structure.goods.Good;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * A panel for displaying trade mission information.
@@ -159,7 +150,7 @@ public class TradeMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	/**
 	 * Abstract model for a goods table.
 	 */
-	private abstract class GoodsTableModel extends AbstractTableModel {
+	private abstract static class GoodsTableModel extends AbstractTableModel {
 		
 		// Data members.
 		protected Map<Good, Integer> goodsMap;

@@ -6,31 +6,22 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Biologist class represents a job for a biologist.
@@ -85,14 +76,14 @@ public class Biologist extends Job implements Serializable {
         Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            try {
+//            try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.BIOLOGY)) 
                     result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-            }
-            catch (BuildingException e) {
-                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-            }
+//            }
+//            catch (BuildingException e) {
+//                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+//            }
         }
 
         // Add (labspace * tech level / 2) for all parked rover labs with biology specialities.

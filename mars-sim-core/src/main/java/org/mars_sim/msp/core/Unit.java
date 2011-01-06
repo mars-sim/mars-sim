@@ -112,7 +112,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
     public void setCoordinates(Coordinates newLocation) {
     	if (location == null) location = new Coordinates(0D, 0D);
         location.setCoords(newLocation);
-        getInventory().setCoordinates(newLocation);
+        inventory.setCoordinates(newLocation);
         fireUnitUpdate(LOCATION_EVENT, newLocation);
     }
 
@@ -122,7 +122,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @param time the amount of time passing (in millisols)
      * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     }
 
     /** 
@@ -157,10 +157,10 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     public Unit getTopContainerUnit() {
     
-        Unit topUnit = getContainerUnit();
+        Unit topUnit = containerUnit;
 	    if (topUnit != null) {
-	        while (topUnit.getContainerUnit() != null) {
-	            topUnit = topUnit.getContainerUnit();
+	        while (topUnit.containerUnit != null) {
+	            topUnit = topUnit.containerUnit;
 	        }
 	    }
 
@@ -181,7 +181,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @return mass of unit and inventory
      * @throws Exception if error getting the mass.
      */
-    public double getMass() throws Exception {
+    public double getMass() {
         return baseMass + inventory.getTotalInventoryMass();
     }
     
@@ -256,6 +256,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * equal to, or greater than the specified object.
      */
     public int compareTo(Unit o) {
-        return name.compareToIgnoreCase(o.getName());
+        return name.compareToIgnoreCase(o.name);
     }
 }

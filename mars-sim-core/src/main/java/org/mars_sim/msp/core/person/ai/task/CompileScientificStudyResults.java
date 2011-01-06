@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -22,6 +16,12 @@ import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task for compiling research data for a scientific study.
@@ -45,7 +45,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
      * @param person the person performing the task.
      * @throws Exception if error constructing the class.
      */
-    public CompileScientificStudyResults(Person person) throws Exception {
+    public CompileScientificStudyResults(Person person) {
         // Use task constructor.
         super("Compiling Scientific Study Data Results", person, true, false, 
                 STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
@@ -230,7 +230,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (COMPILING_PHASE.equals(getPhase())) return compilingPhase(time);
         else return time;
@@ -242,7 +242,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double compilingPhase(double time) throws Exception {
+    private double compilingPhase(double time) {
         
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();

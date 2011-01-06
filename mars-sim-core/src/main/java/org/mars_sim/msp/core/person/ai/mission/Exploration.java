@@ -7,23 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
@@ -43,6 +27,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /** 
@@ -85,7 +74,7 @@ public class Exploration extends RoverMission  implements Serializable {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public Exploration(Person startingPerson) throws MissionException {
+	public Exploration(Person startingPerson) {
 		
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_PEOPLE);
@@ -146,7 +135,7 @@ public class Exploration extends RoverMission  implements Serializable {
      */
     public Exploration(Collection<Person> members, Settlement startingSettlement, 
     		List<Coordinates> explorationSites, Rover rover, String description) 
-            throws MissionException {
+            {
     	
        	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -181,13 +170,13 @@ public class Exploration extends RoverMission  implements Serializable {
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 
        	// Check if vehicle can carry enough supplies for the mission.
-       	try {
+//       	try {
        		if (hasVehicle() && !isVehicleLoadable()) 
                 endMission("Vehicle is not loadable. (Exploration)");
-       	}
-       	catch (Exception e) {
-       		throw new MissionException(getPhase(), e);
-       	}
+//       	}
+//       	catch (Exception e) {
+//       		throw new MissionException(getPhase(), e);
+//       	}
     }
 
 	/** 
@@ -214,14 +203,14 @@ public class Exploration extends RoverMission  implements Serializable {
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = false;
-			try {
+//			try {
 				int numContainers = settlement.getInventory().findNumEmptyUnitsOfClass(
                         SpecimenContainer.class);
 				enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
-			}
-			catch (InventoryException e) {
-				logger.log(Level.SEVERE, "Error checking if enough collecting containers available.");
-			}
+//			}
+//			catch (InventoryException e) {
+//				logger.log(Level.SEVERE, "Error checking if enough collecting containers available.");
+//			}
 			
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
@@ -272,7 +261,7 @@ public class Exploration extends RoverMission  implements Serializable {
      * @throws Exception if error determining mineral locations.
      */
     private static boolean hasNearbyMineralLocations(Rover rover, Settlement homeSettlement) 
-            throws Exception {
+{
         
         double roverRange = rover.getRange();
         double tripTimeLimit = getTotalTripTimeLimit(rover, rover.getCrewCapacity(), true);
@@ -302,7 +291,7 @@ public class Exploration extends RoverMission  implements Serializable {
     }
 	
     @Override
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
     	if (EMBARKING.equals(getPhase())) {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
@@ -327,7 +316,7 @@ public class Exploration extends RoverMission  implements Serializable {
     }
     
     @Override
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
     	super.performPhase(person);
     	if (EXPLORE_SITE.equals(getPhase())) exploringPhase(person);
     }
@@ -352,7 +341,7 @@ public class Exploration extends RoverMission  implements Serializable {
 	 * @param person the person currently performing the mission
 	 * @throws MissionException if problem performing phase.
 	 */
-	private final void exploringPhase(Person person) throws MissionException {
+	private void exploringPhase(Person person) {
 
 		// Add new explored site if just starting exploring.
 		if (currentSite == null) {
@@ -387,31 +376,31 @@ public class Exploration extends RoverMission  implements Serializable {
 	    
 			// If no one can explore the site and this is not due to it just being
 			// night time, end the exploring phase.
-			try {
+//			try {
 				Mars mars = Simulation.instance().getMars();
 				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
                         getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
 				if (nobodyExplore && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
-			} 
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e);
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e);
+//			}
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasEmergency()) setPhaseEnded(true);
 			
-			try {
+//			try {
 				// Check if enough resources for remaining trip.
 				if (!hasEnoughResourcesForRemainingMission(false)) {
 					// If not, determine an emergency destination.
 					determineEmergencyDestination(person);
 					setPhaseEnded(true);
 				}
-			}
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e.getMessage());
+//			}
 		}
 		else {
 			// If exploration time has expired for the site, have everyone end their exploration tasks.
@@ -430,12 +419,12 @@ public class Exploration extends RoverMission  implements Serializable {
 			if (!endExploringSite && !timeExpired) {
 				// If person can explore the site, start that task.
 				if (ExploreSite.canExploreSite(person, getRover())) {
-					try {
+//					try {
 						assignTask(person, new ExploreSite(person, currentSite, (Rover) getVehicle()));
-					}
-					catch(Exception e) {
-						throw new MissionException(getPhase(), e);
-					}
+//					}
+//					catch(Exception e) {
+//						throw new MissionException(getPhase(), e);
+//					}
 				}
 			}
 		}
@@ -450,21 +439,21 @@ public class Exploration extends RoverMission  implements Serializable {
 	 * concentrations, and adds it to the explored site list.
 	 * @throws MissionException if error creating explored site.
 	 */
-	private void createNewExploredSite() throws MissionException {
+	private void createNewExploredSite() {
 		SurfaceFeatures surfaceFeatures = Simulation.instance().getMars().getSurfaceFeatures();
 		MineralMap mineralMap = surfaceFeatures.getMineralMap();
 		String[] mineralTypes = mineralMap.getMineralTypeNames();
 		Map<String, Double> initialMineralEstimations = new HashMap<String, Double>(mineralTypes.length);
-		for (int x = 0; x < mineralTypes.length; x++) {
-			double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D) - 
-					MINERAL_ESTIMATION_CEILING;
-			double actualConcentration = 
-					mineralMap.getMineralConcentration(mineralTypes[x], getCurrentMissionLocation());
-			estimation += actualConcentration;
-			if (estimation < 0D) estimation = 0D - estimation;
-			else if (estimation > 100D) estimation = 100D - estimation;
-			initialMineralEstimations.put(mineralTypes[x], estimation);
-		}
+        for (String mineralType : mineralTypes) {
+            double estimation = RandomUtil.getRandomDouble(MINERAL_ESTIMATION_CEILING * 2D) -
+                    MINERAL_ESTIMATION_CEILING;
+            double actualConcentration =
+                    mineralMap.getMineralConcentration(mineralType, getCurrentMissionLocation());
+            estimation += actualConcentration;
+            if (estimation < 0D) estimation = 0D - estimation;
+            else if (estimation > 100D) estimation = 100D - estimation;
+            initialMineralEstimations.put(mineralType, estimation);
+        }
 		currentSite = surfaceFeatures.addExploredLocation(
 				new Coordinates(getCurrentMissionLocation()), initialMineralEstimations, 
 				getAssociatedSettlement());
@@ -497,7 +486,7 @@ public class Exploration extends RoverMission  implements Serializable {
 	}
 	
 	@Override
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) {
     	double result = super.getEstimatedRemainingMissionTime(useBuffer);
     	result += getEstimatedRemainingExplorationSiteTime();
     	return result;
@@ -508,7 +497,7 @@ public class Exploration extends RoverMission  implements Serializable {
      * @return time (millisols)
      * @throws MissionException if error estimating time.
      */
-    private final double getEstimatedRemainingExplorationSiteTime() throws MissionException {
+    private double getEstimatedRemainingExplorationSiteTime() {
     	double result = 0D;
     	
     	// Add estimated remaining exploration time at current site if still there.
@@ -528,7 +517,7 @@ public class Exploration extends RoverMission  implements Serializable {
     
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) throws MissionException {
+    		boolean parts) {
     	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
     	double explorationSitesTime = getEstimatedRemainingExplorationSiteTime();
@@ -537,28 +526,28 @@ public class Exploration extends RoverMission  implements Serializable {
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	try {
+//    	try {
     		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(oxygen)) 
-    			oxygenAmount += ((Double) result.get(oxygen)).doubleValue();
-    		result.put(oxygen, new Double(oxygenAmount));
+    			oxygenAmount += (Double) result.get(oxygen);
+    		result.put(oxygen, oxygenAmount);
     		
     		AmountResource water = AmountResource.findAmountResource("water");
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(water)) 
-    			waterAmount += ((Double) result.get(water)).doubleValue();
-    		result.put(water, new Double(waterAmount));
+    			waterAmount += (Double) result.get(water);
+    		result.put(water, waterAmount);
     		
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(food)) 
-    			foodAmount += ((Double) result.get(food)).doubleValue();
-    		result.put(food, new Double(foodAmount));
-    	}
-    	catch(Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+    			foodAmount += (Double) result.get(food);
+    		result.put(food, foodAmount);
+//    	}
+//    	catch(Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     	
     	return result;
     }
@@ -569,7 +558,7 @@ public class Exploration extends RoverMission  implements Serializable {
 	}
 	
 	@Override
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws MissionException {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		int result = super.compareVehicles(firstVehicle, secondVehicle);
 		
 		// Check of one rover has a research lab and the other one doesn't.
@@ -611,16 +600,16 @@ public class Exploration extends RoverMission  implements Serializable {
     
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
-    		throws MissionException {
+{
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
     	
         	// Include one EVA suit per person on mission.
-        	result.put(EVASuit.class, new Integer(getPeopleNumber()));
+        	result.put(EVASuit.class, getPeopleNumber());
     		
     		// Include required number of specimen containers.
-    		result.put(SpecimenContainer.class, new Integer(REQUIRED_SPECIMEN_CONTAINERS));
+    		result.put(SpecimenContainer.class, REQUIRED_SPECIMEN_CONTAINERS);
     	
     		equipmentNeededCache = result;
     		return result;
@@ -634,7 +623,7 @@ public class Exploration extends RoverMission  implements Serializable {
      * @throws MissionException if error determining time limit.
      */
     public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
-    		throws MissionException {
+    		 {
     	
     	Inventory vInv = rover.getInventory();
     	
@@ -642,7 +631,7 @@ public class Exploration extends RoverMission  implements Serializable {
     	
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		
-    	try {
+//    	try {
     		// Check food capacity as time limit.
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodConsumptionRate = config.getFoodConsumptionRate();
@@ -663,10 +652,10 @@ public class Exploration extends RoverMission  implements Serializable {
     		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
     		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
     		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(null, e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(null, e);
+//    	}
     	
     	// Convert timeLimit into millisols and use error margin.
     	timeLimit = (timeLimit * 1000D);
@@ -683,7 +672,7 @@ public class Exploration extends RoverMission  implements Serializable {
 	 * @throws MissionException if exploration sites can not be determined.
 	 */
 	private void determineExplorationSites(double roverRange, double tripTimeLimit, int numSites, 
-            int areologySkill) throws MissionException {
+            int areologySkill) {
 
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 		
@@ -692,7 +681,7 @@ public class Exploration extends RoverMission  implements Serializable {
 		double timeRange = getTripTimeRange(tripTimeLimit);
     	if (timeRange < range) range = timeRange;
         
-    	try {
+//    	try {
     		// Get the current location.
     		Coordinates startingLocation = getCurrentMissionLocation();
         
@@ -707,7 +696,7 @@ public class Exploration extends RoverMission  implements Serializable {
             if (newLocation != null) {
                 unorderedSites.add(newLocation);
             }
-            else throw new MissionException(getPhase(), "Could not determine first exploration site.");
+            else throw new IllegalStateException(getPhase() + " : Could not determine first exploration site.");
             
             double siteDistance = startingLocation.getDistance(newLocation);
             Coordinates currentLocation = newLocation;
@@ -747,10 +736,10 @@ public class Exploration extends RoverMission  implements Serializable {
     			currentLocation = shortest;
     			explorationSiteNum++;
     		}
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
 	}
     
     /**
@@ -761,7 +750,7 @@ public class Exploration extends RoverMission  implements Serializable {
      * @throws MissionException if error determining site.
      */
     private Coordinates determineFirstExplorationSite(double range, int areologySkill) 
-            throws MissionException {
+            {
         Coordinates result = null;
         
         Coordinates startingLocation = getCurrentMissionLocation();

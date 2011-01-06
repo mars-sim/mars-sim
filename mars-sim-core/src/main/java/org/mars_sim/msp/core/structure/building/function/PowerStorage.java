@@ -6,16 +6,15 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * The PowerStorage class is a building function for storing power.
@@ -34,17 +33,17 @@ public class PowerStorage extends Function implements Serializable {
      * @param building the building with the function.
      * @throws BuildingException if error parsing configuration.
      */
-    public PowerStorage(Building building) throws BuildingException {
+    public PowerStorage(Building building) {
         // Call Function constructor.
         super(NAME, building);
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        try {
+//        try {
             powerStorageCapacity = config.getPowerStorageCapacity(building.getName());
-        }
-        catch (Exception e) {
-            throw new BuildingException("PowerStorage.constructor: " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//            throw new BuildingException("PowerStorage.constructor: " + e.getMessage());
+//        }
     }
     
     /**
@@ -55,8 +54,8 @@ public class PowerStorage extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         PowerGrid grid = settlement.getPowerGrid();
         
@@ -69,7 +68,7 @@ public class PowerStorage extends Function implements Serializable {
             Building building = iStore.next();
             PowerStorage store = (PowerStorage) building.getFunction(PowerStorage.NAME);
             double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-            supply += store.getPowerStorageCapacity() * wearModifier;
+            supply += store.powerStorageCapacity * wearModifier;
         }
         
         double existingPowerStorageValue = demand / (supply + 1D);
@@ -120,7 +119,7 @@ public class PowerStorage extends Function implements Serializable {
     }
 
     @Override
-    public void timePassing(double time) throws BuildingException {
+    public void timePassing(double time) {
         // Do nothing.
     }
 }

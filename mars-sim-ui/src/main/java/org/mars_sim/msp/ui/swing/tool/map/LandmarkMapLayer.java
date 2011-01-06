@@ -6,15 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Landmark;
+
+import java.awt.*;
+import java.util.Iterator;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.

@@ -6,15 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -24,10 +15,18 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Task for assisting a scientific study researcher.
@@ -57,7 +56,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
      * @param person the person performing the task.
      * @throws Exception if error construction task.
      */
-    public AssistScientificStudyResearcher(Person person) throws Exception {
+    public AssistScientificStudyResearcher(Person person) {
         // Use Task constructor.
         super("Assisting researcher", person, true, false, STRESS_MODIFIER, false, 0D);
         
@@ -71,17 +70,17 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
                 
                 // If in settlement, move teacher to building researcher is in.
                 if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                    try {
+//                    try {
                         Building assistantBuilding = BuildingManager.getBuilding(person);
                         Building researcherBuilding = BuildingManager.getBuilding(researcher);
                         if (!assistantBuilding.equals(researcherBuilding)) 
                             BuildingManager.addPersonToBuilding(person, researcherBuilding);
-                    }
-                    catch (BuildingException e) {
-                        logger.log(Level.SEVERE, "AssistScientificStudyResearcher.constructor(): " + 
-                                e.getMessage());
-                        endTask();
-                    }
+//                    }
+//                    catch (BuildingException e) {
+//                        logger.log(Level.SEVERE, "AssistScientificStudyResearcher.constructor(): " +
+//                                e.getMessage());
+//                        endTask();
+//                    }
                 }
             }
             else {
@@ -116,18 +115,18 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
             // If assistant is in a settlement, use crowding modifier.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
                 Person researcher = (Person) potentialResearchers.toArray()[0];
-                try {
+//                try {
                     Building building = BuildingManager.getBuilding(researcher);
                     if (building != null) {
                         result *= Task.getCrowdingProbabilityModifier(person, building);
                         result *= Task.getRelationshipModifier(person, building);
                     }
                     else result = 0D;
-                }
-                catch (BuildingException e) {
-                    logger.log(Level.SEVERE,"AssistScientificStudyResearcher.getProbability(): " + 
-                            e.getMessage());
-                }
+//                }
+//                catch (BuildingException e) {
+//                    logger.log(Level.SEVERE,"AssistScientificStudyResearcher.getProbability(): " +
+//                            e.getMessage());
+//                }
             }
         }
         
@@ -163,7 +162,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         // If assistant is in a settlement, best researchers are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
         if (assistant.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            try {
+//            try {
                 // Find the least crowded buildings that researchers are in.
                 int crowding = Integer.MAX_VALUE;
                 Iterator<Person> i = researchers.iterator();
@@ -190,8 +189,8 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
                         if (buildingCrowding == crowding) leastCrowded.add(researcher);
                     }
                 }
-            }
-            catch (BuildingException e) {}
+//            }
+//            catch (BuildingException e) {}
         }
         else leastCrowded = researchers;
         
@@ -305,7 +304,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (ASSISTING.equals(getPhase())) return assistingPhase(time);
         else return time;
@@ -317,7 +316,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
      * @return the amount (millisols) of time remaining after performing the phase.
      * @throws Exception
      */
-    private double assistingPhase(double time) throws Exception {
+    private double assistingPhase(double time) {
         
         // Check if task is finished.
         if (((Task) researchTask).isDone()) endTask();

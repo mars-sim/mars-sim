@@ -7,15 +7,18 @@
  
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.Settlement;
+
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.mars.*;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /**
  * The Crop class is a food crop grown on a farm.
@@ -152,7 +155,7 @@ public class Crop implements Serializable {
      * @return workTime remaining after working on crop (millisols)
      * @throws Exception if error adding work.
      */
-    public double addWork(double workTime) throws Exception {
+    public double addWork(double workTime) {
         double remainingWorkTime = workTime;
         
         if (phase.equals(PLANTING)) {
@@ -201,7 +204,7 @@ public class Crop implements Serializable {
      * @param time - amount of time passing (millisols)
      * @throws Exception if error during time.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
         
     	if (time > 0D) {
     		if (phase.equals(GROWING)) {
@@ -226,7 +229,7 @@ public class Crop implements Serializable {
                 
     				// Determine harvest modifier by amount of sunlight.
     				SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-    				double sunlight = (double) surface.getSurfaceSunlight(settlement.getCoordinates());
+    				double sunlight = surface.getSurfaceSunlight(settlement.getCoordinates());
     				harvestModifier = harvestModifier * ((sunlight * .5D) + .5D);
                     
                 	Inventory inv = settlement.getInventory();
@@ -284,7 +287,7 @@ public class Crop implements Serializable {
      * @return crop type
      * @throws Exception if crops could not be found.
      */
-    public static CropType getRandomCropType() throws Exception {
+    public static CropType getRandomCropType() {
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
     	List cropTypes = cropConfig.getCropList();    
         int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
@@ -296,7 +299,7 @@ public class Crop implements Serializable {
      * @return average growing time (millisols)
      * @throws Exception if error reading crop config.
      */
-    public static double getAverageCropGrowingTime() throws Exception {
+    public static double getAverageCropGrowingTime() {
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
     	double totalGrowingTime = 0D;
     	List cropTypes = cropConfig.getCropList();  

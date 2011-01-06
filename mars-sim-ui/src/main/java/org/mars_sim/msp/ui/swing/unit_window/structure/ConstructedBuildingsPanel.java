@@ -6,19 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.structure.construction.ConstructedBuildingLogEntry;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 
 public class ConstructedBuildingsPanel extends JPanel {
 
@@ -79,7 +73,7 @@ public class ConstructedBuildingsPanel extends JPanel {
     /** 
      * Internal class used as model for the constructed table.
      */
-    private class ConstructedBuildingTableModel extends AbstractTableModel {
+    private static class ConstructedBuildingTableModel extends AbstractTableModel {
         
         // Data members
         ConstructionManager manager;

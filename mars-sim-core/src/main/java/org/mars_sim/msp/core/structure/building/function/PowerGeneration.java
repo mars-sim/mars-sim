@@ -5,16 +5,19 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
-import java.io.Serializable;
-import java.util.*;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
  
 /**
  * The PowerGeneration class is a building function for generating power.
@@ -32,19 +35,19 @@ public class PowerGeneration extends Function implements Serializable {
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
      */
-    public PowerGeneration(Building building) throws BuildingException {
+    public PowerGeneration(Building building) {
     	// Call Function constructor.
     	super(NAME, building);
     	
     	// Determine power sources.
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
     		
-    	try {
+//    	try {
     		powerSources = config.getPowerSources(building.getName());
-    	}
-    	catch (Exception e) {
-    		throw new BuildingException("PowerGeneration.constructor: " + e.getMessage());
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new BuildingException("PowerGeneration.constructor: " + e.getMessage());
+//    	}
     }
     
     /**
@@ -55,8 +58,8 @@ public class PowerGeneration extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         double demand = settlement.getPowerGrid().getRequiredPower();
         
@@ -91,7 +94,7 @@ public class PowerGeneration extends Function implements Serializable {
      * @throws Exception if error determining supply value.
      */
     private static double getPowerSourceSupply(List<PowerSource> powerSources, Settlement settlement) 
-            throws Exception {
+{
         double result = 0D;
         
         Iterator<PowerSource> j = powerSources.iterator();
@@ -141,7 +144,7 @@ public class PowerGeneration extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-    public void timePassing(double time) throws BuildingException {
+    public void timePassing(double time) {
         for(PowerSource source : powerSources ) {
             if (source instanceof FuelPowerSource) {
                 FuelPowerSource fuelSource = (FuelPowerSource)source;

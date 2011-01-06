@@ -6,11 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /** 
  * The Job class represents a person's job.
@@ -104,7 +105,6 @@ public abstract class Job implements Serializable {
 	 * @return true if job related task.
 	 */
 	public boolean isJobRelatedTask(Class taskClass) {
-		if (jobTasks.contains(taskClass)) return true;
-		else return false;
+        return jobTasks.contains(taskClass);
 	}
 }

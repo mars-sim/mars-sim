@@ -7,11 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Iterator;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -23,7 +19,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
@@ -31,6 +26,9 @@ import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
@@ -52,7 +50,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	protected RoverMission(String name, Person startingPerson) throws MissionException {
+	protected RoverMission(String name, Person startingPerson) {
 		// Use VehicleMission constructor.
 		super(name, startingPerson, MIN_PEOPLE);
 	}
@@ -64,7 +62,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @param minPeople the minimum number of people required for mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	protected RoverMission(String name, Person startingPerson, int minPeople) throws MissionException { 
+	protected RoverMission(String name, Person startingPerson, int minPeople) { 
 		// Use VehicleMission constructor.
 		super(name, startingPerson, minPeople);
 	}
@@ -78,7 +76,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @throws MissionException if error constructing mission.
 	 */
 	protected RoverMission(String name, Person startingPerson, int minPeople, 
-			Rover rover) throws MissionException {
+			Rover rover) {
 		// Use VehicleMission constructor.
 		super(name, startingPerson, minPeople, rover);
 	}
@@ -113,7 +111,7 @@ public abstract class RoverMission extends VehicleMission {
      * @param person the person performing the phase.
      * @throws MissionException if problem performing the phase.
      */
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
     	// if (hasEmergency()) setEmergencyDestination(true);
     	super.performPhase(person);
     }
@@ -125,8 +123,8 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return vehicle or null if none available.
 	 * @throws Exception if error finding vehicles.
 	 */
-	protected final static Vehicle getVehicleWithGreatestRange(Settlement settlement, 
-            boolean allowMaintReserved) throws Exception {
+	protected static Vehicle getVehicleWithGreatestRange(Settlement settlement,
+            boolean allowMaintReserved) {
 		Vehicle result = null;
 
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -170,12 +168,12 @@ public abstract class RoverMission extends VehicleMission {
 			if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
 			if (!(vehicle instanceof Rover)) usable = false;
 			
-			try {
+//			try {
 				if (vehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
-			}
-			catch (InventoryException e) {
-				e.printStackTrace(System.err);
-			}
+//			}
+//			catch (InventoryException e) {
+//				e.printStackTrace(System.err);
+//			}
 			
 			if (usable) result = true;    
 		}
@@ -190,7 +188,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @return true if vehicle is usable.
 	 * @throws MissionException if problem determining if vehicle is usable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) throws MissionException {
+	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		boolean usable = super.isUsableVehicle(newVehicle);
 		if (!(newVehicle instanceof Rover)) usable = false;
 		return usable;
@@ -235,19 +233,19 @@ public abstract class RoverMission extends VehicleMission {
      * @param person the person currently performing the mission
      * @throws MissionException if error performing phase.
      */ 
-    protected void performEmbarkFromSettlementPhase(Person person) throws MissionException {
+    protected void performEmbarkFromSettlementPhase(Person person) {
     	
-    	try {
+//    	try {
     		Settlement settlement = getVehicle().getSettlement();
     		if (settlement == null) 
-    			throw new MissionException(getPhase(), "Vehicle is not at a settlement.");
+    			throw new IllegalStateException(getPhase() +  " : Vehicle is not at a settlement.");
     	
     		// Add the rover to a garage if possible.
     		if (BuildingManager.getBuilding(getVehicle()) != null) {
-    			try {
+//    			try {
     				BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
-    			}
-    			catch (BuildingException e) {}
+//    			}
+//    			catch (BuildingException e) {}
     		}
     	
     		// Load vehicle if not fully loaded.
@@ -268,10 +266,10 @@ public abstract class RoverMission extends VehicleMission {
     			// If person is not aboard the rover, board rover.
     			if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
     				if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-    					try {
+//    					try {
     						settlement.getInventory().retrieveUnit(person);
-    					}
-    					catch (InventoryException e) {}
+//    					}
+//    					catch (InventoryException e) {}
     				}
     				getVehicle().getInventory().storeUnit(person);
             	}
@@ -291,10 +289,10 @@ public abstract class RoverMission extends VehicleMission {
         			setPhaseEnded(true);
         		}
     		}
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     }
     
     /**
@@ -304,42 +302,43 @@ public abstract class RoverMission extends VehicleMission {
      * @throws MissionException if error performing phase.
      */
     protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) 
-    		throws MissionException {
+{
     	
         Building garageBuilding = null;
         VehicleMaintenance garage = null;
     	
     	// If rover is not parked at settlement, park it.
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-    		try {
+//    		try {
     			disembarkSettlement.getInventory().storeUnit(getVehicle());
-    		}
-    		catch (InventoryException e) {
-    			throw new MissionException(getPhase(), e);
-    		}
+//    		}
+//    		catch (InventoryException e) {
+//    			throw new MissionException(getPhase(), e);
+//    		}
     		
     		// Add vehicle to a garage if available.
-    		try {
+//    		try {
     			BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), disembarkSettlement);
                 garageBuilding = BuildingManager.getBuilding(getVehicle());
-                garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-            }
-            catch (BuildingException e) {}
+                if(garageBuilding != null)
+                    garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+//            }
+//            catch (BuildingException e) {}
     	}
     	
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-        	try {
+//        	try {
         		if (getVehicle() != null) getVehicle().getInventory().retrieveUnit(person);
         		disembarkSettlement.getInventory().storeUnit(person);
-        	}
-        	catch (InventoryException e) {
-        		throw new MissionException(getPhase(), e);
-        	}
+//        	}
+//        	catch (InventoryException e) {
+//        		throw new MissionException(getPhase(), e);
+//        	}
             
             // Add the person to the rover's garage if it's in one.
             // Otherwise add person to another building in the settlement.
-            try {
+//            try {
                 if (getVehicle() != null) {
                     garageBuilding = BuildingManager.getBuilding(getVehicle());
                     if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
@@ -348,10 +347,10 @@ public abstract class RoverMission extends VehicleMission {
                     }
                     else BuildingManager.addToRandomBuilding(person, disembarkSettlement);
                 }
-            }
-            catch (BuildingException e) {
-            	throw new MissionException(getPhase(), e);
-            } 
+//            }
+//            catch (BuildingException e) {
+//            	throw new MissionException(getPhase(), e);
+//            }
         }
         
         // If any people are aboard the rover who aren't mission members, carry them into the settlement.
@@ -361,19 +360,19 @@ public abstract class RoverMission extends VehicleMission {
         		Iterator<Person> i = rover.getCrew().iterator();
         		while (i.hasNext()) {
         			Person crewmember = i.next();
-        			try {
+//        			try {
         				rover.getInventory().retrieveUnit(crewmember);
         				disembarkSettlement.getInventory().storeUnit(crewmember);
         				BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
-        			}
-        			catch (Exception e) {
-        				throw new MissionException(getPhase(), e);
-        			}
+//        			}
+//        			catch (Exception e) {
+//        				throw new MissionException(getPhase(), e);
+//        			}
         		}
         	}
         
         	//	Unload rover if necessary.
-        	try {
+//        	try {
         		boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
         		if (!roverUnloaded) {
         			// Random chance of having person unload (this allows person to do other things sometimes)
@@ -382,22 +381,22 @@ public abstract class RoverMission extends VehicleMission {
         				return;
         			}
         		}
-        	}
-        	catch (Exception e) {
-        		throw new MissionException(getPhase(), e);
-        	}
+//        	}
+//        	catch (Exception e) {
+//        		throw new MissionException(getPhase(), e);
+//        	}
         
         	// If everyone has left the rover, end the phase.
         	if (isNoOneInRover()) {
         	
         		// If the rover is in a garage, put the rover outside.
         		if (isRoverInAGarage()) {
-        			try {
+//        			try {
         				garageBuilding = BuildingManager.getBuilding(getVehicle());
         				garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
         				garage.removeVehicle(getVehicle());
-        			}
-        			catch (BuildingException e) {}
+//        			}
+//        			catch (BuildingException e) {}
         		}
         	
         		// Leave the vehicle.
@@ -417,9 +416,9 @@ public abstract class RoverMission extends VehicleMission {
      * @throws MissionException if error creating OperateVehicle task.
      */
     protected OperateVehicle getOperateVehicleTask(Person person, String lastOperateVehicleTaskPhase) 
-    		throws MissionException {
+{
     	OperateVehicle result = null;
-    	try {
+//    	try {
     		if (lastOperateVehicleTaskPhase != null) {
     			result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(), 
     					getCurrentLegStartingTime(), getCurrentLegDistance(), lastOperateVehicleTaskPhase);
@@ -428,10 +427,10 @@ public abstract class RoverMission extends VehicleMission {
     			result = new DriveGroundVehicle(person, getRover(), getNextNavpoint().getLocation(),
     					getCurrentLegStartingTime(), getCurrentLegDistance());
     		}
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     	
     	return result;
     }
@@ -511,7 +510,7 @@ public abstract class RoverMission extends VehicleMission {
 	 * @throws MissionException if error determining resources.
 	 */
     public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, 
-    		double distance) throws MissionException {
+    		double distance) {
     	Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, parts, distance);
     	
     	// Determine estimate time for trip.
@@ -521,25 +520,25 @@ public abstract class RoverMission extends VehicleMission {
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	try {
+//    	try {
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) oxygenAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-    		result.put(oxygen, new Double(oxygenAmount));
+    		result.put(oxygen, oxygenAmount);
     		
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) waterAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     		AmountResource water = AmountResource.findAmountResource("water");
-    		result.put(water, new Double(waterAmount));
+    		result.put(water, waterAmount);
     		
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     		if (useBuffer) foodAmount *= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     		AmountResource food = AmountResource.findAmountResource("food");
-    		result.put(food, new Double(foodAmount));
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+    		result.put(food, foodAmount);
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     	
     	return result;
     }
@@ -551,7 +550,7 @@ public abstract class RoverMission extends VehicleMission {
      * @throws MissionException if error determining needed equipment.
      */
     public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(
-    		boolean useBuffer) throws MissionException;
+    		boolean useBuffer) ;
     
 	/** 
 	 * Finalizes the mission 

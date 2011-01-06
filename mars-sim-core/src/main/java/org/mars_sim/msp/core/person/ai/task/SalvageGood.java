@@ -6,13 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -25,9 +18,14 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task for salvaging a malfunctionable piece of equipment back down
@@ -55,23 +53,23 @@ public class SalvageGood extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public SalvageGood(Person person) throws Exception {
+    public SalvageGood(Person person) {
         super("Salvage Good", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(100D));
         
         // Get available manufacturing workshop if any.
-        try {
+//        try {
             Building manufactureBuilding = getAvailableManufacturingBuilding(person);
             if (manufactureBuilding != null) {
                 workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
                 BuildingManager.addPersonToBuilding(person, manufactureBuilding);
             }
             else endTask();
-        }
-        catch (BuildingException e) {
-            logger.log(Level.SEVERE, "SalvageGood", e);
-            endTask();
-        }
+//        }
+//        catch (BuildingException e) {
+//            logger.log(Level.SEVERE, "SalvageGood", e);
+//            endTask();
+//        }
         
         if (workshop != null) {
             // Determine salvage process.
@@ -94,7 +92,7 @@ public class SalvageGood extends Task implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            try {
+//            try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
                 if (manufacturingBuilding != null) {
@@ -119,9 +117,9 @@ public class SalvageGood extends Task implements Serializable {
                     // salvage processes can be created.
                     else if (person.getSettlement().getManufactureOverride()) result = 0;
                 }
-            } catch (BuildingException e) {
-                logger.log(Level.SEVERE, "SalvageGood.getProbability()", e);
-            }
+//            } catch (BuildingException e) {
+//                logger.log(Level.SEVERE, "SalvageGood.getProbability()", e);
+//            }
         }
 
         // Effort-driven task modifier.
@@ -162,7 +160,7 @@ public class SalvageGood extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null)
             throw new IllegalArgumentException("Task phase is null");
         if (SALVAGE.equals(getPhase()))
@@ -177,7 +175,7 @@ public class SalvageGood extends Task implements Serializable {
      * @return remaining time after performing (millisols)
      * @throws Exception if error performing phase.
      */
-    private double salvagePhase(double time) throws Exception {
+    private double salvagePhase(double time) {
 
         // Check if workshop has malfunction.
         if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -250,7 +248,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if error finding manufacturing building.
      */
     private static Building getAvailableManufacturingBuilding(Person person) 
-            throws BuildingException {
+            {
         
         Building result = null;
         
@@ -267,7 +265,7 @@ public class SalvageGood extends Task implements Serializable {
             manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
             
-            if (manufacturingBuildings.size() > 0) result = (Building) manufacturingBuildings.get(0);
+            if (manufacturingBuildings.size() > 0) result = manufacturingBuildings.get(0);
         }
         
         return result;
@@ -282,7 +280,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList, 
-            int skill) throws BuildingException {
+            int skill) {
         
         List<Building> result = new ArrayList<Building>();
         
@@ -304,7 +302,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if error determining building processes.
      */
     private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList, 
-            int skill) throws BuildingException {
+            int skill) {
         
         List<Building> result = new ArrayList<Building>();
         
@@ -329,7 +327,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if building is not manufacturing.
      */
     private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, int skill) 
-            throws BuildingException {
+            {
         
         boolean result = false;
         
@@ -353,7 +351,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
     private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList)
-            throws BuildingException {
+            {
         
         List<Building> result = new ArrayList<Building>();
         
@@ -385,7 +383,7 @@ public class SalvageGood extends Task implements Serializable {
      * @throws BuildingException if error determining process value.
      */
     private static double getHighestSalvagingProcessValue(Person person, 
-            Building manufacturingBuilding) throws BuildingException {
+            Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
 
@@ -394,7 +392,7 @@ public class SalvageGood extends Task implements Serializable {
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-        try {
+//        try {
             Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
                     techLevel, skillLevel).iterator();
             while (i.hasNext()) {
@@ -407,9 +405,9 @@ public class SalvageGood extends Task implements Serializable {
                         highestProcessValue = processValue;
                 }
             }
-        } catch (Exception e) {
-            throw new BuildingException("Error getting highest salvage process value.", e);
-        }
+//        } catch (Exception e) {
+//            throw new BuildingException("Error getting highest salvage process value.", e);
+//        }
 
         return highestProcessValue;
     }
@@ -461,7 +459,7 @@ public class SalvageGood extends Task implements Serializable {
      * @return the new salvage process or null if none.
      * @throws Exception if error creating salvage process.
      */
-    private SalvageProcess createNewSalvageProcess() throws Exception {
+    private SalvageProcess createNewSalvageProcess() {
         SalvageProcess result = null;
 
         if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {
@@ -503,7 +501,7 @@ public class SalvageGood extends Task implements Serializable {
      * @return salvage process or null if none determined.
      * @throws Exception if error determining the salvage process.
      */
-    private SalvageProcess determineSalvageProcess() throws Exception {
+    private SalvageProcess determineSalvageProcess() {
         SalvageProcess process = getRunningSalvageProcess();
         if (process == null) process = createNewSalvageProcess();
         return process;

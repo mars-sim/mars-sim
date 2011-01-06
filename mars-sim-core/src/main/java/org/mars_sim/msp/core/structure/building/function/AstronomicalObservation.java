@@ -6,10 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.Science;
@@ -17,8 +13,11 @@ import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A building function for observing astronomical objects.
@@ -42,7 +41,7 @@ public class AstronomicalObservation extends Function {
      * @param building the building the function is for.
      * @throws BuildingException if error creating building function.
      */
-    public AstronomicalObservation(Building building) throws BuildingException {
+    public AstronomicalObservation(Building building) {
         // Use function constructor.
         super(NAME, building);
 
@@ -54,7 +53,7 @@ public class AstronomicalObservation extends Function {
             observatoryCapacity = config.getAstronomicalObservationCapacity(building.getName());
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Constructor(): " + e.getMessage());
-            throw new BuildingException("AstronomicalObservation.constructor: " + e.getMessage());
+            throw new IllegalStateException("AstronomicalObservation.constructor: " + e.getMessage());
         }
     }
 
@@ -79,7 +78,7 @@ public class AstronomicalObservation extends Function {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    public void timePassing(double time) throws BuildingException {
+    public void timePassing(double time) {
         // Do nothing
     }
 
@@ -87,12 +86,12 @@ public class AstronomicalObservation extends Function {
      * Adds a new observer to the observatory.
      * @throws Exception if observatory is already at capacity.
      */
-    public void addObserver() throws Exception {
+    public void addObserver() {
         observerNum++;
         if (observerNum > observatoryCapacity) {
             observerNum = observatoryCapacity;
             logger.log(Level.SEVERE, "addObserver(): " + "Observatory is already full of observers.");
-            throw new Exception("Observatory is already full of observers.");
+            throw new IllegalStateException("Observatory is already full of observers.");
         }
     }
     
@@ -100,12 +99,12 @@ public class AstronomicalObservation extends Function {
      * Removes an observer from the observatory.
      * @throws Exception if no observers currently in observatory.
      */
-    public void removeObserver() throws Exception {
+    public void removeObserver() {
         observerNum--;
-        if (getObserverNum() < 0) {
+        if (observerNum < 0) {
             observerNum = 0;
             logger.log(Level.SEVERE, "addObserver(): " + "Observatory is already empty of observers.");
-            throw new Exception("Observatory is already empty of observers.");
+            throw new IllegalStateException("Observatory is already empty of observers.");
         }
     }
 
@@ -141,8 +140,8 @@ public class AstronomicalObservation extends Function {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
 
         double observatoryDemand = 0D;
         Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
@@ -164,8 +163,8 @@ public class AstronomicalObservation extends Function {
                 removedBuilding = true;
             } else {
                 AstronomicalObservation astroFunction = (AstronomicalObservation) building.getFunction(NAME);
-                int techLevel = astroFunction.getTechnologyLevel();
-                int observatorySize = astroFunction.getObservatoryCapacity();
+                int techLevel = astroFunction.techLevel;
+                int observatorySize = astroFunction.observatoryCapacity;
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 observatorySupply += techLevel * observatorySize * wearModifier;
             }

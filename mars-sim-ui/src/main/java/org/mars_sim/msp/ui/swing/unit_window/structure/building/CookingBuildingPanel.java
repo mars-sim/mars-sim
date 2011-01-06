@@ -6,14 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 /**

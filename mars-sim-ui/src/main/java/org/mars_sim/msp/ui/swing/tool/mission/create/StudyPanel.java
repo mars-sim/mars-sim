@@ -6,33 +6,22 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A wizard panel to select a scientific study for the mission.
@@ -160,7 +149,7 @@ public class StudyPanel extends WizardPanel {
     /**
      * A table model for scientific studies.
      */
-    private class StudyTableModel extends AbstractTableModel {
+    private static class StudyTableModel extends AbstractTableModel {
         
         // Data members
         private Science studyScience;
@@ -244,7 +233,7 @@ public class StudyPanel extends WizardPanel {
                     else if (column == 1) 
                         result = study.getPhase();
                     else if (column == 2) 
-                        result = new Integer(getScienceResearcherNum(study));
+                        result = getScienceResearcherNum(study);
                 }
                 catch (Exception e) {}
             }

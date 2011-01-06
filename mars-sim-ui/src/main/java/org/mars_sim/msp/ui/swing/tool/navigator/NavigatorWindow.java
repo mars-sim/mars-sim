@@ -5,37 +5,30 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing.tool.navigator;  
-  
+package org.mars_sim.msp.ui.swing.tool.navigator;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+import org.mars_sim.msp.ui.swing.tool.map.*;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.Iterator;
-
-import javax.swing.*;
-import javax.swing.border.*;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.LandmarkMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.Map;
-import org.mars_sim.msp.ui.swing.tool.map.MapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
-import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.ShadingMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.TopoMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.USGSMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
-import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
-import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
 /** 
  * The NavigatorWindow is a tool window that displays a map and a
@@ -371,8 +364,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         	// Read longitude and latitude from user input, translate to radians,
         	// and recenter globe and surface map on that location.
         	try {
-            	double latitude = ((Float) new Float(latText.getText())).doubleValue();
-	            double longitude = ((Float) new Float(longText.getText())).doubleValue();
+            	double latitude = new Float(latText.getText()).doubleValue();
+	            double longitude = new Float(longText.getText()).doubleValue();
     	        String latDirStr = (String) latDir.getSelectedItem();
         	    String longDirStr = (String) longDir.getSelectedItem();
 
@@ -566,8 +559,8 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 //					(double)(event.getX() - (Map.MAP_VIS_WIDTH / 2) - 1),
 //					(double)(event.getY() - (Map.MAP_VIS_HEIGHT / 2) - 1), rho);
 			Coordinates clickedPosition = map.getCenterLocation().convertRectToSpherical(
-			(double)(event.getX() - ((double)Map.MAP_VIS_WIDTH / 2) - 1),
-			(double)(event.getY() - ((double)Map.MAP_VIS_HEIGHT / 2) - 1), rho);
+                    event.getX() - ((double)Map.MAP_VIS_WIDTH / 2) - 1,
+                    event.getY() - ((double)Map.MAP_VIS_HEIGHT / 2) - 1, rho);
 
 			boolean unitsClicked = false;
 

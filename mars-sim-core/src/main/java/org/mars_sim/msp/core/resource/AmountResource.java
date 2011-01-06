@@ -57,7 +57,7 @@ public final class AmountResource implements Resource, Serializable {
 	 * Returns the resource as a string.
 	 */
 	public String toString() {
-		return getName();
+		return name;
 	}
 	
 	/**
@@ -82,22 +82,22 @@ public final class AmountResource implements Resource, Serializable {
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
 	 */
-	public static final AmountResource findAmountResource(String name) throws ResourceException {
+	public static AmountResource findAmountResource(String name) {
 		AmountResource result = null;
 		Iterator<AmountResource> i = resources.iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.getName().equalsIgnoreCase(name)) result = resource;
+			if (resource.name.equalsIgnoreCase(name)) result = resource;
 		}
 		if (result != null) return result;
-		else throw new ResourceException("Resource: " + name + " could not be found.");
+		else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
 	
 	/**
 	 * Gets a ummutable set of all the amount resources.
 	 * @return set of amount resources.
 	 */
-	public static final Set<AmountResource> getAmountResources() {
+	public static Set<AmountResource> getAmountResources() {
 		return Collections.unmodifiableSet(resources);
 	}
 	
@@ -108,7 +108,7 @@ public final class AmountResource implements Resource, Serializable {
 	public boolean equals(Object object) {
 		if (object instanceof AmountResource) {
 			AmountResource otherObject = (AmountResource) object;
-			if ((name.equals(otherObject.getName())) && (phase.equals(otherObject.getPhase())))
+			if ((name.equals(otherObject.name)) && (phase.equals(otherObject.phase)))
 				return true;
 		}
 		return false;

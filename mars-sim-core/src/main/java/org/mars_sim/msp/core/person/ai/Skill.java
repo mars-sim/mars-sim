@@ -43,7 +43,7 @@ public class Skill implements Serializable {
      * @param name the skill's name
      */
     public Skill(String name) {
-        this.name = new String(name);
+        this.name = name;
         level = 0;
         experiencePoints = 0D;
         neededExperiencePoints = 25D;
@@ -63,7 +63,7 @@ public class Skill implements Serializable {
      *  @return the skill's name
      */
     public String getName() {
-        return new String(name);
+        return name;
     }
 
     /** Returns the level of the skill. 

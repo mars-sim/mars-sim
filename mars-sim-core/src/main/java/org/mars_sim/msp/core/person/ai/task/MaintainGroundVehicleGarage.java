@@ -7,17 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -35,6 +24,12 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -62,7 +57,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public MaintainGroundVehicleGarage(Person person) throws Exception {
+    public MaintainGroundVehicleGarage(Person person) {
         super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
         		true, RandomUtil.getRandomDouble(100D));
 
@@ -184,7 +179,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehiclePhase(time);
     	else return time;
@@ -196,7 +191,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @return the amount of time (millisols) left after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double maintainVehiclePhase(double time) throws Exception {
+    private double maintainVehiclePhase(double time) {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
     	
         // If person is incompacitated, end task.
@@ -330,7 +325,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @return ground vehicle
      * @throws Exception if error finding needy vehicle.
      */
-    private GroundVehicle getNeedyGroundVehicle(Person person) throws Exception {
+    private GroundVehicle getNeedyGroundVehicle(Person person) {
             
         GroundVehicle result = null;
 
@@ -369,7 +364,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      * @return the probability weight.
      * @throws Exception if error determining probability weight.
      */
-    private double getProbabilityWeight(Vehicle vehicle) throws Exception {
+    private double getProbabilityWeight(Vehicle vehicle) {
     	double result = 0D;
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();

@@ -7,14 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import java.awt.BorderLayout;
-import java.util.*;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.ui.swing.*;
-import org.mars_sim.msp.ui.swing.unit_display_info.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * The UnitWindow is the base window for displaying units.

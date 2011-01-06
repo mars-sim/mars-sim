@@ -7,16 +7,16 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.time.MarsClock;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A building construction site.
@@ -218,22 +218,22 @@ public class ConstructionSite implements Serializable {
      * @param stage the new construction stage.
      * @throws Exception if error adding construction stage.
      */
-    public void addNewStage(ConstructionStage stage) throws Exception {
+    public void addNewStage(ConstructionStage stage) {
         if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
-            if (foundationStage != null) throw new Exception("Foundation stage already exists.");
+            if (foundationStage != null) throw new IllegalStateException("Foundation stage already exists.");
             foundationStage = stage;
         }
         else if (ConstructionStageInfo.FRAME.equals(stage.getInfo().getType())) {
-            if (frameStage != null) throw new Exception("Frame stage already exists");
-            if (foundationStage == null) throw new Exception("Foundation stage hasn't been added yet.");
+            if (frameStage != null) throw new IllegalStateException("Frame stage already exists");
+            if (foundationStage == null) throw new IllegalStateException("Foundation stage hasn't been added yet.");
             frameStage = stage;
         }
         else if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
-            if (buildingStage != null) throw new Exception("Building stage already exists");
-            if (frameStage == null) throw new Exception("Frame stage hasn't been added yet.");
+            if (buildingStage != null) throw new IllegalStateException("Building stage already exists");
+            if (frameStage == null) throw new IllegalStateException("Frame stage hasn't been added yet.");
             buildingStage = stage;
         }
-        else throw new Exception("Stage type: " + stage.getInfo().getType() + " not valid");
+        else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");
         
         // Update construction site dimensions.
         updateDimensions(stage);
@@ -258,7 +258,7 @@ public class ConstructionSite implements Serializable {
      * @param stage the salvaged construction stage.
      * @throws Exception if error removing the stage.
      */
-    public void removeSalvagedStage(ConstructionStage stage) throws Exception {
+    public void removeSalvagedStage(ConstructionStage stage) {
         if (ConstructionStageInfo.BUILDING.equals(stage.getInfo().getType())) {
             buildingStage = null;
         }
@@ -268,7 +268,7 @@ public class ConstructionSite implements Serializable {
         else if (ConstructionStageInfo.FOUNDATION.equals(stage.getInfo().getType())) {
             foundationStage = null;
         }
-        else throw new Exception("Stage type: " + stage.getInfo().getType() + " not valid");
+        else throw new IllegalStateException("Stage type: " + stage.getInfo().getType() + " not valid");
         
         // Fire construction event.
         fireConstructionUpdate(REMOVE_CONSTRUCTION_STAGE_EVENT, stage);
@@ -278,14 +278,14 @@ public class ConstructionSite implements Serializable {
      * Removes the current salvaged construction stage.
      * @throws Exception if error removing salvaged construction stage.
      */
-    public void removeSalvagedStage() throws Exception {
+    public void removeSalvagedStage() {
         if (undergoingSalvage) {
             if (buildingStage != null) buildingStage = null;
             else if (frameStage != null) frameStage = null;
             else if (foundationStage != null) foundationStage = null;
-            else throw new Exception("Construction site has no stage to remove");
+            else throw new IllegalStateException("Construction site has no stage to remove");
         }
-        else throw new Exception("Construction site is not undergoing salvage");
+        else throw new IllegalStateException("Construction site is not undergoing salvage");
     }
     
     /**
@@ -294,11 +294,11 @@ public class ConstructionSite implements Serializable {
      * @return newly constructed building.
      * @throws Exception if error constructing building.
      */
-    public Building createBuilding(BuildingManager manager) throws Exception {
-        if (buildingStage == null) throw new Exception("Building stage doesn't exist");
+    public Building createBuilding(BuildingManager manager) {
+        if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
         
-        Building newBuilding = new Building(buildingStage.getInfo().getName(), getXLocation(), 
-                getYLocation(), getFacing(), manager);
+        Building newBuilding = new Building(buildingStage.getInfo().getName(), xLocation,
+                yLocation, facing, manager);
         manager.addBuilding(newBuilding);
         
         // Record completed building name.
@@ -394,13 +394,13 @@ public class ConstructionSite implements Serializable {
     
     @Override
     public String toString() {
-        StringBuffer result = new StringBuffer("Site");
+        StringBuilder result = new StringBuilder("Site");
         
         ConstructionStage stage = getCurrentConstructionStage();
         if (stage != null) {
-            result.append(": " + stage.getInfo().getName());
-            if (isUndergoingConstruction()) result.append(" - under construction");
-            else if (isUndergoingSalvage()) result.append(" - under salvage");
+            result.append(": ").append(stage.getInfo().getName());
+            if (undergoingConstruction) result.append(" - under construction");
+            else if (undergoingSalvage) result.append(" - under salvage");
             else if (hasUnfinishedStage()) {
                 if (stage.isSalvaging()) result.append(" - salvage unfinished");
                 else result.append(" - construction unfinished");

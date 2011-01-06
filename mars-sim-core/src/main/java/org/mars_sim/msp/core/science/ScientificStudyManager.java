@@ -6,16 +6,16 @@
  */
 package org.mars_sim.msp.core.science;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A class that keeps track of all scientific studies in the simulation.

@@ -6,13 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -26,9 +19,14 @@ import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task for observing the night sky with an astronomical observatory.
@@ -56,7 +54,7 @@ public class ObserveAstronomicalObjects extends Task implements
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
-    public ObserveAstronomicalObjects(Person person) throws Exception {
+    public ObserveAstronomicalObjects(Person person) {
         // Use task constructor.
         super("Observe Night Sky with Telescope", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(300D));
@@ -177,7 +175,7 @@ public class ObserveAstronomicalObjects extends Task implements
         AstronomicalObservation result = null;
         
         if (Person.INSETTLEMENT.equals(observer.getLocationSituation())) {
-            try {
+//            try {
                 BuildingManager manager = observer.getSettlement().getBuildingManager();
                 List<Building> observatoryBuildings = manager.getBuildings(AstronomicalObservation.NAME);
                 observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
@@ -186,13 +184,13 @@ public class ObserveAstronomicalObjects extends Task implements
                 observatoryBuildings = BuildingManager.getBestRelationshipBuildings(observer, observatoryBuildings);
             
                 if (observatoryBuildings.size() > 0) {
-                    Building building = (Building) observatoryBuildings.get(0);
+                    Building building = observatoryBuildings.get(0);
                     result = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
                 }
-            }
-            catch (BuildingException e) {
-                logger.log(Level.SEVERE, "determineObservatory(): " + e.getMessage());
-            }
+//            }
+//            catch (BuildingException e) {
+//                logger.log(Level.SEVERE, "determineObservatory(): " + e.getMessage());
+//            }
         }
         
         return result;
@@ -206,7 +204,7 @@ public class ObserveAstronomicalObjects extends Task implements
      * @throws BuildingException if error determining observatory building.
      */
     private static double getObservatoryCrowdingModifier(Person observer, AstronomicalObservation observatory) 
-            throws BuildingException {
+            {
         double result = 1D;
         if (observer.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Building observatoryBuilding = observatory.getBuilding();  
@@ -225,7 +223,7 @@ public class ObserveAstronomicalObjects extends Task implements
      * @throws BuildingException if building list contains buildings without astronomical observation function.
      */
     private static List<Building> getObservatoriesWithAvailableSpace(List<Building> buildingList) 
-            throws BuildingException {
+            {
         List<Building> result = new ArrayList<Building>();
         
         Iterator<Building> i = buildingList.iterator();
@@ -317,7 +315,7 @@ public class ObserveAstronomicalObjects extends Task implements
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (OBSERVING.equals(getPhase())) return observingPhase(time);
         else return time;
@@ -329,7 +327,7 @@ public class ObserveAstronomicalObjects extends Task implements
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    protected double observingPhase(double time) throws Exception {
+    protected double observingPhase(double time) {
         
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
@@ -387,7 +385,7 @@ public class ObserveAstronomicalObjects extends Task implements
         
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            SkillManager manager = getResearchAssistant().getMind().getSkillManager();
+            SkillManager manager = researchAssistant.getMind().getSkillManager();
             Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
             int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(astronomyScience));
             if (astronomySkill > 0) observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);

@@ -7,17 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -29,6 +18,12 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Mission class represents a large multi-person task
@@ -74,7 +69,7 @@ public abstract class Mission implements Serializable {
      * @param minPeople the minimum number of people required for mission.
      * @throws MissionException if error constructing mission.
      */
-    public Mission(String name, Person startingPerson, int minPeople) throws MissionException {
+    public Mission(String name, Person startingPerson, int minPeople) {
 
         // Initialize data members
         this.name = name;
@@ -95,7 +90,7 @@ public abstract class Mission implements Serializable {
 		
 		// Log mission starting.
 		if (logger.isLoggable(Level.FINEST)) {
-		    logger.finest(getDescription()  + " started by " 
+		    logger.finest(description + " started by "
 			    			    + startingPerson.getName() 
 			    			    + " at " 
 			    			    + startingPerson.getSettlement());
@@ -150,7 +145,7 @@ public abstract class Mission implements Serializable {
      * Gets the string representation of this mission.
      */
     public String toString() {
-    	return getDescription();
+    	return description;
     }
 
     /** 
@@ -223,7 +218,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMinPeople(int minPeople) {
     	this.minPeople = minPeople;
-    	fireMissionUpdate(MIN_PEOPLE_EVENT, new Integer(minPeople));
+    	fireMissionUpdate(MIN_PEOPLE_EVENT, minPeople);
     }
 
     /**
@@ -291,7 +286,7 @@ public abstract class Mission implements Serializable {
      * @param newPhase the new mission phase.
      * @throws MissionException if newPhase is not in the mission's collection of phases.
      */
-    protected final void setPhase(String newPhase) throws MissionException {
+    protected final void setPhase(String newPhase) {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
     	else if (phases.contains(newPhase)) {
     		phase = newPhase;
@@ -299,7 +294,7 @@ public abstract class Mission implements Serializable {
     		phaseDescription = null;
     		fireMissionUpdate(PHASE_EVENT, newPhase);
     	}
-    	else throw new MissionException(getPhase(), "newPhase: " + newPhase + " is not a valid phase for this mission.");
+    	else throw new IllegalStateException(phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
     }
     
     /**
@@ -334,28 +329,28 @@ public abstract class Mission implements Serializable {
      * @param person the person performing the mission.
      * @throws MissionException if problem performing the mission.
      */
-    public void performMission(Person person) throws MissionException {
+    public void performMission(Person person) {
 
     	// If current phase is over, decide what to do next.
-    	if (getPhaseEnded()) determineNewPhase();
+    	if (phaseEnded) determineNewPhase();
     	
     	// Perform phase.
-    	if (!isDone()) performPhase(person);
+    	if (!done) performPhase(person);
     }
     
     /**
      * Determines a new phase for the mission when the current phase has ended.
      * @throws MissionException if problem setting a new phase.
      */
-    protected abstract void determineNewPhase() throws MissionException;
+    protected abstract void determineNewPhase() ;
     
     /**
      * The person performs the current phase of the mission.
      * @param person the person performing the phase.
      * @throws MissionException if problem performing the phase.
      */
-    protected void performPhase(Person person) throws MissionException {
-        if (getPhase() == null) endMission("Current mission phase is null.");
+    protected void performPhase(Person person) {
+        if (phase == null) endMission("Current mission phase is null.");
     }
 
     /** Gets the mission capacity for participating people.
@@ -370,7 +365,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMissionCapacity(int newCapacity) {
         missionCapacity = newCapacity;
-        fireMissionUpdate(CAPACITY_EVENT, new Integer(newCapacity));
+        fireMissionUpdate(CAPACITY_EVENT, newCapacity);
     }
 
     /** 
@@ -383,13 +378,13 @@ public abstract class Mission implements Serializable {
     		done = true;
     		fireMissionUpdate(END_MISSION_EVENT);
     		Object p[] = people.toArray();
-    		for(int i = 0; i < p.length; i++) removePerson((Person) p[i]);
+            for (Object aP : p) removePerson((Person) aP);
     		
 
     		if (logger.isLoggable(Level.INFO)) {
-    		logger.info(getDescription() 
+    		logger.info(description
 			     + " ending at " 
-			     + getPhase() 
+			     + phase
 			     + " due to " 
 			     + reason);
     		    
@@ -468,7 +463,7 @@ public abstract class Mission implements Serializable {
 	protected void recruitPeopleForMission(Person startingPerson) {
 		
 		int count = 0;
-		while ((count < 4) && (getPeopleNumber() < getMinPeople())) {
+		while ((count < 4) && (getPeopleNumber() < minPeople)) {
 			count++;
 			
 			// Get all people qualified for the mission.
@@ -485,7 +480,7 @@ public abstract class Mission implements Serializable {
 					double bestPersonValue = 0D;
 					Person bestPerson = null;
 					Iterator<Person> j = qualifiedPeople.iterator();
-					while (j.hasNext() && (getPeopleNumber() < getMissionCapacity())) {
+					while (j.hasNext() && (getPeopleNumber() < missionCapacity)) {
 						Person person = j.next();
 						// Determine the person's mission qualification.
 						double qualification = getMissionQualification(person) * 100D;
@@ -515,7 +510,7 @@ public abstract class Mission implements Serializable {
 			}
 		}
 		
-		if (getPeopleNumber() < getMinPeople()) endMission("Not enough members");
+		if (getPeopleNumber() < minPeople) endMission("Not enough members");
 	}
 	
 	/**
@@ -524,7 +519,7 @@ public abstract class Mission implements Serializable {
 	 * @param recruitee the person being recruited.
 	 * @throws MissionException if problem recruiting person.
 	 */
-	private void recruitPerson(Person recruiter, Person recruitee) throws MissionException {
+	private void recruitPerson(Person recruiter, Person recruitee) {
 		if (isCapableOfMission(recruitee)) {
 			// Get mission qualification modifier.
 			double qualification = getMissionQualification(recruitee) * 100D;
@@ -570,7 +565,7 @@ public abstract class Mission implements Serializable {
 	 * @return mission qualification value.
 	 * @throws MissionException if error determining mission qualification.
 	 */
-	protected double getMissionQualification(Person person) throws MissionException {
+	protected double getMissionQualification(Person person) {
 		
 		double result = 0D;
 		
@@ -613,7 +608,7 @@ public abstract class Mission implements Serializable {
 	 * @throws MissionException if error determining needed resources.
 	 */
     public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) throws MissionException ;
+    		boolean parts)  ;
     
     /**
      * Gets the number and types of equipment needed for the mission.
@@ -622,14 +617,14 @@ public abstract class Mission implements Serializable {
      * @throws MissionException if error determining needed equipment.
      */
     public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
-    		throws MissionException;
+    		;
     
     /** 
      * Time passing for mission.
      * @param time the amount of time passing (in millisols)
      * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     }
     
     /**
@@ -646,9 +641,9 @@ public abstract class Mission implements Serializable {
 	 * @return coordinate location.
 	 * @throws MissionException if error determining location.
 	 */
-	public final Coordinates getCurrentMissionLocation() throws MissionException {
+	public final Coordinates getCurrentMissionLocation() {
 		if (getPeopleNumber() > 0) return ((Person) people.toArray()[0]).getCoordinates();
-		throw new MissionException(getPhase(), "No people in the mission.");
+		throw new IllegalStateException(phase + " : No people in the mission.");
 	}
     
     /**

@@ -5,16 +5,19 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
-import java.io.Serializable;
-import java.util.*;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The storage class is a building function for storing resources and units.
@@ -30,11 +33,11 @@ public class Storage extends Function implements Serializable {
 	 * @param building the building the function is for.
 	 * @throws BuildingException if function cannot be constructed.
 	 */
-	public Storage(Building building) throws BuildingException {
+	public Storage(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
-		try {
+//		try {
 			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			Inventory inventory = building.getInventory();	
 			
@@ -44,7 +47,7 @@ public class Storage extends Function implements Serializable {
 			while (i1.hasNext()) {
                 AmountResource resource = i1.next();
 				double currentCapacity = inventory.getAmountResourceCapacity(resource);
-				double buildingCapacity = ((Double) storageCapacity.get(resource)).doubleValue();
+				double buildingCapacity = (Double) storageCapacity.get(resource);
 				inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
 			}
 		
@@ -53,15 +56,15 @@ public class Storage extends Function implements Serializable {
 			Iterator<AmountResource> i2 = initialResources.keySet().iterator();
 			while (i2.hasNext()) {
                 AmountResource resource = i2.next();
-				double initialResource = ((Double) initialResources.get(resource)).doubleValue();
+				double initialResource = (Double) initialResources.get(resource);
 				double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource, true);
 				if (initialResource > resourceCapacity) initialResource = resourceCapacity;
 				inventory.storeAmountResource(resource, initialResource, true);
 			}
-		}
-		catch (Exception e) {
-			throw new BuildingException("Storage.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Storage.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -72,8 +75,8 @@ public class Storage extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         double result = 0D;
         
@@ -90,8 +93,8 @@ public class Storage extends Function implements Serializable {
                 Building building = j.next();
                 Storage storageFunction = (Storage) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                if (storageFunction.getResourceStorageCapacity().containsKey(resource))
-                    existingStorage += storageFunction.getResourceStorageCapacity().get(resource) * wearModifier;
+                if (storageFunction.storageCapacity.containsKey(resource))
+                    existingStorage += storageFunction.storageCapacity.get(resource) * wearModifier;
             }
             
             double storageAmount = storageMap.get(resource);
@@ -132,7 +135,7 @@ public class Storage extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) {}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

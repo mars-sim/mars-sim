@@ -5,13 +5,14 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
-import java.io.Serializable;
-import java.util.Iterator;
 
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * The Exercise class is a building function for exercise.
@@ -29,18 +30,18 @@ public class Exercise extends Function implements Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Exercise(Building building) throws BuildingException {
+	public Exercise(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			this.exerciserCapacity = config.getExerciseCapacity(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("Exercise.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Exercise.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -51,8 +52,8 @@ public class Exercise extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is one exerciser capacity for every four inhabitants.
         double demand = settlement.getAllAssociatedPeople().size() / 4D;
@@ -68,7 +69,7 @@ public class Exercise extends Function implements Serializable {
             else {
                 Exercise exerciseFunction = (Exercise) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += exerciseFunction.getExerciserCapacity() * wearModifier;
+                supply += exerciseFunction.exerciserCapacity * wearModifier;
             }
         }
         
@@ -100,11 +101,11 @@ public class Exercise extends Function implements Serializable {
 	 * Adds a person to the exercise facility.
 	 * @throws BuildingException if person would exceed exercise facility capacity.
 	 */
-	public void addExerciser() throws BuildingException {
+	public void addExerciser() {
 		exercisers++;
 		if (exercisers > exerciserCapacity) {
 			exercisers = exerciserCapacity;
-			throw new BuildingException("Exercise facility in use.");
+			throw new IllegalStateException("Exercise facility in use.");
 		}
 	}
 	
@@ -112,11 +113,11 @@ public class Exercise extends Function implements Serializable {
 	 * Removes a person from the exercise facility.
 	 * @throws BuildingException if nobody is using the exercise facility.
 	 */
-	public void removeExerciser() throws BuildingException {
+	public void removeExerciser() {
 		exercisers--;
 		if (exercisers < 0) {
 			exercisers = 0;
-			throw new BuildingException("Exercise facility empty.");
+			throw new IllegalStateException("Exercise facility empty.");
 		}
 	}
 	
@@ -125,7 +126,7 @@ public class Exercise extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) {}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

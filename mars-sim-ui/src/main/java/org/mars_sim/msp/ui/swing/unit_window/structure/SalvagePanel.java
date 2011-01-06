@@ -6,27 +6,18 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.manufacture.PartSalvage;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 /**
  * A panel displaying information about a salvage process.
@@ -66,10 +57,10 @@ public class SalvagePanel extends JPanel {
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                try {
+//                try {
                     getSalvageProcess().getWorkshop().endSalvageProcess(getSalvageProcess(), true);
-                }
-                catch (BuildingException e) {}
+//                }
+//                catch (BuildingException e) {}
             }
         });
         cancelButton.setToolTipText("Cancel salvage process");
@@ -141,24 +132,24 @@ public class SalvagePanel extends JPanel {
      */
     public static String getToolTipString(SalvageProcess process, SalvageProcessInfo processInfo, 
             Building building) {
-        StringBuffer result = new StringBuffer("<html>");
-        
-        result.append("Salvage Process: " + processInfo.toString() + "<br>");
-        if (building != null) result.append("Manufacture Building: " + building.getName() + "<br>");
-        result.append("Effort Time Required: " + processInfo.getWorkTimeRequired() + " millisols<br>");
-        result.append("Building Tech Level Required: " + processInfo.getTechLevelRequired() + "<br>");
-        result.append("Materials Science Skill Level Required: " + processInfo.getSkillLevelRequired() + "<br>");
+        StringBuilder result = new StringBuilder("<html>");
+
+        result.append("Salvage Process: ").append(processInfo.toString()).append("<br>");
+        if (building != null) result.append("Manufacture Building: ").append(building.getName()).append("<br>");
+        result.append("Effort Time Required: ").append(processInfo.getWorkTimeRequired()).append(" millisols<br>");
+        result.append("Building Tech Level Required: ").append(processInfo.getTechLevelRequired()).append("<br>");
+        result.append("Materials Science Skill Level Required: ").append(processInfo.getSkillLevelRequired()).append("<br>");
         
         // Add salvaged item.
-        if (process != null) result.append("Salvaged Item: " + process.getSalvagedUnit().getName() + "<br>");
-        else result.append("Salvaged Item Type: " + processInfo.getItemName() + "<br>");
+        if (process != null) result.append("Salvaged Item: ").append(process.getSalvagedUnit().getName()).append("<br>");
+        else result.append("Salvaged Item Type: ").append(processInfo.getItemName()).append("<br>");
         
         // Add process outputs.
         result.append("Possible Parts Returned:<br>");
         Iterator<PartSalvage> j = processInfo.getPartSalvageList().iterator();
         while (j.hasNext()) {
             PartSalvage partSalvage = j.next();
-            result.append("&nbsp;&nbsp;" + partSalvage.getName() + ": " + partSalvage.getNumber() + "<br>");
+            result.append("&nbsp;&nbsp;").append(partSalvage.getName()).append(": ").append(partSalvage.getNumber()).append("<br>");
         }
         
         result.append("</html>");

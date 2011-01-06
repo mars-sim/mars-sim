@@ -5,32 +5,7 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing.tool.search;  
- 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
+package org.mars_sim.msp.ui.swing.tool.search;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
@@ -42,6 +17,15 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+
+import javax.swing.*;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /** 
  * The SearchWindow is a tool window that allows the user to search
@@ -229,7 +213,7 @@ public class SearchWindow extends ToolWindow {
         if (!foundUnit) statusLabel.setText(tempName + " Not Found");
 
         // If there is no text entered, display "Enter The Name of a 'Category'" in statusLabel.
-        if (selectTextField.getText().equals(""))
+        if (selectTextField.getText().length() == 0)
             statusLabel.setText("Enter The Name of a " + tempName);
     }
 

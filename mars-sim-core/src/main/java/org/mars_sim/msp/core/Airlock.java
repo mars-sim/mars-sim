@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.core;
 
+import org.mars_sim.msp.core.person.Person;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.person.Person;
 
 
 /** 

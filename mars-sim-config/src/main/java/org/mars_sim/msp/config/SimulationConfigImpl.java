@@ -18,8 +18,6 @@
 
 package org.mars_sim.msp.config;
 
-import java.io.InputStreamReader;
-
 import org.exolab.castor.xml.MarshalException;
 import org.exolab.castor.xml.ValidationException;
 import org.mars_sim.msp.config.model.building.BuildingList;
@@ -37,6 +35,8 @@ import org.mars_sim.msp.config.model.resupply.ResupplyList;
 import org.mars_sim.msp.config.model.settlement.SettlementConfiguration;
 import org.mars_sim.msp.config.model.simulation.SimulationConfiguration;
 import org.mars_sim.msp.config.model.vehicle.VehicleConfiguration;
+
+import java.io.InputStreamReader;
 
 /**
  * DOCME: documentation is missing

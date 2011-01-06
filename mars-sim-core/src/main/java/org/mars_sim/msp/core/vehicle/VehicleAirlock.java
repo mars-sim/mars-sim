@@ -7,8 +7,10 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.person.Person;
 
 /** 
  * The VehicleAirlock class represents an airlock for a vehicle.
@@ -41,22 +43,22 @@ public class VehicleAirlock extends Airlock {
      * @param person the person to exit.
      * @throws Exception if person is not in the airlock.
      */
-    protected void exitAirlock(Person person) throws Exception {
+    protected void exitAirlock(Person person) {
         
         if (inAirlock(person)) {
             if (pressurized) vehicle.getInventory().storeUnit(person);
             else {
             	// Drop person outside.  If person, for some reason, is not in vehicle,
             	// put them outside anyway.
-            	try {
+//            	try {
             		vehicle.getInventory().retrieveUnit(person);
-            	}
-            	catch (InventoryException e) {
-            		person.setContainerUnit(null);
-            	}
+//            	}
+//            	catch (InventoryException e) {
+//            		person.setContainerUnit(null);
+//            	}
             } 
         }
-        else throw new Exception(person.getName() + " not in airlock of " + getEntityName());
+        else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
     }
     
     /**

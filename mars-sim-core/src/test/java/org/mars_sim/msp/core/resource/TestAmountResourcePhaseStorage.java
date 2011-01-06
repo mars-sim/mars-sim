@@ -31,7 +31,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.addAmountResourcePhaseCapacity(Phase.GAS, -100D);
 			fail("Cannot add negative capacity for a phase.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
@@ -51,7 +51,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.storeAmountResourcePhase(hydrogen, 101D);
 			fail("Throws exception if overloaded");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreNegativeAmount() throws Exception {
@@ -62,7 +62,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.storeAmountResourcePhase(hydrogen, -1D);
 			fail("Throws exception if negative amount");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreNoCapacity() throws Exception {
@@ -72,7 +72,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.storeAmountResourcePhase(hydrogen, 100D);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseTypeGood() throws Exception {
@@ -125,7 +125,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.retrieveAmountResourcePhase(Phase.GAS, 101D);
 			fail("Amount phase retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseRetrieveNegative() throws Exception {
@@ -137,7 +137,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.retrieveAmountResourcePhase(Phase.GAS, -100D);
 			fail("Amount phase retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseRetrieveNoCapacity() throws Exception {
@@ -146,7 +146,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 			storage.retrieveAmountResourcePhase(Phase.GAS, 100D);
 			fail("Amount phase retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseTotalAmount() throws Exception {

@@ -7,22 +7,29 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.malfunction.*;
-import org.mars_sim.msp.core.mars.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.*;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.Structure;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Maintenance class is a task for performing
@@ -46,7 +53,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @param person the person to perform the task
 	 * @throws Exception if error constructing task.
 	 */
-	public MaintenanceEVA(Person person) throws Exception {
+	public MaintenanceEVA(Person person) {
 		super("Performing EVA Maintenance", person);
 		
 		// Get an available airlock.
@@ -137,7 +144,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
     	if (MAINTAIN.equals(getPhase())) return maintenance(time);
@@ -179,7 +186,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting the airlock.
 	 */
-	private double exitEVA(double time) throws Exception {
+	private double exitEVA(double time) {
 		
     	try {
     		time = exitAirlock(time, airlock);
@@ -202,7 +209,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error during maintenance.
 	 */
-	private double maintenance(double time) throws Exception {
+	private double maintenance(double time) {
         
 		MalfunctionManager manager = entity.getMalfunctionManager();
 		boolean malfunction = manager.hasMalfunction();
@@ -254,7 +261,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @return time remaining after performing the phase
 	 * @throws Exception if error entering airlock.
 	 */
-	private double enterEVA(double time) throws Exception {
+	private double enterEVA(double time) {
 		time = enterAirlock(time, airlock);
 		
         // Add experience points
@@ -295,7 +302,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @return malfunctionable or null.
 	 * @throws Exception if error finding malfunctionable.
 	 */
-	private Malfunctionable getMaintenanceMalfunctionable() throws Exception {
+	private Malfunctionable getMaintenanceMalfunctionable() {
 		Malfunctionable result = null;
     	
 		// Determine entity to maintain.
@@ -311,7 +318,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		// Get the malfunctionable entity chosen.
 		i = MalfunctionFactory.getMalfunctionables(person).iterator();
 		while (i.hasNext()) {
-			Malfunctionable malfunctionable = (Malfunctionable) i.next();
+			Malfunctionable malfunctionable = i.next();
 			double entityWeight = getProbabilityWeight(malfunctionable);
 			if (chance < entityWeight) {
 				result = malfunctionable;
@@ -329,7 +336,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	 * @param malfunctionable the malfunctionable.
 	 * @return the probability weight.
 	 */
-	private double getProbabilityWeight(Malfunctionable malfunctionable) throws Exception {
+	private double getProbabilityWeight(Malfunctionable malfunctionable) {
 		double result = 0D;
 		boolean isStructure = (malfunctionable instanceof Structure);
 		boolean uninhabitableBuilding = false;

@@ -6,13 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
  * The JobManager class keeps track of the settler jobs in a simulation.

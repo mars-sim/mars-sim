@@ -6,21 +6,14 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 
 
 
@@ -117,7 +110,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
     /** 
      * Internal class used as model for the crop table.
      */
-    private class CropTableModel extends AbstractTableModel {
+    private static class CropTableModel extends AbstractTableModel {
         
         Farming farm;
         java.util.List<Crop> crops;
@@ -160,7 +153,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         
         public Object getValueAt(int row, int column) {
             
-            Crop crop = (Crop) crops.get(row);
+            Crop crop = crops.get(row);
             String phase = crop.getPhase();
             
             if (column == 0) {

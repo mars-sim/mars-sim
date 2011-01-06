@@ -7,10 +7,12 @@
 
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /** 
  * The BuildingAirlock class represents an airlock for a building.
@@ -48,10 +50,9 @@ public class BuildingAirlock extends Airlock {
         boolean result = super.enterAirlock(person, inside);
     
         if (result && inside) {
-            try { 
+//            try {
 				BuildingManager.addPersonToBuilding(person, building);
-            }
-            catch (BuildingException e) {}
+//            }sBuildingException e) {}
         }
         
         return result;
@@ -63,7 +64,7 @@ public class BuildingAirlock extends Airlock {
      * @param person the person to exit.
      * @throws Exception if person is not in the airlock.
      */
-    protected void exitAirlock(Person person) throws Exception {
+    protected void exitAirlock(Person person) {
         Inventory inv = building.getInventory();
         
         if (inAirlock(person)) {
@@ -78,7 +79,7 @@ public class BuildingAirlock extends Airlock {
             	inv.retrieveUnit(person);
             }
         }
-        else throw new Exception(person.getName() + " not in airlock of " + getEntityName());
+        else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
     }
     
     /**

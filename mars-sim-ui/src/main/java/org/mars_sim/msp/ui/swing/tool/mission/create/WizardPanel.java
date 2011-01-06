@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 
 /**
  * An abstract panel for the create mission wizard.

@@ -6,19 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.science;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.util.Iterator;
-
-import javax.swing.Box;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
 
 /**
  * A panel showing details of a selected scientific study.
@@ -103,8 +97,7 @@ public class StudyDetailPanel extends JPanel {
             
             // Update all researcher panels.
             primaryResearcherPane.update();
-            for (int y = 0; y < collabResearcherPanes.length; y++)
-                collabResearcherPanes[y].update();
+            for (ResearcherPanel collabResearcherPane : collabResearcherPanes) collabResearcherPane.update();
         }
     }
     
@@ -150,8 +143,8 @@ public class StudyDetailPanel extends JPanel {
      */
     private void clearResearcherPanels() {
         primaryResearcherPane.setStudyResearcher(null, null);
-        for (int x = 0; x < collabResearcherPanes.length; x++)
-            collabResearcherPanes[x].setStudyResearcher(null, null);
+        for (ResearcherPanel collabResearcherPane : collabResearcherPanes)
+            collabResearcherPane.setStudyResearcher(null, null);
     }
     
     /**

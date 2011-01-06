@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
+
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class represents a mission table displayed within the Monitor Window. 

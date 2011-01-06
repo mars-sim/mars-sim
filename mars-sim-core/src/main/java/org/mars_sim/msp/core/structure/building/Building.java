@@ -7,17 +7,23 @@
  
 package org.mars_sim.msp.core.structure.building;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.malfunction.*;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.person.ai.task.*;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Repair;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.*;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * The Building class is a settlement's building.
@@ -54,7 +60,7 @@ public class Building implements Malfunctionable, Serializable {
      * @throws BuildingException if building can not be created.
      */
     public Building(BuildingTemplate template, BuildingManager manager) 
-            throws BuildingException {
+            {
         this(template.getType(), template.getXLoc(), template.getYLoc(), 
                 template.getFacing(), manager);
     }
@@ -69,7 +75,7 @@ public class Building implements Malfunctionable, Serializable {
      * @throws BuildingException if building can not be created.
      */
     public Building(String name, double xLoc, double yLoc, double facing, 
-            BuildingManager manager) throws BuildingException {
+            BuildingManager manager) {
         
         this.name = name;
         this.manager = manager;
@@ -78,7 +84,7 @@ public class Building implements Malfunctionable, Serializable {
         this.yLoc = yLoc;
         this.facing = facing;
         
-        try {
+//        try {
         	// Get the building's functions
         	functions = determineFunctions();
         	
@@ -91,10 +97,10 @@ public class Building implements Malfunctionable, Serializable {
 			// Get building's dimensions.
 			width = config.getWidth(name);
 			length = config.getLength(name);
-        }
-        catch (Exception e) {
-        	throw new BuildingException("Building " + name + " cannot be constructed: " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//        	throw new BuildingException("Building " + name + " cannot be constructed: " + e.getMessage());
+//        }
         
 		// Set up malfunction manager.
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -122,7 +128,7 @@ public class Building implements Malfunctionable, Serializable {
      * @return list of building functions.
      * @throws Exception if error in functions.
      */
-    private List<Function> determineFunctions() throws Exception {
+    private List<Function> determineFunctions() {
     	List<Function> buildingFunctions = new ArrayList<Function>();
     	
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
@@ -204,7 +210,7 @@ public class Building implements Malfunctionable, Serializable {
      * @return function.
      * @throws BuildingException if building doesn't have the function.
      */
-    public Function getFunction(String functionName) throws BuildingException {
+    public Function getFunction(String functionName)  {
     	Function result = null;
     	Iterator<Function> i = functions.iterator();
     	while (i.hasNext()) {
@@ -212,7 +218,7 @@ public class Building implements Malfunctionable, Serializable {
     		if (function.getName().equals(functionName)) result = function;
     	}
     	if (result != null) return result;
-    	else throw new BuildingException(name + " does not have " + functionName);
+    	else throw new IllegalStateException(name + " does not have " + functionName);
     }
     
     /**
@@ -278,12 +284,12 @@ public class Building implements Malfunctionable, Serializable {
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
      */
-    public void timePassing(double time) throws BuildingException {
+    public void timePassing(double time) {
         
         // Check for valid argument.
         if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
         
-        try {
+//        try {
         	// Send time to each building function.
         	Iterator<Function> i = functions.iterator();
         	while (i.hasNext()) i.next().timePassing(time);
@@ -292,11 +298,11 @@ public class Building implements Malfunctionable, Serializable {
         	malfunctionManager.timePassing(time);
         	
         	// If powered up, active time passing.
-        	if (getPowerMode().equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
-        }
-        catch (Exception e) {
-        	throw new BuildingException("Building " + getName() + " timePassing(): " + e.getMessage());
-        }
+        	if (powerMode.equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
+//        }
+//        catch (Exception e) {
+//        	throw new BuildingException("Building " + getName() + " timePassing(): " + e.getMessage());
+//        }
     }   
     
     /**
@@ -359,15 +365,15 @@ public class Building implements Malfunctionable, Serializable {
 
 		// If building has life support, add all occupants of the building.
 		if (hasFunction(LifeSupport.NAME)) {
-			try {
+//			try {
 				LifeSupport lifeSupport = (LifeSupport) getFunction(LifeSupport.NAME);
 				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Person occupant = i.next();
 					if (!people.contains(occupant)) people.add(occupant);
 				}
-			}
-			catch (BuildingException e) {}
+//			}
+//			catch (BuildingException e) {}
 		}
 
         // Check all people in settlement.
@@ -407,6 +413,6 @@ public class Building implements Malfunctionable, Serializable {
      * @return The settlement and building name.
      */
     public String toString() {
-        return getName();
+        return name;
     }
 }

@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.core.mars;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Coordinates;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -46,7 +46,7 @@ public class LandmarkConfig implements Serializable {
 	 * @throws Exception when landmarks can not be parsed.
 	 */
     @SuppressWarnings("unchecked")
-	public List getLandmarkList() throws Exception {
+	public List getLandmarkList() {
 		
 		if (landmarkList == null) {
 			landmarkList = new ArrayList<Landmark>();
@@ -57,7 +57,7 @@ public class LandmarkConfig implements Serializable {
 			for (Element landmark : landmarks) {
 				String name = "";
 				
-				try {
+//				try {
 					// Get landmark name.
 					name = landmark.getAttributeValue(NAME);
 					
@@ -72,10 +72,10 @@ public class LandmarkConfig implements Serializable {
 					
 					// Create landmark.
 					landmarkList.add(new Landmark(name, location));
-				}
-				catch (Exception e) {
-					throw new Exception("Error reading landmark " + name + ": " + e.getMessage());
-				}
+//				}
+//				catch (Exception e) {
+//					throw new IllegalStateException("Error reading landmark " + name + ": " + e.getMessage());
+//				}
 			}
 		}
 		

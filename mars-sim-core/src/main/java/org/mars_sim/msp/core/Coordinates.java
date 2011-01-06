@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core;
 
+import org.mars_sim.msp.core.mars.Mars;
+
 import java.io.Serializable;
 import java.text.ParseException;
-
-import org.mars_sim.msp.core.mars.Mars;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
  *  spherical coordinates. It provides some useful methods involving
@@ -55,7 +55,7 @@ public class Coordinates implements Serializable {
      *  @param originalCoordinates the Coordinates object to be cloned
      */
     public Coordinates(Coordinates originalCoordinates) {
-        this(originalCoordinates.getPhi(), originalCoordinates.getTheta());
+        this(originalCoordinates.phi, originalCoordinates.theta);
     }
     
     /**
@@ -64,7 +64,7 @@ public class Coordinates implements Serializable {
      * @param longitude String representing longitude value. ex. "63.5532 W"
      * @throws Exception if latitude or longitude strings are invalid.
      */
-    public Coordinates(String latitude, String longitude) throws Exception {
+    public Coordinates(String latitude, String longitude) {
     	this(parseLatitude(latitude), parseLongitude(longitude));
     }
 
@@ -157,8 +157,8 @@ public class Coordinates implements Serializable {
         // Update coordinates
         //phi = newCoordinates.getPhi();
         //theta = newCoordinates.getTheta();
-    	this.setPhi(newCoordinates.getPhi());
-    	this.setTheta(newCoordinates.getTheta());
+    	this.setPhi(newCoordinates.phi);
+    	this.setTheta(newCoordinates.theta);
         // Update trigonometric functions
         setTrigFunctions();
     }
@@ -171,7 +171,7 @@ public class Coordinates implements Serializable {
 
         if ((otherCoords != null) && (otherCoords instanceof Coordinates)) {
         	Coordinates other = (Coordinates) otherCoords;
-            if ((phi == other.getPhi()) && (theta == other.getTheta()))
+            if ((phi == other.phi) && (theta == other.theta))
                 return true;
         }
 
@@ -193,9 +193,9 @@ public class Coordinates implements Serializable {
      */
     public double getAngle(Coordinates otherCoords) {
 
-        double temp1 = cosPhi * otherCoords.getCosPhi();
-        double temp2 = sinPhi * otherCoords.getSinPhi();
-        double temp3 = Math.cos(Math.abs(theta - otherCoords.getTheta()));
+        double temp1 = cosPhi * otherCoords.cosPhi;
+        double temp2 = sinPhi * otherCoords.sinPhi;
+        double temp3 = Math.cos(Math.abs(theta - otherCoords.theta));
         double temp4 = temp1 + (temp2 * temp3);
         
         // Make sure temp4 is in valid -1 to 1 range.
@@ -225,7 +225,7 @@ public class Coordinates implements Serializable {
      * @see #getFormattedLatitudeString()
      */
     public String getFormattedString() {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(getFormattedLatitudeString());
         buffer.append(' ');
         buffer.append(getFormattedLongitudeString());
@@ -257,7 +257,7 @@ public class Coordinates implements Serializable {
         int first = Math.abs((int)degrees);
         int last = Math.abs((int)((degrees - first) * 100D));
 
-        return new String(first + "." + last + "\u00BA " + direction);
+        return first + "." + last + "\u00BA " + direction;
     }
 
     /** 
@@ -286,7 +286,7 @@ public class Coordinates implements Serializable {
         int first = Math.abs((int)degrees);
         int last = Math.abs((int)((degrees - first) * 100D));
 
-        return new String(first + "." + last + "\u00BA " + direction);
+        return first + "." + last + "\u00BA " + direction;
     }
 
     /** Converts spherical coordinates to rectangular coordinates.
@@ -302,7 +302,7 @@ public class Coordinates implements Serializable {
     static public IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords,
             double rho, int half_map, int low_edge) {
 
-        return centerCoords.findRectPosition(newCoords.getPhi(), newCoords.getTheta(), rho, 
+        return centerCoords.findRectPosition(newCoords.phi, newCoords.theta, rho,
             half_map, low_edge);
     }
     
@@ -320,17 +320,17 @@ public class Coordinates implements Serializable {
      */
     public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
         
-        double sin_offset = 0D - sinPhi;
-        double cos_offset = 0D - cosPhi;
-        double col_correction = (Math.PI / -2D) - getTheta();
-        double temp_col = newTheta + col_correction;
-        double temp_buff_x = rho * Math.sin(newPhi);
-        double temp_buff_y1 = temp_buff_x * cos_offset;
-        double temp_buff_y2 = rho * Math.cos(newPhi) * sin_offset;
-        int buff_x = (int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map;
-        int buff_y = (int) Math.round((temp_buff_y1 * Math.sin(temp_col)) + temp_buff_y2) + half_map;
+//        double sin_offset = 0D - sinPhi;
+//        double cos_offset = 0D - cosPhi;
+//        double col_correction = (Math.PI / -2D) - getTheta();
+        final double temp_col = newTheta + ((Math.PI / -2D) - theta);
+        final double temp_buff_x = rho * Math.sin(newPhi);
+//        double temp_buff_y1 = temp_buff_x * (0D - cosPhi);
+//        double temp_buff_y2 = rho * Math.cos(newPhi) * (0D - sinPhi);
+        int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
+        int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) * Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) + half_map) - low_edge;
 
-        return new IntPoint(buff_x - low_edge, buff_y - low_edge);
+        return new IntPoint(buff_x, buff_y);
     }
 
     /** Converts linear rectangular XY position change to spherical coordinates
@@ -415,13 +415,13 @@ public class Coordinates implements Serializable {
                 if (getDistance(otherCoords) <= 1D) {
                     result = 0D;
                 } else {
-                    if ((otherCoords.getPhi() - phi) != 0D) {
-                        result = Math.atan((otherCoords.getTheta() - theta) / (otherCoords.phi - phi));
+                    if ((otherCoords.phi - phi) != 0D) {
+                        result = Math.atan((otherCoords.theta - theta) / (otherCoords.phi - phi));
                     }
                 }
             }
         } else {
-            result = Math.atan(Math.abs((double) pos.getX() / (double)(pos.getY())));
+            result = Math.atan(Math.abs(pos.getX() / pos.getY()));
         }
 
         if (pos.getX() < 0) {
@@ -478,10 +478,10 @@ public class Coordinates implements Serializable {
 	 * @return phi value
 	 * @throws ParseException if latitude string could not be parsed.
 	 */
-	public static double parseLatitude(String latitude) throws ParseException {
+	public static double parseLatitude(String latitude) {
 		double latValue = 0D;
 
-		if (latitude.trim().equals("")) throw new ParseException("Latitude is blank", 0);
+		if (latitude.trim().length() == 0) throw new IllegalStateException("Latitude is blank");
 		
 		try {
 			String numberString = latitude.substring(0, latitude.length() - 2);
@@ -489,15 +489,15 @@ public class Coordinates implements Serializable {
 			latValue = Double.parseDouble(numberString);
 		}
 		catch(NumberFormatException e) { 
-			throw new ParseException("Latitude number invalid: " + latitude, 0);
+			throw new IllegalStateException("Latitude number invalid: " + latitude);
 		}
 		
-		if ((latValue > 90D) || (latValue < 0)) throw new ParseException("Latitude value out of range: " + latValue, 0);
+		if ((latValue > 90D) || (latValue < 0)) throw new IllegalStateException("Latitude value out of range: " + latValue);
 		
 		char direction = latitude.charAt(latitude.length() - 1);
 		if (direction == 'N') latValue = 90D - latValue;
 		else if (direction == 'S') latValue += 90D;
-		else throw new ParseException("Latitude direction wrong: " + direction, 0);
+		else throw new IllegalStateException("Latitude direction wrong: " + direction);
 
 		double phi = Math.PI * ((latValue%180) / 180D);
 		return phi;
@@ -510,10 +510,10 @@ public class Coordinates implements Serializable {
 	 * @return theta value
 	 * @throws ParseException if longitude string could not be parsed.
 	 */
-	public static double parseLongitude(String longitude) throws ParseException {
+	public static double parseLongitude(String longitude)  {
 		double longValue = 0D;
 
-		if (longitude.trim().equals("")) throw new ParseException("Longitude is blank", 0);
+		if (longitude.trim().length() == 0) throw new IllegalStateException("Longitude is blank");
 		
 		try {
 			String numberString = longitude.substring(0, longitude.length() - 2);
@@ -521,14 +521,14 @@ public class Coordinates implements Serializable {
 			longValue = Double.parseDouble(numberString);
 		}
 		catch(NumberFormatException e) { 
-			throw new ParseException("Longitude number invalid: " + longitude, 0);
+			throw new IllegalStateException("Longitude number invalid: " + longitude);
 		}
 		
-		if ((longValue > 180D) || (longValue < 0)) throw new ParseException("Longitude value out of range: " + longValue, 0);
+		if ((longValue > 180D) || (longValue < 0)) throw new IllegalStateException("Longitude value out of range: " + longValue);
 		
 		char direction = longitude.charAt(longitude.length() - 1);
 		if (direction == 'W') longValue = 360D - longValue;
-		else if (direction != 'E') throw new ParseException("Longitude direction wrong: " + direction, 0);
+		else if (direction != 'E') throw new IllegalStateException("Longitude direction wrong: " + direction);
 
 		double theta = (2 * Math.PI) * (longValue / 360D);
 		return theta;
@@ -549,7 +549,7 @@ public class Coordinates implements Serializable {
 	 * @return longitude
 	 */
 	public static double getRandomLongitude() {
-		double theta = (double)(Math.random() * (2D * Math.PI)); 
+		double theta = Math.random() * (2D * Math.PI);
 		return theta;
 	}
 }

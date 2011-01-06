@@ -5,11 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing;  
+package org.mars_sim.msp.ui.swing;
 
-import java.awt.*; 
-import javax.swing.plaf.*;
-import javax.swing.plaf.metal.*;
+import javax.swing.plaf.ColorUIResource;
+import javax.swing.plaf.FontUIResource;
+import javax.swing.plaf.metal.OceanTheme;
+import java.awt.*;
 
 /** The MarsTheme class provides a custom color theme to the project
  *  UI.

@@ -10,6 +10,7 @@
 	<artifactId>mars-sim-main</artifactId>
 	<version>3.00-SNAPSHOT</version>
 	<name>mars-sim-main</name>
+        <packaging>jar</packaging>
 	<build>
 		<plugins>
 			<plugin>
@@ -41,6 +42,33 @@
           			</archive>
         		</configuration>
       		</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+
+                    </descriptorRefs>
+                    <archive>
+                        <manifest>
+                            <mainClass>org.mars_sim.msp.MarsProject</mainClass>
+                        </manifest>
+                    </archive>
+
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id> <!-- this is used for inheritance merges -->
+                        <phase>package</phase> <!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>assembly</goal> <!-- goals == mojos -->
+                        </goals>
+                    </execution>
+                </executions>
+
+            </plugin>
 		</plugins>
 	</build>
 	<dependencies>
@@ -61,4 +89,5 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+        
 </project>

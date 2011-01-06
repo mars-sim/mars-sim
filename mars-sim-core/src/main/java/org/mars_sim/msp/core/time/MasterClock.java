@@ -7,6 +7,9 @@
 
 package org.mars_sim.msp.core.time;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+
 import java.io.File;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -15,9 +18,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 
 /** The MasterClock represents the simulated time clock on virtual
  *  Mars. Virtual Mars has only one master clock. The master clock
@@ -72,7 +72,7 @@ public class MasterClock implements Runnable, Serializable {
      * Constructor
      * @throws Exception if clock could not be constructed.
      */
-    public MasterClock() throws Exception {
+    public MasterClock()  {
         // Initialize data members
 		SimulationConfig config = SimulationConfig.instance();
 
@@ -188,7 +188,7 @@ public class MasterClock implements Runnable, Serializable {
      * @return time pulse length in millisols
      * @throws Exception if time pulse length could not be determined.
      */
-    public double getTimePulse() throws Exception {
+    public double getTimePulse()  {
 
 		// Get time ratio from simulation configuration.
     	
@@ -215,7 +215,7 @@ public class MasterClock implements Runnable, Serializable {
      * @param ratio the simulation/real-time ratio.
      * @throws Exception if parameter is invalid.
      */
-    public void setTimeRatio(int slidervalue) throws Exception {
+    public void setTimeRatio(int slidervalue)  {
     	// slidervalue should be in the range 1..100 inclusive, if not it defaults to
     	// 1:15 real:sim ratio 
     	/*
@@ -267,7 +267,7 @@ public class MasterClock implements Runnable, Serializable {
     	} 
     	else {
     		timeRatio = 15;
-    		throw new Exception("Time ratio should be in 1..100");
+    		throw new IllegalArgumentException("Time ratio should be in 1..100");
     	} 
     }
     /**
@@ -275,13 +275,13 @@ public class MasterClock implements Runnable, Serializable {
      * indicating the simetime:realtime ratio. 1000 means 1000 sim time minutes elapse for
      * each real-world minute. 
      * */
-    public void setTimeRatio (double ratio) throws Exception 
+    public void setTimeRatio (double ratio) 
     {
     	if ( ratio >= 0.0001 && ratio <= 500000) {
     		timeRatio = ratio;
     		//need to set slider bar in the correct position. 
     		
-    	} else throw new Exception ("Time ratio out of bounds ");
+    	} else throw new IllegalArgumentException ("Time ratio out of bounds ");
     }
     /**
      * Gets the real-time/simulation ratio.
@@ -313,7 +313,7 @@ public class MasterClock implements Runnable, Serializable {
         		logger.fine("Problem with Thread.yield() in MasterClock.run() ");
         	}
             
-        	if (!isPaused()) {
+        	if (!isPaused) {
         		try {
         			// Get the time pulse length in millisols.
         			double timePulse = getTimePulse();
@@ -331,7 +331,11 @@ public class MasterClock implements Runnable, Serializable {
 //        				while (i.hasNext()) i.next().clockPulse(timePulse);
         				while (i.hasNext()) {
             				ClockListener cl = i.next();
+                                        try{
         					cl.clockPulse(timePulse);
+                                            }catch(Exception e){
+                                                logger.log(Level.WARNING, "Encountered error", e);
+                                            }
         				}
         			}
 				
@@ -360,7 +364,11 @@ public class MasterClock implements Runnable, Serializable {
 				}
 				else if (loadSimulation) {
 					// Load the simulation from a file.
-					Simulation.instance().loadSimulation(file);
+					if(file.exists() && file.canRead()){
+                                            Simulation.instance().loadSimulation(file);
+                                        }else{
+                                            logger.warning("Cannot access file " + file.getPath() + ", not reading");
+                                        }
 					loadSimulation = false;
 				}
         	}
@@ -431,7 +439,7 @@ public class MasterClock implements Runnable, Serializable {
 		days = (int)((seconds%secsperyear)/secspday);		
 		hours=(int)((seconds%secspday)/secsphour);
 		minutes=(int)((seconds%secsphour)/secspmin);
-		secs=(double)((seconds%secspmin));
+		secs= (seconds%secspmin);
 
 	
 	if (years > 0) {YY=""+years+":";} else {YY="";};	

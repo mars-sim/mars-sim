@@ -7,15 +7,18 @@
 
 package org.mars_sim.msp.core.malfunction;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /** 
  * The Malfunction class represents a
@@ -270,18 +273,17 @@ public class Malfunction implements Serializable {
      * Determines the parts that are required to repair this malfunction.
      * @throws Exception if error determining the repair parts.
      */
-    void determineRepairParts() throws Exception {
+    void determineRepairParts() {
     	MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
     	String[] partNames = config.getRepairPartNamesForMalfunction(name);
-    	for (int x = 0; x < partNames.length; x++) {
-    		String partName = partNames[x];
-    		if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
-    			int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
-    			Part part = (Part) ItemResource.findItemResource(partName);
-    			repairParts.put(part, number);
-    			logger.info("New Malfunction: " + getName() + " - required part: " + part.getName() + " - number: " + number);
-    		}
-    	}
+        for (String partName : partNames) {
+            if (RandomUtil.lessThanRandPercent(config.getRepairPartProbability(name, partName))) {
+                int number = RandomUtil.getRandomRegressionInteger(config.getRepairPartNumber(name, partName));
+                Part part = (Part) ItemResource.findItemResource(partName);
+                repairParts.put(part, number);
+                logger.info("New Malfunction: " + name + " - required part: " + part.getName() + " - number: " + number);
+            }
+        }
     }
     
     /**
@@ -316,6 +318,6 @@ public class Malfunction implements Serializable {
      * Gets the string value for the object.
      */
     public String toString() {
-    	return getName();
+    	return name;
     }
 }

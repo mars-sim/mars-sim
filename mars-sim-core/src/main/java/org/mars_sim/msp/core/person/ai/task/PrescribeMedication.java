@@ -6,14 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -24,10 +16,16 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task in which a doctor prescribes (and provides) a medication to a patient.
@@ -54,7 +52,7 @@ public class PrescribeMedication extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public PrescribeMedication(Person person) throws Exception {
+    public PrescribeMedication(Person person) {
         // Use task constructor.
         super("Prescribing Medication", person, true, false, STRESS_MODIFIER, true, 10D);
         
@@ -66,16 +64,16 @@ public class PrescribeMedication extends Task implements Serializable {
             
             // If in settlement, move doctor to building patient is in.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                try {
+//                try {
                     Building doctorBuilding = BuildingManager.getBuilding(person);
                     Building patientBuilding = BuildingManager.getBuilding(patient);
                     if (doctorBuilding != patientBuilding) 
                         BuildingManager.addPersonToBuilding(person, patientBuilding);
-                }
-                catch (BuildingException e) {
-                    logger.log(Level.SEVERE,"PrescribeMedication.constructor(): " + e.getMessage());
-                    endTask();
-                }
+//                }
+//                catch (BuildingException e) {
+//                    logger.log(Level.SEVERE,"PrescribeMedication.constructor(): " + e.getMessage());
+//                    endTask();
+//                }
             }
             
             logger.info(person.getName() + " prescribing " + medication.getName() + 
@@ -171,7 +169,7 @@ public class PrescribeMedication extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double medicatingPhase(double time) throws Exception {
+    private double medicatingPhase(double time) {
         
         // If duration, provide medication.
         if (getDuration() < (getTimeCompleted() + time)) {
@@ -185,9 +183,9 @@ public class PrescribeMedication extends Task implements Serializable {
                         condition.addMedication(medication);
                     }
                 }
-                else throw new Exception("medication is null");
+                else throw new IllegalStateException("medication is null");
             }
-            else throw new Exception ("patient is null");
+            else throw new IllegalStateException ("patient is null");
         }
         
         // Add experience.
@@ -223,7 +221,7 @@ public class PrescribeMedication extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (MEDICATING.equals(getPhase())) return medicatingPhase(time);
         else return time;

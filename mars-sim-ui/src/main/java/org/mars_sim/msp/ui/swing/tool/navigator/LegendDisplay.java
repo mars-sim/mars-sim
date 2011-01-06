@@ -8,10 +8,10 @@
 
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
-import java.awt.*;
-import javax.swing.*;
-
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
+import java.awt.*;
 
 /** 
  * The LegendDisplay class is a UI class that represents a map legend

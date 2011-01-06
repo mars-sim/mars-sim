@@ -50,11 +50,11 @@ public interface Lab {
      * Adds a researcher to the laboratory.
      * @throws Exception if person cannot be added.
      */
-    public void addResearcher() throws Exception; 
+    public void addResearcher();
 
     /**
      * Removes a researcher from the laboratory.
      * @throws Exception if person cannot be removed.
      */
-    public void removeResearcher() throws Exception; 
+    public void removeResearcher();
 }

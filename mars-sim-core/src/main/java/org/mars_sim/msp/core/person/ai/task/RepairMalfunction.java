@@ -7,19 +7,25 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.malfunction.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
@@ -40,7 +46,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public RepairMalfunction(Person person) throws Exception {
+    public RepairMalfunction(Person person) {
         super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
         // Get the malfunctioning entity.
@@ -64,7 +70,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @return malfunctional entity.
      * @throws Exception if error checking if error finding entity.
      */
-    private static Malfunctionable getMalfunctionEntity(Person person) throws Exception {
+    private static Malfunctionable getMalfunctionEntity(Person person) {
         Malfunctionable result = null;
         
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -81,7 +87,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @return malfunctional entity.
      * @throws Exception if error checking if error finding entity.
      */
-    private static boolean hasMalfunction(Person person, Malfunctionable entity) throws Exception {
+    private static boolean hasMalfunction(Person person, Malfunctionable entity) {
     	boolean result = false;
     	
     	MalfunctionManager manager = entity.getMalfunctionManager();
@@ -101,7 +107,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @throws Exception if error checking for repair parts.
      */
     private static boolean hasRepairPartsForMalfunction(Person person, Malfunction malfunction) 
-    		throws Exception {
+    		{
     	if (person == null) throw new IllegalArgumentException("person is null");
     	if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
     	
@@ -165,7 +171,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (REPAIRING.equals(getPhase())) return repairingPhase(time);
     	else return time;
@@ -177,7 +183,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double repairingPhase(double time) throws Exception {
+    private double repairingPhase(double time) {
     	
         // Check if there are no more malfunctions.
         if (!hasMalfunction(person, entity)) endTask();
@@ -289,10 +295,13 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     	
     	if (malfunctionable instanceof Building) {
     		Building building = (Building) malfunctionable;
-    		try {
+//    		try {
+                if(building instanceof LifeSupport){
+
     			BuildingManager.addPersonToBuilding(person, building);
-    		}
-    		catch (BuildingException e) {}
+                }
+//    		}
+//    		catch (BuildingException e) {}
     	}
     }
     

@@ -7,19 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.SwingUtilities;
-
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -29,6 +17,10 @@ import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
+
+import javax.swing.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
@@ -220,22 +212,22 @@ public class PersonTableModel extends UnitTableModel {
 
             	case HUNGER : {
             		double hunger = person.getPhysicalCondition().getHunger();
-            		result = new Integer(new Float(hunger).intValue());
+            		result = new Float(hunger).intValue();
             	} break;
 
             	case FATIGUE : {
             		double fatigue = person.getPhysicalCondition().getFatigue();
-            		result = new Integer(new Float(fatigue).intValue());
+            		result = new Float(fatigue).intValue();
             	} break;
             
             	case STRESS : {
             		double stress = person.getPhysicalCondition().getStress();
-            		result = new Integer(new Double(stress).intValue()); 
+            		result = new Double(stress).intValue();
             	} break;
 
             	case PERFORMANCE : {
             		double performance = person.getPhysicalCondition().getPerformanceFactor();
-            		result = new Integer(new Float(performance * 100D).intValue());
+            		result = new Float(performance * 100D).intValue();
             	} break;
 
             	case HEALTH : {
@@ -272,7 +264,7 @@ public class PersonTableModel extends UnitTableModel {
             	case MISSION : {
             		Mission mission = person.getMind().getMission();
             		if (mission != null) {
-            			StringBuffer cellValue = new StringBuffer();
+                        StringBuilder cellValue = new StringBuilder();
             			cellValue.append(mission.getName());
             			// cellValue.append(" - ");
             			// cellValue.append(mission.getPhase());

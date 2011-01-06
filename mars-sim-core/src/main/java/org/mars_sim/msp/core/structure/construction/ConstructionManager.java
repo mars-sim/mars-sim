@@ -7,17 +7,17 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Manager for construction sites at a settlement.
@@ -113,9 +113,9 @@ public class ConstructionManager implements Serializable {
      * @param site the construction site to remove.
      * @throws Exception if site doesn't exist.
      */
-    public void removeConstructionSite(ConstructionSite site) throws Exception {
+    public void removeConstructionSite(ConstructionSite site) {
         if (sites.contains(site)) sites.remove(site);
-        else throw new Exception("Construction site doesn't exist.");
+        else throw new IllegalStateException("Construction site doesn't exist.");
     }
     
     /**
@@ -163,7 +163,7 @@ public class ConstructionManager implements Serializable {
      * @return the construction site.
      * @throws Exception if error creating construction site.
      */
-    public ConstructionSite createNewSalvageConstructionSite(Building salvagedBuilding) throws Exception {
+    public ConstructionSite createNewSalvageConstructionSite(Building salvagedBuilding) {
         
         // Remove building from settlement.
         BuildingManager buildingManager = salvagedBuilding.getBuildingManager();
@@ -208,11 +208,11 @@ public class ConstructionManager implements Serializable {
                     buildingStage.setSalvaging(true);
                     site.addNewStage(buildingStage);
                 }
-                else throw new Exception("Could not find foundation construction stage for building: " + salvagedBuilding.getName());
+                else throw new IllegalStateException("Could not find foundation construction stage for building: " + salvagedBuilding.getName());
             }
-            else throw new Exception("Could not find frame construction stage for building: " + salvagedBuilding.getName());
+            else throw new IllegalStateException("Could not find frame construction stage for building: " + salvagedBuilding.getName());
         }
-        else throw new Exception("Could not find building construction stage for building: " + salvagedBuilding.getName());
+        else throw new IllegalStateException("Could not find building construction stage for building: " + salvagedBuilding.getName());
         
         // Clear construction values cache.
         values.clearCache();

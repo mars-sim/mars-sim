@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.jdom.Document;
 import org.jdom.Element;
+
+import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -31,7 +31,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @param amountResourceDoc the amount resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public AmountResourceConfig(Document amountResourceDoc) throws Exception {
+	public AmountResourceConfig(Document amountResourceDoc) {
 		loadAmountResources(amountResourceDoc);
 	}
 	
@@ -41,14 +41,14 @@ public class AmountResourceConfig implements Serializable {
 	 * @throws Exception if error loading amount resources.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadAmountResources(Document amountResourceDoc) throws Exception {
+	private void loadAmountResources(Document amountResourceDoc) {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
 		
 		for (Element resourceElement : resourceNodes) {
 			String name = "";
 			
-			try {
+//			try {
 				// Get name.
 				name = resourceElement.getAttributeValue(NAME);
 				
@@ -61,10 +61,10 @@ public class AmountResourceConfig implements Serializable {
 				
 				// Create new amount resource.
 				new AmountResource(name, phase, lifeSupport);
-			}
-			catch (Exception e) {
-				throw new Exception("Error reading resources " + name + ": " + e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new Exception("Error reading resources " + name + ": " + e.getMessage());
+//			}
 		}
 	}
 }

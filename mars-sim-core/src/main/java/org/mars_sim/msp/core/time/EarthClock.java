@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -27,7 +28,7 @@ public class EarthClock extends GregorianCalendar implements Serializable {
      * @param dateString the UT date string in format: "MM/dd/yyyy hh:mm:ss".
      * @throws Exception if date string is invalid. 
      */
-    public EarthClock(String dateString) throws Exception {
+    public EarthClock(String dateString) {
         
         // Use GregorianCalendar constructor
         super();
@@ -45,7 +46,11 @@ public class EarthClock extends GregorianCalendar implements Serializable {
         clear();
         DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
         tempFormatter.setTimeZone(zone);
-       	setTime(tempFormatter.parse(dateString));
+        try {
+            setTime(tempFormatter.parse(dateString));
+        } catch (ParseException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
 
     /** Returns the date/time formatted in a string 

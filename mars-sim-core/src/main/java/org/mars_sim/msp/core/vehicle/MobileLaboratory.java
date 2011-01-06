@@ -7,10 +7,11 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Lab;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The MobileLaboratory class represents the research laboratory in a vehicle.
@@ -80,7 +81,7 @@ public class MobileLaboratory implements Lab, Serializable {
         boolean result = false;
         Iterator i = techSpecialities.iterator();
         while (i.hasNext()) {
-            if (speciality.equals((String) i.next())) result = true;
+            if (speciality.equals(i.next())) result = true;
         }
 
         return result;
@@ -98,11 +99,11 @@ public class MobileLaboratory implements Lab, Serializable {
      * Adds a researcher to the laboratory.
      * @throws Exception if person cannot be added.
      */
-    public void addResearcher() throws Exception {
+    public void addResearcher() {
     	researcherNum ++;
         if (researcherNum > laboratorySize) {
         	 researcherNum = laboratorySize;
-            throw new Exception("Lab already full of researchers.");
+            throw new IllegalStateException("Lab already full of researchers.");
         }
     }
 
@@ -110,11 +111,11 @@ public class MobileLaboratory implements Lab, Serializable {
      * Removes a researcher from the laboratory.
      * @throws Exception if person cannot be removed.
      */
-    public void removeResearcher() throws Exception {
+    public void removeResearcher() {
     	researcherNum --;
         if (researcherNum < 0) { 
         	researcherNum = 0;
-            throw new Exception("Lab is already empty of researchers.");
+            throw new IllegalStateException("Lab is already empty of researchers.");
         }
     }
 }

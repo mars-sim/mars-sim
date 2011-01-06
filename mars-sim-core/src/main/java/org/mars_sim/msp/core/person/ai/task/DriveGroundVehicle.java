@@ -7,16 +7,21 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.mars.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.time.*;
-import org.mars_sim.msp.core.vehicle.*;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
@@ -47,7 +52,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @throws Exception if task cannot be constructed.
      */
     public DriveGroundVehicle(Person person, GroundVehicle vehicle,
-            Coordinates destination, MarsClock startTripTime, double startTripDistance) throws Exception {
+            Coordinates destination, MarsClock startTripTime, double startTripDistance) {
     	
     	// User OperateVehicle constructor
         super("Driving vehicle", person, vehicle, destination, startTripTime, 
@@ -72,7 +77,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @throws Exception if task cannot be constructed.
      */
     public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, 
-            MarsClock startTripTime, double startTripDistance, String startingPhase) throws Exception {
+            MarsClock startTripTime, double startTripDistance, String startingPhase) {
     	
         // Use OperateVehicle constuctor
     	super("Driving vehicle", person, vehicle, destination, startTripTime, 
@@ -82,7 +87,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
         setDescription("Driving " + vehicle.getName());
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
-		if ((startingPhase != null) && !startingPhase.equals("")) setPhase(startingPhase);
+		if ((startingPhase != null) && startingPhase.length() != 0) setPhase(startingPhase);
 
         // logger.info(person.getName() + " is driving " + vehicle.getName());
     }
@@ -93,7 +98,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	time = super.performMappedPhase(time);
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (AVOID_OBSTACLE.equals(getPhase())) return obstaclePhase(time);
@@ -108,7 +113,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 * @throws Exception of error mobilizing vehicle.
 	 */
-	protected double mobilizeVehicle(double time) throws Exception {
+	protected double mobilizeVehicle(double time) {
 		
 		// If vehicle is stuck, try winching.
 		if (((GroundVehicle) getVehicle()).isStuck() && (!WINCH_VEHICLE.equals(getPhase()))) {
@@ -131,7 +136,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @return time remaining after performing phase (in millisols)
      * @throws Exception if error performing phase.
      */
-    private double obstaclePhase(double time) throws Exception {
+    private double obstaclePhase(double time) {
 
         double timeUsed = 0D;
         GroundVehicle vehicle = (GroundVehicle) getVehicle();
@@ -188,7 +193,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @return time remaining after performing the phase.
      * @throws Exception if error while performing phase.
      */
-    private double winchingPhase(double time) throws Exception {
+    private double winchingPhase(double time) {
 
         double timeUsed = 0D;
         GroundVehicle vehicle = (GroundVehicle) getVehicle();
@@ -228,7 +233,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
      * @return direction for obstacle avoidance in radians or null if none found.
      * @throws exception if error in getting direction.
      */
-    private Direction getObstacleAvoidanceDirection() throws Exception {
+    private Direction getObstacleAvoidanceDirection() {
         Direction result = null;
         
     	GroundVehicle vehicle = (GroundVehicle) getVehicle();

@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
 
 /**
  * A settlement template information.

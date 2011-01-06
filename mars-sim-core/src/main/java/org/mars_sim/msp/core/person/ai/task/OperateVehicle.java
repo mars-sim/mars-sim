@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
@@ -19,6 +17,8 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
+
+import java.io.Serializable;
 
 
 /**
@@ -57,7 +57,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
 			MarsClock startTripTime, double startTripDistance, double stressModifier, 
-			boolean hasDuration, double duration) throws Exception {
+			boolean hasDuration, double duration) {
 		
 		// Use Task constructor
 		super(name, person, true, false, stressModifier, hasDuration, duration);
@@ -85,7 +85,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (MOBILIZE.equals(getPhase())) return mobilizeVehiclePhase(time);
     	else return time;
@@ -137,10 +137,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time left over after performing the phase.
 	 * @throws Exception if error while performing phase.
 	 */
-	protected double mobilizeVehiclePhase(double time) throws Exception {
+	protected double mobilizeVehiclePhase(double time) {
 		
         // Find current direction and update vehicle.
-        vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(getDestination()));
+        vehicle.setDirection(vehicle.getCoordinates().getDirectionToPoint(destination));
         
         // Find current elevation/altitude and update vehicle.
         updateVehicleElevationAltitude();
@@ -159,7 +159,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         if (!isDone()) checkForAccident(timeUsed);
         
         // If vehicle has malfunction, end task.
-        if (getVehicle().getMalfunctionManager().hasMalfunction()) endTask();        
+        if (vehicle.getMalfunctionManager().hasMalfunction()) endTask();
         
         return time - timeUsed;
 	}
@@ -171,10 +171,10 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @return the amount of time (ms) left over after driving (if any)
 	 * @throws Exception if error while mobilizing vehicle.
 	 */
-	protected double mobilizeVehicle(double time) throws Exception {
+	protected double mobilizeVehicle(double time) {
 		
         // Set person as the vehicle operator if he/she isn't already.
-        if (!person.equals(getVehicle().getOperator())) getVehicle().setOperator(person);
+        if (!person.equals(vehicle.getOperator())) vehicle.setOperator(person);
 		
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
@@ -201,7 +201,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         // If starting distance to destination is less than distance traveled, stop at destination.
         if (startingDistanceToDestination < (distanceTraveled + DESTINATION_BUFFER)) {
             distanceTraveled = startingDistanceToDestination;
-            vehicle.setCoordinates(getDestination());
+            vehicle.setCoordinates(destination);
             vehicle.setSpeed(0D);
             vehicle.setOperator(null);
             updateVehicleElevationAltitude();
@@ -241,7 +241,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 
         // Determine estimated speed in km/hr.
         double estimatorConstant = .5D;
-        double estimatedSpeed = estimatorConstant * (getVehicle().getBaseSpeed() + getSpeedSkillModifier());
+        double estimatedSpeed = estimatorConstant * (vehicle.getBaseSpeed() + getSpeedSkillModifier());
 
         // Determine final estimated speed in km/hr.
         double tempAvgSpeed = avgSpeed * ((startTripDistance - getDistanceToDestination()) / startTripDistance);
@@ -272,7 +272,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     protected double getSpeed(Direction direction) {
 
-        double speed = getVehicle().getBaseSpeed() + getSpeedSkillModifier(); 
+        double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
         if (speed < 0D) speed = 0D;
 
         return speed;
@@ -317,8 +317,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
      */
     public void endTask() {
     	// TODO Might need to change this for flying vehicles.
-        getVehicle().setSpeed(0D);
-        getVehicle().setOperator(null);
+        vehicle.setSpeed(0D);
+        vehicle.setOperator(null);
     	
     	super.endTask();
     }

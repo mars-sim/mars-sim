@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -20,6 +14,12 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -63,7 +63,7 @@ public class ConstructionConfig implements Serializable {
      * @return list of construction stage infos.
      * @throws Exception if error parsing list.
      */
-    List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) throws Exception {
+    List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) {
         
         List<ConstructionStageInfo> stageInfo = null;
         
@@ -82,7 +82,7 @@ public class ConstructionConfig implements Serializable {
                 createConstructionStageInfoList(ConstructionStageInfo.BUILDING);
             stageInfo = buildingStageInfoList;
         }
-        else throw new Exception("stageType: " + stageType + " is invalid.");
+        else throw new IllegalStateException("stageType: " + stageType + " is invalid.");
         
         return new ArrayList<ConstructionStageInfo>(stageInfo);
     }
@@ -95,7 +95,7 @@ public class ConstructionConfig implements Serializable {
      */
     @SuppressWarnings("unchecked")
     private List<ConstructionStageInfo> createConstructionStageInfoList(String stageType) 
-            throws Exception {
+{
         
         List<ConstructionStageInfo> stageInfoList = null;
         if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {
@@ -110,7 +110,7 @@ public class ConstructionConfig implements Serializable {
             buildingStageInfoList = new ArrayList<ConstructionStageInfo>();
             stageInfoList = buildingStageInfoList;
         }
-        else throw new Exception("stageType: " + stageType + " not valid.");
+        else throw new IllegalStateException("stageType: " + stageType + " not valid.");
             
         Element root = constructionDoc.getRootElement();
         Element stageInfoListElement = root.getChild(stageType + "-list");
@@ -189,7 +189,7 @@ public class ConstructionConfig implements Serializable {
                     if (vehicleType.toLowerCase().indexOf("rover") > -1) vehicleClass = Rover.class;
                     else if (vehicleType.equalsIgnoreCase("light utility vehicle")) 
                         vehicleClass = LightUtilityVehicle.class;
-                    else throw new Exception("Unknown vehicle type: " + vehicleType);
+                    else throw new IllegalStateException("Unknown vehicle type: " + vehicleType);
                         
                     List<Element> attachmentPartList = vehicleElement.getChildren(ATTACHMENT_PART);
                     List<Part> attachmentParts = new ArrayList<Part>(attachmentPartList.size());
@@ -208,7 +208,7 @@ public class ConstructionConfig implements Serializable {
                 stageInfoList.add(stageInfo);
             }
             catch (Exception e) {
-                throw new Exception("Error reading construction stage " + name + ": " + e.getMessage());
+                throw new IllegalStateException("Error reading construction stage " + name + ": " + e.getMessage());
             }
         }
         

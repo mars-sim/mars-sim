@@ -7,18 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 
@@ -85,9 +82,9 @@ public class LaboratoryTabPanel extends TabPanel {
         laboratoryPanel.add(specialitiesListPanel, BorderLayout.SOUTH);
         
         // For each speciality, add speciality name panel.
-        
-        for (int x=0; x < specialities.length; x++) {
-            JLabel specialityLabel = new JLabel(specialities[x], JLabel.CENTER);
+
+        for (String speciality : specialities) {
+            JLabel specialityLabel = new JLabel(speciality, JLabel.CENTER);
             specialitiesListPanel.add(specialityLabel);
         }
     }

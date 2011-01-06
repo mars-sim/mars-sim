@@ -6,11 +6,11 @@
  */
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
-import java.util.List;
-
 import org.jdom.Document;
 import org.jdom.Element;
+
+import java.io.Serializable;
+import java.util.List;
 
 
 /**
@@ -33,7 +33,7 @@ public final class PartConfig implements Serializable {
 	 * @param itemResourceDoc the item resource XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public PartConfig(Document itemResourceDoc) throws Exception {
+	public PartConfig(Document itemResourceDoc) {
 		loadItemResources(itemResourceDoc);
 	}
 	
@@ -43,13 +43,13 @@ public final class PartConfig implements Serializable {
 	 * @throws Exception if error loading item resources.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadItemResources(Document itemResourceDoc) throws Exception {
+	private void loadItemResources(Document itemResourceDoc) {
 		Element root = itemResourceDoc.getRootElement();
 		List<Element> partNodes = root.getChildren(PART);
 		for (Element partElement : partNodes) {
 			String name = "";
 			
-			try {
+//			try {
 				// Get name.
 				name = partElement.getAttributeValue(NAME);
 				
@@ -70,10 +70,10 @@ public final class PartConfig implements Serializable {
 						part.addMaintenanceEntity(entityName, probability, maxNumber);
 					}
 				}
-			}
-			catch (Exception e) {
-				throw new Exception("Error reading parts " + name + ": " + e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new IllegalStateException("Error reading parts " + name + ": " + e.getMessage());
+//			}
 		}
 	}
 }

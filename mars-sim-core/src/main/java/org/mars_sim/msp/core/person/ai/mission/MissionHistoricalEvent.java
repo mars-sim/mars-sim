@@ -6,7 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.events.*;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.person.Person;
 
 /**

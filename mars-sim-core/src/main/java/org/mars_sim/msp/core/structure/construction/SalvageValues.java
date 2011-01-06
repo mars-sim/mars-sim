@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -21,6 +16,11 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * Calculates values for salvaging buildings at a settlement.
@@ -49,7 +49,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSettlementSalvageProfit() throws Exception {
+    public double getSettlementSalvageProfit() {
         return getSettlementSalvageProfit(Integer.MAX_VALUE);
     }
     
@@ -60,7 +60,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getSettlementSalvageProfit(int constructionSkill) 
-            throws Exception {
+{
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((settlementSalvageValueCacheTime == null) || 
@@ -94,7 +94,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getAllSalvageSitesProfit(int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         
@@ -114,7 +114,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSalvageSiteProfit(ConstructionSite site) throws Exception {
+    public double getSalvageSiteProfit(ConstructionSite site) {
         return getSalvageSiteProfit(site, Integer.MAX_VALUE);
     }
     
@@ -126,7 +126,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getSalvageSiteProfit(ConstructionSite site, int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         
@@ -173,7 +173,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getNewSalvageSiteProfit(int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         
@@ -196,7 +196,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining salvage profit.
      */
     public double getNewBuildingSalvageProfit(Building building, int constructionSkill)
-            throws Exception {
+{
         double result = 0D;
         
         // Get current value of building.
@@ -241,7 +241,7 @@ public class SalvageValues implements Serializable {
      * @return value of the stage (VP).
      * @throws Exception if error determining value.
      */
-    private double getSalvageStageValue(ConstructionStageInfo stageInfo) throws Exception {
+    private double getSalvageStageValue(ConstructionStageInfo stageInfo) {
         // Use construction stage value.
         return settlement.getConstructionManager().getConstructionValues().getConstructionStageValue(stageInfo);
     }
@@ -255,7 +255,7 @@ public class SalvageValues implements Serializable {
      * @throws Exception if error determining value.
      */
     private double getEstimatedSalvagedPartsValue(ConstructionStageInfo stageInfo, int constructionSkill, 
-            double wearConditionModifier) throws Exception {
+            double wearConditionModifier) {
         double result = 0D;
         
         GoodsManager goodsManager = settlement.getGoodsManager();

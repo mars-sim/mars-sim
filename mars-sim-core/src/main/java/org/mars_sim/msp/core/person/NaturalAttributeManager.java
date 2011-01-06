@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.person;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.RandomUtil;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.Hashtable;
 
 /** 
  * The NaturalAttributeManager class manages a person's natural attributes.
@@ -47,12 +47,12 @@ public class NaturalAttributeManager implements Serializable {
 
         // Create natural attributes using random values (averaged for bell curve around 50%).
         // Note: this may change later.
-        for (int x = 0; x < attributeKeys.length; x++) {
-        	int attributeValue = 0;
-        	int numberOfIterations = 3;
-        	for (int y = 0; y < numberOfIterations; y++) attributeValue+= RandomUtil.getRandomInt(100);
-        	attributeValue /= numberOfIterations;
-            attributeList.put(attributeKeys[x], attributeValue);
+        for (String attributeKey : attributeKeys) {
+            int attributeValue = 0;
+            int numberOfIterations = 3;
+            for (int y = 0; y < numberOfIterations; y++) attributeValue += RandomUtil.getRandomInt(100);
+            attributeValue /= numberOfIterations;
+            attributeList.put(attributeKey, attributeValue);
         }
 
         // Adjust certain attributes reflective of Martian settlers.
@@ -98,7 +98,7 @@ public class NaturalAttributeManager implements Serializable {
      */
     public static String[] getKeys() {
         String[] result = new String[attributeKeys.length];
-        for (int x = 0; x < result.length; x++) result[x] = attributeKeys[x];
+        System.arraycopy(attributeKeys, 0, result, 0, result.length);
         return result;
     }
 
@@ -125,11 +125,11 @@ public class NaturalAttributeManager implements Serializable {
         if (level < 0) level = 0;
 
         boolean found = false;
-        for (int x=0; x < attributeKeys.length; x++) {
-            if (name.equals(attributeKeys[x])) {
-            	attributeList.put(name, level);
-            	found = true;
-            } 
+        for (String attributeKey : attributeKeys) {
+            if (name.equals(attributeKey)) {
+                attributeList.put(name, level);
+                found = true;
+            }
         }
         if (!found) throw new IllegalArgumentException("Attribute: " + name + " is not a valid attribute.");
     }

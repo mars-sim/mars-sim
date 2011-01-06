@@ -27,10 +27,10 @@ public class Mars implements Serializable {
      * Constructor
      * @throws Exception if Mars could not be constructed.
      */
-    public Mars() throws Exception {
+    public Mars() {
 
 		// Initialize surface features
-		surfaceFeatures = new SurfaceFeatures();
+		surfaceFeatures = new SurfaceFeatures(); 
 
         // Initialize orbit info
         orbitInfo = new OrbitInfo();
@@ -43,7 +43,7 @@ public class Mars implements Serializable {
 	 * Initialize transient data in the simulation.
 	 * @throws Exception if transient data could not be constructed.
 	 */
-	public void initializeTransientData() throws Exception {
+	public void initializeTransientData() {
 		// Initialize surface features transient data.
 		surfaceFeatures.initializeTransientData();
 	}
@@ -74,7 +74,7 @@ public class Mars implements Serializable {
      * @param time time in millisols
      * @throws Exception if error during time.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     	orbitInfo.addTime(time);
     	surfaceFeatures.timePassing(time);
     }

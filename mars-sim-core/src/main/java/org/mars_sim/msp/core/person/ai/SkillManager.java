@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import java.io.Serializable;
-import java.util.Hashtable;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
+
+import java.io.Serializable;
+import java.util.Hashtable;
 
 /** The SkillManager class manages skills for a given person.
  *  Each person has one skill manager.
@@ -35,10 +35,10 @@ public class SkillManager implements Serializable {
                                     Skill.CHEMISTRY, Skill.PHYSICS, Skill.MATHEMATICS,
                                     Skill.METEOROLOGY };
 
-        for (int x = 0; x < startingSkills.length; x++) {
+        for (String startingSkill : startingSkills) {
             int skillLevel = getInitialSkillLevel(0, 50);
             // int skillLevel = 1;
-            Skill newSkill = new Skill(startingSkills[x]);
+            Skill newSkill = new Skill(startingSkill);
             newSkill.setLevel(skillLevel);
             addNewSkill(newSkill);
         }
@@ -79,8 +79,7 @@ public class SkillManager implements Serializable {
      *  @return true if the manager has the named skill
      */
     public boolean hasSkill(String skillName) {
-        if (skills.containsKey(skillName)) return true;
-        else return false;
+        return skills.containsKey(skillName);
     }
 
     /** Returns the integer skill level from a named skill if it exists in the SkillManager.

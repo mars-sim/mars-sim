@@ -1,8 +1,11 @@
 package org.mars_sim.msp.core;
 
 
-import java.io.*;
-import java.util.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Random;
 
 /** 
  * <h3>MersenneTwister and MersenneTwisterFast</h3>
@@ -194,8 +197,8 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         try
             {
             MersenneTwisterFast f = (MersenneTwisterFast)(super.clone());
-            f.mt = (int[])(mt.clone());
-            f.mag01 = (int[])(mag01.clone());
+            f.mt = mt.clone();
+            f.mag01 = mag01.clone();
             return f;
             }
         catch (CloneNotSupportedException e) { throw new InternalError(); } // should never happen
@@ -487,7 +490,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         y ^= (y << 15) & TEMPERING_MASK_C;      // TEMPERING_SHIFT_T(y)
         y ^= (y >>> 18);                        // TEMPERING_SHIFT_L(y)
 
-        return (boolean)((y >>> 31) != 0);
+        return (y >>> 31) != 0;
         }
 
 
@@ -1230,7 +1233,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         r = new MersenneTwisterFast(SEED);
         for (j = 0; j < 1000; j++)
             {
-            System.out.print(r.nextBoolean((double)(j/999.0)) + " ");
+            System.out.print(r.nextBoolean(j/999.0) + " ");
             if (j%8==7) System.out.println();
             }
         if (!(j%8==7)) System.out.println();
@@ -1239,7 +1242,7 @@ public strictfp class MersenneTwisterFast implements Serializable, Cloneable
         r = new MersenneTwisterFast(SEED);
         for (j = 0; j < 1000; j++)
             {
-            System.out.print(r.nextBoolean((float)(j/999.0f)) + " ");
+            System.out.print(r.nextBoolean(j/999.0f) + " ");
             if (j%8==7) System.out.println();
             }
         if (!(j%8==7)) System.out.println();

@@ -7,13 +7,6 @@
 
 package org.mars_sim.msp.core.malfunction;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -26,6 +19,9 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * This class is a factory for Malfunction objects.
@@ -40,7 +36,7 @@ public final class MalfunctionFactory implements Serializable {
      * @param config malfunction configuration DOM document.
      * @throws Exception when malfunction list could not be found.
      */
-    public MalfunctionFactory(MalfunctionConfig config) throws Exception {
+    public MalfunctionFactory(MalfunctionConfig config)  {
 		malfunctions = config.getMalfunctionList(); 
     }
 
@@ -190,7 +186,7 @@ public final class MalfunctionFactory implements Serializable {
      * @return map of repair parts and probable number of parts needed per malfunction.
      * @throws Exception if error finding repair part probabilities.
      */
-    Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) throws Exception {
+    Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) {
     	Map<Part, Double> result = new HashMap<Part, Double>();
     	
     	Iterator<Malfunction> i = malfunctions.iterator();
@@ -200,15 +196,15 @@ public final class MalfunctionFactory implements Serializable {
     			double malfunctionProbability = malfunction.getProbability() / 100D;
     			MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
     			String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
-    			for (int x = 0; x < partNames.length; x++) {
-    				double partProbability = config.getRepairPartProbability(malfunction.getName(), partNames[x]) / 100D;
-    				int partNumber = config.getRepairPartNumber(malfunction.getName(), partNames[x]);
-    				double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-    				double totalNumber = averageNumber * partProbability * malfunctionProbability;
-    				Part part = (Part) ItemResource.findItemResource(partNames[x]);
-    				if (result.containsKey(part)) totalNumber += result.get(part);
-    				result.put(part, totalNumber);
-    			}
+                for (String partName : partNames) {
+                    double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
+                    int partNumber = config.getRepairPartNumber(malfunction.getName(), partName);
+                    double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+                    double totalNumber = averageNumber * partProbability * malfunctionProbability;
+                    Part part = (Part) ItemResource.findItemResource(partName);
+                    if (result.containsKey(part)) totalNumber += result.get(part);
+                    result.put(part, totalNumber);
+                }
     		}
     	}
     	
@@ -221,7 +217,7 @@ public final class MalfunctionFactory implements Serializable {
      * @return map of maintenance parts and probable number of parts needed per maintenance.
      * @throws Exception if error finding maintenance part probabilities.
      */
-    Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) throws Exception {
+    Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) {
     	Map<Part, Double> result = new HashMap<Part, Double>();
     	
     	Iterator<String> i = scope.iterator();

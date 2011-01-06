@@ -7,30 +7,27 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Direction;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.task.*;
+import org.mars_sim.msp.core.person.ai.task.CollectResources;
+import org.mars_sim.msp.core.person.ai.task.EVAOperation;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Logger;
 
 /** 
  * The CollectResourcesMission class is a mission to travel in a rover to several
@@ -75,7 +72,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 */
 	CollectResourcesMission(String missionName, Person startingPerson, AmountResource resourceType, 
 			double siteResourceGoal, double resourceCollectionRate, Class containerType, 
-			int containerNum, int numSites, int minPeople) throws MissionException {
+			int containerNum, int numSites, int minPeople) {
 		
 		// Use RoverMission constructor
 		super(missionName, startingPerson, minPeople);
@@ -99,25 +96,25 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
         	recruitPeopleForMission(startingPerson);
 			
 			// Determine collection sites
-			try {
+//			try {
 				if (hasVehicle()) determineCollectionSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(), 
 						getPeopleNumber(), true), numSites);
-			}
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e);
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e);
+//			}
 			
 			// Add home settlement
 			addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
 					getStartingSettlement(), getStartingSettlement().getName()));
 			
         	// Check if vehicle can carry enough supplies for the mission.
-        	try {
+//        	try {
         		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
-        	}
-        	catch (Exception e) {
-                endMission("Collection site could not be determined.");
-        	}
+//        	}
+//        	catch (Exception e) {
+//                endMission("Collection site could not be determined.");
+//        	}
 		}
 		
 		// Add collecting phase.
@@ -150,7 +147,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	CollectResourcesMission(String missionName, Collection<Person> members, Settlement startingSettlement, 
 			AmountResource resourceType, double siteResourceGoal, double resourceCollectionRate, Class containerType, 
 			int containerNum, int numSites, int minPeople, Rover rover, List<Coordinates> collectionSites) 
-            throws MissionException {
+            {
 		
 		// Use RoverMission constructor
 		super(missionName, (Person) members.toArray()[0], minPeople, rover);
@@ -187,12 +184,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 
        	// Check if vehicle can carry enough supplies for the mission.
-       	try {
+//       	try {
        		if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (CollectingResourcesMission)");
-       	}
-       	catch (Exception e) {
-       		throw new MissionException(getPhase(), e);
-       	}
+//       	}
+//       	catch (Exception e) {
+//       		throw new MissionException(getPhase(), e);
+//       	}
 	}
 	
 	/** 
@@ -223,12 +220,12 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 			
 			// Check if there are enough specimen containers at the settlement for collecting rock samples.
 			boolean enoughContainers = false;
-			try {
+//			try {
 				enoughContainers = (numCollectingContainersAvailable(settlement, containerType) >= containerNum);
-			}
-			catch (MissionException e) {
-				logger.log(Level.SEVERE, "Error checking if enough collecting containers available.");
-			}
+//			}
+//			catch (MissionException e) {
+//				logger.log(Level.SEVERE, "Error checking if enough collecting containers available.");
+//			}
 			
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
@@ -255,7 +252,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * Determines a new phase for the mission when the current phase has ended.
      * @throws MissionException if problem setting a new phase.
      */
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
     	if (EMBARKING.equals(getPhase())) {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
@@ -285,7 +282,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @param person the person performing the phase.
      * @throws MissionException if problem performing the phase.
      */
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
     	super.performPhase(person);
     	if (COLLECT_RESOURCES.equals(getPhase())) collectingPhase(person);
     }
@@ -308,17 +305,17 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @param person the person currently performing the mission
 	 * @throws MissionException if problem performing collecting phase.
 	 */
-	private final void collectingPhase(Person person) throws MissionException {
+	private void collectingPhase(Person person) {
 		Inventory inv = getRover().getInventory();
 		double resourcesCollected = 0D;
 		double resourcesCapacity = 0D;
-		try {
+//		try {
 			resourcesCollected = inv.getAmountResourceStored(resourceType);
 			resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
-		}
-		catch (InventoryException e) {
-			throw new MissionException(getPhase(), e);
-		}
+//		}
+//		catch (InventoryException e) {
+//			throw new MissionException(getPhase(), e);
+//		}
 	
 		// Calculate resources collected at the site so far.
 		siteCollectedResources = resourcesCollected - collectingStart;
@@ -347,45 +344,45 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	    
 			// If no one can collect resources and this is not due to it just being
 			// night time, end the collecting phase.
-			try {
+//			try {
 				Mars mars = Simulation.instance().getMars();
 				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
 				if (nobodyCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
-			} 
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e);
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e);
+//			}
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasEmergency()) setPhaseEnded(true);
 			
-			try {
+//			try {
 				// Check if enough resources for remaining trip.
 				if (!hasEnoughResourcesForRemainingMission(false)) {
 					// If not, determine an emergency destination.
 					determineEmergencyDestination(person);
 					setPhaseEnded(true);
 				}
-			}
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e.getMessage());
+//			}
 		}
 
 		if (!getPhaseEnded()) {
 			if ((siteCollectedResources < siteResourceGoal) && !endCollectingSite) {
 				// If person can collect resources, start him/her on that task.
 				if (CollectResources.canCollectResources(person, getRover(), containerType, resourceType)) {
-					try {
+//					try {
 						CollectResources collectResources = new CollectResources("Collecting Resources", person, 
 							getRover(), resourceType, resourceCollectionRate, 
 							siteResourceGoal - siteCollectedResources, inv.getAmountResourceStored(resourceType), containerType);
 						assignTask(person, collectResources);
-					}
-					catch (Exception e) {
-						throw new MissionException(getPhase(), e);
-					}
+//					}
+//					catch (Exception e) {
+//						throw new MissionException(getPhase(), e);
+//					}
 				}
 			}
 		}
@@ -406,7 +403,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException of collection sites can not be determined.
 	 */
 	private void determineCollectionSites(double roverRange, double tripTimeLimit, 
-			int numSites) throws MissionException {
+			int numSites) {
 
 		List<Coordinates> unorderedSites = new ArrayList<Coordinates>();
 		
@@ -415,7 +412,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 		double timeRange = getTripTimeRange(tripTimeLimit, numSites, true);
     	if (timeRange < range) range = timeRange;
         
-    	try {
+//    	try {
     		// Get the current location.
     		Coordinates startingLocation = getCurrentMissionLocation();
         
@@ -460,10 +457,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     			currentLocation = shortest;
     			collectionSiteNum++;
     		}
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
 	}
 	
 	/**
@@ -537,13 +534,13 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if error determining number.
 	 */
 	protected static int numCollectingContainersAvailable(Settlement settlement, 
-			Class containerType) throws MissionException {
-		try {
+			Class containerType) {
+//		try {
 			return settlement.getInventory().findNumEmptyUnitsOfClass(containerType);
-		}
-		catch (InventoryException e) {
-			throw new MissionException(null, e);
-		}
+//		}
+//		catch (InventoryException e) {
+//			throw new MissionException(null, e);
+//		}
 	}
 	
     /**
@@ -552,7 +549,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @return time (millisols)
      * @throws MissionException
      */
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) {
     	double result = super.getEstimatedRemainingMissionTime(useBuffer);
     	
     	result += getEstimatedRemainingCollectionSiteTime(useBuffer);
@@ -566,7 +563,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @return time (millisols)
      * @throws MissionException if error estimating time.
      */
-    private final double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) throws MissionException {
+    private double getEstimatedRemainingCollectionSiteTime(boolean useBuffer) {
     	double result = 0D;
     	
     	// Add estimated remaining collection time at current site if still there.
@@ -592,7 +589,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 	 * @throws MissionException if error determining needed resources.
 	 */
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) throws MissionException {
+    		boolean parts) {
     	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
     	double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
@@ -601,29 +598,29 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	try {
+//    	try {
     		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(oxygen)) 
-    			oxygenAmount += ((Double) result.get(oxygen)).doubleValue();
-    		result.put(oxygen, new Double(oxygenAmount));
+    			oxygenAmount += (Double) result.get(oxygen);
+    		result.put(oxygen, oxygenAmount);
     		
     		AmountResource water = AmountResource.findAmountResource("water");
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(water)) 
-    			waterAmount += ((Double) result.get(water)).doubleValue();
-    		result.put(water, new Double(waterAmount));
+    			waterAmount += (Double) result.get(water);
+    		result.put(water, waterAmount);
     		
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(food)) 
-    			foodAmount += ((Double) result.get(food)).doubleValue();
-    		result.put(food, new Double(foodAmount));
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
-    	
+    			foodAmount += (Double) result.get(food);
+    		result.put(food, foodAmount);
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
+//    	
     	return result;
     }
     
@@ -633,7 +630,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @return map of part resources and their number.
      * @throws MissionException if error determining parts.
      */
-    protected Map<Resource, Number> getPartsNeededForTrip(double distance) throws MissionException {
+    protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
     	Map<Resource, Number> result = super.getPartsNeededForTrip(distance);
     	
     	// Determine repair parts for EVA Suits.
@@ -643,7 +640,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	// Average number malfunctions per accident is two.
 		double numberMalfunctions = numberAccidents * 2D; 
 		
-		try {
+//		try {
 			// Get temporary EVA suit.
 			EVASuit suit = (EVASuit) EquipmentFactory.getEquipment(EVASuit.class, new Coordinates(0, 0), true);
 		
@@ -658,10 +655,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
 					result.put(part, number);
 				}
 			}
-		}
-		catch (Exception e) {
-			throw new MissionException(getPhase(), e);
-		}
+//		}
+//		catch (Exception e) {
+//			throw new MissionException(getPhase(), e);
+//		}
 
     	return result;
     }
@@ -702,7 +699,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @throws MissionException if error determining time limit.
      */
     public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
-    		throws MissionException {
+{
     	
     	Inventory vInv = rover.getInventory();
     	
@@ -710,7 +707,7 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     	
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		
-    	try {
+//    	try {
     		// Check food capacity as time limit.
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodConsumptionRate = config.getFoodConsumptionRate();
@@ -731,10 +728,10 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
     		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
     		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
     		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(null, e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(null, e);
+//    	}
     	
     	// Convert timeLimit into millisols and use error margin.
     	timeLimit = (timeLimit * 1000D);
@@ -750,16 +747,16 @@ public abstract class CollectResourcesMission extends RoverMission implements Se
      * @throws MissionException if error determining needed equipment.
      */
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
-    		throws MissionException {
+{
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
     	
         	// Include one EVA suit per person on mission.
-        	result.put(EVASuit.class, new Integer(getPeopleNumber()));
+        	result.put(EVASuit.class, getPeopleNumber());
     		
     		// Include required number of containers.
-    		result.put(containerType, new Integer(containerNum));
+    		result.put(containerType, containerNum);
     	
     		equipmentNeededCache = result;
     		return result;

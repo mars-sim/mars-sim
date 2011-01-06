@@ -7,15 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
-import java.awt.*;
-import java.awt.image.*;
-import javax.swing.*;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.awt.image.MemoryImageSource;
+import java.awt.image.PixelGrabber;
+import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The MarsGlobe class generates the Martian globe for the
@@ -58,9 +60,9 @@ public class MarsGlobe {
         // Load Surface Map Image
         String imageName;
         if (globeType.equals("surface")) {
-            imageName = new String("SurfaceMarsMapSmall.jpg");
+            imageName = "SurfaceMarsMapSmall.jpg";
         } else {
-            imageName = new String("TopoMarsMapSmall.jpg");
+            imageName = "TopoMarsMapSmall.jpg";
         }
 
         MediaTracker mtrack = new MediaTracker(displayArea);
@@ -128,8 +130,8 @@ public class MarsGlobe {
         int[] buffer_array = new int[map_height * map_height];
 
         // Go through each row of the sphere
-        for (double row = start_row; (((north == true) && (row >= end_row)) ||
-                ((north == false) && (row <= end_row))); row += row_iterate) {
+        for (double row = start_row; (((north) && (row >= end_row)) ||
+                ((!north) && (row <= end_row))); row += row_iterate) {
             if (row < 0)
                 continue;
             if (row >= Math.PI)

@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -25,6 +20,11 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Task for constructing a building construction site stage.
@@ -53,7 +53,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @throws Exception if error constructing task.
      */
     public ConstructBuilding(Person person, ConstructionStage stage, 
-            List<GroundVehicle> vehicles) throws Exception {
+            List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
         super("Construct Building", person);
         
@@ -97,7 +97,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
     }
     
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
         if (CONSTRUCTION.equals(getPhase())) return construction(time);
@@ -111,7 +111,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @return the time (millisols) remaining after performing this phase.
      * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) throws Exception {
+    private double exitEVA(double time) {
         
         try {
             time = exitAirlock(time, airlock);
@@ -134,7 +134,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @return time (millisols) remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) throws Exception {
+    private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points
@@ -150,7 +150,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @return time (millisols) remaining after performing the phase.
      * @throws Exception
      */
-    private double construction(double time) throws Exception {
+    private double construction(double time) {
         
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -189,7 +189,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * Obtains a construction vehicle from the settlement if possible.
      * @throws Exception if error obtaining construction vehicle.
      */
-    private void obtainVehicle() throws Exception {
+    private void obtainVehicle() {
         Iterator<GroundVehicle> i = vehicles.iterator();
         while (i.hasNext() && (luv == null)) {
             GroundVehicle vehicle = i.next();
@@ -214,7 +214,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * Loads any needed attachment parts on the construction vehicle.
      * @throws Exception if error loading the parts.
      */
-    private void loadAttachmentParts() throws Exception {
+    private void loadAttachmentParts() {
         if (luv != null) {
             int index = vehicles.indexOf(luv);
             ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
@@ -231,7 +231,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * Returns the construction vehicle used to the settlement.
      * @throws Exception if error returning construction vehicle.
      */
-    private void returnVehicle() throws Exception {
+    private void returnVehicle() {
         luv.getInventory().retrieveUnit(person);
         luv.setOperator(null);
         operatingLUV = false;
@@ -245,7 +245,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * Unloads attachment parts from the construction vehicle.
      * @throws Exception if error unloading parts.
      */
-    private void unloadAttachmentParts() throws Exception {
+    private void unloadAttachmentParts() {
         if (luv != null) {
             int index = vehicles.indexOf(luv);
             ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);

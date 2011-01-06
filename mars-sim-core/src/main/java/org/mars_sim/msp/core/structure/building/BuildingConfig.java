@@ -6,22 +6,16 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.function.*;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
-import org.mars_sim.msp.core.structure.building.function.PowerSource;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
-import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
-import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
-import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 
 
 /**
@@ -110,7 +104,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	private Element getBuildingElement(String buildingName) throws Exception {
+	private Element getBuildingElement(String buildingName) {
 		Element result = null;
 		
 		Element root = buildingDoc.getRootElement();
@@ -123,7 +117,7 @@ public class BuildingConfig implements Serializable {
 			}
 		}
 		
-		if (result == null) throw new Exception("Building type: " + buildingName + 
+		if (result == null) throw new IllegalStateException("Building type: " + buildingName +
 			" could not be found in buildings.xml.");
 		
 		return result;
@@ -135,14 +129,14 @@ public class BuildingConfig implements Serializable {
      * @return building width (meters).
      * @throws Exception if building name cannot be found or XML parsing error.
      */
-    public double getWidth(String buildingName) throws Exception {
-    	try {
+    public double getWidth(String buildingName) {
+//    	try {
             Element buildingElement = getBuildingElement(buildingName);
             return Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-        }
-        catch (Exception e) {
-            throw new Exception("width attribute not found for building: " + buildingName);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new IllegalStateException("width attribute not found for building: " + buildingName);
+//        }
     }
     
     /**
@@ -151,14 +145,14 @@ public class BuildingConfig implements Serializable {
      * @return building length (meters).
      * @throws Exception if building name cannot be found or XML parsing error.
      */
-    public double getLength(String buildingName) throws Exception {
-    	try {
+    public double getLength(String buildingName) {
+//    	try {
             Element buildingElement = getBuildingElement(buildingName);
             return Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-        }
-        catch (Exception e) {
-            throw new Exception("length attribute not found for building: " + buildingName);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new Exception("length attribute not found for building: " + buildingName);
+//        }
     }
 	
 	/**
@@ -167,15 +161,15 @@ public class BuildingConfig implements Serializable {
 	 * @return base power requirement (kW)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getBasePowerRequirement(String buildingName) throws Exception {
-        try {
+	public double getBasePowerRequirement(String buildingName) {
+//        try {
             Element buildingElement = getBuildingElement(buildingName);
             Element powerElement = buildingElement.getChild(POWER_REQUIRED);
             return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
-        }
-        catch (Exception e) {
-            throw new Exception("power-required: base-power attribute not found for building: " + buildingName);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new Exception("power-required: base-power attribute not found for building: " + buildingName);
+//        }
 	}
 	
 	/**
@@ -184,15 +178,15 @@ public class BuildingConfig implements Serializable {
 	 * @return base power-down power (kW)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getBasePowerDownPowerRequirement(String buildingName) throws Exception {
-        try {
+	public double getBasePowerDownPowerRequirement(String buildingName) {
+//        try {
             Element buildingElement = getBuildingElement(buildingName);
             Element powerElement = buildingElement.getChild(POWER_REQUIRED);
             return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
-        }
-        catch (Exception e) {
-            throw new Exception("power-required: base-power-down-power attribute not found for building: " + buildingName);
-        }
+//        }
+//        catch (Exception e) {
+//            throw new Exception("power-required: base-power-down-power attribute not found for building: " + buildingName);
+//        }
 	}
 	
 	/**
@@ -201,7 +195,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if life support
 	 * @throws Exception if building name cannot be found.
 	 */
-	public boolean hasLifeSupport(String buildingName) throws Exception {
+	public boolean hasLifeSupport(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,LIFE_SUPPORT);
 	}
 	
@@ -211,7 +205,7 @@ public class BuildingConfig implements Serializable {
 	 * @return number of people
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getLifeSupportCapacity(String buildingName) throws Exception {
+	public int getLifeSupportCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,LIFE_SUPPORT,CAPACITY);
 	}
 	
@@ -221,7 +215,7 @@ public class BuildingConfig implements Serializable {
 	 * @return power required (kW)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getLifeSupportPowerRequirement(String buildingName) throws Exception {
+	public double getLifeSupportPowerRequirement(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,LIFE_SUPPORT,POWER_REQUIRED);
 	}
 	
@@ -231,7 +225,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if living accommodations
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasLivingAccommodations(String buildingName) throws Exception {
+	public boolean hasLivingAccommodations(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS);
 	}
 	
@@ -241,7 +235,7 @@ public class BuildingConfig implements Serializable {
 	 * @return number of beds.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getLivingAccommodationBeds(String buildingName) throws Exception {
+	public int getLivingAccommodationBeds(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,LIVING_ACCOMMODATIONS,BEDS);
 	}
 	
@@ -251,7 +245,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if research lab.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasResearchLab(String buildingName) throws Exception {
+	public boolean hasResearchLab(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,RESEARCH);
 	}
 	
@@ -261,7 +255,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getResearchTechLevel(String buildingName) throws Exception {
+	public int getResearchTechLevel(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,TECH_LEVEL);
 	}
 	
@@ -271,7 +265,7 @@ public class BuildingConfig implements Serializable {
 	 * @return number of researchers
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */	
-	public int getResearchCapacity(String buildingName) throws Exception {
+	public int getResearchCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,RESEARCH,CAPACITY);		
 	}
 	
@@ -282,7 +276,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<String> getResearchSpecialities(String buildingName) throws Exception {
+	public List<String> getResearchSpecialities(String buildingName) {
 		List<String> result = new ArrayList<String>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -301,7 +295,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if communication
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasCommunication(String buildingName) throws Exception {
+	public boolean hasCommunication(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,COMMUNICATION);
 	}
 	
@@ -311,7 +305,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if EVA
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasEVA(String buildingName) throws Exception {
+	public boolean hasEVA(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,EVA);
 	}
 	
@@ -321,7 +315,7 @@ public class BuildingConfig implements Serializable {
 	 * @return airlock capacity
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getAirlockCapacity(String buildingName) throws Exception {
+	public int getAirlockCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
 	}
 	
@@ -331,7 +325,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if recreation
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasRecreation(String buildingName) throws Exception {
+	public boolean hasRecreation(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,RECREATION);
 	}	
 	
@@ -341,7 +335,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if dining
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasDining(String buildingName) throws Exception {
+	public boolean hasDining(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,DINING);
 	}
 	
@@ -351,7 +345,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if resource processing
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasResourceProcessing(String buildingName) throws Exception {
+	public boolean hasResourceProcessing(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,RESOURCE_PROCESSING);
 	}
 	
@@ -361,7 +355,7 @@ public class BuildingConfig implements Serializable {
 	 * @return power down level
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getResourceProcessingPowerDown(String buildingName) throws Exception {
+	public double getResourceProcessingPowerDown(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,RESOURCE_PROCESSING,POWER_DOWN_LEVEL);
 	}
 	
@@ -373,7 +367,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<ResourceProcess> getResourceProcesses(String buildingName) throws Exception {
+	public List<ResourceProcess> getResourceProcesses(String buildingName) {
 		List<ResourceProcess> resourceProcesses = new ArrayList<ResourceProcess>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -398,7 +392,7 @@ public class BuildingConfig implements Serializable {
 				String resourceName = inputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double rate = Double.parseDouble(inputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT)).booleanValue();
+				boolean ambient = Boolean.valueOf(inputElement.getAttributeValue(AMBIENT));
 				process.addMaxInputResourceRate(resource, rate, ambient);
 			}
 			
@@ -408,7 +402,7 @@ public class BuildingConfig implements Serializable {
 				String resourceName = outputElement.getAttributeValue(RESOURCE).toLowerCase();
 				AmountResource resource = AmountResource.findAmountResource(resourceName);
 				double rate = Double.parseDouble(outputElement.getAttributeValue(RATE)) / 1000D;
-				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT)).booleanValue();
+				boolean ambient = Boolean.valueOf(outputElement.getAttributeValue(AMBIENT));
 				process.addMaxOutputResourceRate(resource, rate, ambient);
 			}
 			
@@ -424,7 +418,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if storage.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasStorage(String buildingName) throws Exception {
+	public boolean hasStorage(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,STORAGE);
 	}
 	
@@ -435,7 +429,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<AmountResource, Double> getStorageCapacities(String buildingName) throws Exception {
+	public Map<AmountResource, Double> getStorageCapacities(String buildingName) {
 		Map<AmountResource, Double> capacities = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -458,7 +452,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<AmountResource, Double> getInitialStorage(String buildingName) throws Exception {
+	public Map<AmountResource, Double> getInitialStorage(String buildingName) {
 		Map<AmountResource, Double> resourceMap = new HashMap<AmountResource, Double>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -479,7 +473,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if power generation
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasPowerGeneration(String buildingName) throws Exception {
+	public boolean hasPowerGeneration(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,POWER_GENERATION);
 	}
 	
@@ -490,7 +484,7 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<PowerSource> getPowerSources(String buildingName) throws Exception {
+	public List<PowerSource> getPowerSources(String buildingName) {
 		List<PowerSource> powerSourceList = new ArrayList<PowerSource>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
@@ -511,7 +505,7 @@ public class BuildingConfig implements Serializable {
 			}
             else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
 			    
-			else throw new Exception("Power source: " + type + " not a valid power source.");
+			else throw new IllegalStateException("Power source: " + type + " not a valid power source.");
 			powerSourceList.add(powerSource); 
 		}
 		return powerSourceList;
@@ -523,7 +517,7 @@ public class BuildingConfig implements Serializable {
      * @return true if power storage
      * @throws Exception if building name cannot be found or XML parsing error.
      */
-    public boolean hasPowerStorage(String buildingName) throws Exception {
+    public boolean hasPowerStorage(String buildingName) {
     	return hasElements(buildingName,FUNCTIONS,POWER_STORAGE);
     }
     
@@ -533,7 +527,7 @@ public class BuildingConfig implements Serializable {
      * @return power storage capacity (kW hr).
      * @throws Exception if building name cannot be found or XML parsing error.
      */
-    public double getPowerStorageCapacity(String buildingName) throws Exception {
+    public double getPowerStorageCapacity(String buildingName) {
     	return getValueAsDouble(buildingName,FUNCTIONS,POWER_STORAGE,CAPACITY);
     }
 	
@@ -543,7 +537,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if medical care
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasMedicalCare(String buildingName) throws Exception {
+	public boolean hasMedicalCare(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,MEDICAL_CARE);
 	}
 	
@@ -553,7 +547,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getMedicalCareTechLevel(String buildingName) throws Exception {
+	public int getMedicalCareTechLevel(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,TECH_LEVEL);
 	}
 	
@@ -563,7 +557,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getMedicalCareBeds(String buildingName) throws Exception {
+	public int getMedicalCareBeds(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,MEDICAL_CARE,BEDS);
 	}
 	
@@ -573,7 +567,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if farming
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasFarming(String buildingName) throws Exception {
+	public boolean hasFarming(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,FARMING);
 	}
 	
@@ -583,7 +577,7 @@ public class BuildingConfig implements Serializable {
 	 * @return number of crops
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getCropNum(String buildingName) throws Exception {
+	public int getCropNum(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,FARMING,CROPS);
 	}
 	
@@ -593,7 +587,7 @@ public class BuildingConfig implements Serializable {
 	 * @return power (kW)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getPowerForGrowingCrop(String buildingName) throws Exception {
+	public double getPowerForGrowingCrop(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_GROWING_CROP);
 	}
 	
@@ -603,7 +597,7 @@ public class BuildingConfig implements Serializable {
 	 * @return power (kW)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getPowerForSustainingCrop(String buildingName) throws Exception {
+	public double getPowerForSustainingCrop(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,POWER_SUSTAINING_CROP);
 	}
 	
@@ -613,7 +607,7 @@ public class BuildingConfig implements Serializable {
 	 * @return crop growing area (square meters)
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public double getCropGrowingArea(String buildingName) throws Exception {
+	public double getCropGrowingArea(String buildingName) {
 		return getValueAsDouble(buildingName,FUNCTIONS,FARMING,GROWING_AREA);
 	}
 	
@@ -623,7 +617,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if exercise
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasExercise(String buildingName) throws Exception {
+	public boolean hasExercise(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,EXERCISE);
 	}
 	
@@ -633,7 +627,7 @@ public class BuildingConfig implements Serializable {
 	 * @return capacity for exercise
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getExerciseCapacity(String buildingName) throws Exception {
+	public int getExerciseCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,EXERCISE,CAPACITY);
 	}
 	
@@ -643,7 +637,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if ground vehicle maintenance
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasGroundVehicleMaintenance(String buildingName) throws Exception {
+	public boolean hasGroundVehicleMaintenance(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE);
 	}
 	
@@ -653,7 +647,7 @@ public class BuildingConfig implements Serializable {
 	 * @return vehicle capacity
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getVehicleCapacity(String buildingName) throws Exception {
+	public int getVehicleCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
 	}
 	
@@ -663,7 +657,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if cooking
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasCooking(String buildingName) throws Exception {
+	public boolean hasCooking(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,COOKING);
 	}
 	
@@ -673,7 +667,7 @@ public class BuildingConfig implements Serializable {
 	 * @return capacity for cooking
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getCookCapacity(String buildingName) throws Exception {
+	public int getCookCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,COOKING,CAPACITY);
 	}
 	
@@ -683,7 +677,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if manufacture.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasManufacture(String buildingName) throws Exception {
+	public boolean hasManufacture(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,MANUFACTURE);
 	}
 	
@@ -693,7 +687,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getManufactureTechLevel(String buildingName) throws Exception {
+	public int getManufactureTechLevel(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,TECH_LEVEL);
 	}
 	
@@ -703,7 +697,7 @@ public class BuildingConfig implements Serializable {
 	 * @return true if ASTRONOMICAL_OBSERVATION.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public boolean hasAstronomicalObservation(String buildingName) throws Exception {
+	public boolean hasAstronomicalObservation(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION);
 	}
 	
@@ -713,7 +707,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getAstronomicalObservationTechLevel(String buildingName) throws Exception {
+	public int getAstronomicalObservationTechLevel(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,TECH_LEVEL);
 	}
 	
@@ -723,7 +717,7 @@ public class BuildingConfig implements Serializable {
 	 * @return tech level.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getAstronomicalObservationCapacity(String buildingName) throws Exception {
+	public int getAstronomicalObservationCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,CAPACITY);
 	}
 	
@@ -733,7 +727,7 @@ public class BuildingConfig implements Serializable {
      * @return power required (kW).
      * @throws Exception if building name cannot be found or XML parsing error.
      */
-    public double getAstronomicalObservationPowerRequirement(String buildingName) throws Exception {
+    public double getAstronomicalObservationPowerRequirement(String buildingName) {
     	return getValueAsDouble(buildingName,FUNCTIONS,ASTRONOMICAL_OBSERVATION,POWER_REQUIRED);
     }
 	
@@ -743,12 +737,12 @@ public class BuildingConfig implements Serializable {
 	 * @return concurrent process limit.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-	public int getManufactureConcurrentProcesses(String buildingName) throws Exception {
+	public int getManufactureConcurrentProcesses(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
 	}
 	
 	private int getValueAsInteger(String buildingName, String child, 
-			                      String subchild, String param) throws Exception{
+			                      String subchild, String param){
 		Element element1 = getBuildingElement(buildingName);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
@@ -756,7 +750,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	private double getValueAsDouble(String buildingName, String child, 
-            String subchild, String param) throws Exception{
+            String subchild, String param) {
 		Element element1 = getBuildingElement(buildingName);
 		Element element2 = element1.getChild(child);
 		Element element3 = element2.getChild(subchild);
@@ -764,7 +758,7 @@ public class BuildingConfig implements Serializable {
 	}
 	
     @SuppressWarnings("unchecked")
-	private boolean hasElements(String buildingName, String child, String children) throws Exception {
+	private boolean hasElements(String buildingName, String child, String children) {
 		Element element1 = getBuildingElement(buildingName);
 		Element element2 = element1.getChild(child);
 		List<Element> elements = element2.getChildren(children);

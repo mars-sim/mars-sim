@@ -11,11 +11,7 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
+import org.mars_sim.msp.ui.swing.unit_window.*;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.

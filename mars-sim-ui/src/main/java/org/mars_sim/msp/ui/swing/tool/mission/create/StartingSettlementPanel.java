@@ -7,24 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
@@ -41,6 +23,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A wizard panel for selecting the mission's starting settlement.
@@ -205,55 +194,55 @@ class StartingSettlementPanel extends WizardPanel {
             		if (column == 0) 
             			result = settlement.getName();
             		else if (column == 1) 
-            			result = new Integer(settlement.getCurrentPopulationNum());
+            			result = settlement.getCurrentPopulationNum();
             		else if (column == 2) 
-            			result = new Integer(inv.findNumUnitsOfClass(Rover.class));
+            			result = inv.findNumUnitsOfClass(Rover.class);
             		if (column == 3) {
             			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            			result = new Integer((int) inv.getAmountResourceStored(oxygen));
+            			result = (int) inv.getAmountResourceStored(oxygen);
             		}
             		else if (column == 4) {
             			AmountResource water = AmountResource.findAmountResource("water");
-            			result = new Integer((int) inv.getAmountResourceStored(water));
+            			result = (int) inv.getAmountResourceStored(water);
             		}
             		else if (column == 5) {
             			AmountResource food = AmountResource.findAmountResource("food");
-            			result = new Integer((int) inv.getAmountResourceStored(food));
+            			result = (int) inv.getAmountResourceStored(food);
             		}
             		else if (column == 6) {
             			AmountResource methane = AmountResource.findAmountResource("methane");
-            			result = new Integer((int) inv.getAmountResourceStored(methane));
+            			result = (int) inv.getAmountResourceStored(methane);
             		}
             		else if (column == 7) 
-            			result = new Integer(inv.findNumUnitsOfClass(EVASuit.class));
+            			result = inv.findNumUnitsOfClass(EVASuit.class);
             		
             		String type = getWizard().getMissionData().getType();
             		
             		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
             			if (column == 8)
-            				result = new Integer(inv.findNumEmptyUnitsOfClass(SpecimenContainer.class));
+            				result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class);
             		}
             		else if (type.equals(MissionDataBean.ICE_MISSION) || 
             						type.equals(MissionDataBean.REGOLITH_MISSION)) {
             			if (column == 8)
-            				result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
+            				result = inv.findNumEmptyUnitsOfClass(Bag.class);
             		}
             		else if (type.equals(MissionDataBean.MINING_MISSION)) {
             			if (column == 8)
-            				result = new Integer(inv.findNumEmptyUnitsOfClass(Bag.class));
+            				result = inv.findNumEmptyUnitsOfClass(Bag.class);
             			else if (column == 9)
-            				result = new Integer(inv.findNumUnitsOfClass(LightUtilityVehicle.class));
+            				result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
             			else if (column == 10) {
             				Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-            				result = new Integer(inv.getItemResourceNum(pneumaticDrill));
+            				result = inv.getItemResourceNum(pneumaticDrill);
             			}
             			else if (column == 11) {
             				Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-            				result = new Integer(inv.getItemResourceNum(backhoe));
+            				result = inv.getItemResourceNum(backhoe);
             			}
             			else if (column == 12) {
             				Part bulldozerBlade = (Part) Part.findItemResource(Mining.BULLDOZER_BLADE);
-            				result = new Integer(inv.getItemResourceNum(bulldozerBlade));
+            				result = inv.getItemResourceNum(bulldozerBlade);
             			}
             		}
             	}

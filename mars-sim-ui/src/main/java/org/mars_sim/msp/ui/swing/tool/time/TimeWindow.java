@@ -6,26 +6,26 @@
  */
 
 package org.mars_sim.msp.ui.swing.tool.time;
- 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.Formatter;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.time.*;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MouseInputAdapter;
+import javax.swing.event.MouseInputListener;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The TimeWindow is a tool window that displays the current 

@@ -7,15 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
 import java.awt.*;
 import java.util.Iterator;
 import java.util.Map;
-
-import javax.swing.*;
-
-import org.mars_sim.msp.core.malfunction.*;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /** 
  * The MalfunctionPanel class displays info about a malfunction. 
@@ -115,7 +114,7 @@ public class MalfunctionPanel extends JPanel {
      * @return string.
      */
     private String getPartsString() {
-    	StringBuffer buf = new StringBuffer("Parts: ");
+        StringBuilder buf = new StringBuilder("Parts: ");
     	
     	Map<Part, Integer> parts = malfunction.getRepairParts();
     	if (parts.size() > 0) {
@@ -123,7 +122,7 @@ public class MalfunctionPanel extends JPanel {
     		while (i.hasNext()) {
     			Part part = i.next();
     			int number = parts.get(part);
-    			buf.append(number + " " + part.getName());
+                buf.append(number).append(" ").append(part.getName());
     			if (i.hasNext()) buf.append(", ");
     		}
     	}
@@ -145,12 +144,12 @@ public class MalfunctionPanel extends JPanel {
      * Creates multi-line tool tip text.
      */
     private String getToolTipString() {
-    	StringBuffer result = new StringBuffer("<html>");
-    	result.append(malfunction.getName() + "<br>");
-    	result.append("General repair time: " + (int) malfunction.getWorkTime() + " milliols<br>");
-    	result.append("EVA repair time: " + (int) malfunction.getEVAWorkTime() + " milliols<br>");
-    	result.append("Emergency repair time: " + (int) malfunction.getEmergencyWorkTime() + " milliols<br>");
-    	result.append("Repair " + getPartsString().toLowerCase());
+        StringBuilder result = new StringBuilder("<html>");
+        result.append(malfunction.getName()).append("<br>");
+        result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" milliols<br>");
+        result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" milliols<br>");
+        result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" milliols<br>");
+        result.append("Repair ").append(getPartsString().toLowerCase());
     	result.append("</html>");
     	
     	return result.toString();

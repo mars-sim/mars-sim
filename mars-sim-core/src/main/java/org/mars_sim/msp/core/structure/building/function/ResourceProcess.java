@@ -6,13 +6,13 @@
  */
  
 package org.mars_sim.msp.core.structure.building.function;
- 
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.resource.AmountResource;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.resource.AmountResource;
  
 /**
  * The ResourceProcess class represents a process of
@@ -72,11 +72,11 @@ public class ResourceProcess implements Serializable {
     public void addMaxInputResourceRate(AmountResource resource, double rate, boolean ambient) {
         if (ambient) {
             if (!maxAmbientInputResourceRates.containsKey(resource)) 
-                maxAmbientInputResourceRates.put(resource, new Double(rate));
+                maxAmbientInputResourceRates.put(resource, rate);
         }
         else {
             if (!maxInputResourceRates.containsKey(resource)) 
-                maxInputResourceRates.put(resource, new Double(rate));
+                maxInputResourceRates.put(resource, rate);
         }
     }
     
@@ -89,11 +89,11 @@ public class ResourceProcess implements Serializable {
     public void addMaxOutputResourceRate(AmountResource resource, double rate, boolean waste) {
         if (waste) {
             if (!maxWasteOutputResourceRates.containsKey(resource))
-                maxWasteOutputResourceRates.put(resource, new Double(rate));
+                maxWasteOutputResourceRates.put(resource, rate);
         }
         else {
             if (!maxOutputResourceRates.containsKey(resource)) 
-                maxOutputResourceRates.put(resource, new Double(rate));
+                maxOutputResourceRates.put(resource, rate);
         }
     }
     
@@ -153,9 +153,9 @@ public class ResourceProcess implements Serializable {
     public double getMaxInputResourceRate(AmountResource resource) {
         double result = 0D;
         if (maxInputResourceRates.containsKey(resource))
-            result = maxInputResourceRates.get(resource).doubleValue();
+            result = maxInputResourceRates.get(resource);
         else if (maxAmbientInputResourceRates.containsKey(resource))
-            result = maxAmbientInputResourceRates.get(resource).doubleValue();
+            result = maxAmbientInputResourceRates.get(resource);
         return result;
     }
     
@@ -186,9 +186,9 @@ public class ResourceProcess implements Serializable {
     public double getMaxOutputResourceRate(AmountResource resource) {
         double result = 0D;
         if (maxOutputResourceRates.containsKey(resource))
-            result = maxOutputResourceRates.get(resource).doubleValue();
+            result = maxOutputResourceRates.get(resource);
         else if (maxWasteOutputResourceRates.containsKey(resource))
-            result = maxWasteOutputResourceRates.get(resource).doubleValue();
+            result = maxWasteOutputResourceRates.get(resource);
         return result;
     }
     
@@ -209,7 +209,7 @@ public class ResourceProcess implements Serializable {
      * @throws Exception if error processing resources.
      */
     public void processResources(double time, double productionLevel, 
-            Inventory inventory) throws Exception {
+            Inventory inventory) {
     	
     	if ((productionLevel < 0D) || (productionLevel > 1D) || (time < 0D))
             throw new IllegalArgumentException();
@@ -230,7 +230,7 @@ public class ResourceProcess implements Serializable {
             Iterator inputI = maxInputResourceRates.keySet().iterator();
             while (inputI.hasNext()) {
                 AmountResource resource = (AmountResource) inputI.next();
-                double maxRate = maxInputResourceRates.get(resource).doubleValue();
+                double maxRate = maxInputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
                 double remainingAmount = inventory.getAmountResourceStored(resource);
@@ -246,7 +246,7 @@ public class ResourceProcess implements Serializable {
             Iterator outputI = maxOutputResourceRates.keySet().iterator();
             while (outputI.hasNext()) {
             	AmountResource resource = (AmountResource) outputI.next();
-                double maxRate = maxOutputResourceRates.get(resource).doubleValue();
+                double maxRate = maxOutputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
                 double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false);
@@ -271,7 +271,7 @@ public class ResourceProcess implements Serializable {
      * @return bottleneck (0.0D - 1.0D)
      * @throws Exception if error getting input bottleneck.
      */
-    private double getInputBottleneck(double time, Inventory inventory) throws Exception {
+    private double getInputBottleneck(double time, Inventory inventory) {
         
         // Check for illegal argument.
         if (time < 0D) throw new IllegalArgumentException("time must be > 0D");
@@ -284,7 +284,7 @@ public class ResourceProcess implements Serializable {
         Iterator inputI = maxInputResourceRates.keySet().iterator();
         while (inputI.hasNext()) {
         	AmountResource resource = (AmountResource) inputI.next();
-            double maxRate = maxInputResourceRates.get(resource).doubleValue();
+            double maxRate = maxInputResourceRates.get(resource);
             double desiredResourceAmount = maxRate * time;
             double inventoryResourceAmount = inventory.getAmountResourceStored(resource);
             double proportionAvailable = 1D;
@@ -301,7 +301,7 @@ public class ResourceProcess implements Serializable {
      * @return string
      */
     public String toString() {
-    	return getProcessName();
+    	return name;
     }
     
     /**

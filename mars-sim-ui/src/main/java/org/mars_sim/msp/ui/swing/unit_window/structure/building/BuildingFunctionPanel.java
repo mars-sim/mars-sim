@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
 
 
 

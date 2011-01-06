@@ -7,22 +7,27 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.malfunction.*;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.person.ai.task.*;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.Maintenance;
+import org.mars_sim.msp.core.person.ai.task.Repair;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
@@ -86,7 +91,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @throws Exception if error constructing vehicle
      */
     protected Vehicle(String name, String description, Settlement settlement, 
-    		double baseSpeed, double baseMass, double fuelEfficiency) throws Exception {
+    		double baseSpeed, double baseMass, double fuelEfficiency) {
     	
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
@@ -116,7 +121,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param settlement the settlement the vehicle is parked at.
      * @throws an exception if vehicle could not be constructed.
      */
-    Vehicle(String name, String description, Settlement settlement) throws Exception {
+    Vehicle(String name, String description, Settlement settlement) {
 	    
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
@@ -180,7 +185,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @return true if vehicle is currently reserved
      */
     public boolean isReserved() {
-        return isReservedForMission() || isReservedForMaintenance();
+        return isReservedMission || reservedForMaintenance;
     }
 
     /**
@@ -278,7 +283,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @return the range of the vehicle (in km)
      * @throws Exception if error getting range.
      */
-    public double getRange() throws Exception {
+    public double getRange() {
     	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType());
         return fuelCapacity * fuelEfficiency / RANGE_ERROR_MARGIN;
     }
@@ -389,8 +394,8 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param time the amount of time passing (millisols)
      * @throws Exception if error during time.
      */
-    public void timePassing(double time) throws Exception {
-    	try  {
+    public void timePassing(double time) {
+//    	try  {
     		// Update status if necessary.
     		updateStatus();
     		
@@ -403,7 +408,7 @@ public abstract class Vehicle extends Unit implements Serializable,
             	if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
         	}
         	
-        	if (isReservedForMission()) {
+        	if (isReservedMission) {
         	    // Set reserved for mission to false if the vehicle is not associated with a mission.
         	    if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
         	        logger.log(Level.SEVERE, getName() + " is mission reserved but has no mission.");
@@ -417,7 +422,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         	}
         	
         	// If operator is dead, remove operator and stop vehicle.
-        	VehicleOperator operator = getOperator();
+        	VehicleOperator operator = vehicleOperator;
         	if ((operator != null) && (operator instanceof Person)) {
         		Person personOperator = (Person) operator;
         		if (personOperator.getPhysicalCondition().isDead()) {
@@ -425,10 +430,10 @@ public abstract class Vehicle extends Unit implements Serializable,
         			setSpeed(0);
         		}
         	}
-    	}
-    	catch (Exception e) {
-    		throw new Exception("Vehicle " + getName() + " timePassing(): " + e.getMessage());
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new Exception("Vehicle " + getName() + " timePassing(): " + e.getMessage());
+//    	}
     }
 
     /**
@@ -480,7 +485,7 @@ public abstract class Vehicle extends Unit implements Serializable,
             if (trail.size() > 0) trail.clear();
 	    }
 	    else if (trail.size() > 0) {
-	        Coordinates lastLocation = (Coordinates) trail.get(trail.size() - 1);
+	        Coordinates lastLocation = trail.get(trail.size() - 1);
 	        if (!lastLocation.equals(location) && (lastLocation.getDistance(location) >= 2D)) 
 	            trail.add(new Coordinates(location));
 	    }
@@ -499,7 +504,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public double getEstimatedTravelDistancePerSol() {
     	// Get estimated average speed (km / hr).
-    	double estSpeed = getBaseSpeed() / 2D;
+    	double estSpeed = baseSpeed / 2D;
     	
     	// Return estimated average speed in km / sol.
     	return estSpeed / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;

@@ -42,7 +42,7 @@ public class Direction implements Cloneable, Serializable {
     public boolean equals(Object obj) {
         boolean result = false;
         if (obj instanceof Direction) {
-            if (((Direction) obj).getDirection() == direction) result = true;
+            if (((Direction) obj).direction == direction) result = true;
         }
         return result;
     }

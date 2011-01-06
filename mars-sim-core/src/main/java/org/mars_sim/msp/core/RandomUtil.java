@@ -9,7 +9,6 @@ package org.mars_sim.msp.core;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 
 /** The RandomUtil class is a library of various random-related
  *  methods
@@ -29,8 +28,7 @@ public final class RandomUtil {
      */
     public static boolean lessThanRandPercent(int randomLimit) {
     	int rand = random.nextInt(100) + 1;
-        if (rand < randomLimit) return true;
-        else return false;
+        return rand < randomLimit;
     }
 
     /** Returns true if given number is less than a random percentage. 
@@ -39,8 +37,7 @@ public final class RandomUtil {
      */
     public static boolean lessThanRandPercent(double randomLimit) {
     	double rand = random.nextDouble() * 100D;
-        if (rand < randomLimit) return true;
-        else return false;
+        return rand < randomLimit;
     }
 
     /** Returns a random int number from 0 to (and including) the
@@ -50,7 +47,7 @@ public final class RandomUtil {
      */
     public static int getRandomInt(int ceiling) {
     	if (ceiling < 0) throw new IllegalArgumentException("ceiling must be positive: " + ceiling);
-    	return (int) random.nextInt(ceiling + 1);
+    	return random.nextInt(ceiling + 1);
     }
     
     /** Returns a random int number from a given base number
@@ -61,7 +58,7 @@ public final class RandomUtil {
      */
     public static int getRandomInt(int base, int ceiling) {
     	if (ceiling < base) throw new IllegalArgumentException("ceiling must be greater than base.");
-    	return (int) random.nextInt(ceiling - base + 1) + base;
+    	return random.nextInt(ceiling - base + 1) + base;
     }
 
     /** Returns a random double number from 0 
@@ -141,7 +138,7 @@ public final class RandomUtil {
     	// Get the total weight of all the objects in the map.
     	double totalWeight = 0D;
     	Iterator i = weightedMap.values().iterator();
-    	while (i.hasNext()) totalWeight += ((Double) i.next()).doubleValue();
+    	while (i.hasNext()) totalWeight += (Double) i.next();
     	
     	// Randomly select a weight value.
     	double randWeight = getRandomDouble(totalWeight);
@@ -150,7 +147,7 @@ public final class RandomUtil {
     	Iterator j = weightedMap.keySet().iterator();
     	while (j.hasNext()) {
     		Object key = j.next();
-    		double weight = ((Double) weightedMap.get(key)).doubleValue();
+    		double weight = (Double) weightedMap.get(key);
     		if (randWeight <= weight) {
     			result = key;
     			break;

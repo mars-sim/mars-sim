@@ -7,18 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.util.Iterator;
-
-import javax.swing.Icon;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
 
 public class ExploredSiteMapLayer implements MapLayer {
 

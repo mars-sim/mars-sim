@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -25,6 +19,12 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Task for mining minerals at a site.
@@ -60,7 +60,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @throws Exception if error creating task.
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, 
-			LightUtilityVehicle luv) throws Exception {
+			LightUtilityVehicle luv) {
 		
 		// Use EVAOperation parent constructor.
 		super("Mine Site", person);
@@ -105,7 +105,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) throws Exception {
+	private double exitRover(double time) {
 		
 		try {
 			time = exitAirlock(time, rover.getAirlock());
@@ -129,7 +129,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) throws Exception {
+	private double enterRover(double time) {
 
 		time = enterAirlock(time, rover.getAirlock());
 
@@ -150,7 +150,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @return remaining time after performing phase (millisols).
 	 * @throws Exception if error performing phase.
 	 */
-	private double miningPhase(double time) throws Exception {
+	private double miningPhase(double time) {
 		
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -193,7 +193,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @param time the time to excavate minerals.
 	 * @throws Exception if error excavating minerals.
 	 */
-	private void excavateMinerals(double time) throws Exception {
+	private void excavateMinerals(double time) {
 		
 		Map<String, Double> minerals = Simulation.instance().getMars().getSurfaceFeatures()
 				.getMineralMap().getAllMineralConcentrations(site);
@@ -276,7 +276,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	}
 
 	@Override
-	protected double performMappedPhase(double time) throws Exception {
+	protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
     	if (MINING.equals(getPhase())) return miningPhase(time);

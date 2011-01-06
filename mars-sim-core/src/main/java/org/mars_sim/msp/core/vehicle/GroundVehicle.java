@@ -7,9 +7,11 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.mars.*;
-import org.mars_sim.msp.core.structure.*;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.mars.TerrainElevation;
+import org.mars_sim.msp.core.structure.Settlement;
 
 import java.io.Serializable;
 
@@ -34,7 +36,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      * @param settlement settlement the ground vehicle is parked at
      * @throws an exception if ground vehicle could not be constructed.
      */
-    GroundVehicle(String name, String description, Settlement settlement) throws Exception {
+    GroundVehicle(String name, String description, Settlement settlement) {
         // use Vehicle constructor
         super(name, description, settlement);
 

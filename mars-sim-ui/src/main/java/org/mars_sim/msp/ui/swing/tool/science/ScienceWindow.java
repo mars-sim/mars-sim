@@ -6,16 +6,14 @@
  */
 package org.mars_sim.msp.ui.swing.tool.science;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 /**
  * Window for the science tool.

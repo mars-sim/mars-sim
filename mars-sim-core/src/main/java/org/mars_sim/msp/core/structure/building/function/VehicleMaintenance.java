@@ -6,15 +6,14 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.vehicle.Vehicle;
  
 /**
  * The VehicleMaintenance interface is a building function for a building
@@ -63,13 +62,13 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      * @param vehicle the vehicle to be added.
      * @throws BuildingException if vehicle cannot be added.
      */
-    public void addVehicle(Vehicle vehicle) throws BuildingException {
+    public void addVehicle(Vehicle vehicle) {
         
 		// Check if vehicle cannot be added to building.
 		if (vehicles.contains(vehicle)) 
-			throw new BuildingException("Building already contains vehicle.");
+			throw new IllegalStateException("Building already contains vehicle.");
 		if (vehicles.size() >= vehicleCapacity) 
-			throw new BuildingException("Building is full of vehicles.");
+			throw new IllegalStateException("Building is full of vehicles.");
      
 		// Remove vehicle from any other garage that it might be in.
 		Iterator i = getBuilding().getBuildingManager().getBuildings(getName()).iterator();
@@ -77,10 +76,10 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			Building building = (Building) i.next();
 			VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getName());
 			if (garage.containsVehicle(vehicle)) {
-				try {
+//				try {
 					garage.removeVehicle(vehicle);
-				}
-				catch (BuildingException e) {}
+//				}
+//				catch (BuildingException e) {}
 			}
 		}
         
@@ -94,8 +93,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      * @param vehicle the vehicle to be removed.
      * @throws BuildingException if vehicle is not in the building.
      */
-    public void removeVehicle(Vehicle vehicle) throws BuildingException {
-		if (!containsVehicle(vehicle)) throw new BuildingException("Vehicle not in building.");
+    public void removeVehicle(Vehicle vehicle) {
+		if (!containsVehicle(vehicle)) throw new IllegalStateException("Vehicle not in building.");
 		else {
 			vehicles.remove(vehicle);
 			logger.info("Removing " + vehicle.getName());
@@ -107,8 +106,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
      * @return true if vehicle is in the building.
      */
     public boolean containsVehicle(Vehicle vehicle) {
-    	if (vehicles.contains(vehicle)) return true;
-    	else return false;
+        return vehicles.contains(vehicle);
     }
     
     /**
@@ -124,7 +122,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException { 
+	public void timePassing(double time) { 
 	
 		// Check to see if any vehicles are in the garage that don't need to be.
 		Iterator<Vehicle> i = vehicles.iterator();

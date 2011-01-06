@@ -7,13 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -29,11 +22,17 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A task for working on a manufacturing process to produce construction materials.
@@ -65,7 +64,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public ManufactureConstructionMaterials(Person person) throws Exception {
+    public ManufactureConstructionMaterials(Person person) {
         super("Manufacturing Construction Materials", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(100D));
 
@@ -76,17 +75,17 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
             endTask();
 
         // Get available manufacturing workshop if any.
-        try {
+//        try {
             Building manufactureBuilding = getAvailableManufacturingBuilding(person);
             if (manufactureBuilding != null) {
                 workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
                 BuildingManager.addPersonToBuilding(person, manufactureBuilding);
             } else
                 endTask();
-        } catch (BuildingException e) {
-            logger.log(Level.SEVERE, "ManufactureConstructionMaterials", e);
-            endTask();
-        }
+//        } catch (BuildingException e) {
+//            logger.log(Level.SEVERE, "ManufactureConstructionMaterials", e);
+//            endTask();
+//        }
 
         // Initialize phase
         addPhase(MANUFACTURE);
@@ -153,7 +152,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @return available manufacturing building
      * @throws Exception if error finding manufacturing building.
      */
-    private static Building getAvailableManufacturingBuilding(Person person) throws Exception {
+    private static Building getAvailableManufacturingBuilding(Person person) {
 
         Building result = null;
 
@@ -171,7 +170,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
             manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
 
             if (manufacturingBuildings.size() > 0)
-                result = (Building) manufacturingBuildings.get(0);
+                result = manufacturingBuildings.get(0);
         }
 
         return result;
@@ -187,7 +186,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      *         the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingWork(
-            List<Building> buildingList, int skill) throws BuildingException {
+            List<Building> buildingList, int skill) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -212,7 +211,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws Exception if error determining building processes.
      */
     private static List<Building> getBuildingsWithProcessesRequiringWork(
-            List<Building> buildingList, int skill) throws Exception {
+            List<Building> buildingList, int skill) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -239,7 +238,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws Exception if building is not manufacturing.
      */
     private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) 
-            throws Exception {
+{
 
         boolean result = false;
 
@@ -264,7 +263,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws Exception if error checking manufacture process.
      */
     private static boolean producesConstructionMaterials(ManufactureProcess process) 
-            throws Exception {
+{
         return producesConstructionMaterials(process.getInfo());
     }
 
@@ -277,7 +276,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      *         the manufacture function.
      */
     private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) 
-            throws BuildingException {
+            {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -310,7 +309,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws BuildingException if error determining process value.
      */
     private static double getHighestManufacturingProcessValue(Person person, 
-            Building manufacturingBuilding) throws BuildingException {
+            Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
 
@@ -319,7 +318,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-        try {
+//        try {
             Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
                     techLevel, skillLevel).iterator();
             while (i.hasNext()) {
@@ -333,9 +332,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
                     }
                 }
             }
-        } catch (Exception e) {
-            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
-        }
+//        } catch (Exception e) {
+//            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
+//        }
 
         return highestProcessValue;
     }
@@ -347,7 +346,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws Exception if error checking for construction materials.
      */
     private static boolean producesConstructionMaterials(ManufactureProcessInfo info) 
-            throws Exception {
+{
         boolean result = false;
         
         if (constructionResources == null) determineConstructionResources();
@@ -373,7 +372,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * Determines all resources needed for construction projects.
      * throws Exception if error determining construction resources.
      */
-    private static void determineConstructionResources() throws Exception {
+    private static void determineConstructionResources() {
         constructionResources = new ArrayList<AmountResource>();
         
         Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
@@ -391,7 +390,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * Determines all parts needed for construction projects.
      * @throws Exception if error determining construction parts.
      */
-    private static void determineConstructionParts() throws Exception {
+    private static void determineConstructionParts() {
         constructionParts = new ArrayList<Part>();
         
         Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
@@ -438,7 +437,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null)
             throw new IllegalArgumentException("Task phase is null");
         if (MANUFACTURE.equals(getPhase()))
@@ -453,7 +452,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @return remaining time after performing (millisols)
      * @throws Exception if error performing phase.
      */
-    private double manufacturePhase(double time) throws Exception {
+    private double manufacturePhase(double time) {
 
         // Check if workshop has malfunction.
         if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -503,7 +502,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @return process or null if none.
      * @throws Exception if error getting running manufacture process.
      */
-    private ManufactureProcess getRunningManufactureProcess() throws Exception {
+    private ManufactureProcess getRunningManufactureProcess() {
         ManufactureProcess result = null;
 
         int skillLevel = getEffectiveSkillLevel();
@@ -546,7 +545,7 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @return the new manufacturing process or null if none.
      * @throws Exception if error creating manufacturing process.
      */
-    private ManufactureProcess createNewManufactureProcess() throws Exception {
+    private ManufactureProcess createNewManufactureProcess() {
         ManufactureProcess result = null;
 
         if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {

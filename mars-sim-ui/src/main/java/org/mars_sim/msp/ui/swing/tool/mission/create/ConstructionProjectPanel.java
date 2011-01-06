@@ -7,42 +7,22 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 /**
  * A wizard panel for selecting the mission's construction project information.
@@ -259,11 +239,11 @@ class ConstructionProjectPanel extends WizardPanel {
         if (stageInfo != null) {
             if (!stageInfo.getType().equals(ConstructionStageInfo.BUILDING)) {
                 try {
-                    StringBuffer nextStages = new StringBuffer("<html>Next possible stages:");
+                    StringBuilder nextStages = new StringBuilder("<html>Next possible stages:");
                     Iterator<ConstructionStageInfo> i = ConstructionUtil.
                             getNextPossibleStages(stageInfo).iterator();
                     while (i.hasNext()) {
-                        nextStages.append("<br>&nbsp;&nbsp;&nbsp;" + i.next().getName());
+                        nextStages.append("<br>&nbsp;&nbsp;&nbsp;").append(i.next().getName());
                     }
                     nextStages.append("</html>");
                     result = nextStages.toString();
@@ -386,7 +366,7 @@ class ConstructionProjectPanel extends WizardPanel {
      * @return true if enough materials.
      * @throws Exception if error determining construction material availability.
      */
-    private boolean hasEnoughConstructionMaterials(ConstructionStageInfo stageInfo) throws Exception {
+    private boolean hasEnoughConstructionMaterials(ConstructionStageInfo stageInfo) {
         
         boolean result = true;
         
@@ -479,10 +459,10 @@ class ConstructionProjectPanel extends WizardPanel {
                     return materialsList.get(row).toString();
                 }
                 else if (col == 1) {
-                    return new Integer(materialsList.get(row).numRequired);
+                    return materialsList.get(row).numRequired;
                 }
                 else if (col == 2) {
-                    return new Integer(materialsList.get(row).numAvailable);
+                    return materialsList.get(row).numAvailable;
                 }
                 else return null;
             }

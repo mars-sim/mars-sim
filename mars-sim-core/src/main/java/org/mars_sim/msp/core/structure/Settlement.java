@@ -7,21 +7,7 @@
 
 package org.mars_sim.msp.core.structure;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
@@ -34,13 +20,16 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 
 /** 
@@ -95,7 +84,7 @@ public class Settlement extends Structure implements Malfunctionable,
      * @param location the settlement's location
      * @throws Exception if settlement cannot be constructed.
      */
-    public Settlement(String name, String template, Coordinates location) throws Exception { 
+    public Settlement(String name, String template, Coordinates location) { 
         // Use Structure constructor
         super(name, location);
         
@@ -135,13 +124,13 @@ public class Settlement extends Structure implements Malfunctionable,
         int result = 0;
         Iterator<Building> i = buildingManager.getBuildings(LivingAccommodations.NAME).iterator();
         while (i.hasNext()) {
-        	try {
+//        	try {
         		Building building = i.next();
         		LivingAccommodations livingAccommodations = 
         			(LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
         		result += livingAccommodations.getBeds();
-        	} 
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         return result;
@@ -203,7 +192,7 @@ public class Settlement extends Structure implements Malfunctionable,
      *  @return true if life support is OK
      *  @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck() throws Exception {
+    public boolean lifeSupportCheck() {
         boolean result = true;
 
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
@@ -230,7 +219,7 @@ public class Settlement extends Structure implements Malfunctionable,
      *  @return the amount of oxgyen actually received from system (kg)
      *  @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested) throws Exception {
+    public double provideOxygen(double amountRequested) {
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
@@ -239,11 +228,11 @@ public class Settlement extends Structure implements Malfunctionable,
     	double carbonDioxideProvided = oxygenTaken;
     	double carbonDioxideCapacity = getInventory().getAmountResourceRemainingCapacity(carbonDioxide, true);
     	if (carbonDioxideProvided > carbonDioxideCapacity) carbonDioxideProvided = carbonDioxideCapacity;
-    	try {
+//    	try {
     		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
     		getInventory().storeAmountResource(carbonDioxide, carbonDioxideProvided, true);
-    	}
-    	catch (InventoryException e) {};
+//    	}
+//    	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -260,15 +249,15 @@ public class Settlement extends Structure implements Malfunctionable,
      *  @return the amount of water actually received from system (kg)
      *  @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested) throws Exception {
+    public double provideWater(double amountRequested) {
     	AmountResource water = AmountResource.findAmountResource("water");
     	double waterTaken = amountRequested;
     	double waterLeft = getInventory().getAmountResourceStored(water);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
-    	try {
+//    	try {
     		getInventory().retrieveAmountResource(water, waterTaken);
-    	}
-    	catch (InventoryException e) {};
+//    	}
+//    	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -321,7 +310,7 @@ public class Settlement extends Structure implements Malfunctionable,
      * @param time the amount of time passing (in millisols)
      * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     	
 		// If settlement is overcrowded, increase inhabitant's stress.
 		int overCrowding = getCurrentPopulationNum() - getPopulationCapacity();
@@ -334,16 +323,16 @@ public class Settlement extends Structure implements Malfunctionable,
 			}
 		}
         
-        try {
+//        try {
         	// Deliver supplies to settlement if they arrive.
         	resupplyManager.timePassing(time);
         	
         	// If no current population at settlement, power down buildings.
         	if (getCurrentPopulationNum() == 0) {
-        		getPowerGrid().setPowerMode(PowerGrid.POWER_DOWN_MODE);
+                powerGrid.setPowerMode(PowerGrid.POWER_DOWN_MODE);
         	}
         	else {
-        		getPowerGrid().setPowerMode(PowerGrid.POWER_UP_MODE);
+                powerGrid.setPowerMode(PowerGrid.POWER_UP_MODE);
         	}
         
         	powerGrid.timePassing(time);
@@ -354,14 +343,14 @@ public class Settlement extends Structure implements Malfunctionable,
         	
         	if (getCurrentPopulationNum() > 0) malfunctionManager.activeTimePassing(time);
         	malfunctionManager.timePassing(time);
-        }
-        catch (Exception e) {
-        	e.printStackTrace(System.err);
-        	throw new Exception("Settlement " + getName() + " timePassing(): " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//        	e.printStackTrace(System.err);
+//        	throw new Exception("Settlement " + getName() + " timePassing(): " + e.getMessage());
+//        }
     }
     
-    private void updateGoodsManager(double time) throws Exception {
+    private void updateGoodsManager(double time) {
     	
     	// Randomly update goods manager 1 time per Sol.
         if (!goodsManager.isInitialized() || (time >= RandomUtil.getRandomDouble(1000D))) {
@@ -431,22 +420,22 @@ public class Settlement extends Structure implements Malfunctionable,
     public Airlock getAvailableAirlock() {
         Airlock result = null;
         
-        try {
-			BuildingManager manager = getBuildingManager();
+//        try {
+			BuildingManager manager = buildingManager;
 			List<Building> evaBuildings = manager.getBuildings(EVA.NAME);
 			evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
         	
 			if (evaBuildings.size() > 0) {
 				// Pick random dining building from list.
 				int rand = RandomUtil.getRandomInt(evaBuildings.size() - 1);
-				Building building = (Building) evaBuildings.get(rand);
+				Building building = evaBuildings.get(rand);
 				EVA eva = (EVA) building.getFunction(EVA.NAME);
 				result = eva.getAirlock();
 			}
-        }
-        catch (BuildingException e) {
-        	logger.log(Level.SEVERE,"Settlement.getAvailableAirlock(): " + e.getMessage());
-        }
+//        }
+//        catch (BuildingException e) {
+//        	logger.log(Level.SEVERE,"Settlement.getAvailableAirlock(): " + e.getMessage());
+//        }
         
         return result;
     }
@@ -456,7 +445,7 @@ public class Settlement extends Structure implements Malfunctionable,
      * @return number of airlocks.
      */
     public int getAirlockNum() {
-        return getBuildingManager().getBuildings(EVA.NAME).size();
+        return buildingManager.getBuildings(EVA.NAME).size();
     }
     
     /**

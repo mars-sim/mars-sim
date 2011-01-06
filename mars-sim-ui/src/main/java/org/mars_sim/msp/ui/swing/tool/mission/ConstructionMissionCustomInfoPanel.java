@@ -6,33 +6,21 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.ConstructionEvent;
-import org.mars_sim.msp.core.structure.construction.ConstructionListener;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.Iterator;
 
 /**
  * A panel for displaying construction custom mission information.
@@ -148,7 +136,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
      * @return stage string.
      */
     private String getStageString() {
-        StringBuffer stageString = new StringBuffer("Stage: ");
+        StringBuilder stageString = new StringBuilder("Stage: ");
         if (mission != null) {
             ConstructionStage stage = mission.getConstructionStage();
             if (stage != null) stageString.append(stage.getInfo().getName());
@@ -185,23 +173,22 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
      * Gets a tool tip string for the panel.
      */
     private String getToolTipString() {
-        StringBuffer result = new StringBuffer("<html>");
+        StringBuilder result = new StringBuilder("<html>");
         
         ConstructionStage stage = null;
         if (site != null) stage = site.getCurrentConstructionStage();
         if (stage != null) {
             ConstructionStageInfo info = stage.getInfo();
-            result.append("Status: building " + info.getName() + "<br>");
-            result.append("Stage Type: " + info.getType() + "<br>");
+            result.append("Status: building ").append(info.getName()).append("<br>");
+            result.append("Stage Type: ").append(info.getType()).append("<br>");
             if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
             else result.append("Work Type: Construction<br>");
             DecimalFormat formatter = new DecimalFormat("0.0");
             String requiredWorkTime = formatter.format(info.getWorkTime() / 1000D);
-            result.append("Work Time Required: " + requiredWorkTime + " Sols<br>");
+            result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
             String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
-            result.append("Work Time Completed: " + completedWorkTime + " Sols<br>");
-            result.append("Architect Construction Skill Required: " + 
-                    info.getArchitectConstructionSkill() + "<br>");
+            result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
+            result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
             
             // Add construction resources.
             if (info.getResources().size() > 0) {
@@ -210,7 +197,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
                 while (i.hasNext()) {
                     AmountResource resource = i.next();
                     double amount = info.getResources().get(resource);
-                    result.append("&nbsp;&nbsp;" + resource.getName() + ": " + amount + " kg<br>");
+                    result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(amount).append(" kg<br>");
                 }
             }
             
@@ -221,7 +208,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
                 while (j.hasNext()) {
                     Part part = j.next();
                     int number = info.getParts().get(part);
-                    result.append("&nbsp;&nbsp;" + part.getName() + ": " + number + "<br>");
+                    result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
                 }
             }
             
@@ -231,11 +218,11 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
                 Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                 while (k.hasNext()) {
                     ConstructionVehicleType vehicle = k.next();
-                    result.append("&nbsp;&nbsp;Vehicle Type: " + vehicle.getVehicleType() + "<br>");
+                    result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
                     result.append("&nbsp;&nbsp;Attachment Parts:<br>");
                     Iterator<Part> l = vehicle.getAttachmentParts().iterator();
                     while (l.hasNext()) {
-                        result.append("&nbsp;&nbsp;&nbsp;&nbsp;" + l.next().getName() + "<br>");
+                        result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(l.next().getName()).append("<br>");
                     }
                 }
             }

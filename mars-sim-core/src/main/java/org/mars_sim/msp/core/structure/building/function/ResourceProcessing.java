@@ -6,16 +6,18 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The ResourceProcessing class is a building function indicating 
@@ -33,19 +35,19 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @param building the building the function is for.
 	 * @throws BuildingException if function cannot be constructed.
 	 */
-	public ResourceProcessing(Building building) throws BuildingException {
+	public ResourceProcessing(Building building) {
 		// Use Function constructor
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
-		try {
+//		try {
 			powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getName());
 			resourceProcesses = config.getResourceProcesses(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("ResourceProcessing.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("ResourceProcessing.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -56,8 +58,8 @@ public class ResourceProcessing extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         
@@ -122,7 +124,7 @@ public class ResourceProcessing extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 		
 		double productionLevel = 0D;
 		if (getBuilding().getPowerMode().equals(Building.FULL_POWER)) productionLevel = 1D;
@@ -132,12 +134,12 @@ public class ResourceProcessing extends Function implements Serializable {
 		// Run each resource process.
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
-			try {
+//			try {
 				i.next().processResources(time, productionLevel, getBuilding().getInventory());
-			}
-			catch(Exception e) {
-				throw new BuildingException("Error processing resources: " + e.getMessage(), e);
-			}
+//			}
+//			catch(Exception e) {
+//				throw new BuildingException("Error processing resources: " + e.getMessage(), e);
+//			}
 		}
 	}
 	

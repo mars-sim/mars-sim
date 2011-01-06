@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Phase;
+
+import java.io.Serializable;
 
 /**
  * A specialized container for holding rock samples.
@@ -22,7 +22,7 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 	public static final double EMPTY_MASS = .5D; // Base mass of the container (kg).
 	public static final double CAPACITY = 10D; // Rock sample capacity (kg).
 	
-	public SpecimenContainer(Coordinates location) throws Exception {
+	public SpecimenContainer(Coordinates location) {
 		// Use Equipment constructor.
 		super(TYPE, location);
 		

@@ -7,13 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
@@ -26,6 +19,13 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
@@ -50,7 +50,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @param airlock to be used.
      * @throws Exception if error constructing task.
      */
-    public EnterAirlock(Person person, Airlock airlock) throws Exception {
+    public EnterAirlock(Person person, Airlock airlock) {
         super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
@@ -69,7 +69,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @param person the person to perform the task.
      * @throws Exception if erro constructing task.
      */
-    public EnterAirlock(Person person) throws Exception {
+    public EnterAirlock(Person person) {
         super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 	
         // Determine airlock from other people on mission.
@@ -144,7 +144,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @return the remaining time (millisols) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (ENTERING_AIRLOCK.equals(getPhase())) return enteringAirlockPhase(time);
     	else return time;
@@ -156,7 +156,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @return
      * @throws Exception
      */
-    private double enteringAirlockPhase(double time) throws Exception {
+    private double enteringAirlockPhase(double time) {
     	double remainingTime = time;
     	
     	if (person.getLocationSituation().equals(Person.OUTSIDE)) {
@@ -211,7 +211,7 @@ public class EnterAirlock extends Task implements Serializable {
      * EVA Suit is refilled with oxygen and water from the entity's inventory.
      * @throws Exception if error putting away suit.
      */
-    private void putAwayEVASuit() throws Exception {
+    private void putAwayEVASuit() {
        
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {

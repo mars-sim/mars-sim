@@ -7,20 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -35,6 +21,11 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 
 /** 
@@ -94,7 +85,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
 		jobCache = mind.getJob().getName();
         String[] jobNames = new String[JobManager.getJobs().size()];
         for (int x=0; x < JobManager.getJobs().size(); x++)
-        	jobNames[x] = ((Job) JobManager.getJobs().get(x)).getName();
+        	jobNames[x] = JobManager.getJobs().get(x).getName();
         jobComboBox = new JComboBox(jobNames);
         jobComboBox.setSelectedItem(jobCache);
         jobComboBox.addActionListener(this);
@@ -286,7 +277,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     	}
     	else if (source == jobComboBox) {
     		int jobIndex = jobComboBox.getSelectedIndex();
-    		Job job = (Job) JobManager.getJobs().get(jobIndex);
+    		Job job = JobManager.getJobs().get(jobIndex);
     		((Person) unit).getMind().setJob(job, true);
     	}
     }

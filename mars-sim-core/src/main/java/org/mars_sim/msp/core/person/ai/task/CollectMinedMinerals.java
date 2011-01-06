@@ -7,13 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -25,6 +19,11 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Task for collecting minerals that have been mined at a site.
@@ -49,7 +48,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @throws Exception if error creating task.
 	 */
 	public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) 
-			throws Exception {
+			{
 		
 		// Use EVAOperation parent constructor.
 		super("Collect Minerals", person);
@@ -68,7 +67,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) throws Exception {
+	private double exitRover(double time) {
 		
 		try {
 			time = exitAirlock(time, rover.getAirlock());
@@ -105,7 +104,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * Takes the most full bag from the rover.
 	 * @throws Exception if error taking bag.
 	 */
-	private void takeBag() throws Exception {
+	private void takeBag() {
 		Bag bag = findMostFullBag(rover.getInventory(), mineralType);
 		if (bag != null) {
 			if (person.getInventory().canStoreUnit(bag)) {
@@ -128,17 +127,17 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 		Iterator<Unit> i = inv.findAllUnitsOfClass(Bag.class).iterator();
 		while (i.hasNext()) {
 			Bag bag = (Bag) i.next();
-			try {
+//			try {
 				double remainingCapacity = bag.getInventory().getAmountResourceRemainingCapacity(resource, true);
 			
 				if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
 					result = bag;
 					leastCapacity = remainingCapacity;
 				}
-			}
-			catch (InventoryException e) {
-				e.printStackTrace(System.err);
-			}
+//			}
+//			catch (InventoryException e) {
+//				e.printStackTrace(System.err);
+//			}
 		}
 		
 		return result;
@@ -150,7 +149,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error collecting minerals.
 	 */
-	private double collectMinerals(double time) throws Exception {
+	private double collectMinerals(double time) {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -196,7 +195,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) throws Exception {
+	private double enterRover(double time) {
 
 		time = enterAirlock(time, rover.getAirlock());
 
@@ -294,7 +293,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 	}
 
 	@Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
     	if (COLLECT_MINERALS.equals(getPhase())) return collectMinerals(time);

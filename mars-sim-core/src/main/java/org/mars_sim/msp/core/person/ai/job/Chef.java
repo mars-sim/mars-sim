@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -22,8 +16,12 @@ import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Chef class represents a job for a chef.
@@ -84,13 +82,13 @@ public class Chef extends Job implements Serializable {
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			try {
+//			try {
 				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME); 
 				result += (double) kitchen.getCookCapacity();
-			}
-			catch (BuildingException e) {
-			   logger.log(Level.SEVERE, "Chef.getSettlementNeed()", e);
-			}
+//			}
+//			catch (BuildingException e) {
+//			   logger.log(Level.SEVERE, "Chef.getSettlementNeed()", e);
+//			}
 		}
 		
 		// Add total population / 2.

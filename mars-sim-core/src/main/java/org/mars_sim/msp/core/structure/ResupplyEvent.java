@@ -6,7 +6,8 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.events.*;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 
 /**
  * An historical event for the arrival of a settlement 

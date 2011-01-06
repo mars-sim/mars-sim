@@ -116,7 +116,7 @@ public class Good implements Serializable, Comparable<Good> {
 	 * @return string.
 	 */
 	public String toString() {
-		return getName();
+		return name;
 	}
 	
 	/**
@@ -128,12 +128,12 @@ public class Good implements Serializable, Comparable<Good> {
 		boolean result = true;
 		if (object instanceof Good) {
 			Good good = (Good) object;
-			if (!getName().equals(good.getName())) result = false;
-			if (!getClassType().equals(good.getClassType())) result = false;
-			if (getObject() != null) {
-				if (!getObject().equals(good.getObject())) result = false;
+			if (!name.equals(good.name)) result = false;
+			if (!classType.equals(good.classType)) result = false;
+			if (this.object != null) {
+				if (!this.object.equals(good.object)) result = false;
 			}
-			if (!category.equals(good.getCategory())) result = false;
+			if (!category.equals(good.category)) result = false;
 		}
 		else result = false;
 		
@@ -144,9 +144,9 @@ public class Good implements Serializable, Comparable<Good> {
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		int hashCode = getName().hashCode() * getClass().hashCode();
-		if (getObject() != null) hashCode *= getObject().hashCode();
-		hashCode *= getCategory().hashCode();
+		int hashCode = name.hashCode() * getClass().hashCode();
+		if (object != null) hashCode *= object.hashCode();
+		hashCode *= category.hashCode();
 		return hashCode;
 	}
 	
@@ -157,6 +157,6 @@ public class Good implements Serializable, Comparable<Good> {
 	 * equal to, or greater than the specified object.
 	 */
 	public int compareTo(Good o) {
-		return name.compareTo(o.getName());
+		return name.compareTo(o.name);
 	}
 }

@@ -7,23 +7,6 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JInternalFrame;
-import javax.swing.UIManager;
-
 import org.apache.commons.io.IOUtils;
 import org.jdom.DocType;
 import org.jdom.Document;
@@ -35,7 +18,14 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
-import org.mars_sim.msp.ui.swing.MainWindow;
+
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class UIConfig {
 
@@ -145,8 +135,8 @@ public class UIConfig {
             uiElement.setAttribute(USE_DEFAULT, "false"); // lechimp asks: why is this always set to false?
     		
             
-            uiElement.setAttribute(SHOW_TOOL_BAR, new Boolean (window.getToolToolBar().isVisible()).toString());
-            uiElement.setAttribute(SHOW_UNIT_BAR, new Boolean (window.getUnitToolBar().isVisible()).toString());
+            uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(window.getToolToolBar().isVisible()));
+            uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(window.getUnitToolBar().isVisible()));
 
             String currentLFClassName = UIManager.getLookAndFeel().getClass().getName();
             String systemLFClassName = UIManager.getSystemLookAndFeelClassName();
@@ -175,41 +165,40 @@ public class UIConfig {
             // Add all internal windows.
             MainDesktopPane desktop = window.getDesktop();
             JInternalFrame[] windows = desktop.getAllFrames();
-            for (int x = 0; x < windows.length; x++) {
+            for (JInternalFrame window1 : windows) {
                 Element windowElement = new Element(WINDOW);
                 internalWindowsElement.addContent(windowElement);
 
-                windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(windows[x])));
-                windowElement.setAttribute(LOCATION_X, Integer.toString(windows[x].getX()));
-                windowElement.setAttribute(LOCATION_Y, Integer.toString(windows[x].getY()));
-                windowElement.setAttribute(WIDTH, Integer.toString(windows[x].getWidth()));
-                windowElement.setAttribute(HEIGHT, Integer.toString(windows[x].getHeight()));
-                windowElement.setAttribute(DISPLAY, Boolean.toString(!windows[x].isClosed()));
+                windowElement.setAttribute(Z_ORDER, Integer.toString(desktop.getComponentZOrder(window1)));
+                windowElement.setAttribute(LOCATION_X, Integer.toString(window1.getX()));
+                windowElement.setAttribute(LOCATION_Y, Integer.toString(window1.getY()));
+                windowElement.setAttribute(WIDTH, Integer.toString(window1.getWidth()));
+                windowElement.setAttribute(HEIGHT, Integer.toString(window1.getHeight()));
+                windowElement.setAttribute(DISPLAY, Boolean.toString(!window1.isClosed()));
 
-                if (windows[x] instanceof ToolWindow) {
+                if (window1 instanceof ToolWindow) {
                     windowElement.setAttribute(TYPE, TOOL);
-                    windowElement.setAttribute(NAME, ((ToolWindow) windows[x]).getToolName());
-                } 
-                else if (windows[x] instanceof UnitWindow) {
+                    windowElement.setAttribute(NAME, ((ToolWindow) window1).getToolName());
+                } else if (window1 instanceof UnitWindow) {
                     windowElement.setAttribute(TYPE, UNIT);
-                    windowElement.setAttribute(NAME, ((UnitWindow) windows[x]).getUnit().getName());
-                }else {
-                	  windowElement.setAttribute(TYPE, "other");
-                      windowElement.setAttribute(NAME, "other");
+                    windowElement.setAttribute(NAME, ((UnitWindow) window1).getUnit().getName());
+                } else {
+                    windowElement.setAttribute(TYPE, "other");
+                    windowElement.setAttribute(NAME, "other");
                 }
             }
 
             // Check unit toolbar for unit buttons without open windows.
             Unit[] toolBarUnits = window.getUnitToolBar().getUnitsInToolBar();
-            for (int x = 0; x < toolBarUnits.length; x++) {
-                UnitWindow unitWindow = desktop.findUnitWindow(toolBarUnits[x]);
+            for (Unit toolBarUnit : toolBarUnits) {
+                UnitWindow unitWindow = desktop.findUnitWindow(toolBarUnit);
 
                 if ((unitWindow == null) || unitWindow.isIcon()) {
                     Element windowElement = new Element(WINDOW);
                     internalWindowsElement.addContent(windowElement);
 
                     windowElement.setAttribute(TYPE, UNIT);
-                    windowElement.setAttribute(NAME, toolBarUnits[x].getName());
+                    windowElement.setAttribute(NAME, toolBarUnit.getName());
                     windowElement.setAttribute(DISPLAY, "false");
                 }
             }

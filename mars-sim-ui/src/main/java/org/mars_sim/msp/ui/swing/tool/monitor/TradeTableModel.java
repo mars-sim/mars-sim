@@ -7,13 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitListener;
@@ -22,6 +15,12 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class TradeTableModel extends AbstractTableModel implements
 		UnitListener, MonitorModel {
@@ -131,14 +130,14 @@ public class TradeTableModel extends AbstractTableModel implements
 	}
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		if (columnIndex == 0) return ((Good) goodsList.get(rowIndex)).getName();
-		else if (columnIndex == 1) return (getGoodCategory((Good) goodsList.get(rowIndex)));
+		if (columnIndex == 0) return goodsList.get(rowIndex).getName();
+		else if (columnIndex == 1) return (getGoodCategory(goodsList.get(rowIndex)));
 		else {
 			try {
 				Settlement settlement = settlements.get(columnIndex - 2);
-				Good good = (Good) goodsList.get(rowIndex);
+				Good good = goodsList.get(rowIndex);
 				double result = settlement.getGoodsManager().getGoodValuePerItem(good);
-				return new Double(result);
+				return result;
 			}
 			catch (Exception e) {
 				return null;
@@ -172,8 +171,8 @@ public class TradeTableModel extends AbstractTableModel implements
 		public void run() {
 			if (event.getTarget() == null) fireTableDataChanged();
 			else {
-				int rowIndex = goodsList.indexOf((Good) event.getTarget());
-				int columnIndex = settlements.indexOf((Settlement) event.getSource()) + 2;
+				int rowIndex = goodsList.indexOf(event.getTarget());
+				int columnIndex = settlements.indexOf(event.getSource()) + 2;
 				fireTableCellUpdated(rowIndex, columnIndex);
 			}
 		}

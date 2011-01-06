@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.science;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -19,6 +14,11 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A utility class for scientific studies.
@@ -107,8 +107,7 @@ public class ScientificStudyUtil {
         }
         
         // Randomly determine if study passes peer review.
-        if (RandomUtil.getRandomDouble(100D) < baseChance) return true;
-        else return false;
+        return RandomUtil.getRandomDouble(100D) < baseChance;
     }
     
     /**

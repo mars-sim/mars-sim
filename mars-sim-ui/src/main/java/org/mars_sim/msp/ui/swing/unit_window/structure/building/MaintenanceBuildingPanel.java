@@ -7,22 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The MaintenanceBuildingPanel class is a building function panel representing 
@@ -134,7 +128,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
      * @return string.
      */
     private String getPartsString() {
-    	StringBuffer buf = new StringBuffer("Parts: ");
+        StringBuilder buf = new StringBuilder("Parts: ");
     	
     	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
@@ -142,7 +136,7 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
     		while (i.hasNext()) {
     			Part part = i.next();
     			int number = parts.get(part);
-    			buf.append(number + " " + part.getName());
+                buf.append(number).append(" ").append(part.getName());
     			if (i.hasNext()) buf.append(", ");
     		}
     	}
@@ -156,10 +150,10 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
      */
     private String getToolTipString() {
     	MalfunctionManager manager = malfunctionable.getMalfunctionManager();
-    	StringBuffer result = new StringBuffer("<html>");
+        StringBuilder result = new StringBuilder("<html>");
     	int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-    	result.append("Last completed maintenance: " + maintSols + " sols<br>");
-    	result.append("Repair " + getPartsString().toLowerCase());
+        result.append("Last completed maintenance: ").append(maintSols).append(" sols<br>");
+        result.append("Repair ").append(getPartsString().toLowerCase());
     	result.append("</html>");
     	
     	return result.toString();

@@ -7,16 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
@@ -34,6 +24,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
@@ -57,7 +52,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 	 * @param person the person to perform the task
 	 * @throws Exception if error constructing task.
 	 */
-    public MaintainGroundVehicleEVA(Person person) throws Exception {
+    public MaintainGroundVehicleEVA(Person person) {
         super("Performing Vehicle Maintenance", person);
    
         // Choose an available needy ground vehicle.
@@ -133,7 +128,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
     	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehicle(time);
@@ -175,7 +170,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) throws Exception {
+    private double exitEVA(double time) {
     	
     	try {
     		time = exitAirlock(time, airlock);
@@ -198,7 +193,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error maintaining vehicle.
      */
-    private double maintainVehicle(double time) throws Exception {
+    private double maintainVehicle(double time) {
         
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
@@ -251,7 +246,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return time remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) throws Exception {
+    private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points
@@ -323,7 +318,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return ground vehicle
      * @throws Exception if error finding needy vehicle.
      */
-    private GroundVehicle getNeedyGroundVehicle(Person person) throws Exception {
+    private GroundVehicle getNeedyGroundVehicle(Person person) {
             
         GroundVehicle result = null;
 
@@ -362,7 +357,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the probability weight.
      * @throws Exception if error determining probability weight.
      */
-    private double getProbabilityWeight(Vehicle vehicle) throws Exception {
+    private double getProbabilityWeight(Vehicle vehicle) {
     	double result = 0D;
 		MalfunctionManager manager = vehicle.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();

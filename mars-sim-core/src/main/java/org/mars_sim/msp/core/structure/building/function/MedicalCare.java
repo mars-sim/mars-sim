@@ -5,16 +5,23 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
-import java.io.Serializable;
-import java.util.*;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.person.ai.task.*;
-import org.mars_sim.msp.core.person.medical.*;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
+import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.medical.HealthProblem;
+import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.person.medical.MedicalStation;
+import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
  
 /**
  * The MedicalCare class represents a building function for providing medical care.
@@ -30,20 +37,20 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if function could not be constructed.
 	 */
-	public MedicalCare(Building building) throws BuildingException {
+	public MedicalCare(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			int techLevel = config.getMedicalCareTechLevel(building.getName());
 			int beds = config.getMedicalCareBeds(building.getName());
 			medicalStation = new MedicalStation(techLevel, beds);
-		}
-		catch (Exception e) {
-			throw new BuildingException("MedicalCare.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("MedicalCare.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -54,8 +61,8 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is 5 medical points per inhabitant.
         double demand = settlement.getAllAssociatedPeople().size() * 5D;
@@ -180,17 +187,17 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param problem The health problem to await treatment.
 	 * @throws Exception if health problem cannot be treated here.
 	 */
-	public void requestTreatment(HealthProblem problem) throws Exception {
+	public void requestTreatment(HealthProblem problem) {
 		medicalStation.requestTreatment(problem);
 		
 		// Add person to building if possible.
-		try {
+//		try {
 			if (getBuilding().hasFunction(LifeSupport.NAME)) {
 				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
 				lifeSupport.addPerson(problem.getSufferer());
 			}
-		}
-		catch (BuildingException e) {}
+//		}
+//		catch (BuildingException e) {}
 	}
 	
 	/**
@@ -200,17 +207,17 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param treatmentDuration the time required to perform the treatment.
 	 * @throws Exception if treatment cannot be started.
 	 */
-	public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception {
+	public void startTreatment(HealthProblem problem, double treatmentDuration) {
 		medicalStation.startTreatment(problem, treatmentDuration);
         
 		// Add person to building if possible.
-		try {
+//		try {
 			if (getBuilding().hasFunction(LifeSupport.NAME)) {
 				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
 				lifeSupport.addPerson(problem.getSufferer());
 			}
-		}
-		catch (BuildingException e) {}
+//		}
+//		catch (BuildingException e) {}
 	}
 	
 	/**
@@ -219,7 +226,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param problem Health problem stopping treatment on.
 	 * @throws Exception if health problem is not being treated.
 	 */
-	public void stopTreatment(HealthProblem problem) throws Exception {
+	public void stopTreatment(HealthProblem problem) {
 		medicalStation.stopTreatment(problem);
 	}
 	
@@ -228,7 +235,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 	
 	    /*
 		String name = getBuilding().getBuildingManager().getSettlement().getName();

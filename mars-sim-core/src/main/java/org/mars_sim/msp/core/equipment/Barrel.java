@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.Phase;
+
+import java.io.Serializable;
 
 /**
  * A barrel container for holding liquid amount resources.
@@ -27,7 +27,7 @@ public class Barrel extends Equipment implements Container, Serializable {
 	 * @param location the location of the barrel.
 	 * @throws Exception if error creating barrel.
 	 */
-	public Barrel(Coordinates location) throws Exception {
+	public Barrel(Coordinates location) {
 		// Use Equipment constructor
 		super(TYPE, location);
 		

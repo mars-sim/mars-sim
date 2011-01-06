@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Graphics;
-
 import org.mars_sim.msp.core.Coordinates;
+
+import java.awt.*;
 
 /**
  * The MapLayer interface is a graphics layer painted on the map display.

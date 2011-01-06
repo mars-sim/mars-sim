@@ -7,25 +7,11 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Container;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.*;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -39,29 +25,22 @@ import org.mars_sim.msp.core.person.ai.job.Architect;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Trader;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.Crop;
-import org.mars_sim.msp.core.structure.building.function.Farming;
-import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.*;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * A manager for goods values at a settlement.
@@ -105,7 +84,7 @@ public class GoodsManager implements Serializable {
 	 * @param settlement the settlement this manager is for.
 	 * @throws Exception if errors constructing instance.
 	 */
-	public GoodsManager(Settlement settlement) throws Exception {
+	public GoodsManager(Settlement settlement) {
 		this.settlement = settlement;
 		populateGoodsValues();
 	}
@@ -130,16 +109,16 @@ public class GoodsManager implements Serializable {
 		Iterator<Good> i = goods.iterator();
 		while (i.hasNext()) {
 			Good good = i.next();
-			goodsValues.put(good, new Double(0D));
-			goodsDemandCache.put(good, new Double(0D));
-			goodsTradeCache.put(good, new Double(0D));
+			goodsValues.put(good, 0D);
+			goodsDemandCache.put(good, 0D);
+			goodsTradeCache.put(good, 0D);
 		}
 		
 		// Create and populate resource processing cache with all amount resources.
 		Set<AmountResource> amountResources = AmountResource.getAmountResources();
 		resourceProcessingCache = new HashMap<AmountResource, Double>(amountResources.size());
 		Iterator<AmountResource> j = amountResources.iterator();
-		while (j.hasNext()) resourceProcessingCache.put(j.next(), new Double(0D));
+		while (j.hasNext()) resourceProcessingCache.put(j.next(), 0D);
 		
 		// Create parts demand cache.
 		partsDemandCache = new HashMap<Part, Double>(ItemResource.getItemResources().size());
@@ -151,12 +130,12 @@ public class GoodsManager implements Serializable {
 	 * @return value (VP)
 	 * @throws Exception if error getting value.
 	 */
-	public double getGoodValuePerItem(Good good) throws Exception {
-        if (goodsValues.containsKey(good)) return goodsValues.get(good).doubleValue();
+	public double getGoodValuePerItem(Good good) {
+        if (goodsValues.containsKey(good)) return goodsValues.get(good);
         else throw new IllegalArgumentException("Good: " + good + " not valid.");
 	}
 	
-	public double getGoodValuePerItem(Good good, double supply) throws Exception {
+	public double getGoodValuePerItem(Good good, double supply) {
         if (goodsValues.containsKey(good)) return determineGoodValue(good, supply, true);
         else throw new IllegalArgumentException("Good: " + good + " not valid.");
 	}
@@ -166,7 +145,7 @@ public class GoodsManager implements Serializable {
 	 * @param time the amount of time passing (millisols).
 	 * @throws Exception if error during time.
 	 */
-	public void timePassing(double time) throws Exception {
+	public void timePassing(double time) {
 		updateGoodsValues();
 	}
 	
@@ -174,7 +153,7 @@ public class GoodsManager implements Serializable {
 	 * Updates the values for all the goods at the settlement.
 	 * @throws Exception if error updating goods values.
 	 */
-	public void updateGoodsValues() throws Exception {
+	public void updateGoodsValues() {
 		// Clear parts demand cache.
 		partsDemandCache.clear();
 		
@@ -191,7 +170,7 @@ public class GoodsManager implements Serializable {
 	 * @param collectiveUpdate true if this update is part of a collective good value update.
 	 * @throws Exception if error updating good value.
 	 */
-	public void updateGoodValue(Good good, boolean collectiveUpdate) throws Exception {
+	public void updateGoodValue(Good good, boolean collectiveUpdate) {
 		if (good != null) {
 			goodsValues.put(good, determineGoodValue(good, getNumberOfGoodForSettlement(good), false));
 			if (!collectiveUpdate) settlement.fireUnitUpdate(GOODS_VALUE_EVENT, good);
@@ -207,7 +186,7 @@ public class GoodsManager implements Serializable {
 	 * @return value of good.
 	 * @throws Exception if problem determining good value.
 	 */
-	private double determineGoodValue(Good good, double supply, boolean useCache) throws Exception {
+	private double determineGoodValue(Good good, double supply, boolean useCache) {
 		if (good != null) {
 			double value = 0D;
 			
@@ -241,7 +220,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining resource value.
 	 */
 	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
-			throws Exception {
+			{
 		double value = 0D;
 		
 		supply++;
@@ -249,7 +228,7 @@ public class GoodsManager implements Serializable {
 		AmountResource resource = (AmountResource) resourceGood.getObject();
 		
 		if (useCache) {
-			if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood).doubleValue();
+			if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood);
 			else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
 		}
 		else {
@@ -278,7 +257,7 @@ public class GoodsManager implements Serializable {
 			double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
 			if (demand > capacity) demand = capacity;
 			
-			goodsDemandCache.put(resourceGood, new Double(demand));
+			goodsDemandCache.put(resourceGood, demand);
 		}
 		
 		value = demand / supply;
@@ -296,7 +275,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 * @throws Exception if error getting life support demand.
 	 */
-	private double getLifeSupportDemand(AmountResource resource) throws Exception {
+	private double getLifeSupportDemand(AmountResource resource) {
 		if (resource.isLifeSupport()) {
 			double amountNeededSol = 0D;
             PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
@@ -320,7 +299,7 @@ public class GoodsManager implements Serializable {
      * @return demand (kg)
      * @throws Exception if error getting potable water usage demand.
      */
-    private double getPotableWaterUsageDemand(AmountResource resource) throws Exception {
+    private double getPotableWaterUsageDemand(AmountResource resource) {
         AmountResource water = AmountResource.findAmountResource("water");
         if (resource.equals(water)) {
             double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
@@ -337,7 +316,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg) for the resource.
 	 * @throws Exception if error getting resource demand.
 	 */
-	private double getVehicleDemand(AmountResource resource) throws Exception {
+	private double getVehicleDemand(AmountResource resource) {
 		double demand = 0D;
 		AmountResource methane = AmountResource.findAmountResource("methane");
 		if (resource.isLifeSupport() || resource.equals(methane)) {
@@ -374,7 +353,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg) for the resource.
 	 * @throws Exception if error determining demand.
 	 */
-	private double getFarmingDemand(AmountResource resource) throws Exception {
+	private double getFarmingDemand(AmountResource resource) {
 		double demand = 0D;
 		AmountResource wasteWater = AmountResource.findAmountResource("waste water");
 		AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
@@ -410,7 +389,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error getting value.
 	 */
 	private double getResourceProcessingValue(AmountResource resource, 
-            boolean useProcessingCache) throws Exception {
+            boolean useProcessingCache) {
 		double value = 0D;
 		
 		if (useProcessingCache) {
@@ -425,7 +404,7 @@ public class GoodsManager implements Serializable {
 				double processValue = getResourceProcessValue(process, resource);
 				if (processValue > value) value = processValue;
 			}
-			resourceProcessingCache.put(resource, new Double(value));
+			resourceProcessingCache.put(resource, value);
 		}
 		
 		return value;
@@ -439,7 +418,7 @@ public class GoodsManager implements Serializable {
      * @throws exception if error getting good value.
 	 */
 	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) 
-            throws Exception {
+{
 		double value = 0D;
 		
 		Set<AmountResource> inputResources = process.getInputResources();
@@ -478,7 +457,7 @@ public class GoodsManager implements Serializable {
 	 * @return list of resource processes.
 	 * @throws BuildingException if error getting processes.
 	 */
-	private List<ResourceProcess> getResourceProcesses() throws BuildingException {
+	private List<ResourceProcess> getResourceProcesses() {
 		List<ResourceProcess> processes = new ArrayList<ResourceProcess>(0);
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
@@ -497,7 +476,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (kg)
 	 * @throws Exception if error determining demand for resource.
 	 */
-	private double getResourceManufacturingDemand(AmountResource resource) throws Exception {
+	private double getResourceManufacturingDemand(AmountResource resource) {
 		double demand = 0D;
 		
 		// Get highest manufacturing tech level in settlement.
@@ -522,7 +501,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining resource value.
 	 */
 	private double getResourceManufacturingProcessDemand(AmountResource resource,
-			ManufactureProcessInfo process) throws Exception {
+			ManufactureProcessInfo process) {
 		double demand = 0D;
 		
 		ManufactureProcessItem resourceInput = null;
@@ -559,7 +538,7 @@ public class GoodsManager implements Serializable {
      * @return demand (kg)
      * @throws Exception if error determining demand for resource.
      */
-    private double getResourceConstructionDemand(AmountResource resource) throws Exception {
+    private double getResourceConstructionDemand(AmountResource resource) {
         double demand = 0D;
 
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -587,7 +566,7 @@ public class GoodsManager implements Serializable {
      * @throws Exception if error determining demand for resource.
      */
     private double getResourceConstructionStageDemand(AmountResource resource, ConstructionStageInfo stage, 
-            double stageValue) throws Exception {
+            double stageValue) {
         double demand = 0D;
         
         Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
@@ -613,7 +592,7 @@ public class GoodsManager implements Serializable {
     }
     
     private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) 
-            throws Exception {
+{
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
@@ -652,7 +631,7 @@ public class GoodsManager implements Serializable {
     }
     
     private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) 
-            throws Exception {
+{
         Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
@@ -696,7 +675,7 @@ public class GoodsManager implements Serializable {
 	 * @return the number of the good (or amount (kg) if amount resource good).
 	 * @throws InventoryException if error determining the number of the good.
 	 */
-	public double getNumberOfGoodForSettlement(Good good) throws InventoryException {
+	public double getNumberOfGoodForSettlement(Good good) {
 		if (good != null) {
 			double result = 0D;
 			
@@ -720,7 +699,7 @@ public class GoodsManager implements Serializable {
 	 * @return amount (kg) of resource for the settlement.
 	 * @throws InventoryException if error getting the amount of the resource.
 	 */
-	private double getAmountOfResourceForSettlement(AmountResource resource) throws InventoryException {
+	private double getAmountOfResourceForSettlement(AmountResource resource) {
 		double amount = 0D;
 		
 		// Get amount of resource in settlement storage.
@@ -757,13 +736,13 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining value.
 	 */
 	private double determineItemResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
-			throws Exception {
+			{
 		double value = 0D;
 		ItemResource resource = (ItemResource) resourceGood.getObject();
 		double demand = 0D;
 		
 		if (useCache) {
-			if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood).doubleValue();
+			if (goodsDemandCache.containsKey(resourceGood)) demand = goodsDemandCache.get(resourceGood);
 			else throw new IllegalArgumentException("Good: " + resourceGood + " not valid.");
 			
 			// Clear parts demand cache so it will be calculated next time.
@@ -787,7 +766,7 @@ public class GoodsManager implements Serializable {
 			// Add trade demand.
             demand += determineTradeDemand(resourceGood, useCache);
 			
-			goodsDemandCache.put(resourceGood, new Double(demand));
+			goodsDemandCache.put(resourceGood, demand);
 		}
 		
 		value = demand / (supply + 1D);
@@ -800,7 +779,7 @@ public class GoodsManager implements Serializable {
 	 * @return map of parts and their demand.
 	 * @throws Exception if error determining the parts demand.
 	 */
-	private void determinePartsDemand() throws Exception {
+	private void determinePartsDemand() {
 		Map<Part, Double> partsProbDemand = new HashMap<Part, Double>(ItemResource.getItemResources().size());
 		
 		// Get all malfunctionables associated with settlement.
@@ -852,7 +831,7 @@ public class GoodsManager implements Serializable {
 		}
 	}
 	
-	private Map<Part, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) throws Exception {
+	private Map<Part, Number> getEstimatedOrbitRepairParts(Malfunctionable entity) {
 		Map<Part, Number> result = new HashMap<Part, Number>();
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
@@ -883,7 +862,7 @@ public class GoodsManager implements Serializable {
 			Iterator<Part> j = repairParts.keySet().iterator();
 			while (j.hasNext()) {
 				Part part = j.next();
-				int number = repairParts.get(part).intValue() * OUTSTANDING_REPAIR_PART_MODIFIER;
+				int number = repairParts.get(part) * OUTSTANDING_REPAIR_PART_MODIFIER;
 				if (result.containsKey(part)) number += result.get(part).intValue();
 				result.put(part, number);
 			}
@@ -892,7 +871,7 @@ public class GoodsManager implements Serializable {
 		return result;
 	}
 	
-	private Map<Part, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) throws Exception {
+	private Map<Part, Number> getEstimatedOrbitMaintenanceParts(Malfunctionable entity) {
 		Map<Part, Number> result = new HashMap<Part, Number>();
 		
 		MalfunctionManager manager = entity.getMalfunctionManager();
@@ -932,7 +911,7 @@ public class GoodsManager implements Serializable {
 	 * @return map of parts and demand number.
 	 * @throws Exception if error getting parts.
 	 */
-	private Map<Part, Number> getVehicleAttachmentParts() throws Exception {
+	private Map<Part, Number> getVehicleAttachmentParts() {
 		Map<Part, Number> result = new HashMap<Part, Number>();
 		
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
@@ -959,7 +938,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (# of parts)
 	 * @throws Exception if error getting part manufacturing demand.
 	 */
-	private double getPartManufacturingDemand(Part part) throws Exception {
+	private double getPartManufacturingDemand(Part part) {
 		double demand = 0D;
 		
 		// Get highest manufacturing tech level in settlement.
@@ -984,7 +963,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining manufacturing demand.
 	 */
 	private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) 
-			throws Exception {
+			{
 		double demand = 0D;
 		double totalInputNum = 0D;
 		
@@ -1022,7 +1001,7 @@ public class GoodsManager implements Serializable {
      * @return demand
      * @throws Exception if error getting part construction demand.
      */
-    private double getPartConstructionDemand(Part part) throws Exception {
+    private double getPartConstructionDemand(Part part) {
         double demand = 0D;
         
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -1050,7 +1029,7 @@ public class GoodsManager implements Serializable {
      * @throws Exception if error determining demand for part.
      */
     private double getPartConstructionStageDemand(Part part, ConstructionStageInfo stage, 
-            double stageValue) throws Exception {
+            double stageValue) {
         double demand = 0D;
         
         Map<AmountResource, Double> resources = getAllPrerequisiteConstructionResources(stage);
@@ -1081,7 +1060,7 @@ public class GoodsManager implements Serializable {
 	 * @return number of resource for the settlement.
 	 * @throws InventoryException if error getting the number of the resource.
 	 */
-	private double getNumberOfResourceForSettlement(ItemResource resource) throws InventoryException {
+	private double getNumberOfResourceForSettlement(ItemResource resource) {
 		double number = 0D;
 		
 		// Get number of resources in settlement storage.
@@ -1118,7 +1097,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining value.
 	 */
 	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) 
-			throws Exception {
+			{
 		double value = 0D;
 		double demand = 0D;
 		
@@ -1133,7 +1112,7 @@ public class GoodsManager implements Serializable {
 			// Add trade demand.
 	        demand += determineTradeDemand(equipmentGood, useCache);
 			
-			goodsDemandCache.put(equipmentGood, new Double(demand));
+			goodsDemandCache.put(equipmentGood, demand);
 		}
 		
 		value = demand / (supply + 1D);
@@ -1147,7 +1126,7 @@ public class GoodsManager implements Serializable {
 	 * @return demand (# of equipment).
 	 * @throws Exception if error getting demand.
 	 */
-	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) throws Exception {
+	private double determineEquipmentDemand(Class<? extends Equipment> equipmentClass) {
 		double numDemand = 0D;
 		
 		// Determine number of EVA suits that are needed
@@ -1186,7 +1165,7 @@ public class GoodsManager implements Serializable {
 	 * @return number of non-empty containers.
 	 * @throws Exception if error determining containers.
 	 */
-	private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) throws Exception {
+	private int getNonEmptyContainers(Class<? extends Equipment> equipmentClass) {
 		int result = 0;
 		
 		Inventory inv = settlement.getInventory();
@@ -1275,7 +1254,7 @@ public class GoodsManager implements Serializable {
 	 * @throws InventoryException if error getting the number of the equipment.
 	 */
 	private double getNumberOfEquipmentForSettlement(Class<? extends Equipment> equipmentClass) 
-	        throws InventoryException {
+	        {
 		double number = 0D;
 		
 		// Get number of the equipment in settlement storage.
@@ -1312,7 +1291,7 @@ public class GoodsManager implements Serializable {
 	 * @throws Exception if error determining vehicle value.
 	 */
 	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) 
-            throws Exception {
+{
 		double value = 0D;
 		
 		String vehicleType = vehicleGood.getName();
@@ -1379,7 +1358,7 @@ public class GoodsManager implements Serializable {
 		return value;
 	}
 	
-	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) throws Exception {
+	private double determineTradeVehicleValue(Good vehicleGood, boolean useCache) {
 	    double tradeDemand = determineTradeDemand(vehicleGood, useCache);
 	    double supply = getNumberOfVehiclesForSettlement(vehicleGood.getName());
 	    return tradeDemand / (supply + 1D);
@@ -1390,7 +1369,7 @@ public class GoodsManager implements Serializable {
 	 * @param buy true if vehicles can be bought.
 	 * @return value (VP)
 	 */
-	private double determineLUVValue(boolean buy) throws Exception {
+	private double determineLUVValue(boolean buy) {
 	    
 	    double demand = 0D;
 	    
@@ -1408,7 +1387,7 @@ public class GoodsManager implements Serializable {
 	}
 	
 	private double determineMissionVehicleValue(String missionType, String vehicleType, boolean buy) 
-            throws Exception {
+{
 		
 		double demand = determineMissionVehicleDemand(missionType);
 		
@@ -1428,7 +1407,7 @@ public class GoodsManager implements Serializable {
         return baseValue;
 	}
 	
-	private double determineMissionVehicleDemand(String missionType) throws Exception {
+	private double determineMissionVehicleDemand(String missionType) {
 		double demand = 0D;
 		
 		if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
@@ -1463,7 +1442,7 @@ public class GoodsManager implements Serializable {
 		return demand;
 	}
 	
-	private double determineMissionVehicleCapacity(String missionType, String vehicleType) throws Exception {
+	private double determineMissionVehicleCapacity(String missionType, String vehicleType) {
 		double capacity = 0D;
 		
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
@@ -1546,7 +1525,7 @@ public class GoodsManager implements Serializable {
 	 * @return range (km)
 	 * @throws Exception if error determining range.
 	 */
-	private double getVehicleRange(String vehicleType) throws Exception {
+	private double getVehicleRange(String vehicleType) {
 		double range = 0D;
 		
 		VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
@@ -1590,7 +1569,7 @@ public class GoodsManager implements Serializable {
 	 * @return the number of vehicles.
 	 * @throws InventoryException if error getting the amount.
 	 */
-	private double getNumberOfVehiclesForSettlement(String vehicleType) throws InventoryException {
+	private double getNumberOfVehiclesForSettlement(String vehicleType) {
 		double number = 0D;
 		
 		Iterator<Vehicle> i = settlement.getAllAssociatedVehicles().iterator();
@@ -1609,9 +1588,9 @@ public class GoodsManager implements Serializable {
 	 * @return the trade demand.
 	 * @throws Exception if error determining trade demand.
 	 */
-	private double determineTradeDemand(Good good, boolean useTradeCache) throws Exception {
+	private double determineTradeDemand(Good good, boolean useTradeCache) {
 		if (useTradeCache) {
-			if (goodsTradeCache.containsKey(good)) return goodsTradeCache.get(good).doubleValue();
+			if (goodsTradeCache.containsKey(good)) return goodsTradeCache.get(good);
 			else throw new IllegalArgumentException("good: " + good + " not valid.");
 		}
 		else {
@@ -1627,7 +1606,7 @@ public class GoodsManager implements Serializable {
 					if (tradeValue > bestTradeValue) bestTradeValue = tradeValue;
 				}
 			}
-			goodsTradeCache.put(good, new Double(bestTradeValue));
+			goodsTradeCache.put(good, bestTradeValue);
 			return bestTradeValue;
 		}
 	}

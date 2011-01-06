@@ -6,21 +6,25 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.events.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * Resupply mission from Earth for a settlement.
@@ -45,7 +49,7 @@ public class Resupply implements Serializable {
 	 * @param resupplyName the name of the resupply mission.
 	 * @param settlement the settlement receiving the supplies.
 	 */
-	Resupply(MarsClock arrivalDate, String resupplyName, Settlement settlement) throws Exception {
+	Resupply(MarsClock arrivalDate, String resupplyName, Settlement settlement) {
 		
 		// Initialize data members.
 		this.arrivalDate = arrivalDate;
@@ -103,7 +107,7 @@ public class Resupply implements Serializable {
 	 * Delivers supplies to the settlement.
 	 * @throws Exception if problem delivering supplies.
 	 */
-	void deliverSupplies() throws Exception {
+	void deliverSupplies() {
 		
 		// Deliver buildings.
 		BuildingManager buildingManager = settlement.getBuildingManager();
@@ -166,7 +170,7 @@ public class Resupply implements Serializable {
 		}
 		
 		// Send resupply delivery event.
-		HistoricalEvent newEvent = new ResupplyEvent(settlement, getResupplyName());
+		HistoricalEvent newEvent = new ResupplyEvent(settlement, resupplyName);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);		
 		
 		// Set isDelivered to true;

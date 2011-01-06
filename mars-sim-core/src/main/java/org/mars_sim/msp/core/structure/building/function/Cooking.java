@@ -6,19 +6,25 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.task.*;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The Cooking class is a building function for cooking meals.
@@ -46,7 +52,7 @@ public class Cooking extends Function implements Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
-	public Cooking(Building building) throws BuildingException {
+	public Cooking(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
@@ -55,12 +61,12 @@ public class Cooking extends Function implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			this.cookCapacity = config.getCookCapacity(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("Cooking.constructor: " + e.getMessage());
-		}		
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Cooking.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -71,8 +77,8 @@ public class Cooking extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is 1 cooking capacity for every five inhabitants.
         double demand = settlement.getAllAssociatedPeople().size() / 5D;
@@ -88,7 +94,7 @@ public class Cooking extends Function implements Serializable {
             else {
                 Cooking cookingFunction = (Cooking) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += cookingFunction.getCookCapacity() * wearModifier;
+                supply += cookingFunction.cookCapacity * wearModifier;
             }
         }
         
@@ -220,24 +226,24 @@ public class Cooking extends Function implements Serializable {
 	 * The amount of work is dependent upon the person's cooking skill.
 	 * @param workTime work time (millisols)
 	 */
-	public void addWork(double workTime) throws BuildingException {
+	public void addWork(double workTime) {
 		cookingWorkTime += workTime;
 		while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
 			int mealQuality = getBestCookSkill();
 			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 			
-			try {
+//			try {
 				PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
 				AmountResource food = AmountResource.findAmountResource("food");
 				getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
-			}
-			catch (InventoryException e) {
-				throw new BuildingException("Not enough food in settlement to cook.");
-			}
-			catch (Exception e) {
-				throw new BuildingException("Error getting configuration data.");
-			}
+//			}
+//			catch (InventoryException e) {
+//				throw new BuildingException("Not enough food in settlement to cook.");
+//			}
+//			catch (Exception e) {
+//				throw new BuildingException("Error getting configuration data.");
+//			}
 			
 			meals.add(new CookedMeal(mealQuality, time));
 			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
@@ -254,7 +260,7 @@ public class Cooking extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 		
 		// Move expired meals back to food again (refrigerate leftovers).
 		Iterator<CookedMeal> i = meals.iterator();

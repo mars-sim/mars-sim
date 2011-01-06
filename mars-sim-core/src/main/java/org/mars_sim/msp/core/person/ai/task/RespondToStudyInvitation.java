@@ -6,13 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -25,6 +18,13 @@ import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A task for responding to an invitation to collaborate on a scientific study.
@@ -50,7 +50,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public RespondToStudyInvitation(Person person) throws Exception {
+    public RespondToStudyInvitation(Person person) {
         super("Responding to a Study Invitation", person, false, true, 
                 STRESS_MODIFIER, true, DURATION);
         
@@ -90,7 +90,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
      * @return the remaining time (millisols) after performing the phase.
      * @throws Exception if error performing phase.
      */
-    private double respondingToInvitationPhase(double time) throws Exception {
+    private double respondingToInvitationPhase(double time) {
         
         if (isDone()) return time;
         
@@ -231,7 +231,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (RESPONDING_INVITATION.equals(getPhase())) return respondingToInvitationPhase(time);
         else return time;

@@ -6,16 +6,12 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.Part;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 
@@ -66,7 +62,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if error retrieving vehicle types.
 	 */
     @SuppressWarnings("unchecked")
-	public Set<String> getVehicleTypes() throws Exception {
+	public Set<String> getVehicleTypes() {
 		Element root = vehicleDoc.getRootElement();
 		List<Element> vehicleNodes = root.getChildren(VEHICLE);
 		Set<String> types = new HashSet<String>(vehicleNodes.size());
@@ -83,7 +79,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	private Element getVehicleElement(String vehicleType) throws Exception {
+	private Element getVehicleElement(String vehicleType) {
 		Element result = null;
 		
 		Element root = vehicleDoc.getRootElement();
@@ -95,7 +91,7 @@ public class VehicleConfig implements Serializable {
 				result = vehicleElement;
 		}
 		
-		if (result == null) throw new Exception("Vehicle type: " + vehicleType + 
+		if (result == null) throw new IllegalStateException("Vehicle type: " + vehicleType +
 			" could not be found in vehicles.xml.");
 		
 		return result;
@@ -107,7 +103,7 @@ public class VehicleConfig implements Serializable {
 	 * @return fuel efficiency in km/kg.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getFuelEfficiency(String vehicleType) throws Exception {
+	public double getFuelEfficiency(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		Element fuelEfficiencyElement = vehicleElement.getChild(FUEL_EFFICIENCY);
 		return Double.parseDouble(fuelEfficiencyElement.getAttributeValue(VALUE));
@@ -119,7 +115,7 @@ public class VehicleConfig implements Serializable {
 	 * @return base speed in km/hr.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getBaseSpeed(String vehicleType) throws Exception {
+	public double getBaseSpeed(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		Element baseSpeedElement = vehicleElement.getChild(BASE_SPEED);
 		return Double.parseDouble(baseSpeedElement.getAttributeValue(VALUE));
@@ -131,7 +127,7 @@ public class VehicleConfig implements Serializable {
 	 * @return empty mass in kg.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getEmptyMass(String vehicleType) throws Exception {
+	public double getEmptyMass(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		Element emptyMassElement = vehicleElement.getChild(EMPTY_MASS);
 		return Double.parseDouble(emptyMassElement.getAttributeValue(VALUE));
@@ -143,9 +139,9 @@ public class VehicleConfig implements Serializable {
 	 * @return crew size
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getCrewSize(String vehicleType) throws Exception {
+	public int getCrewSize(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
-		Element crewSizeElement = (Element) vehicleElement.getChild(CREW_SIZE);
+		Element crewSizeElement = vehicleElement.getChild(CREW_SIZE);
 		return Integer.parseInt(crewSizeElement.getAttributeValue(VALUE));
 	}
 	
@@ -155,7 +151,7 @@ public class VehicleConfig implements Serializable {
 	 * @return total cargo capacity
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public double getTotalCapacity(String vehicleType) throws Exception {
+	public double getTotalCapacity(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		Element cargoElement = vehicleElement.getChild(CARGO);
 		return Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
@@ -169,7 +165,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public double getCargoCapacity(String vehicleType, String resource) throws Exception {
+	public double getCargoCapacity(String vehicleType, String resource) {
 		
 		double resourceCapacity = 0D;
 		
@@ -191,7 +187,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public boolean hasSickbay(String vehicleType) throws Exception {
+	public boolean hasSickbay(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> sickbayNodes = vehicleElement.getChildren(SICKBAY);
 		return (sickbayNodes.size() > 0);
@@ -203,7 +199,7 @@ public class VehicleConfig implements Serializable {
 	 * @return tech level or -1 if no sickbay.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getSickbayTechLevel(String vehicleType) throws Exception {
+	public int getSickbayTechLevel(String vehicleType) {
 		int sickbayTechLevel = -1;	
 		Element vehicleElement = getVehicleElement(vehicleType);
 	    Element sickbayElement = vehicleElement.getChild(SICKBAY);
@@ -220,7 +216,7 @@ public class VehicleConfig implements Serializable {
 	 * @return number of sickbay beds or -1 if no sickbay.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getSickbayBeds(String vehicleType) throws Exception {
+	public int getSickbayBeds(String vehicleType) {
 		int sickbayBeds = -1;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
@@ -239,7 +235,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public boolean hasLab(String vehicleType) throws Exception {	
+	public boolean hasLab(String vehicleType) {	
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> labNodes = vehicleElement.getChildren(LAB);
 		return (labNodes.size() > 0);
@@ -251,7 +247,7 @@ public class VehicleConfig implements Serializable {
 	 * @return lab tech level or -1 if no lab.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getLabTechLevel(String vehicleType) throws Exception {
+	public int getLabTechLevel(String vehicleType) {
 		int labTechLevel = -1;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
@@ -271,7 +267,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<String> getLabTechSpecialities(String vehicleType) throws Exception {
+	public List<String> getLabTechSpecialities(String vehicleType) {
 		List<String> specialities = new ArrayList<String>();
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
@@ -296,7 +292,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public boolean hasPartAttachments(String vehicleType) throws Exception {
+	public boolean hasPartAttachments(String vehicleType) {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		List<Element> partAttachmentNodes = vehicleElement.getChildren(PART_ATTACHMENT);
 		return (partAttachmentNodes.size() > 0);
@@ -308,7 +304,7 @@ public class VehicleConfig implements Serializable {
 	 * @return number of part attachment slots.
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-	public int getPartAttachmentSlotNumber(String vehicleType) throws Exception {
+	public int getPartAttachmentSlotNumber(String vehicleType) {
 		int result = 0;
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
@@ -327,7 +323,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public Collection<Part> getAttachableParts(String vehicleType) throws Exception {
+	public Collection<Part> getAttachableParts(String vehicleType) {
 		Collection<Part> result = new ArrayList<Part>();
 		
 		Element vehicleElement = getVehicleElement(vehicleType);
@@ -354,7 +350,7 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<String> getRoverNameList() throws Exception {
+	public List<String> getRoverNameList() {
 		
 		if (roverNames == null) {
 			roverNames = new ArrayList<String>();

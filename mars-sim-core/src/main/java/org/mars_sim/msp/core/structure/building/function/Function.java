@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
+import org.mars_sim.msp.core.structure.building.Building;
 
-import org.mars_sim.msp.core.structure.building.*;
+import java.io.Serializable;
 
 /**
  * A settlement building function.
@@ -48,7 +48,7 @@ public abstract class Function implements Serializable {
      * @return array of scope strings.
      */
     public String[] getMalfunctionScopeStrings() {
-        String[] result = { getName() };
+        String[] result = {name};
         return result;
     }
 	
@@ -57,7 +57,7 @@ public abstract class Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public abstract void timePassing(double time) throws BuildingException;
+	public abstract void timePassing(double time) ;
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

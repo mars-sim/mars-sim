@@ -6,15 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -32,6 +24,13 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
@@ -59,7 +58,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @param person the person to perform the task.
      * @throws Exception if error constructing task.
      */
-    public UnloadVehicle(Person person) throws Exception {
+    public UnloadVehicle(Person person) {
     	// Use Task constructor.
     	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
@@ -85,7 +84,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @param vehicle the vehicle to be unloaded
      * @throws Exception if error constructing task.
      */
-    public UnloadVehicle(Person person, Vehicle vehicle) throws Exception {
+    public UnloadVehicle(Person person, Vehicle vehicle) {
     	// Use Task constructor.
         super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
@@ -148,17 +147,17 @@ public class UnloadVehicle extends Task implements Serializable {
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
-    			try {
+//    			try {
     				if (!vehicle.isReserved()) {
                         if (vehicle.getInventory().getTotalInventoryMass() > 0D) needsUnloading = true;
                         if (vehicle instanceof Towing) {
                             if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
                         }
                     }
-    			}
-    			catch(InventoryException e) {
-    				e.printStackTrace(System.err);
-    			}
+//    			}
+//    			catch(InventoryException e) {
+//    				e.printStackTrace(System.err);
+//    			}
                 if (needsUnloading) result = vehicle;
     		}
     	}
@@ -172,7 +171,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return list of vehicle missions.
      * @throws Exception if error finding missions.
      */
-    private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) throws Exception {
+    private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
     	
     	List<Mission> result = new ArrayList<Mission>();
     	
@@ -201,7 +200,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return vehicle mission.
      * @throws Exception if error finding vehicle mission.
      */
-    private VehicleMission getMissionNeedingUnloading() throws Exception {
+    private VehicleMission getMissionNeedingUnloading() {
     	
     	VehicleMission result = null;
     	
@@ -221,7 +220,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (UNLOADING.equals(getPhase())) return unloadingPhase(time);
     	else return time;
@@ -233,7 +232,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return the amount of time (millisol) after performing the phase.
      * @throws Exception if error in loading phase.
      */
-    protected double unloadingPhase(double time) throws Exception {
+    protected double unloadingPhase(double time) {
     	
         // Determine unload rate.
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
@@ -318,7 +317,7 @@ public class UnloadVehicle extends Task implements Serializable {
         return 0D;
     }
     
-    private void unloadEquipmentInventory(Equipment equipment) throws InventoryException {
+    private void unloadEquipmentInventory(Equipment equipment) {
     	Inventory eInv = equipment.getInventory();
     	Inventory sInv = settlement.getInventory();
     	
@@ -352,7 +351,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @return is vehicle fully unloaded?
      * @throws InventoryException if error checking vehicle.
      */
-    static public boolean isFullyUnloaded(Vehicle vehicle) throws InventoryException {
+    static public boolean isFullyUnloaded(Vehicle vehicle) {
         return (vehicle.getInventory().getTotalInventoryMass() == 0D);
     }
     

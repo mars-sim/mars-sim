@@ -7,15 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.GridLayout;
-import java.text.DecimalFormat;
-
-import javax.swing.JLabel;
-
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
+import java.text.DecimalFormat;
 
 
 /**
@@ -47,8 +45,7 @@ public class PowerBuildingPanel extends BuildingFunctionPanel {
         super(building, desktop);
         
         // Check if the building is a power producer.
-        if (building.hasFunction(PowerGeneration.NAME)) isProducer = true;
-        else isProducer = false;
+        isProducer = building.hasFunction(PowerGeneration.NAME);
         
         // Set the layout
         if (isProducer) setLayout(new GridLayout(3, 1, 0, 0));
@@ -61,14 +58,14 @@ public class PowerBuildingPanel extends BuildingFunctionPanel {
         
         // If power producer, prepare power producer label.
         if (isProducer) {
-        	try {
+//        	try {
         		PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
             	productionCache = generator.getGeneratedPower();
             	productionLabel = new JLabel("Power Produced: " + formatter.format(productionCache) + " kW.",
                 	JLabel.CENTER);
             	add(productionLabel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         // Prepare power used label.
@@ -94,14 +91,14 @@ public class PowerBuildingPanel extends BuildingFunctionPanel {
         
         // Update power production if necessary.
         if (isProducer) {
-        	try {
+//        	try {
         		PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
             	if (productionCache != generator.getGeneratedPower()) {
                 	productionCache = generator.getGeneratedPower();
                 	productionLabel.setText("Power Produced: " + formatter.format(productionCache) + " kW.");
             	}
-            }
-            catch (BuildingException e) {}
+//            }
+//            catch (BuildingException e) {}
         }
         
         // Update power used if necessary.

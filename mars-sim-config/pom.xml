@@ -9,7 +9,7 @@
   <groupId>net.sf.mars-sim</groupId>
   <artifactId>mars-sim-config</artifactId>
   <version>3.00-SNAPSHOT</version>
-  <name>mars-sim-core</name>
+  <name>mars-sim-config</name>
   <build>
   	<plugins>
   		<plugin>

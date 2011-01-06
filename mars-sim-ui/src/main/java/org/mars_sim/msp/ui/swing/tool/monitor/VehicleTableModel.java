@@ -7,39 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.SwingUtilities;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
-import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import javax.swing.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -168,32 +149,32 @@ public class VehicleTableModel extends UnitTableModel {
             
             		case CREW : {
             			if (vehicle instanceof Crewable)
-            				result = new Integer(((Crewable) vehicle).getCrewNum());
-            			else result = new Integer(0);
+            				result = ((Crewable) vehicle).getCrewNum();
+            			else result = 0;
             		} break;
 
             		case WATER : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("water"));
+            			result = resourceMap.get(AmountResource.findAmountResource("water"));
             		} break;
 
             		case FOOD : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("food"));
+            			result = resourceMap.get(AmountResource.findAmountResource("food"));
             		} break;
 
             		case OXYGEN : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("oxygen"));
+            			result = resourceMap.get(AmountResource.findAmountResource("oxygen"));
             		} break;
 
             		case METHANE : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("methane"));
+            			result = resourceMap.get(AmountResource.findAmountResource("methane"));
             		} break;
 
             		case ROCK_SAMPLES : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("rock samples"));
+            			result = resourceMap.get(AmountResource.findAmountResource("rock samples"));
             		} break;
 
             		case SPEED : {
-            			result = new Integer(new Float(vehicle.getSpeed()).intValue());
+            			result = new Float(vehicle.getSpeed()).intValue();
             		} break;
 
             		case DRIVER : {
@@ -253,7 +234,7 @@ public class VehicleTableModel extends UnitTableModel {
             				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
             			if (mission != null) {
             				try {
-            					result = new Integer(new Float(mission.getCurrentLegRemainingDistance()).intValue());
+            					result = new Float(mission.getCurrentLegRemainingDistance()).intValue();
             				}
             				catch (Exception e) {
             					logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
@@ -273,7 +254,7 @@ public class VehicleTableModel extends UnitTableModel {
             		} break;
             
             		case ICE : {
-            			result = (Integer) resourceMap.get(AmountResource.findAmountResource("ice"));
+            			result = resourceMap.get(AmountResource.findAmountResource("ice"));
             		} break;
         		}
         	}
@@ -327,12 +308,12 @@ public class VehicleTableModel extends UnitTableModel {
 				
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
-					int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
-					int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
+					int newValue = getResourceStored(unit, (AmountResource) target);
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
-						resourceMap.put((AmountResource) target, new Integer(newValue));
+						resourceMap.put((AmountResource) target, newValue);
 					}
 				}
 			}
@@ -406,13 +387,13 @@ public class VehicleTableModel extends UnitTableModel {
      */
     private Integer getResourceStored(Unit unit, AmountResource resource) {
     	Integer result = null;	
-    	try {
+//    	try {
     		Inventory inv = unit.getInventory();
-    		result = new Integer((int) inv.getAmountResourceStored(resource));
-    	}
-    	catch (InventoryException e) {
-    		e.printStackTrace(System.err);
-    	}
+    		result = (int) inv.getAmountResourceStored(resource);
+//    	}
+//    	catch (InventoryException e) {
+//    		e.printStackTrace(System.err);
+//    	}
     	return result;
     }
 	

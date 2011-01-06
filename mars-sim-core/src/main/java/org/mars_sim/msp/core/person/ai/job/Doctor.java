@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -23,9 +17,13 @@ import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.structure.building.function.Research;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Doctor class represents a job for an medical treatment expert.
@@ -95,14 +93,14 @@ public class Doctor extends Job implements Serializable {
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			try {
+//			try {
 				Research lab = (Research) building.getFunction(Research.NAME);
 				if (lab.hasSpeciality(Skill.MEDICAL)) 
 					result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
-			}
-			catch (BuildingException e) {
-			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
-			}
+//			}
+//			catch (BuildingException e) {
+//			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
+//			}
 		}		
 		
 		// Add (tech level / 2) for all medical infirmaries.
@@ -110,13 +108,13 @@ public class Doctor extends Job implements Serializable {
 		Iterator<Building> j = medicalBuildings.iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
-			try {
+//			try {
 				MedicalCare infirmary = (MedicalCare) building.getFunction(MedicalCare.NAME);
 				result+= (double) infirmary.getTechLevel() / 2D;
-			}
-			catch (BuildingException e) {
-			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
-			}
+//			}
+//			catch (BuildingException e) {
+//			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
+//			}
 		}			
 		
 		return result;	

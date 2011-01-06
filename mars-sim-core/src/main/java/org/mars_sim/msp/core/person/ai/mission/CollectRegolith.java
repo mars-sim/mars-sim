@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
@@ -19,6 +14,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Exploration class is a mission to travel in a rover to several
@@ -53,7 +53,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectRegolith (Person startingPerson) throws MissionException {
+	public CollectRegolith (Person startingPerson) {
 		
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, 
@@ -74,7 +74,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      */
     public CollectRegolith (Collection<Person> members, Settlement startingSettlement, 
     		List<Coordinates> regolithCollectionSites, Rover rover, String description) 
-    		throws MissionException {
+{
     	
        	// Use CollectResourcesMission constructor.
     	super(description, members, startingSettlement, getRegolithResource(), 
@@ -127,12 +127,12 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @return regolith resource.
      * @throws MissionException if error getting regolith resource.
      */
-    private static AmountResource getRegolithResource() throws MissionException {
-    	try {
+    private static AmountResource getRegolithResource() {
+//    	try {
     		return AmountResource.findAmountResource("regolith");
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(null, e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(null, e);
+//    	}
     }
 }

@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -21,8 +15,12 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Research;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Meteorologist class represents a job for a meteorologist.
@@ -76,14 +74,14 @@ public class Meteorologist extends Job implements Serializable {
         Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            try {
+//            try {
                 Research lab = (Research) building.getFunction(Research.NAME);
                 if (lab.hasSpeciality(Skill.METEOROLOGY)) 
                     result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-            }
-            catch (BuildingException e) {
-                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-            }
+//            }
+//            catch (BuildingException e) {
+//                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
+//            }
         }
 
         result *= 5D;

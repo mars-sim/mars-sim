@@ -7,21 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
@@ -35,6 +21,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
@@ -82,7 +75,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param minPeople the minimum number of mission members allowed
      * @throws MissionException if error constructing mission.
      */
-	protected VehicleMission(String name, Person startingPerson, int minPeople) throws MissionException {
+	protected VehicleMission(String name, Person startingPerson, int minPeople) {
 		// Use TravelMission constructor.
 		super(name, startingPerson, minPeople);
 		
@@ -104,7 +97,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws MissionException if error constructing mission.
      */
 	protected VehicleMission(String name, Person startingPerson, int minPeople, 
-			Vehicle vehicle) throws MissionException {
+			Vehicle vehicle) {
 		// Use TravelMission constructor.
 		super(name, startingPerson, minPeople);
 		
@@ -130,10 +123,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @param newVehicle the vehicle to use.
 	 * @throws MissionException if vehicle cannot be used.
 	 */
-	protected void setVehicle(Vehicle newVehicle) throws MissionException {
+	protected void setVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			boolean usable = false;
-			try {
+//			try {
 				usable = isUsableVehicle(newVehicle);
 				if (usable) {
 					vehicle = newVehicle;
@@ -142,11 +135,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 					vehicle.addUnitListener(this);
 					fireMissionUpdate(VEHICLE_EVENT);
 				}
-			}
-			catch (Exception e) {
-				throw new MissionException(getPhase(), "Problem determining if vehicle is usable.");
-			}
-			if (!usable) throw new MissionException(getPhase(), "newVehicle is not usable for this mission.");
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), "Problem determining if vehicle is usable.");
+//			}
+			if (!usable) throw new IllegalStateException(getPhase() + " : newVehicle is not usable for this mission.");
 		}
 		else throw new IllegalArgumentException("newVehicle is null.");
 	}
@@ -179,17 +172,17 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws IllegalArgumentException if newVehicle is null.
 	 * @throws MissionException if problem checking vehicle is loadable.
 	 */
-	protected boolean isUsableVehicle(Vehicle newVehicle) throws MissionException {
+	protected boolean isUsableVehicle(Vehicle newVehicle) {
 		if (newVehicle != null) {
 			boolean usable = true;
 			if (newVehicle.isReserved()) usable = false;
 			if (!newVehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-			try {
+//			try {
 				if (newVehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
-			}
-			catch (InventoryException e) {
-				throw new MissionException(getPhase(), e);
-			}
+//			}
+//			catch (InventoryException e) {
+//				throw new MissionException(getPhase(), e);
+//			}
 			return usable;
 		}
 		else throw new IllegalArgumentException("isUsableVehicle: newVehicle is null.");
@@ -205,7 +198,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * and 1 if the first vehicle is better than the second vehicle.
 	 * @throws MissionException if error determining vehicle range.
 	 */
-	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) throws MissionException {
+	protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
 		if (isUsableVehicle(firstVehicle)) {
 			if (isUsableVehicle(secondVehicle)) return 0;
 			else return 1;
@@ -222,7 +215,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return true if vehicle is reserved, false if unable to.
 	 * @throws MissionException if error reserving vehicle.
 	 */
-	protected final boolean reserveVehicle(Person person) throws MissionException {
+	protected final boolean reserveVehicle(Person person) {
 		
 		Collection<Vehicle> bestVehicles = new ConcurrentLinkedQueue<Vehicle>();
 		
@@ -259,7 +252,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return list of available vehicles.
 	 * @throws MissionException if problem determining if vehicles are usable.
 	 */
-	private final Collection<Vehicle> getAvailableVehicles(Settlement settlement) throws MissionException {
+	private Collection<Vehicle> getAvailableVehicles(Settlement settlement) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
 		
 		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -279,7 +272,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 		
 		// Set emergency beacon if vehicle is not at settlement.
 		if (hasVehicle()) {
-			if (getVehicle().getSettlement() == null) setEmergencyBeacon(null, getVehicle(), true);
+			if (vehicle.getSettlement() == null) setEmergencyBeacon(null, vehicle, true);
 		}
 		
 		leaveVehicle();
@@ -291,13 +284,13 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return true if rover is loaded.
      * @throws MissionException if error checking vehicle.
      */
-    public final boolean isVehicleLoaded() throws MissionException {
-    	if (getVehicle() == null) throw new MissionException(getPhase(), "vehicle is null");
+    public final boolean isVehicleLoaded()  {
+    	if (vehicle == null) throw new IllegalStateException(getPhase()+ " : vehicle is null");
     	try {
-    		return LoadVehicle.isFullyLoaded(getResourcesToLoad(), getEquipmentToLoad(), getVehicle());
+    		return LoadVehicle.isFullyLoaded(getResourcesToLoad(), getEquipmentToLoad(), vehicle);
     	}
     	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
+    		throw new IllegalStateException(getPhase(), e);
     	}
     }
     
@@ -306,15 +299,15 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return true if vehicle is loadable.
      * @throws Exception if error checking vehicle.
      */
-    public final boolean isVehicleLoadable() throws MissionException {
+    public final boolean isVehicleLoadable()  {
     	
     	Map<Resource, Number> resources = getResourcesToLoad();
     	Map<Class, Integer> equipment = getEquipmentToLoad();
-    	Vehicle vehicle = getVehicle();
+    	Vehicle vehicle = this.vehicle;
     	Settlement settlement = vehicle.getSettlement();
     	double tripTime = getEstimatedRemainingMissionTime(true);
     	
-    	try {
+//    	try {
     		boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, 
     				vehicle, settlement);
     		boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle, 
@@ -327,10 +320,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
         	}
         	
         	return vehicleCapacity && settlementSupplies;
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     }
     
     /**
@@ -354,7 +347,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * Determines a new phase for the mission when the current phase has ended.
      * @throws MissionException if problem setting a new phase.
      */
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase()  {
     	if (EMBARKING.equals(getPhase())) {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
@@ -374,7 +367,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param person the person performing the phase.
      * @throws MissionException if problem performing the phase.
      */
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
         super.performPhase(person);
     	if (EMBARKING.equals(getPhase())) performEmbarkFromSettlementPhase(person);
 		else if (TRAVELLING.equals(getPhase())) performTravelPhase(person);
@@ -387,28 +380,28 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param person the person currently performing the mission.
      * @throws MissionException if error performing phase.
      */
-    protected final void performTravelPhase(Person person) throws MissionException {
+    protected final void performTravelPhase(Person person) {
     	
     	NavPoint destination = getNextNavpoint();
     	
     	// If vehicle has not reached destination and isn't broken down, travel to destination.
-    	boolean reachedDestination = getVehicle().getCoordinates().equals(destination.getLocation());
-    	boolean malfunction = getVehicle().getMalfunctionManager().hasMalfunction();
+    	boolean reachedDestination = vehicle.getCoordinates().equals(destination.getLocation());
+    	boolean malfunction = vehicle.getMalfunctionManager().hasMalfunction();
     	if (!reachedDestination && !malfunction) {
     		// Don't operate vehicle if person was the last operator.
     		if (person != lastOperator) {
     			// If vehicle doesn't currently have an operator, set this person as the operator.
-    			if (getVehicle().getOperator() == null) {
-    				try {
+    			if (vehicle.getOperator() == null) {
+//    				try {
     					if (operateVehicleTask != null) 
     						operateVehicleTask = getOperateVehicleTask(person, operateVehicleTask.getTopPhase());
     					else operateVehicleTask = getOperateVehicleTask(person, null); 
     					assignTask(person, operateVehicleTask);
     					lastOperator = person;
-    				}
-    				catch (Exception e) {
-    					throw new MissionException(getPhase(), e);
-    				}
+//    				}
+//    				catch (Exception e) {
+//    					throw new MissionException(getPhase(), e);
+//    				}
     			}
     			else {
     				// If emergency, make sure current operate vehicle task is pointed home.
@@ -423,16 +416,16 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	
     	// If the destination has been reached, end the phase.
     	if (reachedDestination) {
-    		try {
+//    		try {
     			reachedNextNode();
     			setPhaseEnded(true);
-    		}
-    		catch (Exception e) {
-    			throw new MissionException(getPhase(), e);
-    		}
+//    		}
+//    		catch (Exception e) {
+//    			throw new MissionException(getPhase(), e);
+//    		}
     	}
     	
-    	try {
+//    	try {
     		// Check if enough resources for remaining trip 
     		// or if there is an emergency medical problem.
     		if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
@@ -442,10 +435,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     		
     		// If vehicle has unrepairable malfunction, end mission.
     		if (hasUnrepairableMalfunction()) endMission("unrepairable malfunction");
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(getPhase(), e.getMessage());
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(getPhase(), e.getMessage());
+//    	}
     }
     
     /**
@@ -455,14 +448,14 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws MissionException if error creating OperateVehicle task.
      */
     protected abstract OperateVehicle getOperateVehicleTask(Person person, 
-    		String lastOperateVehicleTaskPhase) throws MissionException;
+    		String lastOperateVehicleTaskPhase) ;
 	
     /** 
      * Performs the embark from settlement phase of the mission.
      * @param person the person currently performing the mission.
      * @throws MissionException if error performing phase.
      */ 
-    protected abstract void performEmbarkFromSettlementPhase(Person person) throws MissionException;
+    protected abstract void performEmbarkFromSettlementPhase(Person person) ;
     
     /**
      * Performs the disembark to settlement phase of the mission.
@@ -471,7 +464,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws MissionException if error performing phase.
      */
     protected abstract void performDisembarkToSettlementPhase(Person person, 
-    		Settlement disembarkSettlement) throws MissionException;
+    		Settlement disembarkSettlement) ;
     
     /**
      * Gets the estimated time of arrival (ETA) for the current leg of the mission.
@@ -490,7 +483,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return time (millisols)
      * @throws MissionException
      */
-    public final double getEstimatedTripTime(boolean useBuffer, double distance) throws MissionException {
+    public final double getEstimatedTripTime(boolean useBuffer, double distance) {
     	
     	// Determine average driving speed for all mission members.
     	double averageSpeed = getAverageVehicleSpeedForOperators();
@@ -511,7 +504,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return time (millisols)
      * @throws MissionException
      */
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) {
     	return getEstimatedTripTime(useBuffer, getTotalRemainingDistance());
     }
     
@@ -533,7 +526,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param person the vehicle operator.
      * @return average speed (km/h)
      */
-    private final double getAverageVehicleSpeedForOperator(Person person) {
+    private double getAverageVehicleSpeedForOperator(Person person) {
     	return OperateVehicle.getAverageVehicleSpeed(vehicle, person);
     }
     
@@ -545,7 +538,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @throws MissionException if error determining needed resources.
 	 */
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) throws MissionException {
+    		boolean parts) {
     	return getResourcesNeededForTrip(useBuffer, parts, getTotalRemainingDistance());
     }
     
@@ -558,11 +551,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @throws MissionException if error determining needed resources.
      */
     public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, 
-    		double distance) throws MissionException {
+    		double distance) {
     	Map<Resource, Number> result = new HashMap<Resource, Number>();
     	if (vehicle != null) {
-    		result.put(vehicle.getFuelType(), new Double(getFuelNeededForTrip(distance, 
-    				vehicle.getFuelEfficiency(), useBuffer)));
+    		result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
+                    vehicle.getFuelEfficiency(), useBuffer));
     		if (parts) result.putAll(getPartsNeededForTrip(distance));
     	}
     	return result;
@@ -574,7 +567,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return map of part resources and their number.
      * @throws MissionException if error determining parts.
      */
-    protected Map<Resource, Number> getPartsNeededForTrip(double distance) throws MissionException {
+    protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
     	Map<Resource, Number> result = new HashMap<Resource, Number>();
     	
     	// Determine vehicle parts.
@@ -584,7 +577,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     		// Average number malfunctions per accident is two.
     		double numberMalfunctions = numberAccidents * 2D; 
     		
-    		try {
+//    		try {
     			Map<Part, Double> parts = vehicle.getMalfunctionManager().getRepairPartProbabilities();
     			Iterator<Part> i = parts.keySet().iterator();
     			while (i.hasNext()) {
@@ -592,10 +585,10 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     				int number = (int) Math.round(parts.get(part) * numberMalfunctions * PARTS_NUMBER_MODIFIER);
     				if (number > 0) result.put(part, number);
     			}
-    		}
-    		catch (Exception e) {
-    			throw new MissionException(getPhase(), e);
-    		}
+//    		}
+//    		catch (Exception e) {
+//    			throw new MissionException(getPhase(), e);
+//    		}
     	}
 
     	return result;
@@ -607,7 +600,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return true if enough resources.
      * @throws MissionException if error checking resources.
      */
-    protected final boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) throws MissionException {
+    protected final boolean hasEnoughResourcesForRemainingMission(boolean useBuffers) {
     	return hasEnoughResources(getResourcesNeededForRemainingMission(useBuffers, false));
     }
     
@@ -617,7 +610,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return true if enough resources.
      * @throws MissionException if error checking resources.
      */
-    private final boolean hasEnoughResources(Map neededResources) throws MissionException {
+    private boolean hasEnoughResources(Map neededResources) {
     	boolean result = true;
     	
         Inventory inv = vehicle.getInventory();
@@ -625,21 +618,21 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
         Iterator iR = neededResources.keySet().iterator();
         while (iR.hasNext() && result) {
         	Resource resource = (Resource) iR.next();
-        	try {
+//        	try {
         		if (resource instanceof AmountResource) {
-        			double amount = ((Double) neededResources.get(resource)).doubleValue();
+        			double amount = (Double) neededResources.get(resource);
         			double amountStored = inv.getAmountResourceStored((AmountResource) resource);
         			if (amountStored < amount) result = false;
         		}
         		else if (resource instanceof ItemResource) {
-        			int num = ((Integer) neededResources.get(resource)).intValue();
+        			int num = (Integer) neededResources.get(resource);
         			if (inv.getItemResourceNum((ItemResource) resource) < num) result = false;
         		}
-        		else throw new MissionException(getPhase(), "Unknown resource type: " + resource);
-        	}
-        	catch (InventoryException e) {
-        		throw new MissionException(getPhase(), e);
-        	}
+        		else throw new IllegalStateException(getPhase() + " : Unknown resource type: " + resource);
+//        	}
+//        	catch (InventoryException e) {
+//        		throw new MissionException(getPhase(), e);
+//        	}
         }
         
         return result;
@@ -651,7 +644,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param person the person performing the mission.
      * @throws MissionException if error determining an emergency destination.
      */
-    protected final void determineEmergencyDestination(Person person) throws MissionException {
+    protected final void determineEmergencyDestination(Person person) {
     	
     	// Determine closest settlement.
     	Settlement newDestination = findClosestSettlement();
@@ -715,7 +708,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @return settlement
      * @throws MissionException if error finding closest settlement.
      */
-    public final Settlement findClosestSettlement() throws MissionException {
+    public final Settlement findClosestSettlement() {
     	Settlement result = null;
     	Coordinates location = getCurrentMissionLocation();
     	double closestDistance = Double.MAX_VALUE;
@@ -747,11 +740,11 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
      * @param time the amount of time passing (in millisols)
      * @throws Exception if error during time passing.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     	// Add this mission as a vehicle listener (does nothing if already listening to vehicle).
     	// Note this is needed so that mission will reattach itself as a vehicle listener after deserialization
     	// since listener collection is transient. - Scott
-    	if (hasVehicle()) getVehicle().addUnitListener(this);
+    	if (hasVehicle()) vehicle.addUnitListener(this);
     }
     
 	/**
@@ -769,7 +762,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return resources and their number.
 	 * @throws MissionException if error determining resources.
 	 */
-	public Map<Resource, Number> getResourcesToLoad() throws MissionException {
+	public Map<Resource, Number> getResourcesToLoad() {
 		return getResourcesNeededForRemainingMission(true, true);
 	}
 	
@@ -778,7 +771,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return equipment and their number.
 	 * @throws MissionException if error determining equipment.
 	 */
-	public Map<Class, Integer> getEquipmentToLoad() throws MissionException {
+	public Map<Class, Integer> getEquipmentToLoad() {
 		return getEquipmentNeededForRemainingMission(true);
 	}
 	
@@ -787,7 +780,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 	 * @return true if unrepairable malfunction.
 	 * @throws MissionException if error checking for malfunction.
 	 */
-	private boolean hasUnrepairableMalfunction() throws MissionException {
+	private boolean hasUnrepairableMalfunction() {
 		boolean result = false;
 		
 		if (vehicle != null) {
@@ -800,12 +793,12 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
 				while (j.hasNext()) {
 					Part part = j.next();
 					int number = parts.get(part);
-					try {
+//					try {
 						if (vehicle.getInventory().getItemResourceNum(part) < number) result = true;
-					}
-					catch (InventoryException e) {
-						throw new MissionException(getPhase(), e);
-					}
+//					}
+//					catch (InventoryException e) {
+//						throw new MissionException(getPhase(), e);
+//					}
 				}
 			}
 		}

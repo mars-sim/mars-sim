@@ -7,17 +7,16 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.Dimension;
+import org.mars_sim.msp.core.Unit;
+
+import javax.swing.*;
+import javax.swing.border.BevelBorder;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.JToolBar;
-import javax.swing.border.BevelBorder;
-
-import org.mars_sim.msp.core.Unit;
 
 /**
  * The UnitToolBar class is a UI toolbar for holding unit buttons. There should

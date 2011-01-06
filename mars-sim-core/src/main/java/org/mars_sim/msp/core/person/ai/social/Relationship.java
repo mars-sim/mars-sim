@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.core.person.ai.social;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
+
+import java.io.Serializable;
 
 /**
  * The Relationship class represents a social relationship between

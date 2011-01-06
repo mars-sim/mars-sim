@@ -7,13 +7,12 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.GridLayout;
-import java.text.DecimalFormat;
-
-import javax.swing.JLabel;
-
 import org.mars_sim.msp.core.structure.building.function.PowerStorage;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
+import java.text.DecimalFormat;
 
 /**
  * The PowerStorageBuildingPanel class is a building function panel representing 

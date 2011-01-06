@@ -52,22 +52,22 @@ public final class Phase implements Serializable {
 	 * @return phase
 	 * @throws Exception if phase could not be found.
 	 */
-	public static final Phase findPhase(String name) throws Exception {
+	public static Phase findPhase(String name) {
 		Phase result = null;
 		Iterator<Phase> i = phases.iterator();
 		while (i.hasNext()) {
 			Phase phase = i.next();
-			if (phase.getName().equals(name.toLowerCase())) result = phase;
+			if (phase.name.equals(name.toLowerCase())) result = phase;
 		}
 		if (result != null) return result;
-		else throw new Exception("Phase: " + name + " could not be found.");
+		else throw new IllegalStateException("Phase: " + name + " could not be found.");
 	}
 	
 	/**
 	 * Gets a ummutable set of all the phases.
 	 * @return set of phases.
 	 */
-	public static final Set<Phase> getPhases() {
+	public static Set<Phase> getPhases() {
 		return Collections.unmodifiableSet(phases);
 	}
 	
@@ -78,7 +78,7 @@ public final class Phase implements Serializable {
 	public boolean equals(Object object) {
 		if (object instanceof Phase) {
 			Phase otherObject = (Phase) object;
-			if (name.equals(otherObject.getName())) return true;
+			if (name.equals(otherObject.name)) return true;
 		}
 		return false;
 	}

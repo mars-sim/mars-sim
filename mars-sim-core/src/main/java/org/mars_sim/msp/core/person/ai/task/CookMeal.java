@@ -6,19 +6,26 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The TendGreenhouse class is a task for cooking meals in a building
@@ -53,7 +60,7 @@ public class CookMeal extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing task.
 	 */
-	public CookMeal(Person person) throws Exception {
+	public CookMeal(Person person) {
 		// Use Task constructor
 		super("Cooking", person, true, false, STRESS_MODIFIER, false, 0D);
 		
@@ -125,7 +132,7 @@ public class CookMeal extends Task implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (COOKING.equals(getPhase())) return cookingPhase(time);
     	else return time;
@@ -137,7 +144,7 @@ public class CookMeal extends Task implements Serializable {
      * @return the amount of time (millisol) left after performing the cooking phase.
      * @throws Exception if error performing the cooking phase.
      */
-	private double cookingPhase(double time) throws Exception {
+	private double cookingPhase(double time) {
 		
 		// If kitchen has malfunction, end task.
 		if (kitchen.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -160,14 +167,14 @@ public class CookMeal extends Task implements Serializable {
 		else workTime += workTime * (.2D * (double) cookingSkill);
         
 		// Add this work to the kitchen.
-		try {
+//		try {
 			kitchen.addWork(workTime);
-		}
-		catch (BuildingException e) {
-			// Not enough food.
-			endTask();
-			return time;
-		}
+//		}
+//		catch (BuildingException e) {
+//			// Not enough food.
+//			endTask();
+//			return time;
+//		}
 		
 		// Add experience
 		addExperience(time);
@@ -268,7 +275,7 @@ public class CookMeal extends Task implements Serializable {
 	 * @param person the person to check for.
 	 * @return kitchen or null if none available.
 	 */
-	private static Building getAvailableKitchen(Person person) throws BuildingException {
+	private static Building getAvailableKitchen(Person person) {
 		Building result = null;
 		
 		String location = person.getLocationSituation();
@@ -280,7 +287,7 @@ public class CookMeal extends Task implements Serializable {
 			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
 			kitchenBuildings = BuildingManager.getBestRelationshipBuildings(person, kitchenBuildings);
 			
-			if (kitchenBuildings.size() > 0) result = (Building) kitchenBuildings.get(0);
+			if (kitchenBuildings.size() > 0) result = kitchenBuildings.get(0);
 		}		
 		
 		return result;
@@ -293,13 +300,13 @@ public class CookMeal extends Task implements Serializable {
 	 * @throws BuildingException if error
 	 */
 	private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) 
-	        throws BuildingException {
+	        {
 		List<Building> result = new ArrayList<Building>();
 		
 		if (kitchenBuildings != null) {
 			Iterator<Building> i = kitchenBuildings.iterator();
 			while (i.hasNext()) {
-				Building building = (Building) i.next();
+				Building building = i.next();
 				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
 				if (kitchen.getNumCooks() < kitchen.getCookCapacity()) result.add(building);
 			}

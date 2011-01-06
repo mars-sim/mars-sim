@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -22,6 +16,12 @@ import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A task for proposing a new scientific study.
@@ -44,7 +44,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error constructing task.
      */
-    public ProposeScientificStudy(Person person) throws Exception {
+    public ProposeScientificStudy(Person person) {
         super("Proposing a Scientific Study", person, false, true, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(100D));
         
@@ -115,7 +115,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double proposingPhase(double time) throws Exception {
+    private double proposingPhase(double time) {
         
         if (!study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) endTask();
         if (isDone()) return time;
@@ -165,7 +165,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (PROPOSAL_PHASE.equals(getPhase())) return proposingPhase(time);
         else return time;

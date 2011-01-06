@@ -7,29 +7,11 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.CollectIce;
-import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
-import org.mars_sim.msp.core.person.ai.mission.Exploration;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionException;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -39,6 +21,8 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.util.*;
 
 /**
  * Mission data holder bean.
@@ -89,7 +73,7 @@ class MissionDataBean {
 	 * Creates a mission from the mission data.
 	 */
 	void createMission() {
-		try {
+//		try {
 			Mission mission = null;
 			if (TRAVEL_MISSION.equals(type)) {
 				mission = new TravelToSettlement(members, startingSettlement, destinationSettlement, rover, 
@@ -110,7 +94,7 @@ class MissionDataBean {
 			}
 			else if (EXPLORATION_MISSION.equals(type)) {
 				List<Coordinates> collectionSites = new ArrayList<Coordinates>(explorationSites.length);
-				for (int x = 0; x < explorationSites.length; x++) collectionSites.add(explorationSites[x]);
+                collectionSites.addAll(Arrays.asList(explorationSites));
 				mission = new Exploration(members, startingSettlement, collectionSites, rover, description);
 			}
 			else if (TRADE_MISSION.equals(type)) {
@@ -136,21 +120,21 @@ class MissionDataBean {
                 mission = new BuildingSalvageMission(members, salvageSettlement, salvageBuilding, salvageSite, 
                         salvageVehicles);
             }
-            else throw new MissionException(null, "mission type: " + type + " unknown");
+            else throw new IllegalStateException("mission type: " + type + " unknown");
 		
 			MissionManager manager = Simulation.instance().getMissionManager();
 			manager.addMission(mission);
-		}
-		catch (MissionException e) {
-			e.printStackTrace(System.err);
-		}
+//		}
+//		catch (MissionException e) {
+//			e.printStackTrace(System.err);
+//		}
 	}
 	
 	/**
 	 * Gets mission types.
 	 * @return array of mission type strings.
 	 */
-	static final String[] getMissionTypes() {
+	static String[] getMissionTypes() {
 		String[] result = { TRAVEL_MISSION, EXPLORATION_MISSION, ICE_MISSION, REGOLITH_MISSION, 
 				AREOLOGY_FIELD_MISSION, BIOLOGY_FIELD_MISSION, RESCUE_MISSION, TRADE_MISSION, 
                 MINING_MISSION, CONSTRUCTION_MISSION, SALVAGE_MISSION };
@@ -162,7 +146,7 @@ class MissionDataBean {
 	 * @param missionType the mission type.
 	 * @return the mission description.
 	 */
-	static final String getMissionDescription(String missionType) {
+	static String getMissionDescription(String missionType) {
 		String result = "";
 		if (missionType.equals(TRAVEL_MISSION)) result = TravelToSettlement.DEFAULT_DESCRIPTION;
 		else if (missionType.equals(EXPLORATION_MISSION)) result = Exploration.DEFAULT_DESCRIPTION;

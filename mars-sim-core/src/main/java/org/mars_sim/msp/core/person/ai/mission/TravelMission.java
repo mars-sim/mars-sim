@@ -7,12 +7,12 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A mission that involves traveling along a series of navpoints.
@@ -43,22 +43,22 @@ public abstract class TravelMission extends Mission {
 	 * @param minPeople the minimum number of people required for mission.
 	 * @throws MissionException if error constructing mission.
 	 */
-	protected TravelMission(String name, Person startingPerson, int minPeople) throws MissionException {
+	protected TravelMission(String name, Person startingPerson, int minPeople) {
 		// Use Mission constructor.
 		super(name, startingPerson, minPeople);
 		
 		NavPoint startingNavPoint = null;
-		try {
+//		try {
 			if (startingPerson.getSettlement() != null) 
 				startingNavPoint = new NavPoint(getCurrentMissionLocation(), startingPerson.getSettlement(), 
 						startingPerson.getSettlement().getName());
 			else startingNavPoint = new NavPoint(getCurrentMissionLocation(), "starting location");
 			addNavpoint(startingNavPoint);
 			lastStopNavpoint = startingNavPoint;
-		}
-		catch (Exception e) {
-			throw new MissionException(getPhase(), e);
-		}
+//		}
+//		catch (Exception e) {
+//			throw new MissionException(getPhase(), e);
+//		}
 		
 		setTravelStatus(AT_NAVPOINT);
 	}
@@ -115,7 +115,7 @@ public abstract class TravelMission extends Mission {
 	 * @return navpoint or null if no more navpoints.
 	 */
 	public final NavPoint getNextNavpoint() {
-		if (navIndex < navPoints.size()) return (NavPoint) navPoints.get(navIndex);
+		if (navIndex < navPoints.size()) return navPoints.get(navIndex);
 		else return null;
 	}
 	
@@ -133,11 +133,11 @@ public abstract class TravelMission extends Mission {
 	 * @param newNavIndex the next navpoint index.
 	 * @throws MissionException if the new navpoint is out of range.
 	 */
-	public final void setNextNavpointIndex(int newNavIndex) throws MissionException {
+	public final void setNextNavpointIndex(int newNavIndex) {
 		if (newNavIndex < getNumberOfNavpoints()) {
 			navIndex = newNavIndex;
 		}
-		else throw new MissionException(getPhase(), "newNavIndex: " + newNavIndex + " is outOfBounds.");
+		else throw new IllegalStateException(getPhase() + " : newNavIndex: " + newNavIndex + " is outOfBounds.");
 	}
 	
 	/**
@@ -147,7 +147,7 @@ public abstract class TravelMission extends Mission {
 	 * @throws IllegaArgumentException if no navpoint at that index.
 	 */
 	public final NavPoint getNavpoint(int index) {
-		if ((index >= 0) && (index < getNumberOfNavpoints())) return (NavPoint) navPoints.get(index);
+		if ((index >= 0) && (index < getNumberOfNavpoints())) return navPoints.get(index);
 		else throw new IllegalArgumentException("index: " + index + " out of bounds.");
 	}
 	
@@ -175,8 +175,8 @@ public abstract class TravelMission extends Mission {
 	 * @return navpoint or null if mission is not stopped at a navpoint.
 	 */
 	public final NavPoint getCurrentNavpoint() {
-		if (AT_NAVPOINT.equals(getTravelStatus())) {
-			if (navIndex < navPoints.size()) return (NavPoint) navPoints.get(navIndex);
+		if (AT_NAVPOINT.equals(travelStatus)) {
+			if (navIndex < navPoints.size()) return navPoints.get(navIndex);
 			else return null;
 		}
 		else return null;
@@ -187,7 +187,7 @@ public abstract class TravelMission extends Mission {
 	 * @return index of current navpoint or -1 if mission is not stopped at a navpoint.
 	 */
 	public final int getCurrentNavpointIndex() {
-		if (AT_NAVPOINT.equals(getTravelStatus())) return navIndex;
+		if (AT_NAVPOINT.equals(travelStatus)) return navIndex;
 		else return -1;
 	}
 	
@@ -212,7 +212,7 @@ public abstract class TravelMission extends Mission {
 	 * Starts travel to the next navpoint in the mission.
 	 * @throws MissionException if no more navpoints.
 	 */
-	protected final void startTravelToNextNode() throws MissionException {
+	protected final void startTravelToNextNode() {
 		setNextNavpointIndex(navIndex + 1);
 		setTravelStatus(TRAVEL_TO_NAVPOINT);
 		legStartingTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
@@ -222,7 +222,7 @@ public abstract class TravelMission extends Mission {
 	 * The mission has reached the next navpoint.
 	 * @throws MisisonException if error determining mission location.
 	 */
-	protected final void reachedNextNode() throws MissionException {
+	protected final void reachedNextNode() {
 		setTravelStatus(AT_NAVPOINT);
 		lastStopNavpoint = getCurrentNavpoint();
 	}
@@ -232,7 +232,7 @@ public abstract class TravelMission extends Mission {
 	 * @param person the person currently performing the mission.
 	 * @throws MissionException if error performing travel phase.
 	 */
-	protected abstract void performTravelPhase(Person person) throws MissionException;
+	protected abstract void performTravelPhase(Person person);
 	
 	/**
 	 * Gets the starting time of the current leg of the mission.
@@ -249,7 +249,7 @@ public abstract class TravelMission extends Mission {
 	 */
 	public final double getCurrentLegDistance() {
 		if (TRAVEL_TO_NAVPOINT.equals(travelStatus)) 
-			return getPreviousNavpoint().getLocation().getDistance(getNextNavpoint().getLocation());
+			return lastStopNavpoint.getLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
 	}
 	
@@ -258,8 +258,8 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km) or 0 if not in the travelling phase.
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double getCurrentLegRemainingDistance() throws MissionException {
-		if (getTravelStatus().equals(TRAVEL_TO_NAVPOINT))
+	public final double getCurrentLegRemainingDistance() {
+		if (travelStatus.equals(TRAVEL_TO_NAVPOINT))
 			return getCurrentMissionLocation().getDistance(getNextNavpoint().getLocation());
 		else return 0D;
 	}
@@ -272,8 +272,8 @@ public abstract class TravelMission extends Mission {
 		double result = 0D;
 		if (navPoints.size() > 1) {
 			for (int x = 1; x < navPoints.size(); x++) {
-				NavPoint prevNav = (NavPoint) navPoints.get(x - 1);
-				NavPoint currNav = (NavPoint) navPoints.get(x);
+				NavPoint prevNav = navPoints.get(x - 1);
+				NavPoint currNav = navPoints.get(x);
 				double distance = currNav.getLocation().getDistance(prevNav.getLocation());
 				result += distance;
 			}
@@ -286,7 +286,7 @@ public abstract class TravelMission extends Mission {
 	 * @return distance (km).
 	 * @throws MissionException if error determining distance.
 	 */
-	public final double getTotalRemainingDistance() throws MissionException {
+	public final double getTotalRemainingDistance() {
 		double result = getCurrentLegRemainingDistance();
 		
 		int index = 0;
@@ -317,7 +317,7 @@ public abstract class TravelMission extends Mission {
      * @return time (millisols)
      * @throws MissionException
      */
-    public abstract double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException;
+    public abstract double getEstimatedRemainingMissionTime(boolean useBuffer) ;
     
     /**
      * Gets the estimated time for a trip.
@@ -326,7 +326,7 @@ public abstract class TravelMission extends Mission {
      * @return time (millisols)
      * @throws MissionException
      */
-    public abstract double getEstimatedTripTime(boolean useBuffer, double distance) throws MissionException;
+    public abstract double getEstimatedTripTime(boolean useBuffer, double distance) ;
     
     /**
      * Update mission to the next navpoint destination.

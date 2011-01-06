@@ -6,18 +6,7 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -29,18 +18,17 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
-import org.mars_sim.msp.core.structure.construction.ConstructionValues;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mission for construction a stage for a settlement building.
@@ -87,7 +75,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error creating mission.
      */
-    public BuildingConstructionMission(Person startingPerson) throws MissionException {
+    public BuildingConstructionMission(Person startingPerson) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
         
@@ -103,7 +91,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Recruit additional people to mission.
             recruitPeopleForMission(startingPerson);
             
-            try {
+//            try {
                 // Determine construction site and stage.
                 int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(
                         Skill.CONSTRUCTION);
@@ -167,11 +155,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 
                 // Retrieve construction LUV attachment parts.
                 retrieveConstructionLUVParts();
-            } 
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error determining construction sites.");
-                throw new MissionException("Error determining construction sites.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                logger.log(Level.SEVERE, "Error determining construction sites.");
+//                throw new MissionException("Error determining construction sites.", e);
+//            }
         }
         
         // Add phases.
@@ -194,7 +182,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      */
     public BuildingConstructionMission(Collection<Person> members, Settlement settlement, 
             ConstructionSite site, ConstructionStageInfo stageInfo, 
-            List<GroundVehicle> vehicles) throws MissionException {
+            List<GroundVehicle> vehicles) {
         
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, (Person) members.toArray()[0], 1);
@@ -362,7 +350,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @return construction stage info.
      * @throws Exception if error determining construction stage info.
      */
-    private ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) throws Exception {
+    private ConstructionStageInfo determineNewStageInfo(ConstructionSite site, int skill) {
         ConstructionStageInfo result = null;
         
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
@@ -457,7 +445,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     }
     
     @Override
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(CONSTRUCTION_PHASE);
             setPhaseDescription("Constructing Site Stage: " + constructionStage.getInfo().getName());
@@ -466,7 +454,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     }
 
     @Override
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
         super.performPhase(person);
         if (PREPARE_SITE_PHASE.equals(getPhase())) prepareSitePhase(person);
         else if (CONSTRUCTION_PHASE.equals(getPhase())) constructionPhase(person);
@@ -477,7 +465,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @param person the person performing the phase.
      * @throws MissionException if error performing the phase.
      */
-    private void prepareSitePhase(Person person) throws MissionException {
+    private void prepareSitePhase(Person person) {
         
         if (finishingExistingStage) {
             // If finishing uncompleted existing construction stage, skip resource loading.
@@ -487,7 +475,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Load all resources needed for construction.
             Inventory inv = settlement.getInventory();
             
-            try {
+//            try {
                 // Load amount resources.
                 Iterator<AmountResource> i = constructionStage.getInfo().getResources().keySet().iterator();
                 while (i.hasNext()) {
@@ -505,11 +493,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     if (inv.getItemResourceNum(part) >= number)
                         inv.retrieveItemResources(part, number);
                 }
-            }
-            catch (InventoryException e) {
-                logger.log(Level.SEVERE, "Error in getting construction resources.");
-                throw new MissionException("Error in getting construction resources.", e);
-            }
+//            }
+//            catch (InventoryException e) {
+//                logger.log(Level.SEVERE, "Error in getting construction resources.");
+//                throw new MissionException("Error in getting construction resources.", e);
+//            }
             
             constructionSuppliesLoaded = true;
         }
@@ -526,7 +514,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @param person the person performing the phase.
      * @throws MissionException if error performing the phase.
      */
-    private void constructionPhase(Person person) throws MissionException {
+    private void constructionPhase(Person person) {
 
         // Anyone in the crew or a single person at the home settlement has a 
         // dangerous illness, end phase.
@@ -536,17 +524,17 @@ public class BuildingConstructionMission extends Mission implements Serializable
             
             // 75% chance of assigning task, otherwise allow break.
             if (RandomUtil.lessThanRandPercent(75D)) {
-                try {
+//                try {
                     // Assign construction task to person.
                     if (ConstructBuilding.canConstruct(person)) {
                         assignTask(person, new ConstructBuilding(person, constructionStage, 
                                 constructionVehicles));
                     }
-                }
-                catch(Exception e) {
-                    logger.log(Level.SEVERE, "Error during construction.", e);
-                    throw new MissionException(getPhase(), e);
-                }
+//                }
+//                catch(Exception e) {
+//                    logger.log(Level.SEVERE, "Error during construction.", e);
+//                    throw new MissionException(getPhase(), e);
+//                }
             }
         }
         
@@ -556,15 +544,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
             
             // Construct building if all site construction complete.
             if (constructionSite.isAllConstructionComplete()) {
-                try {
+//                try {
                     constructionSite.createBuilding(settlement.getBuildingManager());
                     settlement.getConstructionManager().removeConstructionSite(constructionSite);
                     logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
                             " building constructed at " + settlement.getName());
-                }
-                catch (Exception e) {
-                    throw new MissionException("Error constructing new building.", e);
-                }
+//                }
+//                catch (Exception e) {
+//                    throw new MissionException("Error constructing new building.", e);
+//                }
             }
         }
     }
@@ -600,7 +588,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(
-            boolean useBuffer, boolean parts) throws MissionException {
+            boolean useBuffer, boolean parts) {
         
         Map<Resource, Number> resources = new HashMap<Resource, Number>();
         
@@ -626,7 +614,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
-            boolean useBuffer) throws MissionException {
+            boolean useBuffer) {
         
         Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
         equipment.put(EVASuit.class, getPeopleNumber());
@@ -641,7 +629,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     private LightUtilityVehicle reserveLightUtilityVehicle() {
         LightUtilityVehicle result = null;
         
-        Iterator<Vehicle> i = getAssociatedSettlement().getParkedVehicles().iterator();
+        Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
         while (i.hasNext() && (result == null)) {
             Vehicle vehicle = i.next();
             
@@ -684,7 +672,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @throws Exception if error checking construction materials.
      */
     private static boolean hasStageConstructionMaterials(ConstructionStageInfo stage, Settlement settlement) 
-            throws Exception {
+{
         boolean result = true;
         
         Iterator<AmountResource> i = stage.getResources().keySet().iterator();
@@ -712,7 +700,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @throws Exception if error checking construction materials.
      */
     private static boolean hasAnyNewSiteConstructionMaterials(int skill, Settlement settlement) 
-            throws Exception {
+{
         boolean result = false;
         
         Iterator<ConstructionStageInfo> i = ConstructionUtil.getConstructionStageInfoList(
@@ -731,7 +719,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @return true if enough construction materials.
      * @throws Exception if error checking site.
      */
-    private boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill) throws Exception {
+    private boolean hasExistingSiteConstructionMaterials(ConstructionSite site, int skill) {
         boolean result = true;
         
         if (!site.hasUnfinishedStage()) {

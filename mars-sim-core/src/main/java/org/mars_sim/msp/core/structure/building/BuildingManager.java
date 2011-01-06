@@ -7,20 +7,22 @@
  
 package org.mars_sim.msp.core.structure.building;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.structure.*;
-import org.mars_sim.msp.core.structure.building.function.*;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.vehicle.*;
 
 /**
  * The BuildingManager manages the settlement's buildings.
@@ -48,7 +50,7 @@ public class BuildingManager implements Serializable {
      * @param settlement the manager's settlement.
      * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement) throws Exception {
+    public BuildingManager(Settlement settlement) {
         this(settlement, SimulationConfig.instance().getSettlementConfiguration().
                 getSettlementTemplate(settlement.getTemplate()).getBuildingTemplates());
     }
@@ -60,7 +62,7 @@ public class BuildingManager implements Serializable {
      * @throws Exception if buildings cannot be constructed.
      */
     public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) 
-            throws Exception {
+{
     	
     	this.settlement = settlement;
     	
@@ -116,7 +118,7 @@ public class BuildingManager implements Serializable {
      * @param template the building template.
      * @throws Exception if error creating or adding building.
      */
-    public void addBuilding(BuildingTemplate template) throws Exception {
+    public void addBuilding(BuildingTemplate template) {
     	Building newBuilding = new Building(template, this);
     	addBuilding(newBuilding);
     }
@@ -160,14 +162,14 @@ public class BuildingManager implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws Exception if error.
      */
-    public void timePassing(double time) throws Exception {
-    	try {
+    public void timePassing(double time) {
+//    	try {
         	Iterator<Building> i = buildings.iterator();
         	while (i.hasNext()) i.next().timePassing(time);
-    	}
-    	catch (BuildingException e) {
-    		throw new Exception("BuildingManager.timePassing(): " + e.getMessage());
-    	}
+//    	}
+//    	catch (BuildingException e) {
+//    		throw new IllegalStateException("BuildingManager.timePassing(): " + e.getMessage());
+//    	}
     }   
 
     /**
@@ -177,7 +179,7 @@ public class BuildingManager implements Serializable {
      * @param settlement the settlement to find a building.
      * @throws BuildingException if person cannot be added to any building.
      */
-    public static void addToRandomBuilding(Person person, Settlement settlement) throws BuildingException {
+    public static void addToRandomBuilding(Person person, Settlement settlement) {
         
         List<Building> habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
         List<Building> goodHabs = getLeastCrowdedBuildings(habs);
@@ -194,7 +196,7 @@ public class BuildingManager implements Serializable {
         }
         
         if (building != null) addPersonToBuilding(person, building);
-        else throw new BuildingException("No inhabitable buildings available for " + person.getName());
+        else throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
     }
     
     /**
@@ -203,7 +205,7 @@ public class BuildingManager implements Serializable {
      * @param settlement the settlement to find a building.
      * @throws BuildingException if vehicle cannot be added to any building.
      */
-    public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) throws BuildingException {
+    public static void addToRandomBuilding(GroundVehicle vehicle, Settlement settlement) {
         
         List<Building> garages = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME);
         List<VehicleMaintenance> openGarages = new ArrayList<VehicleMaintenance>();
@@ -219,7 +221,7 @@ public class BuildingManager implements Serializable {
             openGarages.get(rand).addVehicle(vehicle);
         }
         else {
-            throw new BuildingException("No available garage space for " + vehicle.getName());
+            logger.warning("No available garage space for " + vehicle.getName() + ", didn't add vehicle");
         }
     }
         
@@ -285,7 +287,7 @@ public class BuildingManager implements Serializable {
      * @throws BuildingException if building in list does not have the life support function.
      */
     public static List<Building> getUncrowdedBuildings(List<Building> buildingList) 
-            throws BuildingException {
+            {
     	List<Building> result = new ArrayList<Building>();
     	
     	try {
@@ -297,7 +299,7 @@ public class BuildingManager implements Serializable {
     		}
     	}
     	catch (ClassCastException e) {
-    		throw new BuildingException("BuildingManager.getUncrowdedBuildings(): " +
+    		throw new IllegalStateException("BuildingManager.getUncrowdedBuildings(): " +
                     "building isn't a life support building.");
     	}
     	
@@ -311,10 +313,10 @@ public class BuildingManager implements Serializable {
      * @throws BuildingException if building in list does not have the life support function.
      */
     public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) 
-            throws BuildingException {
+             {
     	List<Building> result = new ArrayList<Building>();
     	
-    	try {
+//    	try {
     		// Find least crowded population.
     		int leastCrowded = Integer.MAX_VALUE;
     		Iterator<Building> i = buildingList.iterator();
@@ -334,11 +336,11 @@ public class BuildingManager implements Serializable {
 				if (crowded < -1) crowded = -1;
 				if (crowded == leastCrowded) result.add(building);
 			}
-		}
-		catch (ClassCastException e) {
-			throw new BuildingException("BuildingManager.getLeastCrowdedBuildings(): " +
-                    "building isn't a life support building.");
-		}
+//		}
+//		catch (ClassCastException e) {
+//			throw new BuildingException("BuildingManager.getLeastCrowdedBuildings(): " +
+//                    "building isn't a life support building.");
+//		}
     	
     	return result;
     }
@@ -350,12 +352,12 @@ public class BuildingManager implements Serializable {
      * @return list of buildings with the best relationships.
      * @throws BuildingException if building in list does not have the life support function.if building in list does not have the life support function.
      */
-    public static List<Building> getBestRelationshipBuildings(Person person, List<Building> buildingList) throws BuildingException {
+    public static List<Building> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
     	
     	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
     	
-		try {
+//		try {
 			// Find best relationship buildings.
 			double bestRelationships = Double.NEGATIVE_INFINITY;
 			Iterator<Building> i = buildingList.iterator();
@@ -383,10 +385,10 @@ public class BuildingManager implements Serializable {
 				} 
 				if (buildingRelationships == bestRelationships) result.add(building);
 			}
-		}
-		catch (ClassCastException e) {
-			throw new BuildingException("BuildingManager.getBestRelationshipBuildings(): building isn't a life support building.");
-		}
+//		}
+//		catch (ClassCastException e) {
+//			throw new BuildingException("BuildingManager.getBestRelationshipBuildings(): building isn't a life support building.");
+//		}
     	
     	return result;
     }
@@ -415,17 +417,17 @@ public class BuildingManager implements Serializable {
      * @param building the building to add the person to.
      * @throws BuildingException if person could not be added to the building.
      */
-    public static void addPersonToBuilding(Person person, Building building) throws BuildingException {
+    public static void addPersonToBuilding(Person person, Building building)  {
 		if (building != null) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person); 
 			}
 			catch (Exception e) {
-				throw new BuildingException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+				throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
 			}
 		}
-		else throw new BuildingException("Building is null");
+		else throw new IllegalStateException("Building is null");
     }
     
     /**
@@ -435,7 +437,7 @@ public class BuildingManager implements Serializable {
      * @return building value (VP).
      * @throws Exception if error getting building value.
      */
-    public double getBuildingValue(String buildingName, boolean newBuilding) throws Exception {
+    public double getBuildingValue(String buildingName, boolean newBuilding) {
         
         // Update building values cache once per Sol.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
@@ -517,7 +519,7 @@ public class BuildingManager implements Serializable {
      * @return building value (VP).
      * @throws Exception if error getting building value.
      */
-    public double getBuildingValue(Building building) throws Exception {
+    public double getBuildingValue(Building building) {
         double result = 0D;
         
         result = getBuildingValue(building.getName(), false);

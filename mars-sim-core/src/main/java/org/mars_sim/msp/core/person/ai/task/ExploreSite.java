@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -28,6 +22,12 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A task for the EVA operation of exploring a site.
@@ -52,7 +52,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @param rover the mission rover.
 	 * @throws exception if error creating task.
 	 */
-	public ExploreSite(Person person, ExploredLocation site, Rover rover) throws Exception {
+	public ExploreSite(Person person, ExploredLocation site, Rover rover) {
 		
 		// Use EVAOperation parent constructor.
 		super("Explore Site", person);
@@ -95,7 +95,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) throws Exception {
+	private double exitRover(double time) {
 		
 		try {
 			time = exitAirlock(time, rover.getAirlock());
@@ -123,7 +123,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) throws Exception {
+	private double enterRover(double time) {
 
 		time = enterAirlock(time, rover.getAirlock());
 
@@ -154,7 +154,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @return remaining time after performing phase (millisols).
 	 * @throws Exception if error performing phase.
 	 */
-	private double exploringPhase(double time) throws Exception {
+	private double exploringPhase(double time) {
 		
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -185,7 +185,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @param time the amount of time available (millisols).
 	 * @throws Exception if error collecting rock samples.
 	 */
-	private void collectRockSamples(double time) throws Exception {
+	private void collectRockSamples(double time) {
 		if (hasSpecimenContainer()) {
 			double numSamplesCollected = AVERAGE_ROCK_SAMPLES_COLLECTED_SITE / AVERAGE_ROCK_SAMPLE_MASS;
 			double probability = (time / Exploration.EXPLORING_SITE_TIME) * (numSamplesCollected);
@@ -237,7 +237,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * Takes the least full specimen container from the rover, if any are available.
 	 * @throws Exception if error taking container.
 	 */
-	private void takeContainer() throws Exception {
+	private void takeContainer() {
 		Unit container = findLeastFullContainer(rover);
 		if (container != null) {
 			if (person.getInventory().canStoreUnit(container)) {
@@ -318,7 +318,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	}
 
 	@Override
-	protected double performMappedPhase(double time) throws Exception {
+	protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
     	if (EXPLORING.equals(getPhase())) return exploringPhase(time);

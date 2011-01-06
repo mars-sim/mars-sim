@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.resource.Part;
+
 import java.io.Serializable;
 import java.util.List;
-
-import org.mars_sim.msp.core.resource.Part;
 
 /**
  * Construction vehicle information.
@@ -62,6 +62,6 @@ public class ConstructionVehicleType implements Serializable {
     
     @Override
     public String toString() {
-        return getVehicleType();
+        return vehicleType;
     }
 }

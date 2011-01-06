@@ -7,10 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -19,6 +15,10 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A task for the EVA operation of performing biology field work at a research site 
@@ -43,7 +43,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
      * @throws Exception if error creating task.
      */
     public BiologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study, 
-            Rover rover) throws Exception {
+            Rover rover) {
         
         // Use EVAOperation parent constructor.
         super("Biology Study Field Work", person);
@@ -87,7 +87,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting rover.
      */
-    private double exitRover(double time) throws Exception {
+    private double exitRover(double time) {
         
         try {
             time = exitAirlock(time, rover.getAirlock());
@@ -111,7 +111,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error entering rover.
      */
-    private double enterRover(double time) throws Exception {
+    private double enterRover(double time) {
 
         time = enterAirlock(time, rover.getAirlock());
 
@@ -132,7 +132,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
      * @return remaining time after performing phase (millisols).
      * @throws Exception if error performing phase.
      */
-    private double fieldWorkPhase(double time) throws Exception {
+    private double fieldWorkPhase(double time) {
         
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -214,7 +214,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
         if (FIELD_WORK.equals(getPhase())) return fieldWorkPhase(time);

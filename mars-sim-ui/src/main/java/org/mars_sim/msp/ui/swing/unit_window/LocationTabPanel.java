@@ -7,13 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.ui.swing.*;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /** 
  * The LocationTabPanel is a tab panel for location information.

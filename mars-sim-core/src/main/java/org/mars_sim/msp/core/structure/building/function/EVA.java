@@ -6,13 +6,14 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
+import java.io.Serializable;
+import java.util.Iterator;
  
 /**
  * The EVA class is a building function for extra vehicular activity.
@@ -28,20 +29,20 @@ public class EVA extends Function implements Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if function cannot be constructed.
 	 */
-	public EVA(Building building) throws BuildingException {
+	public EVA(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
-		try {
+//		try {
 			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
 			// Add a building airlock.
 			int airlockCapacity = config.getAirlockCapacity(building.getName());
 			airlock = new BuildingAirlock(building, airlockCapacity);
-		}
-		catch (Exception e) {
-			throw new BuildingException("EVA.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("EVA.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -52,8 +53,8 @@ public class EVA extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is one airlock capacity for every four inhabitants.
         double demand = settlement.getAllAssociatedPeople().size() / 4D;
@@ -69,7 +70,7 @@ public class EVA extends Function implements Serializable {
             else {
                 EVA evaFunction = (EVA) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += evaFunction.getAirlock().getCapacity() * wearModifier;
+                supply += evaFunction.airlock.getCapacity() * wearModifier;
             }
         }
         
@@ -94,7 +95,7 @@ public class EVA extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 		airlock.timePassing(time);
 	}
 	

@@ -8,9 +8,8 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import javax.swing.*;
 import java.util.List;
-
-import javax.swing.JComponent;
 
 
 /**

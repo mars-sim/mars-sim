@@ -7,7 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -39,7 +39,7 @@ public class UnitWindowFactory {
         
         if (unit instanceof Person) return new PersonWindow(desktop, (Person) unit);
         else if (unit instanceof Vehicle) return new VehicleWindow(desktop, (Vehicle) unit);
-        else if (unit instanceof Settlement) return new SettlementWindow(desktop, (Settlement) unit);
+        else if (unit instanceof Settlement) return new SettlementWindow(desktop, unit);
         else if (unit instanceof Equipment) return new EquipmentWindow(desktop, (Equipment) unit);
         else return null;
     }

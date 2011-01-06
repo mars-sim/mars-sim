@@ -7,25 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -37,6 +18,14 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * A wizard panel for selecting a mission rendezvous vehicle.
@@ -199,21 +188,21 @@ class RendezvousVehiclePanel extends WizardPanel {
             		else if (column == 1) {
                 		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
                 		double distance = startingSettlement.getCoordinates().getDistance(vehicle.getCoordinates());
-                		return new Integer((int) distance);
+                		return (int) distance;
             		}
             		else if (column == 2) 
-            			result = new Integer(vehicle.getCrewNum());
+            			result = vehicle.getCrewNum();
             		else if (column == 3) {
             			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            			result = new Integer((int) inv.getAmountResourceStored(oxygen));
+            			result = (int) inv.getAmountResourceStored(oxygen);
             		}
                 	else if (column == 4) {
                 		AmountResource water = AmountResource.findAmountResource("water");
-                		result = new Integer((int) inv.getAmountResourceStored(water));
+                		result = (int) inv.getAmountResourceStored(water);
                 	}
                 	else if (column == 5) { 
                 		AmountResource food = AmountResource.findAmountResource("food");
-                		result = new Integer((int) inv.getAmountResourceStored(food));
+                		result = (int) inv.getAmountResourceStored(food);
                 	}
                 	else if (column == 6) {
                 		Vehicle rescueVehicle = getRescueVehicle(vehicle);
