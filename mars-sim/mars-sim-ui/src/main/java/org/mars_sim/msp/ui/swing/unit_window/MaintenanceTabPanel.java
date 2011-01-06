@@ -7,22 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -30,6 +14,13 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Map;
 
 /** 
  * The MaintenanceTabPanel is a tab panel for unit maintenance information.
@@ -211,7 +202,7 @@ public class MaintenanceTabPanel extends TabPanel {
      */
     private String getPartsString() {
     	Malfunctionable malfunctionable = (Malfunctionable) unit;
-    	StringBuffer buf = new StringBuffer("Parts: ");
+        StringBuilder buf = new StringBuilder("Parts: ");
     	
     	Map<Part, Integer> parts = malfunctionable.getMalfunctionManager().getMaintenanceParts();
     	if (parts.size() > 0) {
@@ -219,7 +210,7 @@ public class MaintenanceTabPanel extends TabPanel {
     		while (i.hasNext()) {
     			Part part = i.next();
     			int number = parts.get(part);
-    			buf.append(number + " " + part.getName());
+                buf.append(number).append(" ").append(part.getName());
     			if (i.hasNext()) buf.append(", ");
     		}
     	}

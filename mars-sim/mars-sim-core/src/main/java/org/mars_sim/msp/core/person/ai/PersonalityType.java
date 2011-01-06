@@ -7,11 +7,17 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import java.io.Serializable;
-import java.util.*;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * The MBTI (Myers-Briggs Type Indicator) personality type for the person.
@@ -50,7 +56,7 @@ public class PersonalityType implements Serializable {
 	/**
 	 * Constructor
 	 */
-	PersonalityType(Person person) throws Exception {
+	PersonalityType(Person person) {
 		
 		this.person = person;
 		
@@ -73,7 +79,7 @@ public class PersonalityType implements Serializable {
 		}
 		
 		if (personalityType == null) 
-			throw new Exception("PersonalityType.constructor(): Unable to determine personality type.");
+			throw new IllegalStateException("PersonalityType.constructor(): Unable to determine personality type.");
 	}
 	
 	/**
@@ -98,7 +104,7 @@ public class PersonalityType implements Serializable {
 	 * Get this object as a string.
 	 */
 	public String toString() {
-		return getTypeString();
+		return personalityType;
 	}
 	
 	/**
@@ -120,8 +126,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if introvert
 	 */
 	public boolean isIntrovert() {
-		if (personalityType.substring(0, 1).equals("I")) return true;
-		else return false;
+        return personalityType.substring(0, 1).equals("I");
 	}
 	
 	/**
@@ -129,8 +134,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if extrovert
 	 */
 	public boolean isExtrovert() {
-		if (personalityType.substring(0, 1).equals("E")) return true;
-		else return false;
+        return personalityType.substring(0, 1).equals("E");
 	}
 	
 	/**
@@ -138,8 +142,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if sensor
 	 */
 	public boolean isSensor() {
-		if (personalityType.substring(1, 2).equals("S")) return true;
-		else return false;
+        return personalityType.substring(1, 2).equals("S");
 	}
 	
 	/**
@@ -147,8 +150,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if intuitive
 	 */
 	public boolean isIntuitive() {
-		if (personalityType.substring(1, 2).equals("N")) return true;
-		else return false;
+        return personalityType.substring(1, 2).equals("N");
 	}
 	
 	/**
@@ -156,8 +158,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if thinker
 	 */
 	public boolean isThinker() {
-		if (personalityType.substring(2, 3).equals("T")) return true;
-		else return false;
+        return personalityType.substring(2, 3).equals("T");
 	}
 	
 	/**
@@ -165,8 +166,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if feeler
 	 */
 	public boolean isFeeler() {
-		if (personalityType.substring(2, 3).equals("F")) return true;
-		else return false;
+        return personalityType.substring(2, 3).equals("F");
 	}
 	
 	/**
@@ -174,8 +174,7 @@ public class PersonalityType implements Serializable {
 	 * @return true if judger
 	 */
 	public boolean isJudger() {
-		if (personalityType.substring(3, 4).equals("J")) return true;
-		else return false;
+        return personalityType.substring(3, 4).equals("J");
 	}
 	
 	/**
@@ -183,19 +182,18 @@ public class PersonalityType implements Serializable {
 	 * @return true if perceiver
 	 */
 	public boolean isPerceiver() {
-		if (personalityType.substring(3, 4).equals("P")) return true;
-		else return false;
+        return personalityType.substring(3, 4).equals("P");
 	}
 	
 	/**
 	 * Loads the average percentages for personality types into a map.
 	 * @throws Exception if personality type cannot be found or percentages don't add up to 100%.
 	 */
-	private void loadPersonalityTypes() throws Exception {
+	private void loadPersonalityTypes() {
 		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		personalityTypes = new HashMap<String, Double>(16);
 		
-		try {
+//		try {
 			personalityTypes.put(ISTP, config.getPersonalityTypePercentage(ISTP));
 			personalityTypes.put(ISTJ, config.getPersonalityTypePercentage(ISTJ));
 			personalityTypes.put(ISFP, config.getPersonalityTypePercentage(ISFP));
@@ -212,16 +210,16 @@ public class PersonalityType implements Serializable {
 			personalityTypes.put(ENTJ, config.getPersonalityTypePercentage(ENTJ));
 			personalityTypes.put(ENFP, config.getPersonalityTypePercentage(ENFP));
 			personalityTypes.put(ENFJ, config.getPersonalityTypePercentage(ENFJ));			
-		}
-		catch (Exception e) {
-			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
-		}
+//		}
+//		catch (Exception e) {
+//			throw new Exception("PersonalityType.loadPersonalityTypes(): unable to load a personality type.");
+//		}
 		
 		Iterator<String> i = personalityTypes.keySet().iterator();
 		double count = 0D;
 		while (i.hasNext()) count+= personalityTypes.get(i.next());
 		if (count != 100D) 
-			throw new Exception("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
+			throw new IllegalStateException("PersonalityType.loadPersonalityTypes(): percentages don't add up to 100%. (total: " + count + ")");
 	}
 	
 	/**
@@ -229,7 +227,7 @@ public class PersonalityType implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if problem updating stress.
 	 */
-	public void updateStress(double time) throws Exception {
+	public void updateStress(double time) {
 		
 		Collection<Person> localGroup = person.getLocalGroup();
 		PhysicalCondition condition = person.getPhysicalCondition();

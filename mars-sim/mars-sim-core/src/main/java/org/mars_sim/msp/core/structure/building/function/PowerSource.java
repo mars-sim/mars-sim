@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.building.Building;
+
+import java.io.Serializable;
 
 /**
  * The PowerSource class represents a power generator for a building.

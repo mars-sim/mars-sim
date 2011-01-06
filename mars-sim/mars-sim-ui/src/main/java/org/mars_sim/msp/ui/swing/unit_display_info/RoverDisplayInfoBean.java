@@ -6,12 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
-import javax.swing.Icon;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
+
+import javax.swing.*;
 
 /**
  * Provides display information about a rover.

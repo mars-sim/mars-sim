@@ -7,42 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * The mission info panel for the edit mission dialog.
@@ -201,8 +184,7 @@ public class InfoPanel extends JPanel {
 		Object[] selectedPeople = new Object[selectedIndexes.length];
 		for (int x = 0; x < selectedIndexes.length; x++) 
 			selectedPeople[x] = memberListModel.elementAt(selectedIndexes[x]);
-		for (int x = 0; x < selectedPeople.length; x++) 
-			memberListModel.removeElement(selectedPeople[x]);
+        for (Object aSelectedPeople : selectedPeople) memberListModel.removeElement(aSelectedPeople);
 		addMembersButton.setEnabled(canAddMembers());
 	}
 	

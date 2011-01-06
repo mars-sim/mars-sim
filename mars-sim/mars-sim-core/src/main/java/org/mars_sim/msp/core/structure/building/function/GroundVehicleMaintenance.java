@@ -5,13 +5,14 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
+
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
 import java.io.Serializable;
 import java.util.Iterator;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
  
 /**
  * The GroundVehicleMaintenance class is a building function for a building
@@ -26,18 +27,18 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
      * @param building the building the function is for.
      * @throws BuildingException if error in construction.
      */
-    public GroundVehicleMaintenance(Building building) throws BuildingException {
+    public GroundVehicleMaintenance(Building building) {
     	// Call VehicleMaintenance constructor.
     	super(NAME, building);
     	
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			vehicleCapacity = config.getVehicleCapacity(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("GroundVehicleMaintenance.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("GroundVehicleMaintenance.constructor: " + e.getMessage());
+//		}
     }
     
     /**
@@ -48,8 +49,8 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is one ground vehicle capacity for every four ground vehicles.
         double demand = settlement.getAllAssociatedVehicles().size() / 4D;

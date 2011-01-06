@@ -7,33 +7,21 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A wizard panel for selecting the mission vehicle.
@@ -201,17 +189,17 @@ class VehiclePanel extends WizardPanel {
             		else if (column == 1) 
             			result = vehicle.getDescription();
             		else if (column == 2) 
-            			result = new Integer(vehicle.getCrewCapacity());
+            			result = vehicle.getCrewCapacity();
             		else if (column == 3) 
-            			result = new Integer((int) vehicle.getRange());
+            			result = (int) vehicle.getRange();
             		else if (column == 4)
-            			result = new Boolean(vehicle.hasLab());
+            			result = vehicle.hasLab();
             		else if (column == 5)
-            			result = new Boolean(vehicle.hasSickBay());
+            			result = vehicle.hasSickBay();
             		else if (column == 6)
-            			result = new Integer((int) inv.getGeneralCapacity());
+            			result = (int) inv.getGeneralCapacity();
                     else if (column == 7)
-                        result = new Integer((int) inv.getTotalInventoryMass());
+                        result = (int) inv.getTotalInventoryMass();
             		else if (column == 8)
             			result = vehicle.getStatus();
             		else if (column == 9) {
@@ -252,12 +240,12 @@ class VehiclePanel extends WizardPanel {
     		Rover vehicle = (Rover) getUnit(row);
     		
             if (column == 7) {
-                try {
+//                try {
                     if (vehicle.getInventory().getTotalInventoryMass() > 0D) result = true;
-                }
-                catch (InventoryException e) {
-                    e.printStackTrace(System.err);
-                }
+//                }
+//                catch (InventoryException e) {
+//                    e.printStackTrace(System.err);
+//                }
             }
             else if (column == 8) {
     			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;

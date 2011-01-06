@@ -6,13 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -20,12 +13,15 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.science.ScientificStudyUtil;
+import org.mars_sim.msp.core.science.*;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A task for inviting a researcher to collaborate on a scientific study.
@@ -52,7 +48,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public InviteStudyCollaborator(Person person) throws Exception {
+    public InviteStudyCollaborator(Person person) {
         super("Writing Study Collaboration Invitation", person, false, true, 
                 STRESS_MODIFIER, true, DURATION);
         
@@ -120,7 +116,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
      * @return best collaborative invitee or null if none.
      * @throws Exception if error determining invitee.
      */
-    private Person determineBestInvitee() throws Exception {
+    private Person determineBestInvitee() {
         Person bestInvitee = null;
         double bestValue = Double.NEGATIVE_INFINITY;
         
@@ -178,7 +174,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
      * @return the remaining time (millisols) after performing the phase.
      * @throws Exception if error performing phase.
      */
-    private double writingInvitationPhase(double time) throws Exception {
+    private double writingInvitationPhase(double time) {
         
         if (isDone()) return time;
         
@@ -238,7 +234,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (WRITING_INVITATION.equals(getPhase())) return writingInvitationPhase(time);
         else return time;

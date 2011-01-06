@@ -7,13 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -25,9 +18,14 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task for working on a manufacturing process.
@@ -54,7 +52,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public ManufactureGood(Person person) throws Exception {
+    public ManufactureGood(Person person) {
         super("Manufacturing", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
         // Initialize data members
@@ -64,17 +62,17 @@ public class ManufactureGood extends Task implements Serializable {
             endTask();
 
         // Get available manufacturing workshop if any.
-        try {
+//        try {
             Building manufactureBuilding = getAvailableManufacturingBuilding(person);
             if (manufactureBuilding != null) {
                 workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
                 BuildingManager.addPersonToBuilding(person, manufactureBuilding);
             } else
                 endTask();
-        } catch (BuildingException e) {
-            logger.log(Level.SEVERE, "ManufactureGood", e);
-            endTask();
-        }
+//        } catch (BuildingException e) {
+//            logger.log(Level.SEVERE, "ManufactureGood", e);
+//            endTask();
+//        }
 
         // Initialize phase
         addPhase(MANUFACTURE);
@@ -90,7 +88,7 @@ public class ManufactureGood extends Task implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            try {
+//            try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
                 if (manufacturingBuilding != null) {
@@ -118,9 +116,9 @@ public class ManufactureGood extends Task implements Serializable {
                     else if (person.getSettlement().getManufactureOverride())
                         result = 0;
                 }
-            } catch (BuildingException e) {
-                logger.log(Level.SEVERE, "ManufactureGood.getProbability()", e);
-            }
+//            } catch (BuildingException e) {
+//                logger.log(Level.SEVERE, "ManufactureGood.getProbability()", e);
+//            }
         }
 
         // Effort-driven task modifier.
@@ -141,7 +139,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @return available manufacturing building
      * @throws BuildingException if error finding manufacturing building.
      */
-    private static Building getAvailableManufacturingBuilding(Person person) throws BuildingException {
+    private static Building getAvailableManufacturingBuilding(Person person) {
 
         Building result = null;
 
@@ -159,7 +157,7 @@ public class ManufactureGood extends Task implements Serializable {
             manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
 
             if (manufacturingBuildings.size() > 0)
-                result = (Building) manufacturingBuildings.get(0);
+                result = manufacturingBuildings.get(0);
         }
 
         return result;
@@ -175,7 +173,7 @@ public class ManufactureGood extends Task implements Serializable {
      *         the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingWork(
-            List<Building> buildingList, int skill) throws BuildingException {
+            List<Building> buildingList, int skill) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -200,7 +198,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @throws BuildingException if error determining building processes.
      */
     private static List<Building> getBuildingsWithProcessesRequiringWork(
-            List<Building> buildingList, int skill) throws BuildingException {
+            List<Building> buildingList, int skill) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -226,7 +224,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @return true if processes requiring work.
      * @throws BuildingException if building is not manufacturing.
      */
-    private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) throws BuildingException {
+    private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) {
 
         boolean result = false;
 
@@ -251,7 +249,7 @@ public class ManufactureGood extends Task implements Serializable {
      *         the manufacture function.
      */
     private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) 
-            throws BuildingException {
+            {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -284,7 +282,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @throws BuildingException if error determining process value.
      */
     private static double getHighestManufacturingProcessValue(Person person, 
-            Building manufacturingBuilding) throws BuildingException {
+            Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
 
@@ -293,7 +291,7 @@ public class ManufactureGood extends Task implements Serializable {
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-        try {
+//        try {
             Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
                     techLevel, skillLevel).iterator();
             while (i.hasNext()) {
@@ -306,9 +304,9 @@ public class ManufactureGood extends Task implements Serializable {
                         highestProcessValue = processValue;
                 }
             }
-        } catch (Exception e) {
-            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
-        }
+//        } catch (Exception e) {
+//            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
+//        }
 
         return highestProcessValue;
     }
@@ -341,7 +339,7 @@ public class ManufactureGood extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null)
             throw new IllegalArgumentException("Task phase is null");
         if (MANUFACTURE.equals(getPhase()))
@@ -356,7 +354,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @return remaining time after performing (millisols)
      * @throws Exception if error performing phase.
      */
-    private double manufacturePhase(double time) throws Exception {
+    private double manufacturePhase(double time) {
 
         // Check if workshop has malfunction.
         if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -448,7 +446,7 @@ public class ManufactureGood extends Task implements Serializable {
      * @return the new manufacturing process or null if none.
      * @throws Exception if error creating manufacturing process.
      */
-    private ManufactureProcess createNewManufactureProcess() throws Exception {
+    private ManufactureProcess createNewManufactureProcess() {
         ManufactureProcess result = null;
 
         if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {

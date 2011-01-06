@@ -7,29 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
@@ -38,16 +15,19 @@ import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
-import org.mars_sim.msp.ui.swing.tool.map.ExploredSiteMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.Map;
-import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
-import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
-import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.*;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A wizard panel for the mining site.
@@ -184,8 +164,7 @@ public class MiningSitePanel extends WizardPanel {
 		concentrationTableModel.addColumn("Concentration %");
 		String[] mineralTypes = Simulation.instance().getMars().getSurfaceFeatures().
 				getMineralMap().getMineralTypeNames();
-		for (int x = 0; x < mineralTypes.length; x++)
-			concentrationTableModel.addRow(new Object[]{mineralTypes[x], new Double(0D)});
+        for (String mineralType : mineralTypes) concentrationTableModel.addRow(new Object[]{mineralType, 0D});
 		JTable mineralConcentrationTable = new JTable(concentrationTableModel);
 		mineralConcentrationTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(2));
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
@@ -299,7 +278,7 @@ public class MiningSitePanel extends WizardPanel {
 	 * @return range (km)
 	 * @throws Exception if error getting mission rover.
 	 */
-	private double getRoverRange() throws Exception {
+	private double getRoverRange() {
 		return (getWizard().getMissionData().getRover().getRange() * RANGE_MODIFIER) / 2D;
 	}
 	
@@ -406,7 +385,7 @@ public class MiningSitePanel extends WizardPanel {
     /**
      * Internal class used to render color cells in the mineral table.
      */
-    private class ColorTableCellRenderer implements TableCellRenderer {
+    private static class ColorTableCellRenderer implements TableCellRenderer {
 
         public Component getTableCellRendererComponent(JTable table, Object value, 
                 boolean isSelected, boolean hasFocus, int row, int column) {

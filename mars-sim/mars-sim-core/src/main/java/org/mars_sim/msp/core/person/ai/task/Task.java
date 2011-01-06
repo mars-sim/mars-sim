@@ -7,15 +7,21 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The Task class is an abstract parent class for tasks that allow people to do various things.
@@ -64,7 +70,7 @@ public abstract class Task implements Serializable, Comparable {
      * @throws Exception if task could not be constructed.
      */
     public Task(String name, Person person, boolean effort, boolean createEvents, 
-    		double stressModifier, boolean hasDuration, double duration) throws Exception {
+    		double stressModifier, boolean hasDuration, double duration) {
         this.name = name;
         this.person = person;
 		this.createEvents = createEvents;
@@ -90,7 +96,7 @@ public abstract class Task implements Serializable, Comparable {
         person.fireUnitUpdate(TASK_ENDED_EVENT, this);
         
         // Create ending task historical event if needed.
-        if (getCreateEvents()) {
+        if (createEvents) {
         	TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
 			Simulation.instance().getEventManager().registerNewEvent(endingEvent);
         }
@@ -108,7 +114,7 @@ public abstract class Task implements Serializable, Comparable {
      *  @return the task's name
      */
     public String getName() {
-        if ((subTask != null) && !subTask.isDone()) return subTask.getName();
+        if ((subTask != null) && !subTask.done) return subTask.getName();
         else return name;
     }
     
@@ -128,7 +134,7 @@ public abstract class Task implements Serializable, Comparable {
      *  @return the description of what the task is currently doing
      */
     public String getDescription() {
-        if ((subTask != null) && !subTask.isDone()) return subTask.getDescription();
+        if ((subTask != null) && !subTask.done) return subTask.getDescription();
         else return description;
     }
     
@@ -153,7 +159,7 @@ public abstract class Task implements Serializable, Comparable {
      * @return the current phase of the task
      */
     public String getPhase() {
-        if ((subTask != null) && !subTask.isDone()) return subTask.getPhase();
+        if ((subTask != null) && !subTask.done) return subTask.getPhase();
         return phase;
     }
     
@@ -170,13 +176,13 @@ public abstract class Task implements Serializable, Comparable {
      * @param newPhase the phase to set the a task at.
      * @throws Exception if newPhase is not in the task's collection of phases.
      */
-    protected void setPhase(String newPhase) throws Exception {
+    protected void setPhase(String newPhase) {
     	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
     	else if (phases.contains(newPhase)) {
     		phase = newPhase;
     		person.fireUnitUpdate(TASK_PHASE_EVENT, newPhase);
     	}
-    	else throw new Exception("newPhase: " + newPhase + " is not a valid phase for this task.");
+    	else throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
     }
     
     /**
@@ -229,20 +235,20 @@ public abstract class Task implements Serializable, Comparable {
      * @return amount of time (millisol) remaining after performing the task (in millisols)
      * @throws Exception if error performing task.
      */
-    double performTask(double time) throws Exception {
+    double performTask(double time) {
         double timeLeft = time;
         if (subTask != null) {
-            if (subTask.isDone()) subTask = null;
+            if (subTask.done) subTask = null;
             else timeLeft = subTask.performTask(timeLeft);
         }
         
         // If no subtask, perform this task.
-        if ((subTask == null) || subTask.isDone()) {
+        if ((subTask == null) || subTask.done) {
             // If task is effort-driven and person is incapacitated, end task.
             if (effortDriven && (person.getPerformanceRating() == 0D)) endTask();
             
             // Perform phases of task until time is up or task is done.
-            while ((timeLeft > 0D) && !isDone()) timeLeft = performMappedPhase(timeLeft);
+            while ((timeLeft > 0D) && !done) timeLeft = performMappedPhase(timeLeft);
             
             // Keep track of the duration of the task if necesary.
             timeCompleted += time;
@@ -264,7 +270,7 @@ public abstract class Task implements Serializable, Comparable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected abstract double performMappedPhase(double time) throws Exception;
+    protected abstract double performMappedPhase(double time);
     
     /**
      * SHould the start of this task create an historical event.
@@ -342,7 +348,7 @@ public abstract class Task implements Serializable, Comparable {
      * @throws BuildingException if current or new building doesn't have life support function.
      */
 	protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) 
-			throws BuildingException {
+			{
 		double modifier = 1D;
 		
 		Building currentBuilding = BuildingManager.getBuilding(person);
@@ -422,7 +428,7 @@ public abstract class Task implements Serializable, Comparable {
 	 * @param building the building the person will need to be in for the task.
 	 * @return probability modifier
 	 */
-	protected static double getRelationshipModifier(Person person, Building building) throws BuildingException {
+	protected static double getRelationshipModifier(Person person, Building building) {
 		double result = 1D;
 		
 		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();

@@ -7,17 +7,21 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.*;
-import java.text.DecimalFormat;
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.*;
+import org.mars_sim.msp.core.structure.PowerGrid;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
-import org.mars_sim.msp.ui.swing.*;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.text.DecimalFormat;
 
 /** 
  * The PowerGridTabPanel is a tab panel for a settlement's power grid information.
@@ -161,7 +165,7 @@ public class PowerGridTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the power table.
      */
-    private class PowerTableModel extends AbstractTableModel {
+    private static class PowerTableModel extends AbstractTableModel {
         
         Settlement settlement;
         java.util.List<Building> buildings;
@@ -204,7 +208,7 @@ public class PowerGridTabPanel extends TabPanel {
         
         public Object getValueAt(int row, int column) {
             
-            Building building = (Building) buildings.get(row);
+            Building building = buildings.get(row);
             String powerMode = building.getPowerMode();
             
             if (column == 0) {
@@ -229,7 +233,7 @@ public class PowerGridTabPanel extends TabPanel {
                 	}
                 	catch (Exception e) {}
                 }
-                return new Double(generated);
+                return generated;
             }
             else if (column == 3) {
                 double used = 0D;
@@ -237,7 +241,7 @@ public class PowerGridTabPanel extends TabPanel {
                     used = building.getFullPowerRequired();
                 else if (powerMode.equals(Building.POWER_DOWN))
                     used = building.getPoweredDownPowerRequired();
-                return new Double(used);
+                return used;
             }
             else return "unknown";
         }

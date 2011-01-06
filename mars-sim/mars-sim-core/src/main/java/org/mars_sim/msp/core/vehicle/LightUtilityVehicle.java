@@ -6,8 +6,6 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
-import java.util.Collection;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -16,6 +14,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.util.Collection;
 
 /**
  * A light utility vehicle that can be used for construction, loading and mining.
@@ -31,7 +31,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     private int slotNumber  = 0;
     
     public LightUtilityVehicle(String name, String description, Settlement settlement)
-    		throws Exception {
+    		{
     	// Use GroundVehicle constructor.
     	super(name, description, settlement);
 	
@@ -65,9 +65,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
     @Override
     public boolean isAppropriateOperator(VehicleOperator operator) {
-    	if ((operator instanceof Person) && (getInventory().containsUnit((Unit) operator))) 
-    		return true;
-    	else return false;
+        return (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
     }
 
     /**
@@ -120,7 +118,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     }
     
     @Override
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     	super.timePassing(time);
     	
     	// Add active time if crewed.

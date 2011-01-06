@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
+import javax.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.*;
-import javax.swing.event.*;
 
 /** 
  * ToolFrameListener manages internal frame behaviors for tool windows.

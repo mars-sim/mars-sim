@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
@@ -20,8 +15,12 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
  
 /**
  * The Farming class is a building function for greenhouse farming.
@@ -46,28 +45,28 @@ public class Farming extends Function implements Serializable {
      * @param building the building the function is for.
      * @throws BuildingException if error in constructing function.
      */
-    public Farming(Building building) throws BuildingException {
+    public Farming(Building building) {
     	// Use Function constructor.
     	super(NAME, building);
     	
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			cropNum = config.getCropNum(building.getName());
 			powerGrowingCrop = config.getPowerForGrowingCrop(building.getName());
 			powerSustainingCrop = config.getPowerForSustainingCrop(building.getName());
 			growingArea = config.getCropGrowingArea(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("Farming.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Farming.constructor: " + e.getMessage());
+//		}
 		
 		// Determine maximum harvest.
 		maxHarvest = growingArea * HARVEST_MULTIPLIER;
 		
 		// Create initial crops.
 		crops = new ArrayList<Crop>();
-		try {
+//		try {
 			Settlement settlement = building.getBuildingManager().getSettlement();
 			for (int x=0; x < cropNum; x++) {
 				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
@@ -75,10 +74,10 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 				building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
-		}
-		catch (Exception e) {
-			throw new BuildingException("Crops could not be loaded for greenhouse: " + e.getMessage());  
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Crops could not be loaded for greenhouse: " + e.getMessage());
+//		}
     }
     
     /**
@@ -89,8 +88,8 @@ public class Farming extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is value of estimated food needed by population per orbit.
         double foodPerSol = SimulationConfig.instance().getPersonConfiguration().getFoodConsumptionRate();
@@ -149,7 +148,7 @@ public class Farming extends Function implements Serializable {
      * @return workTime remaining after working on crop (millisols)
      * @throws Exception if error adding work.
      */
-    public double addWork(double workTime) throws Exception {
+    public double addWork(double workTime) {
 		double workTimeRemaining = workTime;
 		int needyCrops = 0;
 		// Scott - I used the comparison criteria 00001D rather than 0D
@@ -219,7 +218,7 @@ public class Farming extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
         
 		// Determine resource processing production level.
 		double productionLevel = 0D;
@@ -229,7 +228,7 @@ public class Farming extends Function implements Serializable {
 		// Add time to each crop.
 		Iterator<Crop> i = crops.iterator();
 		int newCrops = 0;
-		try {
+//		try {
 			while (i.hasNext()) {
 				Crop crop = i.next();
 				crop.timePassing(time * productionLevel);
@@ -240,13 +239,13 @@ public class Farming extends Function implements Serializable {
 					newCrops++;
 				}
 			}
-        }
-        catch (Exception e) {
-        	throw new BuildingException("Farming.timePassing(): Problem with crops");
-        }
+//        }
+//        catch (Exception e) {
+//        	throw new BuildingException("Farming.timePassing(): Problem with crops");
+//        }
         
 		// Add any new crops.
-		try {
+//		try {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 			for (int x=0; x < newCrops; x++) {
 				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
@@ -254,10 +253,10 @@ public class Farming extends Function implements Serializable {
 				crops.add(crop);
 				getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
 			}
-		}
-		catch (Exception e) {
-			throw new BuildingException("Farming could not add new crop: " + e.getMessage());    
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Farming could not add new crop: " + e.getMessage());
+//		}
 	}
 	
 	/**
@@ -312,7 +311,7 @@ public class Farming extends Function implements Serializable {
 	 * @return max harvest (kg)
 	 * @throws Exception if error determining harvest.
 	 */
-	public double getEstimatedHarvestPerOrbit() throws Exception {
+	public double getEstimatedHarvestPerOrbit() {
 		double aveGrowingTime = Crop.getAverageCropGrowingTime();
 		int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;

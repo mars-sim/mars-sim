@@ -8,15 +8,15 @@
 
 package org.mars_sim.msp.core.person.medical;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
 
 /**
  * This class represents a medical station.
@@ -126,9 +126,8 @@ public class MedicalStation implements MedicalAid, Serializable {
             
             // Check if problem is waiting to be treated.
             boolean waiting = problemsAwaitingTreatment.contains(problem);
-            
-            if (supported && degrading && !treating && !waiting) return true;
-            else return false;
+
+            return supported && degrading && !treating && !waiting;
         }
     }
     
@@ -139,7 +138,7 @@ public class MedicalStation implements MedicalAid, Serializable {
      * @param problem The health problem to await treatment.
      * @throws Exception if health problem cannot be treated here.
      */
-    public void requestTreatment(HealthProblem problem) throws Exception {
+    public void requestTreatment(HealthProblem problem) {
 
         if (problem == null) throw new IllegalArgumentException("problem is null");
 
@@ -158,7 +157,7 @@ public class MedicalStation implements MedicalAid, Serializable {
                 problemsAwaitingTreatment.add(problem);
             }
         }
-        else throw new Exception("Health problem cannot be treated at this facility.");
+        else throw new IllegalStateException("Health problem cannot be treated at this facility.");
     }
 
     /**
@@ -168,7 +167,7 @@ public class MedicalStation implements MedicalAid, Serializable {
      * @param treatmentDuration the time required to perform the treatment.
      * @throws Exception if treatment cannot be started.
      */
-    public void startTreatment(HealthProblem problem, double treatmentDuration) throws Exception {
+    public void startTreatment(HealthProblem problem, double treatmentDuration) {
         
         if (problem == null) throw new IllegalArgumentException("problem is null");
         
@@ -177,7 +176,7 @@ public class MedicalStation implements MedicalAid, Serializable {
             problemsBeingTreated.add(problem);
             problemsAwaitingTreatment.remove(problem);
         }
-        else throw new Exception("Health problem not in medical station's waiting queue.");
+        else throw new IllegalStateException("Health problem not in medical station's waiting queue.");
     }
 
     /**
@@ -186,7 +185,7 @@ public class MedicalStation implements MedicalAid, Serializable {
      * @param problem Health problem stopping treatment on.
      * @throws Exception if health problem is not being treated.
      */
-    public void stopTreatment(HealthProblem problem) throws Exception {
+    public void stopTreatment(HealthProblem problem) {
         
         if (problemsBeingTreated.contains(problem)) {
             problem.stopTreatment();
@@ -196,7 +195,7 @@ public class MedicalStation implements MedicalAid, Serializable {
             boolean recovering = problem.getRecovering();
             if (!cured && !dead && !recovering) problemsAwaitingTreatment.add(problem);
         }
-        else throw new Exception("Health problem not currently being treated.");
+        else throw new IllegalStateException("Health problem not currently being treated.");
     }
     
     /**

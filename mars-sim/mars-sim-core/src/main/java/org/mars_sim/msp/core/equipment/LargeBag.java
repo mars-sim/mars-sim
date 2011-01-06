@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.Phase;
+
+import java.io.Serializable;
 
 /**
  * A large bag container for holding solid amount resources.
@@ -27,7 +27,7 @@ public class LargeBag extends Equipment implements Container, Serializable {
      * @param location the location of the large bag.
      * @throws Exception if error creating large bag.
      */
-    public LargeBag(Coordinates location) throws Exception {
+    public LargeBag(Coordinates location) {
         // Use Equipment constructor
         super(TYPE, location);
         

@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.mars;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
+
+import java.io.Serializable;
 
 
 /** The Landmark class represents a surface landmark on virtual Mars.

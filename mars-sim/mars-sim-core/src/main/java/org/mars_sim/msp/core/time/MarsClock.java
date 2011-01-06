@@ -52,27 +52,27 @@ public class MarsClock implements Serializable {
      * @param dateString format: "orbit-month-sol:millisol"
      * @throws Exception if dateString is invalid.
      */
-    public MarsClock(String dateString) throws Exception {
+    public MarsClock(String dateString) {
     
         // Set initial date to dateString. ex: "15-Adir-01:000.000"
         String orbitStr = dateString.substring(0, dateString.indexOf("-"));
         orbit = Integer.parseInt(orbitStr);
-        if (orbit < 0) throw new Exception("Invalid orbit number: " + orbit);
+        if (orbit < 0) throw new IllegalStateException("Invalid orbit number: " + orbit);
         	
         String monthStr = dateString.substring(dateString.indexOf("-") + 1, dateString.lastIndexOf("-"));
         month = 0;
         for (int x=0; x < MONTH_NAMES.length; x++) {
         	if (monthStr.equals(MONTH_NAMES[x])) month = x + 1;
         }
-        if ((month < 1) || (month > MONTH_NAMES.length)) throw new Exception("Invalid month: " + monthStr);
+        if ((month < 1) || (month > MONTH_NAMES.length)) throw new IllegalStateException("Invalid month: " + monthStr);
         	
         String solStr = dateString.substring(dateString.lastIndexOf("-") + 1, dateString.indexOf(":"));
         sol = Integer.parseInt(solStr);
-        if (sol < 1) throw new Exception("Invalid sol number: " + sol);
+        if (sol < 1) throw new IllegalStateException("Invalid sol number: " + sol);
         	
         String millisolStr = dateString.substring(dateString.indexOf(":") + 1);
         millisol = Double.parseDouble(millisolStr);
-        if (millisol < 0D) throw new Exception("Invalid millisol number: " + millisol);
+        if (millisol < 0D) throw new IllegalStateException("Invalid millisol number: " + millisol);
     }
     
     /** Constructs a MarsClock object with a given time
@@ -122,20 +122,20 @@ public class MarsClock implements Serializable {
         double result = 0D;
         
         // Add millisols up to current orbit
-        for (int x=1; x < time.getOrbit(); x++) {
+        for (int x=1; x < time.orbit; x++) {
             if (MarsClock.isLeapOrbit(x)) result += SOLS_IN_ORBIT_LEAPYEAR * 1000D;
             else result += SOLS_IN_ORBIT_NON_LEAPYEAR * 1000D;
         }
         
         // Add millisols up to current month
-        for (int x=1; x < time.getMonth(); x++) 
-            result += MarsClock.getSolsInMonth(x, time.getOrbit()) * 1000D;
+        for (int x=1; x < time.month; x++)
+            result += MarsClock.getSolsInMonth(x, time.orbit) * 1000D;
             
         // Add millisols up to current sol
-        result += (time.getSolOfMonth() - 1) * 1000D;
+        result += (time.sol - 1) * 1000D;
    
         // Add millisols in current sol
-        result += time.getMillisol();
+        result += time.millisol;
         
         return result;
     }
@@ -212,14 +212,14 @@ public class MarsClock implements Serializable {
      * @return current date string
      */
     public String getDateString() {
-        StringBuffer result = new StringBuffer("");
+        StringBuilder result = new StringBuilder("");
 
         // Append orbit
-        result.append("" + orbit + "-");
+        result.append("").append(orbit).append("-");
    
                   
         // Append month
-        result.append(getMonthName() + "-");
+        result.append(getMonthName()).append("-");
 
         // Append sol of month
         String solString = "" + sol;
@@ -354,10 +354,10 @@ public class MarsClock implements Serializable {
     	boolean result = true;
     	if (object instanceof MarsClock) {
     		MarsClock otherClock = (MarsClock) object;
-    		if (orbit != otherClock.getOrbit()) result = false;
-    		else if (month != otherClock.getMonth()) result = false;
-    		else if (sol != otherClock.getSolOfMonth()) result = false;
-    		else if (millisol != otherClock.getMillisol()) result = false;
+    		if (orbit != otherClock.orbit) result = false;
+    		else if (month != otherClock.month) result = false;
+    		else if (sol != otherClock.sol) result = false;
+    		else if (millisol != otherClock.millisol) result = false;
     	}
     	else result = false;
     	return result;

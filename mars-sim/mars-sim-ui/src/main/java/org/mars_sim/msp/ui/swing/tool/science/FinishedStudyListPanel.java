@@ -6,24 +6,17 @@
  */
 package org.mars_sim.msp.ui.swing.tool.science;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.util.List;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.List;
 
 /**
  * A panel showing a selectable list of finished scientific studies.
@@ -122,7 +115,7 @@ public class FinishedStudyListPanel extends JPanel {
     /**
      * The study table model inner class.
      */
-    private class StudyTableModel extends AbstractTableModel {
+    private static class StudyTableModel extends AbstractTableModel {
 
         // Data members
         private List<ScientificStudy> studies;

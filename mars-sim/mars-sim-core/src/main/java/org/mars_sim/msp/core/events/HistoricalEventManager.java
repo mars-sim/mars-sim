@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.core.events;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.MarsClock;
-import org.mars_sim.msp.core.time.MasterClock;
 
 /**
  * This class provides a manager that maintains a model of the events that

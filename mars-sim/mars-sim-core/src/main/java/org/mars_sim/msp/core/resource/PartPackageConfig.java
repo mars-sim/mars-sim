@@ -6,15 +6,11 @@
  */
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.jdom.Document;
 import org.jdom.Element;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 /**
@@ -38,7 +34,7 @@ public class PartPackageConfig implements Serializable {
 	 * @param partPackageDoc the part package XML document.
 	 * @throws Exception if error reading XML document
 	 */
-	public PartPackageConfig(Document partPackageDoc) throws Exception {
+	public PartPackageConfig(Document partPackageDoc) {
 		partPackages = new ArrayList<PartPackage>();
 		loadPartPackages(partPackageDoc);
 	}
@@ -49,7 +45,7 @@ public class PartPackageConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadPartPackages(Document partPackageDoc) throws Exception {
+	private void loadPartPackages(Document partPackageDoc) {
 		
 		Element root = partPackageDoc.getRootElement();
 		List<Element> partPackageNodes = root.getChildren(PART_PACKAGE);
@@ -76,7 +72,7 @@ public class PartPackageConfig implements Serializable {
 	 * @return parts and their numbers.
 	 * @throws Exception if part package name does not match any packages.
 	 */
-	public Map<Part, Integer> getPartsInPackage(String name) throws Exception {
+	public Map<Part, Integer> getPartsInPackage(String name) {
 		Map<Part, Integer> result = null;
 		
 		PartPackage foundPartPackage = null;
@@ -89,7 +85,7 @@ public class PartPackageConfig implements Serializable {
 		
 		if (foundPartPackage != null) 
 			result = new HashMap<Part, Integer>(foundPartPackage.parts);
-		else throw new Exception("name: " + name + " does not match any part packages.");
+		else throw new IllegalStateException("name: " + name + " does not match any part packages.");
 		
 		return result;
 	}
@@ -97,7 +93,7 @@ public class PartPackageConfig implements Serializable {
 	/**
 	 * Private inner class for storing part packages.
 	 */
-	private class PartPackage implements Serializable {
+	private static class PartPackage implements Serializable {
 		
 		// Data members
 		private String name;

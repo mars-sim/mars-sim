@@ -7,25 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /** 
  * The SkillTabPanel is a tab panel for the skills of a person.
@@ -80,7 +75,7 @@ public class SkillTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the skill table.
      */
-    private class SkillTableModel extends AbstractTableModel {
+    private static class SkillTableModel extends AbstractTableModel {
         
         SkillManager manager;
         Map<String, Integer> skills;
@@ -92,11 +87,11 @@ public class SkillTabPanel extends TabPanel {
             String[] keys = manager.getKeys();
             skills = new HashMap<String, Integer>();
             skillNames = new ArrayList<String>();
-            for (int x=0; x < keys.length; x++) {
-                int level = manager.getSkillLevel(keys[x]);
+            for (String key : keys) {
+                int level = manager.getSkillLevel(key);
                 if (level > 0) {
-                    skillNames.add(keys[x]);
-                    skills.put(keys[x], level);
+                    skillNames.add(key);
+                    skills.put(key, level);
                 }
             }
         }
@@ -132,11 +127,11 @@ public class SkillTabPanel extends TabPanel {
             String[] keys = manager.getKeys();
             List<String> newSkillNames = new ArrayList<String>();
             Map<String, Integer> newSkills = new HashMap<String, Integer>();
-            for (int x=0; x < keys.length; x++) {
-                int level = manager.getSkillLevel(keys[x]);
+            for (String key : keys) {
+                int level = manager.getSkillLevel(key);
                 if (level > 0) {
-                    newSkillNames.add(keys[x]);
-                    newSkills.put(keys[x], level);
+                    newSkillNames.add(key);
+                    newSkills.put(key, level);
                 }
             }
                 

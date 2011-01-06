@@ -7,7 +7,9 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import javax.swing.border.*;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
 
 /**
  * The MarsPanelBorder is a common compound border used for panels.

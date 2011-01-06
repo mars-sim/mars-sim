@@ -6,27 +6,18 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
 
 /**
  * A panel showing information about a manufacturing process.
@@ -67,10 +58,10 @@ public class ManufacturePanel extends JPanel {
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent event) {
-        		try {
+//        		try {
         			getManufactureProcess().getWorkshop().endManufacturingProcess(getManufactureProcess(), true);
-        		}
-        		catch (BuildingException e) {}
+//        		}
+//        		catch (BuildingException e) {}
 	        }
         });
         cancelButton.setToolTipText("Cancel manufacturing process");
@@ -161,22 +152,22 @@ public class ManufacturePanel extends JPanel {
      * @param building the manufacturing building (or null if none).
      */
     public static String getToolTipString(ManufactureProcessInfo info, Building building) {
-    	StringBuffer result = new StringBuffer("<html>");
-    	
-    	result.append("Manufacturing Process: " + info.getName() + "<br>");
-    	if (building != null) result.append("Manufacture Building: " + building.getName() + "<br>");
-    	result.append("Effort Time Required: " + info.getWorkTimeRequired() + " millisols<br>");
-    	result.append("Process Time Required: " + info.getProcessTimeRequired() + " millisols<br>");
-        result.append("Power Required: " + info.getPowerRequired() + " kW<br>");
-    	result.append("Building Tech Level Required: " + info.getTechLevelRequired() + "<br>");
-    	result.append("Materials Science Skill Level Required: " + info.getSkillLevelRequired() + "<br>");
+        StringBuilder result = new StringBuilder("<html>");
+
+        result.append("Manufacturing Process: ").append(info.getName()).append("<br>");
+    	if (building != null) result.append("Manufacture Building: ").append(building.getName()).append("<br>");
+        result.append("Effort Time Required: ").append(info.getWorkTimeRequired()).append(" millisols<br>");
+        result.append("Process Time Required: ").append(info.getProcessTimeRequired()).append(" millisols<br>");
+        result.append("Power Required: ").append(info.getPowerRequired()).append(" kW<br>");
+        result.append("Building Tech Level Required: ").append(info.getTechLevelRequired()).append("<br>");
+        result.append("Materials Science Skill Level Required: ").append(info.getSkillLevelRequired()).append("<br>");
     	
     	// Add process inputs.
     	result.append("Process Inputs:<br>");
     	Iterator<ManufactureProcessItem> i = info.getInputList().iterator();
     	while (i.hasNext()) {
     		ManufactureProcessItem item = i.next();
-    		result.append("&nbsp;&nbsp;" + item.getName() + ": " + getItemAmountString(item) + "<br>");
+            result.append("&nbsp;&nbsp;").append(item.getName()).append(": ").append(getItemAmountString(item)).append("<br>");
     	}
     	
     	// Add process outputs.
@@ -184,7 +175,7 @@ public class ManufacturePanel extends JPanel {
     	Iterator<ManufactureProcessItem> j = info.getOutputList().iterator();
     	while (j.hasNext()) {
     		ManufactureProcessItem item = j.next();
-    		result.append("&nbsp;&nbsp;" + item.getName() + ": " + getItemAmountString(item) + "<br>");
+            result.append("&nbsp;&nbsp;").append(item.getName()).append(": ").append(getItemAmountString(item)).append("<br>");
     	}
     	
     	result.append("</html>");

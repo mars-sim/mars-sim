@@ -7,19 +7,7 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.ExploredLocation;
@@ -42,6 +30,13 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mission for mining mineral concentrations at an explored site.
@@ -92,7 +87,7 @@ public class Mining extends RoverMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if error creating mission.
 	 */
-	public Mining(Person startingPerson) throws MissionException {
+	public Mining(Person startingPerson) {
 		
 		// Use RoverMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, RoverMission.MIN_PEOPLE);
@@ -156,7 +151,7 @@ public class Mining extends RoverMission {
 	 */
 	public Mining(Collection<Person> members, Settlement startingSettlement, 
     		ExploredLocation miningSite, Rover rover, LightUtilityVehicle luv, 
-    		String description) throws MissionException {
+    		String description) {
 		
        	// Use RoverMission constructor.
     	super(description, (Person) members.toArray()[0], 1, rover);
@@ -225,13 +220,13 @@ public class Mining extends RoverMission {
 			
 			// Check if there are enough bags at the settlement for collecting minerals.
 			boolean enoughBags = false;
-			try {
+//			try {
 				int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class);
 				enoughBags = (numBags >= NUMBER_OF_BAGS);
-			}
-			catch (InventoryException e) {
-				logger.log(Level.SEVERE, "Error checking if enough bags available.");
-			}
+//			}
+//			catch (InventoryException e) {
+//				logger.log(Level.SEVERE, "Error checking if enough bags available.");
+//			}
 			
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
@@ -334,7 +329,7 @@ public class Mining extends RoverMission {
 	}
 	
 	@Override
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
     	if (EMBARKING.equals(getPhase())) {
     		startTravelToNextNode();
     		setPhase(VehicleMission.TRAVELLING);
@@ -359,13 +354,13 @@ public class Mining extends RoverMission {
     }
     
     @Override
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
     	super.performPhase(person);
     	if (MINING_SITE.equals(getPhase())) miningPhase(person);
     }
     
     @Override
-    protected void performEmbarkFromSettlementPhase(Person person) throws MissionException {
+    protected void performEmbarkFromSettlementPhase(Person person) {
     	super.performEmbarkFromSettlementPhase(person);
     	
     	// Attach light utility vehicle for towing.
@@ -399,7 +394,7 @@ public class Mining extends RoverMission {
     
     @Override
     protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) 
-		throws MissionException {
+		{
 
     	// Unload towed light utility vehicle.
     	if (!isDone() && (getRover().getTowedVehicle() != null)) {
@@ -437,7 +432,7 @@ public class Mining extends RoverMission {
      * @param person the person performing the mining phase.
      * @throws MissionException if error performing the mining phase.
      */
-    private final void miningPhase(Person person) throws MissionException {
+    private void miningPhase(Person person) {
     	
     	// Set the mining site start time if necessary.
     	if (miningSiteStartTime == null) 
@@ -477,31 +472,31 @@ public class Mining extends RoverMission {
 	    
 			// If no one can mine or collect minerals at the site and this is not due to it just being
 			// night time, end the mining phase.
-			try {
+//			try {
 				Mars mars = Simulation.instance().getMars();
 				boolean inDarkPolarRegion = mars.getSurfaceFeatures().inDarkPolarRegion(
                         getCurrentMissionLocation());
 				double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(getCurrentMissionLocation());
 				if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) setPhaseEnded(true);
-			} 
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e);
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e);
+//			}
 			
 			// Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
 			if (hasEmergency()) setPhaseEnded(true);
 			
-			try {
+//			try {
 				// Check if enough resources for remaining trip.
 				if (!hasEnoughResourcesForRemainingMission(false)) {
 					// If not, determine an emergency destination.
 					determineEmergencyDestination(person);
 					setPhaseEnded(true);
 				}
-			}
-			catch (Exception e) {
-				throw new MissionException(getPhase(), e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(getPhase(), e.getMessage());
+//			}
 		}
 		else {
 			// If mining time has expired for the site, have everyone end their 
@@ -522,7 +517,7 @@ public class Mining extends RoverMission {
 			if (RandomUtil.lessThanRandPercent(75D)) {
 				// If mining is still needed at site, assign tasks.
 				if (!endMiningSite && !timeExpired) {
-					try {
+//					try {
 						// If person can collect minerals the site, start that task.
 						if (canCollectExcavatedMinerals(person)) {
 							AmountResource mineralToCollect = getMineralToCollect(person);
@@ -534,10 +529,10 @@ public class Mining extends RoverMission {
 							assignTask(person, new MineSite(person, miningSite.getLocation(), 
 									(Rover) getVehicle(), luv));
 						}
-					}
-					catch(Exception e) {
-						throw new MissionException(getPhase(), e);
-					}
+//					}
+//					catch(Exception e) {
+//						throw new MissionException(getPhase(), e);
+//					}
 				}
 			}
 		}
@@ -619,7 +614,7 @@ public class Mining extends RoverMission {
 	 * @throws MissionException if error determining mining site.
 	 */
 	private static ExploredLocation determineBestMiningSite(Rover rover, Settlement homeSettlement) 
-			throws MissionException {
+			{
 		
 		ExploredLocation result = null;
 		double bestValue = 0D;
@@ -663,7 +658,7 @@ public class Mining extends RoverMission {
 	 * @throws MissionException if error determining the value.
 	 */
 	private static double getMiningSiteValue(ExploredLocation site, Settlement settlement) 
-			throws MissionException {
+			{
 		
 		double result = 0D;
 		
@@ -671,17 +666,17 @@ public class Mining extends RoverMission {
 		Iterator<String> i = concentrations.keySet().iterator();
 		while (i.hasNext()) {
 			String mineralType = i.next();
-			try {
+//			try {
 				AmountResource mineralResource = AmountResource.findAmountResource(mineralType);
 				Good mineralGood = GoodsUtil.getResourceGood(mineralResource);
 				double mineralValue = settlement.getGoodsManager().getGoodValuePerItem(mineralGood);
 				double concentration = concentrations.get(mineralType);
 				double mineralAmount = (concentration / 100D) * MINERAL_BASE_AMOUNT;
 				result += mineralValue * mineralAmount;
-			}
-			catch (Exception e) {
-				throw new MissionException(null, e);
-			}
+//			}
+//			catch (Exception e) {
+//				throw new MissionException(null, e);
+//			}
 		}
 		
 		return result;
@@ -694,7 +689,7 @@ public class Mining extends RoverMission {
      * @throws MissionException if error determining time limit.
      */
     private static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
-    		throws MissionException {
+{
     	
     	Inventory vInv = rover.getInventory();
     	
@@ -702,7 +697,7 @@ public class Mining extends RoverMission {
     	
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 		
-    	try {
+//    	try {
     		// Check food capacity as time limit.
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodConsumptionRate = config.getFoodConsumptionRate();
@@ -723,10 +718,10 @@ public class Mining extends RoverMission {
     		double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
     		double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
     		if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(null, e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(null, e);
+//    	}
     	
     	// Convert timeLimit into millisols and use error margin.
     	timeLimit = (timeLimit * 1000D);
@@ -737,16 +732,16 @@ public class Mining extends RoverMission {
 	
 	@Override
 	public Map<Class, Integer> getEquipmentNeededForRemainingMission(
-			boolean useBuffer) throws MissionException {
+			boolean useBuffer) {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
     	
         	// Include one EVA suit per person on mission.
-        	result.put(EVASuit.class, new Integer(getPeopleNumber()));
+        	result.put(EVASuit.class, getPeopleNumber());
     		
     		// Include required number of bags.
-    		result.put(Bag.class, new Integer(NUMBER_OF_BAGS));
+    		result.put(Bag.class, NUMBER_OF_BAGS);
     	
     		equipmentNeededCache = result;
     		return result;
@@ -784,7 +779,7 @@ public class Mining extends RoverMission {
 	}
 	
 	@Override
-    public double getEstimatedRemainingMissionTime(boolean useBuffer) throws MissionException {
+    public double getEstimatedRemainingMissionTime(boolean useBuffer) {
     	double result = super.getEstimatedRemainingMissionTime(useBuffer);
     	result += getEstimatedRemainingMiningSiteTime();
     	return result;
@@ -814,7 +809,7 @@ public class Mining extends RoverMission {
 	
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) throws MissionException {
+    		boolean parts) {
     	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
     	
     	double miningSiteTime = getEstimatedRemainingMiningSiteTime();
@@ -823,28 +818,28 @@ public class Mining extends RoverMission {
     	int crewNum = getPeopleNumber();
     	
     	// Determine life support supplies needed for trip.
-    	try {
+//    	try {
     		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     		double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(oxygen)) 
-    			oxygenAmount += ((Double) result.get(oxygen)).doubleValue();
-    		result.put(oxygen, new Double(oxygenAmount));
+    			oxygenAmount += (Double) result.get(oxygen);
+    		result.put(oxygen, oxygenAmount);
     		
     		AmountResource water = AmountResource.findAmountResource("water");
     		double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(water)) 
-    			waterAmount += ((Double) result.get(water)).doubleValue();
-    		result.put(water, new Double(waterAmount));
+    			waterAmount += (Double) result.get(water);
+    		result.put(water, waterAmount);
     		
     		AmountResource food = AmountResource.findAmountResource("food");
     		double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
     		if (result.containsKey(food)) 
-    			foodAmount += ((Double) result.get(food)).doubleValue();
-    		result.put(food, new Double(foodAmount));
-    	}
-    	catch(Exception e) {
-    		throw new MissionException(getPhase(), e);
-    	}
+    			foodAmount += (Double) result.get(food);
+    		result.put(food, foodAmount);
+//    	}
+//    	catch(Exception e) {
+//    		throw new MissionException(getPhase(), e);
+//    	}
     	
     	return result;
     }
@@ -957,13 +952,13 @@ public class Mining extends RoverMission {
 	 * @param amount the amount (kg)
 	 * @throws Exception if error collecting mineral.
 	 */
-	public void collectMineral(AmountResource mineral, double amount) throws Exception {
+	public void collectMineral(AmountResource mineral, double amount) {
 		double currentExcavated = 0D;
 		if (excavatedMinerals.containsKey(mineral)) 
 			currentExcavated = excavatedMinerals.get(mineral);
 		if (currentExcavated >= amount)
 			excavatedMinerals.put(mineral, (currentExcavated - amount));
-		else throw new Exception(mineral.getName() + " amount: " + amount + 
+		else throw new IllegalStateException(mineral.getName() + " amount: " + amount +
 				" more than currently excavated.");
 		fireMissionUpdate(COLLECT_MINERALS_EVENT);
 	}

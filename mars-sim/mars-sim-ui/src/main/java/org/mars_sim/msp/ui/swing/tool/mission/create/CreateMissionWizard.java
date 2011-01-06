@@ -7,19 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.Dimension;
-import java.awt.Frame;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A dialog wizard for creating new missions.

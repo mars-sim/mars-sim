@@ -6,26 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.List;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.Science;
@@ -38,6 +18,16 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.List;
 
 /**
  * A tab panel displaying a person's scientific studies and achievements.
@@ -203,7 +193,7 @@ public class ScienceTabPanel extends TabPanel {
     /**
      * Inner class for study table model.
      */
-    private class StudyTableModel extends AbstractTableModel {
+    private static class StudyTableModel extends AbstractTableModel {
         
         // Data members.
         private Person person;
@@ -308,7 +298,7 @@ public class ScienceTabPanel extends TabPanel {
     /**
      * Inner class for achievement table model.
      */
-    private class AchievementTableModel extends AbstractTableModel {
+    private static class AchievementTableModel extends AbstractTableModel {
         
         // Data members.
         private Person person;
@@ -369,7 +359,7 @@ public class ScienceTabPanel extends TabPanel {
                 Science science = sciences.get(rowIndex);
                 if (columnIndex == 0) result = science.getName();
                 else if (columnIndex == 1) {
-                    result = new Double(person.getScientificAchievement(science));
+                    result = person.getScientificAchievement(science);
                 }
             }
             return result;

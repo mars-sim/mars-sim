@@ -7,29 +7,18 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import java.awt.BorderLayout;
-import java.awt.Dialog;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Iterator;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A dialog window for adding members to the mission for the mission tool.
@@ -135,9 +124,9 @@ class AddMembersDialog extends JDialog {
 	 */
 	private void addPeople() {
 		int[] selectedIndexes = availableList.getSelectedIndices();
-		for (int x = 0; x < selectedIndexes.length; x++) {
-			if (memberListModel.getSize() < mission.getMissionCapacity())
-				memberListModel.addElement(availableListModel.elementAt(selectedIndexes[x]));
-		}
+        for (int selectedIndexe : selectedIndexes) {
+            if (memberListModel.getSize() < mission.getMissionCapacity())
+                memberListModel.addElement(availableListModel.elementAt(selectedIndexe));
+        }
 	}
 }

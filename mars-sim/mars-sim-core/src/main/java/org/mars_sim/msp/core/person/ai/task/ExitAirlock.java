@@ -7,11 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
@@ -21,6 +16,11 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.resource.AmountResource;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
@@ -43,7 +43,7 @@ public class ExitAirlock extends Task implements Serializable {
      * @param airlock the airlock to use.
      * @throws Exception if error constructing task.
      */
-    public ExitAirlock(Person person, Airlock airlock) throws Exception {
+    public ExitAirlock(Person person, Airlock airlock) {
         super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
@@ -63,7 +63,7 @@ public class ExitAirlock extends Task implements Serializable {
      * @return the remaining time (millisols) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EXITING_AIRLOCK.equals(getPhase())) return exitingAirlockPhase(time);
     	else return time;
@@ -75,7 +75,7 @@ public class ExitAirlock extends Task implements Serializable {
      * @return
      * @throws Exception
      */
-    private double exitingAirlockPhase(double time) throws Exception {
+    private double exitingAirlockPhase(double time) {
     	
     	double remainingTime = time;
     	
@@ -200,7 +200,7 @@ public class ExitAirlock extends Task implements Serializable {
      * @return true if enough supplies.
      * @throws Exception if error checking suit resources.
      */
-    private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) throws Exception {
+    private static boolean hasEnoughResourcesForSuit(Inventory entityInv, EVASuit suit) {
     	
     	Inventory suitInv = suit.getInventory();
     	int otherPeopleNum = entityInv.findNumUnitsOfClass(Person.class) - 1;
@@ -229,7 +229,7 @@ public class ExitAirlock extends Task implements Serializable {
      * @param suit the EVA suit.
      * @throws Exception if problem loading supplies.
      */
-    private void loadEVASuit(EVASuit suit) throws Exception {
+    private void loadEVASuit(EVASuit suit) {
     	
     	Inventory suitInv = suit.getInventory();
     	Inventory entityInv = person.getContainerUnit().getInventory();

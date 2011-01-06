@@ -6,29 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.construction.*;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A panel displaying a list of construction sites at a settlement.
@@ -144,7 +131,7 @@ public class ConstructionSitesPanel extends JPanel {
     /**
      * A panel displaying information about a particular construction site.
      */
-    private class ConstructionSitePanel extends JPanel {
+    private static class ConstructionSitePanel extends JPanel {
         
         // Data members
         private ConstructionSite site;
@@ -254,22 +241,21 @@ public class ConstructionSitesPanel extends JPanel {
          * Gets a tool tip string for the panel.
          */
         private String getToolTipString() {
-            StringBuffer result = new StringBuffer("<html>");
-            result.append(getStatusString() + "<br>");
+            StringBuilder result = new StringBuilder("<html>");
+            result.append(getStatusString()).append("<br>");
             
             ConstructionStage stage = site.getCurrentConstructionStage();
             if (stage != null) {
                 ConstructionStageInfo info = stage.getInfo();
-                result.append("Stage Type: " + info.getType() + "<br>");
+                result.append("Stage Type: ").append(info.getType()).append("<br>");
                 if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
                 else result.append("Work Type: Construction<br>");
                 DecimalFormat formatter = new DecimalFormat("0.0");
                 String requiredWorkTime = formatter.format(info.getWorkTime() / 1000D);
-                result.append("Work Time Required: " + requiredWorkTime + " Sols<br>");
+                result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
                 String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
-                result.append("Work Time Completed: " + completedWorkTime + " Sols<br>");
-                result.append("Architect Construction Skill Required: " + 
-                        info.getArchitectConstructionSkill() + "<br>");
+                result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
+                result.append("Architect Construction Skill Required: ").append(info.getArchitectConstructionSkill()).append("<br>");
                 
                 // Add construction resources.
                 if ((info.getResources().size() > 0) && !stage.isSalvaging()) {
@@ -278,7 +264,7 @@ public class ConstructionSitesPanel extends JPanel {
                     while (i.hasNext()) {
                         AmountResource resource = i.next();
                         double amount = info.getResources().get(resource);
-                        result.append("&nbsp;&nbsp;" + resource.getName() + ": " + amount + " kg<br>");
+                        result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(amount).append(" kg<br>");
                     }
                 }
                 
@@ -290,7 +276,7 @@ public class ConstructionSitesPanel extends JPanel {
                     while (j.hasNext()) {
                         Part part = j.next();
                         int number = info.getParts().get(part);
-                        result.append("&nbsp;&nbsp;" + part.getName() + ": " + number + "<br>");
+                        result.append("&nbsp;&nbsp;").append(part.getName()).append(": ").append(number).append("<br>");
                     }
                 }
                 
@@ -301,11 +287,11 @@ public class ConstructionSitesPanel extends JPanel {
                     Iterator<ConstructionVehicleType> k = info.getVehicles().iterator();
                     while (k.hasNext()) {
                         ConstructionVehicleType vehicle = k.next();
-                        result.append("&nbsp;&nbsp;Vehicle Type: " + vehicle.getVehicleType() + "<br>");
+                        result.append("&nbsp;&nbsp;Vehicle Type: ").append(vehicle.getVehicleType()).append("<br>");
                         result.append("&nbsp;&nbsp;Attachment Parts:<br>");
                         Iterator<Part> l = vehicle.getAttachmentParts().iterator();
                         while (l.hasNext()) {
-                            result.append("&nbsp;&nbsp;&nbsp;&nbsp;" + l.next().getName() + "<br>");
+                            result.append("&nbsp;&nbsp;&nbsp;&nbsp;").append(l.next().getName()).append("<br>");
                         }
                     }
                 }

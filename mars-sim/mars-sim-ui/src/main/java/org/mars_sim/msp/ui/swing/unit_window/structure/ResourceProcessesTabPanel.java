@@ -7,34 +7,24 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * A tab panel for displaying all of the resource processes in a settlement.
@@ -103,22 +93,22 @@ public class ResourceProcessesTabPanel extends TabPanel {
     	// Clear the list.
     	processListPanel.removeAll();
     	
-    	try {
+//    	try {
     		// Add a label for each process in each processing building.
     		Iterator<Building> i = processingBuildings.iterator();
     		while (i.hasNext()) {
-    			Building building = (Building) i.next();
+    			Building building = i.next();
     			ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
     			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
     			while (j.hasNext()) {
-    				ResourceProcess process = (ResourceProcess) j.next();
+    				ResourceProcess process = j.next();
     				processListPanel.add(new ResourceProcessPanel(process, building));
     			}
     		}
-    	}
-    	catch (BuildingException e) {
-    		e.printStackTrace(System.err);
-    	}
+//    	}
+//    	catch (BuildingException e) {
+//    		e.printStackTrace(System.err);
+//    	}
     }
 	
 	@Override
@@ -136,10 +126,10 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		else {
 			// Update process list.
 			Component[] components = processListPanel.getComponents();
-			for (int x = 0; x < components.length; x++) {
-				ResourceProcessPanel panel = (ResourceProcessPanel) components[x];
-				panel.update();
-			}
+            for (Component component : components) {
+                ResourceProcessPanel panel = (ResourceProcessPanel) component;
+                panel.update();
+            }
 		}
 	}
 	
@@ -155,7 +145,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	/**
 	 * An internal class for a resource process panel.
 	 */
-	private class ResourceProcessPanel extends JPanel {
+	private static class ResourceProcessPanel extends JPanel {
 		
 		// Data members.
 		private ResourceProcess process;
@@ -204,12 +194,12 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		}
 		
 		private String getToolTipString(Building building) {
-			StringBuffer result = new StringBuffer("<html>");
-			
-			result.append("Resource Process: " + process.getProcessName() + "<br>");
-			result.append("Building: " + building.getName() + "<br>");
-            
-            result.append("Power Required: " + decFormatter.format(process.getPowerRequired()) + " kW<br>");
+            StringBuilder result = new StringBuilder("<html>");
+
+            result.append("Resource Process: ").append(process.getProcessName()).append("<br>");
+            result.append("Building: ").append(building.getName()).append("<br>");
+
+            result.append("Power Required: ").append(decFormatter.format(process.getPowerRequired())).append(" kW<br>");
 			
 			result.append("Process Inputs:<br>");
 			Iterator<AmountResource> i = process.getInputResources().iterator();
@@ -219,7 +209,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 				String rateString = decFormatter.format(rate);
 				result.append("&nbsp;&nbsp;");
 				if (process.isAmbientInputResource(resource)) result.append("* ");
-				result.append(resource.getName() + ": " + rateString + " kg/sol<br>");
+                result.append(resource.getName()).append(": ").append(rateString).append(" kg/sol<br>");
 			}
 			
 			result.append("Process Outputs:<br>");
@@ -228,7 +218,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 				AmountResource resource = j.next();
 				double rate = process.getMaxOutputResourceRate(resource) * 1000D;
 				String rateString = decFormatter.format(rate);
-				result.append("&nbsp;&nbsp;" + resource.getName() + ": " + rateString + " kg/sol<br>");
+                result.append("&nbsp;&nbsp;").append(resource.getName()).append(": ").append(rateString).append(" kg/sol<br>");
 			}
 			
 			result.append("</html>");

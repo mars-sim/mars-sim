@@ -7,12 +7,6 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -21,6 +15,12 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provides value information for construction.
@@ -49,7 +49,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSettlementConstructionProfit() throws Exception {
+    public double getSettlementConstructionProfit() {
         return getSettlementConstructionProfit(Integer.MAX_VALUE);
     }
     
@@ -60,7 +60,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getSettlementConstructionProfit(int constructionSkill) 
-            throws Exception {
+{
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((settlementConstructionValueCacheTime == null) || 
@@ -94,7 +94,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getAllConstructionSitesProfit(int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         
@@ -114,7 +114,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getConstructionSiteProfit(ConstructionSite site) throws Exception {
+    public double getConstructionSiteProfit(ConstructionSite site) {
         return getConstructionSiteProfit(site, Integer.MAX_VALUE);
     }
     
@@ -126,7 +126,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         
@@ -165,7 +165,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public double getNewConstructionSiteProfit(int constructionSkill) 
-            throws Exception {
+{
         
         double result = 0D;
         Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
@@ -199,7 +199,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public Map<ConstructionStageInfo, Double> getNewConstructionStageProfits(
-            ConstructionSite site, int constructionSkill) throws Exception {
+            ConstructionSite site, int constructionSkill) {
         
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
         
@@ -231,7 +231,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     public Map<ConstructionStageInfo, Double> getConstructionStageProfit(String stageType, 
-            int constructionSkill, boolean checkMaterials) throws Exception {
+            int constructionSkill, boolean checkMaterials) {
         
         Map<ConstructionStageInfo, Double> result = new HashMap<ConstructionStageInfo, Double>();
         
@@ -252,7 +252,7 @@ public class ConstructionValues implements Serializable {
      * @return map of construction stage infos and their values (VP).
      * @throws Exception if error determining value.
      */
-    public Map<ConstructionStageInfo, Double> getAllConstructionStageValues() throws Exception {
+    public Map<ConstructionStageInfo, Double> getAllConstructionStageValues() {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((allStageInfoValueCacheTime == null) || 
@@ -280,7 +280,7 @@ public class ConstructionValues implements Serializable {
      * @return value (VP).
      * @throws Exception if error getting value.
      */
-    double getConstructionStageValue(ConstructionStageInfo stageInfo) throws Exception {
+    double getConstructionStageValue(ConstructionStageInfo stageInfo) {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((stageInfoValueCacheTime == null) || 
@@ -318,7 +318,7 @@ public class ConstructionValues implements Serializable {
      * @return cost (VP)
      * @throws Exception if error determining the cost.
      */
-    private double getConstructionStageCost(ConstructionStageInfo stageInfo) throws Exception {
+    private double getConstructionStageCost(ConstructionStageInfo stageInfo) {
         double cost = 0D;
         
         GoodsManager manager = settlement.getGoodsManager();
@@ -356,7 +356,7 @@ public class ConstructionValues implements Serializable {
      * @throws Exception if error determining profit.
      */
     private double getConstructionStageProfit(ConstructionStageInfo stageInfo, boolean checkMaterials) 
-            throws Exception {
+{
         double result = getConstructionStageValue(stageInfo) - getConstructionStageCost(stageInfo);
         if (checkMaterials && !hasConstructionMaterials(stageInfo)) result = 0D;
         
@@ -369,7 +369,7 @@ public class ConstructionValues implements Serializable {
      * @return value (VP)
      * @throws Exception if error getting construction value.
      */
-    private double getBuildingConstructionValue(String buildingName) throws Exception {
+    private double getBuildingConstructionValue(String buildingName) {
         return settlement.getBuildingManager().getBuildingValue(buildingName, true);
     }
     
@@ -379,7 +379,7 @@ public class ConstructionValues implements Serializable {
      * @return true if enough construction materials available.
      * @throws Exception if error determining construction materials.
      */
-    private boolean hasConstructionMaterials(ConstructionStageInfo stageInfo) throws Exception {
+    private boolean hasConstructionMaterials(ConstructionStageInfo stageInfo) {
         boolean result = true;
         
         // Check resources.

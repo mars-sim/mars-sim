@@ -7,14 +7,24 @@
 
 package org.mars_sim.msp.core;
 
-import java.awt.Point;
+import java.awt.*;
 
 /** The IntPoint class is an extension of
  *  java.awt.Point that returns int typed
  *  X and Y coordinates.
  */
 
-public class IntPoint extends Point {
+public final class IntPoint extends Point {
+
+//    protected
+
+//    public static class Create
+//    {
+//        public static IntPoint point(int x, int y)
+//        {
+//            return null;
+//        }
+//    }
 
     /** Construct an IntPoint object */
     public IntPoint(int x, int y) {

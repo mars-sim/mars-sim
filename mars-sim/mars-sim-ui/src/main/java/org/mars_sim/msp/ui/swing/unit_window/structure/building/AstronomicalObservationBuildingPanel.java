@@ -6,14 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * A panel for the astronomical observation building function.

@@ -6,30 +6,19 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A wizard panel to select a lead researcher the science mission.

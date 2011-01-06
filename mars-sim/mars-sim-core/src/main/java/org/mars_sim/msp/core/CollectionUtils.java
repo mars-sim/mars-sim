@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.core;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This class gather general collection manipulation methods
@@ -86,7 +86,7 @@ public class CollectionUtils {
 
         ConcurrentLinkedQueue<Person> persons = 
             new ConcurrentLinkedQueue<Person>();
-
+            
         Iterator<Unit> i = units.iterator();
         while (i.hasNext()) {
             Unit unit = i.next();

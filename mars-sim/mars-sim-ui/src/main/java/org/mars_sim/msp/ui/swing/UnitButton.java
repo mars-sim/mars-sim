@@ -5,13 +5,13 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing;  
-
-import java.awt.*;
-import javax.swing.*;
+package org.mars_sim.msp.ui.swing;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.unit_display_info.*;
+import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The UnitButton class is a UI button for a given unit.

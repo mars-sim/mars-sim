@@ -7,19 +7,8 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -39,6 +28,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The LoadVehicle class is a task for loading a vehicle with fuel and supplies.
@@ -71,7 +65,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public LoadVehicle(Person person) throws Exception {
+    public LoadVehicle(Person person) {
     	// Use Task constructor
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
@@ -102,7 +96,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @throws Exception if error creating task.
      */
     public LoadVehicle(Person person, Vehicle vehicle, Map<Resource, Number> resources, 
-    		Map<Class, Integer> equipment) throws Exception {
+    		Map<Class, Integer> equipment) {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
@@ -158,7 +152,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return list of vehicle missions.
      * @throws Exception if error finding missions.
      */
-    private static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) throws Exception {
+    private static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
     	
     	List<Mission> result = new ArrayList<Mission>();
     	
@@ -187,7 +181,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return vehicle mission.
      * @throws Exception if error finding vehicle mission.
      */
-    private VehicleMission getMissionNeedingLoading() throws Exception {
+    private VehicleMission getMissionNeedingLoading() {
     	
     	VehicleMission result = null;
     	
@@ -207,7 +201,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (LOADING.equals(getPhase())) return loadingPhase(time);
     	else return time;
@@ -219,7 +213,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the amount of time (millisol) after performing the phase.
      * @throws Exception if error in loading phase.
      */
-    double loadingPhase(double time) throws Exception {
+    double loadingPhase(double time) {
     	
     	if (settlement == null) {
     		endTask();
@@ -263,7 +257,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the remaining amount (kg) the person can load in this time period.
      * @throws Exception if problem loading resources.
      */
-    private double loadResources(double amountLoading) throws Exception {
+    private double loadResources(double amountLoading) {
         
         Iterator<Resource> iR = resources.keySet().iterator();
         while (iR.hasNext() && (amountLoading > 0D)) {
@@ -289,7 +283,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the remaining amount (kg) the person can load in this time period.
      * @throws Exception if problem loading resource.
      */
-    private double loadAmountResource(double amountLoading, AmountResource resource) throws Exception {
+    private double loadAmountResource(double amountLoading, AmountResource resource) {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
@@ -300,7 +294,7 @@ public class LoadVehicle extends Task implements Serializable {
         	sInv.retrieveUnit(vehicle);
         }
         */
-    	double amountNeededTotal = ((Double) resources.get(resource)).doubleValue();
+    	double amountNeededTotal = (Double) resources.get(resource);
 		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
@@ -311,7 +305,7 @@ public class LoadVehicle extends Task implements Serializable {
                     if ((amountNeeded - remainingCapacity) < .00001D) amountNeeded = remainingCapacity;
                     else {
                         endTask();
-                        throw new Exception("Not enough capacity in vehicle for loading resource " + resource + 
+                        throw new IllegalStateException("Not enough capacity in vehicle for loading resource " + resource +
                                 ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
                     }
                 }
@@ -351,7 +345,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the remaining amount (kg) the person can load in this time period.
      * @throws Exception if problem loading resource.
      */
-    private double loadItemResource(double amountLoading, ItemResource resource) throws Exception {
+    private double loadItemResource(double amountLoading, ItemResource resource) {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
@@ -363,8 +357,8 @@ public class LoadVehicle extends Task implements Serializable {
         	sInv.retrieveUnit(vehicle);
         }
         */
-        int numNeededTotal = ((Integer) resources.get(resource)).intValue();
-		ItemResource itemResource = (ItemResource) resource;
+        int numNeededTotal = (Integer) resources.get(resource);
+		ItemResource itemResource = resource;
 		int numAlreadyLoaded = vInv.getItemResourceNum(itemResource);
 		if (numAlreadyLoaded < numNeededTotal) {
 			int numNeeded = numNeededTotal - numAlreadyLoaded;
@@ -402,7 +396,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return the remaining amount (kg) the person can load in this time period.
      * @throws Exception if problem loading equipment.
      */
-    private double loadEquipment(double amountLoading) throws Exception {
+    private double loadEquipment(double amountLoading) {
     	
     	Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
@@ -416,7 +410,7 @@ public class LoadVehicle extends Task implements Serializable {
         Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
         	Class equipmentType = iE.next();
-        	int numNeededTotal = ((Integer) equipment.get(equipmentType)).intValue();
+        	int numNeededTotal = (Integer) equipment.get(equipmentType);
         	int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
         	if (numAlreadyLoaded < numNeededTotal) {
         		int numNeeded = numNeededTotal - numAlreadyLoaded;
@@ -491,7 +485,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @throws Exception if error checking supplies.
      */
     public static boolean hasEnoughSupplies(Settlement settlement, Vehicle vehicle, Map <Resource, Number> resources, 
-    		Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) throws Exception {
+    		Map<Class, Integer> equipment, int vehicleCrewNum, double tripTime) {
     	
     	// Check input parameters.
     	if (settlement == null) throw new IllegalArgumentException("settlement is null");
@@ -511,7 +505,7 @@ public class LoadVehicle extends Task implements Serializable {
         while (iR.hasNext()) {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
-        		double amountNeeded = ((Double) resources.get(resource)).doubleValue();
+        		double amountNeeded = (Double) resources.get(resource);
         		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
         		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource);
         		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
@@ -523,7 +517,7 @@ public class LoadVehicle extends Task implements Serializable {
         		}
         	}
         	else if (resource instanceof ItemResource) {
-        		int numNeeded = ((Integer) resources.get(resource)).intValue();
+        		int numNeeded = (Integer) resources.get(resource);
         		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
         		int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
         		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
@@ -534,14 +528,14 @@ public class LoadVehicle extends Task implements Serializable {
         			enoughSupplies = false;
         		}
         	}
-        	else throw new Exception("Unknown resource type: " + resource);
+        	else throw new IllegalStateException("Unknown resource type: " + resource);
         }
         
         // Check if there is enough equipment at the settlement.
         Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext()) {
         	Class equipmentType = iE.next();
-        	int numNeeded = ((Integer) equipment.get(equipmentType)).intValue();
+        	int numNeeded = (Integer) equipment.get(equipmentType);
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
         	int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
     		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
@@ -567,8 +561,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining amount (kg)
      * @throws Exception if error getting the remaining amount.
      */
-    private static final double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum, 
-    		AmountResource resource, double tripTime) throws Exception {
+    private static double getRemainingSettlementAmount(Settlement settlement, int vehicleCrewNum,
+    		AmountResource resource, double tripTime) {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	double amountPersonPerSol = 0D;
     	double tripTimeSols = tripTime / 1000D;
@@ -592,8 +586,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining number
      * @throws Exception if error getting the remaining number.
      */
-    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, 
-    		ItemResource resource) throws Exception {
+    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum,
+    		ItemResource resource) {
     	// No item resources required at settlement at this time.
     	return 0;
     }
@@ -606,8 +600,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining number.
      * @throws Exception if error getting the remaining number.
      */
-    private static final int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType) 
-    		throws Exception {
+    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType)
+    		{
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	// Leave one EVA suit for every four remaining people at settlement (min 1).
     	if (equipmentType == EVASuit.class) {
@@ -628,19 +622,19 @@ public class LoadVehicle extends Task implements Serializable {
      * @throws Exception if error
      */
     public static boolean enoughCapacityForSupplies(Map<Resource, Number> resources, Map<Class, Integer> equipment, 
-    		Vehicle vehicle, Settlement settlement) throws Exception {
+    		Vehicle vehicle, Settlement settlement) {
     	
     	boolean sufficientCapacity = true;
     	
     	// Create vehicle inventory clone.
     	Inventory inv = vehicle.getInventory().clone(null);
   
-    	try {
+//    	try {
     		// Add equipment clones.
     		Iterator<Class> i = equipment.keySet().iterator();
     		while (i.hasNext()) {
     			Class equipmentType = i.next();
-    			int num = ((Integer) equipment.get(equipmentType)).intValue();
+    			int num = (Integer) equipment.get(equipmentType);
     			Coordinates defaultLoc = new Coordinates(0D, 0D);
     			for (int x = 0; x < num; x++) 
     				inv.storeUnit(EquipmentFactory.getEquipment(equipmentType, defaultLoc, false));
@@ -651,19 +645,19 @@ public class LoadVehicle extends Task implements Serializable {
     		while (j.hasNext()) {
     			Resource resource = (Resource) j.next();
     			if (resource instanceof AmountResource) {
-    				double amount = ((Double) resources.get(resource)).doubleValue();
+    				double amount = (Double) resources.get(resource);
     				inv.storeAmountResource((AmountResource) resource, amount, true);
     			}
     			else {
-    				int num = ((Integer) resources.get(resource)).intValue();
+    				int num = (Integer) resources.get(resource);
     				inv.storeItemResources((ItemResource) resource, num);
     			}
     		}
-    	}
-    	catch (InventoryException e) {
-            logger.info(e.getMessage());
-    		sufficientCapacity = false;
-    	}
+//    	}
+//    	catch (InventoryException e) {
+//            logger.info(e.getMessage());
+//    		sufficientCapacity = false;
+//    	}
     	
     	return sufficientCapacity;
     }
@@ -673,8 +667,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is fully loaded.
      * @throws Exception if error checking supplies.
      */
-    public static final boolean isFullyLoaded(Map<Resource, Number> resources, Map<Class, Integer> equipment, 
-    		Vehicle vehicle) throws Exception {
+    public static boolean isFullyLoaded(Map<Resource, Number> resources, Map<Class, Integer> equipment,
+    		Vehicle vehicle) {
     	
     	boolean sufficientSupplies = true;
 
@@ -694,8 +688,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static final boolean isFullyLoadedWithResources(Map<Resource, Number> resources, Vehicle vehicle) 
-    		throws Exception {
+    private static boolean isFullyLoadedWithResources(Map<Resource, Number> resources, Vehicle vehicle)
+    		{
     	
     	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	
@@ -706,14 +700,14 @@ public class LoadVehicle extends Task implements Serializable {
         while (iR.hasNext() && sufficientSupplies) {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
-        		double amount = ((Double) resources.get(resource)).doubleValue();
+        		double amount = (Double) resources.get(resource);
         		if (inv.getAmountResourceStored((AmountResource) resource) < amount) sufficientSupplies = false;
         	}
         	else if (resource instanceof ItemResource) {
-        		int num = ((Integer) resources.get(resource)).intValue();
+        		int num = (Integer) resources.get(resource);
         		if (inv.getItemResourceNum((ItemResource) resource) < num) sufficientSupplies = false;
         	}
-        	else throw new Exception("Unknown resource type: " + resource);
+        	else throw new IllegalStateException("Unknown resource type: " + resource);
         }
         
         return sufficientSupplies;
@@ -726,8 +720,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is full loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static final boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle) 
-    		throws Exception {
+    private static boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle)
+    		{
     	
     	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	
@@ -737,7 +731,7 @@ public class LoadVehicle extends Task implements Serializable {
         Iterator<Class> iE = equipment.keySet().iterator();
         while (iE.hasNext() && sufficientSupplies) {
         	Class equipmentType = iE.next();
-        	int num = ((Integer) equipment.get(equipmentType)).intValue();
+        	int num = (Integer) equipment.get(equipmentType);
         	if (inv.findNumUnitsOfClass(equipmentType) < num) sufficientSupplies = false;
         }
         

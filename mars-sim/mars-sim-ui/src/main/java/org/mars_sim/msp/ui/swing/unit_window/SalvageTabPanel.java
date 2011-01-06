@@ -6,25 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageInfo;
@@ -33,6 +14,14 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.*;
+import java.util.List;
 
 /**
  * A tab panel with info about an item's salvage.
@@ -146,7 +135,7 @@ public class SalvageTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the parts table.
      */
-    private class PartTableModel extends AbstractTableModel {
+    private static class PartTableModel extends AbstractTableModel {
         
         // Data members
         private SalvageInfo salvageInfo;

@@ -6,18 +6,14 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 

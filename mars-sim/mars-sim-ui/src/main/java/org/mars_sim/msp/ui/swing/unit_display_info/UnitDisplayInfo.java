@@ -5,12 +5,12 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing.unit_display_info;  
- 
-import java.awt.*;
-import javax.swing.*;
+package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Provides display information about a unit.

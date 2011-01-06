@@ -7,11 +7,10 @@
 
 package org.mars_sim.msp.ui.swing;
 
+import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-
-import javax.swing.SwingConstants;
-import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * The NumberCellRenderer class renders table cells containing Number objects.

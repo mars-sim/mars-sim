@@ -1,9 +1,9 @@
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.Arrays;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.event.TableModelListener;
 import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import java.util.Arrays;
 
 
 /**
@@ -100,6 +100,7 @@ public class TableSorter extends AbstractTableModel
         // Determine the first and low rows.
         int firstRow = e.getFirstRow();
         int lastRow = e.getLastRow();
+        if(indexes == null) return;
         for (int x = 0; x < indexes.length; x++) {
         	if (indexes[x] == e.getFirstRow()) firstRow = x;
         	if (indexes[x] == e.getLastRow()) lastRow = x;
@@ -301,7 +302,7 @@ public class TableSorter extends AbstractTableModel
      * @return Return whether a reordering has been performed
      */
     private boolean sortModel() {
-        int original[] = (int [])indexes.clone();
+        int original[] = indexes.clone();
         reallocateIndexes();
 
         // Only do sorting if cells contians Comparable

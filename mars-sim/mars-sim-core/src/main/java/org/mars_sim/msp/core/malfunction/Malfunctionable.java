@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.malfunction;
 
-import java.util.Collection;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.person.Person;
+
+import java.util.Collection;
 
 /**
  * The Malfunctionable interface represents a Unit that can have malfunctions.

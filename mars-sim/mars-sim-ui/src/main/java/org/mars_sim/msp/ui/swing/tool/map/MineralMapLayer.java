@@ -7,21 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.MineralMap;
+
+import java.awt.*;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.MineralMap;
 
 /**
  * A map layer showing mineral concentrations.
@@ -166,8 +162,7 @@ public class MineralMapLayer implements MapLayer {
 		Arrays.sort(currentMineralNames);
 		if (!Arrays.equals(mineralNames, currentMineralNames)) {
 			mineralsDisplayedMap.clear();
-			for (int x = 0; x < mineralNames.length; x++)
-				mineralsDisplayedMap.put(mineralNames[x], true);
+            for (String mineralName : mineralNames) mineralsDisplayedMap.put(mineralName, true);
 		}
 	}
 	

@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -24,8 +18,12 @@ import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and 
@@ -94,13 +92,13 @@ public class Engineer extends Job implements Serializable {
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			try {
+//			try {
 				Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
 				result += workshop.getTechLevel() * workshop.getConcurrentProcesses() * 2D;
-			}
-			catch (BuildingException e) {
-			    logger.log(Level.SEVERE,"Engineer.getSettlementNeed()",e);
-			}
+//			}
+//			catch (BuildingException e) {
+//			    logger.log(Level.SEVERE,"Engineer.getSettlementNeed()",e);
+//			}
 		}
 		
 		return result;	

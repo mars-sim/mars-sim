@@ -7,15 +7,22 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * The RepairEmergencyMalfunction class is a task to repair an emergency malfunction.
@@ -37,7 +44,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public RepairEmergencyMalfunction(Person person) throws Exception {
+    public RepairEmergencyMalfunction(Person person) {
         super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
@@ -45,10 +52,10 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		// Add person to malfunctioning building if necessary.
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			if (entity instanceof Building) {
-				try {
+//				try {
 					BuildingManager.addPersonToBuilding(person, (Building) entity);
-				}
-				catch (BuildingException e) {}
+//				}
+//				catch (BuildingException e) {}
 			}
 		}
 
@@ -71,7 +78,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (REPAIRING.equals(getPhase())) return repairingPhase(time);
     	else return time;
@@ -83,7 +90,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      * @return the amount of time (millisol) left after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double repairingPhase(double time) throws Exception {
+    private double repairingPhase(double time) {
     	
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -

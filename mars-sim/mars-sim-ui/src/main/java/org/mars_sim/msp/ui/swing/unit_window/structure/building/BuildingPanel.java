@@ -6,32 +6,15 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
-import org.mars_sim.msp.core.structure.building.function.Farming;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
-import org.mars_sim.msp.core.structure.building.function.PowerStorage;
-import org.mars_sim.msp.core.structure.building.function.Research;
-import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
-import org.mars_sim.msp.core.structure.building.function.Storage;
-import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * The BuildingPanel class is a panel representing a settlement building.
@@ -72,91 +55,91 @@ public class BuildingPanel extends JPanel {
         
         // Prepare inhabitable panel if building has lifesupport.
         if (building.hasFunction(LifeSupport.NAME)) {
-        	try {
+//        	try {
         		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
             	BuildingFunctionPanel inhabitablePanel = new InhabitableBuildingPanel(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         // Prepare manufacture panel if building has manufacturing.
         if (building.hasFunction(Manufacture.NAME)) {
-        	try {
+//        	try {
         		Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
         		BuildingFunctionPanel manufacturePanel = new ManufactureBuildingPanel(workshop, desktop);
         		functionPanels.add(manufacturePanel);
         		functionListPanel.add(manufacturePanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         // Prepare farming panel if building has farming.
         if (building.hasFunction(Farming.NAME)) {
-        	try {
+//        	try {
         		Farming farm = (Farming) building.getFunction(Farming.NAME);
             	BuildingFunctionPanel farmingPanel = new FarmingBuildingPanel(farm, desktop);
             	functionPanels.add(farmingPanel);
             	functionListPanel.add(farmingPanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
 		// Prepare cooking panel if building has cooking.
 		if (building.hasFunction(Cooking.NAME)) {
-			try {
+//			try {
 				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
 				BuildingFunctionPanel cookingPanel = new CookingBuildingPanel(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
-			}
-			catch (BuildingException e) {}
+//			}
+//			catch (BuildingException e) {}
 		}
         
         // Prepare medical care panel if building has medical care.
         if (building.hasFunction(MedicalCare.NAME)) {
-        	try {
+//        	try {
         		MedicalCare med = (MedicalCare) building.getFunction(MedicalCare.NAME);
             	BuildingFunctionPanel medicalCarePanel = new MedicalCareBuildingPanel(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
 		// Prepare vehicle maintenance panel if building has vehicle maintenance.
 		if (building.hasFunction(GroundVehicleMaintenance.NAME)) {
-			try {
+//			try {
 				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
 				BuildingFunctionPanel vehicleMaintenancePanel = new VehicleMaintenanceBuildingPanel(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
-			}
-			catch (BuildingException e) {}
+//			}
+//			catch (BuildingException e) {}
 		}
         
         // Prepare research panel if building has research.
         if (building.hasFunction(Research.NAME)) {
-        	try {
+//        	try {
         		Research lab = (Research) building.getFunction(Research.NAME);
             	BuildingFunctionPanel researchPanel = new ResearchBuildingPanel(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         
         // Prepare Observation panel if building has Observatory.
         if (building.hasFunction(AstronomicalObservation.NAME)) {
-        	try {
+//        	try {
         		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
             	BuildingFunctionPanel observationPanel = new AstronomicalObservationBuildingPanel(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         // Prepare power panel.
@@ -166,46 +149,46 @@ public class BuildingPanel extends JPanel {
         
         // Prepare power storage panel if building has power storage.
         if (building.hasFunction(PowerStorage.NAME)) {
-            try {
+//            try {
                 PowerStorage storage = (PowerStorage) building.getFunction(PowerStorage.NAME);
                 BuildingFunctionPanel powerStoragePanel = new PowerStorageBuildingPanel(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
-            }
-            catch (BuildingException e) {}
+//            }
+//            catch (BuildingException e) {}
         }
         
         // Prepare resource processing panel if building has resource processes.
         if (building.hasFunction(ResourceProcessing.NAME)) {
-        	try {
+//        	try {
         		ResourceProcessing processor = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
             	BuildingFunctionPanel resourceProcessingPanel = new ResourceProcessingBuildingPanel(processor, desktop);
             	functionPanels.add(resourceProcessingPanel);
             	functionListPanel.add(resourceProcessingPanel);
-        	}
-        	catch (BuildingException e) {}
+//        	}
+//        	catch (BuildingException e) {}
         }
         
         // Prepare storage process panel if building has storage function.
         if (building.hasFunction(Storage.NAME)) {
-            try {
+//            try {
                 Storage storage = (Storage) building.getFunction(Storage.NAME);
                 BuildingFunctionPanel storagePanel = new StorageBuildingPanel(storage, desktop);
                 functionPanels.add(storagePanel);
                 functionListPanel.add(storagePanel);
-            }
-            catch (BuildingException e) {}
+//            }
+//            catch (BuildingException e) {}
         }
         
         // Prepare malfunctionable panel.
         BuildingFunctionPanel malfunctionPanel = 
-            new MalfunctionableBuildingPanel((Malfunctionable) building, desktop);
+            new MalfunctionableBuildingPanel(building, desktop);
         functionPanels.add(malfunctionPanel);
         functionListPanel.add(malfunctionPanel);
         
         // Prepare maintenance panel.
         BuildingFunctionPanel maintenancePanel = 
-            new MaintenanceBuildingPanel((Malfunctionable) building, desktop);
+            new MaintenanceBuildingPanel(building, desktop);
         functionPanels.add(maintenancePanel);
         functionListPanel.add(maintenancePanel);
     }

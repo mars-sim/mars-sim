@@ -54,7 +54,7 @@ public class ItemResource implements Resource, Serializable {
 	 * Returns the resource as a string.
 	 */
 	public String toString() {
-		return getName();
+		return name;
 	}
 	
 	/**
@@ -72,7 +72,7 @@ public class ItemResource implements Resource, Serializable {
 	public boolean equals(Object object) {
 		if (object instanceof ItemResource) {
 			ItemResource otherObject = (ItemResource) object;
-			if ((name.equals(otherObject.getName())) && (massPerItem == otherObject.getMassPerItem()))
+			if ((name.equals(otherObject.name)) && (massPerItem == otherObject.massPerItem))
 				return true;
 		}
 		return false;
@@ -91,22 +91,22 @@ public class ItemResource implements Resource, Serializable {
 	 * @return resource
 	 * @throws ResourceException if resource could not be found.
 	 */
-	public static final ItemResource findItemResource(String name) throws ResourceException {
+	public static ItemResource findItemResource(String name) {
 		ItemResource result = null;
 		Iterator<ItemResource> i = resources.iterator();
 		while (i.hasNext()) {
 			ItemResource resource = i.next();
-			if (resource.getName().equals(name)) result = resource;
+			if (resource.name.equals(name)) result = resource;
 		}
 		if (result != null) return result;
-		else throw new ResourceException("Resource: " + name + " could not be found.");
+		else throw new IllegalStateException("Resource: " + name + " could not be found.");
 	}
 	
 	/**
 	 * Gets a ummutable set of all the item resources.
 	 * @return set of item resources.
 	 */
-	public static final Set<ItemResource> getItemResources() {
+	public static Set<ItemResource> getItemResources() {
 		return Collections.unmodifiableSet(resources);
 	}
 	
@@ -114,7 +114,7 @@ public class ItemResource implements Resource, Serializable {
 	 * Gets a mock item resource of a hammer.
 	 * @return item resource.
 	 */
-	public static final ItemResource getTestResourceHammer() {
+	public static ItemResource getTestResourceHammer() {
 		return new ItemResource("hammer", 1.4D);
 	}
 	
@@ -122,7 +122,7 @@ public class ItemResource implements Resource, Serializable {
 	 * Gets a mock item resource of a socket wrench.
 	 * @return item resource.
 	 */
-	public static final ItemResource getTestResourceSocketWrench() {
+	public static ItemResource getTestResourceSocketWrench() {
 		return new ItemResource("socket wrench", .5D);
 	}
 	
@@ -130,7 +130,7 @@ public class ItemResource implements Resource, Serializable {
 	 * Gets a mock item resource of a pipe wrench.
 	 * @return item resource.
 	 */
-	public static final ItemResource getTestResourcePipeWrench() {
+	public static ItemResource getTestResourcePipeWrench() {
 		return new ItemResource("pipe wrench", 2.5D);
 	}
     

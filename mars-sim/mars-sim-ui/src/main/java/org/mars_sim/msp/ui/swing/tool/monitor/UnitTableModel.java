@@ -7,15 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitListener;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitListener;
 
 /**
  * The UnitTableModel that maintains a table model of Units objects.
@@ -30,6 +29,8 @@ abstract public class UnitTableModel extends AbstractTableModel
     private String statusSuffix;    // Suffix to added to status message
     private String columnNames[];   // Names of the displayed columns
     private Class  columnTypes[];   // Types of the individual columns
+    private int size = -1;
+    private boolean refreshSize = true;
 
     /**
      * Constructs a UnitTableModel object.
@@ -46,6 +47,7 @@ abstract public class UnitTableModel extends AbstractTableModel
         this.name = name;
         this.statusSuffix = suffix;
         this.units = new ConcurrentLinkedQueue<Unit>();
+        getRowCount();
         this.columnNames = names;
         this.columnTypes = types;
     }
@@ -57,12 +59,13 @@ abstract public class UnitTableModel extends AbstractTableModel
     protected void addUnit(Unit newUnit) {
         if (!units.contains(newUnit)) {
             units.add(newUnit);
+            refreshSize = true;
             newUnit.addUnitListener(this);
             
             // Inform listeners of new row
             SwingUtilities.invokeLater(new Runnable() {
             	public void run() {
-            		fireTableRowsInserted(units.size() - 1, units.size() - 1);
+            		fireTableRowsInserted(getUnitNumber() - 1, getUnitNumber() - 1);
             	}
             });
         }
@@ -77,6 +80,7 @@ abstract public class UnitTableModel extends AbstractTableModel
             int index = getIndex(oldUnit);
             
             units.remove(oldUnit);
+            refreshSize = true;
             oldUnit.removeUnitListener(this);
 
             // Inform listeners of new row
@@ -90,20 +94,31 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return the index value.
      */
     private int getIndex(Unit unit) {
-    	Object[] array = units.toArray();
-    	int size = array.length;
-    	int result = 0;
-	
-    	for(int i = 0; i < size; i++) {
-    		Unit temp = (Unit) array[i];
-	    
-    		if(temp.equals(unit)) {
-    			result = i;
-    			break;
-    		}
-    	}
-	
-    	return result;
+        final Iterator<Unit> it = units.iterator();
+        int idx = -1;
+        Unit u;
+        while(it.hasNext()){
+            idx++;
+            u = it.next();
+            if(u.equals(unit)){
+                return idx;
+            }
+        }
+        throw new IllegalStateException("Could not find index for unit " + unit);
+//    	Object[] array = units.toArray();
+//    	int size = array.length;
+//    	int result = 0;
+//
+//    	for(int i = 0; i < size; i++) {
+//    		Unit temp = (Unit) array[i];
+//
+//    		if(temp.equals(unit)) {
+//    			result = i;
+//    			break;
+//    		}
+//    	}
+//
+//    	return result;
     }
     
     /**
@@ -122,6 +137,7 @@ abstract public class UnitTableModel extends AbstractTableModel
     	Iterator<Unit> i = units.iterator();
     	while (i.hasNext()) i.next().removeUnitListener(this);
     	units.clear();
+        refreshSize = true;
     	fireTableDataChanged();
     }
     
@@ -139,8 +155,13 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return number of units.
      */
     protected int getUnitNumber() {
-    	if (units != null) return units.size();
-    	else return 0;
+        if(refreshSize){
+            this.size = units == null ? 0 : units.size();
+            refreshSize = false;
+        }
+//        if (units != null) return units.size();
+//    	else return 0;
+        return this.size;
     }
 
     /**
@@ -189,6 +210,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return the number of Units.
      */
     public int getRowCount() {
+
         return getUnitNumber();
     }
 
@@ -206,8 +228,19 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return Unit matching row
      */
     protected Unit getUnit(int index) {
-	Object [] array = units.toArray();
-        return (Unit)array[index];
+        if(index > (getRowCount()-1)) throw new IllegalStateException("Invalid index " + index + " for " + getRowCount() + " rows");
+        int idx = -1;
+        Iterator<Unit> it = units.iterator();
+        while(it.hasNext()){
+            idx++;
+            if(idx == index){
+                return it.next();
+            }
+            it.next();
+        }
+        throw new IllegalStateException("Could not find an index " + index);
+//	Object [] array = units.toArray();
+//        return (Unit)array[index];
     }
     
     /**
@@ -228,8 +261,9 @@ abstract public class UnitTableModel extends AbstractTableModel
      * @return Unit at specified position.
      */
     public Object getObject(int row) {
-    	Object array[] = units.toArray();
-        return array[row];
+        return getUnit(row);
+//    	Object array[] = units.toArray();
+//        return array[row];
     }
     
     /**

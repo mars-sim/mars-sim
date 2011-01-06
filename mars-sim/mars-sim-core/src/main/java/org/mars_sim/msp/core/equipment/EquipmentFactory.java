@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.equipment;
 
+import org.mars_sim.msp.core.Coordinates;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import org.mars_sim.msp.core.Coordinates;
 
 /**
  * A factory for equipment units.
@@ -35,7 +35,7 @@ public final class EquipmentFactory {
 	 * @return the equipment instance.
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment getEquipment(String type, Coordinates location, boolean temp) throws Exception {
+	public static Equipment getEquipment(String type, Coordinates location, boolean temp) {
 		
 		if (temp) {
 			if (equipmentTypeCache.containsKey(type)) return equipmentTypeCache.get(type);
@@ -52,7 +52,7 @@ public final class EquipmentFactory {
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return new GasCanister(location);
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return new LargeBag(location);
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
-		else throw new Exception("Equipment: " + type + " could not be constructed.");
+		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
 	
 	/**
@@ -64,7 +64,7 @@ public final class EquipmentFactory {
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment getEquipment(Class<? extends Equipment> equipmentClass, Coordinates location, 
-	        boolean temp) throws Exception {
+	        boolean temp) {
 		
 		if (temp) {
 			if (equipmentClassCache.containsKey(equipmentClass)) return equipmentClassCache.get(equipmentClass);
@@ -81,7 +81,7 @@ public final class EquipmentFactory {
 		else if (GasCanister.class.equals(equipmentClass)) return new GasCanister(location);
         else if (LargeBag.class.equals(equipmentClass)) return new LargeBag(location);
 		else if (SpecimenContainer.class.equals(equipmentClass)) return new SpecimenContainer(location);
-		else throw new Exception("Equipment: " + equipmentClass + " could not be constructed.");
+		else throw new IllegalStateException("Equipment: " + equipmentClass + " could not be constructed.");
 	}
 	
 	/**
@@ -90,14 +90,14 @@ public final class EquipmentFactory {
 	 * @return the equipment class.
 	 * @throws Exception if equipment class could not be found.
 	 */
-	public static Class<? extends Equipment> getEquipmentClass(String type) throws Exception {
+	public static Class<? extends Equipment> getEquipmentClass(String type) {
 		if (Bag.TYPE.equalsIgnoreCase(type)) return Bag.class;
 		else if (Barrel.TYPE.equalsIgnoreCase(type)) return Barrel.class;
 		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return EVASuit.class;
 		else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.class;
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.class;
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.class;
-		else throw new Exception("Class for equipment: " + type + " could not be found.");
+		else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
 	}
     
     /**
@@ -106,13 +106,13 @@ public final class EquipmentFactory {
      * @return empty mass (kg).
      * @throws Exception if equipment mass could not be determined.
      */
-    public static double getEquipmentMass(String type) throws Exception {
+    public static double getEquipmentMass(String type) {
         if (Bag.TYPE.equalsIgnoreCase(type)) return Bag.EMPTY_MASS;
         else if (Barrel.TYPE.equalsIgnoreCase(type)) return Barrel.EMPTY_MASS;
         else if (EVASuit.TYPE.equalsIgnoreCase(type)) return EVASuit.EMPTY_MASS;
         else if (GasCanister.TYPE.equalsIgnoreCase(type)) return GasCanister.EMPTY_MASS;
         else if (LargeBag.TYPE.equalsIgnoreCase(type)) return LargeBag.EMPTY_MASS;
         else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return SpecimenContainer.EMPTY_MASS;
-        else throw new Exception("Class for equipment: " + type + " could not be found.");
+        else throw new IllegalStateException("Class for equipment: " + type + " could not be found.");
     }
 }

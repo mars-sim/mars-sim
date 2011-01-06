@@ -6,15 +6,12 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ResourceException;
 import org.mars_sim.msp.core.structure.building.Building;
+
+import java.io.Serializable;
+import java.util.logging.Logger;
 
 public class FuelPowerSource extends PowerSource implements Serializable {
 
@@ -52,17 +49,17 @@ public class FuelPowerSource extends PowerSource implements Serializable {
         consumptionSpeed = _consumptionSpeed;
         toggle = _toggle;
 
-        try {
+//        try {
             resource = AmountResource.findAmountResource(fuelType);
-        } catch (ResourceException e) {
-            logger.log(Level.SEVERE, "Could not get fuel resource", e);
-        }
+//        } catch (ResourceException e) {
+//            logger.log(Level.SEVERE, "Could not get fuel resource", e);
+//        }
     }
 
     @Override
     public double getCurrentPower(Building building) {
-        try {
-            if (isToggleON()) {
+//        try {
+            if (toggle) {
                 double fuelStored = building.getInventory()
                         .getAmountResourceStored(resource);
                 if (fuelStored > 0) {
@@ -73,11 +70,11 @@ public class FuelPowerSource extends PowerSource implements Serializable {
             } else {
                 return 0;
             }
-        } catch (InventoryException e) {
-            logger.log(Level.SEVERE,
-                    "Issues when getting power frong fuel source", e);
-            return 0;
-        }
+//        } catch (InventoryException e) {
+//            logger.log(Level.SEVERE,
+//                    "Issues when getting power frong fuel source", e);
+//            return 0;
+//        }
     }
 
     public void toggleON() {
@@ -93,7 +90,7 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     }
 
     public void consumeFuel(double time, Inventory inv) {
-        try {
+//        try {
             double consumptionRateMillisol = consumptionSpeed / 1000D;
             double consumedFuel = time * consumptionRateMillisol;
             double fuelStored = inv.getAmountResourceStored(resource);
@@ -103,9 +100,9 @@ public class FuelPowerSource extends PowerSource implements Serializable {
             }
 
             inv.retrieveAmountResource(resource, consumedFuel);
-        } catch (InventoryException e) {
-            logger.log(Level.SEVERE, "Issues when consuming fuel", e);
-        }
+//        } catch (InventoryException e) {
+//            logger.log(Level.SEVERE, "Issues when consuming fuel", e);
+//        }
 
     }
     

@@ -7,13 +7,9 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 /** 
  * The AnnouncementWindow class is an internal frame for displaying popup announcements

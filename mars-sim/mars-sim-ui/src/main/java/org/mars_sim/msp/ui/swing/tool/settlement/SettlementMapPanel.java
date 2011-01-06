@@ -7,21 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-import java.util.Iterator;
-
-import javax.swing.JPanel;
-
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.util.Iterator;
 
 /**
  * A panel for displaying the settlement map.

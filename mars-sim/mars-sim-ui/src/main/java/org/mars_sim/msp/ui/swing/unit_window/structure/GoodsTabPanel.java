@@ -7,16 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.util.List;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -26,6 +16,11 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.List;
 
 public class GoodsTabPanel extends TabPanel {
 
@@ -85,7 +80,7 @@ public class GoodsTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the power table.
      */
-    private class GoodsTableModel extends AbstractTableModel {
+    private static class GoodsTableModel extends AbstractTableModel {
     	
     	// Data members
     	GoodsManager manager;

@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.mars;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  * A class representing an explored location.

@@ -7,18 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.*;
+
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import javax.swing.AbstractListModel;
-import javax.swing.SwingUtilities;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 
 /**
  * List model for the mission list.
@@ -113,8 +108,7 @@ public class MissionListModel extends AbstractListModel implements
 	 * @return true if list contains the mission.
 	 */
 	public boolean containsMission(Mission mission) {
-		if ((missions != null) && missions.contains(mission)) return true;
-		else return false;
+        return (missions != null) && missions.contains(mission);
 	}
 	
 	/**

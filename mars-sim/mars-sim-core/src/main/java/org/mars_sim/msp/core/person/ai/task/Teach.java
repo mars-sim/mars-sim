@@ -6,19 +6,23 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * This is a task for teaching a student a task.
@@ -46,7 +50,7 @@ public class Teach extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing task.
 	 */
-	public Teach(Person person) throws Exception {
+	public Teach(Person person) {
 		super("Teaching", person, false, false, STRESS_MODIFIER, false, 0D);
 		
 		// Randomly get a student.
@@ -61,16 +65,16 @@ public class Teach extends Task implements Serializable {
 			
 			// If in settlement, move teacher to building student is in.
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-				try {
+//				try {
 					Building teacherBuilding = BuildingManager.getBuilding(person);
 					Building studentBuilding = BuildingManager.getBuilding(student);
 					if (teacherBuilding != studentBuilding) 
 						BuildingManager.addPersonToBuilding(person, studentBuilding);
-				}
-				catch (BuildingException e) {
-					logger.log(Level.SEVERE,"Teach.constructor(): " + e.getMessage());
-					endTask();
-				}
+//				}
+//				catch (BuildingException e) {
+//					logger.log(Level.SEVERE,"Teach.constructor(): " + e.getMessage());
+//					endTask();
+//				}
 			}
 		}
 		else endTask();
@@ -100,17 +104,17 @@ public class Teach extends Task implements Serializable {
 			// If teacher is in a settlement, use crowding modifier.
 			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 				Person student = (Person) potentialStudents.toArray()[0];
-				try {
+//				try {
 					Building building = BuildingManager.getBuilding(student);
 					if (building != null) {
 						result *= Task.getCrowdingProbabilityModifier(person, building);
 						result *= Task.getRelationshipModifier(person, building);
 					}
 					else result = 0D;
-				}
-				catch (BuildingException e) {
-					logger.log(Level.SEVERE,"Teach.getProbability(): " + e.getMessage());
-				}
+//				}
+//				catch (BuildingException e) {
+//					logger.log(Level.SEVERE,"Teach.getProbability(): " + e.getMessage());
+//				}
 			}
 		}
 		
@@ -123,7 +127,7 @@ public class Teach extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (TEACHING.equals(getPhase())) return teachingPhase(time);
     	else return time;
@@ -135,7 +139,7 @@ public class Teach extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double teachingPhase(double time) throws Exception {
+    private double teachingPhase(double time) {
     	
 		// Check if task is finished.
 		if (teachingTask.isDone()) endTask();
@@ -190,7 +194,7 @@ public class Teach extends Task implements Serializable {
 		// If teacher is in a settlement, best students are in least crowded buildings.
 		Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
 		if (teacher.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			try {
+//			try {
 				// Find the least crowded buildings that teachable students are in.
 				int crowding = Integer.MAX_VALUE;
 				Iterator<Person> i = students.iterator();
@@ -217,8 +221,8 @@ public class Teach extends Task implements Serializable {
 						if (buildingCrowding == crowding) leastCrowded.add(student);
 					}
 				}
-			}
-			catch (BuildingException e) {}
+//			}
+//			catch (BuildingException e) {}
 		}
 		else leastCrowded = students;
 		

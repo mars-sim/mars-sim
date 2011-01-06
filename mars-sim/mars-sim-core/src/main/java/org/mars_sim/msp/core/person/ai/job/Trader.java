@@ -7,18 +7,14 @@
 
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
-import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 public class Trader extends Job implements Serializable {
 

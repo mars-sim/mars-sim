@@ -7,16 +7,21 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.mars.*;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The CollectResources class is a task for collecting resources at a site with an EVA from a rover.
@@ -46,7 +51,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @throws Exception if error constructing this task.
 	 */
 	public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType, 
-			double collectionRate, double targettedAmount, double startingCargo, Class containerType) throws Exception {
+			double collectionRate, double targettedAmount, double startingCargo, Class containerType) {
 		
 		// Use EVAOperation parent constructor.
 		super(taskName, person);
@@ -69,7 +74,7 @@ public class CollectResources extends EVAOperation implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
     	if (COLLECT_RESOURCES.equals(getPhase())) return collectResources(time);
@@ -111,7 +116,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) throws Exception {
+	private double exitRover(double time) {
 		
 		try {
 			time = exitAirlock(time, rover.getAirlock());
@@ -148,7 +153,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * Takes the least full container from the rover.
 	 * @throws Exception if error taking container.
 	 */
-	private void takeContainer() throws Exception {
+	private void takeContainer() {
 		Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
 		if (container != null) {
 			if (person.getInventory().canStoreUnit(container)) {
@@ -172,17 +177,17 @@ public class CollectResources extends EVAOperation implements Serializable {
 		Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
 		while (i.hasNext()) {
 			Unit container = i.next();
-			try {
+//			try {
 				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource, true);
 			
 				if (remainingCapacity > mostCapacity) {
 					result = container;
 					mostCapacity = remainingCapacity;
 				}
-			}
-			catch (InventoryException e) {
-				e.printStackTrace(System.err);
-			}
+//			}
+//			catch (InventoryException e) {
+//				e.printStackTrace(System.err);
+//			}
 		}
 		
 		return result;
@@ -194,7 +199,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error collecting resources.
 	 */
-	private double collectResources(double time) throws Exception {
+	private double collectResources(double time) {
 
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
@@ -246,7 +251,7 @@ public class CollectResources extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) throws Exception {
+	private double enterRover(double time) {
 
 		time = enterAirlock(time, rover.getAirlock());
 

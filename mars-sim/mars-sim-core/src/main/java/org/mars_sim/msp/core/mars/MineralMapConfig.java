@@ -7,12 +7,12 @@
 
 package org.mars_sim.msp.core.mars;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.jdom.Document;
-import org.jdom.Element;
 
 
 public class MineralMapConfig implements Serializable {
@@ -36,7 +36,7 @@ public class MineralMapConfig implements Serializable {
 	}
 	
     @SuppressWarnings("unchecked")
-	List<MineralType> getMineralTypes() throws Exception {
+	List<MineralType> getMineralTypes() {
 		if (mineralTypes != null) return mineralTypes;
 		else {
 			mineralTypes = new ArrayList<MineralType>();
@@ -47,7 +47,7 @@ public class MineralMapConfig implements Serializable {
 			for (Element mineral : minerals ) {
 				String name = "";
 			
-				try {
+//				try {
 				
 					// Get mineral name.
 					name = mineral.getAttributeValue(NAME).toLowerCase().trim();
@@ -69,17 +69,17 @@ public class MineralMapConfig implements Serializable {
 				
 					// Add mineral type to list.
 					mineralTypes.add(mineralType);
-				}
-				catch (Exception e) {
-					throw new Exception("Error reading mineral type " + name + ": " + e.getMessage());
-				}
+//				}
+//				catch (Exception e) {
+//					throw new Exception("Error reading mineral type " + name + ": " + e.getMessage());
+//				}
 			}
 		
 			return mineralTypes;
 		}
 	}
 	
-	class MineralType implements Serializable {
+	static class MineralType implements Serializable {
 		
 		String name;
 		String frequency;

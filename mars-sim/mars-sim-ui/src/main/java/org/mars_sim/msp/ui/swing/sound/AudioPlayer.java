@@ -8,35 +8,16 @@
 
 package org.mars_sim.msp.ui.swing.sound;
 
+import org.mars_sim.msp.ui.swing.UIConfig;
+
+import javax.sound.midi.*;
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.sound.midi.MetaEventListener;
-import javax.sound.midi.MetaMessage;
-import javax.sound.midi.MidiChannel;
-import javax.sound.midi.MidiSystem;
-import javax.sound.midi.Receiver;
-import javax.sound.midi.Sequence;
-import javax.sound.midi.Sequencer;
-import javax.sound.midi.Synthesizer;
-import javax.sound.midi.Transmitter;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.BooleanControl;
-import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.Line;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
-import javax.sound.sampled.SourceDataLine;
-
-import org.mars_sim.msp.ui.swing.UIConfig;
 
 /**
  * A class to play sound files.
@@ -110,7 +91,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
         // the sound within his own thread
         sound_player = new Thread() {
             public void run() {
-                if ((filepath != null) && !filepath.equals("")) {
+                if ((filepath != null) && filepath.length() != 0) {
                     if (filepath.endsWith(SoundConstants.SND_FORMAT_WAV)) {
                         startPlayWavSound(filepath, loop);
                     } else if (filepath.endsWith(SoundConstants.SND_FORMAT_MP3) || filepath.endsWith(SoundConstants.SND_FORMAT_OGG)) {
@@ -421,8 +402,8 @@ public class AudioPlayer implements LineListener, MetaEventListener {
         // convert to a range 0 to 127
         int convert = (int) (volume * 127);
         MidiChannel[] channels = synthesizer.getChannels();
-        for (int i = 0; i < channels.length; i++) {
-            channels[i].controlChange(7, convert);
+        for (MidiChannel channel : channels) {
+            channel.controlChange(7, convert);
         }
 
     }

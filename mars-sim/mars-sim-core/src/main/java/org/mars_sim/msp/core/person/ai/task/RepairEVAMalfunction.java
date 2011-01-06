@@ -7,20 +7,24 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.malfunction.*;
+import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * The RepairEVAMalfunction class is a task to repair a malfunction requiring an EVA.
@@ -39,7 +43,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @param person the person to perform the task
      * @throws Exception if error constructing task
      */
-    public RepairEVAMalfunction(Person person) throws Exception {
+    public RepairEVAMalfunction(Person person) {
         super("Repairing EVA Malfunction", person);
 
         // Get the malfunctioning entity.
@@ -64,7 +68,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @throws Exception if error checking for EVA malfunction.
      */
     private static boolean hasEVAMalfunction(Person person, Unit containerUnit, Malfunctionable entity) 
-    		throws Exception {
+    		{
    
         boolean result = false;
 
@@ -84,7 +88,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return malfunctional entity.
      * @throws Exception if error checking if error finding entity.
      */
-    private static Malfunctionable getEVAMalfunctionEntity(Person person, Unit containerUnit) throws Exception {
+    private static Malfunctionable getEVAMalfunctionEntity(Person person, Unit containerUnit) {
         Malfunctionable result = null;
         
         Iterator i = MalfunctionFactory.getMalfunctionables((Malfunctionable) containerUnit).iterator();
@@ -105,7 +109,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @throws Exception if error checking for repair parts.
      */
     private static boolean hasRepairPartsForMalfunction(Person person, Unit containerUnit, 
-    		Malfunction malfunction) throws Exception {
+    		Malfunction malfunction) {
     	if (person == null) throw new IllegalArgumentException("person is null");
     	if (containerUnit == null) throw new IllegalArgumentException("containerUnit is null");
     	if (malfunction == null) throw new IllegalArgumentException("malfunction is null");
@@ -174,7 +178,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
     	if (REPAIR_MALFUNCTION.equals(getPhase())) return repairMalfunction(time);
@@ -216,7 +220,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting airlock.
      */
-    private double exitEVA(double time) throws Exception {
+    private double exitEVA(double time) {
     	
     	try {
     		time = exitAirlock(time, airlock);
@@ -239,7 +243,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error repairing malfunction.
      */
-    private double repairMalfunction(double time) throws Exception {
+    private double repairMalfunction(double time) {
         
         if (!hasEVAMalfunction(person, containerUnit, entity) || shouldEndEVAOperation()) {
             setPhase(ENTER_AIRLOCK);
@@ -301,7 +305,7 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return time remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) throws Exception {
+    private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points

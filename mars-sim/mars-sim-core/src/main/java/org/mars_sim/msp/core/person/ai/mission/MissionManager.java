@@ -7,18 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -26,6 +14,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The MissionManager class keeps track of ongoing missions
@@ -132,8 +127,7 @@ public class MissionManager implements Serializable {
      */
     public Mission getMission(Person person) {
         Mission result = null;
-        for (int x=0; x < missions.size(); x++) {
-            Mission tempMission = missions.get(x);
+        for (Mission tempMission : missions) {
             if (tempMission.hasPerson(person)) result = tempMission;
         }
         return result;
@@ -216,7 +210,7 @@ public class MissionManager implements Serializable {
         Iterator<Class<? extends Mission>> i = missionProbCache.keySet().iterator();
         while (i.hasNext()) {
         	Class<? extends Mission> mission = i.next();
-        	double probWeight = ((Double) missionProbCache.get(mission)).doubleValue();
+        	double probWeight = (Double) missionProbCache.get(mission);
         	if (selectedMission == null) {
         		if (r < probWeight) selectedMission = mission;
         		else r -= probWeight;
@@ -325,16 +319,15 @@ public class MissionManager implements Serializable {
     	totalProbCache = 0D;
     	
     	// Determine probabilities.
-        for (int x=0; x < potentialMissions.length; x++) {
+        for (Class<? extends Mission> potentialMission : potentialMissions) {
             try {
-            	Class<? extends Mission> probabilityClass = potentialMissions[x];
+                Class<? extends Mission> probabilityClass = potentialMission;
                 Method probabilityMethod = probabilityClass.getMethod("getNewMissionProbability", parametersForFindingMethod);
                 Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
                 missionProbCache.put(probabilityClass, probability);
-    			totalProbCache += probability.doubleValue();
-            } 
-            catch (Exception e) { 
-        	logger.log(Level.SEVERE, "MissionManager.getTotalMissionProbability()", e);
+                totalProbCache += probability;
+            } catch (Exception e) {
+                logger.log(Level.SEVERE, "MissionManager.getTotalMissionProbability()", e);
             }
         }
     	
@@ -350,8 +343,7 @@ public class MissionManager implements Serializable {
      */
     private boolean useCache(Person person) {
     	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-    	if (currentTime.equals(timeCache) && (person == personCache)) return true;
-    	return false;
+        return currentTime.equals(timeCache) && (person == personCache);
     }
     
     /**
@@ -359,7 +351,7 @@ public class MissionManager implements Serializable {
      * @param time amount of time passing (millisols)
      * @throws Exception if error in updating missions
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
     	Iterator<Mission> i = missions.iterator();
     	while (i.hasNext()) i.next().timePassing(time);
     }

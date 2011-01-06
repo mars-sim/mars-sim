@@ -6,15 +6,19 @@
  */
  
 package org.mars_sim.msp.core.structure;
- 
+
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.time.MarsClock;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.structure.building.function.*;
-import org.mars_sim.msp.core.time.MarsClock;
  
 /**
  * The PowerGrid class is a settlement's building power grid.
@@ -171,7 +175,7 @@ public class PowerGrid implements Serializable {
      *
      * @param time amount of time passing (in millisols)
      */
-    public void timePassing(double time) throws BuildingException {
+    public void timePassing(double time) {
         
         if(logger.isLoggable(Level.FINE)) {
             logger.fine(settlement.getName() + " power situation: ");
@@ -190,17 +194,17 @@ public class PowerGrid implements Serializable {
         updateTotalRequiredPower();
         
         // Check if there is enough power generated to fully supply each building.
-        if (getRequiredPower() <= getGeneratedPower()) {
+        if (powerRequired <= powerGenerated) {
             sufficientPower = true;
             
             // Store excess power in power storage buildings.
             double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
-            double excessPower = (getGeneratedPower() - getRequiredPower()) * timeHr;
+            double excessPower = (powerGenerated - powerRequired) * timeHr;
             storeExcessPower(excessPower);
         }
         else {
             sufficientPower = false;
-            double neededPower = getRequiredPower() - getGeneratedPower();
+            double neededPower = powerRequired - powerGenerated;
             
             // Retrieve power from power storage buildings.
             double timeHr = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
@@ -262,7 +266,7 @@ public class PowerGrid implements Serializable {
      * Updates the total power generated in the grid.
      * @throws BuildingException if error determining total power generated.
      */
-    private void updateTotalPowerGenerated() throws BuildingException {
+    private void updateTotalPowerGenerated() {
         double tempPowerGenerated = 0D;
         BuildingManager manager = settlement.getBuildingManager();
         Iterator<Building> iPow = manager.getBuildings(PowerGeneration.NAME).iterator();
@@ -283,7 +287,7 @@ public class PowerGrid implements Serializable {
      * Updates the total power stored in the grid.
      * @throws BuildingException if error determining total power stored.
      */
-    private void updateTotalStoredPower() throws BuildingException {
+    private void updateTotalStoredPower() {
         double tempPowerStored = 0D;
         BuildingManager manager = settlement.getBuildingManager();
         Iterator<Building> iStore = manager.getBuildings(PowerStorage.NAME).iterator();
@@ -303,7 +307,7 @@ public class PowerGrid implements Serializable {
      * Updates the toal power required in the grid.
      * @throws BuildingException if error determining total power required.
      */
-    private void updateTotalRequiredPower() throws BuildingException {
+    private void updateTotalRequiredPower() {
         double tempPowerRequired = 0D;
         boolean powerUp = powerMode.equals(POWER_UP_MODE);
         BuildingManager manager = settlement.getBuildingManager();
@@ -340,7 +344,7 @@ public class PowerGrid implements Serializable {
      * Updates the total power storage capacity in the grid.
      * @throws BuildingException if error determining total power storage capacity.
      */
-    private void updateTotalPowerStorageCapacity() throws BuildingException {
+    private void updateTotalPowerStorageCapacity() {
         double tempPowerStorageCapacity = 0D;
         BuildingManager manager = settlement.getBuildingManager();
         Iterator<Building> iStore = manager.getBuildings(PowerStorage.NAME).iterator();
@@ -365,7 +369,7 @@ public class PowerGrid implements Serializable {
      * @return true if building supplies more power than it uses.
      * throws BuildingException if error in power generation.
      */
-    private boolean powerSurplus(Building building, String mode) throws BuildingException {
+    private boolean powerSurplus(Building building, String mode) {
         double generated = 0D;
         if (building.hasFunction(PowerGeneration.NAME)) {
         	PowerGeneration powerGeneration = 
@@ -376,9 +380,8 @@ public class PowerGrid implements Serializable {
         double used = 0D;
         if (mode.equals(Building.FULL_POWER)) used = building.getFullPowerRequired();
         else if (mode.equals(Building.POWER_DOWN)) used = building.getPoweredDownPowerRequired();
-        
-        if (generated > used) return true;
-        else return false;
+
+        return generated > used;
     }
     
     /**
@@ -386,7 +389,7 @@ public class PowerGrid implements Serializable {
      * @param excessPower excess grid power (in kW hr).
      * @throws BuildingException if error storing excess power.
      */
-    private void storeExcessPower(double excessPower) throws BuildingException {
+    private void storeExcessPower(double excessPower) {
         BuildingManager manager = settlement.getBuildingManager();
         Iterator<Building> i = manager.getBuildings(PowerStorage.NAME).iterator();
         while (i.hasNext()) {
@@ -408,7 +411,7 @@ public class PowerGrid implements Serializable {
      * @return stored power retrieved (kW hr).
      * @throws BuildingException if error retrieving power.
      */
-    private double retrieveStoredPower(double neededPower) throws BuildingException {
+    private double retrieveStoredPower(double neededPower) {
         BuildingManager manager = settlement.getBuildingManager();
         Iterator<Building> i = manager.getBuildings(PowerStorage.NAME).iterator();
         while (i.hasNext()) {

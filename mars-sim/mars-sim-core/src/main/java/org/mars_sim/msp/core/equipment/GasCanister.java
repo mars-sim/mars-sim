@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.equipment;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.resource.Phase;
+
+import java.io.Serializable;
 
 /**
  * A canister container for holding gas amount resources.
@@ -27,7 +27,7 @@ public class GasCanister extends Equipment implements Container, Serializable {
 	 * @param location the location of the gas canister.
 	 * @throws Exception if error creating gas canister.
 	 */
-	public GasCanister(Coordinates location) throws Exception {
+	public GasCanister(Coordinates location) {
 		// Use Equipment constructor.
 		super(TYPE, location);
 		

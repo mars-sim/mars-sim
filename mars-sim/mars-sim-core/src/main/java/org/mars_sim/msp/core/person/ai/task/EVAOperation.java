@@ -7,21 +7,17 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-
-import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
 
 /** 
  * The EVAOperation class is an abstract task that involves an extra vehicular activity. 
@@ -48,7 +44,7 @@ public abstract class EVAOperation extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if task could not be constructed.
      */
-    public EVAOperation(String name, Person person) throws Exception { 
+    public EVAOperation(String name, Person person) { 
         super(name, person, true, false, STRESS_MODIFIER, false, 0D);
         
         // Initialize data members
@@ -76,7 +72,7 @@ public abstract class EVAOperation extends Task implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if person cannot exit through the airlock.
      */
-    protected double exitAirlock(double time, Airlock airlock) throws Exception {
+    protected double exitAirlock(double time, Airlock airlock) {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             // System.out.printl(person.getName() + " exiting airlock of " + airlock.getEntityName());
@@ -90,7 +86,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
             else {
                 endTask();
-                throw new Exception(person.getName() + " unable to exit airlock of " + airlock.getEntityName());
+                throw new IllegalStateException(person.getName() + " unable to exit airlock of " + airlock.getEntityName());
             }
         }
     }
@@ -103,7 +99,7 @@ public abstract class EVAOperation extends Task implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if person cannot enter the airlock.
      */
-    protected double enterAirlock(double time, Airlock airlock) throws Exception {
+    protected double enterAirlock(double time, Airlock airlock) {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             if (EnterAirlock.canEnterAirlock(person, airlock)) {
@@ -112,7 +108,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
             else {
                 endTask();
-                throw new Exception(person.getName() + " unable to enter airlock of " + airlock.getEntityName());
+                throw new IllegalStateException(person.getName() + " unable to enter airlock of " + airlock.getEntityName());
             }
         }
         else {

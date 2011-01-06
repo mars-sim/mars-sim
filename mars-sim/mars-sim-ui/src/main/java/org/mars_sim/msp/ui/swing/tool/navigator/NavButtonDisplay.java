@@ -7,15 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.*;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The NavButtonDisplay class is a component that displays and

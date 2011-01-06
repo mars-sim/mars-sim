@@ -7,22 +7,13 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.phoenixst.plexus.*;
+import com.phoenixst.plexus.Graph.Edge;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 
-import com.phoenixst.plexus.DefaultGraph;
-import com.phoenixst.plexus.EdgePredicate;
-import com.phoenixst.plexus.EdgePredicateFactory;
-import com.phoenixst.plexus.Graph;
-import com.phoenixst.plexus.GraphUtils;
-import com.phoenixst.plexus.Graph.Edge;
+import java.io.Serializable;
+import java.util.*;
 
 /** 
  * The CreditManager class keeps track of all credits/debts between settlements.
@@ -63,7 +54,7 @@ public class CreditManager implements Serializable {
 	 * value if the first settlement owes the second settlement).
 	 * @throws Exception if error setting the credit between the settlements.
 	 */
-	public void setCredit(Settlement settlement1, Settlement settlement2, double amount) throws Exception {
+	public void setCredit(Settlement settlement1, Settlement settlement2, double amount) {
 		
 		// Check that settlements are in graph.
 		if (!creditGraph.containsNode(settlement1)) 
@@ -77,8 +68,8 @@ public class CreditManager implements Serializable {
 		if (existingEdge != null) creditGraph.removeEdge(existingEdge);
 		
 		// Add edge for credit.
-		if (amount >= 0D) creditGraph.addEdge(new Double(Math.abs(amount)), settlement1, settlement2, true);
-		else creditGraph.addEdge(new Double(Math.abs(amount)), settlement2, settlement1, true);
+		if (amount >= 0D) creditGraph.addEdge(Math.abs(amount), settlement1, settlement2, true);
+		else creditGraph.addEdge(Math.abs(amount), settlement2, settlement1, true);
 		
         // Update listeners.
         synchronized(getListeners()) {
@@ -95,7 +86,7 @@ public class CreditManager implements Serializable {
 	 * value if the first settlement owes the second settlement).
 	 * @throws Exception if error getting the credit between the settlements.
 	 */
-	public double getCredit(Settlement settlement1, Settlement settlement2) throws Exception {
+	public double getCredit(Settlement settlement1, Settlement settlement2) {
 		
 		double result = 0D;
 		
@@ -103,7 +94,7 @@ public class CreditManager implements Serializable {
 		EdgePredicate edgePredicate = EdgePredicateFactory.createEqualsNodes(settlement1, settlement2, GraphUtils.ANY_DIRECTION_MASK);
 		Edge existingEdge = creditGraph.getEdge(edgePredicate);
 		if (existingEdge != null) {
-			result = ((Double) existingEdge.getUserObject()).doubleValue();
+			result = (Double) existingEdge.getUserObject();
 			if (existingEdge.getHead() == settlement1) result *= -1D;
 		}
 		

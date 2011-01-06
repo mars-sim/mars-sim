@@ -7,23 +7,10 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Barrel;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.GasCanister;
+import org.mars_sim.msp.core.equipment.*;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -37,6 +24,9 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Utility class for static trade methods.
@@ -81,7 +71,7 @@ public final class TradeUtil {
 	 * @return the best value (value points) for trade.
 	 * @throws Exception if error while getting best trade profit.
 	 */
-    static double getBestTradeProfit(Settlement startingSettlement, Rover rover) throws Exception {
+    static double getBestTradeProfit(Settlement startingSettlement, Rover rover) {
     	double bestProfit = 0D;
     	Settlement bestSettlement = null;
     	
@@ -118,7 +108,7 @@ public final class TradeUtil {
      * @throws Exception if error getting the estimated trade profit.
      */
     private static double getEstimatedTradeProfit(Settlement startingSettlement, Rover rover, 
-    		Settlement tradingSettlement) throws Exception {
+    		Settlement tradingSettlement) {
     	
     	// Determine estimated trade revenue.
     	double revenue = getEstimatedTradeRevenue(startingSettlement, rover, tradingSettlement);
@@ -139,7 +129,7 @@ public final class TradeUtil {
      * @throws Exception if error getting the estimated trade revenue.
      */
     private static double getEstimatedTradeRevenue(Settlement startingSettlement, Rover rover, 
-    		Settlement tradingSettlement) throws Exception {
+    		Settlement tradingSettlement) {
     	
         // Determine best sell load.
         Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover);
@@ -185,7 +175,7 @@ public final class TradeUtil {
      * @throws Exception if error determining the buy load.
      */
     public static Map<Good, Integer> getDesiredBuyLoad(Settlement startingSettlement, Rover rover, 
-            Settlement tradingSettlement) throws Exception {
+            Settlement tradingSettlement) {
         
         // Determine best sell loads.
         Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover);
@@ -219,7 +209,7 @@ public final class TradeUtil {
      * @throws Exception if error determining best sell load.
      */
     static Map<Good, Integer> determineBestSellLoad(Settlement startingSettlement, Rover rover, 
-    		Settlement tradingSettlement) throws Exception {
+    		Settlement tradingSettlement) {
     	
         // Determine best sell load.
         Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover);
@@ -253,7 +243,7 @@ public final class TradeUtil {
      * @throws Exception if error determining the load.
      */
     public static Map<Good, Integer> determineLoad(Settlement buyingSettlement, Settlement sellingSettlement,
-    		Rover rover) throws Exception {
+    		Rover rover) {
         
     	Map<Good, Integer> tradeList = new HashMap<Good, Integer>();
     	boolean hasRover = false;
@@ -290,7 +280,7 @@ public final class TradeUtil {
     						Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
                             massCapacity -= container.getBaseMass();
     						int containerNum = 0;
-    						if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood).intValue();
+    						if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood);
     						double containerSupply = manager.getNumberOfGoodForSettlement(containerGood);
                             double totalContainerNum = containerNum + containerSupply;
                             loadValue+= manager.getGoodValuePerItem(containerGood, totalContainerNum);
@@ -314,7 +304,7 @@ public final class TradeUtil {
                         massCapacity -= (GoodsUtil.getGoodMassPerItem(good) * number);
     				}
     				int currentNum = 0;
-    				if (tradeList.containsKey(good)) currentNum = tradeList.get(good).intValue();
+    				if (tradeList.containsKey(good)) currentNum = tradeList.get(good);
     				double supply = manager.getNumberOfGoodForSettlement(good);
                     double goodNum = 1D;
     	    		if (isAmountResource) goodNum = getResourceTradeAmount((AmountResource) good.getObject());
@@ -352,7 +342,7 @@ public final class TradeUtil {
      */
     public static Map<Good, Integer> addNonProfitsToLoad(Settlement buyingSettlement, Settlement sellingSettlement,
             Rover rover, Map<Good, Integer> currentLoad, Set<Good> nonAddGoods, double currentValue, 
-            double targetValue) throws Exception {
+            double targetValue) {
         
         double massCapacity = rover.getInventory().getGeneralCapacity();
         
@@ -403,7 +393,7 @@ public final class TradeUtil {
                             Good containerGood = GoodsUtil.getEquipmentGood(container.getClass());
                             massCapacity -= container.getBaseMass();
                             int containerNum = 0;
-                            if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood).intValue();
+                            if (tradeList.containsKey(containerGood)) containerNum = tradeList.get(containerGood);
                             double containerSupply = manager.getNumberOfGoodForSettlement(containerGood);
                             double totalContainerNum = containerNum + containerSupply;
                             loadValue+= manager.getGoodValuePerItem(containerGood, totalContainerNum);
@@ -428,7 +418,7 @@ public final class TradeUtil {
                     }
                     
                     int currentNum = 0;
-                    if (tradeList.containsKey(good)) currentNum = tradeList.get(good).intValue();
+                    if (tradeList.containsKey(good)) currentNum = tradeList.get(good);
                     double supply = manager.getNumberOfGoodForSettlement(good);
                     double goodNum = 1D;
                     if (isAmountResource) goodNum = getResourceTradeAmount((AmountResource) good.getObject());
@@ -462,7 +452,7 @@ public final class TradeUtil {
      * @throws Exception if error determining the load value.
      */
     public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) 
-			throws Exception {
+			{
 
     	double result = 0D;
 
@@ -471,7 +461,7 @@ public final class TradeUtil {
     	Iterator<Good> i = load.keySet().iterator(); 
     	while (i.hasNext()) {
     		Good good = i.next();
-    		int goodNumber = load.get(good).intValue();
+    		int goodNumber = load.get(good);
     		double supply = manager.getNumberOfGoodForSettlement(good);
     		double multiplier = 1D;
     		if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
@@ -516,7 +506,7 @@ public final class TradeUtil {
     private static Good findBestTradeGood(Settlement sellingSettlement, Settlement buyingSettlement, 
     		Map<Good, Integer> tradedGoods, Set<Good> nonTradeGoods, double remainingCapacity, 
             boolean hasVehicle, Rover missionRover, Good previousGood, boolean allowNegValue,
-            Set<Part> repairParts) throws Exception {
+            Set<Part> repairParts) {
     	
     	Good result = null;
     	
@@ -559,7 +549,7 @@ public final class TradeUtil {
      * @throws Exception if error determining number of goods.
      */
     private static int getNumItemResourcesToTrade(Good itemResourceGood, Settlement sellingSettlement, 
-    		Settlement buyingSettlement, Map<Good, Integer>tradeList, double remainingCapacity) throws Exception {
+    		Settlement buyingSettlement, Map<Good, Integer>tradeList, double remainingCapacity) {
         
     	int result = 0;
     	
@@ -617,7 +607,7 @@ public final class TradeUtil {
      */
     private static double getTradeValue(Good good, Settlement sellingSettlement, Settlement buyingSettlement, 
     		Map<Good, Integer> tradedGoods, double remainingCapacity, boolean hasVehicle, Rover missionRover, 
-    		boolean allowNegValue, Set<Part> repairParts) throws Exception {
+    		boolean allowNegValue, Set<Part> repairParts) {
     	
     	double result = Double.NEGATIVE_INFINITY;
     	
@@ -705,7 +695,7 @@ public final class TradeUtil {
      * @throws Exception if error checking for capacity.
      */
     private static boolean hasCapacityInInventory(Good good, double remainingCapacity, boolean hasVehicle) 
-            throws Exception {
+{
     	boolean result = false;
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
     		AmountResource resource = (AmountResource) good.getObject();
@@ -731,7 +721,7 @@ public final class TradeUtil {
      * @return number of goods in inventory.
      * @throws Exception if error getting number of goods in inventory.
      */
-    public static double getNumInInventory(Good good, Inventory inventory) throws Exception {
+    public static double getNumInInventory(Good good, Inventory inventory) {
     	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
     		return inventory.getAmountResourceStored((AmountResource) good.getObject());
     	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
@@ -760,7 +750,7 @@ public final class TradeUtil {
      * @throws Exception if error.
      */
     private static Equipment getAvailableContainerForResource(AmountResource resource, Settlement settlement, 
-    		Map<Good, Integer> tradedGoods) throws Exception {
+    		Map<Good, Integer> tradedGoods) {
     	
     	Equipment result = null;
     	
@@ -776,7 +766,7 @@ public final class TradeUtil {
     	
     	Good containerGood = GoodsUtil.getEquipmentGood(containerType);
     	int containersTraded = 0;
-    	if (tradedGoods.containsKey(containerGood)) containersTraded = tradedGoods.get(containerGood).intValue();
+    	if (tradedGoods.containsKey(containerGood)) containersTraded = tradedGoods.get(containerGood);
     	
     	if (containersStored > containersTraded) result = (Equipment) settlementInv.findUnitOfClass(containerType);
     	
@@ -792,14 +782,14 @@ public final class TradeUtil {
      * @throws Exception if error getting the estimated mission cost.
      */
     public static double getEstimatedMissionCost(Settlement startingSettlement, Rover rover, double distance) 
-			throws Exception {
+			{
     	Map<Good, Integer> neededResources = new HashMap<Good, Integer>(4);
 
     	// Get required fuel.
     	Good fuelGood = GoodsUtil.getResourceGood(rover.getFuelType());
     	double efficiency = rover.getFuelEfficiency();
-    	neededResources.put(fuelGood, 
-    			new Integer((int) VehicleMission.getFuelNeededForTrip(distance, efficiency, true)));
+    	neededResources.put(fuelGood,
+                (int) VehicleMission.getFuelNeededForTrip(distance, efficiency, true));
 
     	// Get estimated trip time.
     	double averageSpeed = rover.getBaseSpeed() / 2D;
@@ -811,21 +801,21 @@ public final class TradeUtil {
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	Good oxygenGood = GoodsUtil.getResourceGood(oxygen);
-    	neededResources.put(oxygenGood, new Integer((int) oxygenAmount));
+    	neededResources.put(oxygenGood, (int) oxygenAmount);
 
     	// Get water amount.
     	double waterAmount = PhysicalCondition.getWaterConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	AmountResource water = AmountResource.findAmountResource("water");
     	Good waterGood = GoodsUtil.getResourceGood(water);
-    	neededResources.put(waterGood, new Integer((int) waterAmount));
+    	neededResources.put(waterGood, (int) waterAmount);
 
     	// Get food amount.
     	double foodAmount = PhysicalCondition.getFoodConsumptionRate() * tripTimeSols * Trade.MAX_MEMBERS * 
 				Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	AmountResource food = AmountResource.findAmountResource("food");
     	Good foodGood = GoodsUtil.getResourceGood(food);
-    	neededResources.put(foodGood, new Integer((int) foodAmount));
+    	neededResources.put(foodGood, (int) foodAmount);
 
     	// Get cost of resources.
     	return determineLoadValue(neededResources, startingSettlement, false);
@@ -837,7 +827,7 @@ public final class TradeUtil {
      * @return amount (kg) of resource to trade.
      * @throws Exception if error determining container.
      */
-    private static double getResourceTradeAmount(AmountResource resource) throws Exception {
+    private static double getResourceTradeAmount(AmountResource resource) {
     	double result = 0D;
     	
     	Class containerType = null;
@@ -867,7 +857,7 @@ public final class TradeUtil {
      * @throws Exception if error determining number.
      */
     private static int getNonProfitItemNumber(Good itemGood, Map<Good, Integer> tradeList, Inventory sellingInv, 
-            double remainingCapacity) throws Exception {
+            double remainingCapacity) {
         
         int targetNum = NONPROFIT_ITEM_RESOURCE_TARGET;
         
@@ -894,7 +884,7 @@ public final class TradeUtil {
      * @return set of repair parts.
      * @throws Exception if error determining repair parts.
      */
-    private static Set<Part> determineRepairParts(Rover rover) throws Exception {
+    private static Set<Part> determineRepairParts(Rover rover) {
         
         Set<Part> result = new HashSet<Part>();
         

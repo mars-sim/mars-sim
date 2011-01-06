@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.structure.construction;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
 
 /**
  * A log entry representing a constructed building.

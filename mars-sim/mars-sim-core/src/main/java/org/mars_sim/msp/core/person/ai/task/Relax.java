@@ -7,15 +7,17 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Recreation;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** The Relax class is a simple task that implements resting and doing nothing for a while.
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
@@ -37,7 +39,7 @@ class Relax extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public Relax(Person person) throws Exception {
+    public Relax(Person person) {
         super("Relaxing", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
 
         // If person is in a settlement, try to find a place to relax.
@@ -91,7 +93,7 @@ class Relax extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (RELAXING.equals(getPhase())) return relaxingPhase(time);
     	else return time;
@@ -103,7 +105,7 @@ class Relax extends Task implements Serializable {
      * @return the amount of time (millisol) left after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double relaxingPhase(double time) throws Exception {
+    private double relaxingPhase(double time) {
     	// Do nothing
         return 0D; 
     }
@@ -124,7 +126,7 @@ class Relax extends Task implements Serializable {
 	 * @return available recreation building
 	 * @throws BuildingException if error finding recreation building.
 	 */
-	private static Building getAvailableRecreationBuilding(Person person) throws BuildingException {
+	private static Building getAvailableRecreationBuilding(Person person) {
      
 		Building result = null;
         
@@ -135,7 +137,7 @@ class Relax extends Task implements Serializable {
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getBestRelationshipBuildings(person, recreationBuildings);
         	
-			if (recreationBuildings.size() > 0) result = (Building) recreationBuildings.get(0);
+			if (recreationBuildings.size() > 0) result = recreationBuildings.get(0);
 		}
         
 		return result;

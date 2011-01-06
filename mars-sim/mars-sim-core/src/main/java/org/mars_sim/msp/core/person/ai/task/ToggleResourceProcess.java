@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -29,6 +24,11 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The ToggleResourceProcess class is an EVA task for toggling a particular
@@ -52,7 +52,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing the task.
 	 */
-	public ToggleResourceProcess(Person person) throws Exception {
+	public ToggleResourceProcess(Person person) {
 		super("Turning on resource process", person);
 		
 		building = getResourceProcessingBuilding(person);
@@ -152,7 +152,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      * @return building with resource process to toggle, or null if none.
      * @throws Exception if error getting building.
      */
-	private static Building getResourceProcessingBuilding(Person person) throws Exception {
+	private static Building getResourceProcessingBuilding(Person person) {
 		Building result = null;
 		
 		Settlement settlement = person.getSettlement();
@@ -182,7 +182,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return the resource process to toggle or null if none.
 	 * @throws Exception if error getting resource process.
 	 */
-	private static ResourceProcess getResourceProcess(Building building) throws Exception {
+	private static ResourceProcess getResourceProcess(Building building) {
 		ResourceProcess result = null;
 		
 		Settlement settlement = building.getBuildingManager().getSettlement();
@@ -210,7 +210,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return the resource value diff (value points)
 	 * @throws Exception if error getting value diff.
 	 */
-	private static double getResourcesValueDiff(Settlement settlement, ResourceProcess process) throws Exception {
+	private static double getResourcesValueDiff(Settlement settlement, ResourceProcess process) {
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);
 		double diff = outputValue - inputValue;
@@ -240,7 +240,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      * @throws Exception if problem determining resource value.
 	 */
 	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) 
-            throws Exception {
+{
 		double result = 0D;
 		
 		Iterator<AmountResource> i = null;
@@ -273,7 +273,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @throws Exception if error checking input resources.
 	 */
 	private static boolean isEmptyInputResourceInProcess(Settlement settlement, 
-	        ResourceProcess process) throws Exception {
+	        ResourceProcess process) {
 		boolean result = false;
 		
 		Iterator<AmountResource> i = process.getInputResources().iterator();
@@ -345,7 +345,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @see org.mars_sim.msp.simulation.person.ai.task.Task#performMappedPhase(double)
 	 */
 	@Override
-	protected double performMappedPhase(double time) throws Exception {
+	protected double performMappedPhase(double time) {
 		if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
 		if (isEVA) {
 			if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
@@ -365,7 +365,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting the airlock.
 	 */
-	private double exitEVA(double time) throws Exception {
+	private double exitEVA(double time) {
 		
     	try {
     		time = exitAirlock(time, airlock);
@@ -388,7 +388,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return time remaining after performing the phase
 	 * @throws Exception if error entering airlock.
 	 */
-	private double enterEVA(double time) throws Exception {
+	private double enterEVA(double time) {
 		time = enterAirlock(time, airlock);
 		
         // Add experience points
@@ -404,7 +404,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double toggleProcessPhase(double time) throws Exception {
+    private double toggleProcessPhase(double time) {
     	
         // If person is incompacitated, enter airlock.
         if (person.getPerformanceRating() == 0D) {

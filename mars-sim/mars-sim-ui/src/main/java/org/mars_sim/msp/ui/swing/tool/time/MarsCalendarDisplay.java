@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.ui.swing.tool.time;
 
-import java.awt.*;
-import javax.swing.*;
+import org.mars_sim.msp.core.time.MarsClock;
 
-import org.mars_sim.msp.core.time.*;
+import javax.swing.*;
+import java.awt.*;
 
 /** 
  * The Mars Calendar Display class shows the current month 

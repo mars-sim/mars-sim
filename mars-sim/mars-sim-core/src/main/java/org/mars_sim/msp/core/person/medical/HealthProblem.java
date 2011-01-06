@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.core.person.medical;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 
 /**
  * This class represents a Health problem being suffered by a Person.
@@ -69,7 +69,7 @@ public class HealthProblem implements Serializable {
         }
         else {
             // Start treatment if the medical aid can help.
-            if ((getState() == DEGRADING) && (aid != null) && aid.canTreatProblem(this)) {
+            if ((state == DEGRADING) && (aid != null) && aid.canTreatProblem(this)) {
                 usedAid = aid;
                 try {
                     usedAid.requestTreatment(this);
@@ -107,14 +107,14 @@ public class HealthProblem implements Serializable {
      * @return true if degrading
      */
     public boolean getDegrading() {
-    	return (getState() == DEGRADING);
+    	return (state == DEGRADING);
     }
 
     /**
      * Has the problem been cured.
      */
     public boolean getCured() {
-        return (getState() == CURED);
+        return (state == CURED);
     }
 
     /**
@@ -157,14 +157,14 @@ public class HealthProblem implements Serializable {
      * Has the problem been cured.
      */
     public boolean getRecovering() {
-        return (getState() == RECOVERING);
+        return (state == RECOVERING);
     }
 
     /**
      * Awaiting treatment
      */
     public boolean getAwaitingTreatment() {
-        return ((getState() == DEGRADING) && (usedAid != null));
+        return ((state == DEGRADING) && (usedAid != null));
     }
 
     /**
@@ -193,7 +193,7 @@ public class HealthProblem implements Serializable {
      * @return illness state as string
      */
     public String getStateString() {
-        switch(getState()) {
+        switch(state) {
             case DEGRADING: 
                 return "degrading";
             case TREATMENT:
@@ -231,7 +231,7 @@ public class HealthProblem implements Serializable {
      * Stops the treatment for now.
      */
     public void stopTreatment() {
-        if (getState() == TREATMENT) {
+        if (state == TREATMENT) {
             if (duration > timePassed) startDegrading();
             else startRecovery();
         }
@@ -250,7 +250,7 @@ public class HealthProblem implements Serializable {
      */
     public void startRecovery() {
         
-        if ((getState() == DEGRADING) || (getState() == TREATMENT)) {
+        if ((state == DEGRADING) || (state == TREATMENT)) {
             // If no recovery period, then it's done.
             duration = illness.getRecoveryPeriod();
             timePassed = 0;
@@ -298,7 +298,7 @@ public class HealthProblem implements Serializable {
         if (timePassed > duration) {
 
             // Recovering so has the recovery period expired
-            if (getState() == RECOVERING) {
+            if (state == RECOVERING) {
                 setCured();
 
                 // If person is cured or treatment person has expired, then
@@ -313,7 +313,7 @@ public class HealthProblem implements Serializable {
                     usedAid = null;
                 }
             }
-            else if (getState() == DEGRADING) {
+            else if (state == DEGRADING) {
                 if (duration != 0D) {
                     // Illness has moved to next phase, if null then dead
                     Complaint nextPhase = illness.getNextPhase();
@@ -334,7 +334,7 @@ public class HealthProblem implements Serializable {
                     else result = nextPhase;
                 }
             }
-            else if (getState() == TREATMENT) {
+            else if (state == TREATMENT) {
                 startRecovery();
             }
         }
@@ -348,12 +348,12 @@ public class HealthProblem implements Serializable {
      * @return String description.
      */
     public String toString() {
-        StringBuffer buffer = new StringBuffer();
-        if (getState() == RECOVERING) {
+        StringBuilder buffer = new StringBuilder();
+        if (state == RECOVERING) {
             buffer.append("Recovering ");
             buffer.append(illness.getName());
         }
-        else if (getState() == TREATMENT) {
+        else if (state == TREATMENT) {
             buffer.append("Treatment (");
             buffer.append(illness.getRecoveryTreatment().getName());
             buffer.append(") ");

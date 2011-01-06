@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Information about the salvage of a particular salvagable item.

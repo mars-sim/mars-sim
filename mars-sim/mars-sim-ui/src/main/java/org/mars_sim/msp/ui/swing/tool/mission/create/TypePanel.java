@@ -7,20 +7,12 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel for selecting mission type.
@@ -69,7 +61,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		String[] missionTypes = MissionDataBean.getMissionTypes();
 		String[] displayMissionTypes = new String[missionTypes.length + 1];
 		displayMissionTypes[0] = "";
-		for (int x = 0; x < missionTypes.length; x++) displayMissionTypes[x + 1] = missionTypes[x];
+        System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
 		typeSelect = new JComboBox(displayMissionTypes);
 		typeSelect.addItemListener(this);
         typeSelect.setMaximumRowCount(typeSelect.getItemCount());

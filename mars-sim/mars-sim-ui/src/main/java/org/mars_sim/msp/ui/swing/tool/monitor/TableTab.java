@@ -6,28 +6,20 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Point;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import javax.swing.event.TableModelEvent;
-import javax.swing.Icon;
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.UIManager;
-
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
@@ -291,9 +283,9 @@ abstract class TableTab extends MonitorTab {
         int indexes[] = {};
         if (table != null) indexes = table.getSelectedRows();
         ArrayList<Object> selectedRows = new ArrayList<Object>();
-        for(int i = 0; i < indexes.length; i++) {
-        	Object selected = target.getObject(indexes[i]);
-        	if (selected != null) selectedRows.add(selected);
+        for (int indexe : indexes) {
+            Object selected = target.getObject(indexe);
+            if (selected != null) selectedRows.add(selected);
         }
 
         return selectedRows;

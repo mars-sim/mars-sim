@@ -62,15 +62,24 @@ public class UpTimer implements Serializable {
     	 * */
     }
 
+    public void updateTime()
+    {
+        utsec = getUptimeMillis()/1000;
+   		days = (int)((utsec%secsperyear)/secspday);
+   		hours=(int)((utsec%secspday)/secsphour);
+   		minutes=(int)((utsec%secsphour)/secspmin);
+   		seconds=(int)((utsec%secspmin));
+    }
+
     /** Reportsthe amount of time the simulation has been running, as a String.  
      *  @return simulation running time formatted in a string. ex "6 days 5:32:58"
      */
     public String getUptime() {
-    	utsec = getUptimeMillis()/1000;
-   		days = (int)((utsec%secsperyear)/secspday);		
-   		hours=(int)((utsec%secspday)/secsphour);
-   		minutes=(int)((utsec%secsphour)/secspmin);
-   		seconds=(int)((utsec%secspmin));
+//    	utsec = getUptimeMillis()/1000;
+//   		days = (int)((utsec%secsperyear)/secspday);
+//   		hours=(int)((utsec%secspday)/secsphour);
+//   		minutes=(int)((utsec%secsphour)/secspmin);
+//   		seconds=(int)((utsec%secspmin));
 
         String minstr = "" + minutes;
         if (minutes < 10) minstr = "0" + minutes;

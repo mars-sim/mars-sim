@@ -6,19 +6,14 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+
+import java.io.Serializable;
+import java.util.*;
 
 
 
@@ -56,7 +51,7 @@ public class ResupplyConfig implements Serializable {
 	 * @throws Exception if error parsing XML.
 	 */
 	public ResupplyConfig(Document resupplyDoc, PartPackageConfig partPackageConfig) 
-			throws Exception {
+			{
 		resupplyTemplates = new ArrayList<ResupplyTemplate>();
 		loadResupplyTemplates(resupplyDoc, partPackageConfig);
 	}
@@ -69,7 +64,7 @@ public class ResupplyConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	private void loadResupplyTemplates(Document resupplyDoc, PartPackageConfig partPackageConfig) 
-			throws Exception {
+			{
 		
 		Element root = resupplyDoc.getRootElement();
 		List<Element> resupplyNodes = root.getChildren(RESUPPLY);
@@ -197,7 +192,7 @@ public class ResupplyConfig implements Serializable {
 	 * @param resupplyName name of the resupply mission.
 	 * @return list of vehicle types as strings.
 	 */
-	public List<String> getResupplyVehicleTypes(String resupplyName) throws Exception {
+	public List<String> getResupplyVehicleTypes(String resupplyName) {
 		ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
 		List<String> result = new ArrayList<String>();
 		Iterator<String> j = foundTemplate.vehicles.keySet().iterator();
@@ -252,7 +247,7 @@ public class ResupplyConfig implements Serializable {
 	/**
 	 * Private inner class for resupply template.
 	 */
-	private class ResupplyTemplate implements Serializable {
+	private static class ResupplyTemplate implements Serializable {
 		private String name;
 		private List<BuildingTemplate> buildings;
 		private Map<String, Integer> vehicles;

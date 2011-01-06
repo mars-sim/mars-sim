@@ -6,13 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -27,11 +20,17 @@ import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A task for performing mathematical modeling in a laboratory for a scientific study.
@@ -60,7 +59,7 @@ public class PerformMathematicalModeling extends Task implements
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public PerformMathematicalModeling(Person person) throws Exception {
+    public PerformMathematicalModeling(Person person) {
         // Use task constructor.
         super("Perform Mathematical Modeling", person, true, false, STRESS_MODIFIER, 
                 true, RandomUtil.getRandomDouble(200D));
@@ -176,7 +175,7 @@ public class PerformMathematicalModeling extends Task implements
      * @throws BuildingException if error determining lab building.
      */
     private static double getLabCrowdingModifier(Person researcher, Lab lab) 
-            throws BuildingException {
+            {
         double result = 1D;
         if (researcher.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Building labBuilding = ((Research) lab).getBuilding();  
@@ -241,7 +240,7 @@ public class PerformMathematicalModeling extends Task implements
      * @return laboratory found or null if none.
      * @throws Exception if error getting a lab.
      */
-    private static Lab getLocalLab(Person person) throws Exception {
+    private static Lab getLocalLab(Person person) {
         Lab result = null;
         
         String location = person.getLocationSituation();
@@ -259,7 +258,7 @@ public class PerformMathematicalModeling extends Task implements
     private static Lab getSettlementLab(Person person) {
         Lab result = null;
         
-        try {
+//        try {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> labBuildings = manager.getBuildings(Research.NAME);
             labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
@@ -269,13 +268,13 @@ public class PerformMathematicalModeling extends Task implements
             labBuildings = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
         
             if (labBuildings.size() > 0) {
-                Building building = (Building) labBuildings.get(0);
+                Building building = labBuildings.get(0);
                 result = (Research) building.getFunction(Research.NAME);
             }
-        }
-        catch (BuildingException e) {
-            logger.severe("getSettlementLab(): " + e.getMessage());
-        }
+//        }
+//        catch (BuildingException e) {
+//            logger.severe("getSettlementLab(): " + e.getMessage());
+//        }
         
         return result;
     }
@@ -288,7 +287,7 @@ public class PerformMathematicalModeling extends Task implements
      * @throws BuildingException if building list contains buildings without research function.
      */
     private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList) 
-            throws BuildingException {
+            {
         List<Building> result = new ArrayList<Building>();
         
         Iterator<Building> i = buildingList.iterator();
@@ -309,7 +308,7 @@ public class PerformMathematicalModeling extends Task implements
      * @throws BuildingException if building list contains buildings without research function.
      */
     private static List<Building> getSettlementLabsWithMathematicsSpeciality(List<Building> buildingList) 
-                throws BuildingException {
+                {
         List<Building> result = new ArrayList<Building>();
         
         Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
@@ -423,7 +422,7 @@ public class PerformMathematicalModeling extends Task implements
         
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
-            SkillManager manager = getResearchAssistant().getMind().getSkillManager();
+            SkillManager manager = researchAssistant.getMind().getSkillManager();
             Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
             int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(mathematicsScience));
             if (mathematicsSkill > 0) modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
@@ -433,7 +432,7 @@ public class PerformMathematicalModeling extends Task implements
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (MODELING.equals(getPhase())) return modelingPhase(time);
         else return time;
@@ -445,7 +444,7 @@ public class PerformMathematicalModeling extends Task implements
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double modelingPhase(double time) throws Exception {
+    private double modelingPhase(double time) {
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();
         

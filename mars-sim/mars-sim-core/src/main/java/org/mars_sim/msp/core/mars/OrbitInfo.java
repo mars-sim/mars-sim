@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.mars;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
 
 /** 
  * The OrbitInfo class keeps track of the orbital position of Mars 
@@ -100,7 +100,7 @@ public class OrbitInfo implements Serializable {
      * @return distance in Astronomical Units (A.U.)
      */
     public double getDistanceToSun() { 
-        return getRadius(); 
+        return radius;
     }
     
     /** 
@@ -109,7 +109,7 @@ public class OrbitInfo implements Serializable {
      * @return angle in radians (0 - PI).
      */
     public double getSunAngleFromPhi(double phi) {
-        return Math.abs(phi - getSunDirection().getPhi());
+        return Math.abs(phi - sunDirection.getPhi());
     }
     
     /** The point on the surface of Mars perpendicular to the Sun as Mars rotates. 

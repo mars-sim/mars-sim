@@ -7,23 +7,19 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.Enumeration;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
-import javax.swing.JPanel;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
-
-import org.mars_sim.msp.ui.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.Enumeration;
 
 /**
  * The MonitorPropsDialog class display the columns of a specific table.

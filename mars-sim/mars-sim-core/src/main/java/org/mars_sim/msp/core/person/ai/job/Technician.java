@@ -7,8 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -16,17 +14,10 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
-import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
-import org.mars_sim.msp.core.person.ai.task.Maintenance;
-import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
-import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
-import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
-import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
-import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
+import org.mars_sim.msp.core.person.ai.task.*;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
 
 public class Technician extends Job implements Serializable {
 

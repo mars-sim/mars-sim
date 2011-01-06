@@ -22,7 +22,7 @@ public interface LifeSupport {
      * @return true if life support is OK
      * @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck() throws Exception;
+    public boolean lifeSupportCheck();
 	
     /** Gets the number of people the life support system can provide for.
      *  @return the capacity of the life support system
@@ -34,14 +34,14 @@ public interface LifeSupport {
      *  @return the amount of oxygen actually received from system (kg)
      *  @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested) throws Exception;
+    public double provideOxygen(double amountRequested);
 
     /** Gets water from system.
      *  @param amountRequested the amount of water requested from system (kg)
      *  @return the amount of water actually received from system (kg)
      *  @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested) throws Exception;
+    public double provideWater(double amountRequested);
 
     /** Gets the air pressure of the life support system.
      *  @return air pressure (atm)

@@ -6,13 +6,16 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
  
 /**
  * The Research class is a building function for research.
@@ -31,20 +34,20 @@ public class Research extends Function implements Lab, Serializable {
 	 * @param building the building this function is for.
 	 * @throws BuildingException if function could not be constructed.
 	 */
-	public Research(Building building) throws BuildingException {
+	public Research(Building building) {
 		// Use Function constructor
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
-		try {
+//		try {
 			techLevel = config.getResearchTechLevel(building.getName());
 			researcherCapacity = config.getResearchCapacity(building.getName());
 			researchSpecialities = config.getResearchSpecialities(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("Research.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Research.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -55,8 +58,8 @@ public class Research extends Function implements Lab, Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         List<String> specialities = config.getResearchSpecialities(buildingName);
@@ -80,8 +83,8 @@ public class Research extends Function implements Lab, Serializable {
             }
             else {
                 Research researchFunction = (Research) building.getFunction(NAME);
-                int techLevel = researchFunction.getTechnologyLevel();
-                int labSize = researchFunction.getLaboratorySize();
+                int techLevel = researchFunction.techLevel;
+                int labSize = researchFunction.researcherCapacity;
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
                     String speciality = researchFunction.getTechSpecialities()[x];
@@ -122,7 +125,7 @@ public class Research extends Function implements Lab, Serializable {
 	public String[] getTechSpecialities() {
 		String[] result = new String[researchSpecialities.size()];
 		for (int x=0; x < researchSpecialities.size(); x++)
-			result[x] = (String) researchSpecialities.get(x);
+			result[x] = researchSpecialities.get(x);
 		return result;
 	}
 	
@@ -151,11 +154,11 @@ public class Research extends Function implements Lab, Serializable {
 	 * Adds a researcher to the laboratory.
 	 * @throws Exception if person cannot be added.
 	 */
-	public void addResearcher() throws Exception {
+	public void addResearcher() {
 		researcherNum ++;
 		if (researcherNum > researcherCapacity) {
 			researcherNum = researcherCapacity;
-			throw new Exception("Lab already full of researchers.");
+			throw new IllegalStateException("Lab already full of researchers.");
 		}
 	}
 
@@ -163,11 +166,11 @@ public class Research extends Function implements Lab, Serializable {
 	 * Removes a researcher from the laboratory.
 	 * @throws Exception if person cannot be removed.
 	 */
-	public void removeResearcher() throws Exception {
+	public void removeResearcher() {
 		researcherNum --;
-		if (getResearcherNum() < 0) {
+		if (researcherNum < 0) {
 			researcherNum = 0; 
-			throw new Exception("Lab is already empty of researchers.");
+			throw new IllegalStateException("Lab is already empty of researchers.");
 		}
 	}
 	
@@ -176,7 +179,7 @@ public class Research extends Function implements Lab, Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) {}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

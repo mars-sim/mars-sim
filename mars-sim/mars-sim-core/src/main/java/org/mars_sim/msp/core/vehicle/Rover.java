@@ -7,23 +7,14 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import java.util.Collection;
-import java.util.Iterator;
-
-import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.Lab;
-import org.mars_sim.msp.core.LifeSupport;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.util.Collection;
+import java.util.Iterator;
 
 /** 
  * The Rover class represents the rover type of ground vehicle.  It
@@ -51,7 +42,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @param settlement the settlement the rover is parked at
      * @throws Exception if rover could not be constructed.
      */
-    public Rover(String name, String description, Settlement settlement) throws Exception {
+    public Rover(String name, String description, Settlement settlement) {
         // Use GroundVehicle constructor
         super(name, description, settlement);
 		
@@ -159,7 +150,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return true if life support is OK
      *  @throws Exception if error checking life support.
      */
-    public boolean lifeSupportCheck() throws Exception {
+    public boolean lifeSupportCheck() {
         boolean result = true;
 
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
@@ -178,7 +169,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return the capacity of the life support system
      */
     public int getLifeSupportCapacity() {
-        return getCrewCapacity();
+        return crewCapacity;
     }
 
     /** Gets oxygen from system.
@@ -186,15 +177,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return the amount of oxgyen actually received from system (kg)
      *  @throws Exception if error providing oxygen.
      */
-    public double provideOxygen(double amountRequested) throws Exception {
+    public double provideOxygen(double amountRequested) {
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
-    	try {
+//    	try {
     		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
-    	}
-    	catch (InventoryException e) {};
+//    	}
+//    	catch (InventoryException e) {};
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -203,15 +194,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      *  @return the amount of water actually received from system (kg)
      *  @throws Exception if error providing water.
      */
-    public double provideWater(double amountRequested) throws Exception {
+    public double provideWater(double amountRequested) {
     	AmountResource water = AmountResource.findAmountResource("water");
     	double waterTaken = amountRequested;
     	double waterLeft = getInventory().getAmountResourceStored(water);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
-    	try {
+//    	try {
     		getInventory().retrieveAmountResource(water, waterTaken);
-    	}
-    	catch (InventoryException e) {};
+//    	}
+//    	catch (InventoryException e) {};
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -250,15 +241,15 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @param time the amount of time passing (in millisols)
      * @throws exception if error during time.
      */
-    public void timePassing(double time) throws Exception {
+    public void timePassing(double time) {
         super.timePassing(time);
         
-        try {
+//        try {
         	airlock.timePassing(time);
-        }
-        catch (Exception e) {
-        	throw new Exception("Rover " + getName() + " timePassing(): " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//        	throw new Exception("Rover " + getName() + " timePassing(): " + e.getMessage());
+//        }
     }
 
     /**
@@ -283,8 +274,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return true if lab.
      */
     public boolean hasLab() {
-    	if (lab != null) return true;
-    	else return false;
+        return lab != null;
     }
 
 	/**
@@ -300,8 +290,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 	 * @return true if sickbay
 	 */
 	public boolean hasSickBay() {
-		if (sickbay != null) return true;
-		else return false;
+        return sickbay != null;
 	}
 	
 	/**
@@ -318,8 +307,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return true if appropriate operator for this vehicle.
      */
     public boolean isAppropriateOperator(VehicleOperator operator) {
-    	if ((operator instanceof Person) && (getInventory().containsUnit((Unit) operator))) return true;
-    	else return false;
+        return (operator instanceof Person) && (getInventory().containsUnit((Unit) operator));
     }
     
     /**
@@ -351,7 +339,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
      * @return the range of the vehicle (in km)
      * @throws Exception if error getting range.
      */
-    public double getRange() throws Exception {
+    public double getRange() {
     	double range = super.getRange();
     	
     	double distancePerSol = getEstimatedTravelDistancePerSol();
@@ -362,7 +350,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	AmountResource food = AmountResource.findAmountResource("food");
     	double foodConsumptionRate = config.getFoodConsumptionRate();
     	double foodCapacity = getInventory().getAmountResourceCapacity(food);
-    	double foodSols = foodCapacity / (foodConsumptionRate * getCrewCapacity());
+    	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
     		
@@ -370,7 +358,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	AmountResource water = AmountResource.findAmountResource("water");
     	double waterConsumptionRate = config.getWaterConsumptionRate();
     	double waterCapacity = getInventory().getAmountResourceCapacity(water);
-    	double waterSols = waterCapacity / (waterConsumptionRate * getCrewCapacity());
+    	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (waterRange < range) range = waterRange;
     		
@@ -378,7 +366,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
     	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen);
-    	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * getCrewCapacity());
+    	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (oxygenRange < range) range = oxygenRange;
     	

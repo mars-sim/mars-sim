@@ -6,13 +6,15 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-import java.util.Iterator;
-
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /**
  * The LivingAccommodations class is a building function for a living accommodations.
@@ -32,18 +34,18 @@ public class LivingAccommodations extends Function implements Serializable {
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
 	 */
-	public LivingAccommodations(Building building) throws BuildingException {
+	public LivingAccommodations(Building building) {
 		// Call Function constructor.
 		super(NAME, building);
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			beds = config.getLivingAccommodationBeds(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("LivingAccommodations.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("LivingAccommodations.constructor: " + e.getMessage());
+//		}
 	}
     
     /**
@@ -54,8 +56,8 @@ public class LivingAccommodations extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is two beds for every inhabitant (with population expansion in mind). 
         double demand = settlement.getAllAssociatedPeople().size() * 2D;
@@ -71,7 +73,7 @@ public class LivingAccommodations extends Function implements Serializable {
             else {
                 LivingAccommodations livingFunction = (LivingAccommodations) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += livingFunction.getBeds() * wearModifier;
+                supply += livingFunction.beds * wearModifier;
             }
         }
         
@@ -103,11 +105,11 @@ public class LivingAccommodations extends Function implements Serializable {
  	 * Adds a sleeper to a bed.
  	 * @throws BuildingException if beds are already in use.
  	 */
- 	public void addSleeper() throws BuildingException {
+ 	public void addSleeper() {
  		sleepers++;
  		if (sleepers > beds) {
  			sleepers = beds;
- 			throw new BuildingException("All beds are full.");
+ 			throw new IllegalStateException("All beds are full.");
  		}
  	}
  	
@@ -115,11 +117,11 @@ public class LivingAccommodations extends Function implements Serializable {
  	 * Removes a sleeper from a bed.
  	 * @throws BuildingException if no sleepers to remove.
  	 */
- 	public void removeSleeper() throws BuildingException {
+ 	public void removeSleeper() {
  		sleepers --;
  		if (sleepers < 0) {
  			sleepers = 0;
- 			throw new BuildingException("Beds are empty.");
+ 			throw new IllegalStateException("Beds are empty.");
  		}
  	}
  
@@ -128,7 +130,7 @@ public class LivingAccommodations extends Function implements Serializable {
      * @param time amount of time passing (millisols)
      * @throws Exception if error in water usage.
      */
-    public void waterUsage(double time) throws Exception {
+    public void waterUsage(double time) {
     	
 		Settlement settlement = getBuilding().getBuildingManager().getSettlement();
 		double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
@@ -141,19 +143,19 @@ public class LivingAccommodations extends Function implements Serializable {
 		double waterUsed = waterUsageBuilding;
 		double waterAvailable = inv.getAmountResourceStored(water);
 		if (waterUsed > waterAvailable) waterUsed = waterAvailable;
-		try {
+//		try {
 			inv.retrieveAmountResource(water, waterUsed);
-    	}
-		catch (Exception e) {}
+//    	}
+//		catch (Exception e) {}
 		
 		AmountResource wasteWater = AmountResource.findAmountResource("waste water");
 		double wasteWaterProduced = waterUsed;
 		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(wasteWater, false);
 		if (wasteWaterProduced > wasteWaterCapacity) wasteWaterProduced = wasteWaterCapacity;
-		try {
+//		try {
 			inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
-		}
-		catch (Exception e) {}
+//		}
+//		catch (Exception e) {}
     }
     
 	/**
@@ -161,13 +163,13 @@ public class LivingAccommodations extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
-		try {
+	public void timePassing(double time) {
+//		try {
 			waterUsage(time);
-		}
-		catch (Exception e) {
-			throw new BuildingException("Error with LivingQuarters.waterUsage(): " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("Error with LivingQuarters.waterUsage(): " + e.getMessage());
+//		}
 	}
 	
 	/**

@@ -7,16 +7,8 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -31,6 +23,13 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The DigLocalRegolith class is a task for performing
@@ -58,7 +57,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
-    public DigLocalRegolith(Person person) throws Exception {
+    public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
         super("Digging local regolith", person);
         
@@ -104,13 +103,13 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             if (numSuits == 0) result = 0D;
             
             // Check if at least one empty bag at settlement.
-            try {
+//            try {
                 int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class);
                 if (numEmptyBags == 0) result = 0D;
-            }
-            catch (InventoryException e) {
-                logger.log(Level.SEVERE, "Error checking empty bags in settlement inventory.");
-            }
+//            }
+//            catch (InventoryException e) {
+//                logger.log(Level.SEVERE, "Error checking empty bags in settlement inventory.");
+//            }
 
             // Check if an airlock is available
             if (getAvailableAirlock(person) == null) result = 0D;
@@ -142,7 +141,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
         if (COLLECT_REGOLITH.equals(getPhase())) return collectRegolith(time);
@@ -196,7 +195,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) throws Exception {
+    private double exitEVA(double time) {
         
         try {
             time = exitAirlock(time, airlock);
@@ -220,14 +219,14 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 }
                 
                 if (emptyBag != null) {
-                    try {
+//                    try {
                         settlement.getInventory().retrieveUnit(emptyBag);
                         person.getInventory().storeUnit(emptyBag);
                         bag = emptyBag;
-                    }
-                    catch (InventoryException e) {
-                        logger.log(Level.SEVERE, "Error retrieving bag from settlement inventory");
-                    }
+//                    }
+//                    catch (InventoryException e) {
+//                        logger.log(Level.SEVERE, "Error retrieving bag from settlement inventory");
+//                    }
                 }
             }
             
@@ -246,7 +245,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
      * @return time remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) throws Exception {
+    private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points
@@ -261,23 +260,23 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 
                 // Try to store regolith in settlement.
                 if (collectedAmount < settlementCap) {
-                    try {
+//                    try {
                         bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
                         settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
-                    }
-                    catch (InventoryException e) {
-                        logger.log(Level.SEVERE, "Error storing regolith in settlement inventory");
-                    }
+//                    }
+//                    catch (InventoryException e) {
+//                        logger.log(Level.SEVERE, "Error storing regolith in settlement inventory");
+//                    }
                 }
                 
                 // Store bag.
-                try {
+//                try {
                     person.getInventory().retrieveUnit(bag);
                     settlement.getInventory().storeUnit(bag);
-                }
-                catch (InventoryException e) {
-                    logger.log(Level.SEVERE, "Error storing bag in settlement inventory");
-                }
+//                }
+//                catch (InventoryException e) {
+//                    logger.log(Level.SEVERE, "Error storing bag in settlement inventory");
+//                }
                 
                 // Recalculate settlement good value for output item.
                 GoodsManager goodsManager = settlement.getGoodsManager();
@@ -294,7 +293,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
      * @return time (millisol) remaining after performing phase.
      * @throws Exception
      */
-    private double collectRegolith(double time) throws Exception {
+    private double collectRegolith(double time) {
         
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -316,13 +315,13 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             finishedCollecting = true;
         }
         
-        try {
+//        try {
             person.getInventory().storeAmountResource(regolith, regolithCollected, true);
-        }
-        catch (InventoryException e) {
-            logger.log(Level.SEVERE, "Error collecting regolith");
-            setPhase(ENTER_AIRLOCK);
-        }
+//        }
+//        catch (InventoryException e) {
+//            logger.log(Level.SEVERE, "Error collecting regolith");
+//            setPhase(ENTER_AIRLOCK);
+//        }
         
         if (finishedCollecting) setPhase(ENTER_AIRLOCK);
         

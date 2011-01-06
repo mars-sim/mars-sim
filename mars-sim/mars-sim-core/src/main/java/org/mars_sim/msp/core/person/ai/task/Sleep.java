@@ -7,17 +7,19 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Sleep class is a task for sleeping.
@@ -46,23 +48,23 @@ class Sleep extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public Sleep(Person person) throws Exception {
+    public Sleep(Person person) {
         super("Sleeping", person, false, false, STRESS_MODIFIER, true, (250D + RandomUtil.getRandomInt(100)));
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-        	try {
+//        	try {
         		Building quarters = getAvailableLivingQuartersBuilding(person);
         		if (quarters != null) {
 					BuildingManager.addPersonToBuilding(person, quarters); 
         			accommodations = (LivingAccommodations) quarters.getFunction(LivingAccommodations.NAME);
         			accommodations.addSleeper();
         		}
-        	}
-        	catch (BuildingException e){
-        		logger.log(Level.SEVERE,"Sleep.constructor(): " + e.getMessage());
-        		endTask();
-        	}
+//        	}
+//        	catch (BuildingException e){
+//        		logger.log(Level.SEVERE,"Sleep.constructor(): " + e.getMessage());
+//        		endTask();
+//        	}
         }
         
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -91,16 +93,16 @@ class Sleep extends Task implements Serializable {
         
         // Crowding modifier.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-        	try {
+//        	try {
         		Building building = getAvailableLivingQuartersBuilding(person);
         		if (building != null) {
         			result *= Task.getCrowdingProbabilityModifier(person, building);
 					result *= Task.getRelationshipModifier(person, building);
         		}
-        	}
-        	catch (BuildingException e) {
-        		logger.log(Level.SEVERE,"Sleep.getProbability(): " + e.getMessage());
-        	}
+//        	}
+//        	catch (BuildingException e) {
+//        		logger.log(Level.SEVERE,"Sleep.getProbability(): " + e.getMessage());
+//        	}
         }
 
         return result;
@@ -112,7 +114,7 @@ class Sleep extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (SLEEPING.equals(getPhase())) return sleepingPhase(time);
     	else return time;
@@ -124,7 +126,7 @@ class Sleep extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double sleepingPhase(double time) throws Exception {
+    private double sleepingPhase(double time) {
     	
 		// Reduce person's fatigue
 		double newFatigue = person.getPhysicalCondition().getFatigue() - (5D * time);
@@ -158,10 +160,10 @@ class Sleep extends Task implements Serializable {
 		super.endTask();
 		
 		// Remove person from living accommodations bed so others can use it.
-		try {
-			if (accommodations != null) accommodations.removeSleeper();
-		}
-		catch(BuildingException e) {}
+//		try {
+			if (accommodations != null && accommodations.getSleepers() > 0) accommodations.removeSleeper();
+//		}
+//		catch(BuildingException e) {}
 	}
     
 	/**
@@ -172,7 +174,7 @@ class Sleep extends Task implements Serializable {
 	 * @return available living accommodations building
 	 * @throws BuildingException if error finding living accommodations building.
 	 */
-	private static Building getAvailableLivingQuartersBuilding(Person person) throws BuildingException {
+	private static Building getAvailableLivingQuartersBuilding(Person person) {
      
 		Building result = null;
         
@@ -184,7 +186,7 @@ class Sleep extends Task implements Serializable {
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
 			quartersBuildings = BuildingManager.getBestRelationshipBuildings(person, quartersBuildings);
         	
-			if (quartersBuildings.size() > 0) result = (Building) quartersBuildings.get(0);
+			if (quartersBuildings.size() > 0) result = quartersBuildings.get(0);
 		}
         
 		return result;
@@ -196,7 +198,7 @@ class Sleep extends Task implements Serializable {
 	 * @return list of buildings with empty beds.
 	 * @throws BuildingException if any buildings in list don't have the living accommodations function.
 	 */
-	private static List<Building> getQuartersWithEmptyBeds(List buildingList) throws BuildingException {
+	private static List<Building> getQuartersWithEmptyBeds(List buildingList) {
 		List<Building> result = new ArrayList<Building>();
 		
 		Iterator i = buildingList.iterator();

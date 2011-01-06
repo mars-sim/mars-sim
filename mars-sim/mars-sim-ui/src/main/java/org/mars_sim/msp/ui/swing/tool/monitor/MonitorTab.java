@@ -7,14 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.List;
-import java.util.Iterator;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.BorderLayout;
-
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.*;
+import java.awt.*;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class represents an absraction of a view displayed in the Monitor Window.

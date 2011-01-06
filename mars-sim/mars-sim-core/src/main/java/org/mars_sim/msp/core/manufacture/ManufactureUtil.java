@@ -7,11 +7,6 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -25,7 +20,6 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -36,6 +30,11 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility class for getting manufacturing processes.
@@ -52,8 +51,8 @@ public final class ManufactureUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static final List<ManufactureProcessInfo> getAllManufactureProcesses() 
-			throws Exception {
+	public static List<ManufactureProcessInfo> getAllManufactureProcesses()
+			{
 		ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
 		return new ArrayList<ManufactureProcessInfo>(config.getManufactureProcessList());
 	}
@@ -64,10 +63,10 @@ public final class ManufactureUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static final List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(
-			int techLevel) throws Exception {
+	public static List<ManufactureProcessInfo> getManufactureProcessesForTechLevel(
+			int techLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
-		
+		 
 		ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
 		Iterator<ManufactureProcessInfo> i = config.getManufactureProcessList().iterator();
 		while (i.hasNext()) {
@@ -85,8 +84,8 @@ public final class ManufactureUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static final List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(
-			int techLevel, int skillLevel) throws Exception {
+	public static List<ManufactureProcessInfo> getManufactureProcessesForTechSkillLevel(
+			int techLevel, int skillLevel) {
 		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
 		
 		ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
@@ -107,8 +106,8 @@ public final class ManufactureUtil {
      * @return list of salvage processes info.
      * @throws Exception if error getting salvage processes info.
      */
-	public static final List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(
-	        int techLevel, int skillLevel) throws Exception {
+	public static List<SalvageProcessInfo> getSalvageProcessesForTechSkillLevel(
+	        int techLevel, int skillLevel) {
 	    List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
 	    
 	    ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
@@ -128,8 +127,8 @@ public final class ManufactureUtil {
 	 * @return list of salvage processes info.
 	 * @throws Exception if error get salvage processes info.
 	 */
-	public static final List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel) 
-	        throws Exception {
+	public static List<SalvageProcessInfo> getSalvageProcessesForTechLevel(int techLevel)
+	        {
 	    List<SalvageProcessInfo> result = new ArrayList<SalvageProcessInfo>();
         
         ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
@@ -149,8 +148,8 @@ public final class ManufactureUtil {
 	 * @return goods value of output goods minus input goods.
 	 * @throws Exception if error determining good values.
 	 */
-	public static final double getManufactureProcessValue(ManufactureProcessInfo process, 
-			Settlement settlement) throws Exception {
+	public static double getManufactureProcessValue(ManufactureProcessInfo process,
+			Settlement settlement) {
 		
 		double inputsValue = 0D;
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -175,8 +174,8 @@ public final class ManufactureUtil {
      * @return goods value of estimated salvaged parts minus salvaged unit.
      * @throws Exception if error determining good values.
      */
-	public static final double getSalvageProcessValue(SalvageProcessInfo process, 
-	        Settlement settlement, Person salvager) throws Exception {
+	public static double getSalvageProcessValue(SalvageProcessInfo process,
+	        Settlement settlement, Person salvager) {
 	    double result = 0D;
 	    
 	    Unit salvagedUnit = findUnitForSalvage(process, settlement);
@@ -201,7 +200,7 @@ public final class ManufactureUtil {
             }
             
             if (salvagedGood != null) salvagedGoodValue = goodsManager.getGoodValuePerItem(salvagedGood);
-            else throw new Exception("Salvaged good is null");
+            else throw new IllegalStateException("Salvaged good is null");
             
             salvagedGoodValue *= (wearConditionModifier * .75D) + .25D;
 	    
@@ -236,8 +235,8 @@ public final class ManufactureUtil {
 	 * @return good value.
 	 * @throws Exception if error getting good value.
 	 */
-	public static final double getManufactureProcessItemValue(ManufactureProcessItem item, 
-			Settlement settlement) throws Exception {
+	public static double getManufactureProcessItemValue(ManufactureProcessItem item,
+			Settlement settlement) {
 		double result = 0D;
 		
 		GoodsManager manager = settlement.getGoodsManager();
@@ -261,7 +260,7 @@ public final class ManufactureUtil {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
-		else throw new Exception("Item type: " + item.getType() + " not valid.");
+		else throw new IllegalStateException("Item type: " + item.getType() + " not valid.");
         
 		return result;
 	}
@@ -273,8 +272,8 @@ public final class ManufactureUtil {
 	 * @return true if process can be started.
 	 * @throws Exception if error determining if process can be started.
 	 */
-	public static final boolean canProcessBeStarted(ManufactureProcessInfo process, 
-			Manufacture workshop) throws Exception {
+	public static boolean canProcessBeStarted(ManufactureProcessInfo process,
+			Manufacture workshop) {
 		boolean result = true;
 		
 		// Check to see if workshop is full of processes.
@@ -301,8 +300,8 @@ public final class ManufactureUtil {
      * @return true if salvage process can be started.
      * @throws Exception if error determining if salvage process can be started.
      */
-    public static final boolean canSalvageProcessBeStarted(SalvageProcessInfo process, 
-            Manufacture workshop) throws Exception {
+    public static boolean canSalvageProcessBeStarted(SalvageProcessInfo process,
+            Manufacture workshop) {
         boolean result = true;
         
         // Check to see if workshop is full of processes.
@@ -325,8 +324,8 @@ public final class ManufactureUtil {
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
 	 */
-	private static final boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv) 
-			throws Exception {
+	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv)
+			{
 		boolean result = true;
 		
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
@@ -340,7 +339,7 @@ public final class ManufactureUtil {
 				Part part = (Part) ItemResource.findItemResource(item.getName());
 				if (inv.getItemResourceNum(part) < (int) item.getAmount()) result = false;
 			}
-			else throw new BuildingException("Manufacture process input: " + 
+			else throw new IllegalStateException("Manufacture process input: " +
 					item.getType() + " not a valid type.");
 		}
 		
@@ -356,7 +355,7 @@ public final class ManufactureUtil {
 	 */
 	/*
 	private static final boolean canProcessOutputsBeStored(ManufactureProcessInfo process, Inventory inv)
-			throws Exception {
+			{
 		boolean result = true;
 		
 		Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
@@ -399,8 +398,8 @@ public final class ManufactureUtil {
 	 * @return true if buildings with manufacture function.
 	 * @throws BuildingException if error checking for manufacturing buildings.
 	 */
-	public static final boolean doesSettlementHaveManufacturing(Settlement settlement) 
-			throws BuildingException {
+	public static boolean doesSettlementHaveManufacturing(Settlement settlement)
+			{
 		BuildingManager manager = settlement.getBuildingManager();
         return (manager.getBuildings(Manufacture.NAME).size() > 0);
 	}
@@ -411,8 +410,8 @@ public final class ManufactureUtil {
 	 * @return highest manufacturing tech level.
 	 * @throws BuildingException if error determining highest tech level.
 	 */
-	public static final int getHighestManufacturingTechLevel(Settlement settlement) 
-			throws BuildingException {
+	public static int getHighestManufacturingTechLevel(Settlement settlement)
+			{
 		int highestTechLevel = 0;
 		BuildingManager manager = settlement.getBuildingManager();
 		Iterator<Building> i = manager.getBuildings(Manufacture.NAME).iterator();
@@ -432,7 +431,7 @@ public final class ManufactureUtil {
 	 * @return good
 	 * @throws Exception if error determining good.
 	 */
-	public static final Good getGood(ManufactureProcessItem item) throws Exception {
+	public static Good getGood(ManufactureProcessItem item) {
 		Good result = null;
 		if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
 			AmountResource resource = AmountResource.findAmountResource(item.getName());
@@ -459,7 +458,7 @@ public final class ManufactureUtil {
      * @return mass (kg).
      * @throws Exception if error determining the mass.
      */
-    public static final double getMass(ManufactureProcessItem item) throws Exception {
+    public static double getMass(ManufactureProcessItem item) {
         double mass = 0D;
         
         if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
@@ -488,8 +487,8 @@ public final class ManufactureUtil {
      * @return available salvagable unit, or null if none found.
      * @throws Exception if problem finding salvagable unit.
      */
-    public static final Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement) 
-            throws Exception {
+    public static Unit findUnitForSalvage(SalvageProcessInfo info, Settlement settlement)
+{
         Unit result = null;
         Inventory inv = settlement.getInventory();
         Collection<Unit> salvagableUnits = new ArrayList<Unit>(0);

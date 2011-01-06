@@ -7,31 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -40,6 +16,15 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.List;
 
 /** 
  * The InventoryTabPanel is a tab panel for displaying inventory information.
@@ -131,7 +116,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /** 
      * Internal class used as model for the resource table.
      */
-    private class ResourceTableModel extends AbstractTableModel {
+    private static class ResourceTableModel extends AbstractTableModel {
         
         private Inventory inventory;
         private Map<Resource, Number> resources;
@@ -143,7 +128,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             
-            try {
+//            try {
             	keys.addAll(inventory.getAllAmountResourcesStored());
             	Iterator<Resource> iAmount = keys.iterator();
             	while (iAmount.hasNext()) {
@@ -156,15 +141,15 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	Iterator<ItemResource> iItem = itemResources.iterator();
             	while (iItem.hasNext()) {
             		ItemResource resource = iItem.next();
-            		resources.put(resource, new Integer(inventory.getItemResourceNum(resource)));
+            		resources.put(resource, inventory.getItemResourceNum(resource));
             	}
                 
                 // Sort resources alphabetically by name.
                 Collections.sort(keys);
-            }
-            catch (InventoryException e) {
-                e.printStackTrace(System.err);
-            }
+//            }
+//            catch (InventoryException e) {
+//                e.printStackTrace(System.err);
+//            }
         }
         
         public int getRowCount() {
@@ -193,7 +178,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	Resource resource = keys.get(row);
             	String result = resources.get(resource).toString();
             	if (resource instanceof AmountResource) {
-            		double amount = ((Double) resources.get(resource)).doubleValue();
+            		double amount = (Double) resources.get(resource);
             		result = decFormatter.format(amount);
             	}
             	return result;
@@ -238,7 +223,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     /** 
      * Internal class used as model for the equipment table.
      */
-    private class EquipmentTableModel extends AbstractTableModel {
+    private static class EquipmentTableModel extends AbstractTableModel {
         
         Inventory inventory;
         List<Unit> equipment;

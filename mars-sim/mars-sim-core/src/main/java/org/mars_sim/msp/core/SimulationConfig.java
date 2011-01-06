@@ -6,15 +6,9 @@
  */
 package org.mars_sim.msp.core;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.mars_sim.msp.core.malfunction.MalfunctionConfig;
 import org.mars_sim.msp.core.manufacture.ManufactureConfig;
@@ -31,6 +25,13 @@ import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.function.CropConfig;
 import org.mars_sim.msp.core.structure.construction.ConstructionConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Loads the simulation configuration XML files as DOM documents.
@@ -139,7 +140,7 @@ public class SimulationConfig implements Serializable {
 	 * Reloads all of the configuration files.
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
-	public static void loadConfig() throws Exception {
+	public static void loadConfig() {
 		instance.loadDefaultConfiguration();
 	}
 	
@@ -153,14 +154,14 @@ public class SimulationConfig implements Serializable {
 	 * @return ratio
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
-	public double getSimulationTimeRatio() throws Exception {
+	public double getSimulationTimeRatio() {
 		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element timeRatio = timeConfig.getChild(TIME_RATIO);
 		double ratio = Double.parseDouble(timeRatio.getAttributeValue(VALUE));
-		if (ratio < 0D) throw new Exception("Simulation time ratio must be positive number.");
-		else if (ratio == 0D) throw new Exception("Simulation time ratio cannot be zero.");
+		if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
+		else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
 		
 		return ratio;
 	}
@@ -170,14 +171,14 @@ public class SimulationConfig implements Serializable {
 	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
 	 * @throws Exception if value is null or empty.
 	 */
-	public String getEarthStartDateTime() throws Exception {
+	public String getEarthStartDateTime() {
 		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element earthStartDate = timeConfig.getChild(EARTH_START_DATE_TIME);
 		String startDate = earthStartDate.getAttributeValue(VALUE);
-		if ((startDate == null) || startDate.trim().equals("")) 
-			throw new Exception("Earth start date time must not be blank.");
+		if ((startDate == null) || startDate.trim().length() == 0)
+			throw new IllegalStateException("Earth start date time must not be blank.");
 			
 		return startDate;
 	}
@@ -187,14 +188,14 @@ public class SimulationConfig implements Serializable {
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
-	public String getMarsStartDateTime() throws Exception {
+	public String getMarsStartDateTime() {
 		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element marsStartDate = timeConfig.getChild(MARS_START_DATE_TIME);
 		String startDate = marsStartDate.getAttributeValue(VALUE);
-		if ((startDate == null) || startDate.trim().equals("")) 
-			throw new Exception("Mars start date time must not be blank.");
+		if ((startDate == null) || startDate.trim().length() == 0)
+			throw new IllegalStateException("Mars start date time must not be blank.");
 		
 		return startDate;
 	}
@@ -357,7 +358,7 @@ public class SimulationConfig implements Serializable {
      * @return DOM document
      * @throws Exception if XML could not be parsed or file could not be found.
      */
-    private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws Exception {
+    private Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
         InputStream stream = getInputStream(filename);
         /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
         InputStreamReader reader = new InputStreamReader(stream, "UTF-8");

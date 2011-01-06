@@ -7,47 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.BoxLayout;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
-import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.manufacture.SalvageProcess;
-import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.manufacture.*;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A tab panel displaying settlement manufacturing information.
@@ -319,11 +297,11 @@ public class ManufactureTabPanel extends TabPanel {
 		
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(Manufacture.NAME).iterator();
 		while (i.hasNext()) {
-			try {
+//			try {
 				Manufacture workshop = (Manufacture) i.next().getFunction(Manufacture.NAME);
 				result.addAll(workshop.getProcesses());
-			}
-			catch (BuildingException e) {}
+//			}
+//			catch (BuildingException e) {}
 		}
 		
 		return result;
@@ -338,11 +316,11 @@ public class ManufactureTabPanel extends TabPanel {
         
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(Manufacture.NAME).iterator();
         while (i.hasNext()) {
-            try {
+//            try {
                 Manufacture workshop = (Manufacture) i.next().getFunction(Manufacture.NAME);
                 result.addAll(workshop.getSalvageProcesses());
-            }
-            catch (BuildingException e) {}
+//            }
+//            catch (BuildingException e) {}
         }
         
         return result;
@@ -461,7 +439,7 @@ public class ManufactureTabPanel extends TabPanel {
 	/**
 	 * Inner class for the manufacture selection list cell renderer.
 	 */
-	private class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
+	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 		
 		@Override
 		public Component getListCellRendererComponent(JList list, Object value, int index, 

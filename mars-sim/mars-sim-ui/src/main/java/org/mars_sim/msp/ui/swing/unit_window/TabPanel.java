@@ -8,11 +8,11 @@
 package org.mars_sim.msp.ui.swing.unit_window;
 
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.*;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import java.awt.*;
 
 public abstract class TabPanel extends JScrollPane {
     

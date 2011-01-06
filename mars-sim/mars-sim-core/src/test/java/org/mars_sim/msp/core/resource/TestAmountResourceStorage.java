@@ -28,7 +28,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.addAmountResourceTypeCapacity(carbonDioxide, -100D);
 			fail("Cannot add negative capacity for a type.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
@@ -45,7 +45,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.addAmountResourcePhaseCapacity(Phase.GAS, -100D);
 			fail("Cannot add negative capacity for a phase.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceComboCapacityGood() throws Exception {
@@ -81,7 +81,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.storeAmountResource(carbonDioxide, 101D);
 			fail("Throws exception if overloaded");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
@@ -101,7 +101,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.storeAmountResource(hydrogen, 101D);
 			fail("Throws exception if overloaded");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceStoreNegativeAmount() throws Exception {
@@ -112,7 +112,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.storeAmountResource(carbonDioxide, -1D);
 			fail("Throws exception if negative amount");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
@@ -122,7 +122,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.storeAmountResource(carbonDioxide, 100D);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRemainingCapacityGood() throws Exception {
@@ -163,7 +163,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.retrieveAmountResource(carbonDioxide, 101D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRetrieveNegative() throws Exception {
@@ -176,7 +176,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.retrieveAmountResource(carbonDioxide, -100D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRetrieveNoCapacity() throws Exception {
@@ -186,7 +186,7 @@ public class TestAmountResourceStorage extends TestCase {
 			storage.retrieveAmountResource(carbonDioxide, 100D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (ResourceException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceTotalAmount() throws Exception {

@@ -7,7 +7,8 @@
  
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
 
 /** 
  * The Structure class is an abstract class that represents a 

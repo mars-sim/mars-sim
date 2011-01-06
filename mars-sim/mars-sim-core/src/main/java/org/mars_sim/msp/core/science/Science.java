@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.science;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.ai.job.Job;
+
+import java.io.Serializable;
 
 /**
  * A class representing a field of science.
@@ -81,7 +81,7 @@ public class Science implements Serializable, Comparable {
      * equal to, or greater than the specified object.
      */
     public int compareTo(Object o) {
-        if (o instanceof Science) return name.compareTo(((Science) o).getName());
+        if (o instanceof Science) return name.compareTo(((Science) o).name);
         else return 0;
     }
     
@@ -92,7 +92,7 @@ public class Science implements Serializable, Comparable {
     public boolean equals(Object object) {
         if (object instanceof Science) {
             Science otherObject = (Science) object;
-            if (name.equals(otherObject.getName())) return true;
+            if (name.equals(otherObject.name)) return true;
         }
         return false;
     }

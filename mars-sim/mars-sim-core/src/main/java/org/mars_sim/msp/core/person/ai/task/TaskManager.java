@@ -4,21 +4,21 @@
  * @version 3.00 2010-08-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
-
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 /** 
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -29,21 +29,18 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public class TaskManager implements Serializable {
 
-	// Unit event types
-	public static final String TASK_EVENT = "task";
-	
+    // Unit event types
+    public static final String TASK_EVENT = "task";
     // Data members
     private Task currentTask; // The current task the person is doing.
     private Mind mind; // The mind of the person the task manager is responsible for.
-
     // Array of available tasks
     private Class<? extends Task>[] availableTasks = null;
-    
     // Cache variables.
     private MarsClock timeCache;
     private Map<Class<? extends Task>, Double> taskProbCache;
     private double totalProbCache;
-    
+
     /** 
      * Constructor
      * @param mind the mind that uses this task manager.
@@ -52,7 +49,7 @@ public class TaskManager implements Serializable {
         // Initialize data members
         this.mind = mind;
         currentTask = null;
-        
+
         // Initialize available tasks.
         availableTasks = (Class<? extends Task>[]) new Class[36];
         availableTasks[0] = Relax.class;
@@ -91,7 +88,7 @@ public class TaskManager implements Serializable {
         availableTasks[33] = AssistScientificStudyResearcher.class;
         availableTasks[34] = SalvageGood.class;
         availableTasks[35] = ManufactureConstructionMaterials.class;
-        
+
         // Initialize cache values.
         timeCache = null;
         taskProbCache = new HashMap<Class<? extends Task>, Double>(availableTasks.length);
@@ -102,16 +99,14 @@ public class TaskManager implements Serializable {
      *  @return true if person has an active task
      */
     public boolean hasActiveTask() {
-        if ((currentTask != null) && !currentTask.isDone()) return true;
-        else return false;
+        return (currentTask != null) && !currentTask.isDone();
     }
 
     /** Returns true if perosn has a task (may be inactive).
      *  @return true if person has a task
      */
     public boolean hasTask() {
-        if (currentTask != null) return true;
-        else return false;
+        return currentTask != null;
     }
 
     /** Returns the name of the current task for UI purposes.
@@ -119,8 +114,11 @@ public class TaskManager implements Serializable {
      *  @return name of the current task
      */
     public String getTaskName() {
-        if (currentTask != null) return currentTask.getName();
-		else return "";
+        if (currentTask != null) {
+            return currentTask.getName();
+        } else {
+            return "";
+        }
     }
 
     /** Returns a description of current task for UI purposes.
@@ -128,8 +126,11 @@ public class TaskManager implements Serializable {
      *  @return a description of the current task
      */
     public String getTaskDescription() {
-        if (currentTask != null) return currentTask.getDescription();
-        else return "";
+        if (currentTask != null) {
+            return currentTask.getDescription();
+        } else {
+            return "";
+        }
     }
 
     /** Returns the name of current task phase if there is one.
@@ -138,8 +139,11 @@ public class TaskManager implements Serializable {
      *  @return the name of the current task phase
      */
     public String getPhase() {
-        if (currentTask != null) return currentTask.getPhase();
-        else return "";
+        if (currentTask != null) {
+            return currentTask.getPhase();
+        } else {
+            return "";
+        }
     }
 
     /** Returns the current task.
@@ -162,8 +166,11 @@ public class TaskManager implements Serializable {
      *  @param newTask the task to be added
      */
     public void addTask(Task newTask) {
-        if (hasActiveTask()) currentTask.addSubTask(newTask);
-        else currentTask = newTask;
+        if (hasActiveTask()) {
+            currentTask.addSubTask(newTask);
+        } else {
+            currentTask = newTask;
+        }
         mind.getPerson().fireUnitUpdate(TASK_EVENT, newTask);
     }
 
@@ -174,24 +181,28 @@ public class TaskManager implements Serializable {
      * @return remaining time.
      * @throws Exception if error in performing task.
      */
-    public double performTask(double time, double efficiency) throws Exception {
+    public double performTask(double time, double efficiency) {
         double remainingTime = 0D;
-        
+
         if (currentTask != null) {
             // For effort driven task, reduce the effective time based on efficiency.
-            if (efficiency < .1D) efficiency = .1D; 
-            if (currentTask.isEffortDriven()) time *= efficiency;
+            if (efficiency < .1D) {
+                efficiency = .1D;
+            }
+            if (currentTask.isEffortDriven()) {
+                time *= efficiency;
+            }
             checkForEmergency();
-            
-            try {
-            	remainingTime = currentTask.performTask(time);
-            }
-            catch (Exception e) {
-            	e.printStackTrace(System.err);
-            	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
-            }
+
+//            try {
+            remainingTime = currentTask.performTask(time);
+//            }
+//            catch (Exception e) {
+//            	e.printStackTrace(System.err);
+//            	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
+//            }
         }
-        
+
         return remainingTime;
     }
 
@@ -200,19 +211,23 @@ public class TaskManager implements Serializable {
      * Adds an emergency task if necessary.
      * @throws Exception if error checking for emergency.
      */
-    private void checkForEmergency() throws Exception {
+    private void checkForEmergency() {
 
         // Check for emergency malfunction.
-		if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
-		    boolean hasEmergencyRepair = false;
+        if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
+            boolean hasEmergencyRepair = false;
             Task task = currentTask;
-	    	while (task != null) {
-                if (task instanceof RepairEmergencyMalfunction) hasEmergencyRepair = true;
-				task = task.getSubTask();
-	    	}
+            while (task != null) {
+                if (task instanceof RepairEmergencyMalfunction) {
+                    hasEmergencyRepair = true;
+                }
+                task = task.getSubTask();
+            }
 
-	    	if (!hasEmergencyRepair) addTask(new RepairEmergencyMalfunction(mind.getPerson()));
-		}
+            if (!hasEmergencyRepair) {
+                addTask(new RepairEmergencyMalfunction(mind.getPerson()));
+            }
+        }
     }
 
     /** 
@@ -220,39 +235,59 @@ public class TaskManager implements Serializable {
      * @return new task
      * @throws Exception if new task could not be found.
      */
-    public Task getNewTask() throws Exception {
+    public Task getNewTask() {
 
-    	// If cache is not current, calculate the probabilities.
-        if (!useCache()) calculateProbability();
+        // If cache is not current, calculate the probabilities.
+        if (!useCache()) {
+            calculateProbability();
+        }
 
         // Get a random number from 0 to the total weight
-        double totalProbability = getTotalTaskProbability(true); 
+        double totalProbability = getTotalTaskProbability(true);
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
         Class<? extends Task> selectedTask = null;
         Iterator<Class<? extends Task>> i = taskProbCache.keySet().iterator();
         while (i.hasNext()) {
-        	Class<? extends Task> task = i.next();
-        	double probWeight = ((Double) taskProbCache.get(task)).doubleValue();
-        	if (selectedTask == null) {
-        		if (r < probWeight) selectedTask = task;
-        		else r -= probWeight;
-        	}
+            Class<? extends Task> task = i.next();
+            double probWeight = (Double) taskProbCache.get(task);
+            if (selectedTask == null) {
+                if (r < probWeight) {
+                    selectedTask = task;
+                } else {
+                    r -= probWeight;
+                }
+            }
         }
 
         // Construct the task
-    	Class[] parametersForFindingMethod = { Person.class };
-    	Object[] parametersForInvokingMethod = { mind.getPerson() };
-        
+        Class[] parametersForFindingMethod = {Person.class};
+        Object[] parametersForInvokingMethod = {mind.getPerson()};
+
+//        try {
+        Constructor construct;
         try {
-            Constructor construct = selectedTask.getConstructor(parametersForFindingMethod);
+            construct = selectedTask.getConstructor(parametersForFindingMethod);
             return (Task) construct.newInstance(parametersForInvokingMethod);
+        } catch (NoSuchMethodException ex) {
+            throw new IllegalStateException(ex);
+        } catch (SecurityException ex) {
+            throw new IllegalStateException(ex);
+        } catch (InstantiationException ex) {
+            throw new IllegalStateException(ex);
+        } catch (IllegalAccessException ex) {
+            throw new IllegalStateException(ex);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalStateException(ex);
+        } catch (InvocationTargetException ex) {
+            throw new IllegalStateException(ex);
         }
-        catch (Exception e) {
-        	e.printStackTrace(System.err);
-        	throw new Exception("TaskManager.getNewTask(): " + e.getMessage());
-        }
+//        }
+//        catch (Exception e) {
+//        	e.printStackTrace(System.err);
+//        	throw new IllegalStateException("TaskManager.getNewTask(): " + e.getMessage());
+//        }
     }
 
     /** 
@@ -261,48 +296,48 @@ public class TaskManager implements Serializable {
      */
     public double getTotalTaskProbability(boolean useCache) {
 
-    	// If cache is not current, calculate the probabilities.
-        if (!useCache) calculateProbability();
-        
+        // If cache is not current, calculate the probabilities.
+        if (!useCache) {
+            calculateProbability();
+        }
+
         return totalProbCache;
     }
-    
+
     /**
      * Calculates and caches the probabilities.
      */
     private void calculateProbability() {
-    	// Initialize parameters.
-    	Class[] parametersForFindingMethod = { Person.class };
-    	Object[] parametersForInvokingMethod = { mind.getPerson() };
-    	
-    	// Clear total probabilities.
-    	totalProbCache = 0D;
-    	
-    	// Determine probabilities.
-    	for (int x = 0; x < availableTasks.length; x++) {
-    		try {
-    			Class<? extends Task> probabilityClass = availableTasks[x];
-    			Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
-    			Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
-    			taskProbCache.put(probabilityClass, probability);
-    			totalProbCache += probability.doubleValue();
-    		} 
-    		catch (Exception e) {
-    			e.printStackTrace(System.err);
-    		}
-    	}
-    	
-    	// Set the time cache to the current time.
-    	timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        // Initialize parameters.
+        Class[] parametersForFindingMethod = {Person.class};
+        Object[] parametersForInvokingMethod = {mind.getPerson()};
+
+        // Clear total probabilities.
+        totalProbCache = 0D;
+
+        // Determine probabilities.
+        for (Class<? extends Task> availableTask : availableTasks) {
+            try {
+                Class<? extends Task> probabilityClass = availableTask;
+                Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
+                Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
+                taskProbCache.put(probabilityClass, probability);
+                totalProbCache += probability;
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+
+        // Set the time cache to the current time.
+        timeCache = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
     }
-    
+
     /**
      * Checks if task probability cache should be used.
      * @return true if cache should be used.
      */
     private boolean useCache() {
-    	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-    	if (currentTime.equals(timeCache)) return true;
-    	return false;
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        return currentTime.equals(timeCache);
     }
 }

@@ -50,6 +50,6 @@ public class UnitEvent extends EventObject {
 	 * Override toString() method.
 	 */
 	public String toString() {
-		return getType();
+		return type;
 	}
 }

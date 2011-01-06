@@ -7,29 +7,12 @@
 
 package org.mars_sim.msp.core.person;
 
-import java.io.Serializable;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.InventoryException;
-import org.mars_sim.msp.core.LifeSupport;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.time.EarthClock;
@@ -37,6 +20,11 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * The Person class represents a person on Mars. It keeps track of everything
@@ -104,7 +92,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 *             if no inhabitable building available at settlement.
 	 */
 	public Person(String name, String gender, Settlement settlement)
-			throws Exception {
+			 {
 		// Use Unit constructor
 		super(name, settlement.getCoordinates());
 
@@ -228,12 +216,12 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	public void buryBody() {
 		Unit containerUnit = getContainerUnit();
 		if (containerUnit != null) {
-			try {
+//			try {
 				containerUnit.getInventory().retrieveUnit(this);
-			} catch (InventoryException e) {
-				logger.log(Level.SEVERE, "Could not bury " + getName());
-				e.printStackTrace(System.err);
-			}
+//			} catch (InventoryException e) {
+//				logger.log(Level.SEVERE, "Could not bury " + getName());
+//				e.printStackTrace(System.err);
+//			}
 		}
 		isBuried = true;
 		setAssociatedSettlement(null);
@@ -255,9 +243,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 *            amount of time passing (in millisols) throws Exception if
 	 *            error during time.
 	 */
-	public void timePassing(double time) throws Exception {
+	public void timePassing(double time) {
 
-		try {
+//		try {
 			// If Person is dead, then skip
 			if (health.getDeathDetails() == null) {
 
@@ -275,11 +263,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 					setDead();
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace(System.err);
-			throw new Exception("Person " + getName() + " timePassing(): "
-					+ e.getMessage());
-		}
+//		} catch (Exception e) {
+//			e.printStackTrace(System.err);
+//			throw new IllegalStateException("Person " + getName() + " timePassing(): "
+//					+ e.getMessage());
+//		}
 	}
 
 	/**
@@ -325,11 +313,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 			if (infirmaries.size() > 0) {
 				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
 				Building foundBuilding = (Building) infirmaries.get(rand);
-				try {
+//				try {
 					found = (MedicalAid) foundBuilding
 							.getFunction(MedicalCare.NAME);
-				} catch (BuildingException e) {
-				}
+//				} catch (BuildingException e) {
+//				}
 			}
 		}
 		if (location.equals(Person.INVEHICLE)) {
@@ -435,7 +423,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 *             if error consuming food.
 	 */
 	public void consumeFood(double amount, boolean takeFromInv)
-			throws Exception {
+			{
 		if (takeFromInv)
 			health.consumeFood(amount, getContainerUnit());
 		else
@@ -458,7 +446,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	 * @throws Exception
 	 *             if error
 	 */
-	public Collection<Person> getLocalGroup() throws Exception {
+	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = new ConcurrentLinkedQueue<Person>();
 
 		if (getLocationSituation().equals(Person.INSETTLEMENT)) {

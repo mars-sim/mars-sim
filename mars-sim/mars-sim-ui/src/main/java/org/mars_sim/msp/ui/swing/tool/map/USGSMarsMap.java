@@ -9,14 +9,20 @@ package org.mars_sim.msp.ui.swing.tool.map;
 
 import org.mars_sim.msp.core.Coordinates;
 
-import java.io.*;
-import java.net.*;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
 
 /** 
  * Access the Mars maps provided by the The Unites States Geological
@@ -99,7 +105,7 @@ public class USGSMarsMap implements Map, ActionListener {
      * @param newCenter the center location.
      * @throws Exception if error in drawing map.
      */
-    public void drawMap(Coordinates newCenter) throws Exception {
+    public void drawMap(Coordinates newCenter) {
      
         connectionTimeout = false;
         
@@ -143,32 +149,37 @@ public class USGSMarsMap implements Map, ActionListener {
      * @param lon the longitude of the center of the image.
      * @throws IOException if there is an IO problem.
      */
-    private void startPdsImageRetrieval(double lat, double lon) throws IOException {
+    private void startPdsImageRetrieval(double lat, double lon) {
         
         imageDone = false;
         goodConnection = false;
         URL url = null;
         
-        try {
+//        try {
             // Get URL connection to PDS CGI.
             url = getPDSURL(lat, lon);
             // System.out.println("url: " + url);
             
-            HttpURLConnection urlCon = (HttpURLConnection) url.openConnection();
+            HttpURLConnection urlCon;
+        try {
+            urlCon = (HttpURLConnection) url.openConnection();
+        } catch (IOException ex) {
+            throw new IllegalStateException(ex);
+        }
             
             // Connect with PDS CGI.
             new PDSConnectionManager(urlCon, this);
-        } 
-        catch (MalformedURLException e) {
-            logger.log(Level.SEVERE,"URL not valid: " + url.toString());
-            throw new IOException("URL not valid");
-        }
-        catch (IOException e) {
-            throw new IOException("Internet connection required");
-        }
-        catch (Exception e) {
-            throw new IOException("Exception retrieving map image");
-        }
+//        }
+//        catch (MalformedURLException e) {
+//            logger.log(Level.SEVERE,"URL not valid: " + url.toString());
+//            throw new IOException("URL not valid");
+//        }
+//        catch (IOException e) {
+//            throw new IOException("Internet connection required");
+//        }
+//        catch (Exception e) {
+//            throw new IOException("Exception retrieving map image");
+//        }
     }
     
     /**
@@ -178,7 +189,7 @@ public class USGSMarsMap implements Map, ActionListener {
      * @return URL the URL created.
      * @throws Exception if the URL is malformed.
      */
-    private URL getPDSURL(double lat, double lon) throws Exception {
+    private URL getPDSURL(double lat, double lon) {
         
         // Find map rectangle boundries.
         DecimalFormat formatter = new DecimalFormat("0.000");
@@ -190,8 +201,8 @@ public class USGSMarsMap implements Map, ActionListener {
         if (northSide > 90D) northSide = 90D + (90D - northSide);
         double southSide = lat - HALF_MAP_ANGLE_DEG;
         if (southSide < -90D) southSide = -90D + (-90D - southSide);
-        
-        StringBuffer urlBuff = new StringBuffer(psdUrl + psdCgi + "?");
+
+        StringBuilder urlBuff = new StringBuilder(psdUrl + psdCgi + "?");
         urlBuff.append("map=" + map);
         urlBuff.append("&layers=" + layers);
         urlBuff.append("&info=" + info);
@@ -207,15 +218,18 @@ public class USGSMarsMap implements Map, ActionListener {
         urlBuff.append("&grid=" + grid);
         urlBuff.append("&stretch=" + stretch);
         urlBuff.append("&resamp_method=" + resamp_method);
-        urlBuff.append("&north=" + formatter.format(northSide));
-        urlBuff.append("&west=" + formatter.format(westSide));
-        urlBuff.append("&east=" + formatter.format(eastSide));
-        urlBuff.append("&south=" + formatter.format(southSide));
+        urlBuff.append("&north=").append(formatter.format(northSide));
+        urlBuff.append("&west=").append(formatter.format(westSide));
+        urlBuff.append("&east=").append(formatter.format(eastSide));
+        urlBuff.append("&south=").append(formatter.format(southSide));
         urlBuff.append("&center=" + center);
         urlBuff.append("&defaultcenter=" + defaultcenter);
         urlBuff.append("&center_lat=" + center_lat);
-        
-        return new URL(urlBuff.toString());
+        try {
+            return new URL(urlBuff.toString());
+        } catch (MalformedURLException ex) {
+            throw new IllegalStateException(ex);
+        }
     }
     
     /**

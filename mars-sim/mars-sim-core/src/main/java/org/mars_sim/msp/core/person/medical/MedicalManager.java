@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.core.person.medical;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+
 import java.io.Serializable;
 import java.util.*;
-
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.*;
 
 /**
  * This class provides a Factory for the Complaint class. Some of the Medical
@@ -70,7 +72,7 @@ public class MedicalManager implements Serializable {
      *
      * @throws Exception if unable to construct.
      */
-    public MedicalManager() throws Exception {
+    public MedicalManager()  {
 
         initMedical();
     }
@@ -79,13 +81,13 @@ public class MedicalManager implements Serializable {
      * Initialise the Medical Complaints from the configuration.
      * @throws exception if not able to initialize complaints.
      */
-    public void initMedical() throws Exception{
+    public void initMedical() {
         // Create the pre-defined complaints, using person configuration.
         SimulationConfig simConfig = SimulationConfig.instance();
         PersonConfig personConfig = simConfig.getPersonConfiguration();
         MedicalConfig medicalConfig = simConfig.getMedicalConfiguration();
 
-		try {
+//		try {
 			
         	// Quite serious, 70, and has a 80% performance factor.
         	// Zero recovery as death will result if unchecked.
@@ -119,26 +121,26 @@ public class MedicalManager implements Serializable {
                 	100D, 40);
 
 			// Create treatments from medical config.
-			try {
+//			try {
 				Iterator i = medicalConfig.getTreatmentList().iterator();
 				while (i.hasNext()) addTreatment((Treatment) i.next());
-			}
-			catch (Exception e) {
-				throw new Exception("Error loading treatments: " + e.getMessage());
-			}
+//			}
+//			catch (Exception e) {
+//				throw new Exception("Error loading treatments: " + e.getMessage());
+//			}
 
 			// Create additional complaints from medical config.
-			try {
+//			try {
 				Iterator j = medicalConfig.getComplaintList().iterator();
 				while (j.hasNext()) addComplaint((Complaint) j.next());
-			}
-			catch (Exception e) {
-				throw new Exception("Error loading complaints: " + e.getMessage());
-			}
-		}
-		catch (Exception e) {
-			throw new Exception("Medical manager cannot be initialized: " + e.getMessage());
-		}
+//			}
+//			catch (Exception e) {
+//				throw new Exception("Error loading complaints: " + e.getMessage());
+//			}
+//		}
+//		catch (Exception e) {
+//			throw new IllegalStateException("Medical manager cannot be initialized: " + e.getMessage(),e);
+//		}
     }
 
     /**
@@ -175,10 +177,10 @@ public class MedicalManager implements Serializable {
      * @param newComplaint the new complaint to add.
      * @throws Exception if complaint already exists in map.
      */
-    void addComplaint(Complaint newComplaint) throws Exception {
+    void addComplaint(Complaint newComplaint) {
     	if (!complaints.containsKey(newComplaint.getName())) 
     		complaints.put(newComplaint.getName(), newComplaint);
-    	else throw new Exception("Complaint " + newComplaint.getName() + " already exists in map.");
+    	else throw new IllegalStateException("Complaint " + newComplaint.getName() + " already exists in map.");
     }
 
     /**
@@ -196,10 +198,10 @@ public class MedicalManager implements Serializable {
 	 * @param newTreatment the new treatment to add.
 	 * @throws Exception if treatment already exists in map.
 	 */
-	void addTreatment(Treatment newTreatment) throws Exception {
+	void addTreatment(Treatment newTreatment) {
 		if (!treatments.containsKey(newTreatment.getName()))
 			treatments.put(newTreatment.getName(), newTreatment);
-		else throw new Exception("Treatment " + newTreatment.getName() + " already exists in map.");
+		else throw new IllegalStateException("Treatment " + newTreatment.getName() + " already exists in map.");
 	}
 
     /**
@@ -289,7 +291,7 @@ public class MedicalManager implements Serializable {
      * @return List of Treatments
      */
     public List<Treatment> getSupportedTreatments(int level) {
-        Integer key = new Integer(level);
+        Integer key = level;
         List<Treatment> results = supported.get(key);
         if (results == null) {
             results = new ArrayList<Treatment>();

@@ -6,15 +6,17 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Exercise;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The Workout class is a task for working out in an exercise facility.
@@ -40,12 +42,12 @@ public class Workout extends Task implements Serializable {
 	 * @param person the person performing the task.
 	 * @throws Exception if error constructing task.
 	 */
-	public Workout(Person person) throws Exception {
+	public Workout(Person person) {
 		// Use Task constructor.
 		super("Exercise", person, true, false, STRESS_MODIFIER, true, 50D + RandomUtil.getRandomInt(100));
 		
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			try {
+//			try {
 				// If person is in a settlement, try to find a gym.
 				Building gymBuilding = getAvailableGym(person);
 				if (gymBuilding != null) {
@@ -53,11 +55,11 @@ public class Workout extends Task implements Serializable {
 					gym = (Exercise) gymBuilding.getFunction(Exercise.NAME);
 				}
 				else endTask();
-			}
-			catch (BuildingException e) {
-				logger.log(Level.SEVERE,"Workout.constructor(): " + e.getMessage());
-				endTask();
-			}
+//			}
+//			catch (BuildingException e) {
+//				logger.log(Level.SEVERE,"Workout.constructor(): " + e.getMessage());
+//				endTask();
+//			}
 		}
 		else endTask();
 		
@@ -82,7 +84,7 @@ public class Workout extends Task implements Serializable {
 			result = condition.getStress() - (condition.getFatigue() / 10D) + 20D;
 			if (result < 0D) result = 0D;
 			
-			try {
+//			try {
 				// Get an available gym.
 				Building building = getAvailableGym(person);
 				if (building != null) {
@@ -90,10 +92,10 @@ public class Workout extends Task implements Serializable {
 					result *= Task.getRelationshipModifier(person, building);
 				}
 				else result = 0D;
-			}
-			catch (BuildingException e) {
-				logger.log(Level.SEVERE,"Workout.getProbability(): " + e.getMessage());
-			}
+//			}
+//			catch (BuildingException e) {
+//				logger.log(Level.SEVERE,"Workout.getProbability(): " + e.getMessage());
+//			}
 		}
 		
 		// Effort-driven task modifier.
@@ -108,7 +110,7 @@ public class Workout extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (EXERCISING.equals(getPhase())) return exercisingPhase(time);
     	else return time;
@@ -120,7 +122,7 @@ public class Workout extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double exercisingPhase(double time) throws Exception {
+    private double exercisingPhase(double time) {
     	
         // Do nothing
         
@@ -142,10 +144,10 @@ public class Workout extends Task implements Serializable {
 		super.endTask();
 		
 		// Remove person from exercise function so others can use it.
-		try {
-			if (gym != null) gym.removeExerciser();
-		}
-		catch(BuildingException e) {}
+//		try {
+			if (gym != null && gym.getNumExercisers() > 0) gym.removeExerciser();
+//		}
+//		catch(BuildingException e) {}
 	}
 	
 	/**
@@ -154,7 +156,7 @@ public class Workout extends Task implements Serializable {
 	 * @return an available exercise building or null if none found.
 	 * @throws BuildingException if error finding gym building.
 	 */
-	private static Building getAvailableGym(Person person) throws BuildingException {
+	private static Building getAvailableGym(Person person) {
 		Building result = null;
 		
 		// If person is in a settlement, try to find a building with a gym.	
@@ -165,7 +167,7 @@ public class Workout extends Task implements Serializable {
 			gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
 			gyms = BuildingManager.getBestRelationshipBuildings(person, gyms);
 			
-			if (gyms.size() > 0) result = (Building) gyms.get(0);
+			if (gyms.size() > 0) result = gyms.get(0);
 		}
 		
 		return result;

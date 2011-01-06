@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
+import java.io.Serializable;
 
 /**
  * A manufacturing process.

@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool;
 
-import javax.swing.*;
-
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
+import javax.swing.*;
 
 /** 
  * The ToolWindow class is an abstract UI window for a tool.

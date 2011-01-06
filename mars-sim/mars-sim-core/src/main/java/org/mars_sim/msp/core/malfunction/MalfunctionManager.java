@@ -7,18 +7,23 @@
 
 package org.mars_sim.msp.core.malfunction;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.person.medical.*;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.medical.Complaint;
+import org.mars_sim.msp.core.person.medical.MedicalManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
@@ -476,7 +481,7 @@ public class MalfunctionManager implements Serializable {
      * @param time amount of time passing (in millisols)
      * @throws Exception if error depleting resources.
      */
-    public void depleteResources(double time) throws Exception {
+    public void depleteResources(double time) {
 
         if (hasMalfunction()) {
             Iterator<Malfunction> i = malfunctions.iterator();
@@ -492,10 +497,10 @@ public class MalfunctionManager implements Serializable {
                         Inventory inv = entity.getInventory();
                         double amountStored = inv.getAmountResourceStored(resource);
                         if (amountStored < amountDepleted) amountDepleted = amountStored;
-                        try {
-                        	inv.retrieveAmountResource(resource, amountDepleted);
-                        }
-                        catch (InventoryException e) {}
+//                        try {
+                        	if(amountDepleted >= 0)inv.retrieveAmountResource(resource, amountDepleted);
+//                        }
+//                        catch (InventoryException e) {}
                     }
                 }
             }
@@ -650,11 +655,11 @@ public class MalfunctionManager implements Serializable {
      * @return associated unit.
      * @throws Exception if error finding associated unit.
      */
-    private Unit getUnit() throws Exception {
+    private Unit getUnit() {
     	if (entity instanceof Unit) return (Unit) entity;
     	else if (entity instanceof Building) 
     		return ((Building) entity).getBuildingManager().getSettlement();
-    	else throw new Exception("Could not find unit associated with malfunctionable.");
+    	else throw new IllegalStateException("Could not find unit associated with malfunctionable.");
     }
     
     /**
@@ -715,12 +720,12 @@ public class MalfunctionManager implements Serializable {
      * @return maps of parts and probable number of parts needed per malfunction.
      * @throws Exception if error finding probabilities.
      */
-	public Map<Part, Double> getRepairPartProbabilities() throws Exception {
+	public Map<Part, Double> getRepairPartProbabilities() {
 		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getRepairPartProbabilities(scope);
 	}
 	
-	public Map<Part, Double> getMaintenancePartProbabilities() throws Exception {
+	public Map<Part, Double> getMaintenancePartProbabilities() {
 		MalfunctionFactory factory = Simulation.instance().getMalfunctionFactory();
 		return factory.getMaintenancePartProbabilities(scope);
 	}
@@ -774,7 +779,7 @@ public class MalfunctionManager implements Serializable {
 	/**
 	 * Inner class comparator for sorting malfunctions my highest severity to lowest.
 	 */
-	private class MalfunctionSeverityComparator implements Comparator<Malfunction>, Serializable {
+	private static class MalfunctionSeverityComparator implements Comparator<Malfunction>, Serializable {
 		public int compare(Malfunction malfunction1, Malfunction malfunction2) {
 			int severity1 = malfunction1.getSeverity();
 			int severity2 = malfunction2.getSeverity();

@@ -5,11 +5,11 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing.unit_display_info;  
- 
-import javax.swing.*;
+package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
 
 /**
  * Provides display information about a explorer rover.

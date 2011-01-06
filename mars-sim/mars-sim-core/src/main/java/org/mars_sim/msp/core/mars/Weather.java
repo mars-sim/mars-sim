@@ -8,10 +8,10 @@
  
 package org.mars_sim.msp.core.mars;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+
+import java.io.Serializable;
 
 /** Weather represents the weather on Mars */
 public class Weather implements Serializable {

@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Yoga extends Task implements Serializable {
 
@@ -25,7 +25,7 @@ public class Yoga extends Task implements Serializable {
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = -.7D;
 
-    public Yoga(Person person) throws Exception {
+    public Yoga(Person person) {
         super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
 
         // Initialize phase
@@ -80,7 +80,7 @@ public class Yoga extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         // TODO Auto-generated method stub
         return 0;
     }

@@ -7,15 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
@@ -24,9 +20,20 @@ import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
-import org.mars_sim.msp.core.vehicle.*;
+import org.mars_sim.msp.core.vehicle.Medical;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.SickBay;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * This class represents a task that requires a person to provide medical
@@ -51,7 +58,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
-    public MedicalAssistance(Person person) throws Exception {
+    public MedicalAssistance(Person person) {
         super("Medical Assistance", person, true, true, STRESS_MODIFIER, true, 0D);
 
         // Get a local medical aid that needs work.
@@ -146,7 +153,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (TREATMENT.equals(getPhase())) return treatmentPhase(time);
     	else return time;
@@ -158,7 +165,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @return the amount of time (millisol) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double treatmentPhase(double time) throws Exception {
+    private double treatmentPhase(double time) {
     	
         // If sickbay owner has malfunction, end task.
         if (getMalfunctionable(medical).getMalfunctionManager().hasMalfunction()) endTask();
@@ -233,8 +240,7 @@ public class MedicalAssistance extends Task implements Serializable {
     	if (aid == null) throw new IllegalArgumentException("aid is null");
         boolean waitingProblems = (aid.getProblemsAwaitingTreatment().size() > 0);
         boolean malfunction = getMalfunctionable(aid).getMalfunctionManager().hasMalfunction();
-        if (waitingProblems && !malfunction) return true;
-        else return false;
+        return waitingProblems && !malfunction;
     }
     
     /**
@@ -307,7 +313,7 @@ public class MedicalAssistance extends Task implements Serializable {
      * @return medical care building or null if none found.
      * @throws Exception if person is not in a settlement.
      */
-    private static Building getMedicalAidBuilding(Person person) throws Exception {
+    private static Building getMedicalAidBuilding(Person person) {
     	Building result = null;
     	
     	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -327,9 +333,9 @@ public class MedicalAssistance extends Task implements Serializable {
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getBestRelationshipBuildings(person, bestMedicalBuildings);
 		
-			if (bestMedicalBuildings.size() > 0) result = (Building) bestMedicalBuildings.get(0);
+			if (bestMedicalBuildings.size() > 0) result = bestMedicalBuildings.get(0);
     	}
-    	else throw new Exception("MedicalAssistance.getMedicalAidBuilding(): Person is not in settlement.");
+    	else throw new IllegalStateException("MedicalAssistance.getMedicalAidBuilding(): Person is not in settlement.");
     	
     	return result;
     }

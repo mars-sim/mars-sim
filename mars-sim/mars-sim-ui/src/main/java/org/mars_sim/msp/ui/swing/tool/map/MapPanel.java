@@ -7,26 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.RenderingHints;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
+
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 public class MapPanel extends JPanel implements Runnable {
 //public class MapPanel extends JScrollPane implements Runnable {

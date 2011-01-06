@@ -7,19 +7,15 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.batik.bridge.BridgeContext;
-import org.apache.batik.bridge.DocumentLoader;
-import org.apache.batik.bridge.GVTBuilder;
-import org.apache.batik.bridge.UserAgent;
-import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.bridge.*;
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.svg.SVGDocument;
+
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This is a static utility class that acts as a helper to load SVG images for use in the UI.

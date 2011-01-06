@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -22,6 +16,12 @@ import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * A task for peer reviewing a compiled study's paper.
@@ -40,7 +40,7 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
 
     private ScientificStudy study; // The scientific study to review.
     
-    public PeerReviewStudyPaper(Person person) throws Exception {
+    public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
         super("Peer Review Compiled Study Paper", person, true, false, 
                 STRESS_MODIFIER, true, RandomUtil.getRandomDouble(300D));
@@ -165,7 +165,7 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
     }
 
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (REVIEW.equals(getPhase())) return reviewingPhase(time);
         else return time;
@@ -177,7 +177,7 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double reviewingPhase(double time) throws Exception {
+    private double reviewingPhase(double time) {
         
         // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) endTask();

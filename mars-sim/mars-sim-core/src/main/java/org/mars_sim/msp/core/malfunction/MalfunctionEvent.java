@@ -1,6 +1,7 @@
 package org.mars_sim.msp.core.malfunction;
 
-import org.mars_sim.msp.core.events.*;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 
 /**
  * This class represents the historical action of a Malfunction occuring or

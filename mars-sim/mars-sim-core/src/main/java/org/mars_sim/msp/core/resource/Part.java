@@ -8,11 +8,7 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * The Part class represents a type of unit resource that is used for maintenance and repairs.
@@ -95,7 +91,7 @@ public class Part extends ItemResource {
 	 * Gets a set of all parts.
 	 * @return set of parts.
 	 */
-	public static final Set<Part> getParts() {
+	public static Set<Part> getParts() {
 		Set<Part> result = new HashSet<Part>();
 		
 		Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
@@ -110,7 +106,7 @@ public class Part extends ItemResource {
 	/**
 	 * A private inner class for holding maintenance entity information.
 	 */
-	private class MaintenanceEntity implements Serializable {
+	private static class MaintenanceEntity implements Serializable {
 		
 		// Domain members
 		private String name;

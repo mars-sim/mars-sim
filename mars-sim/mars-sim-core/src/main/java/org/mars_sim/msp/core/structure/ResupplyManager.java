@@ -6,11 +6,14 @@
  */
 package org.mars_sim.msp.core.structure;
 
-import java.io.Serializable;
-import java.util.*;
-
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Manages resupply missions from Earth for a settlement.
@@ -25,7 +28,7 @@ public class ResupplyManager implements Serializable {
 	 * @param settlement the settlement the manager is for.
 	 * @throws Exception if problem creating resupply missions.
 	 */
-	ResupplyManager(Settlement settlement) throws Exception {
+	ResupplyManager(Settlement settlement) {
 		
 		//Initialize data
 		resupplies = new ArrayList<Resupply>();
@@ -59,8 +62,8 @@ public class ResupplyManager implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(double time) throws Exception {
-		try {
+	public void timePassing(double time) {
+//		try {
 			Iterator<Resupply> i = resupplies.iterator();
 			while (i.hasNext()) {
 				Resupply resupply = i.next();
@@ -72,9 +75,9 @@ public class ResupplyManager implements Serializable {
 					}
 				}
 			} 
-		}
-		catch (Exception e) {
-			throw new Exception("ResupplyManager.timePassing(): " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new IllegalStateException("ResupplyManager.timePassing(): " + e.getMessage());
+//		}
 	}   	
 }

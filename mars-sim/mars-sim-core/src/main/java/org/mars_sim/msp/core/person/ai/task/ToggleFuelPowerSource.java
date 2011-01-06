@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -31,6 +25,12 @@ import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 /** 
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -57,7 +57,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
-    public ToggleFuelPowerSource(Person person) throws Exception {
+    public ToggleFuelPowerSource(Person person) {
         super("Turning on fuel power source", person);
         
         building = getFuelPowerSourceBuilding(person);
@@ -154,7 +154,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return building with fuel power source to toggle, or null if none.
      * @throws Exception if error getting building.
      */
-    private static Building getFuelPowerSourceBuilding(Person person) throws Exception {
+    private static Building getFuelPowerSourceBuilding(Person person) {
         Building result = null;
         
         Settlement settlement = person.getSettlement();
@@ -184,7 +184,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return the fuel power source to toggle or null if none.
      * @throws Exception if error getting fuel power source.
      */
-    private static FuelPowerSource getFuelPowerSource(Building building) throws Exception {
+    private static FuelPowerSource getFuelPowerSource(Building building) {
         FuelPowerSource result = null;
         
         Settlement settlement = building.getBuildingManager().getSettlement();
@@ -216,7 +216,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @throws Exception if error getting value diff.
      */
     private static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) 
-            throws Exception {
+{
         double inputValue = getInputResourcesValue(settlement, fuelSource);
         double outputValue = getPowerOutputValue(settlement, fuelSource);
         double diff = outputValue - inputValue;
@@ -238,7 +238,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @throws Exception if problem determining resources value.
      */
     private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) 
-            throws Exception {
+{
         AmountResource resource = fuelSource.getFuelResource();
         double massPerSol = fuelSource.getFuelConsumptionRate();
         double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
@@ -271,7 +271,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @throws Exception if error checking input resources.
      */
     private static boolean isEmptyInputResource(Settlement settlement, 
-            FuelPowerSource fuelSource) throws Exception {
+            FuelPowerSource fuelSource) {
         boolean result = false;
         
         AmountResource resource = fuelSource.getFuelResource();
@@ -338,7 +338,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @see org.mars_sim.msp.simulation.person.ai.task.Task#performMappedPhase(double)
      */
     @Override
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (isEVA) {
             if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
@@ -358,7 +358,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) throws Exception {
+    private double exitEVA(double time) {
         
         try {
             time = exitAirlock(time, airlock);
@@ -381,7 +381,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return time remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) throws Exception {
+    private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points
@@ -397,7 +397,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double togglePowerSourcePhase(double time) throws Exception {
+    private double togglePowerSourcePhase(double time) {
         
         // If person is incompacitated, end task.
         if (person.getPerformanceRating() == 0D) {

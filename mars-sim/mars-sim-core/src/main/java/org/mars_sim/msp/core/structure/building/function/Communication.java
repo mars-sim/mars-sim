@@ -5,12 +5,12 @@
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
- 
-import java.io.Serializable;
-import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.building.Building;
+
+import java.io.Serializable;
+import java.util.Iterator;
  
 /**
  * The Communication class is a building function for communication.
@@ -36,8 +36,8 @@ public class Communication extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Settlements need one communication building.
         // Note: Might want to update this when we do more with simulating communication.
@@ -63,7 +63,7 @@ public class Communication extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {}
+	public void timePassing(double time) {}
 	
 	/**
 	 * Gets the amount of power required when function is at full power.

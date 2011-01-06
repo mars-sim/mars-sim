@@ -6,16 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -28,18 +18,18 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.construction.ConstructionManager;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
-import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
-import org.mars_sim.msp.core.structure.construction.SalvageValues;
+import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Mission for salvaging a construction stage at a building construction site.
@@ -85,7 +75,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error creating mission.
      */
-    public BuildingSalvageMission(Person startingPerson) throws MissionException {
+    public BuildingSalvageMission(Person startingPerson) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
         
@@ -104,7 +94,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
             // Recruit additional people to mission.
             recruitPeopleForMission(startingPerson);
             
-            try {
+//            try {
                 // Determine construction site and stage.
                 int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(
                         Skill.CONSTRUCTION);
@@ -164,11 +154,11 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                 
                 // Retrieve construction LUV attachment parts.
                 retrieveConstructionLUVParts();
-            } 
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error determining salvage construction site.");
-                throw new MissionException("Error determining salvage construction site.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                logger.log(Level.SEVERE, "Error determining salvage construction site.");
+//                throw new MissionException("Error determining salvage construction site.", e);
+//            }
         }
         
         // Add phases.
@@ -190,7 +180,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @throws MissionException if error creating mission.
      */
     public BuildingSalvageMission(Collection<Person> members, Settlement settlement, Building building,
-            ConstructionSite site, List<GroundVehicle> vehicles) throws MissionException {
+            ConstructionSite site, List<GroundVehicle> vehicles) {
         
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, (Person) members.toArray()[0], 1);
@@ -201,19 +191,19 @@ public class BuildingSalvageMission extends Mission implements Serializable {
         
         if (building != null) {
             // Create new salvage construction site.
-            try {
+//            try {
                 constructionSite = manager.createNewSalvageConstructionSite(building);
-            }
-            catch (Exception e) {
-                throw new MissionException("New salvage construction site could not be created.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException("New salvage construction site could not be created.", e);
+//            }
         }
         else if (site != null) {
             constructionSite = site;
         }
         else {
             logger.log(Level.SEVERE, "Neither salvage building or salvage construction site provided.");
-            throw new MissionException(PREPARE_SITE_PHASE, 
+            throw new IllegalStateException(PREPARE_SITE_PHASE + ":" +
                     "Neither salvage building or salvage construction site provided.");
         }
         
@@ -335,7 +325,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @throws Exception if error determining construction site.
      */
     private ConstructionSite determineMostProfitableSalvageConstructionSite(Settlement settlement, 
-            int constructionSkill) throws Exception {
+            int constructionSkill) {
         ConstructionSite result = null;
         
         double topSiteProfit = 0D;
@@ -361,7 +351,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @throws Exception if error determining building.
      */
     private Building determineMostProfitableSalvageBuilding(Settlement settlement, 
-            int constructionSkill) throws Exception {
+            int constructionSkill) {
         Building result = null;
         
         double topSalvageProfit = 0D;
@@ -380,7 +370,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     }
     
     @Override
-    protected void determineNewPhase() throws MissionException {
+    protected void determineNewPhase() {
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(SALVAGE_PHASE);
             setPhaseDescription("Salvage Construction Site Stage: " + constructionStage.getInfo().getName());
@@ -389,7 +379,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     }
     
     @Override
-    protected void performPhase(Person person) throws MissionException {
+    protected void performPhase(Person person) {
         super.performPhase(person);
         if (PREPARE_SITE_PHASE.equals(getPhase())) prepareSitePhase(person);
         else if (SALVAGE_PHASE.equals(getPhase())) salvagePhase(person);
@@ -402,7 +392,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
-            boolean useBuffer) throws MissionException {
+            boolean useBuffer) {
         
         Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
         equipment.put(EVASuit.class, getPeopleNumber());
@@ -411,7 +401,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     }
 
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) throws MissionException {
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, boolean parts) {
         Map<Resource, Number> resources = new HashMap<Resource, Number>();
         return resources;   
     }
@@ -421,7 +411,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @param person the person performing the phase.
      * @throws MissionException if error performing the phase.
      */
-    private void prepareSitePhase(Person person) throws MissionException {
+    private void prepareSitePhase(Person person) {
         
         if (finishingExistingStage) {
             // If finishing uncompleted existing construction stage, skip resource loading.
@@ -440,7 +430,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * @param person the person performing the phase.
      * @throws MissionException if error performing the phase.
      */
-    private void salvagePhase(Person person) throws MissionException {
+    private void salvagePhase(Person person) {
 
         // Anyone in the crew or a single person at the home settlement has a 
         // dangerous illness, end phase.
@@ -450,17 +440,17 @@ public class BuildingSalvageMission extends Mission implements Serializable {
             
             // 75% chance of assigning task, otherwise allow break.
             if (RandomUtil.lessThanRandPercent(75D)) {
-                try {
+//                try {
                     // Assign salvage building task to person.
                     if (SalvageBuilding.canSalvage(person)) {
                         assignTask(person, new SalvageBuilding(person, constructionStage, 
                                 constructionVehicles));
                     }
-                }
-                catch(Exception e) {
-                    logger.log(Level.SEVERE, "Error during salvage.", e);
-                    throw new MissionException(getPhase(), e);
-                }
+//                }
+//                catch(Exception e) {
+//                    logger.log(Level.SEVERE, "Error during salvage.", e);
+//                    throw new MissionException(getPhase(), e);
+//                }
             }
         }
         
@@ -469,33 +459,33 @@ public class BuildingSalvageMission extends Mission implements Serializable {
             settlement.getConstructionManager().getConstructionValues().clearCache();
             
             // Remove salvaged construction stage from site.
-            try {
+//            try {
                 constructionSite.removeSalvagedStage(constructionStage);
-            }
-            catch (Exception e) {
-                throw new MissionException("Error removing salvage construction stage.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException("Error removing salvage construction stage.", e);
+//            }
             
             // Salvage construction parts from the stage.
-            try {
+//            try {
                 salvageConstructionParts();
-            }
-            catch (Exception e) {
-                throw new MissionException("Error salvaging construction parts.", e);
-            }
+//            }
+//            catch (Exception e) {
+//                throw new MissionException("Error salvaging construction parts.", e);
+//            }
             
             // Mark construction site as not undergoing salvage.
             constructionSite.setUndergoingSalvage(false);
             
             // Remove construction site if all salvaging complete.
             if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.FOUNDATION)) {
-                try {
+//                try {
                     settlement.getConstructionManager().removeConstructionSite(constructionSite);
                     logger.log(Level.INFO, "Construction site completely salvaged at " + settlement.getName());
-                }
-                catch (Exception e) {
-                    throw new MissionException("Error removing salvage construction site.", e);
-                }
+//                }
+//                catch (Exception e) {
+//                    throw new MissionException("Error removing salvage construction site.", e);
+//                }
             }
         }
     }
@@ -635,7 +625,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     private LightUtilityVehicle reserveLightUtilityVehicle() {
         LightUtilityVehicle result = null;
         
-        Iterator<Vehicle> i = getAssociatedSettlement().getParkedVehicles().iterator();
+        Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
         while (i.hasNext() && (result == null)) {
             Vehicle vehicle = i.next();
             
@@ -674,7 +664,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
      * Salvage construction parts from the stage.
      * @throws Exception if error salvaging construction parts.
      */
-    private void salvageConstructionParts() throws Exception {
+    private void salvageConstructionParts() {
         
         double salvageChance = 50D;
         

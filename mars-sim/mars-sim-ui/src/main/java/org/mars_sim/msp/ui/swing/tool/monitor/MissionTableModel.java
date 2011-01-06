@@ -6,22 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.*;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.mission.MissionManager;
-import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
-import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 
 public class MissionTableModel extends AbstractTableModel implements
 		MonitorModel, MissionManagerListener, MissionListener {
@@ -248,34 +239,34 @@ public class MissionTableModel extends AbstractTableModel implements
 				} break;
 				 
 				case MEMBER_NUM : {
-					result = new Integer(mission.getPeopleNumber());
+					result = mission.getPeopleNumber();
 				} break;
 				
 				case NAVPOINT_NUM : {
 					if (mission instanceof TravelMission) {
 						TravelMission travelMission = (TravelMission) mission;
-						result = new Integer(travelMission.getNumberOfNavpoints());
+						result = travelMission.getNumberOfNavpoints();
 					}
-					else result = new Integer(0);
+					else result = 0;
 				} break;
 				
 				case TRAVELLED_DISTANCE : {
 					if (mission instanceof TravelMission) {
 						TravelMission travelMission = (TravelMission) mission;
-						result = new Integer((int) travelMission.getTotalDistanceTravelled());
+						result = (int) travelMission.getTotalDistanceTravelled();
 					}
-					else result = new Integer(0);
+					else result = 0;
 				} break;
 				
 				case REMAINING_DISTANCE : {
 					if (mission instanceof TravelMission) {
 						TravelMission travelMission = (TravelMission) mission;
 						try {
-							result = new Integer((int) travelMission.getTotalRemainingDistance());
+							result = (int) travelMission.getTotalRemainingDistance();
 						}
 						catch (Exception e) {}
 					}
-					else result = new Integer(0);
+					else result = 0;
 				}
 			}
 		}
@@ -287,9 +278,9 @@ public class MissionTableModel extends AbstractTableModel implements
      * Prepares the model for deletion.
      */
     public void destroy() {
-    	for (int x = 0; x < missionCache.size(); x++) {
-    		removeMission(missionCache.get(0));
-    	}
+        for (Mission aMissionCache : missionCache) {
+            removeMission(missionCache.get(0));
+        }
         Simulation.instance().getMissionManager().removeListener(this);
     	//missionCache = null;
     }

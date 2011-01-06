@@ -7,26 +7,20 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Barrel;
-import org.mars_sim.msp.core.equipment.EVASuit;
-import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.GasCanister;
-import org.mars_sim.msp.core.equipment.LargeBag;
-import org.mars_sim.msp.core.equipment.SpecimenContainer;
+import org.mars_sim.msp.core.equipment.*;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Utility class for goods information.
@@ -97,7 +91,7 @@ public class GoodsUtil {
 	 * @return good for the vehicle type.
 	 */
 	public static Good getVehicleGood(String vehicleType) {
-		if ((vehicleType != null) && !vehicleType.trim().equals("")) {
+		if ((vehicleType != null) && vehicleType.trim().length() != 0) {
 			Class<?> vehicleClass = Rover.class;
 			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) 
 				vehicleClass = LightUtilityVehicle.class;
@@ -185,7 +179,7 @@ public class GoodsUtil {
 	 * @return mass (kg) per item (or 1kg for amount resources).
 	 * @throws Exception if error getting mass per item.
 	 */
-	public static double getGoodMassPerItem(Good good) throws Exception {
+	public static double getGoodMassPerItem(Good good) {
 		double result = 0D;
 		
 		if (Good.AMOUNT_RESOURCE.equals(good.getCategory())) result = 1D;

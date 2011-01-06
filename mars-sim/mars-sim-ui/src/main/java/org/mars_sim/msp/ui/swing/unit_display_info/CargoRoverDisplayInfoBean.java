@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.unit_display_info;
 
-import javax.swing.Icon;
-
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
 
 /**
  * Provides display information about a cargo rover.

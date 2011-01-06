@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.core.science;
 
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.job.JobManager;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.job.JobManager;
 
 /**
  * Utility class for science fields.
@@ -160,8 +160,8 @@ public class ScienceUtil {
         while (i.hasNext()) {
             Science science = i.next();
             Job[] jobs = science.getJobs();
-            for (int x = 0; x < jobs.length; x++) {
-                if (jobs[x].equals(job)) result = true;
+            for (Job job1 : jobs) {
+                if (job1.equals(job)) result = true;
             }
         }
         
@@ -182,8 +182,8 @@ public class ScienceUtil {
         while (i.hasNext()) {
             Science science = i.next();
             Job[] jobs = science.getJobs();
-            for (int x = 0; x < jobs.length; x++) {
-                if (jobs[x].equals(job)) result = science;
+            for (Job job1 : jobs) {
+                if (job1.equals(job)) result = science;
             }
         }
         
@@ -202,8 +202,8 @@ public class ScienceUtil {
         boolean result = false;
         
         Science[] collaborators = primaryScience.getCollaborativeSciences();
-        for (int x = 0; x < collaborators.length; x++) {
-            if (collaborators[x].equals(science)) result = true;
+        for (Science collaborator : collaborators) {
+            if (collaborator.equals(science)) result = true;
         }
         
         return result;

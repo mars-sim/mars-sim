@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
@@ -19,6 +14,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.Rover;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Exploration class is a mission to travel in a rover to several
@@ -53,7 +53,7 @@ public class CollectIce extends CollectResourcesMission {
 	 * @param startingPerson the person starting the mission.
 	 * @throws MissionException if problem constructing mission.
 	 */
-	public CollectIce(Person startingPerson) throws MissionException {
+	public CollectIce(Person startingPerson) {
 		
 		// Use CollectResourcesMission constructor.
 		super(DEFAULT_DESCRIPTION, startingPerson, getIceResource(), SITE_GOAL, 
@@ -71,7 +71,7 @@ public class CollectIce extends CollectResourcesMission {
      */
     public CollectIce(Collection<Person> members, Settlement startingSettlement, 
     		List<Coordinates> iceCollectionSites, Rover rover, String description) 
-            throws MissionException {
+            {
     	
        	// Use CollectResourcesMission constructor.
     	super(description, members, startingSettlement, getIceResource(), SITE_GOAL, 
@@ -123,12 +123,12 @@ public class CollectIce extends CollectResourcesMission {
      * @return ice resource.
      * @throws MissionException if error getting ice resource.
      */
-    private static AmountResource getIceResource() throws MissionException {
-    	try {
+    private static AmountResource getIceResource() {
+//    	try {
     		return AmountResource.findAmountResource("ice");
-    	}
-    	catch (Exception e) {
-    		throw new MissionException(null, e);
-    	}
+//    	}
+//    	catch (Exception e) {
+//    		throw new MissionException(null, e);
+//    	}
     }
 }

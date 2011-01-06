@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import java.util.EventObject;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.util.EventObject;
 
 /**
  * A credit change event.

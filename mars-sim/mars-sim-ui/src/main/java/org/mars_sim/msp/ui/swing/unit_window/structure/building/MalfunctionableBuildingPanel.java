@@ -7,22 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.MalfunctionPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 
 
 /**

@@ -6,15 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
 
 
 /**
@@ -78,9 +75,9 @@ public class ResearchBuildingPanel extends BuildingFunctionPanel {
         add(specialitiesListPanel, BorderLayout.CENTER);
         
         // For each speciality, add speciality name panel.
-        
-        for (int x=0; x < specialities.length; x++) {
-            JLabel specialityLabel = new JLabel(specialities[x], JLabel.CENTER);
+
+        for (String speciality : specialities) {
+            JLabel specialityLabel = new JLabel(speciality, JLabel.CENTER);
             specialitiesListPanel.add(specialityLabel);
         }
     }

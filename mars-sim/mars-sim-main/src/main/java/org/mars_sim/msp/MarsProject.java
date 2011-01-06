@@ -6,6 +6,11 @@
  */
 package org.mars_sim.msp;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.ui.swing.MainWindow;
+import org.mars_sim.msp.ui.swing.SplashWindow;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,11 +18,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.ui.swing.MainWindow;
-import org.mars_sim.msp.ui.swing.SplashWindow;
 
 /**
  * MarsProject is the main class for the application. It creates both Mars and
@@ -60,7 +60,7 @@ public class MarsProject {
                 int index = argList.indexOf("-load");
                 // Get the next argument as the filename.
                 File loadFile = new File(argList.get(index + 1));
-                if (loadFile.exists()) Simulation.instance().loadSimulation(loadFile);
+                if (loadFile.exists() &&loadFile.canRead()) Simulation.instance().loadSimulation(loadFile);
                 else {
                     logger.log(Level.SEVERE, "Problem loading simulation");
                     logger.log(Level.SEVERE, argList.get(index + 1) + " not found.");

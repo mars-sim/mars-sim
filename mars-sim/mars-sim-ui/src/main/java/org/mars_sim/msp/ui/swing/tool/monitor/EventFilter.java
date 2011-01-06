@@ -6,13 +6,15 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
-import javax.swing.border.*;
-
 import org.mars_sim.msp.core.events.HistoricalEventManager;
-import org.mars_sim.msp.ui.swing.*;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * The EventFilter class is a internal dialog window for filtering 

@@ -6,23 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.tool.science;
 
-import java.awt.BorderLayout;
-import java.awt.CardLayout;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
 
 /**
  * A panel that displays study researcher information.

@@ -1,32 +1,5 @@
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.JButton;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.text.NumberFormatter;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -40,6 +13,18 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.text.NumberFormatter;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.*;
+import java.util.List;
 
 class TradeGoodsPanel extends WizardPanel {
 
@@ -124,7 +109,7 @@ class TradeGoodsPanel extends WizardPanel {
 					public void actionPerformed(ActionEvent e) {
 						try {
 							// Remove trade good amount.
-							int amount = ((Integer) formatter.stringToValue(amountTextField.getText())).intValue();
+							int amount = (Integer) formatter.stringToValue(amountTextField.getText());
 							int selectedGoodIndex = tradeTable.getSelectedRow();
 							if (selectedGoodIndex > -1) {
 								Good good = tradeTableModel.tradeList.get(selectedGoodIndex);
@@ -148,7 +133,7 @@ class TradeGoodsPanel extends WizardPanel {
 		formatter.setMinimum(0);
 		formatter.setMaximum(9999);
 		amountTextField = new JFormattedTextField(formatter);
-		amountTextField.setValue(new Integer(0));
+		amountTextField.setValue(0);
 		amountTextField.setColumns(5);
 		amountTextField.setHorizontalAlignment(JTextField.RIGHT);
 		amountTextField.setEnabled(false);
@@ -162,7 +147,7 @@ class TradeGoodsPanel extends WizardPanel {
 					public void actionPerformed(ActionEvent e) {
 						// Add trade good amount.
 						try {
-							int amount = ((Integer) formatter.stringToValue(amountTextField.getText())).intValue();
+							int amount = (Integer) formatter.stringToValue(amountTextField.getText());
 							int selectedGoodIndex = goodsTable.getSelectedRow();
 							if (selectedGoodIndex > -1) {
 								Good good = goodsTableModel.goodsList.get(selectedGoodIndex);
@@ -261,7 +246,7 @@ class TradeGoodsPanel extends WizardPanel {
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
-	private boolean hasEnoughContainers() throws Exception {
+	private boolean hasEnoughContainers() {
 		boolean result = true;
 		
 		Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);

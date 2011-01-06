@@ -7,35 +7,21 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Crewable;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel to select mission members.
@@ -109,8 +95,8 @@ class MembersPanel extends WizardPanel {
         					
         					// Check if any of the rows failed.
         					boolean failedRow = false;
-        					for (int x = 0; x < selectedRows.length; x++) 
-        						if (peopleTableModel.isFailureRow(selectedRows[x])) failedRow = true;
+                            for (int selectedRow : selectedRows)
+                                if (peopleTableModel.isFailureRow(selectedRow)) failedRow = true;
         				
         					if (failedRow) {
         						// Display failed row message and disable add button.
@@ -165,8 +151,7 @@ class MembersPanel extends WizardPanel {
 					// Add the selected rows in the people table to the members table.
 					int[] selectedRows = peopleTable.getSelectedRows();
 					Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-					for (int x = 0; x < selectedRows.length; x++) 
-						people.add((Person) peopleTableModel.getUnit(selectedRows[x]));
+                    for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
 					peopleTableModel.removePeople(people);
 					membersTableModel.addPeople(people);
 					updateRoverCapacityLabel();
@@ -183,8 +168,8 @@ class MembersPanel extends WizardPanel {
 						// Remove the selected rows in the members table to the people table.
 						int[] selectedRows = membersTable.getSelectedRows();
 						Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-						for (int x = 0; x < selectedRows.length; x++) 
-							people.add((Person) membersTableModel.getUnit(selectedRows[x]));
+                        for (int selectedRow : selectedRows)
+                            people.add((Person) membersTableModel.getUnit(selectedRow));
 						peopleTableModel.addPeople(people);
 						membersTableModel.removePeople(people);
 						updateRoverCapacityLabel();
@@ -301,7 +286,7 @@ class MembersPanel extends WizardPanel {
         if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) return Integer.MAX_VALUE;
         else if (MissionDataBean.SALVAGE_MISSION.equals(type)) return Integer.MAX_VALUE;
         else {
-            int roverCapacity = ((Crewable) getWizard().getMissionData().getRover()).getCrewCapacity();
+            int roverCapacity = getWizard().getMissionData().getRover().getCrewCapacity();
             int memberNum = membersTableModel.getRowCount();
             return roverCapacity - memberNum;
         }

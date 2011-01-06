@@ -7,20 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -29,6 +15,13 @@ import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
 
 
 /** 
@@ -203,7 +196,7 @@ public class HealthTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the health problem table.
      */
-    private class HealthProblemTableModel extends AbstractTableModel {
+    private static class HealthProblemTableModel extends AbstractTableModel {
         
         PhysicalCondition condition;
         java.util.Collection problemsCache;
@@ -271,7 +264,7 @@ public class HealthTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the medication table.
      */
-    private class MedicationTableModel extends AbstractTableModel {
+    private static class MedicationTableModel extends AbstractTableModel {
         
         private PhysicalCondition condition;
         private List<Medication> medicationCache;

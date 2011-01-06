@@ -6,18 +6,21 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.time.MarsClock;
+
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.*;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * The LifeSupport class is a building function for life support and managing inhabitants.
@@ -41,7 +44,7 @@ public class LifeSupport extends Function implements Serializable {
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
 	 */
-	public LifeSupport(Building building) throws BuildingException {
+	public LifeSupport(Building building) {
 		// Call Function constructor.
 		super(NAME, building);
 		
@@ -49,16 +52,16 @@ public class LifeSupport extends Function implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-		try {
+//		try {
 			// Set occupant capacity.
 			occupantCapacity = config.getLifeSupportCapacity(building.getName());
 		
 			// Set life support power required.
 			powerRequired = config.getLifeSupportPowerRequirement(building.getName());
-		}
-		catch (Exception e) {
-			throw new BuildingException("LifeSupport.constructor: " + e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			throw new BuildingException("LifeSupport.constructor: " + e.getMessage());
+//		}
 	}
 	
 	/**
@@ -68,7 +71,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @param powerRequired the power required (kW)
 	 * @throws BuildingException if error constructing function.
 	 */
-	public LifeSupport(Building building, int occupantCapacity, double powerRequired) throws BuildingException {
+	public LifeSupport(Building building, int occupantCapacity, double powerRequired) {
 		// Use Function constructor
 		super(NAME, building);
 		
@@ -85,8 +88,8 @@ public class LifeSupport extends Function implements Serializable {
      * @return value (VP) of building function.
      * @throws Exception if error getting function value.
      */
-    public static final double getFunctionValue(String buildingName, boolean newBuilding, 
-            Settlement settlement) throws Exception {
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
         
         // Demand is 2 occupant capacity for every inhabitant. 
         double demand = settlement.getAllAssociatedPeople().size() * 2D;
@@ -102,7 +105,7 @@ public class LifeSupport extends Function implements Serializable {
             else {
                 LifeSupport lsFunction = (LifeSupport) building.getFunction(NAME);
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += lsFunction.getOccupantCapacity() * wearModifier;
+                supply += lsFunction.occupantCapacity * wearModifier;
             }
         }
         
@@ -146,7 +149,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return occupancy room
 	 */
 	public int getAvailableOccupancy() {
-		int available = getOccupantCapacity() - getOccupantNumber();
+		int available = occupantCapacity - getOccupantNumber();
 		if (available > 0) return available;
 		else return 0;
 	}
@@ -156,8 +159,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @return true if person is in building.
 	 */
 	public boolean containsPerson(Person person) {
-		if (occupants.contains(person)) return true;
-		else return false;
+        return occupants.contains(person);
 	}
 	
 	/**
@@ -176,7 +178,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @param person new person to add to building.
 	 * @throws BuildingException if person is already building occupant.
 	 */
-	public void addPerson(Person person) throws BuildingException {
+	public void addPerson(Person person) {
 		if (!occupants.contains(person)) {
 			// Remove person from any other inhabitable building in the settlement.
 			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
@@ -192,7 +194,7 @@ public class LifeSupport extends Function implements Serializable {
 			occupants.add(person);
 		}
 		else {
-			throw new BuildingException("Person already occupying building.");
+			throw new IllegalStateException("Person already occupying building.");
 		} 
 	}
 	
@@ -201,10 +203,10 @@ public class LifeSupport extends Function implements Serializable {
 	 * @param occupant the person to remove from building.
 	 * @throws BuildingException if person is not building occupant.
 	 */
-	public void removePerson(Person occupant) throws BuildingException {
+	public void removePerson(Person occupant) {
 		if (occupants.contains(occupant)) occupants.remove(occupant);
 		else {
-			throw new BuildingException("Person does not occupy building.");
+			throw new IllegalStateException("Person does not occupy building.");
 		} 
 	}
 
@@ -213,7 +215,7 @@ public class LifeSupport extends Function implements Serializable {
 	 * @param time amount of time passing (in millisols)
 	 * @throws BuildingException if error occurs.
 	 */
-	public void timePassing(double time) throws BuildingException {
+	public void timePassing(double time) {
 
 		// Make sure all occupants are actually in settlement inventory.
 		// If not, remove them as occupants.
@@ -224,7 +226,7 @@ public class LifeSupport extends Function implements Serializable {
 		}
 		
 		// Add stress if building is overcrowded.
-		int overcrowding = getOccupantNumber() - getOccupantCapacity();
+		int overcrowding = getOccupantNumber() - occupantCapacity;
 		if (overcrowding > 0) {
 		    
 		    	if(logger.isLoggable(Level.FINEST)){

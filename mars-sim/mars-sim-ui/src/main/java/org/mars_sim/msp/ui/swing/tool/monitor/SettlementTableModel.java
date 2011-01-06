@@ -6,19 +6,20 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.*;
-
-import javax.swing.SwingUtilities;
-
 import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.*;
-import org.mars_sim.msp.core.structure.building.*;
+import org.mars_sim.msp.core.structure.PowerGrid;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import javax.swing.*;
+import java.util.*;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -124,27 +125,27 @@ public class SettlementTableModel extends UnitTableModel {
             		} break;
 
             		case WATER : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("water"));
             		} break;
 
             		case FOOD : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("food"));
             		} break;
 
             		case OXYGEN : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("oxygen"));
             		} break;
 
             		case METHANE : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("methane"));
             		} break;
 
             		case ROCK_SAMPLES : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("rock samples"));
             		} break;
 
@@ -165,20 +166,20 @@ public class SettlementTableModel extends UnitTableModel {
             		} break;
 
             		case POPULATION : {
-            			result = new Integer(settle.getCurrentPopulationNum());
+            			result = settle.getCurrentPopulationNum();
             		} break;
 
             		case PARKED : {
-            			result = new Integer(settle.getParkedVehicleNum());
+            			result = settle.getParkedVehicleNum();
             		} break;
             
             		case POWER : {
-            			result = new Integer((int) settle.getPowerGrid().getGeneratedPower());
+            			result = (int) settle.getPowerGrid().getGeneratedPower();
             		} break;
 
             		case GREENHOUSES : {
             			int greenhouses = bMgr.getBuildings(Farming.NAME).size();
-            			result = new Integer(greenhouses);
+            			result = greenhouses;
             		} break;
 
             		case CROPS : {
@@ -194,26 +195,26 @@ public class SettlementTableModel extends UnitTableModel {
             				catch (Exception e) {}
             			}
                 
-            			result = new Integer(crops);
+            			result = crops;
             		} break;
 
             		case HYDROGEN : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("hydrogen"));
             		} break;
 
             		case WASTE_WATER : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("waste water"));
             		} break;
             
             		case CO2 : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("carbon dioxide"));
             		} break;
             
             		case ICE : {
-            			result = (Integer) resourceMap.get(
+            			result = resourceMap.get(
             					AmountResource.findAmountResource("ice"));
             		} break;
         		}
@@ -272,8 +273,8 @@ public class SettlementTableModel extends UnitTableModel {
 				
 				if (tempColumnNum > -1) {
 					// Only update cell if value as int has changed.
-					int currentValue = ((Integer) getValueAt(unitIndex, tempColumnNum)).intValue();
-					int newValue = getResourceStored(unit, (AmountResource) target).intValue();
+					int currentValue = (Integer) getValueAt(unitIndex, tempColumnNum);
+					int newValue = getResourceStored(unit, (AmountResource) target);
 					if (currentValue != newValue) {
 						columnNum = tempColumnNum;
 						Map<AmountResource, Integer> resourceMap = resourceCache.get(unit);
@@ -353,13 +354,13 @@ public class SettlementTableModel extends UnitTableModel {
      */
     private Integer getResourceStored(Unit unit, AmountResource resource) {
     	Integer result = null;	
-    	try {
+//    	try {
     		Inventory inv = unit.getInventory();
-    		result = new Integer((int) inv.getAmountResourceStored(resource));
-    	}
-    	catch (InventoryException e) {
-    		e.printStackTrace(System.err);
-    	}
+    		result = (int) inv.getAmountResourceStored(resource);
+//    	}
+//    	catch (InventoryException e) {
+//    		e.printStackTrace(System.err);
+//    	}
     	return result;
     }
 	

@@ -7,27 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.map.EllipseLayer;
-import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
-import org.mars_sim.msp.ui.swing.tool.map.MapUtils;
-import org.mars_sim.msp.ui.swing.tool.map.NavpointEditLayer;
-import org.mars_sim.msp.ui.swing.tool.map.SurfMarsMap;
-import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
-import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 
 /**
  * A wizard panel for the ice or regolith prospecting site.

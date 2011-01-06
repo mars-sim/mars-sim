@@ -4,11 +4,7 @@
  * @version 3.00 2010-08-10
  * @author Scott Davis
  */
- 
 package org.mars_sim.msp.core.mars;
-
-import java.io.Serializable;
-import java.util.*;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
@@ -18,45 +14,50 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 /** 
  * SurfaceFeatures represents the surface terrain and landmarks of the virtual Mars. 
  */
 public class SurfaceFeatures implements Serializable {
-    
+
     // Data members 
     private transient TerrainElevation surfaceTerrain;
     private List landmarks;
     private MineralMap mineralMap;
     private List<ExploredLocation> exploredLocations;
-    
+
     /** 
      * Constructor 
      * @throws Exception when error in creating surface features.
      */
-    public SurfaceFeatures() throws Exception {
-        
+    public SurfaceFeatures() {
+
         surfaceTerrain = new TerrainElevation();
         mineralMap = new RandomMineralMap();
         exploredLocations = new ArrayList<ExploredLocation>();
 
-		try {
-			landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
-		}
-		catch (Exception e) {
-			throw new Exception("Landmarks could not be loaded: " + e.getMessage());
-		}
+        try {
+            landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
+        } catch (Exception e) {
+            throw new IllegalStateException("Landmarks could not be loaded: " + e.getMessage(), e);
+        }
     }
-    
-	/**
-	 * Initialize transient data in the simulation.
-	 * @throws Exception if transient data could not be constructed.
-	 */
-	public void initializeTransientData() throws Exception {
-		
-		// Initialize surface terrain.
-		surfaceTerrain = new TerrainElevation();
-	}    
-    
+
+    /**
+     * Initialize transient data in the simulation.
+     * @throws Exception if transient data could not be constructed.
+     */
+    public void initializeTransientData() {
+
+        // Initialize surface terrain.
+        surfaceTerrain = new TerrainElevation();
+    }
+
     /** Returns the surface terrain
      *  @return surface terrain
      */
@@ -74,8 +75,8 @@ public class SurfaceFeatures implements Serializable {
      * Values in between 0.0 and 1.0 represent twilight conditions. 
      */
     public double getSurfaceSunlight(Coordinates location) {
-        
-		Mars mars = Simulation.instance().getMars();
+
+        Mars mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double angleFromSun = sunDirection.getAngle(location);
 
@@ -83,72 +84,71 @@ public class SurfaceFeatures implements Serializable {
         double twilightzone = .2D; // Angle width of twilight border (radians)
         if (angleFromSun < (Math.PI / 2D) - (twilightzone / 2D)) {
             result = 1D;
-        }
-        else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
+        } else if (angleFromSun > (Math.PI / 2D) + (twilightzone / 2D)) {
             result = 0D;
-        }
-        else {
+        } else {
             double twilightAngle = angleFromSun - ((Math.PI / 2D) - (twilightzone / 2D));
             result = 1D - (twilightAngle / twilightzone);
         }
 
         return result;
-    }    
+    }
 
     /** Returns true if location is in a dark polar region.
      *  A dark polar region is where the sun doesn't rise in the current sol.
      *  @return true if location is in dark polar region
      */
     public boolean inDarkPolarRegion(Coordinates location) {
-        
+
         boolean result = false;
 
-		Mars mars = Simulation.instance().getMars();
+        Mars mars = Simulation.instance().getMars();
         Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
         double sunPhi = sunDirection.getPhi();
         double darkPhi = 0D;
 
         if (sunPhi < (Math.PI / 2D)) {
             darkPhi = Math.PI - ((Math.PI / 2D) - sunPhi);
-            if (location.getPhi() >= darkPhi) result = true;
-        }
-        else {
+            if (location.getPhi() >= darkPhi) {
+                result = true;
+            }
+        } else {
             darkPhi = sunPhi - (Math.PI / 2D);
-            if (location.getPhi() < darkPhi) result = true;
+            if (location.getPhi() < darkPhi) {
+                result = true;
+            }
         }
 
         return result;
     }
-    
+
     /**
      * Checks if location is within a polar region of Mars.
      * @param location the location to check.
      * @return true if in polar region.
      */
     public boolean inPolarRegion(Coordinates location) {
-    	double polarPhi = .1D * Math.PI;
-    	
-    	if ((location.getPhi() < polarPhi) || (location.getPhi() > Math.PI - polarPhi))
-    		return true;
-    	else return false;
+        double polarPhi = .1D * Math.PI;
+
+        return (location.getPhi() < polarPhi) || (location.getPhi() > Math.PI - polarPhi);
     }
-    
+
     /**
      * Gets a list of landmarks on Mars.
      * @return list of landmarks.
      */
     public List getLandmarks() {
-    	return landmarks;
+        return landmarks;
     }
-    
+
     /**
      * Gets the mineral map.
      * @return mineral map.
      */
     public MineralMap getMineralMap() {
-    	return mineralMap;
+        return mineralMap;
     }
-    
+
     /**
      * Adds an explored location.
      * @param location the location coordinates.
@@ -157,48 +157,50 @@ public class SurfaceFeatures implements Serializable {
      * @param settlement the settlement the exploring mission is from.
      * @return the explored location
      */
-    public ExploredLocation addExploredLocation(Coordinates location, 
-    		Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
-    	ExploredLocation result = new ExploredLocation(location, 
-    			estimatedMineralConcentrations, settlement);
-    	exploredLocations.add(result);
-    	return result;
+    public ExploredLocation addExploredLocation(Coordinates location,
+            Map<String, Double> estimatedMineralConcentrations, Settlement settlement) {
+        ExploredLocation result = new ExploredLocation(location,
+                estimatedMineralConcentrations, settlement);
+        exploredLocations.add(result);
+        return result;
     }
-    
+
     /**
      * Gets a list of all explored locations on Mars.
      * @return list of explored locations.
      */
     public List<ExploredLocation> getExploredLocations() {
-    	return exploredLocations;
+        return exploredLocations;
     }
-    
+
     /**
      * Time passing in the simulation.
      * @param time time in millisols
      * @throws Exception if error during time.
      */
-    public void timePassing(double time) throws Exception {
-    	// Update any reserved explored locations.
-    	Iterator<ExploredLocation> i = exploredLocations.iterator();
-    	while (i.hasNext()) {
-    		ExploredLocation site = i.next();
-    		if (site.isReserved()) {
-    			// Check if site is reserved by a current mining mission.
-    			// If not, mark as unreserved.
-    			boolean goodMission = false;
-    			MissionManager missionManager = Simulation.instance().getMissionManager();
-    			Iterator<Mission> j = missionManager.getMissions().iterator();
-    			while (j.hasNext()) {
-    				Mission mission = j.next();
-    				if (mission instanceof Mining) {
-    					if (site.equals(((Mining) mission).getMiningSite())) goodMission = true;
-    				}
-    			}
-    			if (!goodMission) {
-    				site.setReserved(false);
-    			}
-    		}
-    	}
+    public void timePassing(double time) {
+        // Update any reserved explored locations.
+        Iterator<ExploredLocation> i = exploredLocations.iterator();
+        while (i.hasNext()) {
+            ExploredLocation site = i.next();
+            if (site.isReserved()) {
+                // Check if site is reserved by a current mining mission.
+                // If not, mark as unreserved.
+                boolean goodMission = false;
+                MissionManager missionManager = Simulation.instance().getMissionManager();
+                Iterator<Mission> j = missionManager.getMissions().iterator();
+                while (j.hasNext()) {
+                    Mission mission = j.next();
+                    if (mission instanceof Mining) {
+                        if (site.equals(((Mining) mission).getMiningSite())) {
+                            goodMission = true;
+                        }
+                    }
+                }
+                if (!goodMission) {
+                    site.setReserved(false);
+                }
+            }
+        }
     }
 }

@@ -7,11 +7,11 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.SimulationConfig;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * Utility class for construction.
@@ -30,7 +30,7 @@ public class ConstructionUtil {
      * @return construction stage info or null if none found.
      * @throws Exception if error finding construction stage info.
      */
-    public final static ConstructionStageInfo getConstructionStageInfo(String stageName) throws Exception {
+    public static ConstructionStageInfo getConstructionStageInfo(String stageName) {
         ConstructionStageInfo result = null;
         
         Iterator<ConstructionStageInfo> i = getAllConstructionStageInfoList().iterator(); 
@@ -48,8 +48,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) 
-            throws Exception {
+    public static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType)
+{
         return getConstructionStageInfoList(stageType, Integer.MAX_VALUE);
     }
     
@@ -60,8 +60,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType, 
-            int constructionSkill) throws Exception {
+    public static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType,
+            int constructionSkill) {
         ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
         List<ConstructionStageInfo> result = 
             new ArrayList<ConstructionStageInfo>(config.getConstructionStageInfoList(stageType));
@@ -77,8 +77,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getFoundationConstructionStageInfoList() 
-            throws Exception { 
+    public static List<ConstructionStageInfo> getFoundationConstructionStageInfoList()
+{ 
         return getFoundationConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -88,8 +88,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getFoundationConstructionStageInfoList(
-            int constructionSkill) throws Exception { 
+    public static List<ConstructionStageInfo> getFoundationConstructionStageInfoList(
+            int constructionSkill) { 
         return getConstructionStageInfoList(ConstructionStageInfo.FOUNDATION, constructionSkill);
     }
     
@@ -98,8 +98,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getFrameConstructionStageInfoList() 
-            throws Exception {
+    public static List<ConstructionStageInfo> getFrameConstructionStageInfoList()
+{
         return getFrameConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -109,8 +109,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getFrameConstructionStageInfoList(
-            int constructionSkill) throws Exception {
+    public static List<ConstructionStageInfo> getFrameConstructionStageInfoList(
+            int constructionSkill) {
         return getConstructionStageInfoList(ConstructionStageInfo.FRAME, constructionSkill);
     }
     
@@ -119,8 +119,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getBuildingConstructionStageInfoList() 
-            throws Exception {
+    public static List<ConstructionStageInfo> getBuildingConstructionStageInfoList()
+{
         return getBuildingConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -130,8 +130,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getBuildingConstructionStageInfoList(
-            int constructionSkill) throws Exception {
+    public static List<ConstructionStageInfo> getBuildingConstructionStageInfoList(
+            int constructionSkill) {
         return getConstructionStageInfoList(ConstructionStageInfo.BUILDING, constructionSkill);
     }
     
@@ -140,8 +140,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getAllConstructionStageInfoList() 
-            throws Exception {
+    public static List<ConstructionStageInfo> getAllConstructionStageInfoList()
+             {
         
         ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
         List<ConstructionStageInfo> foundations = config.getConstructionStageInfoList(
@@ -166,8 +166,8 @@ public class ConstructionUtil {
      * @return list of building names.
      * @throws Exception if error getting list.
      */
-    public final static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo) 
-            throws Exception {
+    public static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo)
+{
         
         List<String> result = new ArrayList<String>();
         
@@ -182,7 +182,7 @@ public class ConstructionUtil {
         else if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType())) {
             result.add(stageInfo.getName());
         }
-        else throw new Exception("Unknown stage type: " + stageInfo.getType());
+        else throw new IllegalStateException("Unknown stage type: " + stageInfo.getType());
         
         return result;
     }
@@ -193,8 +193,8 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public final static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo) 
-            throws Exception {
+    public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo)
+{
         
         List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
         
@@ -224,8 +224,8 @@ public class ConstructionUtil {
      * @return the prerequisite stage info or null if none.
      * @throws Exception if error finding prerequisite stage info.
      */
-    public final static ConstructionStageInfo getPrerequisiteStage(ConstructionStageInfo stageInfo) 
-            throws Exception {
+    public static ConstructionStageInfo getPrerequisiteStage(ConstructionStageInfo stageInfo)
+{
         ConstructionStageInfo result = null;
         
         String prerequisiteStageName = stageInfo.getPrerequisiteStage();

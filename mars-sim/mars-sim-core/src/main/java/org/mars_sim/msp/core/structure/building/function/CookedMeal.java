@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.time.MarsClock;
+
+import java.io.Serializable;
 
 /*
  * The CookedMeal class represents a cooked meal from a kitchen.

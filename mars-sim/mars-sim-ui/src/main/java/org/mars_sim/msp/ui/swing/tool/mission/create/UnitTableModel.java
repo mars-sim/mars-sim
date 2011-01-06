@@ -7,14 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import org.mars_sim.msp.core.Unit;
+
+import javax.swing.table.AbstractTableModel;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import javax.swing.table.AbstractTableModel;
-
-import org.mars_sim.msp.core.Unit;
 
 /**
  * An abstract table model for unit tables in create mission wizard.

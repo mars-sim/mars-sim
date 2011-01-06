@@ -7,24 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.swing.BoundedRangeModel;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JScrollPane;
-
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -34,6 +16,13 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class MaintenanceTabPanel extends TabPanel {
 
@@ -160,7 +149,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		else {
 			// Update all building maintenance panels.
 			Component[] components = maintenanceListPanel.getComponents();
-			for (int x = 0; x < components.length; x++) ((BuildingMaintenancePanel) components[x]).update();
+            for (Component component : components) ((BuildingMaintenancePanel) component).update();
 		}
 		
 		// Create temporary malfunctions list.
@@ -181,7 +170,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		else {
 			// Update all building malfunction panels.
 			Component[] components = malfunctionsListPanel.getComponents();
-			for (int x = 0; x < components.length; x++) ((BuildingMalfunctionPanel) components[x]).update();
+            for (Component component : components) ((BuildingMalfunctionPanel) component).update();
 		}
 	}
 	
@@ -190,14 +179,14 @@ public class MaintenanceTabPanel extends TabPanel {
      * @return string.
      */
     private String getPartsString(Map<Part, Integer> parts) {
-    	StringBuffer buf = new StringBuffer("Parts: ");
+        StringBuilder buf = new StringBuilder("Parts: ");
     	
     	if (parts.size() > 0) {
     		Iterator<Part> i = parts.keySet().iterator();
     		while (i.hasNext()) {
     			Part part = i.next();
     			int number = parts.get(part);
-    			buf.append(number + " " + part.getName());
+                buf.append(number).append(" ").append(part.getName());
     			if (i.hasNext()) buf.append(", ");
     		}
     	}
@@ -292,10 +281,10 @@ public class MaintenanceTabPanel extends TabPanel {
 	     * Creates multi-line tool tip text.
 	     */
 	    private String getToolTipString() {
-	    	StringBuffer result = new StringBuffer("<html>");
+            StringBuilder result = new StringBuilder("<html>");
 	    	int maintSols = (int) (manager.getTimeSinceLastMaintenance() / 1000D);
-	    	result.append("Last completed maintenance: " + maintSols + " sols<br>");
-	    	result.append("Repair " + getPartsString(manager.getMaintenanceParts()).toLowerCase());
+            result.append("Last completed maintenance: ").append(maintSols).append(" sols<br>");
+            result.append("Repair ").append(getPartsString(manager.getMaintenanceParts()).toLowerCase());
 	    	result.append("</html>");
 	    	
 	    	return result.toString();
@@ -400,12 +389,12 @@ public class MaintenanceTabPanel extends TabPanel {
 	     * Creates multi-line tool tip text.
 	     */
 	    private String getToolTipString() {
-	    	StringBuffer result = new StringBuffer("<html>");
-	    	result.append(malfunction.getName() + "<br>");
-	    	result.append("General repair time: " + (int) malfunction.getWorkTime() + " milliols<br>");
-	    	result.append("EVA repair time: " + (int) malfunction.getEVAWorkTime() + " milliols<br>");
-	    	result.append("Emergency repair time: " + (int) malfunction.getEmergencyWorkTime() + " milliols<br>");
-	    	result.append("Repair " + getPartsString(malfunction.getRepairParts()).toLowerCase());
+            StringBuilder result = new StringBuilder("<html>");
+            result.append(malfunction.getName()).append("<br>");
+            result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" milliols<br>");
+            result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" milliols<br>");
+            result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" milliols<br>");
+            result.append("Repair ").append(getPartsString(malfunction.getRepairParts()).toLowerCase());
 	    	result.append("</html>");
 	    	
 	    	return result.toString();

@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Component;
-import java.awt.Graphics;
-import java.util.Iterator;
-import javax.swing.Icon;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
@@ -19,6 +14,10 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Iterator;
 
 /**
  * The NavpointMapLayer is a graphics layer to display mission navpoints.

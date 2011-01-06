@@ -7,15 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Coordinates;
 
-import java.util.Vector;
 import javax.swing.*;
-import java.awt.Frame;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
+import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
 
 /**
  * This window displays a list of columns from the specified model.

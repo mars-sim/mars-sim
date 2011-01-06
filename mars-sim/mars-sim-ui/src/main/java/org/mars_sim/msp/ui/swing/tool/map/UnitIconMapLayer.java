@@ -7,16 +7,14 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import java.awt.Component;
-import java.awt.Graphics;
-
-import javax.swing.Icon;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * The UnitMapLayer is a graphics layer to display unit icons.

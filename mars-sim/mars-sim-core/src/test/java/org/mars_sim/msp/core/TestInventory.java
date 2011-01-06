@@ -36,7 +36,7 @@ public class TestInventory extends TestCase {
 			inventory.addAmountResourceTypeCapacity(carbonDioxide, -100D);
 			fail("Cannot add negative capacity for a type.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
@@ -53,7 +53,7 @@ public class TestInventory extends TestCase {
 			inventory.addAmountResourcePhaseCapacity(Phase.GAS, -100D);
 			fail("Cannot add negative capacity for a phase.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceComboCapacityGood() throws Exception {
@@ -89,7 +89,7 @@ public class TestInventory extends TestCase {
 			inventory.storeAmountResource(carbonDioxide, 101D, true);
 			fail("Throws exception if overloaded");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreGood() throws Exception {
@@ -109,7 +109,7 @@ public class TestInventory extends TestCase {
 			inventory.storeAmountResource(hydrogen, 101D, true);
 			fail("Throws exception if overloaded");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceStoreNegativeAmount() throws Exception {
@@ -120,7 +120,7 @@ public class TestInventory extends TestCase {
 			inventory.storeAmountResource(carbonDioxide, -1D, true);
 			fail("Throws exception if negative amount");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceStoreNoCapacity() throws Exception {
@@ -130,7 +130,7 @@ public class TestInventory extends TestCase {
 			inventory.storeAmountResource(carbonDioxide, 100D, true);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseStoreDeep() throws Exception {
@@ -168,7 +168,7 @@ public class TestInventory extends TestCase {
 			testUnit2.getInventory().storeAmountResource(hydrogen, 100D, true);
 			fail("Fails properly when parent unit's general capacity is overloaded.");	
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRemainingCapacityGood() throws Exception {
@@ -220,7 +220,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveAmountResource(carbonDioxide, 101D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRetrieveNegative() throws Exception {
@@ -233,7 +233,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveAmountResource(carbonDioxide, -100D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourceRetrieveNoCapacity() throws Exception {
@@ -243,7 +243,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveAmountResource(carbonDioxide, 100D);
 			fail("Amount type retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryAmountResourcePhaseRetrieveDeep() throws Exception {
@@ -329,7 +329,7 @@ public class TestInventory extends TestCase {
 			inventory.storeItemResources(pipeWrench, 21);
 			fail("Throws exception if overloaded");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceStoreNegativeNumber() throws Exception {
@@ -340,7 +340,7 @@ public class TestInventory extends TestCase {
 			inventory.storeItemResources(pipeWrench, -1);
 			fail("Throws exception if negative number");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceStoreNoCapacity() throws Exception {
@@ -350,7 +350,7 @@ public class TestInventory extends TestCase {
 			inventory.storeItemResources(pipeWrench, 1);
 			fail("Throws exception if capacity not set (overloaded)");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceStoreDeepOverload() throws Exception {
@@ -364,7 +364,7 @@ public class TestInventory extends TestCase {
 			testUnit2.getInventory().storeItemResources(pipeWrench, 21);
 			fail("Fails properly when parent unit's general capacity is overloaded.");	
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceRemainingCapacityGood() throws Exception {
@@ -414,7 +414,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveItemResources(pipeWrench, 11);
 			fail("Item resource retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceRetrieveNegative() throws Exception {
@@ -426,7 +426,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveItemResources(pipeWrench, -1);
 			fail("Item resource retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryItemResourceRetrieveNoItem() throws Exception {
@@ -436,7 +436,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveItemResources(pipeWrench, 1);
 			fail("Item resource retrieved fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoreGood() throws Exception {
@@ -455,7 +455,7 @@ public class TestInventory extends TestCase {
 			inventory.storeUnit(testUnit);
 			fail("Duplicate unit stored fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoredNoCapacity() throws Exception {
@@ -465,7 +465,7 @@ public class TestInventory extends TestCase {
 			inventory.storeUnit(testUnit);
 			fail("Unit stored with insufficient capacity fails correctly.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoredUnitContains() throws Exception {
@@ -478,7 +478,7 @@ public class TestInventory extends TestCase {
 			testUnit2.getInventory().storeUnit(testUnit1);
 			fail("Unit cannot store another unit that stores it.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoredItself() throws Exception {
@@ -488,7 +488,7 @@ public class TestInventory extends TestCase {
 			testUnit1.getInventory().storeUnit(testUnit1);
 			fail("Unit cannot store itself.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoredNull() throws Exception {
@@ -498,7 +498,7 @@ public class TestInventory extends TestCase {
 			inventory.storeUnit(null);
 			fail("Unit cannot store null unit.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryUnitStoreDeepOverload() throws Exception {
@@ -512,7 +512,7 @@ public class TestInventory extends TestCase {
 			testUnit2.getInventory().storeUnit(testUnit3);
 			fail("Fails properly when parent unit's general capacity is overloaded.");	
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryGetTotalUnitMassStored() throws Exception {
@@ -637,7 +637,7 @@ public class TestInventory extends TestCase {
 			inventory.retrieveUnit(testUnit);
 			fail("testUnit not found.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 	
 	public void testInventoryRetrieveUnitDouble() throws Exception {
@@ -650,6 +650,6 @@ public class TestInventory extends TestCase {
 			inventory.retrieveUnit(testUnit);
 			fail("testUnit retrieved twice.");
 		}
-		catch (InventoryException e) {}
+		catch (Exception e) {}
 	}
 }

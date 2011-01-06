@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.core.person.medical;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+
+import java.io.Serializable;
 
 /**
  * A medication that reduces stress.

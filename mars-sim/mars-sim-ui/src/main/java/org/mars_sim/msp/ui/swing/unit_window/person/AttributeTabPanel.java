@@ -7,20 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
 
 
 /** 
@@ -74,7 +69,7 @@ public class AttributeTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the attribute table.
      */
-    private class AttributeTableModel extends AbstractTableModel {
+    private static class AttributeTableModel extends AbstractTableModel {
         
         NaturalAttributeManager manager;
         

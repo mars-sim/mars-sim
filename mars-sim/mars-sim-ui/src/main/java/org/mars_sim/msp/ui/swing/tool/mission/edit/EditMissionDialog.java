@@ -7,27 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Frame;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
-
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionException;
-import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
-import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * The edit mission dialog for the mission tool.
@@ -132,14 +121,14 @@ public class EditMissionDialog extends JDialog {
 	private void returnHome() {
 		if (mission instanceof TravelMission) {
 			TravelMission travelMission = (TravelMission) mission;
-			try {
+//			try {
 				int offset = 2;
 				if (travelMission.getPhase().equals(VehicleMission.TRAVELLING)) offset = 1;
 				travelMission.setNextNavpointIndex(travelMission.getNumberOfNavpoints() - offset);
 				travelMission.updateTravelDestination();
 				endCollectionPhase();
-			}
-			catch (MissionException e) {}
+//			}
+//			catch (MissionException e) {}
 		}
 	}
 	

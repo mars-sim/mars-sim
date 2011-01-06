@@ -7,29 +7,22 @@
 
 package org.mars_sim.msp.core.mars;
 
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.PixelGrabber;
-import java.io.Serializable;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.ImageIcon;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.MineralMapConfig.MineralType;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.ImageObserver;
+import java.awt.image.PixelGrabber;
+import java.io.Serializable;
+import java.net.URL;
+import java.util.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * A randomly generated mineral map of Mars.
@@ -315,7 +308,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
     /**
      * Internal class representing a mineral concentration.
      */
-	private class MineralConcentration implements Serializable {
+	private static class MineralConcentration implements Serializable {
 		private Coordinates location;
 		private double concentration;
 		private String mineralType;

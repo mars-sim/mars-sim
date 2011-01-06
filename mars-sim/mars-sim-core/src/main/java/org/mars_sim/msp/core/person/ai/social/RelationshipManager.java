@@ -7,6 +7,14 @@
 
 package org.mars_sim.msp.core.person.ai.social;
 
+import com.phoenixst.plexus.*;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.PersonalityType;
+import org.mars_sim.msp.core.structure.Settlement;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,21 +23,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.PersonalityType;
-import org.mars_sim.msp.core.structure.Settlement;
-
-import com.phoenixst.plexus.DefaultGraph;
-import com.phoenixst.plexus.EdgePredicate;
-import com.phoenixst.plexus.EdgePredicateFactory;
-import com.phoenixst.plexus.Graph;
-import com.phoenixst.plexus.GraphUtils;
-import com.phoenixst.plexus.NoSuchNodeException;
-import com.phoenixst.plexus.Traverser;
 
 /** 
  * The RelationshipManager class keeps track of all the social 
@@ -250,7 +243,7 @@ public class RelationshipManager implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error.
 	 */
-	public void timePassing(Person person, double time) throws Exception {
+	public void timePassing(Person person, double time) {
 		
 		// Update the person's relationships.
 		updateRelationships(person, time);
@@ -265,8 +258,8 @@ public class RelationshipManager implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error
 	 */
-	private void updateRelationships(Person person, double time) throws Exception {
-		try {
+	private void updateRelationships(Person person, double time) {
+//		try {
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
@@ -345,11 +338,11 @@ public class RelationshipManager implements Serializable {
 			}
 		}	
 		count2++;
-		}
-		catch (Exception e) {
-			e.printStackTrace(System.err);
-			throw new Exception(e.getMessage());
-		}
+//		}
+//		catch (Exception e) {
+//			e.printStackTrace(System.err);
+//			throw new IllegalStateException(e.getMessage());
+//		}
 	}
 	
 	/**
@@ -358,7 +351,7 @@ public class RelationshipManager implements Serializable {
 	 * @param time the time passing (millisols)
 	 * @throws Exception if error
 	 */
-	private void modifyStress(Person person, double time) throws Exception {
+	private void modifyStress(Person person, double time) {
 		double stressModifier = 0D;
 		
 		Iterator<Person> i = person.getLocalGroup().iterator();

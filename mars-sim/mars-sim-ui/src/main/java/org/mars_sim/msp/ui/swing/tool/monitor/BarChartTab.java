@@ -7,26 +7,26 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPosition;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.Plot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.AbstractSeriesDataset;
+import org.jfree.data.CategoryDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javax.swing.Icon;
-import javax.swing.JScrollPane;
-import javax.swing.JComponent;
-import javax.swing.table.TableModel;
-import javax.swing.event.TableModelListener;
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import java.awt.Dimension;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.jfree.data.AbstractSeriesDataset;
-import org.jfree.data.CategoryDataset;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.plot.*;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPosition;
 
 /**
  */
@@ -49,7 +49,7 @@ class BarChartTab extends MonitorTab {
      *  rows of the Table Model. The Series are the columns specified to be
      *  displayed.
      */
-    class TableBarDataset extends AbstractSeriesDataset
+    static class TableBarDataset extends AbstractSeriesDataset
             implements CategoryDataset, TableModelListener {
         
         private TableModel model;
@@ -139,7 +139,7 @@ class BarChartTab extends MonitorTab {
          */
         public void setColumns(int newcolumns[]) {
             columns = new int[newcolumns.length];
-            for(int i = 0; i < newcolumns.length; i++) columns[i] = newcolumns[i];
+            System.arraycopy(newcolumns, 0, columns, 0, newcolumns.length);
 
             fireDatasetChanged();
         }
@@ -167,26 +167,26 @@ class BarChartTab extends MonitorTab {
         
         public List<String> getRowKeys() {
             List<String> result = new ArrayList<String>();
-            for (int x=0; x < columns.length; x++) {
-                result.add(model.getColumnName(columns[x]));
+            for (int column : columns) {
+                result.add(model.getColumnName(column));
             }
             
             return result;
         }
         
         public Comparable getColumnKey(int index) {
-            return (Comparable) getCategories().get(index);
+            return categories.get(index);
         }
         
         public List getColumnKeys() {
-            return getCategories();
+            return categories;
         }
         
         public int getColumnIndex(Comparable key) {
             int result = -1;
             
-            for (int x=0; x < getCategories().size(); x++) {
-                if (key.equals(getCategories().get(x))) result = x;
+            for (int x=0; x < categories.size(); x++) {
+                if (key.equals(categories.get(x))) result = x;
             }
             
             return result;
@@ -237,9 +237,9 @@ class BarChartTab extends MonitorTab {
             else if (e.getColumn() == TableModelEvent.ALL_COLUMNS) fireDatasetChanged();
             else {
             	boolean dataChanged = false;
-            	for (int x=0; x < columns.length; x++) {
-            		if (columns[x] == e.getColumn()) dataChanged = true;
-            	}
+                for (int column : columns) {
+                    if (column == e.getColumn()) dataChanged = true;
+                }
             	if (dataChanged) {
             		long time = System.nanoTime() / 1000000L;
                 	if ((time - lastUpdateTime) > MIN_TIME_BETWEEN_UPDATES) {

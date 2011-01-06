@@ -5,11 +5,11 @@
  * @author Greg Whelan
  */
 
-package org.mars_sim.msp.ui.swing.tool.map; 
- 
-import java.awt.Image;
+package org.mars_sim.msp.ui.swing.tool.map;
 
 import org.mars_sim.msp.core.Coordinates;
+
+import java.awt.*;
 
 /** 
  * The Map interface represents a map usable by the MapDisplay class.
@@ -38,7 +38,7 @@ public interface Map {
      * @param newCenter the new center location
      * @throws Exception if error in drawing map.
      */
-    public void drawMap(Coordinates newCenter) throws Exception;
+    public void drawMap(Coordinates newCenter) ;
     
     /** 
      * Checks if a requested map is complete.

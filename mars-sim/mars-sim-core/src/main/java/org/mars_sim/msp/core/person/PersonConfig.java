@@ -6,14 +6,14 @@
  */
 package org.mars_sim.msp.core.person;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.jdom.Document;
-import org.jdom.Element;
 
 
 
@@ -79,7 +79,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if person names could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	public List<String> getPersonNameList() throws Exception {
+	public List<String> getPersonNameList() {
 		
 		if (nameList == null) {
 			nameList = new ArrayList<String>();
@@ -102,7 +102,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if person names could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	public String getPersonGender(String name) throws Exception {
+	public String getPersonGender(String name) {
 		String result = "unknown";
 		
 		Element root = personDoc.getRootElement();
@@ -121,7 +121,7 @@ public class PersonConfig implements Serializable {
 	 * @return oxygen rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	public double getOxygenConsumptionRate() throws Exception {
+	public double getOxygenConsumptionRate() {
 		return getValueAsDouble(OXYGEN_CONSUMPTION_RATE);
 	}
 	
@@ -130,7 +130,7 @@ public class PersonConfig implements Serializable {
 	 * @return water rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	public double getWaterConsumptionRate() throws Exception {
+	public double getWaterConsumptionRate() {
 		return getValueAsDouble(WATER_CONSUMPTION_RATE);
 	}
 	
@@ -139,7 +139,7 @@ public class PersonConfig implements Serializable {
 	 * @return food rate (kg/sol)
 	 * @throws Exception if consumption rate could not be found.
 	 */
-	public double getFoodConsumptionRate() throws Exception {
+	public double getFoodConsumptionRate() {
 		return getValueAsDouble(FOOD_CONSUMPTION_RATE);
 	}
 	
@@ -148,7 +148,7 @@ public class PersonConfig implements Serializable {
 	 * @return oxygen time in millisols.
 	 * @throws Exception if oxygen deprivation time could not be found.
 	 */
-	public double getOxygenDeprivationTime() throws Exception {
+	public double getOxygenDeprivationTime() {
 		return getValueAsDouble(OXYGEN_DEPRIVATION_TIME);
 	}
 	
@@ -157,7 +157,7 @@ public class PersonConfig implements Serializable {
 	 * @return water time in sols.
 	 * @throws Exception if water deprivation time could not be found.
 	 */
-	public double getWaterDeprivationTime() throws Exception {
+	public double getWaterDeprivationTime() {
 		return getValueAsDouble(WATER_DEPRIVATION_TIME);
 	}
 	
@@ -166,7 +166,7 @@ public class PersonConfig implements Serializable {
 	 * @return food time in sols.
 	 * @throws Exception if food deprivation time could not be found.
 	 */
-	public double getFoodDeprivationTime() throws Exception {
+	public double getFoodDeprivationTime() {
 		return getValueAsDouble(FOOD_DEPRIVATION_TIME);
 	}
 	
@@ -175,7 +175,7 @@ public class PersonConfig implements Serializable {
 	 * @return starvation time in sols.
 	 * @throws Exception if starvation start time could not be found.
 	 */
-	public double getStarvationStartTime() throws Exception {
+	public double getStarvationStartTime() {
 		return getValueAsDouble(STARVATION_START_TIME);
 	}
 	
@@ -184,7 +184,7 @@ public class PersonConfig implements Serializable {
 	 * @return air pressure in atm.
 	 * @throws Exception if air pressure could not be found.
 	 */
-	public double getMinAirPressure() throws Exception {
+	public double getMinAirPressure() {
 		return getValueAsDouble(MIN_AIR_PRESSURE);
 	}
 	
@@ -193,7 +193,7 @@ public class PersonConfig implements Serializable {
 	 * @return decompression time in millisols.
 	 * @throws Exception if decompression time could not be found.
 	 */
-	public double getDecompressionTime() throws Exception {
+	public double getDecompressionTime() {
 		return getValueAsDouble(DECOMPRESSION_TIME);
 	}
 	
@@ -202,7 +202,7 @@ public class PersonConfig implements Serializable {
 	 * @return temperature in celsius
 	 * @throws Exception if min temperature cannot be found.
 	 */
-	public double getMinTemperature() throws Exception {
+	public double getMinTemperature() {
 		return getValueAsDouble(MIN_TEMPERATURE);
 	}
 	
@@ -211,7 +211,7 @@ public class PersonConfig implements Serializable {
 	 * @return temperature in celsius
 	 * @throws Exception if max temperature cannot be found.
 	 */
-	public double getMaxTemperature() throws Exception {
+	public double getMaxTemperature() {
 		return getValueAsDouble(MAX_TEMPERATURE);
 	}
 	
@@ -220,7 +220,7 @@ public class PersonConfig implements Serializable {
 	 * @return freezing time in millisols.
 	 * @throws Exception if freezing time could not be found.
 	 */
-	public double getFreezingTime() throws Exception {
+	public double getFreezingTime() {
 		return getValueAsDouble(FREEZING_TIME);
 	}
 	
@@ -229,7 +229,7 @@ public class PersonConfig implements Serializable {
 	 * @return percent chance of a breakdown per millisol.
 	 * @throws Exception if stress breakdown time could not be found.
 	 */
-	public double getStressBreakdownChance() throws Exception {
+	public double getStressBreakdownChance() {
 		return getValueAsDouble(STRESS_BREAKDOWN_CHANCE);
 	}
 	
@@ -238,7 +238,7 @@ public class PersonConfig implements Serializable {
 	 * @return gender ratio between males and total population.
 	 * @throws Exception if gender ratio could not be found.
 	 */
-	public double getGenderRatio() throws Exception {
+	public double getGenderRatio() {
 		return getValueAsDouble(GENDER_MALE_PERCENTAGE) / 100D;
 	}
 	
@@ -249,7 +249,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if personality type could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	public double getPersonalityTypePercentage(String personalityType) throws Exception {
+	public double getPersonalityTypePercentage(String personalityType) {
 		double result = 0D;
 		
 		Element root = personDoc.getRootElement();
@@ -272,7 +272,7 @@ public class PersonConfig implements Serializable {
 	 * @return number of people.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public int getNumberOfConfiguredPeople() throws Exception {
+	public int getNumberOfConfiguredPeople() {
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
 		List personNodes = personList.getChildren(PERSON);
@@ -286,7 +286,7 @@ public class PersonConfig implements Serializable {
 	 * @return name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonName(int index) throws Exception {
+	public String getConfiguredPersonName(int index) {
 		return getValueAsString(index,NAME);
 	}
 	
@@ -296,7 +296,7 @@ public class PersonConfig implements Serializable {
 	 * @return "male", "female" or null if not found.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonGender(int index) throws Exception {
+	public String getConfiguredPersonGender(int index) {
 		return getValueAsString(index,GENDER);
 	}
 	
@@ -306,7 +306,7 @@ public class PersonConfig implements Serializable {
 	 * @return four character string for MBTI ex. "ISTJ". Return null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonPersonalityType(int index) throws Exception {
+	public String getConfiguredPersonPersonalityType(int index) {
 		return getValueAsString(index,PERSONALITY_TYPE);
 	}
 	
@@ -316,7 +316,7 @@ public class PersonConfig implements Serializable {
 	 * @return the settlement name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonSettlement(int index) throws Exception {
+	public String getConfiguredPersonSettlement(int index) {
 		return getValueAsString(index,SETTLEMENT);
 	}
 	
@@ -326,7 +326,7 @@ public class PersonConfig implements Serializable {
 	 * @return the job name or null if none.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonJob(int index) throws Exception {
+	public String getConfiguredPersonJob(int index) {
 		return getValueAsString(index,JOB);
 	}
 	
@@ -337,7 +337,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<String, Integer> getNaturalAttributeMap(int index) throws Exception {
+	public Map<String, Integer> getNaturalAttributeMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
@@ -379,7 +379,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<String, Integer> getSkillMap(int index) throws Exception {
+	public Map<String, Integer> getSkillMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);
@@ -406,7 +406,7 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if error in XML parsing.
 	 */
     @SuppressWarnings("unchecked")
-	public Map<String, Integer> getRelationshipMap(int index) throws Exception {
+	public Map<String, Integer> getRelationshipMap(int index) {
 		Map<String, Integer> result = new HashMap<String, Integer>();
 		Element root = personDoc.getRootElement();
 		Element personList = root.getChild(PERSON_LIST);

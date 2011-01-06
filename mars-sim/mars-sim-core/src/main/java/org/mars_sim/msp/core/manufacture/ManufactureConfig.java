@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.core.manufacture;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jdom.Document;
-import org.jdom.Element;
 
 
 public class ManufactureConfig implements Serializable {
@@ -59,7 +59,7 @@ public class ManufactureConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	List<ManufactureProcessInfo> getManufactureProcessList() 
-			throws Exception {
+			 {
 		
 		if (manufactureProcessList == null) {
 			
@@ -74,7 +74,7 @@ public class ManufactureConfig implements Serializable {
 				manufactureProcessList.add(process);
 				String name = "";
 				
-				try {
+//				try {
 					
 					name = processElement.getAttributeValue(NAME);
 					process.setName(name);
@@ -127,11 +127,11 @@ public class ManufactureConfig implements Serializable {
 			
 					parseVehicles(outputList, 
 							outputs.getChildren(VEHICLE));
-				}
-				catch (Exception e) {
-					throw new Exception("Error reading manufacturing process "
-							+ name + ": " + e.getMessage());
-				}
+//				}
+//				catch (Exception e) {
+//					throw new IllegalStateException("Error reading manufacturing process "
+//							+ name + ": " + e.getMessage());
+//				}
 			}
 		}
 		
@@ -145,7 +145,7 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing resources.
 	 */
 	private void parseResources(List<ManufactureProcessItem> list, 
-			List<Element> resourceNodes) throws Exception {
+			List<Element> resourceNodes) {
 		for (Element resourceElement : resourceNodes) {
 			ManufactureProcessItem resourceItem = new ManufactureProcessItem();
 			resourceItem.setType(ManufactureProcessItem.AMOUNT_RESOURCE);
@@ -163,7 +163,7 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing parts.
 	 */
 	private void parseParts(List<ManufactureProcessItem> list, 
-			List<Element> partNodes) throws Exception {
+			List<Element> partNodes) {
 		for (Element partElement : partNodes) {
 			ManufactureProcessItem partItem = new ManufactureProcessItem();
 			partItem.setType(ManufactureProcessItem.PART);
@@ -181,7 +181,7 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing equipment.
 	 */
 	private void parseEquipment(List<ManufactureProcessItem> list, 
-			List<Element> equipmentNodes) throws Exception {
+			List<Element> equipmentNodes) {
 		for (Element equipmentElement : equipmentNodes) {
 			ManufactureProcessItem equipmentItem = 
 				new ManufactureProcessItem();
@@ -200,7 +200,7 @@ public class ManufactureConfig implements Serializable {
 	 * @throws Exception if error parsing vehicles.
 	 */
 	private void parseVehicles(List<ManufactureProcessItem> list, 
-			List<Element> vehicleNodes) throws Exception {
+			List<Element> vehicleNodes) {
 		for (Element vehicleElement : vehicleNodes) {
 			ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
 			vehicleItem.setType(ManufactureProcessItem.VEHICLE);
@@ -216,7 +216,7 @@ public class ManufactureConfig implements Serializable {
      * @throws Exception if error getting info.
      */
     @SuppressWarnings("unchecked")
-    List<SalvageProcessInfo> getSalvageList() throws Exception {
+    List<SalvageProcessInfo> getSalvageList() {
         
         if (salvageList == null) {
             
@@ -230,7 +230,7 @@ public class ManufactureConfig implements Serializable {
                 salvageList.add(salvage);
                 String itemName = "";
                 
-                try {    
+//                try {
                     itemName = salvageElement.getAttributeValue(ITEM_NAME);
                     salvage.setItemName(itemName);
                     
@@ -261,11 +261,11 @@ public class ManufactureConfig implements Serializable {
                         part.setNumber(Integer.parseInt(
                                 partSalvageElement.getAttributeValue(NUMBER)));
                     }
-                }
-                catch (Exception e) {
-                    throw new Exception("Error reading salvage process "
-                            + itemName + ": " + e.getMessage());
-                }
+//                }
+//                catch (Exception e) {
+//                    throw new Exception("Error reading salvage process "
+//                            + itemName + ": " + e.getMessage());
+//                }
             }
         }
         

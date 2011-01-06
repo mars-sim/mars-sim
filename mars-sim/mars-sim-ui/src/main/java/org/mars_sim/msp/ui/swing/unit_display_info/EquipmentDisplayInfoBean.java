@@ -5,14 +5,14 @@
  * @author Scott Davis
  */
 
-package org.mars_sim.msp.ui.swing.unit_display_info;  
- 
-import java.awt.*;
-import javax.swing.*;
+package org.mars_sim.msp.ui.swing.unit_display_info;
 
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
+
+import javax.swing.*;
+import java.awt.*;
 
 /**
  * Provides display information about a piece of equipment.

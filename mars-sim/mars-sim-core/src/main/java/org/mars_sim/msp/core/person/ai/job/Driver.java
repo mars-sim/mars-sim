@@ -6,15 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import java.io.Serializable;
-import java.util.*;
-
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.person.ai.task.*;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
+import java.util.Iterator;
 
 /** 
  * The Driver class represents a rover driver job.

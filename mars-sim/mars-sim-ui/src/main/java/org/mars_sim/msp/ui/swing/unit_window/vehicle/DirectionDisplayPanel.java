@@ -7,18 +7,13 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-
-import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
-
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import java.awt.*;
 
 
 

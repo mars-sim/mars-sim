@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
+
+import java.io.Serializable;
 
 /**
  * A navigation point for travel missions.
@@ -86,7 +86,7 @@ public class NavPoint implements Serializable {
 			NavPoint otherNavpoint = (NavPoint) object;
 			if (getLocation().equals(otherNavpoint.getLocation())) {
 				if (isSettlementAtNavpoint()) {
-					if (getSettlement().equals(otherNavpoint.getSettlement())) result = true;
+					if (settlement.equals(otherNavpoint.settlement)) result = true;
 				}
 				else result = true;
 			}
@@ -99,6 +99,6 @@ public class NavPoint implements Serializable {
 	 * @return hash code.
 	 */
 	public int hashCode() {
-		return getLocation().hashCode() * getSettlement().hashCode();
+		return getLocation().hashCode() * settlement.hashCode();
 	}
 }

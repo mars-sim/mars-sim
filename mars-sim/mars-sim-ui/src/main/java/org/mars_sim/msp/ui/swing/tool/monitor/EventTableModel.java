@@ -6,14 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import java.util.*;
-
-import javax.swing.SwingUtilities;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.events.*;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventListener;
+import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.structure.building.Building;
+
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class provides a table model for use with the MonitorWindow that

@@ -6,20 +6,16 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import java.awt.BorderLayout;
-import java.awt.GridLayout;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -96,7 +92,7 @@ public class ResourceProcessingBuildingPanel extends BuildingFunctionPanel {
     	List<ResourceProcess> processes = processor.getProcesses();
     	for (int x=0; x < processes.size(); x++) {
     		ResourceProcess process = processes.get(x);
-    		JLabel processLabel = (JLabel) processLabels.get(x);
+    		JLabel processLabel = processLabels.get(x);
     		if (process.isProcessRunning()) {
     			processLabel.setIcon(greenDot);
             	processLabel.setToolTipText(process.getProcessName() + " process is running.");

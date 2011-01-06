@@ -6,26 +6,6 @@
  */
 
 package org.mars_sim.msp.ui.swing.tool.navigator;
- 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.image.MemoryImageSource;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.swing.JComponent;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
@@ -34,6 +14,15 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.MemoryImageSource;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Globe Display class displays a graphical globe of Mars in the
@@ -368,7 +357,7 @@ class GlobeDisplay extends JComponent implements Runnable {
      */
     private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
         double rho = width / Math.PI;
-        int half_map = (int)(width / 2);
+        int half_map = width / 2;
         int low_edge = 0;
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho,
                 half_map, low_edge);

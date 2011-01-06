@@ -6,21 +6,25 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.*;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.*;
-import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
@@ -46,7 +50,7 @@ public class TendGreenhouse extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error constructing task.
      */
-    public TendGreenhouse(Person person) throws Exception {
+    public TendGreenhouse(Person person) {
         // Use Task constructor
         super("Tending Greenhouse", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
         
@@ -56,18 +60,18 @@ public class TendGreenhouse extends Task implements Serializable {
         else endTask();
         
         // Get available greenhouse if any.
-        try {
+//        try {
         	Building farmBuilding = getAvailableGreenhouse(person);
         	if (farmBuilding != null) {
         		greenhouse = (Farming) farmBuilding.getFunction(Farming.NAME);
         		BuildingManager.addPersonToBuilding(person, farmBuilding);
         	}
         	else endTask();
-        }
-        catch (BuildingException e) {
-			logger.log(Level.SEVERE,"TendGreenhouse: " + e.getMessage());
-			endTask();
-        }
+//        }
+//        catch (BuildingException e) {
+//			logger.log(Level.SEVERE,"TendGreenhouse: " + e.getMessage());
+//			endTask();
+//        }
         
         // Initialize phase
         addPhase(TENDING);
@@ -121,7 +125,7 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return the remaining time (millisol) after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
-    protected double performMappedPhase(double time) throws Exception {
+    protected double performMappedPhase(double time) {
     	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
     	if (TENDING.equals(getPhase())) return tendingPhase(time);
     	else return time;
@@ -133,7 +137,7 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return the amount of time (millisols) left over after performing the phase.
      * @throws Exception if error performing the phase.
      */
-    private double tendingPhase(double time) throws Exception {
+    private double tendingPhase(double time) {
     	
         // Check if greenhouse has malfunction.
         if (greenhouse.getBuilding().getMalfunctionManager().hasMalfunction()) {
@@ -213,7 +217,7 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return available greenhouse
      * @throws BuildingException if error finding farm building.
      */
-    private static Building getAvailableGreenhouse(Person person) throws BuildingException {
+    private static Building getAvailableGreenhouse(Person person) {
      
         Building result = null;
      
@@ -226,7 +230,7 @@ public class TendGreenhouse extends Task implements Serializable {
 			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
 			farmBuildings = BuildingManager.getBestRelationshipBuildings(person, farmBuildings);
 			
-			if (farmBuildings.size() > 0) result = (Building) farmBuildings.get(0);
+			if (farmBuildings.size() > 0) result = farmBuildings.get(0);
         }
         
         return result;
@@ -238,7 +242,7 @@ public class TendGreenhouse extends Task implements Serializable {
      * @return list of farming buildings needing work.
      * @throws BuildingException if any buildings in building list don't have the farming function.
      */
-    private static List<Building> getFarmsNeedingWork(List<Building> buildingList) throws BuildingException {
+    private static List<Building> getFarmsNeedingWork(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
     	
     	Iterator<Building> i = buildingList.iterator();

@@ -6,25 +6,19 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.util.Collection;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+
+import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import java.awt.*;
+import java.util.Collection;
 
 /**
  * A tab panel displaying a person's social relationships.
@@ -91,7 +85,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 	/** 
 	 * Internal class used as model for the relationship table.
 	 */
-	private class RelationshipTableModel extends AbstractTableModel {
+	private static class RelationshipTableModel extends AbstractTableModel {
 	
 		RelationshipManager manager;
 		Collection knownPeople;

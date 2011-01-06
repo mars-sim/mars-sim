@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import javax.swing.JPanel;
-
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+
+import javax.swing.*;
 
 /**
  * A panel for displaying custom mission information.

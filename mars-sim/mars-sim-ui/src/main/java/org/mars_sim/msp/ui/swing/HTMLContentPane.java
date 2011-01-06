@@ -7,13 +7,13 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import java.net.URL;
+import javax.swing.*;
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JEditorPane;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** The HTMLContentPane class provides a pane for displaying
  *  the help files in the Guide window.
@@ -56,7 +56,7 @@ public class HTMLContentPane extends JEditorPane {
     if (historyIndex >= history.size())
       historyIndex = history.size() - 1;
 
-    URL url = (URL) history.get(historyIndex);
+    URL url = history.get(historyIndex);
     displayPage(url);
 
     return url;
@@ -66,7 +66,7 @@ public class HTMLContentPane extends JEditorPane {
     historyIndex--;
     if (historyIndex < 0)
       historyIndex = 0;
-    URL url = (URL) history.get(historyIndex);
+    URL url = history.get(historyIndex);
     displayPage(url);
 
     return url;

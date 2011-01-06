@@ -7,9 +7,10 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
-import javax.swing.event.*;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import org.mars_sim.msp.ui.swing.*;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
 
 /** The UnitWindowListener class is a custom window listener for unit
  *  detail windows that handles their behavior.

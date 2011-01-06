@@ -6,9 +6,9 @@
  */
 package org.mars_sim.msp.core.person.medical;
 
-import java.io.Serializable;
-
 import org.mars_sim.msp.core.person.Person;
+
+import java.io.Serializable;
 
 /**
  * An abstract class representing a medication a person
@@ -92,10 +92,10 @@ public abstract class Medication implements Serializable,
         boolean result = true;
         if (object instanceof Medication) {
             Medication med = (Medication) object;
-            if (!getName().equals(med.getName())) result = false;
-            if (getDuration() != med.getDuration()) result = false;
-            if (getTimeElapsed() != med.getTimeElapsed()) result = false;
-            if (!getPerson().equals(med.getPerson())) result = false;
+            if (!name.equals(med.name)) result = false;
+            if (duration != med.duration) result = false;
+            if (timeElapsed != med.timeElapsed) result = false;
+            if (!person.equals(med.person)) result = false;
         }
         else result = false;
         
@@ -104,10 +104,10 @@ public abstract class Medication implements Serializable,
     
     @Override
     public int hashCode() {
-        int hashCode = getName().hashCode();
-        hashCode *= new Double(getDuration()).hashCode();
-        hashCode *= new Double(getTimeElapsed()).hashCode();
-        hashCode *= getPerson().hashCode();
+        int hashCode = name.hashCode();
+        hashCode *= new Double(duration).hashCode();
+        hashCode *= new Double(timeElapsed).hashCode();
+        hashCode *= person.hashCode();
         return hashCode;
     }
     
@@ -118,6 +118,6 @@ public abstract class Medication implements Serializable,
      * equal to, or greater than the specified object.
      */
     public int compareTo(Medication o) {
-        return getName().compareTo(o.getName());
+        return name.compareTo(o.name);
     }
 }

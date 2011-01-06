@@ -6,13 +6,13 @@
  */
 package org.mars_sim.msp.core.person.medical;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import org.jdom.Document;
-import org.jdom.Element;
 
 
 /**
@@ -58,7 +58,7 @@ public class MedicalConfig implements Serializable {
 	 * @throws Exception if list could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	public List<Complaint> getComplaintList() throws Exception {
+	public List<Complaint> getComplaintList() {
 		
 		if (complaintList == null) {
 			complaintList = new ArrayList<Complaint>();
@@ -68,7 +68,7 @@ public class MedicalConfig implements Serializable {
 			
 			for (Element medicalComplaint : medicalComplaints) {
 				String complaintName = "";
-				try {
+//				try {
 					
 					// Get name.
 					complaintName = medicalComplaint.getAttributeValue(NAME);
@@ -114,8 +114,8 @@ public class MedicalConfig implements Serializable {
 						}
 					}
 					
-					if (!treatmentStr.equals("") && (treatment == null)) 
-						throw new Exception("treatment: " + treatmentStr + " could not be found in treatment list");
+					if (treatmentStr.length() != 0 && (treatment == null))
+						throw new IllegalStateException("treatment: " + treatmentStr + " could not be found in treatment list");
 				
 					// Get the degrade complaint. (optional)
 					String degradeComplaint = "";
@@ -132,17 +132,17 @@ public class MedicalConfig implements Serializable {
 						                                degradeComplaint, performance);
 					
 					complaintList.add(complaint);
-				}
-				catch (Exception e) {
-					throw new Exception("Error parsing medical complaint: " + complaintName + ": " + e.getMessage());
-				}
+//				}
+//				catch (Exception e) {
+//					throw new IllegalStateException("Error parsing medical complaint: " + complaintName + ": " + e.getMessage());
+//				}
 			}
 			
 			// Fill in degrade complaint objects based on complaint names.
 			for (Complaint complaint : complaintList) {
 				String degradeComplaintName = complaint.getNextPhaseStr();
 				
-				if (!degradeComplaintName.equals("")) {
+				if (degradeComplaintName.length() != 0) {
 					Iterator<Complaint> j = complaintList.iterator();
                     while (j.hasNext()) {
                         Complaint degradeComplaint = j.next();
@@ -151,7 +151,7 @@ public class MedicalConfig implements Serializable {
                     }
 					
 					if (complaint.getNextPhase() == null){ 
-						throw new Exception("Degrade complaint " + degradeComplaintName + 
+						throw new IllegalStateException("Degrade complaint " + degradeComplaintName +
 							" can not be found in medical complaint list.");
 					}
 				} 
@@ -162,7 +162,7 @@ public class MedicalConfig implements Serializable {
 	}
 
     @SuppressWarnings("unchecked")
-	public List<Treatment> getTreatmentList() throws Exception {
+	public List<Treatment> getTreatmentList() {
 		
 		if (treatmentList == null) {
 			treatmentList = new ArrayList<Treatment>();
