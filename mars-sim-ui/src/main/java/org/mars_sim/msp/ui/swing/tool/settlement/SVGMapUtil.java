@@ -107,6 +107,9 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("medical hab", "hab_const");
         constructionSiteSVGMap.put("machinery hab", "hab_const");
         constructionSiteSVGMap.put("lander hab frame", "hab_frame_const");
+        constructionSiteSVGMap.put("solar photovoltaic array", "solar_photovoltaic_array_const");
+        constructionSiteSVGMap.put("array frame", "array_frame_const");
+        constructionSiteSVGMap.put("surface foundation 10m x 5m", "surface_foundation_10x5_const");
         // TODO: add more mapped entities.
     }
     
