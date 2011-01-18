@@ -67,6 +67,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("solar photovoltaic array", "solar_photovoltaic_array");
         buildingSVGMap.put("solar thermal array", "solar_thermal_array");
         buildingSVGMap.put("small battery array", "small_battery_array");
+        buildingSVGMap.put("methane power generator", "methane_power_generator");
         // TODO: Add more mapped entities.
     }
     
@@ -114,6 +115,9 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("surface foundation 10m x 5m", "surface_foundation_10x5_const");
         constructionSiteSVGMap.put("solar thermal array", "solar_thermal_array_const");
         constructionSiteSVGMap.put("small battery array", "small_battery_array_const");
+        constructionSiteSVGMap.put("methane power generator", "methane_power_generator_const");
+        constructionSiteSVGMap.put("small steel frame", "small_steel_frame_const");
+        constructionSiteSVGMap.put("surface foundation 5m x 5m", "surface_foundation_5x5_const");
         // TODO: add more mapped entities.
     }
     
