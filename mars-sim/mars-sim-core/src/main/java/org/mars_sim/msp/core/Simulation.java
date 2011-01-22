@@ -225,23 +225,32 @@ public class Simulation implements ClockListener, Serializable {
                 file.getParentFile().mkdirs();
             }
         }
+        ObjectOutputStream p = null;
+        try{
+            p = new ObjectOutputStream(new FileOutputStream(file));
+            // Store the intransient objects.
+            p.writeObject(SimulationConfig.instance());
+            p.writeObject(malfunctionFactory);
+            p.writeObject(mars);
+            p.writeObject(missionManager);
+            p.writeObject(relationshipManager);
+            p.writeObject(medicalManager);
+            p.writeObject(scientificStudyManager);
+            p.writeObject(creditManager);
+            p.writeObject(unitManager);
+            p.writeObject(masterClock);
 
-        ObjectOutputStream p = new ObjectOutputStream(new FileOutputStream(file));
-
-        // Store the intransient objects.
-        p.writeObject(SimulationConfig.instance());
-        p.writeObject(malfunctionFactory);
-        p.writeObject(mars);
-        p.writeObject(missionManager);
-        p.writeObject(relationshipManager);
-        p.writeObject(medicalManager);
-        p.writeObject(scientificStudyManager);
-        p.writeObject(creditManager);
-        p.writeObject(unitManager);
-        p.writeObject(masterClock);
-
-        p.flush();
-        p.close();
+            p.flush();
+            p.close();
+            p = null;
+        }catch(IOException e){
+            logger.log(Level.WARNING, "Could not save the simulation", e);
+            throw e;
+        }finally{
+            if(p != null){
+                p.close();
+            }
+        }
 
         simulation.start();
     }

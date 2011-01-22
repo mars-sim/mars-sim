@@ -316,7 +316,7 @@ class BarChartTab extends MonitorTab {
     public void displayProps(MainDesktopPane desktop) {
 
         // Show modal column selector
-        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(), getModel());
+        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow().getFrame(), getModel());
         if (columns.length > 0) {
             barModel.setColumns(columns);
         }

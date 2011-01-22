@@ -9,10 +9,12 @@ package org.mars_sim.msp.core.person.ai.task;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.Science;
 
+import java.io.Serializable;
+
 /**
  * Interface for tasks the add research credit to scientific studies.
  */
-public interface ResearchScientificStudy {
+public interface ResearchScientificStudy extends Serializable{
 
     /**
      * Gets the scientific field that is being researched for the study.

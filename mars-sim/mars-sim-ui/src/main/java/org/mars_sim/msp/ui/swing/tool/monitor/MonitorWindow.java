@@ -242,7 +242,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
-        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow(), model);
+        int columns[] = ColumnSelector.createBarSelector(desktop.getMainWindow().getFrame(), model);
         if (columns.length > 0) {
             addTab(new BarChartTab(model, columns));
         }
@@ -252,7 +252,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         MonitorModel model = getSelected().getModel();
 
         // Show modal column selector
-        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(), model);
+        int column = ColumnSelector.createPieSelector(desktop.getMainWindow().getFrame(), model);
         if (column >= 0) {
             addTab(new PieChartTab(model, column));
         }

@@ -155,7 +155,7 @@ public class MissionWindow extends ToolWindow {
 		desktop.getMainWindow().pauseSimulation();
 		
 		// Create new mission wizard.
-		new CreateMissionWizard(desktop.getMainWindow());
+		new CreateMissionWizard(desktop.getMainWindow().getFrame());
         
 		// Unpause simulation.
 		desktop.getMainWindow().unpauseSimulation();
@@ -170,7 +170,7 @@ public class MissionWindow extends ToolWindow {
 		desktop.getMainWindow().pauseSimulation();
 		
 		// Create new mission wizard.
-		new EditMissionDialog(desktop.getMainWindow(), mission);
+		new EditMissionDialog(desktop.getMainWindow().getFrame(), mission);
         
 		// Unpause simulation.
 		desktop.getMainWindow().unpauseSimulation();

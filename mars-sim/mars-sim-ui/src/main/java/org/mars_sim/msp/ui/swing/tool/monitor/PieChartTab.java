@@ -276,7 +276,7 @@ class PieChartTab extends MonitorTab {
     public void displayProps(MainDesktopPane desktop) {
 
         // Show modal column selector
-        int column = ColumnSelector.createPieSelector(desktop.getMainWindow(), getModel());
+        int column = ColumnSelector.createPieSelector(desktop.getMainWindow().getFrame(), getModel());
         if (column >= 0) {
             setColumn(column);
         }

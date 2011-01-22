@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.core;
 
-/** 
+import java.io.Serializable;
+
+/**
  * The Lab interface represents a unit that can perform the function
  * of a research laboratory.
  */
-public interface Lab {
+public interface Lab extends Serializable{
 
     /** 
      * Gets the laboratory size.
