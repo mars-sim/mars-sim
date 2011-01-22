@@ -11,68 +11,71 @@ import java.io.IOException;
 import java.io.Serializable;
 
 
-/** The UpTimer class keeps track of how long an instance of the simulation 
- *  has been running in real time.
+/**
+ * The UpTimer class keeps track of how long an instance of the simulation
+ * has been running in real time.
  */
 public class UpTimer implements Serializable {
-	
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = -4992839027918134952L;
-	/**
-	 * 
-	 */
-	private transient long thiscall=System.currentTimeMillis();
-    private transient long lastcall=System.currentTimeMillis();
-  
-    private final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
-	private long years,days,hours,minutes,seconds;
-	
-	// Data members
+
+    /**
+     *
+     */
+    private static final long serialVersionUID = -4992839027918134952L;
+    /**
+     *
+     */
+    private transient long thiscall = System.currentTimeMillis();
+    private transient long lastcall = System.currentTimeMillis();
+
+    private static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
+    private long days, hours, minutes, seconds;
+
+    // Data members
     private long uptime = 1; //in case it gets divided by 0 right away
     private long utsec = 0;
 
-	private transient boolean paused = true;
+    private transient boolean paused = true;
 
-    public UpTimer() 
-    {
-    	this.setPaused(false);
-    	lastcall = System.currentTimeMillis();
+    public UpTimer() {
+        this.setPaused(false);
+        lastcall = System.currentTimeMillis();
     }
-    
-    private  void readObject(java.io.ObjectInputStream in)
-    throws IOException, ClassNotFoundException 
-    {
-    	in.defaultReadObject();
-    	lastcall=System.currentTimeMillis();
-    };
+
+    private void readObject(java.io.ObjectInputStream in)
+            throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        lastcall = System.currentTimeMillis();
+    }
+
+    ;
+
+//    /**
+//     * This method adds a period of time to the running time of the
+//     * simulation.
+//     *
+//     * @param period Extra time the simulation is running. (milliseconds)
+//     */
+//    public void addTime(long period) {
+//        //uptime += period;
+//        /*
+//           * I left a placeholder function so callers would not break.
+//           * It's perhaps better to base elapsed time on the system millisecond clock.
+//           * */
+//    }
+
+    public void updateTime() {
+        utsec = getUptimeMillis() / 1000;
+        days = (int) ((utsec % secsperyear) / secspday);
+        hours = (int) ((utsec % secspday) / secsphour);
+        minutes = (int) ((utsec % secsphour) / secspmin);
+        seconds = (int) ((utsec % secspmin));
+    }
 
     /**
-     * This method adds a period of time to the running time of the 
-     * simulation.
-     * @param period Extra time the simulation is running. (milliseconds)
-     */
-    public void addTime(long period) {
-        //uptime += period;
-    	/*
-    	 * I left a placeholder function so callers would not break. 
-    	 * It's perhaps better to base elapsed time on the system millisecond clock. 
-    	 * */
-    }
-
-    public void updateTime()
-    {
-        utsec = getUptimeMillis()/1000;
-   		days = (int)((utsec%secsperyear)/secspday);
-   		hours=(int)((utsec%secspday)/secsphour);
-   		minutes=(int)((utsec%secsphour)/secspmin);
-   		seconds=(int)((utsec%secspmin));
-    }
-
-    /** Reportsthe amount of time the simulation has been running, as a String.  
-     *  @return simulation running time formatted in a string. ex "6 days 5:32:58"
+     * Reportsthe amount of time the simulation has been running, as a String.
+     *
+     * @return simulation running time formatted in a string. ex "6 days 5:32:58"
      */
     public String getUptime() {
 //    	utsec = getUptimeMillis()/1000;
@@ -89,32 +92,36 @@ public class UpTimer implements Serializable {
 
         String daystr = "";
         if (days == 1) daystr = "" + days + " day ";
-        else {daystr = "" + days + " days ";}
+        else {
+            daystr = "" + days + " days ";
+        }
 
         String hourstr = "" + hours;
         return daystr + hourstr + ":" + minstr + ":" + secstr;
     }
-    
+
     public long getUptimeMillis() {
-		thiscall = System.currentTimeMillis();
-    	if (paused ) 
-    	{	return uptime;	} 
-    	else {
-        	//uptime = System.currentTimeMillis()-firstcall;
-    	    uptime = uptime + ( thiscall-lastcall);
-    	    lastcall = thiscall;
-        	return uptime ;
-    	}
+        thiscall = System.currentTimeMillis();
+        if (paused) {
+            return uptime;
+        } else {
+            //uptime = System.currentTimeMillis()-firstcall;
+            uptime = uptime + (thiscall - lastcall);
+            lastcall = thiscall;
+            return uptime;
+        }
     }
-    
-    public boolean isPaused() {return paused;}
-	
+
+    public boolean isPaused() {
+        return paused;
+    }
+
     public void setPaused(boolean isPaused) {
-		paused = isPaused;
-		if (isPaused) {
-			
-		} else {
-			thiscall = lastcall = System.currentTimeMillis();
-		}
-	}
+        paused = isPaused;
+        if (isPaused) {
+
+        } else {
+            thiscall = lastcall = System.currentTimeMillis();
+        }
+    }
 }

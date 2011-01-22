@@ -222,7 +222,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		}
         //String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
     	//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-        String s =master.gettimestring(master.getTimeRatio());
+        String s =master.getTimeString(master.getTimeRatio());
         final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
         pulsePane.add(pulseCurRatioLabel, "Center");
 
@@ -234,7 +234,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         		if (pulseCurRatioLabel.getText().contains(":")) {
             		pulseCurRatioLabel.setText(String.format("%8.4f", master.getTimeRatio() ) );
         		} else {
-            		pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()) );
+            		pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()) );
         		}
         	}
 		});
@@ -249,7 +249,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
                     try {
                     	master.setTimeRatio(pulseSlider.getValue());
                     	if (pulseCurRatioLabel.getText().contains(":") ) 
-                    	{pulseCurRatioLabel.setText(master.gettimestring(master.getTimeRatio()));} 
+                    	{pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));}
                     	else 
                     	{pulseCurRatioLabel.setText(String.format("%8.4f", master.getTimeRatio() ) );}
                     }

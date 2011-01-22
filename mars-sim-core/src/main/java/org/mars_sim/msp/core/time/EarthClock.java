@@ -18,10 +18,12 @@ import java.util.SimpleTimeZone;
 /** The EarthClock class keeps track of Earth Universal Time.
  *  It should be synchronized with the Mars clock. 
  */
-public class EarthClock extends GregorianCalendar implements Serializable {
+public class EarthClock implements Serializable/*extends GregorianCalendar implements Serializable*/ {
+
+    private final GregorianCalendar cal;
 
     // Data members
-    SimpleDateFormat formatter;
+    private final SimpleDateFormat formatter;
 
     /** 
      * Constructor
@@ -31,23 +33,23 @@ public class EarthClock extends GregorianCalendar implements Serializable {
     public EarthClock(String dateString) {
         
         // Use GregorianCalendar constructor
-        super();
+        cal = new GregorianCalendar();
 
         // Set GMT timezone for calendar
         SimpleTimeZone zone = new SimpleTimeZone(0, "GMT");
-        setTimeZone(zone);
+        cal.setTimeZone(zone);
 
         // Initialize formatter
-        formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss 'UT'");
         formatter.setTimeZone(zone);
 
         // Set Earth clock to Martian Zero-orbit date-time. 
         // This date may need to be adjusted if it is inaccurate.
-        clear();
+        cal.clear();
         DateFormat tempFormatter = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss");
         tempFormatter.setTimeZone(zone);
         try {
-            setTime(tempFormatter.parse(dateString));
+            cal.setTime(tempFormatter.parse(dateString));
         } catch (ParseException ex) {
             throw new IllegalStateException(ex);
         }
@@ -56,29 +58,44 @@ public class EarthClock extends GregorianCalendar implements Serializable {
     /** Returns the date/time formatted in a string 
      *  @return date/time formatted in a string. ex "2055-05-06 03:37:22 UT"
      */
-    public String getTimeStamp() {
-        return formatter.format(getTime()) + " UT";
+    public synchronized String getTimeStamp() {
+        return formatter.format(cal.getTime());// + " UT";
     }
 
     /** Returns the date formatted in a string 
      *  @return date formatted in a string. ex "2055-05-06"
      */
-    public String getDateString() {
+    public synchronized String getDateString() {
         return getTimeStamp().substring(0,10);
     }
     
     /** Adds time to the calendar 
      *  @param seconds seconds added to the calendar
      */
-    public void addTime(double seconds) {
-        add(Calendar.MILLISECOND, (int) (seconds * 1000D));
+    public synchronized void addTime(double seconds) {
+        cal.add(Calendar.MILLISECOND, (int) (seconds * 1000D));
     }
     
     /**
      * Displays the string version of the clock.
      * @return time stamp string.
      */
-    public String toString() {
+    public synchronized String toString() {
     	return getTimeStamp();
+    }
+
+    public int getDayOfMonth()
+    {
+        return cal.get(Calendar.DATE);
+    }
+
+    public int getMonth()
+    {
+        return cal.get(Calendar.MONTH);
+    }
+
+    public int getYear()
+    {
+        return cal.get(Calendar.YEAR);
     }
 }

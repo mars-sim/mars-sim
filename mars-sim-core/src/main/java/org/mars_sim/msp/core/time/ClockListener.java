@@ -15,5 +15,5 @@ public interface ClockListener {
 	 * Change in time.
 	 * param time the amount of time changed. (millisols)
 	 */
-	public void clockPulse(double time);
+	void clockPulse(double time);
 }

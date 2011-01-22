@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.core.vehicle;
 
+import java.io.Serializable;
+
 /**
  * An entity capable of operating a vehicle.
  * Could be a person or an AI computer.
  */
-public interface VehicleOperator {
+public interface VehicleOperator extends Serializable{
 
 	/**
 	 * Checks if the vehicle operator is fit for operating the vehicle.

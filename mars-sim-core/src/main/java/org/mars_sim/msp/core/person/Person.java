@@ -34,7 +34,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 
 	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.Person";
 
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static transient Logger logger = Logger.getLogger(CLASS_NAME);
 
 	// Unit update events
 	public final static String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
@@ -346,11 +346,11 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 	public int getAge() {
 		EarthClock simClock = Simulation.instance().getMasterClock()
 				.getEarthClock();
-		int age = simClock.get(Calendar.YEAR)
-				- birthTimeStamp.get(Calendar.YEAR) - 1;
-		if (simClock.get(Calendar.MONTH) >= birthTimeStamp.get(Calendar.MONTH)
-				&& simClock.get(Calendar.MONTH) >= birthTimeStamp
-						.get(Calendar.MONTH)) {
+		int age = simClock.getYear()
+				- birthTimeStamp.getYear() - 1;
+		if (simClock.getMonth() >= birthTimeStamp.getMonth()
+				&& simClock.getMonth() >= birthTimeStamp
+						.getMonth()) {
 			age = age + 1;
 		}
 

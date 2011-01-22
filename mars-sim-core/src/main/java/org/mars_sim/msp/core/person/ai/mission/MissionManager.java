@@ -32,7 +32,7 @@ public class MissionManager implements Serializable {
     
     private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.MissionManager";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static transient Logger logger = Logger.getLogger(CLASS_NAME);
  
 
     // Data members
