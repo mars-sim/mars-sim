@@ -1,5 +1,6 @@
 package org.mars_sim.msp.core.vehicle;
 
+import junit.textui.TestRunner;
 import org.mars_sim.msp.core.structure.MockSettlement;
 
 import junit.framework.Test;
@@ -9,7 +10,6 @@ import junit.framework.TestSuite;
 // include any ONE of the following...
 //import junit.textui.TestRunner;
 //import junit.awtui.TestRunner;
-import junit.swingui.TestRunner;
 
 /**
  * JUnit test suite
