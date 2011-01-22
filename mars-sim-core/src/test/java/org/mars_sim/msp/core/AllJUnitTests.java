@@ -3,7 +3,7 @@ package org.mars_sim.msp.core;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
-import junit.swingui.TestRunner;
+import junit.textui.TestRunner;
 
 /**
  * JUnit test suite

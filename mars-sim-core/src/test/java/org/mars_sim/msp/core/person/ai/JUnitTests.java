@@ -3,11 +3,11 @@ package org.mars_sim.msp.core.person.ai;
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
+import junit.textui.TestRunner;
 
 // include any ONE of the following...
 //import junit.textui.TestRunner;
 //import junit.awtui.TestRunner;
-import junit.swingui.TestRunner;
 
 /**
  * JUnit test suite
