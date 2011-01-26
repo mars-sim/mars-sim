@@ -120,6 +120,8 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("small steel frame", "small_steel_frame_const");
         constructionSiteSVGMap.put("surface foundation 5m x 5m", "surface_foundation_5x5_const");
         constructionSiteSVGMap.put("small sabatier processor", "small_sabatier_processor_const");
+        constructionSiteSVGMap.put("wind turbine", "wind_turbine_const");
+        constructionSiteSVGMap.put("steel frame tower", "steel_frame_tower_const");
         // TODO: add more mapped entities.
     }
     
