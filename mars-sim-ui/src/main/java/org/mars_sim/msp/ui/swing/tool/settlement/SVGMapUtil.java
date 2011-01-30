@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.00 2010-11-13
+ * @version 3.00 2011-01-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -69,7 +69,8 @@ public final class SVGMapUtil {
         buildingSVGMap.put("small battery array", "small_battery_array");
         buildingSVGMap.put("methane power generator", "methane_power_generator");
         buildingSVGMap.put("small sabatier processor", "small_sabatier_processor");
-        // TODO: Add more mapped entities.
+        buildingSVGMap.put("bunkhouse", "bunkhouse");
+        buildingSVGMap.put("manufacturing shed", "manufacturing_shed");
     }
     
     /**
