@@ -132,6 +132,8 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("regolith storage bin", "storage_bin_const");
         constructionSiteSVGMap.put("brick bin frame", "brick_bin_frame_const");
         constructionSiteSVGMap.put("surface foundation 3m x 2m", "surface_foundation_3x2_const");
+        constructionSiteSVGMap.put("bunkhouse", "bunkhouse_const");
+        constructionSiteSVGMap.put("manufacturing shed", "manufacturing_shed_const");
         // TODO: add more mapped entities.
     }
     
