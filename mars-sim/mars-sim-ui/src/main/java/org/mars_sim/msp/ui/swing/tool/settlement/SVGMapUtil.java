@@ -122,6 +122,15 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("small sabatier processor", "small_sabatier_processor_const");
         constructionSiteSVGMap.put("wind turbine", "wind_turbine_const");
         constructionSiteSVGMap.put("steel frame tower", "steel_frame_tower_const");
+        constructionSiteSVGMap.put("carbon storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("cement storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("sand storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("lime storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("mortar storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("concrete storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("regolith storage bin", "storage_bin_const");
+        constructionSiteSVGMap.put("brick bin frame", "brick_bin_frame_const");
+        constructionSiteSVGMap.put("surface foundation 3m x 2m", "surface_foundation_3x2_const");
         // TODO: add more mapped entities.
     }
     
