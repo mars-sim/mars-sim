@@ -134,7 +134,8 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("surface foundation 3m x 2m", "surface_foundation_3x2_const");
         constructionSiteSVGMap.put("bunkhouse", "bunkhouse_const");
         constructionSiteSVGMap.put("manufacturing shed", "manufacturing_shed_const");
-        // TODO: add more mapped entities.
+        constructionSiteSVGMap.put("small brick shed frame", "small_brick_shed_frame_const");
+        constructionSiteSVGMap.put("subsurface foundation 5m x 5m x 3m", "subsurface_foundation_5x5x3_const");
     }
     
     /**
