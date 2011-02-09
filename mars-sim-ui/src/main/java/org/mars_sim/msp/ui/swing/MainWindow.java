@@ -19,6 +19,8 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -78,12 +80,13 @@ public class MainWindow {
 //		// Prepare frame
 //		setVisible(false);
 
-//        frame.addWindowListener(new WindowAdapter() {
-//            @Override
-//            public void windowClosing(WindowEvent event) {
-//                exitSimulation();
-//            }
-//        });
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent event) {
+            	// Save simulation and UI configuration when window is closed.
+                exitSimulation();
+            }
+        });
 
         // Prepare menu
         frame.setJMenuBar(new MainWindowMenu(this));
@@ -372,7 +375,7 @@ public class MainWindow {
      */
     public void exitSimulation() {
         // logger.info("Exiting simulation");
-
+    	
         // Save the UI configuration.
         UIConfig.INSTANCE.saveFile(this);
 
