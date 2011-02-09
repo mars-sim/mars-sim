@@ -15,6 +15,9 @@ import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 import javax.swing.*;
+import javax.swing.UIManager.LookAndFeelInfo;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import java.awt.*;
 import java.io.File;
 import java.util.logging.Level;
@@ -404,47 +407,46 @@ public class MainWindow {
      * @param nativeLookAndFeel true if native look and feel should be used.
      */
     public void setLookAndFeel(boolean nativeLookAndFeel) {
-//		try {
+        
         boolean changed = false;
         if (nativeLookAndFeel) {
             try {
-                UIManager.setLookAndFeel(UIManager
-                        .getSystemLookAndFeelClassName());
+                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 changed = true;
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Could not load system look&feel", e);
             }
-
         } else {
             try {
-                UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-                changed = true;
+                // Set Nimbus look & feel if found in JVM.
+                boolean foundNimbus = false;
+                for (LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+                    if (info.getName().equals("Nimbus")) {
+                        UIManager.setLookAndFeel(info.getClassName());
+                        foundNimbus = true;
+                        changed = true;
+                        break;
+                    }
+                }
+                
+                // Set old Mars theme and metal look & feel if Nimbus not found.
+                if (!foundNimbus) {
+                    logger.log(Level.WARNING, "Could not set Nimbus look&feel, make sure you have a recent JRE 1.6 update or 1.7");
+                    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
+                    UIManager.setLookAndFeel(new MetalLookAndFeel());
+                    changed = true;
+                }
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Could not set Nimbus look&feel, make sure you have a recent JRE 1.6 update or 1.7", e);
             }
-//				boolean foundNimbus = false;
-//				for (LookAndFeelInfo info : UIManager
-//						.getInstalledLookAndFeels()) {
-//					if ("Nimbus".equals(info.getName())) {
-//						UIManager.setLookAndFeel(info.getClassName());
-//						foundNimbus = true;
-//						break;
-//					}
-//				}
-//				if (!foundNimbus) {
-//					MetalLookAndFeel.setCurrentTheme(new MarsTheme());
-//					UIManager.setLookAndFeel(new MetalLookAndFeel());
-//				}
         }
+        
         if (changed) {
             SwingUtilities.updateComponentTreeUI(frame);
             if (desktop != null) {
                 desktop.updateToolWindowLF();
             }
         }
-//		} catch (Exception e) {
-//			e.printStackTrace(System.err);
-//		}
     }
 
     /**

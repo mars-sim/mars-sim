@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2010-10-15
+ * @version 3.00 2011-02-08
  * @author Scott Davis
  */
 
@@ -124,6 +124,9 @@ public class SettlementMapPanel extends JPanel {
      * @param yDiff the Y axis pixels.
      */
     public void moveCenter(double xDiff, double yDiff) {
+        xDiff /= scale;
+        yDiff /= scale;
+        
         // Correct due to rotation of map.
         double realXDiff = (Math.cos(rotation) * xDiff) + (Math.sin(rotation) * yDiff);
         double realYDiff = (Math.cos(rotation) * yDiff) - (Math.sin(rotation) * xDiff);
@@ -144,10 +147,10 @@ public class SettlementMapPanel extends JPanel {
         double mapCenterY = getHeight() / 2D;
         
         // Translate map from settlement center point.
-        g2d.translate(xPos, yPos);
+        g2d.translate(xPos * scale, yPos * scale);
         
         // Rotate map from North.
-        g2d.rotate(rotation, mapCenterX - xPos, mapCenterY - yPos);
+        g2d.rotate(rotation, mapCenterX - (xPos * scale), mapCenterY - (yPos * scale));
         
         // Draw each building.
         drawBuildings(g2d);
