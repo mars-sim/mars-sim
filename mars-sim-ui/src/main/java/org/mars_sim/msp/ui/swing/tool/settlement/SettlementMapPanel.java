@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2011-02-08
+ * @version 3.00 2011-02-09
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,6 +30,7 @@ public class SettlementMapPanel extends JPanel {
     public static final double MIN_SCALE = 5D / 11D;
     private static final Color BUILDING_COLOR = Color.BLUE;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
+    private static final Color LABEL_COLOR = Color.BLUE;
     
     // Data members.
     private Settlement settlement;
@@ -36,6 +38,7 @@ public class SettlementMapPanel extends JPanel {
     private double yPos;
     private double rotation;
     private double scale;
+    private boolean showLabels;
     
     /**
      * A panel for displaying a settlement map.
@@ -50,6 +53,7 @@ public class SettlementMapPanel extends JPanel {
         rotation = 0D;
         scale = DEFAULT_SCALE;
         settlement = null;
+        showLabels = false;
         
         // Set preferred size.
         setPreferredSize(new Dimension(400, 400));
@@ -136,12 +140,30 @@ public class SettlementMapPanel extends JPanel {
         repaint();
     }
     
+    /**
+     * Checks if labels should be displayed.
+     * @return true if labels should be displayed.
+     */
+    public boolean isShowLabels() {
+        return showLabels;
+    }
+    
+    /**
+     * Sets if labels should be displayed.
+     * @param showLabels true if labels should be displayed.
+     */
+    public void setShowLabels(boolean showLabels) {
+        this.showLabels = showLabels;
+        repaint();
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         
         double mapCenterX = getWidth() / 2D;
         double mapCenterY = getHeight() / 2D;
@@ -189,6 +211,11 @@ public class SettlementMapPanel extends JPanel {
                     building.getWidth(), building.getLength(), building.getFacing(), 
                     BUILDING_COLOR);
         }
+        
+        // Draw building label if displaying labels.
+        if (showLabels) {
+            drawLabel(g2d, building.getName(), building.getXLocation(), building.getYLocation());
+        }
     }
     
     /**
@@ -223,6 +250,45 @@ public class SettlementMapPanel extends JPanel {
                     site.getWidth(), site.getLength(), site.getFacing(), 
                     CONSTRUCTION_SITE_COLOR);
         }
+        
+        // Draw construction site label if displaying labels.
+        if (showLabels) {
+            drawLabel(g2d, getConstructionLabel(site), site.getXLocation(), site.getYLocation());
+        }
+    }
+    
+    /**
+     * Gets the label for a construction site.
+     * @param site the construction site.
+     * @return the construction label.
+     */
+    private String getConstructionLabel(ConstructionSite site) {
+        String label = "";
+        ConstructionStage stage = site.getCurrentConstructionStage();
+        if (stage != null) {
+            if (site.isUndergoingConstruction()) {
+                label = "Constructing " + stage.getInfo().getName();
+            }
+            else if (site.isUndergoingSalvage()) {
+                label = "Salvaging " + stage.getInfo().getName();
+            }
+            else if (site.hasUnfinishedStage()) {
+                if (stage.isSalvaging()) {
+                    label = "Salvaging " + stage.getInfo().getName() + " unfinished";
+                }
+                else {
+                    label = "Constructing " + stage.getInfo().getName() + " unfinished";
+                }
+            }
+            else {
+                label = stage.getInfo().getName() + " completed";
+            }
+        }
+        else {
+            label = "No construction";
+        }
+        
+        return label;
     }
     
     /**
@@ -309,6 +375,48 @@ public class SettlementMapPanel extends JPanel {
             g2d.setColor(color);
             g2d.fill(bounds);
         }
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Draws a building or construction site label.
+     * @param g2d the graphics 2D context.
+     * @param label the label string.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     */
+    private void drawLabel(Graphics2D g2d, String label, double xLoc, double yLoc) {
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        // Determine bounds.
+        g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
+        FontMetrics metrics = g2d.getFontMetrics();
+        double height = metrics.getLeading();
+        double width = metrics.stringWidth(label);
+        Rectangle2D bounds = new Rectangle2D.Double(width / -2D, height / -2D, width, height);
+        
+        // Determine transform information.
+        double boundsPosX = bounds.getX() * scale;
+        double boundsPosY = bounds.getY() * scale;
+        double centerX = bounds.getWidth() * scale / 2D;
+        double centerY = bounds.getHeight() * scale / 2D;
+        double centerMapX = getWidth() / 2D;
+        double centerMapY = getHeight() / 2D;
+        double translationX = (-1D * xLoc * scale) - centerX - boundsPosX + centerMapX;
+        double translationY = (-1D * yLoc * scale) - centerY - boundsPosY + centerMapY;
+        
+        // Apply graphic transforms for structure.
+        AffineTransform newTransform = new AffineTransform();
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(rotation * -1D);
+        g2d.transform(newTransform);
+        
+        // Draw label.
+        g2d.setColor(LABEL_COLOR);
+        g2d.drawString(label, (int) bounds.getX(), (int) bounds.getY());
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
