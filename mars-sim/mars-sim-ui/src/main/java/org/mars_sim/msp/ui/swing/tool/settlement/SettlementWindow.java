@@ -142,14 +142,14 @@ public class SettlementWindow extends ToolWindow {
             public void mouseWheelMoved(MouseWheelEvent evt) {
                 int numClicks = evt.getWheelRotation();
                 if (numClicks > 0) {
-                    // Move zoom slider up.
-                    if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
-                        zoomSlider.setValue(zoomSlider.getValue() + 1);
-                }
-                else if (numClicks < 0) {
                     // Move zoom slider down.
                     if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
                         zoomSlider.setValue(zoomSlider.getValue() - 1);
+                }
+                else if (numClicks < 0) {
+                    // Move zoom slider up.
+                    if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
+                        zoomSlider.setValue(zoomSlider.getValue() + 1);
                 }
             }
         });
@@ -164,7 +164,7 @@ public class SettlementWindow extends ToolWindow {
 		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon("Clockwise"));
 		rotateClockwiseButton.setToolTipText("Rotate map clockwise");
 		rotateClockwiseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent evt) {
                 mapPane.setRotation(mapPane.getRotation() + ROTATION_CHANGE);
             }
 		});
@@ -174,7 +174,7 @@ public class SettlementWindow extends ToolWindow {
 		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon("CounterClockwise"));
         rotateCounterClockwiseButton.setToolTipText("Rotate map counter-clockwise");
         rotateCounterClockwiseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent evt) {
                 mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
             }
         });
@@ -184,22 +184,31 @@ public class SettlementWindow extends ToolWindow {
 		JButton recenterButton = new JButton("Recenter");
 		recenterButton.setToolTipText("Recenter view to center, normal zoom");
 		recenterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
+            public void actionPerformed(ActionEvent evt) {
                 mapPane.reCenter();
                 zoomSlider.setValue(0);
             }
         });
-		
 		buttonsPane.add(recenterButton);
 		
 		// Create labels button.
 		JButton labelsButton = new JButton("Labels");
 		labelsButton.setToolTipText("Add/remove label overlays");
+		labelsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                mapPane.setShowLabels(!mapPane.isShowLabels());
+            }
+        });
 		buttonsPane.add(labelsButton);
 		
 		// Create open info button.
 		JButton openInfoButton = new JButton("Open Info");
 		openInfoButton.setToolTipText("Opens the Settlement Info Window");
+		labelsButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // TODO
+            }
+        });
 		buttonsPane.add(openInfoButton);
 		
 		// Pack window.
