@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.00 2010-10-15
+ * @version 3.00 2011-02-13
  * @author Lars Naesbye Christensen
  */
 
@@ -204,14 +204,25 @@ public class SettlementWindow extends ToolWindow {
 		// Create open info button.
 		JButton openInfoButton = new JButton("Open Info");
 		openInfoButton.setToolTipText("Opens the Settlement Info Window");
-		labelsButton.addActionListener(new ActionListener() {
+		openInfoButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                // TODO
+                Settlement settlement = mapPane.getSettlement();
+                if (settlement != null) {
+                    getDesktop().openUnitWindow(settlement, false);
+                }
             }
         });
 		buttonsPane.add(openInfoButton);
 		
 		// Pack window.
 		pack();
+	}
+	
+	/**
+	 * Gets the main desktop panel for this tool.
+	 * @return main desktop panel.
+	 */
+	private MainDesktopPane getDesktop() {
+	    return desktop;
 	}
 }
