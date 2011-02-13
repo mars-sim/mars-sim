@@ -346,7 +346,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
 	/** 
 	 * Creates and opens a window for a unit if it isn't 
-	 * already in existance and open.
+	 * already in existence and open.
 	 * @param unit the unit the window is for.
 	 * @param initialWindow true if window is opened at UI startup.
 	 */

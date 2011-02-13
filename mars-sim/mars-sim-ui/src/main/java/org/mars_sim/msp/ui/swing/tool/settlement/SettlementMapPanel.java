@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2011-02-09
+ * @version 3.00 2011-02-13
  * @author Scott Davis
  */
 
@@ -66,6 +66,14 @@ public class SettlementMapPanel extends JPanel {
         // Set Apache Batik library system property so that it doesn't output: 
         // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
         System.setProperty("org.apache.batik.warn_destination", "false");
+    }
+    
+    /**
+     * Gets the settlement currently displayed.
+     * @return settlement or null if none.
+     */
+    public Settlement getSettlement() {
+        return settlement;
     }
     
     /**
