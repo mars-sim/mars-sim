@@ -63,7 +63,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
         
 		// Create scroll panel for population list.
 		JScrollPane populationScrollPanel = new JScrollPane();
-		populationScrollPanel.setPreferredSize(new Dimension(175, 100));
+		populationScrollPanel.setPreferredSize(new Dimension(175, 250));
 		populationDisplayPanel.add(populationScrollPanel);
         
 		// Create population list model

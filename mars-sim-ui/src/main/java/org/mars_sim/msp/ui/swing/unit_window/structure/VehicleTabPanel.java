@@ -59,7 +59,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         
         // Create scroll panel for vehicle list.
         JScrollPane vehicleScrollPanel = new JScrollPane();
-        vehicleScrollPanel.setPreferredSize(new Dimension(175, 100));
+        vehicleScrollPanel.setPreferredSize(new Dimension(175, 200));
         vehicleDisplayPanel.add(vehicleScrollPanel);
         
         // Create vehicle list model
