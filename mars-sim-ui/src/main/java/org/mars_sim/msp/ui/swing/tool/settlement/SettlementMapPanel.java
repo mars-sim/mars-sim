@@ -31,6 +31,7 @@ public class SettlementMapPanel extends JPanel {
     private static final Color BUILDING_COLOR = Color.BLUE;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     private static final Color LABEL_COLOR = Color.BLUE;
+    private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
     
     // Data members.
     private Settlement settlement;
@@ -60,7 +61,7 @@ public class SettlementMapPanel extends JPanel {
         
         // Set foreground and background colors.
         setOpaque(true);
-        setBackground(new Color(54, 13, 0));
+        setBackground(MAP_BACKGROUND);
         setForeground(Color.WHITE);
         
         // Set Apache Batik library system property so that it doesn't output: 
