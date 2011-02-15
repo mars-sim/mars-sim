@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-14
  * @author Scott Davis
  */
 
@@ -62,7 +62,10 @@ public class MainWindow {
 
         // use JFrame constructor
         frame = new JFrame(WINDOW_TITLE);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        // Note: this setting causes the application to close before it
+        // saves the default.sim file.
+        //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Load UI configuration.
         UIConfig.INSTANCE.parseFile();
@@ -374,7 +377,7 @@ public class MainWindow {
      * Exit the simulation for running and exit.
      */
     public void exitSimulation() {
-        // logger.info("Exiting simulation");
+        //logger.info("Exiting simulation");
     	
         // Save the UI configuration.
         UIConfig.INSTANCE.saveFile(this);
