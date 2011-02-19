@@ -1,23 +1,27 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2011-02-13
+ * @version 3.00 2011-02-19
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import org.apache.batik.gvt.GraphicsNode;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * A panel for displaying the settlement map.
@@ -32,6 +36,7 @@ public class SettlementMapPanel extends JPanel {
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     private static final Color LABEL_COLOR = Color.BLUE;
     private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
+    private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
     
     // Data members.
     private Settlement settlement;
@@ -40,6 +45,7 @@ public class SettlementMapPanel extends JPanel {
     private double rotation;
     private double scale;
     private boolean showLabels;
+    private Map<Settlement, String> settlementBackgroundMap;
     
     /**
      * A panel for displaying a settlement map.
@@ -55,6 +61,7 @@ public class SettlementMapPanel extends JPanel {
         scale = DEFAULT_SCALE;
         settlement = null;
         showLabels = false;
+        settlementBackgroundMap = new HashMap<Settlement, String>();
         
         // Set preferred size.
         setPreferredSize(new Dimension(400, 400));
@@ -174,6 +181,9 @@ public class SettlementMapPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         
+        // Draw background image tiles.
+        drawBackgroundImageTiles(g2d);
+        
         double mapCenterX = getWidth() / 2D;
         double mapCenterY = getHeight() / 2D;
         
@@ -188,6 +198,51 @@ public class SettlementMapPanel extends JPanel {
         
         // Draw each construction site.
         drawConstructionSites(g2d);
+    }
+    
+    /**
+     * Draws the background image tiles on the map.
+     */
+    private void drawBackgroundImageTiles(Graphics2D g2d) {
+        ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
+        if (backgroundTileIcon != null) {
+            for (int x = 0; x < getWidth(); x+= backgroundTileIcon.getIconWidth()) {
+                for (int y = 0; y < getHeight(); y+= backgroundTileIcon.getIconHeight()) {
+                    g2d.drawImage(backgroundTileIcon.getImage(), x, y, this);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Gets the background tile image icon for a settlement.
+     * @param settlement the settlement to display.
+     * @return the background tile image icon or null if none found.
+     */
+    private ImageIcon getBackgroundImage(Settlement settlement) {
+        ImageIcon result = null;
+        
+        if (settlementBackgroundMap.containsKey(settlement)) {
+            String backgroundImageName = settlementBackgroundMap.get(settlement);
+            result = ImageLoader.getIcon(backgroundImageName, "jpg");
+        }
+        else {
+            int count = 1;
+            Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+            while (i.hasNext()) {
+                if (i.next().equals(settlement)) {
+                    String backgroundImageName = "settlement_map_tile" + count;
+                    settlementBackgroundMap.put(settlement, backgroundImageName);
+                    result = ImageLoader.getIcon(backgroundImageName, "jpg");
+                }
+                count++;
+                if (count > MAX_BACKGROUND_IMAGE_NUM) {
+                    count = 1;
+                }
+            }
+        }
+        
+        return result;
     }
     
     /**
