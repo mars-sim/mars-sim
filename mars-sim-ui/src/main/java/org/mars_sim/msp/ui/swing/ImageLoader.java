@@ -37,22 +37,36 @@ public class ImageLoader {
     }
 
     /**
+     * Load the image icon with the specified name and a "png" image extension. 
+     * This operation may either create a new Image Icon of returned a previously
+     * created one.
+     *
+     * @param imagename Name of the image to load.
+     * @return ImageIcon containing image of specified name.
+     */
+    public static ImageIcon getIcon(String imagename) {
+        return getIcon(imagename, "png");
+    }
+    
+    /**
      * Load the image icon with the specified name. This operation may either
      * create a new Image Icon of returned a previously created one.
      *
-     * @param name Name of the image to load.
+     * @param imagename Name of the image to load.
+     * @param ext the file extension (ex. "png", "jpg").
      * @return ImageIcon containing image of specified name.
      */
-    public static ImageIcon getIcon(String name) {
-        ImageIcon found = iconCache.get(name);
+    public static ImageIcon getIcon(String imagename, String ext) {
+        String fullImageName = imagename + "." + ext;
+        ImageIcon found = iconCache.get(fullImageName);
         if (found == null) {
-            String fileName = IMAGE_DIR + name + ".png";
+            String fileName = IMAGE_DIR + fullImageName;
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
             URL resource = ImageLoader.class.getResource(fileName);//ClassLoader.getSystemResource(fileName);
 
             found = new ImageIcon(resource);
 
-            iconCache.put(name, found);
+            iconCache.put(fullImageName, found);
         }
 
         return found;
