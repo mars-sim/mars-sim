@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -481,6 +481,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
             if (constructionStage.getInfo().getType().equals(ConstructionStageInfo.FOUNDATION)) {
 //                try {
                     settlement.getConstructionManager().removeConstructionSite(constructionSite);
+                    settlement.fireUnitUpdate(ConstructionManager.FINISH_SALVAGE_EVENT, constructionSite);
                     logger.log(Level.INFO, "Construction site completely salvaged at " + settlement.getName());
 //                }
 //                catch (Exception e) {

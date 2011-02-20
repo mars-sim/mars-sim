@@ -9,8 +9,14 @@ package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionEvent;
+import org.mars_sim.msp.core.structure.construction.ConstructionListener;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -26,7 +32,7 @@ import java.util.Map;
 /**
  * A panel for displaying the settlement map.
  */
-public class SettlementMapPanel extends JPanel {
+public class SettlementMapPanel extends JPanel implements UnitListener, ConstructionListener {
 
     // Static members.
     public static final double DEFAULT_SCALE = 5D;
@@ -89,7 +95,28 @@ public class SettlementMapPanel extends JPanel {
      * @param settlement the settlement.
      */
     public void setSettlement(Settlement settlement) {
+        // Remove as unit and construction listener for old settlement.
+        if (this.settlement != null) {
+            this.settlement.removeUnitListener(this);
+            Iterator<ConstructionSite> i = this.settlement.getConstructionManager()
+                    .getConstructionSites().iterator();
+            while (i.hasNext()) {
+                i.next().removeConstructionListener(this);
+            }
+        }
+        
         this.settlement = settlement;
+        
+        // Add as unit and construction listener for new settlement.
+        if (settlement != null) {
+            settlement.addUnitListener(this);
+            Iterator<ConstructionSite> i = settlement.getConstructionManager()
+                    .getConstructionSites().iterator();
+            while (i.hasNext()) {
+                i.next().addConstructionListener(this);
+            }
+        }
+        
         repaint();
     }
     
@@ -484,5 +511,31 @@ public class SettlementMapPanel extends JPanel {
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
+    }
+
+    @Override
+    public void constructionUpdate(ConstructionEvent event) {
+        // Draw map.
+        repaint();
+    }
+
+    @Override
+    public void unitUpdate(UnitEvent event) {
+        // Add as listener for new construction sites.
+        if (ConstructionManager.START_CONSTRUCTION_SITE_EVENT.equals(event.getType())) {
+            ConstructionSite site = (ConstructionSite) event.getTarget();
+            if (site != null) {
+                site.addConstructionListener(this);
+            }
+        }
+        
+        // Redraw map for construction or building events.
+        if (ConstructionManager.START_CONSTRUCTION_SITE_EVENT.equals(event.getType()) ||
+                ConstructionManager.FINISH_BUILDING_EVENT.equals(event.getType()) ||
+                ConstructionManager.FINISH_SALVAGE_EVENT.equals(event.getType()) ||
+                BuildingManager.ADD_BUILDING_EVENT.equals(event.getType()) ||
+                BuildingManager.REMOVE_BUILDING_EVENT.equals(event.getType())) {
+            repaint();
+        }
     }
 }

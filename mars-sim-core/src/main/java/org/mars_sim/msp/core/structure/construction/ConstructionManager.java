@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-19
  * @author Scott Davis
  */
 
@@ -26,11 +26,11 @@ public class ConstructionManager implements Serializable {
     
     //  Unit update events.
     public static final String START_CONSTRUCTION_SITE_EVENT = "start construction site";
-    public static final String START_CONSTRUCTION_STAGE_EVENT = "start construction stage";
-    public static final String FINISH_CONSTRUCTION_STAGE_EVENT = "finish construction stage";
     public static final String FINISH_BUILDING_EVENT = "finish building";
+    public static final String FINISH_SALVAGE_EVENT = "salvage building";
     
     // Data members.
+    private Settlement settlement;
     private List<ConstructionSite> sites; // The settlement's construction sites.
     private ConstructionValues values;
     private SalvageValues salvageValues;
@@ -41,6 +41,7 @@ public class ConstructionManager implements Serializable {
      * @param settlement the settlement.
      */
     public ConstructionManager(Settlement settlement) {
+        this.settlement = settlement;
         sites = new ArrayList<ConstructionSite>();
         values = new ConstructionValues(settlement);
         salvageValues = new SalvageValues(settlement);
@@ -105,6 +106,7 @@ public class ConstructionManager implements Serializable {
     public ConstructionSite createNewConstructionSite() {
         ConstructionSite result = new ConstructionSite();
         sites.add(result);
+        settlement.fireUnitUpdate(START_CONSTRUCTION_SITE_EVENT, result);
         return result;
     }
     
@@ -114,7 +116,9 @@ public class ConstructionManager implements Serializable {
      * @throws Exception if site doesn't exist.
      */
     public void removeConstructionSite(ConstructionSite site) {
-        if (sites.contains(site)) sites.remove(site);
+        if (sites.contains(site)) {
+            sites.remove(site);
+        }
         else throw new IllegalStateException("Construction site doesn't exist.");
     }
     
