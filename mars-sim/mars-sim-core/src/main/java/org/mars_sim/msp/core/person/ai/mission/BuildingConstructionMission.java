@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -545,8 +546,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Construct building if all site construction complete.
             if (constructionSite.isAllConstructionComplete()) {
 //                try {
-                    constructionSite.createBuilding(settlement.getBuildingManager());
+                    Building building = constructionSite.createBuilding(settlement.getBuildingManager());
                     settlement.getConstructionManager().removeConstructionSite(constructionSite);
+                    settlement.fireUnitUpdate(ConstructionManager.FINISH_BUILDING_EVENT, building);
                     logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
                             " building constructed at " + settlement.getName());
 //                }
