@@ -538,4 +538,19 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
             repaint();
         }
     }
+    
+    /**
+     * Cleans up the map panel for disposal.
+     */
+    public void destroy() {
+        // Remove as unit or construction listener.
+        if (this.settlement != null) {
+            this.settlement.removeUnitListener(this);
+            Iterator<ConstructionSite> i = this.settlement.getConstructionManager()
+                    .getConstructionSites().iterator();
+            while (i.hasNext()) {
+                i.next().removeConstructionListener(this);
+            }
+        }
+    }
 }

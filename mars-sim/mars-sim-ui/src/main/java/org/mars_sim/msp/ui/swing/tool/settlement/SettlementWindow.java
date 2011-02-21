@@ -225,4 +225,9 @@ public class SettlementWindow extends ToolWindow {
 	private MainDesktopPane getDesktop() {
 	    return desktop;
 	}
+	
+	@Override
+	public void destroy() {
+	    mapPane.destroy();
+	}
 }
