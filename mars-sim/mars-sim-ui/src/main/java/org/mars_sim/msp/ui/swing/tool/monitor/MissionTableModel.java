@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.person.ai.mission.*;
 
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -278,9 +279,11 @@ public class MissionTableModel extends AbstractTableModel implements
      * Prepares the model for deletion.
      */
     public void destroy() {
-        for (Mission aMissionCache : missionCache) {
-            removeMission(missionCache.get(0));
+        Object[] missions = missionCache.toArray();
+        for (int x = 0; x < missions.length; x++) {
+            removeMission((Mission) missions[x]);
         }
+        
         Simulation.instance().getMissionManager().removeListener(this);
     	//missionCache = null;
     }
