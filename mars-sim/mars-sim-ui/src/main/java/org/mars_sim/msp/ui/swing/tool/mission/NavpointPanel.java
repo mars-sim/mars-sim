@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
 
@@ -65,6 +65,9 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		navpointLayer = new NavpointMapLayer(this);
 		mapPane.addMapLayer(navpointLayer);
         mineralLayer = new MineralMapLayer(this);
+        // Forcing map panel to be 300x300 size.
+        mapPane.setSize(new Dimension(300, 300));
+        mapPane.setPreferredSize(new Dimension(300, 300));
 		mapDisplayPane.add(mapPane, BorderLayout.CENTER);
 		
 		// Create the north button.

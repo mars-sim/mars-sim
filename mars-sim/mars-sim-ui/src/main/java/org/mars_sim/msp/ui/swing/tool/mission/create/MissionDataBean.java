@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-21
  * @author Scott Davis
  */
 
@@ -60,6 +60,9 @@ class MissionDataBean {
     private Settlement constructionSettlement;
     private ConstructionSite constructionSite;
     private ConstructionStageInfo constructionStageInfo;
+    private double constructionSiteXLoc;
+    private double constructionSiteYLoc;
+    private double constructionSiteFacing;
     private List<GroundVehicle> constructionVehicles;
     private Settlement salvageSettlement;
     private ConstructionSite salvageSite;
@@ -106,7 +109,8 @@ class MissionDataBean {
             }
             else if (CONSTRUCTION_MISSION.equals(type)) {
                 mission = new BuildingConstructionMission(members, constructionSettlement, constructionSite, 
-                        constructionStageInfo, constructionVehicles);
+                        constructionStageInfo, constructionSiteXLoc, constructionSiteYLoc, constructionSiteFacing, 
+                        constructionVehicles);
             }
             else if (AREOLOGY_FIELD_MISSION.equals(type)) {
                 mission = new AreologyStudyFieldMission(members, startingSettlement, leadResearcher, study, 
@@ -500,6 +504,54 @@ class MissionDataBean {
      */
     void setConstructionStageInfo(ConstructionStageInfo constructionStageInfo) {
         this.constructionStageInfo = constructionStageInfo;
+    }
+    
+    /**
+     * Gets the construction site X location.
+     * @return X location (meters).
+     */
+    double getConstructionSiteXLocation() {
+        return constructionSiteXLoc;
+    }
+    
+    /**
+     * Sets the construction site X location.
+     * @param constructionSiteXLoc X location (meters).
+     */
+    void setConstructionSiteXLocation(double constructionSiteXLoc) {
+        this.constructionSiteXLoc = constructionSiteXLoc;
+    }
+    
+    /**
+     * Gets the construction site Y location.
+     * @return Y location (meters).
+     */
+    double getConstructionSiteYLocation() {
+        return constructionSiteYLoc;
+    }
+    
+    /**
+     * Sets the construction site Y location.
+     * @param constructionSiteYLoc Y Location (meters).
+     */
+    void setConstructionSiteYLocation(double constructionSiteYLoc) {
+        this.constructionSiteYLoc = constructionSiteYLoc;
+    }
+    
+    /**
+     * Gets the construction site facing.
+     * @return the construction site facing (degrees clockwise from North).
+     */
+    double getConstructionSiteFacing() {
+        return constructionSiteFacing;
+    }
+    
+    /**
+     * Sets the construction site facing.
+     * @param constructionSiteFacing facing (degrees clockwise from North).
+     */
+    void setConstructionSiteFacing(double constructionSiteFacing) {
+        this.constructionSiteFacing = constructionSiteFacing;
     }
     
     /**

@@ -94,8 +94,7 @@ public class ConstructionConfig implements Serializable {
      * @throws Exception if error parsing XML file.
      */
     @SuppressWarnings("unchecked")
-    private List<ConstructionStageInfo> createConstructionStageInfoList(String stageType) 
-{
+    private List<ConstructionStageInfo> createConstructionStageInfoList(String stageType) {
         
         List<ConstructionStageInfo> stageInfoList = null;
         if (ConstructionStageInfo.FOUNDATION.equals(stageType)) {

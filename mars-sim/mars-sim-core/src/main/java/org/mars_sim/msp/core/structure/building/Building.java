@@ -59,8 +59,7 @@ public class Building implements Malfunctionable, Serializable {
      * @param manager the building's building manager.
      * @throws BuildingException if building can not be created.
      */
-    public Building(BuildingTemplate template, BuildingManager manager) 
-            {
+    public Building(BuildingTemplate template, BuildingManager manager) {
         this(template.getType(), template.getXLoc(), template.getYLoc(), 
                 template.getFacing(), manager);
     }

@@ -59,8 +59,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSettlementConstructionProfit(int constructionSkill) 
-{
+    public double getSettlementConstructionProfit(int constructionSkill) {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((settlementConstructionValueCacheTime == null) || 
@@ -93,8 +92,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getAllConstructionSitesProfit(int constructionSkill) 
-{
+    public double getAllConstructionSitesProfit(int constructionSkill) {
         
         double result = 0D;
         
@@ -125,8 +123,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) 
-{
+    public double getConstructionSiteProfit(ConstructionSite site, int constructionSkill) {
         
         double result = 0D;
         
@@ -164,8 +161,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getNewConstructionSiteProfit(int constructionSkill) 
-{
+    public double getNewConstructionSiteProfit(int constructionSkill) {
         
         double result = 0D;
         Map<ConstructionStageInfo, Double> stageProfits = getConstructionStageProfit(
@@ -280,7 +276,7 @@ public class ConstructionValues implements Serializable {
      * @return value (VP).
      * @throws Exception if error getting value.
      */
-    double getConstructionStageValue(ConstructionStageInfo stageInfo) {
+    public double getConstructionStageValue(ConstructionStageInfo stageInfo) {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((stageInfoValueCacheTime == null) || 
@@ -355,8 +351,7 @@ public class ConstructionValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    private double getConstructionStageProfit(ConstructionStageInfo stageInfo, boolean checkMaterials) 
-{
+    private double getConstructionStageProfit(ConstructionStageInfo stageInfo, boolean checkMaterials) {
         double result = getConstructionStageValue(stageInfo) - getConstructionStageCost(stageInfo);
         if (checkMaterials && !hasConstructionMaterials(stageInfo)) result = 0D;
         

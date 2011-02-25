@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.00 2010-08-25
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
  
@@ -15,10 +15,15 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -145,6 +150,23 @@ public class BuildingManager implements Serializable {
     		if (building.hasFunction(functionName)) functionBuildings.add(building);
     	}
     	return functionBuildings;
+    }
+    
+    /**
+     * Gets the buildings in the settlement with a given building name.
+     * @param buildingName the building name.
+     * @return list of buildings.
+     */
+    public List<Building> getBuildingsOfName(String buildingName) {
+        List<Building> nameBuildings = new ArrayList<Building>();
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (building.getName().equalsIgnoreCase(buildingName)){
+                nameBuildings.add(building);
+            }
+        }
+        return nameBuildings;
     }
     
     /**
@@ -529,5 +551,93 @@ public class BuildingManager implements Serializable {
         result *= (wearCondition / 100D) * .75D + .25D;
         
         return result;
+    }
+    
+    /**
+     * Checks if a new building's proposed location is open or intersects with existing 
+     * buildings or construction sites.
+     * @param xLoc the new building's X location.
+     * @param yLoc the new building's Y location.
+     * @param width the new building's width (meters).
+     * @param length the new building's length (meters).
+     * @param facing the new building's facing (degrees clockwise from North).
+     * @return true if new building location is open.
+     */
+    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc, 
+            double width, double length, double facing) {
+        return checkIfNewBuildingLocationOpen(xLoc, yLoc, width, length, facing, null);
+    }
+    
+    /**
+     * Checks if a new building's proposed location is open or intersects with existing 
+     * buildings or construction sites.
+     * @param xLoc the new building's X location.
+     * @param yLoc the new building's Y location.
+     * @param width the new building's width (meters).
+     * @param length the new building's length (meters).
+     * @param facing the new building's facing (degrees clockwise from North).
+     * @param site the new construction site or null if none.
+     * @return true if new building location is open.
+     */
+    public boolean checkIfNewBuildingLocationOpen(double xLoc, double yLoc, 
+            double width, double length, double facing, ConstructionSite site) {
+        boolean goodLocation = true;
+        
+        // Create path for proposed new building position.
+        Rectangle2D newBuildingRect = new Rectangle2D.Double(xLoc + (width / 2D), 
+                yLoc + (length / 2D), width, length);
+        Path2D newBuildingPath = getPathFromRectangleRotation(newBuildingRect, facing);
+        
+        // Check to see if proposed new building position intersects with any existing buildings.
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+        while (i.hasNext()) {
+            Building existingBuilding = i.next();
+            Rectangle2D existingBuildingRect = new Rectangle2D.Double(existingBuilding.getXLocation() + 
+                    (existingBuilding.getWidth() / 2D), existingBuilding.getYLocation() + 
+                    (existingBuilding.getLength() / 2D), existingBuilding.getWidth(), existingBuilding.getLength());
+            Path2D existingBuildingPath = getPathFromRectangleRotation(existingBuildingRect, 
+                    existingBuilding.getFacing());
+            Area area = new Area(newBuildingPath);
+            area.intersect(new Area(existingBuildingPath));
+            if (!area.isEmpty()) {
+                goodLocation = false;
+                break;
+            }
+        }
+        
+        // Check to see if proposed new building position intersects with any existing construction sites.
+        Iterator<ConstructionSite> j = settlement.getConstructionManager().getConstructionSites().iterator();
+        while (j.hasNext()) {
+            ConstructionSite existingSite = j.next();
+            // Check if existing site is not the same as the new construction site.
+            if ((site == null) || (!site.equals(existingSite))) {
+                Rectangle2D existingSiteRect = new Rectangle2D.Double(existingSite.getXLocation() + 
+                        (existingSite.getWidth() / 2D), existingSite.getYLocation() + 
+                        (existingSite.getLength() / 2D), existingSite.getWidth(), existingSite.getLength());
+                Path2D existingSitePath = getPathFromRectangleRotation(existingSiteRect, 
+                        existingSite.getFacing());
+                Area area = new Area(newBuildingPath);
+                area.intersect(new Area(existingSitePath));
+                if (!area.isEmpty()) {
+                    goodLocation = false;
+                    break;
+                }
+            }
+        }
+        
+        return goodLocation;
+    }
+    
+    /**
+     * Creates a Path2D object from a rectangle with a given rotation.
+     * @param rectangle the rectangle.
+     * @param rotation the rotation (degrees clockwise from North).
+     * @return path representing rotated rectangle.
+     */
+    private Path2D getPathFromRectangleRotation(Rectangle2D rectangle, double rotation) {
+        double randianRotation = rotation * (Math.PI / 180D);
+        AffineTransform at = AffineTransform.getRotateInstance(randianRotation, rectangle.getCenterX(), 
+                rectangle.getCenterY());
+        return new Path2D.Double(rectangle, at);
     }
 }
