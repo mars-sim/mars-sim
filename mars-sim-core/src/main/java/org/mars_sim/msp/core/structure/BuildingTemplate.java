@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.00 2010-08-25
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;

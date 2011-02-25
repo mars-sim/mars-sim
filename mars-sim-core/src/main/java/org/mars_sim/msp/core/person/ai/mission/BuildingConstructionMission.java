@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.00 2011-02-19
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -19,6 +20,8 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.construction.*;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -118,8 +121,19 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 else if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                     // Create new site.
                     constructionSite = manager.createNewConstructionSite();
-                    // TODO Determine construction site location and facing.
-                    logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+                    
+                    // Determine construction site location and facing.
+                    ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+                    if (stageInfo != null) {
+                        constructionSite.setWidth(stageInfo.getWidth());
+                        constructionSite.setLength(stageInfo.getLength());
+                        positionNewConstructionSite(constructionSite, stageInfo);
+                        
+                        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+                    }
+                    else {
+                        endMission("New construction stage could not be determined.");
+                    }
                 }
                 
                 if (constructionSite != null) {
@@ -178,12 +192,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @param settlement the settlement.
      * @param site the construction site.
      * @param stageInfo the construction stage info.
+     * @param xLoc the X location of the new construction site (ignored if existing site).
+     * @param yLoc the Y location of the new construction site (ignored if existing site).
+     * @param facing the facing of the new construction site (ignored if existing site).
      * @param vehicles the construction vehicles.
      * @throws MissionException if error creating mission.
      */
     public BuildingConstructionMission(Collection<Person> members, Settlement settlement, 
-            ConstructionSite site, ConstructionStageInfo stageInfo, 
-            List<GroundVehicle> vehicles) {
+            ConstructionSite site, ConstructionStageInfo stageInfo, double xLoc, double yLoc,
+            double facing, List<GroundVehicle> vehicles) {
         
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, (Person) members.toArray()[0], 1);
@@ -195,8 +212,24 @@ public class BuildingConstructionMission extends Mission implements Serializable
         else {
             logger.log(Level.INFO, "New construction site added at " + settlement.getName());
             constructionSite = manager.createNewConstructionSite();
-            // TODO determine location and facing of construction site.
-            if (constructionSite == null) endMission("Construction site could not be created.");
+            
+            if (constructionSite != null) {
+                // Set new construction site location and facing.
+                constructionSite.setWidth(stageInfo.getWidth());
+                constructionSite.setLength(stageInfo.getLength());
+                
+                // TODO: Replace auto-positioning with set position/facing from parameters
+                // when mission creation wizard supports this.
+                positionNewConstructionSite(constructionSite, stageInfo);
+                /*
+                constructionSite.setXLocation(xLoc);
+                constructionSite.setYLocation(yLoc);
+                constructionSite.setFacing(facing);
+                */
+            }
+            else {
+                endMission("Construction site could not be created.");
+            }
         }
         
         if (constructionSite.hasUnfinishedStage()) {
@@ -772,5 +805,154 @@ public class BuildingConstructionMission extends Mission implements Serializable
      */
     public ConstructionStage getConstructionStage() {
         return constructionStage;
+    }
+    
+    /**
+     * Determines and sets the position of a new construction site.
+     * @param site the new construction site.
+     * @param foundationStageInfo the site's foundation stage info.
+     */
+    private void positionNewConstructionSite(ConstructionSite site, ConstructionStageInfo foundationStageInfo) {
+        
+        // Determine preferred building type from foundation stage info.
+        String buildingType = determinePreferredConstructedBuildingType(foundationStageInfo);
+        if (buildingType != null) {
+            boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().hasLifeSupport(buildingType);
+        
+            boolean goodPosition = false;
+        
+            if (hasLifeSupport) {
+                // Try to put building next to another inhabitable building.
+                List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+                Collections.shuffle(inhabitableBuildings);
+                Iterator<Building> i = inhabitableBuildings.iterator();
+                while (i.hasNext()) {
+                    goodPosition = positionNextToBuilding(site, i.next(), 0D);
+                    if (goodPosition) break;
+                }
+            }
+            else {
+                // Try to put building next to the same building type.
+                List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfName(buildingType);
+                Collections.shuffle(sameBuildings);
+                Iterator<Building> j = sameBuildings.iterator();
+                while (j.hasNext()) {
+                    goodPosition = positionNextToBuilding(site, j.next(), 0D);
+                    if (goodPosition) break;
+                }
+            }
+        
+            if (!goodPosition) {
+                // Try to put building next to another building.
+                // If not successful, try again 10m from each building and continue out at 10m increments 
+                // until a location is found.
+                BuildingManager buildingManager = settlement.getBuildingManager();
+                if (buildingManager.getBuildingNum() > 0) {
+                    for (int x = 10; !goodPosition; x+= 10) {
+                        List<Building> allBuildings = buildingManager.getBuildings();
+                        Collections.shuffle(allBuildings);
+                        Iterator<Building> i = allBuildings.iterator();
+                        while (i.hasNext()) {
+                            goodPosition = positionNextToBuilding(site, i.next(), (double) x);
+                            if (goodPosition) break;
+                        }
+                    }
+                }
+                else {
+                    // If no buildings at settlement, position new construction site at 0,0 with random facing.
+                    site.setXLocation(0D);
+                    site.setYLocation(0D);
+                    site.setFacing(RandomUtil.getRandomDouble(360D));
+                }
+            }
+        }
+    }
+    
+    /**
+     * Determines the preferred construction building type for a given foundation.
+     * @param foundationStageInfo the foundation stage info.
+     * @return preferred building type or null if none found.
+     */
+    private String determinePreferredConstructedBuildingType(ConstructionStageInfo foundationStageInfo) {
+        
+        String result = null;
+        
+        ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
+        List<String> constructableBuildings = ConstructionUtil.getConstructableBuildingNames(foundationStageInfo);
+        Iterator<String> i = constructableBuildings.iterator();
+        double maxBuildingValue = Double.NEGATIVE_INFINITY;
+        while (i.hasNext()) {
+            String buildingType = i.next();
+            double buildingValue = values.getConstructionStageValue(foundationStageInfo);
+            if (buildingValue > maxBuildingValue) {
+                maxBuildingValue = buildingValue;
+                result = buildingType;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Positions a new construction site near an existing building.
+     * @param site the new construction site.
+     * @param building the existing building.
+     * @param separationDistance the separation distance (meters) from the building.
+     * @return true if construction site could be positioned, false if not.
+     */
+    private boolean positionNextToBuilding(ConstructionSite site, Building building, double separationDistance) {
+        boolean goodPosition = false;
+        
+        final int front = 0;
+        final int back = 1;
+        final int right = 2;
+        final int left = 3;
+        
+        List<Integer> directions = new ArrayList<Integer>(4);
+        directions.add(front);
+        directions.add(back);
+        directions.add(right);
+        directions.add(left);
+        Collections.shuffle(directions);
+        
+        double direction = 0D;
+        double structureDistance = 0D;
+        
+        for (int x = 0; x < directions.size(); x++) {
+            switch (directions.get(x)) {
+                case front: direction = building.getFacing();
+                            structureDistance = (building.getLength() / 2D) + (site.getLength() / 2D);
+                            break;
+                case back: direction = building.getFacing() + 180D;
+                            structureDistance = (building.getLength() / 2D) + (site.getLength() / 2D);
+                            break;
+                case right:  direction = building.getFacing() + 90D;
+                            structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+                            break;
+                case left:  direction = building.getFacing() + 270D;
+                            structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+            }
+            
+            goodPosition = true;
+            
+            double distance = structureDistance + separationDistance;
+            double radianDirection = Math.PI * direction / 180D;
+            double rectCenterX = building.getXLocation() + (distance * Math.sin(radianDirection));
+            double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
+            double rectRotation = building.getFacing();
+            
+            // Check to see if proposed new site position intersects with any existing buildings 
+            // or construction sites.
+            if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
+                    rectCenterY, site.getWidth(), site.getLength(), rectRotation, site)) {
+                // Set the new site here.
+                site.setXLocation(rectCenterX);
+                site.setYLocation(rectCenterY);
+                site.setFacing(building.getFacing());
+                break;
+            }
+        }
+        
+        return goodPosition;
     }
 }

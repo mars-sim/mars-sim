@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -15,12 +15,17 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -112,7 +117,24 @@ public class Resupply implements Serializable {
 		// Deliver buildings.
 		BuildingManager buildingManager = settlement.getBuildingManager();
 		Iterator<BuildingTemplate> buildingI = newBuildings.iterator();
-		while (buildingI.hasNext()) buildingManager.addBuilding(buildingI.next());
+		while (buildingI.hasNext()) {
+		    BuildingTemplate template = buildingI.next();
+		    
+		    // Check if building location conflicts with an existing building or construction site.
+		    BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+		    double width = buildingConfig.getWidth(template.getType());
+		    double length = buildingConfig.getLength(template.getType());
+		    if (buildingManager.checkIfNewBuildingLocationOpen(template.getXLoc(), template.getYLoc(), 
+		            width, length, template.getFacing())) {
+		        // Add building at its specified location.
+		        buildingManager.addBuilding(template);
+		    }
+		    else {
+		        // Determine another location for the new building.
+		        BuildingTemplate positionedTemplate = positionNewResupplyBuilding(template);
+		        buildingManager.addBuilding(positionedTemplate);
+		    }
+		}
 		
 		// Deliver vehicles.
 		UnitManager unitManager = Simulation.instance().getUnitManager();
@@ -176,4 +198,125 @@ public class Resupply implements Serializable {
 		// Set isDelivered to true;
 		isDelivered = true;
 	}
+	
+    /**
+     * Determines and sets the position of a new resupply building.
+     * @param template the building template.
+     * @return the repositioned building template.
+     */
+    private BuildingTemplate positionNewResupplyBuilding(BuildingTemplate template) {
+        
+        BuildingTemplate newPosition = null;
+        
+        boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().
+                hasLifeSupport(template.getType());
+        if (hasLifeSupport) {
+            // Try to put building next to another inhabitable building.
+            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+            Collections.shuffle(inhabitableBuildings);
+            Iterator<Building> i = inhabitableBuildings.iterator();
+            while (i.hasNext()) {
+                newPosition = positionNextToBuilding(template, i.next(), 0D);
+                if (newPosition != null) break;
+            }
+        }
+        else {
+            // Try to put building next to the same building type.
+            List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfName(template.getType());
+            Collections.shuffle(sameBuildings);
+            Iterator<Building> j = sameBuildings.iterator();
+            while (j.hasNext()) {
+                newPosition = positionNextToBuilding(template, j.next(), 0D);
+                if (newPosition != null) break;
+            }
+        }
+        
+        if (newPosition == null) {
+            // Try to put building next to another building.
+            // If not successful, try again 10m from each building and continue out at 10m increments 
+            // until a location is found.
+            BuildingManager buildingManager = settlement.getBuildingManager();
+            if (buildingManager.getBuildingNum() > 0) {
+                for (int x = 10; newPosition == null; x+= 10) {
+                    List<Building> allBuildings = buildingManager.getBuildings();
+                    Collections.shuffle(allBuildings);
+                    Iterator<Building> i = allBuildings.iterator();
+                    while (i.hasNext()) {
+                        newPosition = positionNextToBuilding(template, i.next(), (double) x);
+                        if (newPosition != null) break;
+                    }
+                }
+            }
+            else {
+                // If no buildings at settlement, position new building at 0,0 with random facing.
+                newPosition = new BuildingTemplate(template.getType(), 0D, 0D, RandomUtil.getRandomDouble(360D));
+            }
+        }
+        
+        return newPosition;
+    }
+    
+    /**
+     * Positions a new construction site near an existing building.
+     * @param template the new building template.
+     * @param building the existing building.
+     * @param separationDistance the separation distance (meters) from the building.
+     * @return new building template with determined position, or null if none found.
+     */
+    private BuildingTemplate positionNextToBuilding(BuildingTemplate template, Building building, 
+            double separationDistance) {
+        BuildingTemplate newPosition = null;
+        
+        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getType());
+        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getType());
+        
+        final int front = 0;
+        final int back = 1;
+        final int right = 2;
+        final int left = 3;
+        
+        List<Integer> directions = new ArrayList<Integer>(4);
+        directions.add(front);
+        directions.add(back);
+        directions.add(right);
+        directions.add(left);
+        Collections.shuffle(directions);
+        
+        double direction = 0D;
+        double structureDistance = 0D;
+        
+        for (int x = 0; x < directions.size(); x++) {
+            switch (directions.get(x)) {
+                case front: direction = building.getFacing();
+                            structureDistance = (building.getLength() / 2D) + (length / 2D);
+                            break;
+                case back: direction = building.getFacing() + 180D;
+                            structureDistance = (building.getLength() / 2D) + (length / 2D);
+                            break;
+                case right:  direction = building.getFacing() + 90D;
+                            structureDistance = (building.getWidth() / 2D) + (width / 2D);
+                            break;
+                case left:  direction = building.getFacing() + 270D;
+                            structureDistance = (building.getWidth() / 2D) + (width / 2D);
+            }
+            
+            double distance = structureDistance + separationDistance;
+            double radianDirection = Math.PI * direction / 180D;
+            double rectCenterX = building.getXLocation() + (distance * Math.sin(radianDirection));
+            double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
+            double rectRotation = building.getFacing();
+            
+            // Check to see if proposed new building position intersects with any existing buildings 
+            // or construction sites.
+            if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
+                    rectCenterY, width, length, rectRotation)) {
+                // Set the new building here.
+                newPosition = new BuildingTemplate(template.getType(), rectCenterX, rectCenterY, 
+                        building.getFacing());
+                break;
+            }
+        }
+        
+        return newPosition;
+    }
 }

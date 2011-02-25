@@ -48,8 +48,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType)
-{
+    public static List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) {
         return getConstructionStageInfoList(stageType, Integer.MAX_VALUE);
     }
     
@@ -77,8 +76,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getFoundationConstructionStageInfoList()
-{ 
+    public static List<ConstructionStageInfo> getFoundationConstructionStageInfoList() { 
         return getFoundationConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -98,8 +96,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getFrameConstructionStageInfoList()
-{
+    public static List<ConstructionStageInfo> getFrameConstructionStageInfoList() {
         return getFrameConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -119,8 +116,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getBuildingConstructionStageInfoList()
-{
+    public static List<ConstructionStageInfo> getBuildingConstructionStageInfoList() {
         return getBuildingConstructionStageInfoList(Integer.MAX_VALUE);
     }
     
@@ -140,8 +136,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getAllConstructionStageInfoList()
-             {
+    public static List<ConstructionStageInfo> getAllConstructionStageInfoList() {
         
         ConstructionConfig config = SimulationConfig.instance().getConstructionConfiguration();
         List<ConstructionStageInfo> foundations = config.getConstructionStageInfoList(
@@ -166,8 +161,7 @@ public class ConstructionUtil {
      * @return list of building names.
      * @throws Exception if error getting list.
      */
-    public static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo)
-{
+    public static List<String> getConstructableBuildingNames(ConstructionStageInfo stageInfo) {
         
         List<String> result = new ArrayList<String>();
         
@@ -193,8 +187,7 @@ public class ConstructionUtil {
      * @return list of construction stage info.
      * @throws Exception if error getting list.
      */
-    public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo)
-{
+    public static List<ConstructionStageInfo> getNextPossibleStages(ConstructionStageInfo stageInfo) {
         
         List<ConstructionStageInfo> result = new ArrayList<ConstructionStageInfo>();
         
@@ -224,8 +217,7 @@ public class ConstructionUtil {
      * @return the prerequisite stage info or null if none.
      * @throws Exception if error finding prerequisite stage info.
      */
-    public static ConstructionStageInfo getPrerequisiteStage(ConstructionStageInfo stageInfo)
-{
+    public static ConstructionStageInfo getPrerequisiteStage(ConstructionStageInfo stageInfo) {
         ConstructionStageInfo result = null;
         
         String prerequisiteStageName = stageInfo.getPrerequisiteStage();

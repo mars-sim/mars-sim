@@ -72,11 +72,27 @@ public class ConstructionSite implements Serializable {
     }
     
     /**
+     * Sets the width of the construction site.
+     * @param width the width (meters).
+     */
+    public void setWidth(double width) {
+        this.width = width;
+    }
+    
+    /**
      * Gets the length of the construction site.
      * @return length (meters).
      */
     public double getLength() {
         return length;
+    }
+    
+    /**
+     * Sets the length of the construction site.
+     * @param length the length (meters).
+     */
+    public void setLength(double length) {
+        this.length = length;
     }
     
     /**

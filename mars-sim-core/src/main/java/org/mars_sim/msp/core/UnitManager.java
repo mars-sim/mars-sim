@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.00 2010-08-26
+ * @version 3.00 2011-02-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -489,11 +489,17 @@ public class UnitManager implements Serializable {
                 if (settlementName != null) {
                     Collection<Settlement> col = CollectionUtils.getSettlement(units);
                     settlement = CollectionUtils.getSettlement(col, settlementName);
+                    if (settlement == null) {
+                        // If settlement cannot be found that matches the settlement name,
+                        // put person in a randomly selected settlement.
+                        logger.log(Level.WARNING, "Person " + name + " could not be located" +
+                                " at " + settlementName + " because the settlement doesn't exist.");
+                        settlement = CollectionUtils.getRandomRegressionSettlement(col);
+                    }
                 } else {
                     Collection<Settlement> col = CollectionUtils.getSettlement(units);
                     settlement = CollectionUtils.getRandomRegressionSettlement(col);
                 }
-
 
                 // Create person and add to the unit manager.
                 Person person = new Person(name, gender, settlement);
