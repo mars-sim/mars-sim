@@ -37,11 +37,11 @@
 			
 			<!-- Equipment -->
 			<equipment type="EVA Suit" number="8" />
-			<equipment type="Gas Canister" number="10" />
-			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="30" />
-			<equipment type="Large Bag" number="20" />
-			<equipment type="Specimen Box" number="20" />
+			<equipment type="Gas Canister" number="60" />
+			<equipment type="Barrel" number="60" />
+			<equipment type="Bag" number="60" />
+			<equipment type="Large Bag" number="60" />
+			<equipment type="Specimen Box" number="60" />
 			
 			<!-- Resources -->
 			<!-- type: the type of resource (see resources.txt) -->
@@ -80,11 +80,11 @@
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<equipment type="EVA Suit" number="16" />
-			<equipment type="Gas Canister" number="10" />
-			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="40" />
-			<equipment type="Large Bag" number="30" />
-			<equipment type="Specimen Box" number="40" />
+			<equipment type="Gas Canister" number="100" />
+			<equipment type="Barrel" number="100" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Large Bag" number="100" />
+			<equipment type="Specimen Box" number="100" />
 			<resource type="waste water" amount="200.0" />
 			<resource type="carbon dioxide" amount="1000.0" />
 			<part-package name="package 2" number="1" />
@@ -114,11 +114,11 @@
 			<vehicle type="Cargo Rover" number="1" />
 			<vehicle type="Light Utility Vehicle" number="2" />
 			<equipment type="EVA Suit" number="24" />
-			<equipment type="Gas Canister" number="10" />
-			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="60" />
-			<equipment type="Large Bag" number="40" />
-			<equipment type="Specimen Box" number="60" />
+			<equipment type="Gas Canister" number="140" />
+			<equipment type="Barrel" number="140" />
+			<equipment type="Bag" number="140" />
+			<equipment type="Large Bag" number="140" />
+			<equipment type="Specimen Box" number="140" />
 			<resource type="waste water" amount="300.0" />
 			<resource type="carbon dioxide" amount="2000.0" />
 			<part-package name="package 3" number="1" />
@@ -158,12 +158,12 @@
 			<vehicle type="Transport Rover" number="2" />
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="3" />
-			<equipment type="EVA Suit" number="24" />
-			<equipment type="Gas Canister" number="10" />
-			<equipment type="Barrel" number="10" />
-			<equipment type="Bag" number="100" />
-			<equipment type="Large Bag" number="50" />
-			<equipment type="Specimen Box" number="100" />
+			<equipment type="EVA Suit" number="48" />
+			<equipment type="Gas Canister" number="260" />
+			<equipment type="Barrel" number="260" />
+			<equipment type="Bag" number="260" />
+			<equipment type="Large Bag" number="260" />
+			<equipment type="Specimen Box" number="260" />
 			<resource type="waste water" amount="1000.0" />
 			<resource type="carbon dioxide" amount="5000.0" />
 			<part-package name="package 4" number="1" />
@@ -173,11 +173,11 @@
 	
 	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
-	
+		
 		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
 			<location longitude="random" latitude="random" />
 		</settlement>
-	
+		
 		<settlement name="Port Zubrin" template="Mars Direct Base (phase 3)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>
@@ -201,7 +201,7 @@
 		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
 		<settlement name="Garvin Station" template="Mars Direct Base (phase 2)">
 			<location longitude="random" latitude="random" />
-		</settlement>	
+		</settlement>
 		
 		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
 		<settlement name="Meyer Station" template="Mars Direct Base (phase 2)">
@@ -235,11 +235,11 @@
 		<settlement name="random" template="Mars Direct Base (phase 1)">
 			<location longitude="random" latitude="random" />
 		</settlement>
-	
+		
 		<settlement name="random" template="Mars Direct Base (phase 1)">
 			<location longitude="random" latitude="random" />
 		</settlement>					
-	
+		
 	</initial-settlement-list>
 	
 	<!-- List of settlement names -->

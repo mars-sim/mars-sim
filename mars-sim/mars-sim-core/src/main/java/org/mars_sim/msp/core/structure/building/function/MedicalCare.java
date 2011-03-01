@@ -191,13 +191,12 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		medicalStation.requestTreatment(problem);
 		
 		// Add person to building if possible.
-//		try {
-			if (getBuilding().hasFunction(LifeSupport.NAME)) {
-				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				lifeSupport.addPerson(problem.getSufferer());
+		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+			LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+			if (!lifeSupport.containsPerson(problem.getSufferer())) {
+			    lifeSupport.addPerson(problem.getSufferer());
 			}
-//		}
-//		catch (BuildingException e) {}
+		}
 	}
 	
 	/**
@@ -211,13 +210,12 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		medicalStation.startTreatment(problem, treatmentDuration);
         
 		// Add person to building if possible.
-//		try {
-			if (getBuilding().hasFunction(LifeSupport.NAME)) {
-				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-				lifeSupport.addPerson(problem.getSufferer());
+		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+			LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+			if (!lifeSupport.containsPerson(problem.getSufferer())) {
+			    lifeSupport.addPerson(problem.getSufferer());
 			}
-//		}
-//		catch (BuildingException e) {}
+		}
 	}
 	
 	/**

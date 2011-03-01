@@ -64,9 +64,9 @@ public class GoodsManager implements Serializable {
 	private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
 	private static final int OUTSTANDING_MAINT_PART_MODIFIER = 10;
 	
-	// Value multiplyer factors for certain goods.
+	// Value multiplier factors for certain goods.
 	private static final double EVA_SUIT_FACTOR = 100D;
-	private static final double VEHICLE_FACTOR = 100D;
+	private static final double VEHICLE_FACTOR = 1000D;
 	
 	// Data members
 	private Settlement settlement;
@@ -219,8 +219,7 @@ public class GoodsManager implements Serializable {
 	 * @return value (value points / kg)
 	 * @throws Exception if error determining resource value.
 	 */
-	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) 
-			{
+	private double determineAmountResourceGoodValue(Good resourceGood, double supply, boolean useCache) {
 		double value = 0D;
 		
 		supply++;
@@ -526,7 +525,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = outputsValue / 2D;
             
-            demand = (resourceItems / totalItems) * totalInputsValue;
+            demand = (resourceItems / totalItems) * totalInputsValue / resourceItems;
 		}
 		
 		return demand;
@@ -585,14 +584,13 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = (resourceItems / totalItems) * totalInputsValue;
+            demand = (resourceItems / totalItems) * totalInputsValue / resourceItems;
         }
         
         return demand;
     }
     
-    private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) 
-{
+    private Map<AmountResource, Double> getAllPrerequisiteConstructionResources(ConstructionStageInfo stage) {
         Map<AmountResource, Double> result = new HashMap<AmountResource, Double>(stage.getResources());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
@@ -630,8 +628,7 @@ public class GoodsManager implements Serializable {
         return result;
     }
     
-    private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) 
-{
+    private Map<Part, Integer> getAllPrerequisiteConstructionParts(ConstructionStageInfo stage) {
         Map<Part, Integer> result = new HashMap<Part, Integer>(stage.getParts());
         
         ConstructionStageInfo preStage1 = ConstructionUtil.getPrerequisiteStage(stage);
@@ -988,8 +985,8 @@ public class GoodsManager implements Serializable {
             double totalInputsValue = outputsValue / 2D;
             double partNum = partInput.getAmount();
             
-            //demand = totalInputsValue * (partNum / totalInputNum) / partNum;
-            demand = totalInputsValue * (partNum / totalInputNum);
+            demand = totalInputsValue * (partNum / totalInputNum) / partNum;
+            //demand = totalInputsValue * (partNum / totalInputNum);
 		}
 		
 		return demand;
@@ -1048,7 +1045,7 @@ public class GoodsManager implements Serializable {
             
             double totalInputsValue = stageValue / 2D;
             
-            demand = totalInputsValue * (partNumber / totalNumber);
+            demand = totalInputsValue * (partNumber / totalNumber) / partNumber;
         }
         
         return demand;
@@ -1096,8 +1093,7 @@ public class GoodsManager implements Serializable {
 	 * @return the value (value points) 
 	 * @throws Exception if error determining value.
 	 */
-	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) 
-			{
+	private double determineEquipmentGoodValue(Good equipmentGood, double supply, boolean useCache) {
 		double value = 0D;
 		double demand = 0D;
 		
@@ -1290,8 +1286,7 @@ public class GoodsManager implements Serializable {
 	 * @return the value (value points).
 	 * @throws Exception if error determining vehicle value.
 	 */
-	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) 
-{
+	private double determineVehicleGoodValue(Good vehicleGood, double supply, boolean useCache) {
 		double value = 0D;
 		
 		String vehicleType = vehicleGood.getName();
