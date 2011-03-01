@@ -742,12 +742,13 @@ public class MalfunctionManager implements Serializable {
     	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
     	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
     	
-    	double avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
+    	double avgMalfunctionsPerOrbit = 0D;
     	
     	if (totalTimeOrbits < 1D) {
-    		double estimateTime = 1D - totalTimeOrbits;
-    		double estimatedMalfunctionsPerOrbit = ESTIMATED_MALFUNCTIONS_PER_ORBIT * estimateTime;
-    		avgMalfunctionsPerOrbit += estimatedMalfunctionsPerOrbit;
+    	    avgMalfunctionsPerOrbit = (numberMalfunctions + ESTIMATED_MALFUNCTIONS_PER_ORBIT) / 2D;
+    	}
+    	else {
+    	    avgMalfunctionsPerOrbit = numberMalfunctions / totalTimeOrbits;
     	}
     	
     	return avgMalfunctionsPerOrbit;
@@ -765,12 +766,13 @@ public class MalfunctionManager implements Serializable {
     	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
     	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
     	
-    	double avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
+    	double avgMaintenancesPerOrbit = 0D;
     	
     	if (totalTimeOrbits < 1D) {
-    		double estimateTime = 1D - totalTimeOrbits;
-    		double estimatedMaintenancesPerOrbit = ESTIMATED_MAINTENANCES_PER_ORBIT * estimateTime;
-    		avgMaintenancesPerOrbit += estimatedMaintenancesPerOrbit;
+    	    avgMaintenancesPerOrbit = (numberMaintenances + ESTIMATED_MAINTENANCES_PER_ORBIT) / 2D;
+    	}
+    	else {
+    	    avgMaintenancesPerOrbit = numberMaintenances / totalTimeOrbits;
     	}
     	
     	return avgMaintenancesPerOrbit;
