@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.00 2011-02-23
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
  

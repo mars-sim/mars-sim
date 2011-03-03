@@ -499,7 +499,7 @@
 		</building>
 		
 		<!-- Starting ERV base building project for salvaging (cannot be refitted). -->
-		<building name="starting erv base" width="4.0" length="6.0" constructable="false" salvagable="true" 
+		<building name="starting erv base" width="10.0" length="10.0" constructable="false" salvagable="true" 
 		 work-time="75.0" skill-required="2" frame="erv base frame" >
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />

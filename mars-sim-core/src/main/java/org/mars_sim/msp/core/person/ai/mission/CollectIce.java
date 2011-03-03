@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -96,7 +96,7 @@ public class CollectIce extends CollectResourcesMission {
 				AmountResource iceResource = AmountResource.findAmountResource("ice");
 				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
 				result *= value;
-                if (result > 10D) result = 10D;
+                if (result > 100D) result = 100D;
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE, "Error checking good value of ice.");

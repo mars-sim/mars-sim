@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -84,7 +84,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
             }
         }
         
-        double medicalPointValue = demand / (supply + 1D);
+        double medicalPointValue = demand / (supply + 1D) / 10D;
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         double tech = config.getMedicalCareTechLevel(buildingName);
