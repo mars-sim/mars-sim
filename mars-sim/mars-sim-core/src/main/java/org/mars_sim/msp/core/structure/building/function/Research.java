@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -61,45 +61,52 @@ public class Research extends Function implements Lab, Serializable {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
         
+        double result = 0D;
+        
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
         List<String> specialities = config.getResearchSpecialities(buildingName);
         
-        double researchDemand = 0D;
         Iterator<String> i = specialities.iterator();
         while (i.hasNext()) {
             String speciality = i.next();
+            
+            double researchDemand = 0D;
             Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
             while (j.hasNext()) 
                 researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality);
-        }
         
-        double researchSupply = 0D;
-        boolean removedBuilding = false;
-        Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
-        while (k.hasNext()) {
-            Building building = k.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
-                removedBuilding = true;
-            }
-            else {
-                Research researchFunction = (Research) building.getFunction(NAME);
-                int techLevel = researchFunction.techLevel;
-                int labSize = researchFunction.researcherCapacity;
-                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
-                    String speciality = researchFunction.getTechSpecialities()[x];
-                    if (specialities.contains(speciality)) researchSupply += techLevel * labSize * wearModifier;
+            double researchSupply = 0D;
+            boolean removedBuilding = false;
+            Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
+            while (k.hasNext()) {
+                Building building = k.next();
+                if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+                    removedBuilding = true;
+                }
+                else {
+                    Research researchFunction = (Research) building.getFunction(NAME);
+                    int techLevel = researchFunction.techLevel;
+                    int labSize = researchFunction.researcherCapacity;
+                    double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                    for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
+                        String researchSpeciality = researchFunction.getTechSpecialities()[x];
+                        if (speciality.equals(researchSpeciality)) {
+                            researchSupply += techLevel * labSize * wearModifier;
+                        }
+                    }
                 }
             }
+            
+            double existingResearchValue = researchDemand / (researchSupply + 1D);
+            
+            int techLevel = config.getResearchTechLevel(buildingName);
+            int labSize = config.getResearchCapacity(buildingName);
+            double buildingResearchSupply = techLevel * labSize;
+            
+            result += buildingResearchSupply * existingResearchValue;
         }
         
-        double existingResearchValue = researchDemand / (researchSupply + 1D);
-        
-        int techLevel = config.getResearchTechLevel(buildingName);
-        int labSize = config.getResearchCapacity(buildingName);
-        double buildingResearchSupply = specialities.size() * techLevel * labSize;
-        
-        return buildingResearchSupply * existingResearchValue;
+        return result;
     }
 	
 	/**

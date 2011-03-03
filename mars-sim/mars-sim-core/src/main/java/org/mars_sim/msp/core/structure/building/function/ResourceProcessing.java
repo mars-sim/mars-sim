@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -26,6 +26,7 @@ import java.util.List;
 public class ResourceProcessing extends Function implements Serializable {
         
 	public static final String NAME = "Resource Processing";
+	private static final double PROCESS_MAX_VALUE = 10D;
         
 	private double powerDownProcessingLevel;
     private List<ResourceProcess> resourceProcesses;
@@ -41,13 +42,8 @@ public class ResourceProcessing extends Function implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 			
-//		try {
-			powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getName());
-			resourceProcesses = config.getResourceProcesses(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("ResourceProcessing.constructor: " + e.getMessage());
-//		}
+		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getName());
+		resourceProcesses = config.getResourceProcesses(building.getName());
 	}
     
     /**
@@ -97,6 +93,7 @@ public class ResourceProcessing extends Function implements Serializable {
             processValue -= powerValue;
             
             if (processValue < 0D) processValue = 0D;
+            if (processValue > PROCESS_MAX_VALUE) processValue = PROCESS_MAX_VALUE;
             result += processValue;
         }
         

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -52,8 +52,8 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
         
-        // Demand is one ground vehicle capacity for every four ground vehicles.
-        double demand = settlement.getAllAssociatedVehicles().size() / 4D;
+        // Demand is one ground vehicle capacity for every ground vehicles.
+        double demand = settlement.getAllAssociatedVehicles().size();
         
         double supply = 0D;
         boolean removedBuilding = false;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 
@@ -12,6 +12,8 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.*;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -84,6 +86,7 @@ public class Manufacture extends Function implements Serializable {
         double buildingTech = config.getManufactureTechLevel(buildingName);
         
         // Determine demand as highest manufacturing process value for settlement.
+        /*
         double demand = 0D;
         Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
         while (i.hasNext()) {
@@ -93,7 +96,14 @@ public class Manufacture extends Function implements Serializable {
                 if (value > demand) demand = value;
             }
         }
-        if (demand > 1000D) demand = 1000D;
+        demand /= 1000D;
+        */
+        
+        double demand = 0D;
+        Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+        while (i.hasNext()) {
+            demand += i.next().getMind().getSkillManager().getSkillLevel(Skill.MATERIALS_SCIENCE);
+        }
         
         double supply = 0D;
         boolean removedBuilding = false;
@@ -117,7 +127,7 @@ public class Manufacture extends Function implements Serializable {
         double processes = config.getManufactureConcurrentProcesses(buildingName);
         double manufactureValue = (buildingTech * buildingTech) * processes;
         
-        return manufactureValue * baseManufactureValue / 1000D;
+        return manufactureValue * baseManufactureValue;
     }
 	
 	/**

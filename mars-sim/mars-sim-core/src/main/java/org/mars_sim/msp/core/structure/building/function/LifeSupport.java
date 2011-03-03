@@ -120,7 +120,7 @@ public class LifeSupport extends Function implements Serializable {
         double power = config.getLifeSupportPowerRequirement(buildingName);
         double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
         double powerPerSol = power * hoursInSol;
-        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
         result -= powerValue;
         
         if (result < 0D) result = 0D;

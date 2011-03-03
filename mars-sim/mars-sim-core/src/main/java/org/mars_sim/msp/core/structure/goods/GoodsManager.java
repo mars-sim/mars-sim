@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-03
  * @author Scott Davis
  */
 
@@ -547,13 +547,52 @@ public class GoodsManager implements Serializable {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) 
-                    && stage.isConstructable()) {
+                    && isLocallyConstructable(stage)) {
                 double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
                 if (constructionDemand > demand) demand = constructionDemand;
             }
         }
         
         return demand;
+    }
+    
+    /**
+     * Checks if a building construction stage can be constructed at the local settlement.
+     * @param buildingStage the building construction stage info.
+     * @return true if building can be constructed.
+     */
+    private boolean isLocallyConstructable(ConstructionStageInfo buildingStage) {
+        boolean result = false;
+        
+        if (buildingStage.isConstructable()) {
+            ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+            if (frameStage != null) {
+                ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+                if (foundationStage != null) {
+                    if (frameStage.isConstructable() && foundationStage.isConstructable()) {
+                        result = true;
+                    }
+                    else {
+                        // Check if any existing buildings have same frame stage and can be refit or refurbished 
+                        // into new building.
+                        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+                        while (i.hasNext()) {
+                            ConstructionStageInfo tempBuildingStage = ConstructionUtil.getConstructionStageInfo(
+                                    i.next().getName());
+                            if (tempBuildingStage != null) {
+                                ConstructionStageInfo tempFrameStage = ConstructionUtil.getPrerequisiteStage(
+                                        tempBuildingStage);
+                                if (frameStage.equals(tempFrameStage)) {
+                                    result = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+        
+        return result;
     }
     
     /**
@@ -1008,7 +1047,7 @@ public class GoodsManager implements Serializable {
             ConstructionStageInfo stage = i.next();
             double stageValue = stageValues.get(stage);
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) && 
-                    stage.isConstructable()) {
+                    isLocallyConstructable(stage)) {
                 double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
                 if (constructionStageDemand > demand) demand = constructionStageDemand;
             }
