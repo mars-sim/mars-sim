@@ -14,92 +14,30 @@
 		<!-- Parts -->
 		<!-- type: the type of part (see parts.xml) -->
 		<!-- number: the number of parts. -->
-		<part type="airleak patch" number="80" />
-		<part type="co2 extinguisher" number="13" />
-		<part type="rover wheel" number="6" />
-		<part type="gasket" number="47" />
-		<part type="timing belt" number="8" />
-		<part type="valve" number="24" />
-		<part type="epoxy resin bottle" number="90" />
-		<part type="spark plug" number="9" />
-		<part type="coolant bottle" number="9" />
-		<part type="electrical wire" number="165" />
-		<part type="power cable" number="8" />
-		<part type="wire connector" number="108" />
-		<part type="plastic tubing" number="30" />
-		<part type="lubricant bottle" number="11" />
-		<part type="rover battery" number="2" />
-		<part type="radio antenna" number="4" />
-		<part type="satellite dish" number="2" />
-		<part type="communications circuit board" number="2" />
-		<part type="navigation circuit board" number="1" />
-		<part type="suit heating unit" number="4" />
-		<part type="plastic pipe" number="9" />
-		<part type="steel pipe" number="6" />
-		<part type="copper pipe" number="6" />
-		<part type="iron pipe" number="6" />
-		<part type="eva helmet" number="8" />
-		<part type="helmet visor" number="4" />
-		<part type="counter pressure suit" number="8" />
-		<part type="coveralls" number="8" />
-		<part type="eva gloves" number="8" />
-		<part type="eva boots" number="8" />
-		<part type="eva pads" number="8" />
-		<part type="eva backpack" number="4" />
-		<part type="eva antenna" number="16" />
-		<part type="eva battery" number="8" />
-		<part type="eva radio" number="10" />
-		<part type="fuel pump" number="1" />
-		<part type="oxygen pump" number="1" />
-		<part type="rover windshield" number="1" />
-		<part type="rover window" number="2" />
-		<part type="winch" number="1" />
-		<part type="small electric motor" number="1" />
-		<part type="large electric motor" number="2" />
-		<part type="rover chassis panel" number="2" />
-		<part type="rover generator" number="1" />
-		<part type="rover control panel" number="1" />
-		<part type="rover fuel tank" number="1" />
-		<part type="rover oxygen tank" number="1" />
-		<part type="rover water tank" number="1" />
-		<part type="electric heating element" number="13" />
-		<part type="pneumatic drill" number="1" />
-		<part type="backhoe" number="1" />
-		<part type="bulldozer blade" number="1" />
-		<part type="soil compactor" number="1" />
-		<part type="crane boom" number="1" />
-		<part type="small wheel" number="1" />
-		<part type="utility vehicle control panel" number="1" />
-		<part type="solar panel" number="2" />
-		
-	</part-package>
-	
-	<part-package name="package 2" >
-	
-		<part type="airleak patch" number="153" />
-		<part type="co2 extinguisher" number="23" />
-		<part type="rover wheel" number="6" />
-		<part type="gasket" number="78" />
-		<part type="timing belt" number="8" />
-		<part type="valve" number="40" />
-		<part type="epoxy resin bottle" number="143" />
-		<part type="spark plug" number="9" />
-		<part type="coolant bottle" number="9" />
-		<part type="electrical wire" number="256" />
-		<part type="power cable" number="12" />
-		<part type="wire connector" number="161" />
-		<part type="plastic tubing" number="52" />
-		<part type="lubricant bottle" number="12" />
-		<part type="rover battery" number="2" />
-		<part type="radio antenna" number="5" />
-		<part type="satellite dish" number="3" />
-		<part type="communications circuit board" number="2" />
-		<part type="navigation circuit board" number="1" />
-		<part type="suit heating unit" number="9" />
-		<part type="plastic pipe" number="15" />
-		<part type="steel pipe" number="9" />
-		<part type="copper pipe" number="11" />
-		<part type="iron pipe" number="9" />
+		<part type="airleak patch" number="160" />
+		<part type="co2 extinguisher" number="26" />
+		<part type="rover wheel" number="12" />
+		<part type="gasket" number="94" />
+		<part type="timing belt" number="16" />
+		<part type="valve" number="48" />
+		<part type="epoxy resin bottle" number="180" />
+		<part type="spark plug" number="18" />
+		<part type="coolant bottle" number="18" />
+		<part type="electrical wire" number="330" />
+		<part type="power cable" number="16" />
+		<part type="wire connector" number="216" />
+		<part type="plastic tubing" number="60" />
+		<part type="lubricant bottle" number="22" />
+		<part type="rover battery" number="4" />
+		<part type="radio antenna" number="8" />
+		<part type="satellite dish" number="4" />
+		<part type="communications circuit board" number="4" />
+		<part type="navigation circuit board" number="2" />
+		<part type="suit heating unit" number="8" />
+		<part type="plastic pipe" number="18" />
+		<part type="steel pipe" number="12" />
+		<part type="copper pipe" number="12" />
+		<part type="iron pipe" number="12" />
 		<part type="eva helmet" number="16" />
 		<part type="helmet visor" number="8" />
 		<part type="counter pressure suit" number="16" />
@@ -110,153 +48,215 @@
 		<part type="eva backpack" number="8" />
 		<part type="eva antenna" number="32" />
 		<part type="eva battery" number="16" />
-		<part type="eva radio" number="19" />
-		<part type="fuel pump" number="1" />
-		<part type="oxygen pump" number="1" />
-		<part type="rover windshield" number="1" />
-		<part type="rover window" number="2" />
-		<part type="winch" number="1" />
-		<part type="small electric motor" number="1" />
-		<part type="large electric motor" number="2" />
-		<part type="rover chassis panel" number="2" />
-		<part type="rover generator" number="1" />
-		<part type="rover control panel" number="1" />
-		<part type="rover fuel tank" number="1" />
-		<part type="rover oxygen tank" number="1" />
-		<part type="rover water tank" number="1" />
-		<part type="electric heating element" number="23" />
-		<part type="pneumatic drill" number="1" />
-		<part type="backhoe" number="1" />
-		<part type="bulldozer blade" number="1" />
-		<part type="soil compactor" number="1" />
-		<part type="crane boom" number="1" />
-		<part type="small wheel" number="1" />
-		<part type="utility vehicle control panel" number="1" />
-		<part type="solar panel" number="3" />
-	
-	</part-package>
-	
-	<part-package name="package 3">
-	
-		<part type="airleak patch" number="234" />
-		<part type="co2 extinguisher" number="36" />
-		<part type="rover wheel" number="11" />
-		<part type="gasket" number="123" />
-		<part type="timing belt" number="17" />
-		<part type="valve" number="63" />
-		<part type="epoxy resin bottle" number="230" />
-		<part type="spark plug" number="18" />
-		<part type="coolant bottle" number="18" />
-		<part type="electrical wire" number="394" />
-		<part type="power cable" number="16" />
-		<part type="wire connector" number="251" />
-		<part type="plastic tubing" number="80" />
-		<part type="lubricant bottle" number="23" />
-		<part type="rover battery" number="5" />
-		<part type="radio antenna" number="10" />
-		<part type="satellite dish" number="5" />
-		<part type="communications circuit board" number="4" />
-		<part type="navigation circuit board" number="2" />
-		<part type="suit heating unit" number="13" />
-		<part type="plastic pipe" number="23" />
-		<part type="steel pipe" number="13" />
-		<part type="copper pipe" number="16" />
-		<part type="iron pipe" number="13" />
-		<part type="eva helmet" number="24" />
-		<part type="helmet visor" number="12" />
-		<part type="counter pressure suit" number="24" />
-		<part type="coveralls" number="24" />
-		<part type="eva gloves" number="24" />
-		<part type="eva boots" number="24" />
-		<part type="eva pads" number="24" />
-		<part type="eva backpack" number="12" />
-		<part type="eva antenna" number="48" />
-		<part type="eva battery" number="24" />
-		<part type="eva radio" number="29" />
-		<part type="fuel pump" number="3" />
+		<part type="eva radio" number="20" />
+		<part type="fuel pump" number="2" />
 		<part type="oxygen pump" number="2" />
 		<part type="rover windshield" number="2" />
 		<part type="rover window" number="4" />
 		<part type="winch" number="2" />
-		<part type="small electric motor" number="1" />
-		<part type="large electric motor" number="3" />
+		<part type="small electric motor" number="2" />
+		<part type="large electric motor" number="4" />
 		<part type="rover chassis panel" number="4" />
 		<part type="rover generator" number="2" />
 		<part type="rover control panel" number="2" />
 		<part type="rover fuel tank" number="2" />
 		<part type="rover oxygen tank" number="2" />
 		<part type="rover water tank" number="2" />
-		<part type="electric heating element" number="36" />
+		<part type="electric heating element" number="26" />
 		<part type="pneumatic drill" number="2" />
 		<part type="backhoe" number="2" />
 		<part type="bulldozer blade" number="2" />
 		<part type="soil compactor" number="2" />
 		<part type="crane boom" number="2" />
-		<part type="small wheel" number="1" />
-		<part type="utility vehicle control panel" number="1" />
-		<part type="solar panel" number="4" />
+		<part type="small wheel" number="2" />
+		<part type="utility vehicle control panel" number="2" />
+		<part type="solar panel" number="2" />
 		
 	</part-package>
 	
-	<part-package name="package 4">
+	<part-package name="package 2" >
 	
-		<part type="airleak patch" number="268" />
-		<part type="co2 extinguisher" number="49" />
-		<part type="rover wheel" number="19" />
-		<part type="gasket" number="170" />
-		<part type="timing belt" number="29" />
-		<part type="valve" number="85" />
-		<part type="epoxy resin bottle" number="310" />
-		<part type="spark plug" number="32" />
-		<part type="coolant bottle" number="32" />
-		<part type="electrical wire" number="540" />
-		<part type="power cable" number="18" />
-		<part type="wire connector" number="346" />
-		<part type="plastic tubing" number="110" />
-		<part type="lubricant bottle" number="37" />
-		<part type="rover battery" number="8" />
-		<part type="radio antenna" number="15" />
-		<part type="satellite dish" number="8" />
-		<part type="communications circuit board" number="6" />
+		<part type="airleak patch" number="306" />
+		<part type="co2 extinguisher" number="46" />
+		<part type="rover wheel" number="12" />
+		<part type="gasket" number="156" />
+		<part type="timing belt" number="16" />
+		<part type="valve" number="80" />
+		<part type="epoxy resin bottle" number="286" />
+		<part type="spark plug" number="18" />
+		<part type="coolant bottle" number="18" />
+		<part type="electrical wire" number="512" />
+		<part type="power cable" number="24" />
+		<part type="wire connector" number="322" />
+		<part type="plastic tubing" number="104" />
+		<part type="lubricant bottle" number="24" />
+		<part type="rover battery" number="4" />
+		<part type="radio antenna" number="10" />
+		<part type="satellite dish" number="6" />
+		<part type="communications circuit board" number="4" />
+		<part type="navigation circuit board" number="2" />
+		<part type="suit heating unit" number="18" />
+		<part type="plastic pipe" number="30" />
+		<part type="steel pipe" number="18" />
+		<part type="copper pipe" number="22" />
+		<part type="iron pipe" number="18" />
+		<part type="eva helmet" number="32" />
+		<part type="helmet visor" number="16" />
+		<part type="counter pressure suit" number="32" />
+		<part type="coveralls" number="32" />
+		<part type="eva gloves" number="32" />
+		<part type="eva boots" number="32" />
+		<part type="eva pads" number="32" />
+		<part type="eva backpack" number="16" />
+		<part type="eva antenna" number="64" />
+		<part type="eva battery" number="32" />
+		<part type="eva radio" number="38" />
+		<part type="fuel pump" number="2" />
+		<part type="oxygen pump" number="2" />
+		<part type="rover windshield" number="2" />
+		<part type="rover window" number="4" />
+		<part type="winch" number="2" />
+		<part type="small electric motor" number="2" />
+		<part type="large electric motor" number="4" />
+		<part type="rover chassis panel" number="4" />
+		<part type="rover generator" number="2" />
+		<part type="rover control panel" number="2" />
+		<part type="rover fuel tank" number="2" />
+		<part type="rover oxygen tank" number="2" />
+		<part type="rover water tank" number="2" />
+		<part type="electric heating element" number="46" />
+		<part type="pneumatic drill" number="2" />
+		<part type="backhoe" number="2" />
+		<part type="bulldozer blade" number="2" />
+		<part type="soil compactor" number="2" />
+		<part type="crane boom" number="2" />
+		<part type="small wheel" number="2" />
+		<part type="utility vehicle control panel" number="2" />
+		<part type="solar panel" number="6" />
+	
+	</part-package>
+	
+	<part-package name="package 3">
+	
+		<part type="airleak patch" number="468" />
+		<part type="co2 extinguisher" number="72" />
+		<part type="rover wheel" number="22" />
+		<part type="gasket" number="246" />
+		<part type="timing belt" number="34" />
+		<part type="valve" number="126" />
+		<part type="epoxy resin bottle" number="460" />
+		<part type="spark plug" number="36" />
+		<part type="coolant bottle" number="36" />
+		<part type="electrical wire" number="788" />
+		<part type="power cable" number="32" />
+		<part type="wire connector" number="502" />
+		<part type="plastic tubing" number="160" />
+		<part type="lubricant bottle" number="46" />
+		<part type="rover battery" number="10" />
+		<part type="radio antenna" number="20" />
+		<part type="satellite dish" number="10" />
+		<part type="communications circuit board" number="8" />
 		<part type="navigation circuit board" number="4" />
-		<part type="suit heating unit" number="13" />
-		<part type="plastic pipe" number="31" />
-		<part type="steel pipe" number="19" />
-		<part type="copper pipe" number="20" />
-		<part type="iron pipe" number="19" />
-		<part type="eva helmet" number="24" />
-		<part type="helmet visor" number="12" />
-		<part type="counter pressure suit" number="24" />
-		<part type="coveralls" number="24" />
-		<part type="eva gloves" number="24" />
-		<part type="eva boots" number="24" />
-		<part type="eva pads" number="24" />
-		<part type="eva backpack" number="12" />
-		<part type="eva antenna" number="48" />
-		<part type="eva battery" number="24" />
-		<part type="eva radio" number="29" />
-		<part type="fuel pump" number="5" />
+		<part type="suit heating unit" number="26" />
+		<part type="plastic pipe" number="26" />
+		<part type="steel pipe" number="26" />
+		<part type="copper pipe" number="32" />
+		<part type="iron pipe" number="26" />
+		<part type="eva helmet" number="48" />
+		<part type="helmet visor" number="24" />
+		<part type="counter pressure suit" number="48" />
+		<part type="coveralls" number="48" />
+		<part type="eva gloves" number="48" />
+		<part type="eva boots" number="48" />
+		<part type="eva pads" number="48" />
+		<part type="eva backpack" number="24" />
+		<part type="eva antenna" number="96" />
+		<part type="eva battery" number="48" />
+		<part type="eva radio" number="58" />
+		<part type="fuel pump" number="6" />
 		<part type="oxygen pump" number="4" />
 		<part type="rover windshield" number="4" />
-		<part type="rover window" number="6" />
+		<part type="rover window" number="8" />
 		<part type="winch" number="4" />
-		<part type="small electric motor" number="1" />
+		<part type="small electric motor" number="2" />
 		<part type="large electric motor" number="6" />
-		<part type="rover chassis panel" number="7" />
+		<part type="rover chassis panel" number="8" />
 		<part type="rover generator" number="4" />
 		<part type="rover control panel" number="4" />
 		<part type="rover fuel tank" number="4" />
 		<part type="rover oxygen tank" number="4" />
 		<part type="rover water tank" number="4" />
-		<part type="electric heating element" number="50" />
-		<part type="pneumatic drill" number="3" />
-		<part type="backhoe" number="3" />
-		<part type="bulldozer blade" number="3" />
-		<part type="soil compactor" number="3" />
-		<part type="crane boom" number="3" />
+		<part type="electric heating element" number="72" />
+		<part type="pneumatic drill" number="4" />
+		<part type="backhoe" number="4" />
+		<part type="bulldozer blade" number="4" />
+		<part type="soil compactor" number="4" />
+		<part type="crane boom" number="4" />
 		<part type="small wheel" number="2" />
 		<part type="utility vehicle control panel" number="2" />
-		<part type="solar panel" number="4" />
+		<part type="solar panel" number="8" />
+		
+	</part-package>
+	
+	<part-package name="package 4">
+	
+		<part type="airleak patch" number="536" />
+		<part type="co2 extinguisher" number="78" />
+		<part type="rover wheel" number="38" />
+		<part type="gasket" number="340" />
+		<part type="timing belt" number="58" />
+		<part type="valve" number="170" />
+		<part type="epoxy resin bottle" number="620" />
+		<part type="spark plug" number="64" />
+		<part type="coolant bottle" number="64" />
+		<part type="electrical wire" number="1080" />
+		<part type="power cable" number="36" />
+		<part type="wire connector" number="692" />
+		<part type="plastic tubing" number="220" />
+		<part type="lubricant bottle" number="74" />
+		<part type="rover battery" number="16" />
+		<part type="radio antenna" number="30" />
+		<part type="satellite dish" number="16" />
+		<part type="communications circuit board" number="12" />
+		<part type="navigation circuit board" number="8" />
+		<part type="suit heating unit" number="26" />
+		<part type="plastic pipe" number="62" />
+		<part type="steel pipe" number="38" />
+		<part type="copper pipe" number="40" />
+		<part type="iron pipe" number="38" />
+		<part type="eva helmet" number="48" />
+		<part type="helmet visor" number="24" />
+		<part type="counter pressure suit" number="48" />
+		<part type="coveralls" number="48" />
+		<part type="eva gloves" number="48" />
+		<part type="eva boots" number="48" />
+		<part type="eva pads" number="48" />
+		<part type="eva backpack" number="24" />
+		<part type="eva antenna" number="96" />
+		<part type="eva battery" number="48" />
+		<part type="eva radio" number="58" />
+		<part type="fuel pump" number="10" />
+		<part type="oxygen pump" number="8" />
+		<part type="rover windshield" number="8" />
+		<part type="rover window" number="12" />
+		<part type="winch" number="8" />
+		<part type="small electric motor" number="2" />
+		<part type="large electric motor" number="12" />
+		<part type="rover chassis panel" number="14" />
+		<part type="rover generator" number="8" />
+		<part type="rover control panel" number="8" />
+		<part type="rover fuel tank" number="8" />
+		<part type="rover oxygen tank" number="8" />
+		<part type="rover water tank" number="8" />
+		<part type="electric heating element" number="100" />
+		<part type="pneumatic drill" number="6" />
+		<part type="backhoe" number="6" />
+		<part type="bulldozer blade" number="6" />
+		<part type="soil compactor" number="6" />
+		<part type="crane boom" number="6" />
+		<part type="small wheel" number="4" />
+		<part type="utility vehicle control panel" number="4" />
+		<part type="solar panel" number="8" />
 	
 	</part-package>
 	
