@@ -99,7 +99,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 				GoodsManager manager = person.getSettlement().getGoodsManager();
 				AmountResource regolithResource = AmountResource.findAmountResource("regolith");
 				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-				result *= value;
+				result *= value * 10D;
                 if (result > 100D) result = 100D;
 			}
 			catch (Exception e) {
