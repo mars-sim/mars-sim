@@ -365,7 +365,7 @@ public class MalfunctionManager implements Serializable {
         effectiveTimeSinceLastMaintenance += time;
         
         // Add time to wear condition.
-        wearCondition -= time / wearLifeTime;
+        wearCondition -= (time / wearLifeTime) * 100D;
         if (wearCondition < 0D) wearCondition = 0D;
 
         // Check for malfunction due to lack of maintenance and wear condition.
