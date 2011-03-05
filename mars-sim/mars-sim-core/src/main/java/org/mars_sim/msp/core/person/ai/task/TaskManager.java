@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /** 
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -29,6 +30,10 @@ import java.util.Map;
  */
 public class TaskManager implements Serializable {
 
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.simulation.person.ai.task.TaskManager";
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
     // Unit event types
     public static final String TASK_EVENT = "task";
     // Data members
@@ -323,6 +328,11 @@ public class TaskManager implements Serializable {
                 Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
                 taskProbCache.put(probabilityClass, probability);
                 totalProbCache += probability;
+                
+                if (totalProbCache == Double.NaN) {
+                    logger.severe(mind.getPerson().getName() + " has a total task probability of NaN caused by " 
+                            + availableTask.getName() + " with a task probability of " + probability);
+                }
             } catch (Exception e) {
                 e.printStackTrace(System.err);
             }
