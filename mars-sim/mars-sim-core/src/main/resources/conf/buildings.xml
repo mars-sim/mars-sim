@@ -307,6 +307,7 @@
 				<resource-storage resource="Oxygen" capacity="10000.0" />
 				<resource-storage resource="Water" capacity="10000.0" />
 				<resource-storage resource="Ice" capacity="1000.0" />
+				<resource-initial resource="Hydrogen" amount="10000.0" />
 			</storage>
 		</functions>
 	</building>		
