@@ -259,28 +259,28 @@ public class MainWindow {
      * Performs the process of creating a new simulation.
      */
     private void newSimulationProcess() {
-//		try {
+
         if (JOptionPane.showInternalConfirmDialog(desktop,
                 "Do you really want to create a new simulation and abandon the current running?",
                 UIManager.getString("OptionPane.titleText"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             desktop.openAnnouncementWindow("Creating new simulation...");
-            /* Break up the creation of the new simulation, to allow intefering with the single steps.*/
+            /* Break up the creation of the new simulation, to allow interfering with the single steps.*/
             desktop.clearDesktop();
             Simulation.stopSimulation();
             SimulationConfig.loadConfig();
             SimulationConfigEditor editor = new SimulationConfigEditor(frame.getOwner(), SimulationConfig.instance());
             editor.setVisible(true);
             Simulation.createNewSimulation();
+            
+            // Start the simulation.
+            Simulation.instance().start();
+            
             desktop.resetDesktop();
             desktop.disposeAnnouncementWindow();
             /* Open navigator tool after creating new simulation. */
             desktop.openToolWindow(NavigatorWindow.NAME);
         }
-//		} catch (Exception e) {
-//			logger.log(Level.SEVERE, "Problem creating new simulation: " + e);
-//			e.printStackTrace(System.err);
-//		}
     }
 
     /**

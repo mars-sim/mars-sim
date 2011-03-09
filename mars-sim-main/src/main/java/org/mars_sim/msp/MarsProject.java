@@ -64,7 +64,7 @@ public class MarsProject {
 
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
-                handleNewSimulation(); // if this fails we always exit, continuing is useless
+            handleNewSimulation(); // if this fails we always exit, continuing is useless
 
 
         } else if (argList.contains("-load")) {
@@ -82,7 +82,7 @@ public class MarsProject {
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "Could not load the default simulation, trying to create new...", e);
                 showError(splashWindow.getJFrame(), "Could not load the default simulation, trying to create a new Simulation...");
-                    handleNewSimulation();
+                handleNewSimulation();
             }
         }
     }
@@ -149,7 +149,6 @@ public class MarsProject {
     public void startSimulation() {
         // Start the simulation.
         Simulation.instance().start();
-
     }
 
     /**
@@ -175,7 +174,6 @@ public class MarsProject {
         // starting the simulation
         System.setProperty("swing.aatext", "true"); // general text antialiasing
 
-        MarsProject mp = new MarsProject(args);
-
+        new MarsProject(args);
     }
 }
