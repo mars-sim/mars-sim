@@ -175,10 +175,6 @@
 	<initial-settlement-list>
 		
 		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="Port Zubrin" template="Mars Direct Base (phase 3)">
 			<location longitude="0.0 W" latitude="0.0 N" />
 		</settlement>
 		
@@ -186,65 +182,24 @@
 			<location longitude="114.0 W" latitude="0.0 N" />
 		</settlement>
 		
-		<settlement name="Olympus Scarp" template="Mars Direct Base (phase 3)">
+		<settlement name="Olympus Scarp" template="Mars Direct Base (phase 2)">
 			<location longitude="135.0 W" latitude="14.8 N" />
 		</settlement>
 		
-		<settlement name="Canyon's End" template="Mars Direct Base (phase 3)">
+		<settlement name="Canyon's End" template="Mars Direct Base (phase 1)">
 			<location longitude="47.4 W" latitude="14.2 S" />
 		</settlement>
 		
-		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 3)">
+		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 1)">
 			<location longitude="16.0 E" latitude="3.0 S" />
 		</settlement>
-		
-		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
-		<settlement name="Garvin Station" template="Mars Direct Base (phase 2)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
-		<settlement name="Meyer Station" template="Mars Direct Base (phase 2)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 2)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 2)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 2)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 1)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 1)">
-			<location longitude="random" latitude="random" />
-		</settlement>	
-		
-		<settlement name="random" template="Mars Direct Base (phase 1)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 1)">
-			<location longitude="random" latitude="random" />
-		</settlement>
-		
-		<settlement name="random" template="Mars Direct Base (phase 1)">
-			<location longitude="random" latitude="random" />
-		</settlement>					
 		
 	</initial-settlement-list>
 	
 	<!-- List of settlement names -->
 	<settlement-name-list>
 	
+		<settlement-name value="Port Zubrin" />
 		<settlement-name value="Lowell Station" />
 		<settlement-name value="Sagan Station" />
 		<settlement-name value="Goddard Settlement" />
@@ -265,6 +220,10 @@
 		<settlement-name value="Shoemaker Base" />
 		<!-- http://en.wikipedia.org/wiki/Zzyzx%2C_California -->
 		<settlement-name value="New Zzyzx" />
+		<!-- http://www.jpl.nasa.gov/media/mgs-sept05/meyer.html -->
+		<settlement-name value="Meyer Station" />
+		<!-- http://science.gsfc.nasa.gov/staff/garvin-10_2005.html -->
+		<settlement-name value="Garvin Station" />
 																
 	</settlement-name-list>
 
