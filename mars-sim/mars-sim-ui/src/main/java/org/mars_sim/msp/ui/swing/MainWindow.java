@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
+import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
 import javax.swing.*;
@@ -269,7 +270,9 @@ public class MainWindow {
             desktop.clearDesktop();
             Simulation.stopSimulation();
             SimulationConfig.loadConfig();
-            SimulationConfigEditor editor = new SimulationConfigEditor(frame.getOwner(), SimulationConfig.instance());
+            //SimulationConfigEditor editor = new SimulationConfigEditor(frame.getOwner(), SimulationConfig.instance());
+            TempSimulationConfigEditor editor = new TempSimulationConfigEditor(frame.getOwner(), 
+                    SimulationConfig.instance());
             editor.setVisible(true);
             Simulation.createNewSimulation();
             
