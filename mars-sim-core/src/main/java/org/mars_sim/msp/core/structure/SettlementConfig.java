@@ -64,8 +64,7 @@ public class SettlementConfig implements Serializable {
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
 	 */
-	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) 
-			{
+	public SettlementConfig(Document settlementDoc, PartPackageConfig partPackageConfig) {
 		settlementTemplates = new ArrayList<SettlementTemplate>();
 		initialSettlements = new ArrayList<InitialSettlement>();
 		settlementNames = new ArrayList<String>();
@@ -82,8 +81,8 @@ public class SettlementConfig implements Serializable {
 	 * @throws Exception if error reading XML document.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadSettlementTemplates(Document settlementDoc, PartPackageConfig partPackageConfig) 
-			{
+	private void loadSettlementTemplates(Document settlementDoc, 
+	        PartPackageConfig partPackageConfig) {
 		
 		Element root = settlementDoc.getRootElement();
 		Element templateList = root.getChild(SETTLEMENT_TEMPLATE_LIST);
@@ -245,6 +244,14 @@ public class SettlementConfig implements Serializable {
 				+ templateName + " not found.");
 		
 		return result;
+	}
+	
+	/**
+	 * Gets a list of settlement templates.
+	 * @return list of settlement templates.
+	 */
+	public List<SettlementTemplate> getSettlementTemplates() {
+	    return new ArrayList<SettlementTemplate>(settlementTemplates);
 	}
 	
 	/**

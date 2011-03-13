@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-09
  * @author Scott Davis
  */
 
@@ -620,7 +620,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		int Xloc = (getWidth() - announcementWindow.getWidth()) / 2;
 		int Yloc = (getHeight() - announcementWindow.getHeight()) / 2;
 		announcementWindow.setLocation(Xloc, Yloc);
-		announcementWindow.show();
+		// Note: second window packing seems necessary to get window
+		// to display components correctly.
+		announcementWindow.pack();
+		announcementWindow.setVisible(true);
 	}
 
 	/**
