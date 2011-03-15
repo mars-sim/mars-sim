@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.00 2010-08-25
+ * @version 3.00 2011-03-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -324,6 +324,29 @@ public class SettlementConfig implements Serializable {
 	 */
 	public List<String> getSettlementNameList() {
 		return new ArrayList<String>(settlementNames);
+	}
+	
+	/**
+	 * Clears the list of initial settlements.
+	 */
+	public void clearInitialSettlements() {
+	    initialSettlements.clear();
+	}
+	
+	/**
+	 * Adds an initial settlement to the configuration.
+	 * @param name the settlement name.
+	 * @param template the settlement template.
+	 * @param latitude the settlement latitude (ex. "10.3 S").
+	 * @param longitude the settlement longitude (ex. "47.0 W").
+	 */
+	public void addInitialSettlement(String name, String template, String latitude, String longitude) {
+	    InitialSettlement settlement = new InitialSettlement();
+	    settlement.name = name;
+	    settlement.template = template;
+	    settlement.latitude = latitude;
+	    settlement.longitude = longitude;
+	    initialSettlements.add(settlement);
 	}
 	
 	/**

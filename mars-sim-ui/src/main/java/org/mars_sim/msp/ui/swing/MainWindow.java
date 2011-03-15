@@ -38,7 +38,7 @@ public class MainWindow {
 //	/** DOCME: documentation is missing */
 ////	private static final long serialVersionUID = 1L;
 
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.MainWindow";
+    private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.MainWindow";
 
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 

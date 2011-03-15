@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-13
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.core;
 import org.mars_sim.msp.core.mars.Mars;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
@@ -239,25 +240,34 @@ public class Coordinates implements Serializable {
      * @return formatted longitude string for this Coordinates object
      */
     public String getFormattedLongitudeString() {
-
+        return getFormattedLongitudeString(theta);
+    }
+    
+    /** 
+     * Gets a common formatted string to represent longitude for
+     * this location. 
+     * ex. "35.6 E"
+     * @param theta the radian theta value for the location.
+     * @return formatted longitude string for this Coordinates object
+     */
+    public static String getFormattedLongitudeString(double theta) {
         double degrees;
         char direction;
 
-        if ((theta < Math.PI) && (theta > 0D)) {
+        degrees = 0D;
+        direction = ' ';
+        
+        if ((theta < Math.PI) && (theta >= 0D)) {
             degrees = Math.toDegrees(theta);
             direction = 'E';
         } else if (theta >= Math.PI) {
             degrees = Math.toDegrees(TWO_PI - theta);
             direction = 'W';
-        } else {
-            degrees = 0.0;
-            direction = ' ';
         }
 
-        int first = Math.abs((int)degrees);
-        int last = Math.abs((int)((degrees - first) * 100D));
+        DecimalFormat formatter = new DecimalFormat("0.0");
 
-        return first + "." + last + "\u00BA " + direction;
+        return formatter.format(degrees) + "\u00BA " + direction;
     }
 
     /** 
@@ -267,26 +277,36 @@ public class Coordinates implements Serializable {
      * @return formatted latitude string for this Coordinates object
      */
     public String getFormattedLatitudeString() {
+        return getFormattedLatitudeString(phi);
+    }
+    
+    /** 
+     * Gets a common formatted string to represent latitude for this
+     * location. 
+     * ex. "35.6 S"
+     * @param phi the radian phi value for the location.
+     * @return formatted latitude string for this Coordinates object
+     */
+    public static String getFormattedLatitudeString(double phi) {
 
         double degrees;
         double piHalf = Math.PI / 2.0;
         char direction;
 
-        if (phi < piHalf) {
+        degrees = 0D;
+        direction = ' ';
+        
+        if (phi <= piHalf) {
             degrees = ((piHalf - phi) / piHalf) * 90D;
             direction = 'N';
         } else if (phi > piHalf) {
             degrees = ((phi - piHalf) / piHalf) * 90D;
             direction = 'S';
-        } else {
-            degrees = 0D;
-            direction = ' ';
         }
 
-        int first = Math.abs((int)degrees);
-        int last = Math.abs((int)((degrees - first) * 100D));
+        DecimalFormat formatter = new DecimalFormat("0.0");
 
-        return first + "." + last + "\u00BA " + direction;
+        return formatter.format(degrees) + "\u00BA " + direction;
     }
 
     /** Converts spherical coordinates to rectangular coordinates.
