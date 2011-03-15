@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.00 2011-03-10
+ * @version 3.00 2011-03-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -15,8 +15,11 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
@@ -31,6 +34,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
@@ -41,6 +46,11 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
  */
 public class TempSimulationConfigEditor extends JDialog {
 
+    private static String CLASS_NAME = 
+        "org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor";
+
+    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
     // Data members.
     private SimulationConfig config;
     private SettlementTableModel settlementTableModel;
@@ -153,28 +163,41 @@ public class TempSimulationConfigEditor extends JDialog {
      * Adds a new settlement  with default values.
      */
     private void addNewSettlement() {
-        // TODO
+        SettlementInfo settlement = determineNewSettlementConfiguration();
+        settlementTableModel.addSettlement(settlement);
     }
     
     /**
      * Removes the settlements selected on the table.
      */
     private void removeSelectedSettlements() {
-        // TODO
+        settlementTableModel.removeSettlements(settlementTable.getSelectedRows());
     }
     
     /**
      * Sets the default settlements from the loaded configuration.
      */
     private void setDefaultSettlements() {
-        // TODO
+        settlementTableModel.loadDefaultSettlements();
     }
     
     /**
      * Set the simulation configuration based on dialog choices.
      */
     private void setConfiguration() {
-        // TODO
+        SettlementConfig settlementConfig = config.getSettlementConfiguration();
+        
+        // Clear configuration settlements.
+        settlementConfig.clearInitialSettlements();
+        
+        // Add configuration settlements from table data.
+        for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+            String name = (String) settlementTableModel.getValueAt(x, 0);
+            String template = (String) settlementTableModel.getValueAt(x, 1);
+            String latitude = (String) settlementTableModel.getValueAt(x, 2);
+            String longitude = (String) settlementTableModel.getValueAt(x, 3);
+            settlementConfig.addInitialSettlement(name, template, latitude, longitude);
+        }
     }
     
     /**
@@ -185,6 +208,121 @@ public class TempSimulationConfigEditor extends JDialog {
         dispose();
     }
     
+    /**
+     * Determines the configuration of a new settlement.
+     * @return settlement configuration.
+     */
+    private SettlementInfo determineNewSettlementConfiguration() {
+        SettlementInfo settlement = new SettlementInfo();
+        
+        settlement.name = determineNewSettlementName();
+        settlement.template = determineNewSettlementTemplate();
+        settlement.latitude = determineNewSettlementLatitude();
+        settlement.longitude = determineNewSettlementLongitude();
+        
+        return settlement;
+    }
+    
+    /**
+     * Determines a new settlement's name.
+     * @return name.
+     */
+    private String determineNewSettlementName() {
+        String result = null;
+  
+        // Try to find unique name in configured settlement name list.
+        // Randomly shuffle settlement name list first.
+        SettlementConfig settlementConfig = config.getSettlementConfiguration();
+        List<String> settlementNames = settlementConfig.getSettlementNameList();
+        Collections.shuffle(settlementNames);
+        Iterator<String> i = settlementNames.iterator();
+        while (i.hasNext()) {
+            String name = i.next();
+            
+            // Make sure settlement name isn't already being used in table.
+            boolean nameUsed = false;
+            for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+                if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+                    nameUsed = true;
+                }
+            }
+            
+            // If not being used already, use this settlement name.
+            if (!nameUsed) {
+                result = name;
+                break;
+            }
+        }
+        
+        // If no name found, create numbered settlement name: "Settlement 1", "Settlement 2", etc.
+        int count = 1;
+        while (result == null) {
+            String name = "Settlement " + count;
+            
+            // Make sure settlement name isn't already being used in table.
+            boolean nameUsed = false;
+            for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
+                if (name.equals(settlementTableModel.getValueAt(x, 0))) {
+                    nameUsed = true;
+                }
+            }
+            
+            // If not being used already, use this settlement name.
+            if (!nameUsed) {
+                result = name;
+            }
+            
+            count++;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Determines a new settlement's template.
+     * @return template name.
+     */
+    private String determineNewSettlementTemplate() {
+        String result = null;
+        
+        SettlementConfig settlementConfig = config.getSettlementConfiguration();
+        List<SettlementTemplate> templates = settlementConfig.getSettlementTemplates();
+        if (templates.size() > 0) {
+            int index = RandomUtil.getRandomInt(templates.size() - 1);
+            result = templates.get(index).getTemplateName();
+        }
+        else logger.log(Level.WARNING, "No configured settlement templates found");
+        
+        return result;
+    }
+    
+    /**
+     * Determines a new settlement's latitude.
+     * @return latitude string.
+     */
+    private String determineNewSettlementLatitude() {
+        double phi = Coordinates.getRandomLatitude();
+        String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
+        int degreeIndex = formattedLatitude.indexOf('\u00BA');
+        return formattedLatitude.substring(0, degreeIndex) + formattedLatitude.substring(degreeIndex + 1, 
+                formattedLatitude.length());
+    }
+    
+    /**
+     * Determines a new settlement's longitude.
+     * @return longitude string.
+     */
+    private String determineNewSettlementLongitude() {
+        double theta = Coordinates.getRandomLongitude();
+        String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
+        int degreeIndex = formattedLongitude.indexOf('\u00BA');
+        return formattedLongitude.substring(0, degreeIndex) + formattedLongitude.substring(degreeIndex + 1, 
+                formattedLongitude.length());
+    }
+    
+    /**
+     * Inner class representing a settlement configuration.
+     */
     private class SettlementInfo {
         String name;
         String template;
@@ -192,11 +330,18 @@ public class TempSimulationConfigEditor extends JDialog {
         String longitude;
     }
     
+    /**
+     * Inner class for the settlement table model.
+     */
     private class SettlementTableModel extends AbstractTableModel {
         
+        // Data members
         private String[] columns;
         private List<SettlementInfo> settlements;
         
+        /**
+         * Constructor
+         */
         private SettlementTableModel() {
             super();
             
@@ -208,6 +353,9 @@ public class TempSimulationConfigEditor extends JDialog {
             loadDefaultSettlements();
         }
         
+        /**
+         * Load the default settlements in the table.
+         */
         private void loadDefaultSettlements() {
             SettlementConfig settlementConfig = config.getSettlementConfiguration();
             settlements.clear();
@@ -299,6 +447,36 @@ public class TempSimulationConfigEditor extends JDialog {
                     }
                 }
             }
+        }
+        
+        /**
+         * Remove a set of settlements from the table.
+         * @param rowIndexes an array of row indexes of the settlements to remove.
+         */
+        private void removeSettlements(int[] rowIndexes) {
+            List<SettlementInfo> removedSettlements = new ArrayList<SettlementInfo>(rowIndexes.length);
+            
+            for (int x = 0; x < rowIndexes.length; x++) {
+                if ((rowIndexes[x] > -1) && (rowIndexes[x] < getRowCount())) {
+                    removedSettlements.add(settlements.get(rowIndexes[x]));
+                }
+            }
+            
+            Iterator<SettlementInfo> i = removedSettlements.iterator();
+            while (i.hasNext()) {
+                settlements.remove(i.next());
+            }
+            
+            fireTableDataChanged();
+        }
+        
+        /**
+         * Adds a new settlement to the table.
+         * @param settlement the settlement configuration.
+         */
+        private void addSettlement(SettlementInfo settlement) {
+            settlements.add(settlement);
+            fireTableDataChanged();
         }
     }
 }
