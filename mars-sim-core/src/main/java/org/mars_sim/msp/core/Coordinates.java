@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 3.00 2011-03-13
+ * @version 3.00 2011-03-15
  * @author Scott Davis
  */
 
@@ -501,10 +501,12 @@ public class Coordinates implements Serializable {
 	public static double parseLatitude(String latitude) {
 		double latValue = 0D;
 
-		if (latitude.trim().length() == 0) throw new IllegalStateException("Latitude is blank");
+		String cleanLatitude = latitude.toUpperCase().trim();
+		
+		if (cleanLatitude.isEmpty()) throw new IllegalStateException("Latitude is blank");
 		
 		try {
-			String numberString = latitude.substring(0, latitude.length() - 2);
+			String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
 			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
 			latValue = Double.parseDouble(numberString);
 		}
@@ -514,7 +516,7 @@ public class Coordinates implements Serializable {
 		
 		if ((latValue > 90D) || (latValue < 0)) throw new IllegalStateException("Latitude value out of range: " + latValue);
 		
-		char direction = latitude.charAt(latitude.length() - 1);
+		char direction = cleanLatitude.charAt(latitude.length() - 1);
 		if (direction == 'N') latValue = 90D - latValue;
 		else if (direction == 'S') latValue += 90D;
 		else throw new IllegalStateException("Latitude direction wrong: " + direction);
@@ -533,10 +535,12 @@ public class Coordinates implements Serializable {
 	public static double parseLongitude(String longitude)  {
 		double longValue = 0D;
 
-		if (longitude.trim().length() == 0) throw new IllegalStateException("Longitude is blank");
+		String cleanLongitude = longitude.toUpperCase().trim();
+		
+		if (cleanLongitude.isEmpty()) throw new IllegalStateException("Longitude is blank");
 		
 		try {
-			String numberString = longitude.substring(0, longitude.length() - 2);
+			String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
 			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
 			longValue = Double.parseDouble(numberString);
 		}
@@ -546,7 +550,7 @@ public class Coordinates implements Serializable {
 		
 		if ((longValue > 180D) || (longValue < 0)) throw new IllegalStateException("Longitude value out of range: " + longValue);
 		
-		char direction = longitude.charAt(longitude.length() - 1);
+		char direction = cleanLongitude.charAt(cleanLongitude.length() - 1);
 		if (direction == 'W') longValue = 360D - longValue;
 		else if (direction != 'E') throw new IllegalStateException("Longitude direction wrong: " + direction);
 
