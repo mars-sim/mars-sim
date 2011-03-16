@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.00 2011-03-14
+ * @version 3.00 2011-03-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -55,6 +56,9 @@ public class TempSimulationConfigEditor extends JDialog {
     private SimulationConfig config;
     private SettlementTableModel settlementTableModel;
     private JTable settlementTable;
+    private boolean hasError;
+    private JLabel errorLabel;
+    private JButton createButton;
     
     /**
      * Constructor
@@ -67,6 +71,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Initialize data members.
         this.config = config;
+        hasError = false;
         
         // Sets the dialog content panel.
         JPanel contentPanel = new JPanel(new BorderLayout(10, 10));
@@ -138,12 +143,21 @@ public class TempSimulationConfigEditor extends JDialog {
         });
         configurationButtonInnerPanel.add(defaultButton);
         
+        // Create bottom panel.
+        JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
+        add(bottomPanel, BorderLayout.SOUTH);
+        
+        // Create error label.
+        errorLabel = new JLabel("", JLabel.CENTER);
+        errorLabel.setForeground(Color.RED);
+        bottomPanel.add(errorLabel, BorderLayout.NORTH);
+        
         // Create the bottom button panel.
         JPanel bottomButtonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        add(bottomButtonPanel, BorderLayout.SOUTH);
+        bottomPanel.add(bottomButtonPanel, BorderLayout.SOUTH);
         
         // Create the create button.
-        JButton createButton = new JButton("Create New Simulation");
+        createButton = new JButton("Create New Simulation");
         createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 setConfiguration();
@@ -206,6 +220,27 @@ public class TempSimulationConfigEditor extends JDialog {
     private void closeWindow() {
         setVisible(false);
         dispose();
+    }
+    
+    /**
+     * Sets an edit-check error.
+     * @param errorString the error description.
+     */
+    private void setError(String errorString) {
+        if (!hasError) {
+            hasError = true;
+            errorLabel.setText(errorString);
+            createButton.setEnabled(false);
+        }
+    }
+    
+    /**
+     * Clears all edit-check errors.
+     */
+    private void clearError() {
+        hasError = false;
+        errorLabel.setText("");
+        createButton.setEnabled(true);
     }
     
     /**
@@ -446,6 +481,8 @@ public class TempSimulationConfigEditor extends JDialog {
                             info.longitude = (String) aValue;
                     }
                 }
+                
+                checkForErrors();
             }
         }
         
@@ -477,6 +514,69 @@ public class TempSimulationConfigEditor extends JDialog {
         private void addSettlement(SettlementInfo settlement) {
             settlements.add(settlement);
             fireTableDataChanged();
+        }
+        
+        /**
+         * Check for errors in table settlement values.
+         */
+        private void checkForErrors() {
+            clearError();
+            
+            Iterator<SettlementInfo> i = settlements.iterator();
+            while (i.hasNext()) {
+                SettlementInfo settlement = i.next();
+                
+                // Check that settlement name is valid.
+                if ((settlement.name == null) || (settlement.name.isEmpty())) {
+                    setError("Settlement name cannot be blank");
+                }
+                
+                // Check that settlement latitude is valid.
+                if ((settlement.latitude == null) || (settlement.latitude.isEmpty())) {
+                    setError("Settlement latitude cannot be blank");
+                }
+                else {
+                    String cleanLatitude = settlement.latitude.trim().toUpperCase();
+                    if (!cleanLatitude.endsWith("N") && !cleanLatitude.endsWith("S")) {
+                        setError("Settlement latitude must end with direction 'N' or 'S'");
+                    }
+                    else {
+                        String numLatitude = cleanLatitude.substring(0, cleanLatitude.length() - 1);
+                        try {
+                            double doubleLatitude = Double.parseDouble(numLatitude);
+                            if ((doubleLatitude < 0) || (doubleLatitude > 90)) {
+                                setError("Settlement latitude must begin with a number between 0 and 90");
+                            }
+                        }
+                        catch(NumberFormatException e) {
+                            setError("Settlement latitude must begin with a number between 0 and 90");
+                        }
+                    }
+                }
+                
+                // Check that settlement longitude is valid.
+                if ((settlement.longitude == null) || (settlement.longitude.isEmpty())) {
+                    setError("Settlement longitude cannot be blank");
+                }
+                else {
+                    String cleanLongitude = settlement.longitude.trim().toUpperCase();
+                    if (!cleanLongitude.endsWith("W") && !cleanLongitude.endsWith("E")) {
+                        setError("Settlement longitude must end with direction 'W' or 'E'");
+                    }
+                    else {
+                        String numLongitude = cleanLongitude.substring(0, cleanLongitude.length() - 1);
+                        try {
+                            double doubleLongitude = Double.parseDouble(numLongitude);
+                            if ((doubleLongitude < 0) || (doubleLongitude > 180)) {
+                                setError("Settlement longitude must begin with a number between 0 and 180");
+                            }
+                        }
+                        catch(NumberFormatException e) {
+                            setError("Settlement longitude must begin with a number between 0 and 180");
+                        }
+                    }
+                }
+            }
         }
     }
 }
