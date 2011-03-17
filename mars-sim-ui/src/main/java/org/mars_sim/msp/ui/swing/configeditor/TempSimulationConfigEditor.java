@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.00 2011-03-15
+ * @version 3.00 2011-03-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -79,7 +79,7 @@ public class TempSimulationConfigEditor extends JDialog {
         setContentPane(contentPanel);
         
         // Create the title label.
-        JLabel titleLabel = new JLabel("Choose settlements for the simulation:", JLabel.CENTER);
+        JLabel titleLabel = new JLabel("Choose settlements for the new simulation:", JLabel.CENTER);
         add(titleLabel, BorderLayout.NORTH);
         
         // Create settlement scroll panel.
@@ -118,6 +118,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create add settlement button.
         JButton addButton = new JButton("Add");
+        addButton.setToolTipText("Add a new settlement");
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 addNewSettlement();
@@ -127,6 +128,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create remove settlement button.
         JButton removeButton = new JButton("Remove");
+        removeButton.setToolTipText("Remove selected settlements");
         removeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 removeSelectedSettlements();
@@ -136,6 +138,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create default button.
         JButton defaultButton = new JButton("Default");
+        defaultButton.setToolTipText("Reset to default settlements");
         defaultButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 setDefaultSettlements();
@@ -158,6 +161,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create the create button.
         createButton = new JButton("Create New Simulation");
+        createButton.setToolTipText("Create a new simulation");
         createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 setConfiguration();
