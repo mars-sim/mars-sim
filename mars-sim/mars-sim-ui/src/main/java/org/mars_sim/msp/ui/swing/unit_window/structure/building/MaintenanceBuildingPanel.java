@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceBuildingPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-18
  * @author Scott Davis
  */
 
@@ -121,6 +121,9 @@ public class MaintenanceBuildingPanel extends BuildingFunctionPanel {
         
         // Update parts label.
         partsLabel.setText(getPartsString());
+        
+        // Update tool tip.
+        setToolTipText(getToolTipString());
     }
     
     /**
