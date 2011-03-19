@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.00 2011-03-16
+ * @version 3.00 2011-03-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -112,9 +112,9 @@ public class TempSimulationConfigEditor extends JDialog {
         JPanel configurationButtonOuterPanel = new JPanel(new BorderLayout(0, 0));
         add(configurationButtonOuterPanel, BorderLayout.EAST);
         
-        // Create configuration button inner panel.
-        JPanel configurationButtonInnerPanel = new JPanel(new GridLayout(3, 1));
-        configurationButtonOuterPanel.add(configurationButtonInnerPanel, BorderLayout.NORTH);
+        // Create configuration button inner top panel.
+        JPanel configurationButtonInnerTopPanel = new JPanel(new GridLayout(2, 1));
+        configurationButtonOuterPanel.add(configurationButtonInnerTopPanel, BorderLayout.NORTH);
         
         // Create add settlement button.
         JButton addButton = new JButton("Add");
@@ -124,7 +124,7 @@ public class TempSimulationConfigEditor extends JDialog {
                 addNewSettlement();
             }
         });
-        configurationButtonInnerPanel.add(addButton);
+        configurationButtonInnerTopPanel.add(addButton);
         
         // Create remove settlement button.
         JButton removeButton = new JButton("Remove");
@@ -134,7 +134,11 @@ public class TempSimulationConfigEditor extends JDialog {
                 removeSelectedSettlements();
             } 
         });
-        configurationButtonInnerPanel.add(removeButton);
+        configurationButtonInnerTopPanel.add(removeButton);
+        
+        // Create configuration button inner bottom panel.
+        JPanel configurationButtonInnerBottomPanel = new JPanel(new GridLayout(1, 1));
+        configurationButtonOuterPanel.add(configurationButtonInnerBottomPanel, BorderLayout.SOUTH);
         
         // Create default button.
         JButton defaultButton = new JButton("Default");
@@ -144,7 +148,7 @@ public class TempSimulationConfigEditor extends JDialog {
                 setDefaultSettlements();
             }
         });
-        configurationButtonInnerPanel.add(defaultButton);
+        configurationButtonInnerBottomPanel.add(defaultButton);
         
         // Create bottom panel.
         JPanel bottomPanel = new JPanel(new BorderLayout(0, 0));
