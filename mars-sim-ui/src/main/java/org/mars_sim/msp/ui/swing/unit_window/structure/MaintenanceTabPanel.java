@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceTabPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-18
  * @author Scott Davis
  */
 
@@ -275,6 +275,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        
 	        // Update parts label.
 	        partsLabel.setText(getPartsString(manager.getMaintenanceParts()));
+	        
+	        // Update tool tip.
+	        setToolTipText(getToolTipString());
 		}
 		
 	    /**
@@ -383,6 +386,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	        
 	        // Update parts label.
 	        partsLabel.setText(getPartsString(malfunction.getRepairParts()));
+	        
+	        // Update tool tip.
+	        setToolTipText(getToolTipString());
 		}
 		
 	    /**
@@ -391,9 +397,9 @@ public class MaintenanceTabPanel extends TabPanel {
 	    private String getToolTipString() {
             StringBuilder result = new StringBuilder("<html>");
             result.append(malfunction.getName()).append("<br>");
-            result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" milliols<br>");
-            result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" milliols<br>");
-            result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" milliols<br>");
+            result.append("General repair time: ").append((int) malfunction.getWorkTime()).append(" millisols<br>");
+            result.append("EVA repair time: ").append((int) malfunction.getEVAWorkTime()).append(" millisols<br>");
+            result.append("Emergency repair time: ").append((int) malfunction.getEmergencyWorkTime()).append(" millisols<br>");
             result.append("Repair ").append(getPartsString(malfunction.getRepairParts()).toLowerCase());
 	    	result.append("</html>");
 	    	
