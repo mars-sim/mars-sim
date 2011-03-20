@@ -24,6 +24,7 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.MouseInputListener;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -57,6 +58,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     private JLabel pulsespersecondLabel;      // JLabel for pulses per second label 
     private JSlider pulseSlider;     // JSlider for pulse
     private int sliderpos = 50;
+    
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
      */
@@ -198,14 +200,15 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         uptimeLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
         uptimePane.add(uptimeLabel, "Center");
 
-        pulsespersecondLabel = new JLabel(uptimer.getUptime(), JLabel.CENTER);
+        DecimalFormat formatter = new DecimalFormat("0.00");
+        String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
+        pulsespersecondLabel = new JLabel(pulsePerSecond, JLabel.CENTER);
         pulsespersecondPane.add(pulsespersecondLabel, "Center");
 
         // Create uptime panel
         JPanel pulsePane = new JPanel(new BorderLayout());
         pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
         simulationPane.add(pulsePane, "South");
-
 
         // Create pulse header label
         final JLabel pulseHeaderLabel = new JLabel("1 realsec : sim Time", JLabel.CENTER);
@@ -217,7 +220,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         try {
 			master.setTimeRatio(sliderpos);
 		} catch (Exception e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
         //String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
@@ -229,7 +231,6 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         pulseCurRatioLabel.addMouseListener(new MouseInputAdapter() {
         	@Override
         	public void mouseClicked(MouseEvent e) {
-        		// TODO Auto-generated method stub
         		super.mouseClicked(e);
         		if (pulseCurRatioLabel.getText().contains(":")) {
             		pulseCurRatioLabel.setText(String.format("%8.4f", master.getTimeRatio() ) );
@@ -295,6 +296,12 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			    
 			    if (earthTime != null) {
 			        earthTimeLabel.setText(earthTime.getTimeStamp());
+			    }
+			    
+			    if (master != null) {
+			        DecimalFormat formatter = new DecimalFormat("0.00");
+			        String pulsePerSecond = formatter.format(master.getPulsesPerSecond());
+			        pulsespersecondLabel.setText(pulsePerSecond);
 			    }
 			    
 			    if (uptimer != null) {

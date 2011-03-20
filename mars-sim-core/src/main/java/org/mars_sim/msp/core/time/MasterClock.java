@@ -63,6 +63,7 @@ public class MasterClock implements Runnable, Serializable {
     private long totalPulses = 1;
     // private transient long pausestart=System.currentTimeMillis(),pauseend=System.currentTimeMillis(),pausetime=0;
     private transient long elapsedlast;// = uptimer.getUptimeMillis();//System.currentTimeMillis();;
+    private transient long elapsedMilliseconds;
     // Sleep duration in milliseconds 
     //public final static long TIME_PULSE_LENGTH = 1000L;
 
@@ -90,7 +91,7 @@ public class MasterClock implements Runnable, Serializable {
         // Create listener list.
         listeners = Collections.synchronizedList(new ArrayList<ClockListener>());
         elapsedlast = uptimer.getUptimeMillis();
-
+        elapsedMilliseconds = 0L;
     }
 
     /**
@@ -211,7 +212,7 @@ public class MasterClock implements Runnable, Serializable {
 
         double timePulse;
         if (timeRatio > 0D) {
-            double timePulseSeconds = ((double) this.getElapsedmillis() * (timeRatio / 1000));// * (TIME_PULSE_LENGTH / 1000D);
+            double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));// * (TIME_PULSE_LENGTH / 1000D);
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         } else timePulse = 1D;
 
@@ -232,17 +233,17 @@ public class MasterClock implements Runnable, Serializable {
     	 * and lots of settlers die.
     	 * */
     //you can change these to suit:
-    private static final double ratioatmid = 1000.0, //the "default" ratio that will be set at 50, the middle of the scale
-            maxratio = 300000.0, //the max ratio the sim can be set at
-            minfracratio = 0.001, //the minimum ratio the sim can be set at
-            maxfracratio = 0.98, //the largest fractional ratio the sim can be set at
+    private static final double ratioatmid = 1000.0D, //the "default" ratio that will be set at 50, the middle of the scale
+            maxratio = 300000.0D, //the max ratio the sim can be set at
+            minfracratio = 0.001D, //the minimum ratio the sim can be set at
+            maxfracratio = 0.98D, //the largest fractional ratio the sim can be set at
 
             //don't recommend changing these:
-            minslider = 20.0,
-            midslider = (50.0 - minslider),
-            maxslider = 100 - minslider,
-            minfracpos = 1,
-            maxfracpos = minslider - 1;
+            minslider = 20.0D,
+            midslider = (50.0D - minslider),
+            maxslider = 100D - minslider,
+            minfracpos = 1D,
+            maxfracpos = minslider - 1D;
 
 
     /**
@@ -283,7 +284,7 @@ public class MasterClock implements Runnable, Serializable {
                 timeRatio = (sliderValue - minfracpos) * slope + offset;
             }
         } else {
-            timeRatio = 15;
+            timeRatio = 15D;
             throw new IllegalArgumentException("Time ratio should be in 1..100");
         }
     }
@@ -294,7 +295,7 @@ public class MasterClock implements Runnable, Serializable {
      * each real-world minute.
      */
     public void setTimeRatio(double ratio) {
-        if (ratio >= 0.0001 && ratio <= 500000) {
+        if (ratio >= 0.0001D && ratio <= 500000D) {
             timeRatio = ratio;
             //need to set slider bar in the correct position.
 
@@ -317,9 +318,9 @@ public class MasterClock implements Runnable, Serializable {
 
         keepRunning = true;
         long lastTimeDiff;
-        elapsedlast = uptimer.getUptimeMillis();// System.currentTimeMillis();
+        //elapsedlast = uptimer.getUptimeMillis();// System.currentTimeMillis();
+        
         // Keep running until told not to
-        final double tr = timeRatio / 1000;
         while (keepRunning) {
 
             //long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
@@ -335,6 +336,9 @@ public class MasterClock implements Runnable, Serializable {
 
             if (!isPaused) {
 //                try {
+                // Update elapsed milliseconds.
+                updateElapsedMilliseconds();
+                
                 // Get the time pulse length in millisols.
                 double timePulse = getTimePulse();
                 //		System.out.println("gettimePulse() "+timePulse);
@@ -342,8 +346,10 @@ public class MasterClock implements Runnable, Serializable {
 
                 // Add time pulse length to Earth and Mars clocks.
                 //earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
-                double earthTimeDiff = this.getElapsedmillis() * tr;//(timeRatio / 1000);
+                //double earthTimeDiff = MarsClock.convertMillisolsToSeconds(timePulse);
+                double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
                 earthTime.addTime(earthTimeDiff);
+                //System.out.println("Adding earth time: " + earthTimeDiff + " sec");
                 marsTime.addTime(timePulse);
 
                 synchronized (listeners) {
@@ -366,7 +372,7 @@ public class MasterClock implements Runnable, Serializable {
                 if (logger.isLoggable(Level.FINEST)) {
                     logger.finest("time: " + lastTimeDiff);
                 }
-                Simulation.instance().updateGUI();
+                //Simulation.instance().updateGUI();
                 try {
                     Thread.yield();
                 } catch (Exception e) {
@@ -386,7 +392,8 @@ public class MasterClock implements Runnable, Serializable {
                     Simulation.instance().saveSimulation(file);
                 } catch (IOException e) {
 
-                    logger.log(Level.SEVERE, "Could not save the simulation with file="+(file == null ? "null" : file.getPath()), e);
+                    logger.log(Level.SEVERE, "Could not save the simulation with file="
+                            + (file == null ? "null" : file.getPath()), e);
                     e.printStackTrace();
                 }
                 saveSimulation = false;
@@ -442,15 +449,18 @@ public class MasterClock implements Runnable, Serializable {
 
     public double getPulsesPerSecond() {
         //System.out.println("pulsespersecond: "+((double) totalPulses / (uptimer.getUptimeMillis()/1000 ) ));
-        return ((double) totalPulses / (uptimer.getUptimeMillis() / 1000));
+        return ((double) totalPulses / (uptimer.getUptimeMillis() / 1000D));
     }
 
-    private long getElapsedmillis() {
+    private void updateElapsedMilliseconds() {
         long tnow = uptimer.getUptimeMillis();// System.currentTimeMillis();
-        long jelapsed = tnow - elapsedlast;
+        elapsedMilliseconds = tnow - elapsedlast;
         elapsedlast = tnow;
-        //	System.out.println("getElapsedmillis "+jelapsed);
-        return jelapsed;
+        //System.out.println("getElapsedmillis " + elapsedMilliseconds);
+    }
+    
+    private long getElapsedmillis() {
+        return elapsedMilliseconds;
     }
 
     public static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
