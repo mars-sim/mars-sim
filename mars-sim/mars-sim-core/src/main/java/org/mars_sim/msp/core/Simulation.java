@@ -417,7 +417,4 @@ public class Simulation implements ClockListener, Serializable {
     logger.severe("Simulation.instance: MainWindow told me not to start");
     }
      */
-
-    public void updateGUI() {
-    }
 }
