@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-03-23
  * @author Scott Davis
  */
 
@@ -24,14 +24,14 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** 
- * The Globe Display class displays a graphical globe of Mars in the
- * Navigator tool.
+/**
+ * The Globe Display class displays a graphical globe of Mars in the Navigator
+ * tool.
  */
 class GlobeDisplay extends JComponent implements Runnable {
-    
+
     private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.GlobeDisplay";
-	
+
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
@@ -39,28 +39,30 @@ class GlobeDisplay extends JComponent implements Runnable {
     private MarsGlobe topoSphere; // Topographical sphere object
     private Coordinates centerCoords; // Spherical coordinates for globe center
     private Thread showThread; // Refresh thread
-    private NavigatorWindow navwin;
-    
-    private boolean topo; // True if in topographical mode, false if in real surface mode
+    private boolean topo; // True if in topographical mode, false if in real
+                          // surface mode
     private boolean recreate; // True if globe needs to be regenerated
     private int width; // width of the globe display component
     private int height; // height of the globe display component
-    private boolean useUSGSMap;  // True if USGS surface map is to be used
-    private int[] shadingArray; // Array used to generate day/night shading image
-    private boolean showDayNightShading; // True if day/night shading is to be used
+    private boolean useUSGSMap; // True if USGS surface map is to be used
+    private int[] shadingArray; // Array used to generate day/night shading
+                                // image
+    private boolean showDayNightShading; // True if day/night shading is to be
+                                         // used
     private boolean update; // True if globe should be updated.
-    private static int dragx,dragy;
+    private static int dragx, dragy;
     private static final double HALF_PI = (Math.PI / 2);
 
-    /** 
-     * Constructor 
-     *
+    /**
+     * Constructor
+     * 
+     * @param navwin the navigator window.
      * @param width the width of the globe display
      * @param height the height of the globe display
      */
-    public GlobeDisplay(final NavigatorWindow navwin,int width, int height) {
+    public GlobeDisplay(final NavigatorWindow navwin, int width, int height) {
 
-    	this.navwin = navwin;
+        // Initialize data members
         this.width = width;
         this.height = height;
 
@@ -81,96 +83,143 @@ class GlobeDisplay extends JComponent implements Runnable {
         useUSGSMap = false;
         shadingArray = new int[width * height];
         showDayNightShading = false;
-        
-        this.addMouseMotionListener(new MouseAdapter(){
-        	int lastx,lasty;
-        	@Override
-        	public void mouseDragged(MouseEvent e)
-        	{	
-        		int difx,dify,x=e.getX(),y=e.getY(); ;
-        		if (y>dragy){if (y<lasty) {dragy=y;}  		}
-        		else{		if (y>lasty) {dragy=y;}	       		}
 
-        		if (x>dragx){if (x<lastx) {dragx=x;}  		}
-        		else{		if (x>lastx) {dragx=x;}	       		}
-        		dify=dragy-y;
-        		difx=dragx-x;
-        		lastx =x;lasty=y;
-/*				System.out.println("GlobeDisplay mouseDragged difx = "+difx);
-    			System.out.println("GlobeDisplay mouseDragged dify = "+dify);
-				System.out.println("GlobeDisplay mouseDragged dragx = "+dragx);
-    			System.out.println("GlobeDisplay mouseDragged dragy = "+dragy);
-				System.out.println("GlobeDisplay mouseDragged X = "+e.getX());
-    			System.out.println("GlobeDisplay mouseDragged Y = "+e.getY());
-*/
-    			if (dragx != 0 && dragy != 0) {
-    				centerCoords = 
-					new Coordinates((centerCoords.getPhi()+dify*0.0025)%(Math.PI) ,
-							(centerCoords.getTheta()+difx*0.0025)%(Math.PI*2) );
+        addMouseMotionListener(new MouseAdapter() {
+            int lastx, lasty;
+
+            @Override
+            public void mouseDragged(MouseEvent e) {
+                int difx, dify, x = e.getX(), y = e.getY();
+                
+                if (y > dragy) {
+                    if (y < lasty) {
+                        dragy = y;
+                    }
+                } else {
+                    if (y > lasty) {
+                        dragy = y;
+                    }
+                }
+
+                if (x > dragx) {
+                    if (x < lastx) {
+                        dragx = x;
+                    }
+                } else {
+                    if (x > lastx) {
+                        dragx = x;
+                    }
+                }
+                dify = dragy - y;
+                difx = dragx - x;
+                lastx = x;
+                lasty = y;
+                /*
+                 * System.out.println("GlobeDisplay mouseDragged difx = "+difx);
+                 * System.out.println("GlobeDisplay mouseDragged dify = "+dify);
+                 * System.out.println("GlobeDisplay mouseDragged dragx = "+dragx);
+                 * System.out.println("GlobeDisplay mouseDragged dragy = "+dragy);
+                 * System.out.println("GlobeDisplay mouseDragged X = "+e.getX());
+                 * System.out.println("GlobeDisplay mouseDragged Y = "+e.getY());
+                 */
+                if (dragx != 0 && dragy != 0) {
+                    double newPhi = centerCoords.getPhi() + ((double) dify * .0025D % (Math.PI));
+                    if (newPhi > Math.PI) {
+                        newPhi = Math.PI;
+                    }
+                    if (newPhi < 0D) {
+                        newPhi = 0D;
+                    }
+                    
+                    double newTheta = centerCoords.getTheta() + ((double) difx * .0025D % (Math.PI / 2D));
+                    while (newTheta > (Math.PI * 2D)) {
+                        newTheta -= (Math.PI * 2D);
+                    }
+                    while (newTheta < 0D) {
+                        newTheta += (Math.PI * 2D);
+                    }
+                    
+                    centerCoords = new Coordinates(newPhi, newTheta);
+                    
                     if (topo) {
                         topoSphere.drawSphere(centerCoords);
                     } else {
                         marsSphere.drawSphere(centerCoords);
                     }
+                    
                     recreate = false;
-                   
+
                     repaint();
-    			}
-    			super.mouseDragged(e);
-
-        	} 
-
+                }
+                
+                super.mouseDragged(e);
+            }
         });
-       this.addMouseListener(new MouseAdapter() {
-       	@Override
-		public void mousePressed(MouseEvent e) {
-			System.out.println("mousepressed X = "+e.getX());
-			System.out.println("             Y = "+e.getY());
-			dragx = e.getX();dragy=e.getY();
-			
-			super.mousePressed(e);
-		}
-		@Override
-		public void mouseReleased(MouseEvent e){
-			dragx = 0;dragy=0;
-			navwin.updateCoords(centerCoords);
-			super.mouseReleased(e);
-		} 
+        
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                System.out.println("mousepressed X = " + e.getX());
+                System.out.println("             Y = " + e.getY());
+                dragx = e.getX();
+                dragy = e.getY();
 
-		@Override
-		public void mouseEntered(MouseEvent e){
-			navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
-			super.mouseReleased(e);
-		} 
+                super.mousePressed(e);
+            }
 
-		@Override
-		public void mouseExited(MouseEvent e){
-			navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			super.mouseReleased(e);
-		} 
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                dragx = 0;
+                dragy = 0;
+                navwin.updateCoords(centerCoords);
+                super.mouseReleased(e);
+            }
 
-	});
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                super.mouseReleased(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                navwin.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+                super.mouseReleased(e);
+            }
+        });
+        
         // Initially show real surface globe
         showSurf();
     }
 
-    /** Displays real surface globe, regenerating if necessary */
+    /** 
+     * Displays real surface globe, regenerating if necessary 
+     */
     public void showSurf() {
-        if (topo) recreate = true; 
+        if (topo) {
+            recreate = true;
+        }
         topo = false;
         showGlobe(centerCoords);
     }
 
-    /** Displays topographical globe, regenerating if necessary */
+    /** 
+     * Displays topographical globe, regenerating if necessary 
+     */
     public void showTopo() {
-        if (!topo) recreate = true;
+        if (!topo) {
+            recreate = true;
+        }
         topo = true;
         showGlobe(centerCoords);
     }
 
-    /** Displays globe at given center regardless of mode, 
-     *  regenerating if necessary 
-     *  @param newCenter the center location for the globe
+    /**
+     * Displays globe at given center regardless of mode, regenerating if
+     * necessary
+     * 
+     * @param newCenter
+     *            the center location for the globe
      */
     public void showGlobe(Coordinates newCenter) {
         if (!centerCoords.equals(newCenter)) {
@@ -180,7 +229,9 @@ class GlobeDisplay extends JComponent implements Runnable {
         updateDisplay();
     }
 
-    /** Starts display update thread (or creates a new one if necessary) */
+    /** 
+     * Starts display update thread (or creates a new one if necessary) 
+     */
     private void updateDisplay() {
         if ((showThread == null) || (!showThread.isAlive())) {
             showThread = new Thread(this, "Globe");
@@ -190,12 +241,17 @@ class GlobeDisplay extends JComponent implements Runnable {
         }
     }
 
-    /** the run method for the runnable interface */
-    public void run() { 
-    	while (update) refreshLoop(); 
+    /** 
+     * the run method for the runnable interface 
+     */
+    public void run() {
+        while (update)
+            refreshLoop();
     }
 
-    /** loop, refreshing the globe display when necessary */
+    /** 
+     * loop, refreshing the globe display when necessary 
+     */
     public void refreshLoop() {
         while (true) { // Endless refresh loop
             if (recreate) {
@@ -212,15 +268,13 @@ class GlobeDisplay extends JComponent implements Runnable {
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {}
+                
                 repaint();
             }
         }
     }
 
-    /** Overrides paintComponent method.  Displays globe, green lines,
-     *  longitude and latitude. 
-     *  @param g graphics context
-     */
+    @Override
     public void paintComponent(Graphics g) {
 
         // Paint black background
@@ -234,20 +288,24 @@ class GlobeDisplay extends JComponent implements Runnable {
             g.drawImage(globe.getGlobeImage(), 0, 0, this);
         }
 
-        if (showDayNightShading) drawShading(g);
+        if (showDayNightShading) {
+            drawShading(g);
+        }
 
         drawUnits(g);
         drawCrossHair(g);
     }
 
-    /** Draws the day/night shading on the globe.
+    /**
+     * Draws the day/night shading on the globe.
+     * 
      * @param g graphics context
      */
     protected void drawShading(Graphics g) {
         int centerX = width / 2;
         int centerY = height / 2;
 
-		Mars mars = Simulation.instance().getMars();
+        Mars mars = Simulation.instance().getMars();
         // Coordinates sunDirection = mars.getOrbitInfo().getSunDirection();
 
         Coordinates location = new Coordinates(0D, 0D);
@@ -256,56 +314,71 @@ class GlobeDisplay extends JComponent implements Runnable {
                 int xDiff = x - centerX;
                 int yDiff = y - centerY;
                 if (Math.sqrt((xDiff * xDiff) + (yDiff * yDiff)) <= 47.74648293D) {
-                    centerCoords.convertRectToSpherical(xDiff, yDiff, 47.74648293D, location);
-                    double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(location);
+                    centerCoords.convertRectToSpherical(xDiff, yDiff,
+                            47.74648293D, location);
+                    double sunlight = mars.getSurfaceFeatures()
+                            .getSurfaceSunlight(location);
                     int sunlightInt = (int) (127 * sunlight);
                     shadingArray[x + (y * width)] = ((127 - sunlightInt) << 24) & 0xFF000000;
+                } else {
+                    shadingArray[x + (y * 150)] = 0xFF000000;
                 }
-                else shadingArray[x + (y * 150)] = 0xFF000000;
             }
         }
 
         // Create shading image for map
-        Image shadingMap = this.createImage(new MemoryImageSource(width, height, shadingArray, 0, width));
+        Image shadingMap = this.createImage(new MemoryImageSource(width,
+                height, shadingArray, 0, width));
 
         MediaTracker mt = new MediaTracker(this);
         mt.addImage(shadingMap, 0);
         try {
             mt.waitForID(0);
-        }
-        catch (InterruptedException e) {
-            logger.log(Level.SEVERE,"GlobeDisplay - ShadingMap interrupted: " + e);
+        } catch (InterruptedException e) {
+            logger.log(Level.SEVERE, "GlobeDisplay - ShadingMap interrupted: "
+                    + e);
         }
 
         // Draw the shading image
         g.drawImage(shadingMap, 0, 0, this);
     }
 
-    /** draw the dots on the globe that identify units 
-     *  @param g graphics context
+    /**
+     * draw the dots on the globe that identify units
+     * 
+     * @param g graphics context
      */
     protected void drawUnits(Graphics g) {
-        Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits().iterator();
+        Iterator<Unit> i = Simulation.instance().getUnitManager().getUnits()
+                .iterator();
         while (i.hasNext()) {
             Unit unit = i.next();
-            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
+            UnitDisplayInfo displayInfo = UnitDisplayInfoFactory
+                    .getUnitDisplayInfo(unit);
             if (displayInfo.isGlobeDisplayed(unit)) {
                 Coordinates unitCoords = unit.getCoordinates();
                 if (centerCoords.getAngle(unitCoords) < HALF_PI) {
-                    if (topo) g.setColor(displayInfo.getTopoGlobeColor());
-                    else g.setColor(displayInfo.getSurfGlobeColor());
+                    if (topo) {
+                        g.setColor(displayInfo.getTopoGlobeColor());
+                    }
+                    else {
+                        g.setColor(displayInfo.getSurfGlobeColor());
+                    }
+                    
                     IntPoint tempLocation = getUnitDrawLocation(unitCoords);
-                    g.fillRect(tempLocation.getiX(), tempLocation.getiY(), 1, 1);
+                    g.fillRect(tempLocation.getiX(), tempLocation
+                                    .getiY(), 1, 1);
                 }
             }
         }
     }
 
-    /** Draw green rectanges and lines (cross-hair type thingy), and
-      *  write the latitude and logitude of the centerpoint of the
-      *  current globe view. 
-      *  @param g graphics context
-      */
+    /**
+     * Draw green rectanges and lines (cross-hair type thingy), and write the
+     * latitude and logitude of the center point of the current globe view.
+     * 
+     * @param g graphics context
+     */
     protected void drawCrossHair(Graphics g) {
         g.setColor(Color.green);
 
@@ -351,9 +424,11 @@ class GlobeDisplay extends JComponent implements Runnable {
         g.drawString(longString, longPosition, 142);
     }
 
-    /** Returns unit x, y position on globe panel 
-     *  @param unitCoords the unit's location
-     *  @return x, y position on globe panel
+    /**
+     * Returns unit x, y position on globe panel
+     * 
+     * @param unitCoords the unit's location
+     * @return x, y position on globe panel
      */
     private IntPoint getUnitDrawLocation(Coordinates unitCoords) {
         double rho = width / Math.PI;
@@ -362,34 +437,50 @@ class GlobeDisplay extends JComponent implements Runnable {
         return Coordinates.findRectPosition(unitCoords, centerCoords, rho,
                 half_map, low_edge);
     }
-    
-    /** Set USGS as surface map
-     *  @param useUSGSMap true if using USGS map.
+
+    /**
+     * Set USGS as surface map
+     * 
+     * @param useUSGSMap true if using USGS map.
      */
     public void setUSGSMap(boolean useUSGSMap) {
-    	this.useUSGSMap = useUSGSMap;
+        this.useUSGSMap = useUSGSMap;
     }
-    
-    /** Sets day/night tracking to on or off.
-     *  @param showDayNightShading true if globe is to use day/night tracking.
+
+    /**
+     * Sets day/night tracking to on or off.
+     * 
+     * @param showDayNightShading true if globe is to use day/night tracking.
      */
     public void setDayNightTracking(boolean showDayNightShading) {
         this.showDayNightShading = showDayNightShading;
     }
-    
-    public Coordinates getCoordinates() {return centerCoords;}
 
-    public void setCoordinates(Coordinates c) {
-    	if (c != null ) centerCoords=c;
+    /**
+     * Gets the center coordinates of the globe.
+     * @return coordinates.
+     */
+    public Coordinates getCoordinates() {
+        return centerCoords;
     }
+
+    /**
+     * Sets the center coordinates of the globe.
+     * @param c the center coordinates.
+     */
+    public void setCoordinates(Coordinates c) {
+        if (c != null) {
+            centerCoords = c;
+        }
+    }
+
     /**
      * Prepare globe for deletion.
-     *
      */
     public void destroy() {
-    	update = false;
-    	marsSphere = null;
-    	topoSphere = null;
-    	centerCoords = null;
+        update = false;
+        marsSphere = null;
+        topoSphere = null;
+        centerCoords = null;
     }
 }
