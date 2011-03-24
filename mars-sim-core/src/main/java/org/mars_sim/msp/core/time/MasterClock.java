@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 2.82 2007-11-09
+ * @version 3.00 2011-03-23
  * @author Scott Davis
  */
 
@@ -318,44 +318,35 @@ public class MasterClock implements Runnable, Serializable {
 
         keepRunning = true;
         long lastTimeDiff;
-        //elapsedlast = uptimer.getUptimeMillis();// System.currentTimeMillis();
+        elapsedlast = uptimer.getUptimeMillis();
         
         // Keep running until told not to
         while (keepRunning) {
 
-            //long pauseTime = TIME_PULSE_LENGTH - lastTimeDiff;
-            //if (pauseTime < 10L) pauseTime = 10L;
-
             try {
-//        		Thread.sleep(pauseTime);
-                //Thread.sleep(50);
                 Thread.yield();
             } catch (Exception e) {
                 logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
             }
 
             if (!isPaused) {
-//                try {
+                
                 // Update elapsed milliseconds.
                 updateElapsedMilliseconds();
                 
                 // Get the time pulse length in millisols.
                 double timePulse = getTimePulse();
-                //		System.out.println("gettimePulse() "+timePulse);
+                //System.out.println("gettimePulse() " + timePulse);
                 long startTime = System.nanoTime();
 
                 // Add time pulse length to Earth and Mars clocks.
-                //earthTime.addTime(MarsClock.convertMillisolsToSeconds(timePulse));
-                //double earthTimeDiff = MarsClock.convertMillisolsToSeconds(timePulse);
                 double earthTimeDiff = getElapsedmillis() * timeRatio / 1000D;
                 earthTime.addTime(earthTimeDiff);
-                //System.out.println("Adding earth time: " + earthTimeDiff + " sec");
                 marsTime.addTime(timePulse);
 
                 synchronized (listeners) {
                     // Send clock pulse to listeners.
                     Iterator<ClockListener> i = listeners.iterator();
-//        				while (i.hasNext()) i.next().clockPulse(timePulse);
                     while (i.hasNext()) {
                         ClockListener cl = i.next();
                         try {
@@ -372,20 +363,14 @@ public class MasterClock implements Runnable, Serializable {
                 if (logger.isLoggable(Level.FINEST)) {
                     logger.finest("time: " + lastTimeDiff);
                 }
-                //Simulation.instance().updateGUI();
+                
                 try {
                     Thread.yield();
                 } catch (Exception e) {
                     logger.fine("Problem with Thread.yield() in MasterClock.run() ");
                 }
-
-//                } catch (Exception e) {
-//                    e.printStackTrace(System.err);
-//                    stop();
-//                }
             }
-
-//            try {
+            
             if (saveSimulation) {
                 // Save the simulation to a file.
                 try {
@@ -406,11 +391,6 @@ public class MasterClock implements Runnable, Serializable {
                 }
                 loadSimulation = false;
             }
-//            } catch (Exception e) {
-//                e.printStackTrace(System.err);
-//                saveSimulation = false;
-//                loadSimulation = false;
-//            }
 
             // Exit program if exitProgram flag is true.
             if (exitProgram) {
@@ -453,10 +433,10 @@ public class MasterClock implements Runnable, Serializable {
     }
 
     private void updateElapsedMilliseconds() {
-        long tnow = uptimer.getUptimeMillis();// System.currentTimeMillis();
+        long tnow = uptimer.getUptimeMillis();
         elapsedMilliseconds = tnow - elapsedlast;
         elapsedlast = tnow;
-        //System.out.println("getElapsedmillis " + elapsedMilliseconds);
+        //System.out.println("getElapsedmilliseconds " + elapsedMilliseconds);
     }
     
     private long getElapsedmillis() {
