@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.00 2011-03-23
+ * @version 3.00 2011-03-27
  * @author Scott Davis
  */
 
@@ -159,8 +159,8 @@ class GlobeDisplay extends JComponent implements Runnable {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent e) {
-                System.out.println("mousepressed X = " + e.getX());
-                System.out.println("             Y = " + e.getY());
+                //System.out.println("mousepressed X = " + e.getX());
+                //System.out.println("             Y = " + e.getY());
                 dragx = e.getX();
                 dragy = e.getY();
 
