@@ -99,9 +99,15 @@ public class Coordinates implements Serializable {
      *  @param newPhi the new phi angle value for the coordinate
      */
     public void setPhi(double newPhi) {
-       if (newPhi < 0) {phi = 0;} else if (newPhi > Math.PI) { phi = Math.PI;} else phi=newPhi;
-       //phi  = newPhi;
-    	setTrigFunctions();
+       if (newPhi <= 0D) {
+           phi = 0D;
+       } else if (newPhi > Math.PI) { 
+           phi = Math.PI;
+       }
+       else {
+           phi = newPhi;
+       }
+       setTrigFunctions();
     }
 
     /** theta accessor
@@ -115,8 +121,9 @@ public class Coordinates implements Serializable {
      *  @param newTheta the new theta angle value for the coordinate
      */
     public void setTheta(double newTheta) {
-       theta = Math.abs(newTheta%TWO_PI);
-       //theta = newTheta;
+        theta = newTheta;
+        while (theta < 0D) theta += TWO_PI;
+        while (theta > TWO_PI) theta -= TWO_PI;
     	setTrigFunctions();
     }
 
