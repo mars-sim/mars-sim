@@ -116,8 +116,8 @@ public class ExploredSiteMapLayer implements MapLayer {
 			
 			// Determine the draw location for the icon.
 			IntPoint location = MapUtils.getRectPosition(site.getLocation(), mapCenter, mapType);
-			IntPoint drawLocation = new IntPoint(location.getiX()+MAP_X_OFFSET, 
-					MAP_Y_OFFSET+(location.getiY() - navIcon.getIconHeight()));
+			IntPoint drawLocation = new IntPoint(location.getiX(), 
+					(location.getiY() - navIcon.getIconHeight()));
 	        
 			// Draw the navpoint icon.
 	        navIcon.paintIcon(displayComponent, g, drawLocation.getiX(), drawLocation.getiY());

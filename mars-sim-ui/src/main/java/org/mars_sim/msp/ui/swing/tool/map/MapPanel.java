@@ -7,19 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.core.Coordinates;
+
 public class MapPanel extends JPanel implements Runnable {
-//public class MapPanel extends JScrollPane implements Runnable {
     
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.tool.map.MapPanel";
@@ -42,14 +48,10 @@ public class MapPanel extends JPanel implements Runnable {
 	private TopoMarsMap topoMap;
 	private USGSMarsMap usgsMap;
 	private boolean update;
-	private NavigatorWindow navWin;
 	
-	public MapPanel(NavigatorWindow navWin) { 
-		this();
-		this.navWin = navWin;
-		}	
 	public MapPanel() {
 		super();
+		
 		mapType = SurfMarsMap.TYPE;
 		oldMapType = mapType;
 		topoMap = new TopoMarsMap(this);
@@ -61,9 +63,7 @@ public class MapPanel extends JPanel implements Runnable {
 		mapLayers = new ArrayList<MapLayer>();
 		update = true;
 		
-		
-		this.setPreferredSize(new Dimension(3*Map.DISPLAY_WIDTH, 3*Map.DISPLAY_HEIGHT));
-		
+		setPreferredSize(new Dimension(300, 300));
 		setBackground(Color.BLACK);
 	}
 	
@@ -151,7 +151,6 @@ public class MapPanel extends JPanel implements Runnable {
 	    			try {
 	    				mapError = false;
 	    				map.drawMap(centerCoords);
-
 	    			}
 	    			catch (Exception e) {
 	    				e.printStackTrace(System.err);
@@ -160,14 +159,12 @@ public class MapPanel extends JPanel implements Runnable {
 	    			}
 	    			wait = false;
 	    			repaint();
-	    	        if (navWin != null ) {navWin.centerViewOnMap();}
 	    		}
 			});
 			createMapThread.start();
 		}
 		
         updateDisplay();
-
     }
 	
 	/** 
@@ -185,26 +182,23 @@ public class MapPanel extends JPanel implements Runnable {
 	public void run() {
 		while (update) {
         	try {
-            //    Thread.sleep(1000);
-        		Thread.sleep(300);
+                Thread.sleep(1000);
             } 
 	        catch (InterruptedException e) {}
 	        repaint();
         }
-
 	}
 	
 	public void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-     
-        mapImage=surfMap.getMapImage();
+        
         if (wait) {
         	if (mapImage != null) g.drawImage(mapImage, 0, 0, this);
         	String message = "Generating Map";
         	drawCenteredMessage(message, g);
-           //	if (navWin != null ) {navWin.centerViewOnMap();}
         }
         else {
         	if (mapError) {
@@ -218,9 +212,9 @@ public class MapPanel extends JPanel implements Runnable {
             }
         	else {
         		// Paint black background
-//              g.setColor(Color.black);
- //             g.fillRect(0, 0, Map.MAP_VIS_HEIGHT, Map.MAP_VIS_WIDTH);
-              
+                g.setColor(Color.black);
+                g.fillRect(0, 0, Map.DISPLAY_WIDTH, Map.DISPLAY_HEIGHT);
+                
                 if (centerCoords != null) {
                 	if (map.isImageDone()) {
                 		mapImage = map.getMapImage();
@@ -229,13 +223,11 @@ public class MapPanel extends JPanel implements Runnable {
                 
                 	// Display map layers.
                 	Iterator<MapLayer> i = mapLayers.iterator();
-               	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
-
+                	while (i.hasNext()) i.next().displayLayer(centerCoords, mapType, g);
                 }
         	}
         }
-
-	}
+    }
 	
     /**
      * Draws a message string in the center of the map panel.
@@ -257,14 +249,13 @@ public class MapPanel extends JPanel implements Runnable {
         int msgWidth = messageMetrics.stringWidth(message);
         
         // Determine message draw position
-        int x = (Map.MAP_VIS_WIDTH - msgWidth) / 2;
-        int y = (Map.MAP_VIS_HEIGHT + msgHeight) / 2;
+        int x = (Map.DISPLAY_WIDTH - msgWidth) / 2;
+        int y = (Map.DISPLAY_HEIGHT + msgHeight) / 2;
     
         // Draw message
         g.drawString(message, x, y);
     }
-
-
+    
     /**
      * Prepares map panel for deletion.
      */
@@ -275,9 +266,4 @@ public class MapPanel extends JPanel implements Runnable {
     	usgsMap = null;
     	update = false;
     }
-	public void setCoords(Coordinates newCoords) {
-		this.centerCoords = new Coordinates(newCoords);
-		navWin.updateCoordsNO_REDRAW(newCoords);
-	}
-
 }
