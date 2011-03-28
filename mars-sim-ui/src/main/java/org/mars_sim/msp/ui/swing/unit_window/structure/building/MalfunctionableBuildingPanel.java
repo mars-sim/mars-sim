@@ -114,7 +114,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
     
         // Have each malfunction panel update.
         Iterator<MalfunctionPanel> i = malfunctionPanels.iterator();
-        while (i.hasNext()) i.next();
+        while (i.hasNext()) i.next().update();
     }
     
     /**
