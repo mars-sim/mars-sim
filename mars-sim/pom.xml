@@ -238,18 +238,18 @@
 			<id>sourceforge.net</id>
 			<name>Mars Sim Releases</name>
 			<uniqueVersion>false</uniqueVersion>
-			<url>scp://shell.sourceforge.net/home/groups/m/ma/mars-sim/htdocs/maven-repo</url>
+			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo</url>
 		</repository>
 		<snapshotRepository>
 			<id>sourceforge.net</id>
 			<name>Mars Sim Snapshots</name>
 			<uniqueVersion>true</uniqueVersion>
-			<url>scp://shell.sourceforge.net/home/groups/m/ma/mars-sim/htdocs/maven-repo-snapshots</url>
+			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/maven-repo-snapshots</url>
 		</snapshotRepository>
 		<site>
 			<id>sourceforge.net</id>
 			<name>Mars Sim Site</name>
-			<url>scp://shell.sourceforge.net/home/groups/m/ma/mars-sim/htdocs/site</url>
+			<url>scp://shell.sourceforge.net/home/project-web/mars-sim/htdocs/site</url>
 		</site>
 	</distributionManagement>
 </project>
