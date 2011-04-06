@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 3.00 2010-08-10
+ * @version 3.00 2011-04-05
  * @author Scott Davis
  */
 
@@ -51,7 +51,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	 * Constructor
 	 */
 	RandomMineralMap() {
-		mineralConcentrations = new ArrayList<MineralConcentration>(1000);
+		mineralConcentrations = new ArrayList<MineralConcentration>(2000);
 		
 		// Determine mineral concentrations.
 		determineMineralConcentrations();
@@ -142,9 +142,10 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	private Set<Coordinates> getTopoRegionSet(String imageMapName) {
 		Set<Coordinates> result = new HashSet<Coordinates>(3000);
 		/* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
-		URL imageMapURL = getClass().getResource("/images/" + imageMapName);//ClassLoader.getSystemResource("images/" + imageMapName);
+		URL imageMapURL = getClass().getResource("/images/" + imageMapName);
 		ImageIcon mapIcon = new ImageIcon(imageMapURL);
 		Image mapImage = mapIcon.getImage();
+
 		int[] mapPixels = new int[300 * 150];
 		PixelGrabber topoGrabber = new PixelGrabber(mapImage, 0, 0, 300, 150, mapPixels, 0, 300);
 		try {
@@ -158,8 +159,8 @@ public class RandomMineralMap implements Serializable, MineralMap {
         for (int x = 0; x < 150; x++) {
         	for (int y = 0; y < 300; y++) {
         		int pixel = mapPixels[(x * 300) + y];
-        		int alpha = (pixel >> 24) & 0xFF;
-        		if (alpha == 255) {
+        		Color color = new Color(pixel);
+        		if (Color.white.equals(color)) {
         			double pixel_offset = (Math.PI / 150D) / 2D;
         			double phi = (((double) x / 150D) * Math.PI) + pixel_offset;
         			double theta = (((double) y / 150D) * Math.PI) + Math.PI + pixel_offset;
@@ -180,6 +181,7 @@ public class RandomMineralMap implements Serializable, MineralMap {
 	public Map<String, Double> getAllMineralConcentrations(Coordinates location) {
 		Map<String, Double> result = Collections.emptyMap();
 		boolean emptyMap = true;
+		
 		Iterator<MineralConcentration> i = mineralConcentrations.iterator();
 		while (i.hasNext()) {
 			MineralConcentration mineralConcentration = i.next();
