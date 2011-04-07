@@ -234,7 +234,7 @@ public class MasterClock implements Runnable, Serializable {
     	 * */
     //you can change these to suit:
     private static final double ratioatmid = 1000.0D, //the "default" ratio that will be set at 50, the middle of the scale
-            maxratio = 300000.0D, //the max ratio the sim can be set at
+            maxratio = 10800.0D, //the max ratio the sim can be set at
             minfracratio = 0.001D, //the minimum ratio the sim can be set at
             maxfracratio = 0.98D, //the largest fractional ratio the sim can be set at
 
@@ -256,17 +256,13 @@ public class MasterClock implements Runnable, Serializable {
     public void setTimeRatio(int sliderValue) {
         // sliderValue should be in the range 1..100 inclusive, if not it defaults to
         // 1:15 real:sim ratio
-        ;
-        double base;
-        double slope, offset, e1, e2;
+        
+        //double base;
+        double slope, offset;
+        //double e1, e2;
 
         if ((sliderValue > 0) && (sliderValue <= 100)) {
-/*    		offset = Math.pow(Math.E,((Math.log(ratioatmid))/midslider) );
-    		e1 = Math.pow( Math.E,((Math.log(maxratio))/maxslider) ) ;
-    		e2 = Math.pow( Math.E,((Math.log(ratioatmid))/midslider) );
-    		slope = (e1-e2)/(maxslider-midslider);
-    		base = (sliderValue-minslider-30)*slope + offset;
-*/
+/*
             if (sliderValue >= minslider) //generates ratios >= 1
             {
                 offset = Math.pow(Math.E, ((Math.log(ratioatmid)) / midslider));
@@ -277,6 +273,22 @@ public class MasterClock implements Runnable, Serializable {
 
                 timeRatio = Math.pow(base, (sliderValue - minslider));
                 timeRatio = Math.round(timeRatio);
+*/
+            if (sliderValue >= (midslider + minslider)) {
+                // Creates exponential curve between ratioatmid and maxratio.
+                double a = ratioatmid;
+                double b = maxratio / ratioatmid;
+                double T = maxslider - midslider;
+                double expo = (sliderValue - minslider - midslider) / T;
+                timeRatio = a * Math.pow(b, expo);
+            }
+            else if (sliderValue >= minslider) {
+                // Creates exponential curve between 1 and ratioatmid.
+                double a = 1D;
+                double b = ratioatmid;
+                double T = midslider;
+                double expo = (sliderValue - minslider) / T;
+                timeRatio = a * Math.pow(b, expo);
             } else //generates ratios < 1
             {
                 offset = minfracratio;
