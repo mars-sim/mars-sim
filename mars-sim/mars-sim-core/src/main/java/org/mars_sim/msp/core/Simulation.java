@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.00 2011-03-17
+ * @version 3.01 2011-04-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -22,7 +22,7 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//import org.mars_sim.msp.ui.swing.*;
+
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
@@ -34,7 +34,7 @@ public class Simulation implements ClockListener, Serializable {
 //    private static String CLASS_NAME = "org.mars_sim.msp.simulation.Simulation";
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
     // Version string.
-    public final static String VERSION = "3.00";
+    public final static String VERSION = "3.01";
     // Default save file.
     public final static String DEFAULT_FILE = "default.sim";
     // Save directory
@@ -63,12 +63,7 @@ public class Simulation implements ClockListener, Serializable {
      */
     private Simulation() {
 
-//        try {
-        // Initialize transient data members.
         initializeTransientData();
-//        } catch (Exception e) {
-//            logger.log(Level.SEVERE, "Simulation could not be created: " + e.getMessage());
-//        }
     }
 
     /**
@@ -95,19 +90,13 @@ public class Simulation implements ClockListener, Serializable {
      * @throws Exception if new simulation could not be created.
      */
     public static void createNewSimulation() {
-//        try {
+
         Simulation simulation = instance();
         // Initialize intransient data members.
         simulation.initializeIntransientData();
 
         // Initialize transient data members.
         simulation.initializeTransientData();
-
-        //note: the following code is in MarsProject, to keep it in one place
-        //	simulation.start();
-//        } catch (Exception e) {
-//            throw new Exception("New simulation could not be created: " + e.getMessage());
-//        }
     }
 
     /**
@@ -161,9 +150,6 @@ public class Simulation implements ClockListener, Serializable {
 
             try {
                 readFromFile(f);
-                //        } catch (FileNotFoundException e) {
-                //            throw new Exception("Saved file: " + file.getAbsolutePath() + " not found.");
-                //        }
             } catch (ClassNotFoundException ex) {
                 throw new IllegalStateException(ex);
             } catch (IOException ex) {
@@ -175,16 +161,13 @@ public class Simulation implements ClockListener, Serializable {
             initializeTransientData();
 
         }
-//        } catch (FileNotFoundException e) {
-//            throw new Exception("Saved file: " + file.getAbsolutePath() + " not found.");
-//        }
 
         //note: the following code is in MarsProject, to keep it in one place
         simulation.start();
     }
 
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
-        //        try {
+        
         ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
         // Load intransient objects.
         SimulationConfig.setInstance((SimulationConfig) p.readObject());
@@ -199,9 +182,6 @@ public class Simulation implements ClockListener, Serializable {
         unitManager = (UnitManager) p.readObject();
         masterClock = (MasterClock) p.readObject();
         p.close();
-        //        } catch (FileNotFoundException e) {
-        //            throw new Exception("Saved file: " + file.getAbsolutePath() + " not found.");
-        //        }
     }
 
     /**
@@ -285,10 +265,6 @@ public class Simulation implements ClockListener, Serializable {
     public void clockPulse(double time) {
         final UpTimer ut = masterClock.getUpTimer();
 
-//        try {
-//        if(logger.isLoggable(Level.FINE)){
-//
-//        }
         ut.updateTime();
         if (debug) {
             logger.fine(ut.getUptime()
@@ -313,10 +289,6 @@ public class Simulation implements ClockListener, Serializable {
                     + " Master clock sending pulse to object: scientificStudyManager " + scientificStudyManager);
         }
         scientificStudyManager.updateStudies();
-//        } catch (Exception e) {
-//            e.printStackTrace(System.err);
-//            logger.log(Level.SEVERE, "Simulation.clockPulse(): " + e.getMessage());
-//        }
     }
 
     /**
@@ -406,15 +378,4 @@ public class Simulation implements ClockListener, Serializable {
     public boolean isDefaultLoad() {
         return defaultLoad;
     }
-    /*
-    public void mainWindowSimStartOK(boolean itsokaytostart) {
-    // TODO Auto-generated method stub
-    //if (mainwindow == null)
-    //	logger.severe("Simulation.instance: MainWindow appeared to be null..");
-    if (itsokaytostart)
-    { this.start(); }
-    else
-    logger.severe("Simulation.instance: MainWindow told me not to start");
-    }
-     */
 }
