@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.00 2011-02-13
+ * @version 3.01 2011-04-09
  * @author Lars Naesbye Christensen
  */
 
@@ -96,7 +96,6 @@ public class SettlementWindow extends ToolWindow {
 
 		settlementListBox = new JComboBox(settlements);
 		settlementListBox.setToolTipText("Select settlement");
-		settlementListBox.setSelectedIndex(0);
 		settlementListBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent event) {
@@ -107,7 +106,11 @@ public class SettlementWindow extends ToolWindow {
             } 
 		});
 		widgetPane.add(settlementListBox);
-		mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
+		
+		if (settlementListBox.getModel().getSize() > 0) {
+            settlementListBox.setSelectedIndex(0);
+            mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
+        }
 
 		// Create zoom label and slider
 		JPanel zoomPane = new JPanel(new BorderLayout());
