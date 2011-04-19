@@ -51,8 +51,8 @@ public class ShadingMapLayer implements MapLayer {
      */
     public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
         
-        int centerX = 150;
-        int centerY = 150;
+        int centerX = 150+MAP_X_OFFSET;
+        int centerY = 150+MAP_X_OFFSET;
 
         // Coordinates sunDirection = orbitInfo.getSunDirection();
 

@@ -76,9 +76,9 @@ public class VehicleTrailMapLayer implements MapLayer {
                 if (mapCenter.getAngle(trailSpot) < angle) {
                     IntPoint spotLocation = MapUtils.getRectPosition(trailSpot, mapCenter, mapType);
                     if ((oldSpot == null))                            
-                        g.drawRect(spotLocation.getiX(), spotLocation.getiY(), 1, 1);
+                        g.drawRect(spotLocation.getiX()+MAP_X_OFFSET, spotLocation.getiY()+MAP_Y_OFFSET, 1, 1);
                     else if (!spotLocation.equals(oldSpot))
-                        g.drawLine(oldSpot.getiX(), oldSpot.getiY(), spotLocation.getiX(), spotLocation.getiY());
+                        g.drawLine(oldSpot.getiX()+MAP_X_OFFSET, oldSpot.getiY()+MAP_Y_OFFSET, spotLocation.getiX()+MAP_X_OFFSET, spotLocation.getiY()+MAP_Y_OFFSET);
                     oldSpot = spotLocation;
                 }
             }
