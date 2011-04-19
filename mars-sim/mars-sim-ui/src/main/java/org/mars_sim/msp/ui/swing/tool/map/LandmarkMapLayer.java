@@ -67,8 +67,8 @@ public class LandmarkMapLayer implements MapLayer {
 		IntPoint location = MapUtils.getRectPosition(landmark.getLandmarkLocation(), mapCenter, mapType);
 		
 		// Determine circle location.
-		int locX = location.getiX() - (CIRCLE_DIAMETER / 2);
-		int locY = location.getiY() - (CIRCLE_DIAMETER / 2);
+		int locX = MAP_X_OFFSET+ location.getiX() - (CIRCLE_DIAMETER / 2);
+		int locY = MAP_Y_OFFSET+location.getiY() - (CIRCLE_DIAMETER / 2);
 		
 		// Set the color
 		if (TopoMarsMap.TYPE.equals(mapType)) g.setColor(TOPO_COLOR);
