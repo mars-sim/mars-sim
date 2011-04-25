@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LandmarkMapLayer.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.map;
@@ -43,7 +43,7 @@ public class LandmarkMapLayer implements MapLayer {
      */
     public void displayLayer(Coordinates mapCenter, String mapType, Graphics g) {
     	
-		Iterator i = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
+		Iterator<Landmark> i = Simulation.instance().getMars().getSurfaceFeatures().getLandmarks().iterator();
 		while (i.hasNext()) {
 			Landmark landmark = (Landmark) i.next();
 			double angle = 0D;
