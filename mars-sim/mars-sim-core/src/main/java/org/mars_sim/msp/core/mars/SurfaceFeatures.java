@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -27,9 +27,10 @@ public class SurfaceFeatures implements Serializable {
 
     // Data members 
     private transient TerrainElevation surfaceTerrain;
-    private List landmarks;
+    private List<Landmark> landmarks;
     private MineralMap mineralMap;
     private List<ExploredLocation> exploredLocations;
+    private AreothermalMap areothermalMap;
 
     /** 
      * Constructor 
@@ -40,6 +41,7 @@ public class SurfaceFeatures implements Serializable {
         surfaceTerrain = new TerrainElevation();
         mineralMap = new RandomMineralMap();
         exploredLocations = new ArrayList<ExploredLocation>();
+        areothermalMap = new AreothermalMap();
 
         try {
             landmarks = SimulationConfig.instance().getLandmarkConfiguration().getLandmarkList();
@@ -137,7 +139,7 @@ public class SurfaceFeatures implements Serializable {
      * Gets a list of landmarks on Mars.
      * @return list of landmarks.
      */
-    public List getLandmarks() {
+    public List<Landmark> getLandmarks() {
         return landmarks;
     }
 
@@ -171,6 +173,14 @@ public class SurfaceFeatures implements Serializable {
      */
     public List<ExploredLocation> getExploredLocations() {
         return exploredLocations;
+    }
+    
+    /**
+     * Gets the areothermal map.
+     * @return areothermal map.
+     */
+    public AreothermalMap getAreothermalMap() {
+        return areothermalMap;
     }
 
     /**
