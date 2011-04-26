@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 import java.io.Serializable;
@@ -30,4 +31,9 @@ public class StandardPowerSource extends PowerSource implements Serializable {
 	public double getCurrentPower(Building building) {
 		return getMaxPower();
 	}
+
+    
+    public double getAveragePower(Settlement settlement) {
+        return getMaxPower();
+    }
 }
