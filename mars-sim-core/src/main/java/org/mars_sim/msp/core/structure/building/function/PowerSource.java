@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * PowerSource.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 
 import java.io.Serializable;
@@ -51,4 +52,11 @@ public abstract class PowerSource implements Serializable {
 	 * @return power (kW)
 	 */
 	public abstract double getCurrentPower(Building building);
+	
+	/**
+	 * Gets the average power produced by the power source.
+	 * @param settlement the settlement this power source is at.
+	 * @return power(kW)
+	 */
+	public abstract double getAveragePower(Settlement settlement);
 }

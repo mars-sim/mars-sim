@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.01 2011-04-21
+ * @version 3.01 2011-04-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -176,11 +176,12 @@ public class SurfaceFeatures implements Serializable {
     }
     
     /**
-     * Gets the areothermal map.
-     * @return areothermal map.
+     * Gets the areothermal heat potential for a given location.
+     * @param location the coordinate location.
+     * @return areothermal heat potential as percentage (0% - low, 100% - high).
      */
-    public AreothermalMap getAreothermalMap() {
-        return areothermalMap;
+    public double getAreothermalPotential(Coordinates location) {
+        return areothermalMap.getAreothermalPotential(location);
     }
 
     /**

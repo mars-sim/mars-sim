@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarThermalPowerSource.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.structure.building.function;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
@@ -41,5 +42,10 @@ public class SolarThermalPowerSource extends PowerSource implements
         // Solar thermal mirror only works in direct sunlight.
         if (sunlight == 1D) return getMaxPower();
         else return 0D;
+    }
+
+    @Override
+    public double getAveragePower(Settlement settlement) {
+        return getMaxPower() / 2.5D;
     }
 }

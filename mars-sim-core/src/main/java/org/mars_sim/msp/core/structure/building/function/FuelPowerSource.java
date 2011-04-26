@@ -1,14 +1,18 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-04-25
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.structure.goods.GoodsManager;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 import java.io.Serializable;
 import java.util.logging.Logger;
@@ -48,33 +52,22 @@ public class FuelPowerSource extends PowerSource implements Serializable {
         super(TYPE, _maxPower);
         consumptionSpeed = _consumptionSpeed;
         toggle = _toggle;
-
-//        try {
-            resource = AmountResource.findAmountResource(fuelType);
-//        } catch (ResourceException e) {
-//            logger.log(Level.SEVERE, "Could not get fuel resource", e);
-//        }
+        resource = AmountResource.findAmountResource(fuelType);
     }
 
     @Override
     public double getCurrentPower(Building building) {
-//        try {
-            if (toggle) {
-                double fuelStored = building.getInventory()
-                        .getAmountResourceStored(resource);
-                if (fuelStored > 0) {
-                    return getMaxPower();
-                } else {
-                    return 0;
-                }
+
+        if (toggle) {
+            double fuelStored = building.getInventory().getAmountResourceStored(resource);
+            if (fuelStored > 0) {
+                return getMaxPower();
             } else {
                 return 0;
             }
-//        } catch (InventoryException e) {
-//            logger.log(Level.SEVERE,
-//                    "Issues when getting power frong fuel source", e);
-//            return 0;
-//        }
+        } else {
+            return 0;
+        }
     }
 
     public void toggleON() {
@@ -90,20 +83,16 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     }
 
     public void consumeFuel(double time, Inventory inv) {
-//        try {
-            double consumptionRateMillisol = consumptionSpeed / 1000D;
-            double consumedFuel = time * consumptionRateMillisol;
-            double fuelStored = inv.getAmountResourceStored(resource);
+        
+        double consumptionRateMillisol = consumptionSpeed / 1000D;
+        double consumedFuel = time * consumptionRateMillisol;
+        double fuelStored = inv.getAmountResourceStored(resource);
 
-            if (fuelStored < consumedFuel) {
-                consumedFuel = fuelStored;
-            }
+        if (fuelStored < consumedFuel) {
+            consumedFuel = fuelStored;
+        }
 
-            inv.retrieveAmountResource(resource, consumedFuel);
-//        } catch (InventoryException e) {
-//            logger.log(Level.SEVERE, "Issues when consuming fuel", e);
-//        }
-
+        inv.retrieveAmountResource(resource, consumedFuel);
     }
     
     /**
@@ -134,5 +123,18 @@ public class FuelPowerSource extends PowerSource implements Serializable {
              if (toggle) logger.info(getType() + " turned on.");
              else logger.info(getType() + " turned off.");
         }
+    }
+
+    @Override
+    public double getAveragePower(Settlement settlement) {
+        double fuelPower = getMaxPower();
+        AmountResource fuelResource = getFuelResource();
+        Good fuelGood = GoodsUtil.getResourceGood(fuelResource);
+        GoodsManager goodsManager = settlement.getGoodsManager();
+        double fuelValue = goodsManager.getGoodValuePerItem(fuelGood);
+        fuelValue *= getFuelConsumptionRate();
+        fuelPower -= fuelValue;
+        if (fuelPower < 0D) fuelPower = 0D;
+        return fuelPower;
     }
 }
