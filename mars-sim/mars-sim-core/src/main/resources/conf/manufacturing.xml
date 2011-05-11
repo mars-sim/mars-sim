@@ -1816,6 +1816,67 @@
 		</outputs>
 	</process>
 	
+	<!-- Manufacturing a steel drill bit. -->
+	<process name="bore drill bit manufacturing" tech="3" skill="3" work-time="300" process-time="150" 
+			power-required="10.0">
+		<inputs>
+			<part name="steel ingot" number="5" />
+		</inputs>
+		<outputs>
+			<part name="bore drill bit" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Manufacturing a steel drill pipe. -->
+	<process name="bore drill pipe manufacturing" tech="2" skill="3" work-time="100" process-time="150" 
+			power-required="10.0">
+		<inputs>
+			<part name="steel sheet" number="3" />
+		</inputs>
+		<outputs>
+			<part name="bore drill pipe" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Assembling a drilling rig (light utility vehicle crane boom attachment). -->
+	<process name="drilling rig assembly" tech="3" skill="3" work-time="50" process-time="0.0" 
+			power-required="2.0">
+		<inputs>
+			<part name="large electric motor" number="1" />
+			<part name="steel cable" number="4" />
+			<part name="steel sheet" number="1" />
+		</inputs>
+		<outputs>
+			<part name="drilling rig" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Manufacturing a copper condenser coil. -->
+	<process name="condenser coil manufacturing" tech="2" skill="2" work-time="150" process-time="25.0" 
+			power-required="6.0">
+		<inputs>
+			<part name="copper pipe" number="2" />
+		</inputs>
+		<outputs>
+			<part name="condenser coil" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Manufacturing a water pump. -->
+	<process name="water pump manufacturing" tech="4" skill="4" work-time="200" process-time="100" 
+			power-required="10.0">
+		<inputs>
+			<part name="iron ingot" number="3" />
+			<part name="aluminum wire" number="1" />
+			<part name="steel sheet" number="1" />
+			<part name="electrical wire" number="10" />
+			<part name="wire connector" number="10" />
+		</inputs>
+		<outputs>
+			<part name="water pump" number="5" />
+		</outputs>
+	</process>
+	
 	<!-- Salvage process for an EVA suit. -->
 	<salvage item-name="eva suit" type="equipment" tech="2" skill="2" work-time="200">
 		<part-salvage name="eva helmet" number="1" />

@@ -86,6 +86,7 @@ public class BuildingConfig implements Serializable {
     private static final String SOLAR_THERMAL_POWER_SOURCE = "Solar Thermal Power Source";
 	private static final String FUEL_POWER_SOURCE = "Fuel Power Source";
     private static final String WIND_POWER_SOURCE = "Wind Power Source";
+    private static final String AREOTHERMAL_POWER_SOURCE = "Areothermal Power Source";
 	
 	private Document buildingDoc;
 	
@@ -504,7 +505,7 @@ public class BuildingConfig implements Serializable {
 			    powerSource = new FuelPowerSource(power ,toggleStafe, fuelType, consumptionSpeed);
 			}
             else if (type.equalsIgnoreCase(WIND_POWER_SOURCE)) powerSource = new WindPowerSource(power);
-			    
+            else if (type.equalsIgnoreCase(AREOTHERMAL_POWER_SOURCE)) powerSource = new AreothermalPowerSource(power);
 			else throw new IllegalStateException("Power source: " + type + " not a valid power source.");
 			powerSourceList.add(powerSource); 
 		}

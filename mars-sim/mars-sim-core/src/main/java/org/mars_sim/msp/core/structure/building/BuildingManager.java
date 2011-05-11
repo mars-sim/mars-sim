@@ -66,8 +66,7 @@ public class BuildingManager implements Serializable {
      * @param buildingTemplates the settlement's building templates.
      * @throws Exception if buildings cannot be constructed.
      */
-    public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) 
-{
+    public BuildingManager(Settlement settlement, List<BuildingTemplate> buildingTemplates) {
     	
     	this.settlement = settlement;
     	
@@ -185,13 +184,8 @@ public class BuildingManager implements Serializable {
      * @throws Exception if error.
      */
     public void timePassing(double time) {
-//    	try {
-        	Iterator<Building> i = buildings.iterator();
-        	while (i.hasNext()) i.next().timePassing(time);
-//    	}
-//    	catch (BuildingException e) {
-//    		throw new IllegalStateException("BuildingManager.timePassing(): " + e.getMessage());
-//    	}
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) i.next().timePassing(time);
     }   
 
     /**
@@ -338,31 +332,25 @@ public class BuildingManager implements Serializable {
              {
     	List<Building> result = new ArrayList<Building>();
     	
-//    	try {
-    		// Find least crowded population.
-    		int leastCrowded = Integer.MAX_VALUE;
-    		Iterator<Building> i = buildingList.iterator();
-    		while (i.hasNext()) {
-				LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
-				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-				if (crowded < -1) crowded = -1;
-				if (crowded < leastCrowded) leastCrowded = crowded;
-			}
+    	// Find least crowded population.
+    	int leastCrowded = Integer.MAX_VALUE;
+    	Iterator<Building> i = buildingList.iterator();
+    	while (i.hasNext()) {
+			LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
+			int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+			if (crowded < -1) crowded = -1;
+			if (crowded < leastCrowded) leastCrowded = crowded;
+		}
 			
-			// Add least crowded buildings to list.
-			Iterator<Building> j = buildingList.iterator();
-			while (j.hasNext()) {
-				Building building = j.next();
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
-				if (crowded < -1) crowded = -1;
-				if (crowded == leastCrowded) result.add(building);
-			}
-//		}
-//		catch (ClassCastException e) {
-//			throw new BuildingException("BuildingManager.getLeastCrowdedBuildings(): " +
-//                    "building isn't a life support building.");
-//		}
+		// Add least crowded buildings to list.
+		Iterator<Building> j = buildingList.iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+			int crowded = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity();
+			if (crowded < -1) crowded = -1;
+			if (crowded == leastCrowded) result.add(building);
+		}
     	
     	return result;
     }
@@ -379,38 +367,34 @@ public class BuildingManager implements Serializable {
     	
     	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
     	
-//		try {
-			// Find best relationship buildings.
-			double bestRelationships = Double.NEGATIVE_INFINITY;
-			Iterator<Building> i = buildingList.iterator();
-			while (i.hasNext()) {
-				LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
-				double buildingRelationships = 0D;
-				Iterator<Person> j = lifeSupport.getOccupants().iterator();
-				while (j.hasNext()) {
-					Person occupant = j.next();
-					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
-				} 
-				if (buildingRelationships > bestRelationships) bestRelationships = buildingRelationships;
-			}
+
+		// Find best relationship buildings.
+		double bestRelationships = Double.NEGATIVE_INFINITY;
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
+			double buildingRelationships = 0D;
+			Iterator<Person> j = lifeSupport.getOccupants().iterator();
+			while (j.hasNext()) {
+				Person occupant = j.next();
+				if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
+			} 
+			if (buildingRelationships > bestRelationships) bestRelationships = buildingRelationships;
+		}
 			
-			// Add bestRelationships buildings to list.
-			i = buildingList.iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				double buildingRelationships = 0D;
-				Iterator<Person> j = lifeSupport.getOccupants().iterator();
-				while (j.hasNext()) {
-					Person occupant = j.next();
-					if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
-				} 
-				if (buildingRelationships == bestRelationships) result.add(building);
-			}
-//		}
-//		catch (ClassCastException e) {
-//			throw new BuildingException("BuildingManager.getBestRelationshipBuildings(): building isn't a life support building.");
-//		}
+		// Add bestRelationships buildings to list.
+		i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+			double buildingRelationships = 0D;
+			Iterator<Person> j = lifeSupport.getOccupants().iterator();
+			while (j.hasNext()) {
+				Person occupant = j.next();
+				if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
+			} 
+			if (buildingRelationships == bestRelationships) result.add(building);
+		}
     	
     	return result;
     }

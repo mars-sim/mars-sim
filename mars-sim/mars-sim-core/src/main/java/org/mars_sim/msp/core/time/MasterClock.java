@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.00 2011-03-23
+ * @version 3.01 2011-05-10
  * @author Scott Davis
  */
 
@@ -365,6 +365,7 @@ public class MasterClock implements Runnable, Serializable {
                             cl.clockPulse(timePulse);
                         } catch (Exception e) {
                             logger.log(Level.WARNING, "Encountered error", e);
+                            e.printStackTrace(System.err);
                         }
                     }
                 }
