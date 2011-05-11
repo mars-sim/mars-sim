@@ -123,6 +123,7 @@
 			<part name="bulldozer blade" />
 			<part name="soil compactor" />
 			<part name="crane boom" />
+			<part name="drilling rig" />
 		</part-attachment>
 	</vehicle>
 	

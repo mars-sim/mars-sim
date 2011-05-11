@@ -45,6 +45,30 @@
 		
 		<foundation name="unprepared surface foundation" width="*" length="*" constructable="false" salvagable="true" 
 		 work-time="0.0" skill-required="0" />
+		 
+		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="100.0" skill-required="3" >
+		 	<resource name="water" amount="100.0" />
+		 	<part name="bore drill bit" number="1" />
+		 	<part name="bore drill pipe" number="20" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="pneumatic drill" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="deep borehole drilling site" width="10.0" length="15.0" constructable="true" 
+		 salvagable="true" work-time="300.0" skill-required="4" >
+		 	<resource name="water" amount="200.0" />
+		 	<part name="bore drill bit" number="4" />
+		 	<part name="bore drill pipe" number="60" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="pneumatic drill" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
 
 	</foundation-list>
 
@@ -228,6 +252,28 @@
 			<part name="wire connector" number="5" />
 			<part name="power cable" number="2" />
 			<part name="gasket" number="4" />
+		</frame>
+		
+		<frame name="small areothermal well frame" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="100.0" skill-required="2" foundation="shallow borehole drilling site" >
+			<resource name="concrete" amount="25.0" />
+			<resource name="water" amount="10.0" />
+			<part name="steel truss" number="10" />
+			<part name="steel sheet" number="5" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="large areothermal well frame" width="10.0" length="15.0" constructable="true" 
+		 salvagable="true" work-time="400.0" skill-required="3" foundation="deep borehole drilling site" >
+			<resource name="concrete" amount="75.0" />
+			<resource name="water" amount="30.0" />
+			<part name="steel truss" number="30" />
+			<part name="steel sheet" number="15" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
 		</frame>
 		
 	</frame-list>
@@ -695,6 +741,46 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Small areothermal well for generating electricity. -->
+		<building name="small areothermal well" width="5.0" length="10.0" constructable="true" salvagable="true"
+		 work-time="15.0" skill-required="3" frame="small areothermal well frame" >
+			<resource name="water" amount="500.0" />
+			<part name="condenser coil" number="1" />
+			<part name="steel pipe" number="10" />
+			<part name="water pump" number="1" />
+			<part name="turbine generator" number="1" />
+			<part name="valve" number="5" />
+			<part name="gasket" number="5" />
+			<part name="rover water tank" number="1" />
+			<part name="fiberglass cloth" number="10" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<!-- Large areothermal well for generating electricity. -->
+		<building name="large areothermal well" width="10.0" length="15.0" constructable="true" salvagable="true"
+		 work-time="50.0" skill-required="3" frame="large areothermal well frame" >
+			<resource name="water" amount="1500.0" />
+			<part name="condenser coil" number="2" />
+			<part name="steel pipe" number="20" />
+			<part name="water pump" number="2" />
+			<part name="turbine generator" number="2" />
+			<part name="valve" number="15" />
+			<part name="gasket" number="15" />
+			<part name="rover water tank" number="2" />
+			<part name="fiberglass cloth" number="20" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="40" />
+			<part name="wire connector" number="40" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
 		</building>
 
 	</building-list>

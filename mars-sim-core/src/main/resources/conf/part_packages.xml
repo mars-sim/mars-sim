@@ -71,6 +71,11 @@
 		<part type="small wheel" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="2" />
+		<part type="bore drill bit" number="1" />
+		<part type="bore drill pipe" number="20" />
+		<part type="drilling rig" number="1" />
+		<part type="condenser coil" number="1" />
+		<part type="water pump" number="1" />
 		
 	</part-package>
 	
@@ -133,6 +138,11 @@
 		<part type="small wheel" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="6" />
+		<part type="bore drill bit" number="2" />
+		<part type="bore drill pipe" number="30" />
+		<part type="drilling rig" number="2" />
+		<part type="condenser coil" number="2" />
+		<part type="water pump" number="2" />
 	
 	</part-package>
 	
@@ -195,6 +205,11 @@
 		<part type="small wheel" number="2" />
 		<part type="utility vehicle control panel" number="2" />
 		<part type="solar panel" number="8" />
+		<part type="bore drill bit" number="4" />
+		<part type="bore drill pipe" number="40" />
+		<part type="drilling rig" number="4" />
+		<part type="condenser coil" number="4" />
+		<part type="water pump" number="4" />
 		
 	</part-package>
 	
@@ -257,6 +272,11 @@
 		<part type="small wheel" number="4" />
 		<part type="utility vehicle control panel" number="4" />
 		<part type="solar panel" number="8" />
+		<part type="bore drill bit" number="6" />
+		<part type="bore drill pipe" number="60" />
+		<part type="drilling rig" number="6" />
+		<part type="condenser coil" number="6" />
+		<part type="water pump" number="6" />
 	
 	</part-package>
 	

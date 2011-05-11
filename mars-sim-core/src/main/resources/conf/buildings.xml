@@ -474,6 +474,26 @@
 		</functions>
 	</building>
 	
+	<!-- A small areothermal electrical generator. -->
+	<building name="Small Areothermal Well" width="5.0" length="10.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Areothermal Power Source" power="30.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
+	<!-- A large areothermal electrical generator. -->
+	<building name="Large Areothermal Well" width="10.0" length="15.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<power-generation>
+				<power-source type="Areothermal Power Source" power="100.0" />
+			</power-generation>
+		</functions>
+	</building>
+	
 	<!-- A small brick bin for storing dry concrete. -->
 	<building name="Concrete Storage Bin" width="2.0" length="3.0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
