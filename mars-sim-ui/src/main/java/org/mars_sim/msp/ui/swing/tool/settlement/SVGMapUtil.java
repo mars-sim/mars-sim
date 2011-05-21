@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.00 2011-01-30
+ * @version 3.00 2011-05-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -71,6 +71,8 @@ public final class SVGMapUtil {
         buildingSVGMap.put("small sabatier processor", "small_sabatier_processor");
         buildingSVGMap.put("bunkhouse", "bunkhouse");
         buildingSVGMap.put("manufacturing shed", "manufacturing_shed");
+        buildingSVGMap.put("small areothermal well", "small_areothermal_well");
+        buildingSVGMap.put("large areothermal well", "large_areothermal_well");
     }
     
     /**
@@ -136,6 +138,12 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("manufacturing shed", "manufacturing_shed_const");
         constructionSiteSVGMap.put("small brick shed frame", "small_brick_shed_frame_const");
         constructionSiteSVGMap.put("subsurface foundation 5m x 5m x 3m", "subsurface_foundation_5x5x3_const");
+        constructionSiteSVGMap.put("small areothermal well", "small_areothermal_well_const");
+        constructionSiteSVGMap.put("small areothermal well frame", "small_areothermal_well_frame_const");
+        constructionSiteSVGMap.put("shallow borehole drilling site", "shallow_borehole_drilling_site_const");
+        constructionSiteSVGMap.put("large areothermal well", "large_areothermal_well_const");
+        constructionSiteSVGMap.put("large areothermal well frame", "large_areothermal_well_frame_const");
+        constructionSiteSVGMap.put("deep borehole drilling site", "deep_borehole_drilling_site_const");
     }
     
     /**
