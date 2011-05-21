@@ -46,14 +46,13 @@ public class MarsProject {
 
         initializeSimulation(args, splashWindow);
 
-
         // Create the main desktop window.
         MainWindow w = new MainWindow();
-
         w.show();
-        // (the main window will call Simulation.getInstance().start(); 
-        // when it is finished loading. 
-        this.startSimulation();
+     
+        // Start simulation
+        startSimulation();
+        
         // Dispose the splash window.
         splashWindow.hide();
     }
@@ -104,16 +103,6 @@ public class MarsProject {
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
-
-//            try {
-//                // If error reading default saved file, create new
-//                // simulation.
-//                logger.warning("Creating new simulation");
-//                Simulation.createNewSimulation();
-//            } catch (Exception e2) {
-//                logger.log(Level.SEVERE, "Problem creating new simulation", e2);
-//                System.exit(0);
-//            }
         }
     }
 
@@ -171,6 +160,7 @@ public class MarsProject {
                 logger.log(Level.WARNING, "Could read logging default config", e);
             }
         }
+        
         // starting the simulation
         System.setProperty("swing.aatext", "true"); // general text antialiasing
 
