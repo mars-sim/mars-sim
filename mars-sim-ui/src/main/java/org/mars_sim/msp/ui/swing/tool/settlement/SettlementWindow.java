@@ -194,12 +194,13 @@ public class SettlementWindow extends ToolWindow {
         });
 		buttonsPane.add(recenterButton);
 		
-		// Create labels button.
-		JButton labelsButton = new JButton("Labels");
+		// Create labels toggle button.
+		JToggleButton labelsButton = new JToggleButton("Labels");
 		labelsButton.setToolTipText("Add/remove label overlays");
 		labelsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 mapPane.setShowLabels(!mapPane.isShowLabels());
+                labelsButton.setSelected(mapPane.isShowLabels());
             }
         });
 		buttonsPane.add(labelsButton);
