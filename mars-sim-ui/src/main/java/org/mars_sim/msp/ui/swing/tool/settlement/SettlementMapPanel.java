@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.00 2011-02-19
+ * @version 3.01 2011-06-01
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private static final Color BUILDING_COLOR = Color.GREEN;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     private static final Color LABEL_COLOR = Color.BLUE;
+    private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 125);
     private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
     private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
     
@@ -483,31 +485,35 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         AffineTransform saveTransform = g2d.getTransform();
         
         // Determine bounds.
-        //g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
-        FontMetrics metrics = g2d.getFontMetrics();
-        double height = metrics.getLeading();
-        double width = metrics.stringWidth(label);
-        Rectangle2D bounds = new Rectangle2D.Double(width / -2D, height / -2D, width, height);
+        TextLayout textLayout = new TextLayout(label, g2d.getFont(), g2d.getFontRenderContext());
+        Rectangle2D bounds = textLayout.getBounds();
         
         // Determine transform information.
-        double boundsPosX = bounds.getX() * scale;
-        double boundsPosY = bounds.getY() * scale;
-        double centerX = bounds.getWidth() * scale / 2D;
-        double centerY = bounds.getHeight() * scale / 2D;
+        double boundsPosX = bounds.getX();
+        double boundsPosY = bounds.getY();
+        double centerX = bounds.getWidth() / 2D;
+        double centerY = bounds.getHeight() / 2D;
         double centerMapX = getWidth() / 2D;
         double centerMapY = getHeight() / 2D;
         double translationX = (-1D * xLoc * scale) - centerX - boundsPosX + centerMapX;
         double translationY = (-1D * yLoc * scale) - centerY - boundsPosY + centerMapY;
         
-        // Apply graphic transforms for structure.
+        // Apply graphic transforms for label.
         AffineTransform newTransform = new AffineTransform();
         newTransform.translate(translationX, translationY);
-        newTransform.rotate(rotation * -1D);
-        g2d.transform(newTransform);
+        newTransform.rotate(rotation * -1D, centerX, centerY);
+        Shape labelShape = textLayout.getOutline(newTransform);
         
-        // Draw label.
+        // Draw label outline.
+        Stroke saveStroke = g2d.getStroke();
+        g2d.setColor(LABEL_OUTLINE_COLOR);
+        g2d.setStroke(new BasicStroke(2));
+        g2d.draw(labelShape);
+        g2d.setStroke(saveStroke);
+        
+        // Fill label
         g2d.setColor(LABEL_COLOR);
-        g2d.drawString(label, (int) bounds.getX(), (int) bounds.getY());
+        g2d.fill(labelShape);
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
