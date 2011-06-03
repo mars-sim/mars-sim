@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.01 2011-06-01
+ * @version 3.01 2011-06-03
  * @author Scott Davis
  */
 
@@ -42,7 +42,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private static final Color BUILDING_COLOR = Color.GREEN;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
     private static final Color LABEL_COLOR = Color.BLUE;
-    private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 125);
+    private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
     private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
     private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
     
@@ -457,14 +457,15 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         newTransform.translate(translationX, translationY);
         newTransform.rotate(facingRadian, centerX, centerY);
         newTransform.scale(scalingWidth, scalingLength);
-        g2d.transform(newTransform);
         
         if (isSVG) {
             // Draw SVG image.
+            svg.setTransform(newTransform);
             svg.paint(g2d);
         }
         else {
             // Draw filled rectangle.
+            g2d.transform(newTransform);
             g2d.setColor(color);
             g2d.fill(bounds);
         }
@@ -507,7 +508,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         // Draw label outline.
         Stroke saveStroke = g2d.getStroke();
         g2d.setColor(LABEL_OUTLINE_COLOR);
-        g2d.setStroke(new BasicStroke(2));
+        g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.draw(labelShape);
         g2d.setStroke(saveStroke);
         
