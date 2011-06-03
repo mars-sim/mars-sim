@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.01 2011-04-09
+ * @version 3.01 2011-06-03
  * @author Lars Naesbye Christensen
  */
 
@@ -199,8 +199,8 @@ public class SettlementWindow extends ToolWindow {
 		labelsButton.setToolTipText("Add/remove label overlays");
 		labelsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                mapPane.setShowLabels(!mapPane.isShowLabels());
-                labelsButton.setSelected(mapPane.isShowLabels());
+                JToggleButton button = (JToggleButton) evt.getSource();
+                mapPane.setShowLabels(button.isSelected());
             }
         });
 		buttonsPane.add(labelsButton);
