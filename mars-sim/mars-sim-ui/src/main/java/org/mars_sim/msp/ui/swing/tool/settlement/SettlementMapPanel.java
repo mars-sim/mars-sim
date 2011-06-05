@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.01 2011-06-03
+ * @version 3.01 2011-06-04
  * @author Scott Davis
  */
 
@@ -26,6 +26,7 @@ import java.awt.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -54,6 +55,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private double scale;
     private boolean showLabels;
     private Map<Settlement, String> settlementBackgroundMap;
+    private Map<Double, Map<GraphicsNode, BufferedImage>> svgImageCache;
     
     /**
      * A panel for displaying a settlement map.
@@ -69,7 +71,8 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         scale = DEFAULT_SCALE;
         settlement = null;
         showLabels = false;
-        settlementBackgroundMap = new HashMap<Settlement, String>();
+        settlementBackgroundMap = new HashMap<Settlement, String>(20);
+        svgImageCache = new HashMap<Double, Map<GraphicsNode, BufferedImage>>(21);
         
         // Set preferred size.
         setPreferredSize(new Dimension(400, 400));
@@ -206,9 +209,14 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         
+        //long startTime = System.nanoTime();
+        
         Graphics2D g2d = (Graphics2D) g;
+        
+        // Set graphics rendering hints.
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         
         // Draw background image tiles.
         drawBackgroundImageTiles(g2d);
@@ -227,6 +235,10 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         
         // Draw each construction site.
         drawConstructionSites(g2d);
+        
+        //long endTime = System.nanoTime();
+        //double timeDiff = (endTime - startTime) / 1000000D;
+        //System.out.println("SMT paint time: " + (int) timeDiff + " ms");
     }
     
     /**
@@ -442,6 +454,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         // Determine transform information.
         double scalingWidth = width / bounds.getWidth() * scale;
         double scalingLength = length / bounds.getHeight() * scale;
+        
         double boundsPosX = bounds.getX() * scalingWidth;
         double boundsPosY = bounds.getY() * scalingLength;
         double centerX = width * scale / 2D;
@@ -456,15 +469,26 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         AffineTransform newTransform = new AffineTransform();
         newTransform.translate(translationX, translationY);
         newTransform.rotate(facingRadian, centerX, centerY);
-        newTransform.scale(scalingWidth, scalingLength);
         
         if (isSVG) {
             // Draw SVG image.
+            /*
+            newTransform.scale(scalingWidth, scalingLength);
             svg.setTransform(newTransform);
             svg.paint(g2d);
+            g2d.setTransform(saveTransform);
+            */
+            
+            // Draw buffered image of structure.
+            BufferedImage image = getBufferedImage(svg, width, length);
+            if (image != null) {
+                g2d.transform(newTransform);
+                g2d.drawImage(image, 0, 0, this);
+            }
         }
         else {
             // Draw filled rectangle.
+            newTransform.scale(scalingWidth, scalingLength);
             g2d.transform(newTransform);
             g2d.setColor(color);
             g2d.fill(bounds);
@@ -472,6 +496,66 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Gets a buffered image for a given graphics node.
+     * @param svg the graphics node.
+     * @param width the structure width.
+     * @param length the structure length.
+     * @return buffered image.
+     */
+    private BufferedImage getBufferedImage(GraphicsNode svg, double width, double length) {
+        
+        // Get image cache for current scale or create it if it doesn't exist.
+        Map<GraphicsNode, BufferedImage> imageCache = null;
+        if (svgImageCache.containsKey(scale)) {
+            imageCache = svgImageCache.get(scale);
+        }
+        else {
+            imageCache = new HashMap<GraphicsNode, BufferedImage>(100);
+            svgImageCache.put(scale, imageCache);
+        }
+        
+        // Get image from image cache or create it if it doesn't exist.
+        BufferedImage image = null;
+        if (imageCache.containsKey(svg)) image = imageCache.get(svg);
+        else {
+            image = createBufferedImage(svg, (int) width, (int) length);
+            imageCache.put(svg, image);
+        }
+        
+        return image;
+    }
+    
+    /**
+     * Creates a buffered image from a SVG graphics node.
+     * @param svg the SVG graphics node.
+     * @param width the width of the produced image.
+     * @param length the length of the produced image.
+     * @return the created buffered image.
+     */
+    private BufferedImage createBufferedImage(GraphicsNode svg, int width, int length) {
+        BufferedImage bufferedImage = new BufferedImage((int) (width * scale), (int) (length * scale), 
+                BufferedImage.TYPE_INT_ARGB);
+        
+        // Determine bounds.
+        Rectangle2D bounds = svg.getBounds();
+        
+        // Determine transform information.
+        double scalingWidth = width / bounds.getWidth() * scale;
+        double scalingLength = length / bounds.getHeight() * scale;
+        
+        // Draw the SVG image on the buffered image.
+        Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        svg.setTransform(AffineTransform.getScaleInstance(scalingWidth, scalingLength));
+        svg.paint(g2d);
+
+        // Cleanup and return image
+        g2d.dispose();
+        
+        return bufferedImage;
     }
     
     /**
@@ -559,5 +643,12 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
                 i.next().removeConstructionListener(this);
             }
         }
+        
+        // Clear all buffered image caches.
+        Iterator<Map<GraphicsNode, BufferedImage>> i = svgImageCache.values().iterator();
+        while (i.hasNext()) {
+            i.next().clear();
+        }
+        svgImageCache.clear();
     }
 }
