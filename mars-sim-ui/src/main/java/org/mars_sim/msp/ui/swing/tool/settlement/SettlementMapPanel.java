@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.01 2011-06-04
+ * @version 3.01 2011-06-05
  * @author Scott Davis
  */
 
@@ -247,9 +247,54 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private void drawBackgroundImageTiles(Graphics2D g2d) {
         ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
         if (backgroundTileIcon != null) {
-            for (int x = 0; x < getWidth(); x+= backgroundTileIcon.getIconWidth()) {
-                for (int y = 0; y < getHeight(); y+= backgroundTileIcon.getIconHeight()) {
-                    g2d.drawImage(backgroundTileIcon.getImage(), x, y, this);
+            
+            int offsetX = (int) (xPos * scale);
+            int tileWidth = backgroundTileIcon.getIconWidth();
+            
+            // Calculate starting X position for drawing tile.
+            int startX = 0;
+            while ((startX + offsetX) > 0) {
+                startX -= tileWidth;
+            }
+            while ((startX + offsetX) < (0 - tileWidth)) {
+                startX += tileWidth;
+            }
+            
+            // Calculate ending X position for drawing tile.
+            int endX = getWidth();
+            while ((endX + offsetX) < getWidth()) {
+                endX += tileWidth;
+            }
+            while ((endX + offsetX) > (getWidth() + tileWidth)) {
+                endX -= tileWidth;
+            }
+            
+            for (int x = startX; x < endX; x+= tileWidth) {
+                
+                int offsetY = (int) (yPos * scale);
+                int tileHeight = backgroundTileIcon.getIconHeight();
+                
+                // Calculate starting Y position for drawing tile.
+                int startY = 0;
+                while ((startY + offsetY) > 0) {
+                    startY -= tileHeight;
+                }
+                while ((startY + offsetY) < (0 - tileHeight)) {
+                    startY += tileHeight;
+                }
+                
+                // Calculate ending Y position for drawing tile.
+                int endY = getHeight();
+                while ((endY + offsetY) < getHeight()) {
+                    endY += tileHeight;
+                }
+                while ((endY + offsetY) > (getHeight() + tileHeight)) {
+                    endY -= tileHeight;
+                }
+                
+                for (int y = startY; y < endY; y+= tileHeight) {
+                    // Draw tile image.
+                    g2d.drawImage(backgroundTileIcon.getImage(), x + offsetX, y + offsetY, this);
                 }
             }
         }
