@@ -245,27 +245,38 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
      * Draws the background image tiles on the map.
      */
     private void drawBackgroundImageTiles(Graphics2D g2d) {
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        double mapCenterX = getWidth() / 2D;
+        double mapCenterY = getHeight() / 2D;
+        
+        g2d.rotate(rotation, mapCenterX, mapCenterY);
+        
+        double diagonal = Math.sqrt(Math.pow(getWidth(), 2D) + Math.pow(getHeight(), 2D));
+        
         ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
         if (backgroundTileIcon != null) {
             
             int offsetX = (int) (xPos * scale);
             int tileWidth = backgroundTileIcon.getIconWidth();
+            int bufferX = (int) diagonal - getWidth();
             
             // Calculate starting X position for drawing tile.
             int startX = 0;
-            while ((startX + offsetX) > 0) {
+            while ((startX + offsetX) > (0 - bufferX)) {
                 startX -= tileWidth;
             }
-            while ((startX + offsetX) < (0 - tileWidth)) {
+            while ((startX + offsetX) < (0 - tileWidth - bufferX)) {
                 startX += tileWidth;
             }
             
             // Calculate ending X position for drawing tile.
             int endX = getWidth();
-            while ((endX + offsetX) < getWidth()) {
+            while ((endX + offsetX) < (getWidth() + bufferX)) {
                 endX += tileWidth;
             }
-            while ((endX + offsetX) > (getWidth() + tileWidth)) {
+            while ((endX + offsetX) > (getWidth() + tileWidth + bufferX)) {
                 endX -= tileWidth;
             }
             
@@ -273,22 +284,23 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
                 
                 int offsetY = (int) (yPos * scale);
                 int tileHeight = backgroundTileIcon.getIconHeight();
+                int bufferY = (int) diagonal - getHeight();
                 
                 // Calculate starting Y position for drawing tile.
                 int startY = 0;
-                while ((startY + offsetY) > 0) {
+                while ((startY + offsetY) > (0 - bufferY)) {
                     startY -= tileHeight;
                 }
-                while ((startY + offsetY) < (0 - tileHeight)) {
+                while ((startY + offsetY) < (0 - tileHeight - bufferY)) {
                     startY += tileHeight;
                 }
                 
                 // Calculate ending Y position for drawing tile.
                 int endY = getHeight();
-                while ((endY + offsetY) < getHeight()) {
+                while ((endY + offsetY) < (getHeight() + bufferY)) {
                     endY += tileHeight;
                 }
-                while ((endY + offsetY) > (getHeight() + tileHeight)) {
+                while ((endY + offsetY) > (getHeight() + tileHeight + bufferY)) {
                     endY -= tileHeight;
                 }
                 
@@ -298,6 +310,9 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
                 }
             }
         }
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
     }
     
     /**
