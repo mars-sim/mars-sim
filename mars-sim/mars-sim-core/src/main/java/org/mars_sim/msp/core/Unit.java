@@ -7,11 +7,14 @@
 
 package org.mars_sim.msp.core;
 
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /** 
  * The Unit class is the abstract parent class to all units in the
@@ -19,6 +22,8 @@ import java.util.List;
  * This class provides data members and methods common to all units.
  */
 public abstract class Unit implements Serializable, Comparable<Unit> {
+
+
 
 	// Unit event types
 	public static final String NAME_EVENT = "name";
@@ -34,25 +39,38 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
     private double baseMass;          // The mass of the unit without inventory
     private Inventory inventory;      // The unit's inventory
     private Unit containerUnit;       // The unit containing this unit
-    private transient List<UnitListener> listeners; // Unit listeners.
-    
+    private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
+    private static Logger logger = Logger.getLogger(Unit.class.getName());
+
     /** 
      * Constructor
      * @param name the name of the unit
      * @param location the unit's location
      */
     public Unit(String name, Coordinates location) {
+        listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
     	
         // Initialize data members from parameters
-        setName(name);
-        setDescription(name);
-        setBaseMass(Double.MAX_VALUE);
-        setInventory(new Inventory(this));
-        setCoordinates(new Coordinates(location));
-        setContainerUnit(null);
+//        setName(name);
+        this.name = name;
+        description = name;
+//        setDescription(name);
+        baseMass = Double.MAX_VALUE;
+//        setBaseMass(Double.MAX_VALUE);
+
+        inventory = new Inventory(this);
+//        setInventory(new Inventory(this));
+
+        this.location = new Coordinates(0D, 0D);
+        this.location.setCoords(location);
+        this.inventory.setCoordinates(location);
+//        setCoordinates(new Coordinates(location));
+
+
+//        setContainerUnit(null);
 	    
-	    // Initialize unit listeners.
-	    listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+//	    // Initialize unit listeners.
+//	    listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
     }
 
     /** 
@@ -110,7 +128,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @param newLocation the new location of the unit
      */
     public void setCoordinates(Coordinates newLocation) {
-    	if (location == null) location = new Coordinates(0D, 0D);
+//    	if (location == null) location = new Coordinates(0D, 0D);
         location.setCoords(newLocation);
         inventory.setCoordinates(newLocation);
         fireUnitUpdate(LOCATION_EVENT, newLocation);
@@ -209,23 +227,50 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
     public String toString() {
         return name;
     }
-    
+
+    public synchronized boolean hasUnitListener(UnitListener listener)
+    {
+        if(listeners == null) return false;
+        return listeners.contains(listener);
+    }
+
     /**
      * Adds a unit listener
      * @param newListener the listener to add.
      */
-    public final void addUnitListener(UnitListener newListener) {
+    public synchronized final void addUnitListener(UnitListener newListener) {
+        if(newListener == null) throw new IllegalArgumentException();
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-        if (!listeners.contains(newListener)) listeners.add(newListener);
+//        synchronized (listeners){
+
+            if (!listeners.contains(newListener)) {
+                listeners.add(newListener);
+            }else{
+                try{
+                    throw new IllegalStateException("Already contains this listener of type " + newListener.getClass().getName() + " : " + newListener + ", not adding");
+                }catch (Exception e){
+                    e.printStackTrace();
+                    logger.log(Level.SEVERE,"Adding listener dupe",e);
+                }
+            }
+//        }
     }
     
     /**
      * Removes a unit listener
      * @param oldListener the listener to remove.
      */
-    public final void removeUnitListener(UnitListener oldListener) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
+    public synchronized final void removeUnitListener(UnitListener oldListener) {
+        if(oldListener == null) throw new IllegalArgumentException();
+//    	synchronized (listeners){
+
+            if(listeners == null){
+                listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+            }
+            if(listeners.size() < 1) return;
+            listeners.remove(oldListener);
+//    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
+//        }
     }
     
     /**
@@ -242,10 +287,18 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @param target the event target object or null if none.
      */
     public final void fireUnitUpdate(String updateType, Object target) {
-    	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-    	synchronized(listeners) {
-    		Iterator<UnitListener> i = listeners.iterator();
-    		while (i.hasNext()) i.next().unitUpdate(new UnitEvent(this, updateType, target));
+    	if (listeners == null || listeners.size() < 1) {
+
+            //listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+            // we don't do anything if there's no listeners attached
+            return;
+        }
+        final UnitEvent ue = new UnitEvent(this, updateType, target);
+        synchronized(listeners) {
+            Iterator<UnitListener> i = listeners.iterator();
+            while (i.hasNext()) {
+                i.next().unitUpdate(ue);
+            }
     	}
     }
     

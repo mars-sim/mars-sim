@@ -74,10 +74,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		LoadVehicle loadVehicle = new LoadVehicle(person, vehicle, resourcesMap, equipmentMap);
 		loadVehicle.loadingPhase(10D);
@@ -118,10 +118,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		Vehicle vehicle = new MockVehicle(settlement);
 		
@@ -150,10 +150,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		Vehicle vehicle = new MockVehicle(settlement);
 		
@@ -189,10 +189,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		Vehicle vehicle = new MockVehicle(settlement);
 		
@@ -226,10 +226,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		Vehicle vehicle = new MockVehicle(settlement);
 		
@@ -271,10 +271,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		assertTrue("Vehicle is fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
@@ -305,10 +305,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
@@ -346,10 +346,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
@@ -384,10 +384,10 @@ public class LoadVehicleTest extends TestCase {
 		resourcesMap.put(food, new Double(100D));
 		resourcesMap.put(water, new Double(100D));
 		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, new Integer(5));
+		resourcesMap.put(hammer, Integer.valueOf(5));
 		
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, new Integer(5));
+		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
 		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}

@@ -203,7 +203,7 @@ public class MarsClock implements Serializable {
      *  @return formatted timestamp string
      */
     public String getTimeStamp() {
-        return getDateString() + "  " + getTimeString(); 
+        return new StringBuilder(getDateString()).append("  ").append(getTimeString()).toString();
     }
 
     /** 
@@ -212,19 +212,19 @@ public class MarsClock implements Serializable {
      * @return current date string
      */
     public String getDateString() {
-        StringBuilder result = new StringBuilder("");
+        StringBuilder result = new StringBuilder();
 
         // Append orbit
-        result.append("").append(orbit).append("-");
-   
-                  
-        // Append month
-        result.append(getMonthName()).append("-");
+        result.append(orbit).append("-").append(getMonthName()).append("-");
 
-        // Append sol of month
-        String solString = "" + sol;
-        if (solString.length() == 1) solString = "0" + solString;
-        result.append(solString);
+        if(sol < 10){
+            result.append("0");
+        }
+        result.append(sol);
+//        // Append sol of month
+//        String solString = "" + sol;
+//        if (solString.length() == 1) solString = "0" + solString;
+//        result.append(solString);
 
         return result.toString();
     }
@@ -233,12 +233,24 @@ public class MarsClock implements Serializable {
      *  ex. "05:056.349"
      */
     public String getTimeString() {
-        String result = "" + (Math.floor(millisol * 1000D) / 1000D);
-        if (millisol < 100D) result = "0" + result;
-        if (millisol < 10D) result = "0" + result;
-        while (result.length() < 7) result += "0";
+        StringBuilder b = new StringBuilder();
+        double tb = Math.floor(millisol * 1000D) / 1000D;
+//        String result = "" + tb;
+        b.append(tb);
+        if (millisol < 100D) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+        if (millisol < 10D) {
+            b.insert(0,"0");
+//            result = "0" + result;
+        }
+        while (b.length() < 7){
+            b.append("0");
+//            result += "0";
+        }
 
-        return result;
+        return b.toString();
     }
 
     /** Returns the name of the current month.
