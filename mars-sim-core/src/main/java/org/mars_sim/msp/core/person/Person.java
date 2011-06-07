@@ -32,9 +32,9 @@ import java.util.logging.Logger;
  */
 public class Person extends Unit implements VehicleOperator, Serializable {
 
-	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.Person";
+//	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.Person";
 
-	private static transient Logger logger = Logger.getLogger(CLASS_NAME);
+	private static transient Logger logger = Logger.getLogger(Person.class.getName());
 
 	// Unit update events
 	public final static String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
@@ -98,33 +98,10 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 
 		// Initialize data members
 		this.gender = gender;
+                 String timeString = createTimeString();
 
-		// Set a birth time for the person
-		int year = 2003 + RandomUtil.getRandomInt(10)
-				+ RandomUtil.getRandomInt(10);
-		int month = RandomUtil.getRandomInt(11) + 1;
-		int day;
-		if (month == 2) {
-			if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
-				day = RandomUtil.getRandomInt(28) + 1;
-			} else {
-				day = RandomUtil.getRandomInt(27) + 1;
-			}
-		} else {
-			if (month % 2 == 1) {
-				day = RandomUtil.getRandomInt(30) + 1;
-			} else {
-				day = RandomUtil.getRandomInt(29) + 1;
-			}
-		}
 
-		int hour = RandomUtil.getRandomInt(23);
-		int minute = RandomUtil.getRandomInt(59);
-		int second = RandomUtil.getRandomInt(59);
-
-		String timeString = month + "/" + day + "/" + year + " " + hour + ":"
-				+ minute + ":" + second; // We use this to initialize the stamp
-		birthTimeStamp = new EarthClock(timeString);
+                 birthTimeStamp = new EarthClock(timeString);
 
 		attributes = new NaturalAttributeManager(this);
 		mind = new Mind(this);
@@ -146,7 +123,35 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 		associatedSettlement = settlement;
 	}
 
-	/**
+    private String createTimeString() {
+        // Set a birth time for the person
+        int year = 2003 + RandomUtil.getRandomInt(10)
+                + RandomUtil.getRandomInt(10);
+        int month = RandomUtil.getRandomInt(11) + 1;
+        int day;
+        if (month == 2) {
+            if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+                day = RandomUtil.getRandomInt(28) + 1;
+            } else {
+                day = RandomUtil.getRandomInt(27) + 1;
+            }
+        } else {
+            if (month % 2 == 1) {
+                day = RandomUtil.getRandomInt(30) + 1;
+            } else {
+                day = RandomUtil.getRandomInt(29) + 1;
+            }
+        }
+
+        int hour = RandomUtil.getRandomInt(23);
+        int minute = RandomUtil.getRandomInt(59);
+        int second = RandomUtil.getRandomInt(59);
+
+        return month + "/" + day + "/" + year + " " + hour + ":"
+                + minute + ":" + second;
+    }
+
+    /**
 	 * Returns a string for the person's relative location "In Settlement", "In
 	 * Vehicle", "Outside" or "Buried"
 	 * 

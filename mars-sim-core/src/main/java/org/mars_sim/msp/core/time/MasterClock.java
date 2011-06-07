@@ -364,8 +364,9 @@ public class MasterClock implements Runnable, Serializable {
                         try {
                             cl.clockPulse(timePulse);
                         } catch (Exception e) {
-                            logger.log(Level.WARNING, "Encountered error", e);
-                            e.printStackTrace(System.err);
+                            throw new IllegalStateException("Error while looping master clock",e);
+//                            logger.log(Level.WARNING, "Encountered error", e);
+//                            e.printStackTrace(System.err);
                         }
                     }
                 }
@@ -458,51 +459,69 @@ public class MasterClock implements Runnable, Serializable {
 
     public static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
 
+
     /**
      * the following is a utility. It may be slow. It returns a string in YY:DDD:HH:MM:SS.SSS format
      * note: it is set up currently to only return hh:mm:ss.s
      */
     public String getTimeString(double seconds) {
 
-        long years, days, hours, minutes;
-        double secs;
-        String YY = "", DD = "", HH = "", MM = "", SS = "";
+        logger.info("timestring for " + seconds);
 
-        years = (int) Math.floor(seconds / secsperyear);
-        days = (int) ((seconds % secsperyear) / secspday);
-        hours = (int) ((seconds % secspday) / secsphour);
-        minutes = (int) ((seconds % secsphour) / secspmin);
-        secs = (seconds % secspmin);
+//        long years, days, hours, minutes;
+//        double secs;
+//        String YY = "", DD = "", HH = "", MM = "", SS = "";
 
+        long years = (int) Math.floor(seconds / secsperyear);
+        long days = (int) ((seconds % secsperyear) / secspday);
+        long hours = (int) ((seconds % secspday) / secsphour);
+        long minutes = (int) ((seconds % secsphour) / secspmin);
+        double secs = (seconds % secspmin);
 
-        if (years > 0) {
-            YY = "" + years + ":";
-        } else {
-            YY = "";
+        StringBuilder b = new StringBuilder();
+
+        b.append(years);
+        if(years>0){
+            b.append(":");
         }
-        ;
+
+
+//        if (years > 0) {
+//            YY = "" + years + ":";
+//        } else {
+//            YY = "";
+//        }
+//        ;
 
         if (days > 0) {
-            DD = String.format("%03d", days) + ":";
+            b.append(String.format("%03d", days)).append(":");
+//            DD = String.format("%03d", days) + ":";
         } else {
-            DD = "0:";
+            b.append("0:");
+//            DD = "0:";
         }
 
         if (hours > 0) {
-            HH = String.format("%02d", hours) + ":";
+            b.append(String.format("%02d", hours)).append(":");
+//            HH = String.format("%02d", hours) + ":";
         } else {
-            HH = "00:";
+            b.append("00:");
+//            HH = "00:";
         }
 
         if (minutes > 0) {
-            MM = String.format("%02d", minutes) + ":";
+            b.append(String.format("%02d", minutes)).append(":");
+//            MM = String.format("%02d", minutes) + ":";
         } else {
-            MM = "00:";
+            b.append("00:");
+//            MM = "00:";
         }
 
-        SS = String.format("%5.3f", secs);
+        b.append(String.format("%5.3f", secs));
+//        SS = String.format("%5.3f", secs);
         //******* change here for more complete string *****
-        return /*YY+*/DD + HH + MM + SS;
+//        return /*YY+*/DD + HH + MM + SS;
 
+        return b.toString();
     }
 }

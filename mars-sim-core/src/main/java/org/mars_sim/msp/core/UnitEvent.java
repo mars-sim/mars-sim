@@ -14,8 +14,8 @@ import java.util.EventObject;
 public class UnitEvent extends EventObject {
 
 	// Data members
-	private String type; // The event type.
-	private Object target; // The event target object, if any.
+	private final String type; // The event type.
+	private final Object target; // The event target object, if any.
 	
 	/**
 	 * Constructor

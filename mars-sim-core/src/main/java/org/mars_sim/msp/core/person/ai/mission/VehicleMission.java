@@ -744,7 +744,7 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	// Add this mission as a vehicle listener (does nothing if already listening to vehicle).
     	// Note this is needed so that mission will reattach itself as a vehicle listener after deserialization
     	// since listener collection is transient. - Scott
-    	if (hasVehicle()) vehicle.addUnitListener(this);
+    	if (hasVehicle() && !vehicle.hasUnitListener(this)) vehicle.addUnitListener(this);
     }
     
 	/**

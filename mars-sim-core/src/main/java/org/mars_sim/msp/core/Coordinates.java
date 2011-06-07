@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.mars.Mars;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.logging.Logger;
 
 /** Spherical Coordinates. Represents a location on virtual Mars in
  *  spherical coordinates. It provides some useful methods involving
@@ -333,6 +334,10 @@ public class Coordinates implements Serializable {
             half_map, low_edge);
     }
     
+    static Logger logger = Logger.getLogger(Coordinates.class.getSimpleName());
+    
+    private static final double PI_HALF_NEG = Math.PI / -2D;
+    
     /**
      * Converts spherical coordinates to rectangular coordinates.
      * Returns integer x and y display coordinates for spherical
@@ -350,13 +355,12 @@ public class Coordinates implements Serializable {
 //        double sin_offset = 0D - sinPhi;
 //        double cos_offset = 0D - cosPhi;
 //        double col_correction = (Math.PI / -2D) - getTheta();
-        final double temp_col = newTheta + ((Math.PI / -2D) - theta);
+        final double temp_col = newTheta + (PI_HALF_NEG - theta);
         final double temp_buff_x = rho * Math.sin(newPhi);
 //        double temp_buff_y1 = temp_buff_x * (0D - cosPhi);
 //        double temp_buff_y2 = rho * Math.cos(newPhi) * (0D - sinPhi);
         int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
         int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) * Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) + half_map) - low_edge;
-
         return new IntPoint(buff_x, buff_y);
     }
 
