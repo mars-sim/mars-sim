@@ -71,9 +71,9 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			throw new IllegalStateException("Building is full of vehicles.");
      
 		// Remove vehicle from any other garage that it might be in.
-		Iterator i = getBuilding().getBuildingManager().getBuildings(getName()).iterator();
+		Iterator<Building> i = getBuilding().getBuildingManager().getBuildings(getName()).iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getName());
 			if (garage.containsVehicle(vehicle)) {
 //				try {
