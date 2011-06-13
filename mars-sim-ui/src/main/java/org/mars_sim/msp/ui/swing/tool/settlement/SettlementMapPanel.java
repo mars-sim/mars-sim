@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.01 2011-06-05
+ * @version 3.01 2011-06-12
  * @author Scott Davis
  */
 
@@ -27,6 +27,7 @@ import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
     private static final Color MAP_BACKGROUND = new Color(181, 95, 0);
     private static final int MAX_BACKGROUND_IMAGE_NUM = 20;
+    private static final int MAX_BACKGROUND_DIMENSION = 1600;
     
     // Data members.
     private Settlement settlement;
@@ -56,6 +58,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
     private boolean showLabels;
     private Map<Settlement, String> settlementBackgroundMap;
     private Map<Double, Map<GraphicsNode, BufferedImage>> svgImageCache;
+    private Image backgroundTileImage;
     
     /**
      * A panel for displaying a settlement map.
@@ -122,6 +125,8 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
             }
         }
         
+        backgroundTileImage = null;
+        
         repaint();
     }
     
@@ -139,6 +144,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
      */
     public void setScale(double scale) {
         this.scale = scale;
+        backgroundTileImage = null;
         repaint();
     }
     
@@ -167,6 +173,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         yPos = 0D;
         setRotation(0D);
         scale = DEFAULT_SCALE;
+        backgroundTileImage = null;
         repaint();
     }
     
@@ -221,6 +228,9 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         // Draw background image tiles.
         drawBackgroundImageTiles(g2d);
         
+        //long bgTime = System.nanoTime();
+        //double bgTimeDiff = (bgTime - startTime) / 1000000D;
+        
         double mapCenterX = getWidth() / 2D;
         double mapCenterY = getHeight() / 2D;
         
@@ -238,7 +248,7 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         
         //long endTime = System.nanoTime();
         //double timeDiff = (endTime - startTime) / 1000000D;
-        //System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+        //System.out.println("SMT paint time: " + (int) timeDiff + " ms, bg time: " + (int) bgTimeDiff + " ms");
     }
     
     /**
@@ -253,17 +263,27 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
         
         g2d.rotate(rotation, mapCenterX, mapCenterY);
         
-        double diagonal = Math.sqrt(Math.pow(getWidth(), 2D) + Math.pow(getHeight(), 2D));
+        double diagonal = Math.hypot(getWidth(), getHeight());
         
-        ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
-        if (backgroundTileIcon != null) {
+        if (backgroundTileImage == null) {
+            ImageIcon backgroundTileIcon = getBackgroundImage(settlement);
+            double imageScale = scale / DEFAULT_SCALE;
+            int imageWidth = (int) (backgroundTileIcon.getIconWidth() * imageScale);
+            int imageHeight = (int) (backgroundTileIcon.getIconHeight() * imageScale);
+        
+            backgroundTileImage = resizeImage(backgroundTileIcon.getImage(), 
+                    backgroundTileIcon.getImageObserver(), imageWidth, imageHeight);
+        }
+        
+        if (backgroundTileImage != null) {
             
             int offsetX = (int) (xPos * scale);
-            int tileWidth = backgroundTileIcon.getIconWidth();
+            int tileWidth = backgroundTileImage.getWidth(this);
             int bufferX = (int) diagonal - getWidth();
+            int tileCenterOffsetX = ((getWidth() / 2) % tileWidth) - (int) (1.5F * tileWidth);
             
             // Calculate starting X position for drawing tile.
-            int startX = 0;
+            int startX = tileCenterOffsetX;
             while ((startX + offsetX) > (0 - bufferX)) {
                 startX -= tileWidth;
             }
@@ -283,11 +303,12 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
             for (int x = startX; x < endX; x+= tileWidth) {
                 
                 int offsetY = (int) (yPos * scale);
-                int tileHeight = backgroundTileIcon.getIconHeight();
+                int tileHeight = backgroundTileImage.getHeight(this);
                 int bufferY = (int) diagonal - getHeight();
+                int tileCenterOffsetY = ((getHeight() / 2) % tileHeight) - (int) (1.5F * tileHeight);
                 
                 // Calculate starting Y position for drawing tile.
-                int startY = 0;
+                int startY = tileCenterOffsetY;
                 while ((startY + offsetY) > (0 - bufferY)) {
                     startY -= tileHeight;
                 }
@@ -306,13 +327,76 @@ public class SettlementMapPanel extends JPanel implements UnitListener, Construc
                 
                 for (int y = startY; y < endY; y+= tileHeight) {
                     // Draw tile image.
-                    g2d.drawImage(backgroundTileIcon.getImage(), x + offsetX, y + offsetY, this);
+                    g2d.drawImage(backgroundTileImage, x + offsetX, y + offsetY, this);
                 }
             }
         }
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Creates a resized instance of a background image.
+     * @param image the original background image.
+     * @param width the resized image width.
+     * @param height the resized image height.
+     * @return image with the new size.
+     */
+    private Image resizeImage(Image image, ImageObserver observer, int width, int height) {
+        Image result = image;
+        
+        int w = image.getWidth(observer);
+        int h = image.getHeight(observer);
+        
+        do {
+            if (w > width) {
+                w /= 2;
+                if (w < width) w = width;
+            }
+            else if (w < width) {
+                w = width;
+            }
+            
+            if (h > height) {
+                h /= 2;
+                if (h < height) h = height;
+            }
+            else if (h < height) {
+                h = height;
+            }
+            
+            int bufferWidth = w;
+            int bufferHeight = h;
+            int xOffset = 0;
+            int yOffset = 0;
+            if ((w > MAX_BACKGROUND_DIMENSION) || (h > MAX_BACKGROUND_DIMENSION)) {
+                float reductionW = (float) MAX_BACKGROUND_DIMENSION / (float) w;
+                float reductionH = (float) MAX_BACKGROUND_DIMENSION / (float) h;
+                float reduction = reductionW;
+                if (reductionH < reductionW) {
+                    reduction = reductionH;
+                }
+                
+                bufferWidth = (int) (w * reduction);
+                bufferHeight = (int) (h * reduction);
+                
+                xOffset = (w - bufferWidth) / -2;
+                yOffset = (h - bufferHeight) / -2;
+            }
+            
+            BufferedImage tmpImage = new BufferedImage(bufferWidth, bufferHeight, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2d = (Graphics2D) tmpImage.getGraphics();
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2d.setClip(0, 0, bufferWidth, bufferHeight);
+            g2d.drawImage(result, xOffset, yOffset, w, h, null);
+            g2d.dispose();
+            
+            result = tmpImage;
+            
+        } while ((w != width) || (h != height));
+        
+        return result;
     }
     
     /**
