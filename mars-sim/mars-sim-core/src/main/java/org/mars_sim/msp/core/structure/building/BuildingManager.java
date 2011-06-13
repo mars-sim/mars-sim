@@ -237,7 +237,7 @@ public class BuildingManager implements Serializable {
             openGarages.get(rand).addVehicle(vehicle);
         }
         else {
-            logger.warning("No available garage space for " + vehicle.getName() + ", didn't add vehicle");
+            //logger.warning("No available garage space for " + vehicle.getName() + ", didn't add vehicle");
         }
     }
         

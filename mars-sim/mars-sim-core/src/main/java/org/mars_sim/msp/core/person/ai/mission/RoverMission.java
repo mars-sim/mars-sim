@@ -241,7 +241,7 @@ public abstract class RoverMission extends VehicleMission {
     			throw new IllegalStateException(getPhase() +  " : Vehicle is not at a settlement.");
     	
     		// Add the rover to a garage if possible.
-    		if (BuildingManager.getBuilding(getVehicle()) != null) {
+    		if (BuildingManager.getBuilding(getVehicle()) == null) {
 //    			try {
     				BuildingManager.addToRandomBuilding((Rover) getVehicle(), getVehicle().getSettlement());
 //    			}
