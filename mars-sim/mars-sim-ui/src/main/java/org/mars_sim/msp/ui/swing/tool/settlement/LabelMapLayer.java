@@ -1,20 +1,26 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.01 2011-06-16
+ * @version 3.01 2011-06-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.font.FontRenderContext;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -32,11 +38,17 @@ public class LabelMapLayer implements SettlementMapLayer {
     
     // Data members
     private SettlementMapPanel mapPanel;
+    private Map<String, BufferedImage> labelImageCache;
     
+    /**
+     * Constructor
+     * @param mapPanel the settlement map panel.
+     */
     public LabelMapLayer(SettlementMapPanel mapPanel) {
         
         // Initialize data members.
         this.mapPanel = mapPanel;
+        labelImageCache = new HashMap<String, BufferedImage>(30);
     }
 
     @Override
@@ -147,23 +159,74 @@ public class LabelMapLayer implements SettlementMapLayer {
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
         
-        // Determine bounds.
-        TextLayout textLayout = new TextLayout(label, g2d.getFont(), g2d.getFontRenderContext());
-        Rectangle2D bounds = textLayout.getBounds();
+        // Get the label image.
+        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext());
         
         // Determine transform information.
-        double boundsPosX = bounds.getX();
-        double boundsPosY = bounds.getY();
-        double centerX = bounds.getWidth() / 2D;
-        double centerY = bounds.getHeight() / 2D;
-        double translationX = (-1D * xLoc * mapPanel.getScale()) - centerX - boundsPosX;
-        double translationY = (-1D * yLoc * mapPanel.getScale()) - centerY - boundsPosY;
+        double centerX = labelImage.getWidth() / 2D;
+        double centerY = labelImage.getHeight() / 2D;
+        double translationX = (-1D * xLoc * mapPanel.getScale()) - centerX;
+        double translationY = (-1D * yLoc * mapPanel.getScale()) - centerY;
         
         // Apply graphic transforms for label.
-        AffineTransform newTransform = new AffineTransform();
+        AffineTransform newTransform = new AffineTransform(saveTransform);
         newTransform.translate(translationX, translationY);
-        newTransform.rotate(mapPanel.getRotation() * -1D, centerX + boundsPosX, centerY + boundsPosY);
-        Shape labelShape = textLayout.getOutline(newTransform);
+        newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
+        g2d.setTransform(newTransform);
+        
+        // Draw image label.
+        g2d.drawImage(labelImage, 0, 0, mapPanel);
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Gets an image of the label from cache or creates one if it doesn't exist.
+     * @param label the label string.
+     * @param font the font to use.
+     * @param fontRenderContext the font render context to use.
+     * @return buffered image of label.
+     */
+    private BufferedImage getLabelImage(String label, Font font, FontRenderContext fontRenderContext) {
+        
+        BufferedImage labelImage = null;
+        if (labelImageCache.containsKey(label)) {
+            labelImage = labelImageCache.get(label);
+        }
+        else {
+            labelImage = createLabelImage(label, font, fontRenderContext);
+            labelImageCache.put(label, labelImage);
+        }
+        
+        return labelImage;
+    }
+    
+    /**
+     * Creates a label image.
+     * @param label the label string.
+     * @param font the font to use.
+     * @param fontRenderContext the font render context to use.
+     * @return buffered image of label.
+     */
+    private BufferedImage createLabelImage(String label, Font font, FontRenderContext fontRenderContext) {
+        
+        // Determine bounds.
+        TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
+        Rectangle2D bounds1 = textLayout1.getBounds();
+        
+        // Get label shape.
+        Shape labelShape = textLayout1.getOutline(null);
+        
+        // Create buffered image for label.
+        int width = (int) (bounds1.getWidth() + bounds1.getX()) + 4;
+        int height = (int) (bounds1.getHeight()) + 4;
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        
+        // Get graphics context from buffered image.
+        Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.translate(2D - bounds1.getX(), 2D - bounds1.getY());
         
         // Draw label outline.
         Stroke saveStroke = g2d.getStroke();
@@ -176,12 +239,15 @@ public class LabelMapLayer implements SettlementMapLayer {
         g2d.setColor(LABEL_COLOR);
         g2d.fill(labelShape);
         
-        // Restore original graphic transforms.
-        g2d.setTransform(saveTransform);
+        // Dispose of image graphics context.
+        g2d.dispose();
+        
+        return bufferedImage;
     }
     
     @Override
     public void destroy() {
-        // Do nothing.
+        // Clear label image cache.
+        labelImageCache.clear();
     }
 }

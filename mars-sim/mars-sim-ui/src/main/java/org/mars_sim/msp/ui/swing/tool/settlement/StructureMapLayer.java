@@ -37,6 +37,7 @@ public class StructureMapLayer implements SettlementMapLayer {
     
     /**
      * Constructor
+     * @param mapPanel the settlement map panel.
      */
     public StructureMapLayer(SettlementMapPanel mapPanel) {
         
