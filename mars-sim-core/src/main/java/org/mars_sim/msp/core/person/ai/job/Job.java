@@ -22,10 +22,10 @@ public abstract class Job implements Serializable {
 	private static final double NON_JOB_TASK_PENALTY = .1D;
 	
 	// Probability penalty for starting a non-job-related mission.
-	private static final double NON_JOB_MISSION_START_PENALTY = 0D;
+	private static final double NON_JOB_MISSION_START_PENALTY = .1D;
 	
 	// Probability penalty for joining a non-job-related mission.
-	private static final double NON_JOB_MISSION_JOIN_PENALTY = 0D;
+	private static final double NON_JOB_MISSION_JOIN_PENALTY = .1D;
 
 	// Domain members
 	private String name; // Name of the job.
