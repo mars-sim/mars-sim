@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -58,9 +58,12 @@ public class Trade extends RoverMission implements Serializable {
     public static final String TRADE_EMBARKING = "Trade Embarking";
     // Static members
     static final int MAX_MEMBERS = 2;
+    private static final double MAX_STARTING_PROBABILITY = 10D;
+    
     // Static cache for holding trade profit info.
-    private static final Map<Person, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Person, TradeProfitInfo>();
-    private static final Map<Person, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Person, Settlement>();
+    private static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
+    private static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
+    
     // Data members.
     private Settlement tradingSettlement;
     private Map<Good, Integer> sellLoad;
@@ -98,7 +101,7 @@ public class Trade extends RoverMission implements Serializable {
             setStartingSettlement(startingPerson.getSettlement());
 
             // Get trading settlement
-            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(startingPerson);
+            tradingSettlement = TRADE_SETTLEMENT_CACHE.get(getStartingSettlement());
             if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
@@ -268,8 +271,8 @@ public class Trade extends RoverMission implements Serializable {
                     // Note: this method is very CPU intensive.
                     boolean useCache = false;
                     MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-                    if (TRADE_PROFIT_CACHE.containsKey(person)) {
-                        TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(person);
+                    if (TRADE_PROFIT_CACHE.containsKey(settlement)) {
+                        TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(settlement);
                         double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
                         if (timeDiff < 1000D) {
                             tradeProfit = profitInfo.profit;
@@ -281,11 +284,11 @@ public class Trade extends RoverMission implements Serializable {
                         double startTime = System.currentTimeMillis();
                         tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
                         double endTime = System.currentTimeMillis();
-                        logger.info(person.getName() + " getBestTradeProfit: " + (endTime - startTime)
+                        logger.info(settlement.getName() + " getBestTradeProfit: " + (endTime - startTime)
                                 + " milliseconds - TP: " + (int) tradeProfit + " VP");
-                        TRADE_PROFIT_CACHE.put(person, new TradeProfitInfo(tradeProfit,
+                        TRADE_PROFIT_CACHE.put(settlement, new TradeProfitInfo(tradeProfit,
                                 (MarsClock) currentTime.clone()));
-                        TRADE_SETTLEMENT_CACHE.put(person, TradeUtil.bestTradeSettlementCache);
+                        TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);
                     }
                 }
             } catch (Exception e) {
@@ -306,9 +309,9 @@ public class Trade extends RoverMission implements Serializable {
             if (missionPossible) {
 
                 // Trade value modifier.
-                missionProbability = tradeProfit / 100D;
-                if (missionProbability > 100D) {
-                    missionProbability = 100D;
+                missionProbability = tradeProfit / 1000D;
+                if (missionProbability > MAX_STARTING_PROBABILITY) {
+                    missionProbability = MAX_STARTING_PROBABILITY;
                 }
 
                 // Crowding modifier.
@@ -396,34 +399,21 @@ public class Trade extends RoverMission implements Serializable {
 
         // If rover is not parked at settlement, park it.
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-//    		try {
+            
             tradingSettlement.getInventory().storeUnit(getVehicle());
-//    		}
-//    		catch (InventoryException e) {
-//    			throw new MissionException(getPhase(), e);
-//    		}
 
             // Add vehicle to a garage if available.
-//    		try {
             BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), tradingSettlement);
             garageBuilding = BuildingManager.getBuilding(getVehicle());
-//            }
-//            catch (BuildingException e) {}
         }
 
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-//        	try {
             getVehicle().getInventory().retrieveUnit(person);
             tradingSettlement.getInventory().storeUnit(person);
-//        	}
-//        	catch (InventoryException e) {
-//        		throw new MissionException(VehicleMission.DISEMBARKING, e);
-//        	}
 
             // Add the person to the rover's garage if it's in one.
             // Otherwise add person to another building in the settlement.
-//            try {
             garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
                 LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
@@ -431,10 +421,6 @@ public class Trade extends RoverMission implements Serializable {
             } else {
                 BuildingManager.addToRandomBuilding(person, tradingSettlement);
             }
-//            }
-//            catch (BuildingException e) {
-//            	throw new MissionException(VehicleMission.DISEMBARKING, e);
-//            }
         }
 
         // End the phase when everyone is out of the rover.
@@ -464,13 +450,8 @@ public class Trade extends RoverMission implements Serializable {
                     }
                     Person settlementTrader = getSettlementTrader();
                     if (settlementTrader != null) {
-//    					try {
                         negotiationTask = new NegotiateTrade(tradingSettlement, getStartingSettlement(), getRover(), sellLoad, person, settlementTrader);
                         assignTask(person, negotiationTask);
-//    					}
-//    					catch (Exception e) {
-//    						throw new MissionException(getPhase(), e);
-//    					}
                     } else {
                         MarsClock currentTime = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
                         double timeDiff = MarsClock.getTimeDiff(currentTime, startNegotiationTime);
@@ -503,7 +484,6 @@ public class Trade extends RoverMission implements Serializable {
     private void performUnloadGoodsPhase(Person person) {
 
         //	Unload rover if necessary.
-//    	try {
         // Unload towed vehicle (if necessary).
         unloadTowedVehicle();
 
@@ -516,10 +496,6 @@ public class Trade extends RoverMission implements Serializable {
         } else {
             setPhaseEnded(true);
         }
-//    	}
-//    	catch (Exception e) {
-//    		throw new MissionException(getPhase(), e);
-//    	}
     }
 
     /**
@@ -530,27 +506,24 @@ public class Trade extends RoverMission implements Serializable {
     private void performLoadGoodsPhase(Person person) {
 
         if (!isDone()) {
-//    		try {
+            
             // Load towed vehicle (if necessary).
             loadTowedVehicle();
-
-            if (!isVehicleLoaded()) {
-                // Check if vehicle can hold enough supplies for mission.
-                if (isVehicleLoadable()) {
-                    // Random chance of having person load (this allows person to do other things sometimes)
-                    if (RandomUtil.lessThanRandPercent(50)) {
-                        assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesToLoad(), getEquipmentToLoad()));
-                    }
-                } else {
-                    endMission("Vehicle is not loadable (RoverMission).");
+        }
+        
+        if (!isDone() && !isVehicleLoaded()) {
+            
+            // Check if vehicle can hold enough supplies for mission.
+            if (isVehicleLoadable()) {
+                // Random chance of having person load (this allows person to do other things sometimes)
+                if (RandomUtil.lessThanRandPercent(50)) {
+                    assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesToLoad(), getEquipmentToLoad()));
                 }
             } else {
-                setPhaseEnded(true);
+                endMission("Vehicle is not loadable (RoverMission).");
             }
-//    		}
-//    		catch (Exception e) {
-//    			throw new MissionException(getPhase(), e);
-//    		}
+        } else {
+            setPhaseEnded(true);
         }
     }
 
@@ -563,10 +536,7 @@ public class Trade extends RoverMission implements Serializable {
             towed.setReservedForMission(false);
             getRover().setTowedVehicle(null);
             towed.setTowingVehicle(null);
-//    		try {
             tradingSettlement.getInventory().storeUnit(towed);
-//    		}
-//    		catch (InventoryException e) {}
         }
     }
 
@@ -582,10 +552,7 @@ public class Trade extends RoverMission implements Serializable {
                     buyVehicle.setReservedForMission(true);
                     getRover().setTowedVehicle(buyVehicle);
                     buyVehicle.setTowingVehicle(getRover());
-//    				try {
                     tradingSettlement.getInventory().retrieveUnit(buyVehicle);
-//    				}
-//    				catch (InventoryException e) {}
                 } else {
                     endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
                 }
@@ -600,7 +567,6 @@ public class Trade extends RoverMission implements Serializable {
      */
     private void performTradeEmbarkingPhase(Person person) {
 
-//    	try {
         // If person is not aboard the rover, board rover.
         if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -623,10 +589,6 @@ public class Trade extends RoverMission implements Serializable {
             tradingSettlement.getInventory().retrieveUnit(getVehicle());
             setPhaseEnded(true);
         }
-//		}
-//    	catch (Exception e) {
-//    		throw new MissionException(getPhase(), e);
-//    	}
     }
 
     /** 
@@ -645,10 +607,7 @@ public class Trade extends RoverMission implements Serializable {
                     sellVehicle.setReservedForMission(true);
                     getRover().setTowedVehicle(sellVehicle);
                     sellVehicle.setTowingVehicle(getRover());
-//    				try {
                     getStartingSettlement().getInventory().retrieveUnit(sellVehicle);
-//    				}
-//    				catch (InventoryException e) {}
                 } else {
                     endMission("Selling vehicle (" + vehicleType + ") is not available (Trade).");
                 }
@@ -670,10 +629,7 @@ public class Trade extends RoverMission implements Serializable {
             towed.setReservedForMission(false);
             getRover().setTowedVehicle(null);
             towed.setTowingVehicle(null);
-//    		try {
             getStartingSettlement().getInventory().storeUnit(towed);
-//    		}
-//    		catch (InventoryException e) {}
         }
 
         super.performDisembarkToSettlementPhase(person, disembarkSettlement);
@@ -907,16 +863,11 @@ public class Trade extends RoverMission implements Serializable {
 
             // Vehicle with superior range should be ranked higher.
             if (result == 0) {
-//				try {
                 if (firstVehicle.getRange() > secondVehicle.getRange()) {
                     result = 1;
                 } else if (firstVehicle.getRange() < secondVehicle.getRange()) {
                     result = -1;
                 }
-//				}
-//				catch (Exception e) {
-//					throw new MissionException(getPhase(), e);
-//				}
             }
         }
 

@@ -348,7 +348,7 @@ public class MasterClock implements Runnable, Serializable {
                 
                 // Get the time pulse length in millisols.
                 double timePulse = getTimePulse();
-                //System.out.println("gettimePulse() " + timePulse);
+                
                 long startTime = System.nanoTime();
 
                 // Add time pulse length to Earth and Mars clocks.
@@ -365,8 +365,6 @@ public class MasterClock implements Runnable, Serializable {
                             cl.clockPulse(timePulse);
                         } catch (Exception e) {
                             throw new IllegalStateException("Error while looping master clock",e);
-//                            logger.log(Level.WARNING, "Encountered error", e);
-//                            e.printStackTrace(System.err);
                         }
                     }
                 }
