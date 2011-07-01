@@ -374,7 +374,9 @@ public class SettlementTableModel extends UnitTableModel {
     	unitManager.removeUnitManagerListener(unitManagerListener);
     	unitManagerListener = null;
     	
-    	resourceCache.clear();
+    	if (resourceCache != null) {
+    	    resourceCache.clear();
+    	}
     	resourceCache = null;
     }
     

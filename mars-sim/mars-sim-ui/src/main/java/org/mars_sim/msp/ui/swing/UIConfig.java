@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-01
  * @author Scott Davis
  */
 
@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Static class for saving/loading user interface configuration data.
+ */
 public class UIConfig {
 
     private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.UIConfig";
@@ -51,46 +54,30 @@ public class UIConfig {
  
     // UI config elements and attributes.
     private static final String UI = "ui";
-
     private static final String USE_DEFAULT = "use-default";
-
     private static final String LOOK_AND_FEEL = "look-and-feel";
-
     private static final String SHOW_UNIT_BAR = "show-unit-bar";
-
     private static final String SHOW_TOOL_BAR = "show-tool-bar";
-
     private static final String MAIN_WINDOW = "main-window";
-
     private static final String LOCATION_X = "location-x";
-
     private static final String LOCATION_Y = "location-y";
-
     private static final String WIDTH = "width";
-
     private static final String HEIGHT = "height";
-
     private static final String VOLUME = "volume";
-
     private static final String SOUND = "sound";
-
     private static final String MUTE = "mute";
-
     private static final String INTERNAL_WINDOWS = "internal-windows";
-
     private static final String WINDOW = "window";
-
     private static final String TYPE = "type";
-
     private static final String NAME = "name";
-
     private static final String DISPLAY = "display";
-
     private static final String Z_ORDER = "z-order";
 
     private Document configDoc;
 
-    // Private singleton constructor.
+    /** 
+     * Private singleton constructor.
+     */
     private UIConfig() {
     }
 
@@ -147,10 +134,10 @@ public class UIConfig {
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
 
-            mainWindowElement.setAttribute(LOCATION_X, Integer.toString(window.getX()));
-            mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(window.getY()));
-            mainWindowElement.setAttribute(WIDTH, Integer.toString(window.getWidth()));
-            mainWindowElement.setAttribute(HEIGHT, Integer.toString(window.getHeight()));
+            mainWindowElement.setAttribute(LOCATION_X, Integer.toString(window.getFrame().getX()));
+            mainWindowElement.setAttribute(LOCATION_Y, Integer.toString(window.getFrame().getY()));
+            mainWindowElement.setAttribute(WIDTH, Integer.toString(window.getFrame().getWidth()));
+            mainWindowElement.setAttribute(HEIGHT, Integer.toString(window.getFrame().getHeight()));
    
             Element volumeElement = new Element(VOLUME);
             uiElement.addContent(volumeElement);

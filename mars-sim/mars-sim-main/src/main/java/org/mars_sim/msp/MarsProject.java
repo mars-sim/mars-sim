@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-06-27
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
+import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,7 +49,7 @@ public class MarsProject {
 
         // Create the main desktop window.
         MainWindow w = new MainWindow();
-        w.show();
+        w.getFrame().setVisible(true);
      
         // Start simulation
         startSimulation();
@@ -57,6 +58,11 @@ public class MarsProject {
         splashWindow.hide();
     }
 
+    /**
+     * Initialize the simulation.
+     * @param args the command args.
+     * @param splashWindow the startup splash window.
+     */
     private void initializeSimulation(String[] args, SplashWindow splashWindow) {
         // Create a simulation
         List<String> argList = Arrays.asList(args);
@@ -86,16 +92,29 @@ public class MarsProject {
         }
     }
 
-
+    /**
+     * Exit the simulation with an error message.
+     * @param dialogParent the parent component.
+     * @param message the error message.
+     */
     private void exitWithError(Component dialogParent, String message) {
         showError(dialogParent, message);
         System.exit(1);
     }
 
+    /**
+     * Show a modal error message dialog.
+     * @param dialogParent the parent component.
+     * @param message the error message.
+     */
     private void showError(Component dialogParent, String message) {
         JOptionPane.showMessageDialog(dialogParent, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Loads the simulation from the default save file.
+     * @throws Exception if error loading the default saved simulation.
+     */
     private void handleLoadDefaultSimulation() throws Exception {
         try {
             // Load a the default simulation
@@ -106,6 +125,11 @@ public class MarsProject {
         }
     }
 
+    /**
+     * Loads the simulation from a save file.
+     * @param argList the command argument list.
+     * @throws Exception if error loading the saved simulation.
+     */
     private void handleLoadSimulation(List<String> argList) throws Exception {
         try {
             int index = argList.indexOf("-load");
@@ -124,9 +148,15 @@ public class MarsProject {
         }
     }
 
+    /**
+     * Create a new simulation instance.
+     */
     private void handleNewSimulation() {
         try {
             SimulationConfig.loadConfig();
+            TempSimulationConfigEditor editor = new TempSimulationConfigEditor(null, 
+                    SimulationConfig.instance());
+            editor.setVisible(true);
             Simulation.createNewSimulation();
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,6 +165,9 @@ public class MarsProject {
         }
     }
 
+    /**
+     * Start the simulation instance.
+     */
     public void startSimulation() {
         // Start the simulation.
         Simulation.instance().start();

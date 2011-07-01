@@ -164,9 +164,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		backgroundLabel.setSize(getSize());
 
 		// Recenter the logo on the window
-		int Xpos = ((mainWindow.getWidth() - logoLabel.getWidth()) / 2) -
-		(int) getLocation().getX();
-		int Ypos = ((mainWindow.getHeight() - logoLabel.getHeight()) /
+		int Xpos = ((mainWindow.getFrame().getWidth() - logoLabel.getWidth()) / 2) -
+		        (int) getLocation().getX();
+		int Ypos = ((mainWindow.getFrame().getHeight() - logoLabel.getHeight()) /
 				2) - 45;
 		logoLabel.setLocation(Xpos, Ypos);
 	}
