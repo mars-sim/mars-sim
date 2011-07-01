@@ -317,7 +317,9 @@ public class TimeWindow extends ToolWindow implements ClockListener {
      * Prepare tool window for deletion.
      */
     public void destroy() {
-    	master.removeClockListener(this);
+        if (master != null) {
+            master.removeClockListener(this);
+        }
     	master = null;
     	marsTime = null;
     	earthTime = null;

@@ -61,11 +61,8 @@ public class MasterClock implements Runnable, Serializable {
     private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
     private transient List<ClockListener> listeners; // Clock listeners.
     private long totalPulses = 1;
-    // private transient long pausestart=System.currentTimeMillis(),pauseend=System.currentTimeMillis(),pausetime=0;
-    private transient long elapsedlast;// = uptimer.getUptimeMillis();//System.currentTimeMillis();;
+    private transient long elapsedlast;
     private transient long elapsedMilliseconds;
-    // Sleep duration in milliseconds 
-    //public final static long TIME_PULSE_LENGTH = 1000L;
 
     static final long serialVersionUID = -1688463735489226494L;
 
@@ -207,12 +204,11 @@ public class MasterClock implements Runnable, Serializable {
     public double getTimePulse() {
 
         // Get time ratio from simulation configuration.
-
         if (timeRatio == 0) setTimeRatio((int) SimulationConfig.instance().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {
-            double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));// * (TIME_PULSE_LENGTH / 1000D);
+            double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
         } else timePulse = 1D;
 
@@ -398,6 +394,7 @@ public class MasterClock implements Runnable, Serializable {
                 // Load the simulation from a file.
                 if (file.exists() && file.canRead()) {
                     Simulation.instance().loadSimulation(file);
+                    Simulation.instance().start();
                 } else {
                     logger.warning("Cannot access file " + file.getPath() + ", not reading");
                 }
@@ -463,8 +460,6 @@ public class MasterClock implements Runnable, Serializable {
      * note: it is set up currently to only return hh:mm:ss.s
      */
     public String getTimeString(double seconds) {
-
-        logger.info("timestring for " + seconds);
 
 //        long years, days, hours, minutes;
 //        double secs;

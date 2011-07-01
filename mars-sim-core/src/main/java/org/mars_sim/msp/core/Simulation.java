@@ -140,14 +140,15 @@ public class Simulation implements ClockListener, Serializable {
 
         // Use default file path if file is null.
         if (f == null) {
-            /* [landrus, 27.11.09]: use the home dir instead of unknow relative paths. */
+            /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
             f = new File(DEFAULT_DIR, DEFAULT_FILE);
             defaultLoad = true;
-        } else {
+        } 
+        else {
             defaultLoad = false;
         }
+        
         if (f.exists() && f.canRead()) {
-
             try {
                 readFromFile(f);
             } catch (ClassNotFoundException ex) {
@@ -155,15 +156,10 @@ public class Simulation implements ClockListener, Serializable {
             } catch (IOException ex) {
                 throw new IllegalStateException(ex);
             }
-        }else{
-            logger.warning("File " + f.getPath() + " is not accessible, not reading and creating transient & intransient data");
-            initializeIntransientData();
-            initializeTransientData();
-
         }
-
-        //note: the following code is in MarsProject, to keep it in one place
-        simulation.start();
+        else{
+            throw new IllegalStateException("Load file: " + f.getPath() + " is not accessible");
+        }
     }
 
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
@@ -196,7 +192,7 @@ public class Simulation implements ClockListener, Serializable {
         simulation.stop();
 
         // Use default file path if file is null.
-		/* [landrus, 27.11.09]: use the home dir instead of unknow relative paths. Also check if the dirs
+		/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
          * exist */
         if (file == null) {
             file = new File(DEFAULT_DIR, DEFAULT_FILE);

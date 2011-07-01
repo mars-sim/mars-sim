@@ -386,15 +386,11 @@ public class VehicleTableModel extends UnitTableModel {
      * @return integer amount of resource.
      */
     private Integer getResourceStored(Unit unit, AmountResource resource) {
-    	Integer result = null;	
-//    	try {
-    		Inventory inv = unit.getInventory();
-    		result = (int) inv.getAmountResourceStored(resource);
-//    	}
-//    	catch (InventoryException e) {
-//    		e.printStackTrace(System.err);
-//    	}
-    	return result;
+        Integer result = null;	
+        Inventory inv = unit.getInventory();
+        result = (int) inv.getAmountResourceStored(resource);
+        
+        return result;
     }
 	
     /**
@@ -407,10 +403,14 @@ public class VehicleTableModel extends UnitTableModel {
     	unitManager.removeUnitManagerListener(unitManagerListener);
     	unitManagerListener = null;
     	
-    	missionManagerListener.destroy();
+    	if (missionManagerListener != null) {
+    	    missionManagerListener.destroy();
+    	}
     	missionManagerListener = null;
     	
-    	resourceCache.clear();
+    	if (resourceCache != null) {
+    	    resourceCache.clear();
+    	}
     	resourceCache = null;
     }
 	

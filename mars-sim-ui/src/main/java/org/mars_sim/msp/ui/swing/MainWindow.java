@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.00 2011-02-14
+ * @version 3.01 2011-07-01
  * @author Scott Davis
  */
 
@@ -11,7 +11,6 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.time.MasterClock;
-import org.mars_sim.msp.ui.swing.configeditor.SimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 
@@ -33,16 +32,13 @@ import java.util.logging.Logger;
 public class MainWindow {
 
     public static final String WINDOW_TITLE = "Mars Simulation Project (version " + Simulation.VERSION + ")";
-    private JFrame frame;
-
-//	/** DOCME: documentation is missing */
-////	private static final long serialVersionUID = 1L;
 
     private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.MainWindow";
 
     private static Logger logger = Logger.getLogger(CLASS_NAME);
 
     // Data members
+    private JFrame frame;
     private final UnitToolBar unitToolbar; // The unit tool bar
     private final ToolToolBar toolToolbar; // The tool bar
     private final MainDesktopPane desktop; // The main desktop
@@ -50,11 +46,6 @@ public class MainWindow {
     private Thread newSimThread;
     private Thread loadSimThread;
     private Thread saveSimThread;
-
-    public static void main(String[] args) {
-        MainWindow w = new MainWindow();
-        w.show();
-    }
 
     /**
      * Constructor
@@ -80,10 +71,6 @@ public class MainWindow {
             setLookAndFeel(false);
         }
 
-
-//		// Prepare frame
-//		setVisible(false);
-
         frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent event) {
@@ -108,7 +95,6 @@ public class MainWindow {
         mainPane.add(unitToolbar, "South");
 
         // set the visibility of tool and unit bars from preferences
-
         unitToolbar.setVisible(UIConfig.INSTANCE.showUnitBar());
         toolToolbar.setVisible(UIConfig.INSTANCE.showToolBar());
 
@@ -142,43 +128,49 @@ public class MainWindow {
             frame.setLocation(UIConfig.INSTANCE.getMainWindowLocation());
         }
 
-//		// Show frame
-//		setVisible(true);
+		// Show frame
+		frame.setVisible(true);
 
         // Open all initial windows.
         desktop.openInitialWindows();
-
-        //this.notifySimStartOK(true);
     }
 
-    public void show() {
-        frame.setVisible(true);
-    }
-
-    public void hide() {
-        frame.setVisible(false);
-    }
-
+    /**
+     * Get the window's x location.
+     * @return x location.
+     */
+    /*
     public int getX() {
         return frame.getX();
     }
-
+    */
+    /**
+     * Get the window's y location.
+     * @return y location.
+     */
+    /*
     public int getY() {
         return frame.getY();
     }
-
+    */
+    /**
+     * Get the window's frame.
+     * @return the frame.
+     */
     public JFrame getFrame() {
         return frame;
     }
 
+    /*
     public int getWidth() {
         return frame.getWidth();
     }
-
+    */
+    /*
     public int getHeight() {
         return frame.getHeight();
     }
-
+    */
     /**
      * Gets the main desktop panel.
      *
@@ -310,13 +302,13 @@ public class MainWindow {
      * Performs the process of saving a simulation.
      */
     private void saveSimulationProcess(boolean useDefault) {
-//		try {
+
         File fileLocn = null;
 
         if (!useDefault) {
             JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
             chooser.setDialogTitle("Select save location");
-            if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
+            if (chooser.showSaveDialog(frame) == JFileChooser.APPROVE_OPTION) {
                 fileLocn = chooser.getSelectedFile();
             } else {
                 return;
@@ -334,12 +326,6 @@ public class MainWindow {
             }
         }
         desktop.disposeAnnouncementWindow();
-//		} catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, "Problem saving simulation",
-//					e.toString(), JOptionPane.ERROR_MESSAGE);
-//			logger.log(Level.SEVERE, "Problem saving simulation: " + e);
-//			e.printStackTrace();
-//		}
     }
 
     /**
