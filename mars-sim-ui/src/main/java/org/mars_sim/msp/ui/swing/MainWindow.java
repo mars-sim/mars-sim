@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.01 2011-07-01
+ * @version 3.01 2011-07-07
  * @author Scott Davis
  */
 
@@ -201,7 +201,7 @@ public class MainWindow {
      * Performs the process of loading a simulation.
      */
     private void loadSimulationProcess() {
-//		try {
+        
         JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
         chooser.setDialogTitle("Select stored simulation");
         if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
@@ -223,12 +223,6 @@ public class MainWindow {
             // Open navigator tool after loading.
             desktop.openToolWindow(NavigatorWindow.NAME);
         }
-//		} catch (Exception e) {
-//			JOptionPane.showMessageDialog(null, "Problem loading simulation",
-//					e.toString(), JOptionPane.ERROR_MESSAGE);
-//			logger.log(Level.SEVERE, "Problem loading simulation: " + e);
-//			e.printStackTrace();
-//		}
     }
 
     /**
