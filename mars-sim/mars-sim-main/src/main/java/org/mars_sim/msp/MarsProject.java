@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.01 2011-06-27
+ * @version 3.01 2011-07-07
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -23,7 +23,7 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 /**
- * MarsProject is the main class for the application. It creates both Mars and
+ * MarsProject is the main class for the application. It creates both the simulation and
  * the user interface.
  */
 public class MarsProject {
@@ -181,7 +181,7 @@ public class MarsProject {
     public static void main(String args[]) {
         /* [landrus, 27.11.09]: Read the logging configuration from the classloader, so that this gets
            * webstart compatible. Also create the logs dir in user.home */
-        new File(System.getProperty("user.home"), "mars-sim" + File.separator + "logs").mkdirs();
+        new File(System.getProperty("user.home"), ".mars-sim" + File.separator + "logs").mkdirs();
 
         try {
             LogManager.getLogManager().readConfiguration(MarsProject.class.getResourceAsStream("/logging.properties"));

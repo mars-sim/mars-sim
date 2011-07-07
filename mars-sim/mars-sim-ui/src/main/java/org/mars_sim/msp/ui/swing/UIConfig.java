@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.01 2011-07-01
+ * @version 3.01 2011-07-07
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class UIConfig {
     public static final String UNIT = "unit";
 
     // Config filename.
-    private static final String DIRECTORY = System.getProperty("user.home") + File.separator + "mars-sim" +
+    private static final String DIRECTORY = System.getProperty("user.home") + File.separator + ".mars-sim" +
     	File.separator + "saved";
 
     private static final String FILE_NAME = "ui_settings.xml";

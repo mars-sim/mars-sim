@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.01 2011-04-10
+ * @version 3.01 2011-07-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -31,21 +31,26 @@ public class Simulation implements ClockListener, Serializable {
 
     /** DOCME: documentation is missing */
     private static final long serialVersionUID = -631308653510974249L;
-//    private static String CLASS_NAME = "org.mars_sim.msp.simulation.Simulation";
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
+    
     // Version string.
     public final static String VERSION = "3.01";
+    
     // Default save file.
     public final static String DEFAULT_FILE = "default.sim";
+    
     // Save directory
-    public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + "mars-sim"
-            + File.separator + "saved";
+    public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + 
+            ".mars-sim" + File.separator + "saved";
+    
     // Singleton instance
     private static final Simulation instance = new Simulation();
+    
     // Transient data members (aren't stored in save file)
     private transient HistoricalEventManager eventManager; // All historical info.
     private transient Thread clockThread;
     private static final boolean debug = logger.isLoggable(Level.FINE);
+    
     // Intransient data members (stored in save file)
     private Mars mars; // Planet Mars
     private MalfunctionFactory malfunctionFactory; // The malfunction factory
