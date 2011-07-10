@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 3.01 2011-04-25
+ * @version 3.01 2011-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -141,9 +141,15 @@ public class PowerGeneration extends Function implements Serializable {
      */
     public double getGeneratedPower() {
         double result = 0D;
-        Iterator<PowerSource> i = powerSources.iterator();
-        while (i.hasNext())
-            result += i.next().getCurrentPower(getBuilding());
+        
+        // Building should only produce power if it has no current malfunctions.
+        if (!getBuilding().getMalfunctionManager().hasMalfunction()) {
+            Iterator<PowerSource> i = powerSources.iterator();
+            while (i.hasNext()) {
+                result += i.next().getCurrentPower(getBuilding());
+            }
+        }
+        
         return result;
     }
 
