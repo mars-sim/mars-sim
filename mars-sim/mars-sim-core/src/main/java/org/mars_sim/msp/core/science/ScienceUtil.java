@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScienceUtil.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -101,6 +101,8 @@ public class ScienceUtil {
      * @return list of all sciences.
      */
     public static List<Science> getAllSciences() {
+        if (sciences == null) loadSciences();
+        
         return Collections.unmodifiableList(sciences);
     }
     
