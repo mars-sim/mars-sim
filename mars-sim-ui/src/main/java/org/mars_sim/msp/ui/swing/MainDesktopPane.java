@@ -639,7 +639,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	void updateToolWindowLF() {
 		Iterator<ToolWindow> i = toolWindows.iterator();
 		while (i.hasNext()) {
-			SwingUtilities.updateComponentTreeUI(i.next());
+		    ToolWindow toolWindow = i.next();
+			SwingUtilities.updateComponentTreeUI(toolWindow);
+			toolWindow.pack();
 		}
 	}
 
