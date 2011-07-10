@@ -106,7 +106,7 @@ public class PreferencesWindow extends ToolWindow {
 			nativeLookAndFeel = false;
 		uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
 		final MainWindow theMainwindow = desktop.getMainWindow();
-		uiCheck.setToolTipText("Use OS native Look&Feel (may look wrong).");
+		uiCheck.setToolTipText("Use OS native Look & Feel.");
 		uiCheck.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				theMainwindow.setLookAndFeel(uiCheck.isSelected());
