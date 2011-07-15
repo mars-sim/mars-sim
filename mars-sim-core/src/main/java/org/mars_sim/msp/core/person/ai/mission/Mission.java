@@ -135,8 +135,8 @@ public abstract class Mission implements Serializable {
     protected final void fireMissionUpdate(String updateType, Object target) {
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
     	synchronized(listeners) {
-    		Iterator i = listeners.iterator();
-    		while (i.hasNext()) ((MissionListener) i.next()).missionUpdate(
+    		Iterator<MissionListener> i = listeners.iterator();
+    		while (i.hasNext()) i.next().missionUpdate(
     				new MissionEvent(this, updateType, target));
     	}
     }

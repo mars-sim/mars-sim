@@ -43,6 +43,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private final static String MINING = "mining";
     private final static String CONSTRUCTION = "construction";
     private final static String SALVAGE = "salvage";
+    private final static String EXPLORATION = "exploration";
 	
 	// Private members
 	private Mission currentMission;
@@ -67,6 +68,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private MissionCustomInfoPanel miningPanel;
     private MissionCustomInfoPanel constructionPanel;
     private MissionCustomInfoPanel salvagePanel;
+    private MissionCustomInfoPanel explorationPanel;
 	
 	/**
 	 * Constructor
@@ -168,10 +170,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         centerMapButton.addActionListener(new ActionListener() {
         	public void actionPerformed(ActionEvent e) {
         		if (currentMission != null) {
-//        			try {
-        				getDesktop().centerMapGlobe(currentMission.getCurrentMissionLocation());
-//        			}
-//        			catch (MissionException e1) {}
+        			getDesktop().centerMapGlobe(currentMission.getCurrentMissionLocation());
         		}
 			}
         });
@@ -245,6 +244,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         // Create custom salvage mission panel.
         salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
         missionCustomPane.add(salvagePanel, SALVAGE);
+        
+        // Create custom exploration mission panel.
+        explorationPanel = new ExplorationCustomInfoPanel();
+        missionCustomPane.add(explorationPanel, EXPLORATION);
 	}
 	
 	/**
@@ -356,6 +359,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
                 customPanelLayout.show(missionCustomPane, SALVAGE);
                 salvagePanel.updateMission(mission);
             }
+            else if (mission instanceof Exploration) {
+                customPanelLayout.show(missionCustomPane, EXPLORATION);
+                explorationPanel.updateMission(mission);
+            }
 			else customPanelLayout.show(missionCustomPane, EMPTY);
 		}
 		else customPanelLayout.show(missionCustomPane, EMPTY);
@@ -379,6 +386,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		else if (mission instanceof Mining) miningPanel.updateMissionEvent(e);
         else if (mission instanceof BuildingConstructionMission) 
             constructionPanel.updateMissionEvent(e);
+        else if (mission instanceof BuildingSalvageMission) 
+            salvagePanel.updateMissionEvent(e);
+        else if (mission instanceof Exploration) explorationPanel.updateMissionEvent(e);
 	}
 	
 	/**
