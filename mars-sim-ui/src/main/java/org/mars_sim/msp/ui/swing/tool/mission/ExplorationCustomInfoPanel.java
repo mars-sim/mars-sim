@@ -1,3 +1,9 @@
+/**
+ * Mars Simulation Project
+ * ExplorationCustomInfoPanel.java
+ * @version 3.01 2011-07-16
+ * @author Scott Davis
+ */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
@@ -19,10 +25,9 @@ import javax.swing.SwingConstants;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
- * A panel for displaying exploration custom mission information.
+ * A panel for displaying exploration mission information.
  */
 public class ExplorationCustomInfoPanel extends MissionCustomInfoPanel {
 
@@ -113,12 +118,14 @@ public class ExplorationCustomInfoPanel extends MissionCustomInfoPanel {
             this.completion = completion;
             
             setLayout(new GridLayout(1, 2));
-            setBorder(new MarsPanelBorder());
+            
+            JPanel namePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 10));
+            add(namePanel);
             
             JLabel nameLabel = new JLabel(siteName, SwingConstants.LEFT);
-            add(nameLabel);
+            namePanel.add(nameLabel);
             
-            JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+            JPanel barPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
             add(barPanel);
             
             completionBar = new JProgressBar(0, 100);

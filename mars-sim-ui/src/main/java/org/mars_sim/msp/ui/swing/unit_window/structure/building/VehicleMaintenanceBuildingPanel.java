@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenanceBuildingPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -75,7 +77,7 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
         
 		// Create vehicle list model
 		vehicleListModel = new DefaultListModel();
-		vehicleCache = garage.getVehicles();
+		vehicleCache = new ArrayList<Vehicle>(garage.getVehicles());
 		Iterator<Vehicle> i = vehicleCache.iterator();
 		while (i.hasNext()) vehicleListModel.addElement(i.next());
         
@@ -90,8 +92,9 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	 */
 	public void update() {
 		// Update vehicle list and vehicle mass label
-		if (!vehicleCache.equals(garage.getVehicles())) {
-			vehicleCache = garage.getVehicles();
+	    
+	    if (!CollectionUtils.isEqualCollection(vehicleCache, garage.getVehicles())) {
+			vehicleCache = new ArrayList<Vehicle>(garage.getVehicles());
 			vehicleListModel.clear();
 			Iterator<Vehicle> i = vehicleCache.iterator();
 			while (i.hasNext()) vehicleListModel.addElement(i.next());
@@ -107,8 +110,12 @@ public class VehicleMaintenanceBuildingPanel extends BuildingFunctionPanel imple
 	 */
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open vehicle window.
-		if (event.getClickCount() >= 2) 
-			desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue(), false);
+		if (event.getClickCount() >= 2) {
+		    Vehicle vehicle = (Vehicle) vehicleList.getSelectedValue();
+		    if (vehicle != null) {
+		        desktop.openUnitWindow(vehicle, false);
+		    }
+		}
 	}
 
 	public void mousePressed(MouseEvent arg0) {}

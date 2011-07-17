@@ -37,7 +37,7 @@ import java.util.logging.Logger;
  */
 public class MaintenanceEVA extends EVAOperation implements Serializable {
     
-    	private static String CLASS_NAME = 
+    private static String CLASS_NAME = 
 	    "org.mars_sim.msp.simulation.person.ai.task.MaintenanceEVA";
 	
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
@@ -109,7 +109,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			}   
 		}
 		catch (Exception e) {
-		logger.log(Level.SEVERE,"getProbability()",e);
+		    logger.log(Level.SEVERE,"getProbability()",e);
     	}
 		
 		// Check if an airlock is available

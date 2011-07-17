@@ -76,16 +76,13 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 			Building building = i.next();
 			VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(getName());
 			if (garage.containsVehicle(vehicle)) {
-//				try {
-					garage.removeVehicle(vehicle);
-//				}
-//				catch (BuildingException e) {}
+				garage.removeVehicle(vehicle);
 			}
 		}
         
 		// Add vehicle to building.
 		vehicles.add(vehicle);
-	       logger.info("Adding " + vehicle.getName());
+	    logger.info("Adding " + vehicle.getName());
     }
     
     /** 

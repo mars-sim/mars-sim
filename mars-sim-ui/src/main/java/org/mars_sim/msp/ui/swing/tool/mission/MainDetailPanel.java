@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-17
  * @author Scott Davis
  */
 
@@ -44,6 +44,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     private final static String CONSTRUCTION = "construction";
     private final static String SALVAGE = "salvage";
     private final static String EXPLORATION = "exploration";
+    private final static String BIOLOGY = "biology";
+    private final static String AREOLOGY = "areology";
 	
 	// Private members
 	private Mission currentMission;
@@ -69,6 +71,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     private MissionCustomInfoPanel constructionPanel;
     private MissionCustomInfoPanel salvagePanel;
     private MissionCustomInfoPanel explorationPanel;
+    private MissionCustomInfoPanel biologyFieldPanel;
+    private MissionCustomInfoPanel areologyFieldPanel;
 	
 	/**
 	 * Constructor
@@ -248,6 +252,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         // Create custom exploration mission panel.
         explorationPanel = new ExplorationCustomInfoPanel();
         missionCustomPane.add(explorationPanel, EXPLORATION);
+        
+        // Create custom biology field mission panel.
+        biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
+        missionCustomPane.add(biologyFieldPanel, BIOLOGY);
+        
+        // Create custom areology field mission panel.
+        areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
+        missionCustomPane.add(areologyFieldPanel, AREOLOGY);
 	}
 	
 	/**
@@ -327,7 +339,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			vehicleStatusLabel.setText("Vehicle Status:");
 			speedLabel.setText("Vehicle Speed:");
 			distanceNextNavLabel.setText("Distance to Next Navpoint:");
-			travelledLabel.setText("Travelled Distance:");
+			travelledLabel.setText("Traveled Distance:");
 			currentMission = null;
 			currentVehicle = null;
 			customPanelLayout.show(missionCustomPane, EMPTY);
@@ -363,6 +375,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
                 customPanelLayout.show(missionCustomPane, EXPLORATION);
                 explorationPanel.updateMission(mission);
             }
+            else if (mission instanceof BiologyStudyFieldMission) {
+                customPanelLayout.show(missionCustomPane, BIOLOGY);
+                biologyFieldPanel.updateMission(mission);
+            }
+            else if (mission instanceof AreologyStudyFieldMission) {
+                customPanelLayout.show(missionCustomPane, AREOLOGY);
+                areologyFieldPanel.updateMission(mission);
+            }
 			else customPanelLayout.show(missionCustomPane, EMPTY);
 		}
 		else customPanelLayout.show(missionCustomPane, EMPTY);
@@ -382,13 +402,20 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private void updateCustomPanelMissionEvent(MissionEvent e) {
 		Mission mission = (Mission) e.getSource();
 		
-		if (mission instanceof Trade) tradePanel.updateMissionEvent(e);
-		else if (mission instanceof Mining) miningPanel.updateMissionEvent(e);
+		if (mission instanceof Trade) 
+		    tradePanel.updateMissionEvent(e);
+		else if (mission instanceof Mining) 
+		    miningPanel.updateMissionEvent(e);
         else if (mission instanceof BuildingConstructionMission) 
             constructionPanel.updateMissionEvent(e);
         else if (mission instanceof BuildingSalvageMission) 
             salvagePanel.updateMissionEvent(e);
-        else if (mission instanceof Exploration) explorationPanel.updateMissionEvent(e);
+        else if (mission instanceof Exploration) 
+            explorationPanel.updateMissionEvent(e);
+        else if (mission instanceof BiologyStudyFieldMission) 
+            biologyFieldPanel.updateMissionEvent(e);
+        else if (mission instanceof AreologyStudyFieldMission) 
+            areologyFieldPanel.updateMissionEvent(e);
 	}
 	
 	/**

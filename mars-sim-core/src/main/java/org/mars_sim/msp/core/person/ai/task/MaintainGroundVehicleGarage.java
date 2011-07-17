@@ -59,7 +59,7 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
      */
     public MaintainGroundVehicleGarage(Person person) {
         super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
-        		true, RandomUtil.getRandomDouble(100D));
+        		true, RandomUtil.getRandomDouble(200D));
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);

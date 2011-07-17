@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -251,6 +251,22 @@ public class BiologyStudyFieldMission extends RoverMission
         }
         
         return result;
+    }
+    
+    /**
+     * Gets the scientific study for the mission.
+     * @return scientific study.
+     */
+    public ScientificStudy getScientificStudy() {
+        return study;
+    }
+    
+    /**
+     * Gets the lead researcher for the mission. 
+     * @return the researcher.
+     */
+    public Person getLeadResearcher() {
+        return leadResearcher;
     }
     
     /**

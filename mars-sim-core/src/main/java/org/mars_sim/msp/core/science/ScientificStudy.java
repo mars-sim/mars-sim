@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -12,8 +12,11 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -82,6 +85,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
     private Map<Person, MarsClock> lastCollaborativeResearchWorkTime;
     private double primaryResearcherAchievementEarned;
     private Map<Person, Double> collaborativeAchievementEarned;
+    private transient List<ScientificStudyListener> listeners; // Scientific study listeners.
     
     /**
      * Constructor.
@@ -111,6 +115,7 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         lastCollaborativeResearchWorkTime = new HashMap<Person, MarsClock>(MAX_NUM_COLLABORATORS);
         primaryResearcherAchievementEarned = 0D;
         collaborativeAchievementEarned = new HashMap<Person, Double>(MAX_NUM_COLLABORATORS);
+        listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
     }
     
     /**
@@ -127,6 +132,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
      */
     void setPhase(String phase) {
         this.phase = phase;
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.PHASE_CHANGE_EVENT);
     }
     
     /**
@@ -185,6 +193,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         Settlement settlement = primaryResearcher.getAssociatedSettlement();
         if ((settlement != null) && !primarySettlement.equals(settlement)) 
             primarySettlement = settlement;
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.PROPOSAL_WORK_EVENT);
     }
     
     /**
@@ -206,6 +217,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         collaborativePaperWorkTime.put(researcher, 0D);
         lastCollaborativeResearchWorkTime.put(researcher, null);
         collaborativeAchievementEarned.put(researcher, 0D);
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.ADD_COLLABORATOR_EVENT, researcher);
     }
     
     /**
@@ -218,6 +232,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         collaborativePaperWorkTime.remove(researcher);
         lastCollaborativeResearchWorkTime.remove(researcher);
         collaborativeAchievementEarned.remove(researcher);
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.REMOVE_COLLABORATOR_EVENT, researcher);
     }
     
     /**
@@ -324,6 +341,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         // Update last primary work time.
         lastPrimaryResearchWorkTime = (MarsClock) Simulation.instance().getMasterClock().
                 getMarsClock().clone();
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_RESEARCH_WORK_EVENT, getPrimaryResearcher());
     }
     
     /**
@@ -372,6 +392,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
             // Update last collaborative work time.
             lastCollaborativeResearchWorkTime.put(researcher, (MarsClock) Simulation.instance().
                     getMasterClock().getMarsClock().clone());
+            
+            // Fire scientific study update event.
+            fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_RESEARCH_WORK_EVENT, researcher);
         }
         else throw new IllegalArgumentException(researcher + 
                 " is not a collaborative researcher in this study.");
@@ -445,6 +468,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         Settlement settlement = primaryResearcher.getAssociatedSettlement();
         if ((settlement != null) && !primarySettlement.equals(settlement)) 
             primarySettlement = settlement;
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.PRIMARY_PAPER_WORK_EVENT);
     }
     
     /**
@@ -489,6 +515,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
             double requiredWorkTime = getTotalCollaborativePaperWorkTimeRequired();
             if (currentWorkTime >= requiredWorkTime) currentWorkTime = requiredWorkTime;
             collaborativePaperWorkTime.put(researcher, currentWorkTime);
+            
+            // Fire scientific study update event.
+            fireScientificStudyUpdate(ScientificStudyEvent.COLLABORATION_PAPER_WORK_EVENT, researcher);
         }
         else throw new IllegalArgumentException(researcher + 
                 " is not a collaborative researcher in this study.");
@@ -579,6 +608,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
     void setCompleted(String completionState) {
         completed = true;
         this.completionState = completionState;
+        
+        // Fire scientific study update event.
+        fireScientificStudyUpdate(ScientificStudyEvent.STUDY_COMPLETION_EVENT);
     }
     
     /**
@@ -679,5 +711,45 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
      */
     public int compareTo(ScientificStudy o) {
         return toString().compareTo(o.toString());
+    }
+    
+    /**
+     * Adds a listener
+     * @param newListener the listener to add.
+     */
+    public final void addScientificStudyListener(ScientificStudyListener newListener) {
+        if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+        if (!listeners.contains(newListener)) listeners.add(newListener);
+    }
+    
+    /**
+     * Removes a listener
+     * @param oldListener the listener to remove.
+     */
+    public final void removeScientificStudyListener(ScientificStudyListener oldListener) {
+        if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+        if (listeners.contains(oldListener)) listeners.remove(oldListener);
+    }
+    
+    /**
+     * Fire a scientific study update event.
+     * @param type the update type.
+     */
+    private void fireScientificStudyUpdate(String type) {
+        fireScientificStudyUpdate(type, null);
+    }
+    
+    /**
+     * Fire a scientific study update event.
+     * @param type the update type.
+     * @param researcher the researcher related to the event or null if none.
+     */
+    private void fireScientificStudyUpdate(String updateType, Person researcher) {
+        if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<ScientificStudyListener>());
+        synchronized(listeners) {
+            Iterator<ScientificStudyListener> i = listeners.iterator();
+            while (i.hasNext()) i.next().scientificStudyUpdate(
+                    new ScientificStudyEvent(this, researcher, updateType));
+        }
     }
 }

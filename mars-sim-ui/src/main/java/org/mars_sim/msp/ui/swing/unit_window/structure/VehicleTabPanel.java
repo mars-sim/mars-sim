@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -19,7 +20,6 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -65,7 +65,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         // Create vehicle list model
         vehicleListModel = new DefaultListModel();
         vehicleCache = settlement.getParkedVehicles();
-        Iterator i = vehicleCache.iterator();
+        Iterator<Vehicle> i = vehicleCache.iterator();
         while (i.hasNext()) vehicleListModel.addElement(i.next());
         
         // Create vehicle list
@@ -81,7 +81,7 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
         Settlement settlement = (Settlement) unit;
         
         // Update vehicle list
-        if (!Arrays.equals(vehicleCache.toArray(), settlement.getParkedVehicles().toArray())) {
+        if (!CollectionUtils.isEqualCollection(vehicleCache, settlement.getParkedVehicles())) {
             vehicleCache = new ArrayList<Vehicle>(settlement.getParkedVehicles());
             vehicleListModel.clear();
             Iterator<Vehicle> i = vehicleCache.iterator();
@@ -97,8 +97,12 @@ public class VehicleTabPanel extends TabPanel implements MouseListener {
     public void mouseClicked(MouseEvent event) {
 
         // If double-click, open person window.
-        if (event.getClickCount() >= 2) 
-            desktop.openUnitWindow((Vehicle) vehicleList.getSelectedValue(), false);
+        if (event.getClickCount() >= 2) {
+            Vehicle vehicle = (Vehicle) vehicleList.getSelectedValue();
+            if (vehicle != null) {
+                desktop.openUnitWindow(vehicle, false);
+            }
+        }
     }
 
     public void mousePressed(MouseEvent event) {}

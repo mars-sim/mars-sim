@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -22,7 +23,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -92,7 +92,7 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 		Settlement settlement = (Settlement) unit;
 
 		// Update population list
-		if (!Arrays.equals(populationCache.toArray(), settlement.getAllAssociatedPeople().toArray())) {
+		if (!CollectionUtils.isEqualCollection(populationCache, settlement.getAllAssociatedPeople())) {
 			populationCache = settlement.getAllAssociatedPeople();
 			populationListModel.clear();
 			Iterator<Person> i = populationCache.iterator();
@@ -106,7 +106,12 @@ public class AssociatedPeopleTabPanel extends TabPanel implements MouseListener,
 	 */
 	public void mouseClicked(MouseEvent event) {
 		// If double-click, open person window.
-		if (event.getClickCount() >= 2) desktop.openUnitWindow((Person) populationList.getSelectedValue(), false);
+		if (event.getClickCount() >= 2) {
+		    Person person = (Person) populationList.getSelectedValue();
+		    if (person != null) {
+		        desktop.openUnitWindow(person, false);
+		    }
+		}
 	}
 
 	public void mousePressed(MouseEvent arg0) {}
