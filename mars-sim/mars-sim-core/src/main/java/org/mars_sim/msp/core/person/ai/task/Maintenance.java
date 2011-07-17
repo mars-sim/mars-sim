@@ -55,7 +55,7 @@ public class Maintenance extends Task implements Serializable {
      */
     public Maintenance(Person person) {
         super("Performing Maintenance", person, true, false, STRESS_MODIFIER, 
-        		true, RandomUtil.getRandomDouble(100D));
+        		true, RandomUtil.getRandomDouble(200D));
 
 		try {
         	entity = getMaintenanceMalfunctionable();

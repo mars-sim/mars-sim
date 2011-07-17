@@ -91,9 +91,10 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
     private static Malfunctionable getEVAMalfunctionEntity(Person person, Unit containerUnit) {
         Malfunctionable result = null;
         
-        Iterator i = MalfunctionFactory.getMalfunctionables((Malfunctionable) containerUnit).iterator();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(
+                (Malfunctionable) containerUnit).iterator();
         while (i.hasNext() && (result == null)) {
-            Malfunctionable entity = (Malfunctionable) i.next();
+            Malfunctionable entity = i.next();
             if (hasEVAMalfunction(person, containerUnit, entity)) result = entity;
         }
         

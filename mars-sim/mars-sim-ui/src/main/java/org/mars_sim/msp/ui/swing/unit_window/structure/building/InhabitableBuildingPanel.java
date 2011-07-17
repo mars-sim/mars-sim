@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -14,6 +15,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -74,8 +76,8 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
         
         // Create inhabitant list model
         inhabitantListModel = new DefaultListModel();
-        inhabitantCache = inhabitable.getOccupants();
-        Iterator i = inhabitantCache.iterator();
+        inhabitantCache = new ArrayList<Person>(inhabitable.getOccupants());
+        Iterator<Person> i = inhabitantCache.iterator();
         while (i.hasNext()) inhabitantListModel.addElement(i.next());
         
         // Create inhabitant list
@@ -90,8 +92,8 @@ public class InhabitableBuildingPanel extends BuildingFunctionPanel implements M
     public void update() {
         
         // Update population list and number label
-        if (!inhabitantCache.equals(inhabitable.getOccupants())) {
-            inhabitantCache = inhabitable.getOccupants();
+        if (!CollectionUtils.isEqualCollection(inhabitantCache, inhabitable.getOccupants())) {
+            inhabitantCache = new ArrayList<Person>(inhabitable.getOccupants());
             inhabitantListModel.clear();
             Iterator<Person> i = inhabitantCache.iterator();
             while (i.hasNext()) inhabitantListModel.addElement(i.next());

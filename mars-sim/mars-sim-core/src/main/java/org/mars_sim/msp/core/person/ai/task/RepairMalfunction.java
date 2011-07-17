@@ -47,7 +47,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
      * @throws Exception if error constructing task.
      */
     public RepairMalfunction(Person person) {
-        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
+        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(200D));
 
         // Get the malfunctioning entity.
         entity = getMalfunctionEntity(person);

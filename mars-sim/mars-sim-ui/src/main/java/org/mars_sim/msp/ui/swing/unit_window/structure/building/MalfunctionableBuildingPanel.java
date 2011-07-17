@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -67,7 +68,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         malfunctionListMainPanel.add(malfunctionListPanel, BorderLayout.NORTH);
         
         // Create malfunction panels
-        malfunctionCache = malfunctionable.getMalfunctionManager().getMalfunctions();
+        malfunctionCache = new ArrayList<Malfunction>(malfunctionable.getMalfunctionManager().getMalfunctions());
         malfunctionPanels = new ArrayList<MalfunctionPanel>();
         Iterator<Malfunction> i = malfunctionCache.iterator();
         while (i.hasNext()) {
@@ -83,7 +84,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
         Collection<Malfunction> malfunctions = malfunctionable.getMalfunctionManager().getMalfunctions();
         
         // Update malfunction panels if necessary.
-        if (!malfunctionCache.equals(malfunctions)) {
+        if (!CollectionUtils.isEqualCollection(malfunctionCache, malfunctions)) {
             // Add malfunction panels for new malfunctions.
             Iterator<Malfunction> iter1 = malfunctions.iterator();
             while (iter1.hasNext()) {
@@ -109,7 +110,7 @@ public class MalfunctionableBuildingPanel extends BuildingFunctionPanel {
             }
             
             // Update malfunction cache.
-            malfunctionCache = malfunctions;
+            malfunctionCache = new ArrayList<Malfunction>(malfunctions);
         }
     
         // Have each malfunction panel update.

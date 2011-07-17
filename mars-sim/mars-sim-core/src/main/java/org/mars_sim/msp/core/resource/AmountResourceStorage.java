@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-07-17
  * @author Scott Davis 
  */
 
@@ -159,9 +159,9 @@ public class AmountResourceStorage implements Serializable {
             synchronized(allStoredResourcesCache) {
                 if (typeStorage != null) allStoredResourcesCache.addAll(typeStorage.getAllAmountResourcesStored());
     		    if (phaseStorage != null) {
-    			    Iterator i = Phase.getPhases().iterator();
+    			    Iterator<Phase> i = Phase.getPhases().iterator();
     			    while (i.hasNext()) {
-    				    Phase phase = (Phase) i.next();
+    				    Phase phase = i.next();
     				    if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) 
     				        allStoredResourcesCache.add(phaseStorage.getAmountResourcePhaseType(phase));
     			    }
@@ -279,7 +279,7 @@ public class AmountResourceStorage implements Serializable {
     			}
     		}
     		
-    		if (remainingAmount == 0D) {
+    		if (Math.abs(remainingAmount) < .0000001D) {
     			retrievable = true;
     			clearStoredCache();
     		}

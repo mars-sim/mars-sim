@@ -475,10 +475,6 @@ public class Inventory implements Serializable {
             throw new IllegalStateException("Insufficiant stored amount to retrieve " + resource.getName()
                     + ", stored: " + getAmountResourceStored(resource) + ", attempted: " + amount);
         }
-//    	}
-//    	catch (ResourceException e) {
-//    		throw new IllegalStateException("Error retrieving amount resource: " + e.getMessage());
-//    	}
     }
 
     /**
