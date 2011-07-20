@@ -73,8 +73,7 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @throws MissionException if error constructing mission.
      */
     public CollectRegolith (Collection<Person> members, Settlement startingSettlement, 
-    		List<Coordinates> regolithCollectionSites, Rover rover, String description) 
-{
+    		List<Coordinates> regolithCollectionSites, Rover rover, String description) {
     	
        	// Use CollectResourcesMission constructor.
     	super(description, members, startingSettlement, getRegolithResource(), 
@@ -128,11 +127,6 @@ public class CollectRegolith  extends CollectResourcesMission {
      * @throws MissionException if error getting regolith resource.
      */
     private static AmountResource getRegolithResource() {
-//    	try {
-    		return AmountResource.findAmountResource("regolith");
-//    	}
-//    	catch (Exception e) {
-//    		throw new MissionException(null, e);
-//    	}
+    	return AmountResource.findAmountResource("regolith");
     }
 }
