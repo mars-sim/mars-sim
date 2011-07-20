@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.01 2011-07-17
+ * @version 3.01 2011-07-19
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -46,6 +47,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     private final static String EXPLORATION = "exploration";
     private final static String BIOLOGY = "biology";
     private final static String AREOLOGY = "areology";
+    private final static String COLLECT_REGOLITH = "collect regolith";
+    private final static String COLLECT_ICE = "collect ice";
 	
 	// Private members
 	private Mission currentMission;
@@ -61,7 +64,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private JLabel vehicleStatusLabel;
 	private JLabel speedLabel;
 	private JLabel distanceNextNavLabel;
-	private JLabel travelledLabel;
+	private JLabel traveledLabel;
 	private MainDesktopPane desktop;
 	private DecimalFormat formatter = new DecimalFormat("0.0");
 	private CardLayout customPanelLayout;
@@ -73,6 +76,8 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     private MissionCustomInfoPanel explorationPanel;
     private MissionCustomInfoPanel biologyFieldPanel;
     private MissionCustomInfoPanel areologyFieldPanel;
+    private MissionCustomInfoPanel collectRegolithPanel;
+    private MissionCustomInfoPanel collectIcePanel;
 	
 	/**
 	 * Constructor
@@ -216,10 +221,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		distanceNextNavLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 		travelPane.add(distanceNextNavLabel);
 		
-		// Create the travelled distance label.
-		travelledLabel = new JLabel("Travelled Distance:");
-		travelledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-		travelPane.add(travelledLabel);
+		// Create the traveled distance label.
+		traveledLabel = new JLabel("Traveled Distance:");
+		traveledLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+		travelPane.add(traveledLabel);
 		
 		// Create the mission custom panel.
 		customPanelLayout = new CardLayout();
@@ -260,6 +265,16 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         // Create custom areology field mission panel.
         areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
         missionCustomPane.add(areologyFieldPanel, AREOLOGY);
+        
+        // Create custom collect regolith mission panel.
+        collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(
+                AmountResource.findAmountResource("regolith"));
+        missionCustomPane.add(collectRegolithPanel, COLLECT_REGOLITH);
+        
+        // Create custom collect ice mission panel.
+        collectIcePanel = new CollectResourcesMissionCustomInfoPanel(
+                AmountResource.findAmountResource("ice"));
+        missionCustomPane.add(collectIcePanel, COLLECT_ICE);
 	}
 	
 	/**
@@ -307,7 +322,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 					catch (Exception e2) {}
 					int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
 					int totalDistance = (int) vehicleMission.getTotalDistance();
-					travelledLabel.setText("Travelled Distance: " + travelledDistance + 
+					traveledLabel.setText("Traveled Distance: " + travelledDistance + 
 							" km of " + totalDistance + " km");
 					vehicle.addUnitListener(this);
 					currentVehicle = vehicle;
@@ -319,7 +334,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 				vehicleStatusLabel.setText("Vehicle Status:");
 				speedLabel.setText("Vehicle Speed:");
 				distanceNextNavLabel.setText("Distance to Next Navpoint:");
-				travelledLabel.setText("Travelled Distance:");
+				traveledLabel.setText("Traveled Distance:");
 				currentVehicle = null;
 			}
 			
@@ -339,7 +354,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			vehicleStatusLabel.setText("Vehicle Status:");
 			speedLabel.setText("Vehicle Speed:");
 			distanceNextNavLabel.setText("Distance to Next Navpoint:");
-			travelledLabel.setText("Traveled Distance:");
+			traveledLabel.setText("Traveled Distance:");
 			currentMission = null;
 			currentVehicle = null;
 			customPanelLayout.show(missionCustomPane, EMPTY);
@@ -383,6 +398,14 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
                 customPanelLayout.show(missionCustomPane, AREOLOGY);
                 areologyFieldPanel.updateMission(mission);
             }
+            else if (mission instanceof CollectRegolith) {
+                customPanelLayout.show(missionCustomPane, COLLECT_REGOLITH);
+                collectRegolithPanel.updateMission(mission);
+            }
+            else if (mission instanceof CollectIce) {
+                customPanelLayout.show(missionCustomPane, COLLECT_ICE);
+                collectIcePanel.updateMission(mission);
+            }
 			else customPanelLayout.show(missionCustomPane, EMPTY);
 		}
 		else customPanelLayout.show(missionCustomPane, EMPTY);
@@ -416,6 +439,10 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
             biologyFieldPanel.updateMissionEvent(e);
         else if (mission instanceof AreologyStudyFieldMission) 
             areologyFieldPanel.updateMissionEvent(e);
+        else if (mission instanceof CollectRegolith) 
+            collectRegolithPanel.updateMissionEvent(e);
+        else if (mission instanceof CollectIce) 
+            collectIcePanel.updateMissionEvent(e);
 	}
 	
 	/**
@@ -494,7 +521,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     			catch (Exception e2) {}
     			int travelledDistance = (int) vehicleMission.getTotalDistanceTravelled();
     			int totalDistance = (int) vehicleMission.getTotalDistance();
-    			travelledLabel.setText("Travelled Distance: " + travelledDistance + 
+    			traveledLabel.setText("Traveled Distance: " + travelledDistance + 
     					" km of " + totalDistance + " km");
     		}
     		
