@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.01 2011-07-19
+ * @version 3.01 2011-07-20
  * @author Scott Davis
  */
 
@@ -29,7 +29,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -40,15 +42,6 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 
 	// Custom mission panel IDs.
 	private final static String EMPTY = "empty";
-	private final static String TRADE = "trade";
-	private final static String MINING = "mining";
-    private final static String CONSTRUCTION = "construction";
-    private final static String SALVAGE = "salvage";
-    private final static String EXPLORATION = "exploration";
-    private final static String BIOLOGY = "biology";
-    private final static String AREOLOGY = "areology";
-    private final static String COLLECT_REGOLITH = "collect regolith";
-    private final static String COLLECT_ICE = "collect ice";
 	
 	// Private members
 	private Mission currentMission;
@@ -69,15 +62,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	private DecimalFormat formatter = new DecimalFormat("0.0");
 	private CardLayout customPanelLayout;
 	private JPanel missionCustomPane;
-	private MissionCustomInfoPanel tradePanel;
-	private MissionCustomInfoPanel miningPanel;
-    private MissionCustomInfoPanel constructionPanel;
-    private MissionCustomInfoPanel salvagePanel;
-    private MissionCustomInfoPanel explorationPanel;
-    private MissionCustomInfoPanel biologyFieldPanel;
-    private MissionCustomInfoPanel areologyFieldPanel;
-    private MissionCustomInfoPanel collectRegolithPanel;
-    private MissionCustomInfoPanel collectIcePanel;
+	private Map<String, MissionCustomInfoPanel> customInfoPanels;
 	
 	/**
 	 * Constructor
@@ -238,43 +223,63 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 		JPanel emptyCustomPane1 = new JPanel();
 		missionCustomPane.add(emptyCustomPane1, EMPTY);
 		
+		customInfoPanels = new HashMap<String, MissionCustomInfoPanel>();
+		
 		// Create custom trade mission panel.
-		tradePanel = new TradeMissionCustomInfoPanel();
-		missionCustomPane.add(tradePanel, TRADE);
+		MissionCustomInfoPanel tradePanel = new TradeMissionCustomInfoPanel();
+		String tradeMissionName = Trade.class.getName();
+		customInfoPanels.put(tradeMissionName, tradePanel);
+		missionCustomPane.add(tradePanel, tradeMissionName);
 		
 		// Create custom mining mission panel.
-		miningPanel = new MiningMissionCustomInfoPanel(desktop);
-		missionCustomPane.add(miningPanel, MINING);
+		MissionCustomInfoPanel miningPanel = new MiningMissionCustomInfoPanel(desktop);
+		String miningMissionName = Mining.class.getName();
+		customInfoPanels.put(miningMissionName, miningPanel);
+		missionCustomPane.add(miningPanel, miningMissionName);
        
         // Create custom construction mission panel.
-        constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
-        missionCustomPane.add(constructionPanel, CONSTRUCTION);
+        MissionCustomInfoPanel constructionPanel = new ConstructionMissionCustomInfoPanel(desktop);
+        String constructionMissionName = BuildingConstructionMission.class.getName();
+        customInfoPanels.put(constructionMissionName, constructionPanel);
+        missionCustomPane.add(constructionPanel, constructionMissionName);
         
         // Create custom salvage mission panel.
-        salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
-        missionCustomPane.add(salvagePanel, SALVAGE);
+        MissionCustomInfoPanel salvagePanel = new SalvageMissionCustomInfoPanel(desktop);
+        String salvageMissionName = BuildingSalvageMission.class.getName();
+        customInfoPanels.put(salvageMissionName, salvagePanel);
+        missionCustomPane.add(salvagePanel, salvageMissionName);
         
         // Create custom exploration mission panel.
-        explorationPanel = new ExplorationCustomInfoPanel();
-        missionCustomPane.add(explorationPanel, EXPLORATION);
+        MissionCustomInfoPanel explorationPanel = new ExplorationCustomInfoPanel();
+        String explorationMissionName = Exploration.class.getName();
+        customInfoPanels.put(explorationMissionName, explorationPanel);
+        missionCustomPane.add(explorationPanel, explorationMissionName);
         
         // Create custom biology field mission panel.
-        biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
-        missionCustomPane.add(biologyFieldPanel, BIOLOGY);
+        MissionCustomInfoPanel biologyFieldPanel = new BiologyStudyFieldMissionCustomInfoPanel(desktop);
+        String biologyMissionName = BiologyStudyFieldMission.class.getName();
+        customInfoPanels.put(biologyMissionName, biologyFieldPanel);
+        missionCustomPane.add(biologyFieldPanel, biologyMissionName);
         
         // Create custom areology field mission panel.
-        areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
-        missionCustomPane.add(areologyFieldPanel, AREOLOGY);
+        MissionCustomInfoPanel areologyFieldPanel = new AreologyStudyFieldMissionCustomInfoPanel(desktop);
+        String areologyMissionName = AreologyStudyFieldMission.class.getName();
+        customInfoPanels.put(areologyMissionName, areologyFieldPanel);
+        missionCustomPane.add(areologyFieldPanel, areologyMissionName);
         
         // Create custom collect regolith mission panel.
-        collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(
+        MissionCustomInfoPanel collectRegolithPanel = new CollectResourcesMissionCustomInfoPanel(
                 AmountResource.findAmountResource("regolith"));
-        missionCustomPane.add(collectRegolithPanel, COLLECT_REGOLITH);
+        String collectRegolithMissionName = CollectRegolith.class.getName();
+        customInfoPanels.put(collectRegolithMissionName, collectRegolithPanel);
+        missionCustomPane.add(collectRegolithPanel, collectRegolithMissionName);
         
         // Create custom collect ice mission panel.
-        collectIcePanel = new CollectResourcesMissionCustomInfoPanel(
+        MissionCustomInfoPanel collectIcePanel = new CollectResourcesMissionCustomInfoPanel(
                 AmountResource.findAmountResource("ice"));
-        missionCustomPane.add(collectIcePanel, COLLECT_ICE);
+        String collectIceMissionName = CollectIce.class.getName();
+        customInfoPanels.put(collectIceMissionName, collectIcePanel);
+        missionCustomPane.add(collectIcePanel, collectIceMissionName);
 	}
 	
 	/**
@@ -369,46 +374,18 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 * @param mission the mission.
 	 */
 	private void updateCustomPanel(Mission mission) {
+	    boolean hasMissionPanel = false;
 		if (mission != null) {
-			if (mission instanceof Trade) {
-				customPanelLayout.show(missionCustomPane, TRADE);
-				tradePanel.updateMission(mission);
-			}
-			else if (mission instanceof Mining) {
-				customPanelLayout.show(missionCustomPane, MINING);
-				miningPanel.updateMission(mission);
-			}
-            else if (mission instanceof BuildingConstructionMission) {
-                customPanelLayout.show(missionCustomPane, CONSTRUCTION);
-                constructionPanel.updateMission(mission);
-            }
-            else if (mission instanceof BuildingSalvageMission) {
-                customPanelLayout.show(missionCustomPane, SALVAGE);
-                salvagePanel.updateMission(mission);
-            }
-            else if (mission instanceof Exploration) {
-                customPanelLayout.show(missionCustomPane, EXPLORATION);
-                explorationPanel.updateMission(mission);
-            }
-            else if (mission instanceof BiologyStudyFieldMission) {
-                customPanelLayout.show(missionCustomPane, BIOLOGY);
-                biologyFieldPanel.updateMission(mission);
-            }
-            else if (mission instanceof AreologyStudyFieldMission) {
-                customPanelLayout.show(missionCustomPane, AREOLOGY);
-                areologyFieldPanel.updateMission(mission);
-            }
-            else if (mission instanceof CollectRegolith) {
-                customPanelLayout.show(missionCustomPane, COLLECT_REGOLITH);
-                collectRegolithPanel.updateMission(mission);
-            }
-            else if (mission instanceof CollectIce) {
-                customPanelLayout.show(missionCustomPane, COLLECT_ICE);
-                collectIcePanel.updateMission(mission);
-            }
-			else customPanelLayout.show(missionCustomPane, EMPTY);
+		    String missionClassName = mission.getClass().getName();
+		    if (customInfoPanels.containsKey(missionClassName)) {
+		        hasMissionPanel = true;
+		        MissionCustomInfoPanel panel = customInfoPanels.get(missionClassName);
+		        customPanelLayout.show(missionCustomPane, missionClassName);
+		        panel.updateMission(mission);
+		    }
 		}
-		else customPanelLayout.show(missionCustomPane, EMPTY);
+		
+		if (!hasMissionPanel) customPanelLayout.show(missionCustomPane, EMPTY);
 	}
 	
 	/**
@@ -424,25 +401,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 	 */
 	private void updateCustomPanelMissionEvent(MissionEvent e) {
 		Mission mission = (Mission) e.getSource();
-		
-		if (mission instanceof Trade) 
-		    tradePanel.updateMissionEvent(e);
-		else if (mission instanceof Mining) 
-		    miningPanel.updateMissionEvent(e);
-        else if (mission instanceof BuildingConstructionMission) 
-            constructionPanel.updateMissionEvent(e);
-        else if (mission instanceof BuildingSalvageMission) 
-            salvagePanel.updateMissionEvent(e);
-        else if (mission instanceof Exploration) 
-            explorationPanel.updateMissionEvent(e);
-        else if (mission instanceof BiologyStudyFieldMission) 
-            biologyFieldPanel.updateMissionEvent(e);
-        else if (mission instanceof AreologyStudyFieldMission) 
-            areologyFieldPanel.updateMissionEvent(e);
-        else if (mission instanceof CollectRegolith) 
-            collectRegolithPanel.updateMissionEvent(e);
-        else if (mission instanceof CollectIce) 
-            collectIcePanel.updateMissionEvent(e);
+		if (mission != null) {
+		    String missionClassName = mission.getClass().getName();
+            if (customInfoPanels.containsKey(missionClassName)) {
+                customInfoPanels.get(missionClassName).updateMissionEvent(e);
+            }
+		}
 	}
 	
 	/**
