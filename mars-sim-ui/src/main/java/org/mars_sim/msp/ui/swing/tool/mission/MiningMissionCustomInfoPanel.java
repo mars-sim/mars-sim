@@ -79,7 +79,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		centerPane.add(concentrationPane);
 		
 		// Create concentration label.
-		JLabel concentrationLabel = new JLabel("Estimated Mineral Concentrations at Site:");
+		JLabel concentrationLabel = new JLabel("Mineral Concentrations at Site:");
 		concentrationPane.add(concentrationLabel, BorderLayout.NORTH);
 		
 		// Create concentration scroll panel.
@@ -90,6 +90,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 		// Create concentration table.
 		concentrationTableModel = new ConcentrationTableModel();
 		JTable concentrationTable = new JTable(concentrationTableModel);
+		concentrationTable.setDefaultRenderer(Double.class, new NumberCellRenderer(1));
 		concentrationScrollPane.setViewportView(concentrationTable);
 		
 		// Create excavation panel.
@@ -152,7 +153,8 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 	private class ConcentrationTableModel extends AbstractTableModel {
 		
 		// Data members.
-		protected Map<String, Double> concentrationMap;
+		protected Map<String, Double> estimatedConcentrationMap;
+		protected Map<String, Double> actualConcentrationMap;
     	
     	/**
     	 * Constructor
@@ -161,8 +163,9 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     		// Use AbstractTableModel constructor.
     		super();
     		
-    		// Initialize concentration map.
-    		concentrationMap = new HashMap<String, Double>();
+    		// Initialize concentration maps.
+    		estimatedConcentrationMap = new HashMap<String, Double>();
+    		actualConcentrationMap = new HashMap<String, Double>();
     	}
     	
     	/**
@@ -170,7 +173,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     	 * @return number of rows.
     	 */
     	public int getRowCount() {
-    		return concentrationMap.size();
+    		return estimatedConcentrationMap.size();
     	}
 
     	/**
@@ -178,13 +181,23 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     	 * @return number of columns.
     	 */
     	public int getColumnCount() {
-    		return 2;
+    		return 3;
     	}
     	
     	@Override
     	public String getColumnName(int columnIndex) {
     		if (columnIndex == 0) return "Mineral";
-    		else return "Concentration %";
+    		else if (columnIndex == 1) return "Estimated %";
+    		else return "Actual %";
+        }
+    	
+        @Override
+        public Class<?> getColumnClass(int columnIndex) {
+            Class<?> dataType = super.getColumnClass(columnIndex);
+            if (columnIndex == 0) dataType = String.class;
+            else if (columnIndex == 1) dataType = Double.class;
+            else if (columnIndex == 2) dataType = Double.class;
+            return dataType;
         }
     	
     	/**
@@ -196,11 +209,23 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     	public Object getValueAt(int row, int column) {
     		Object result = "unknown";
     		
-            String[] minerals = concentrationMap.keySet().toArray(
-            		new String[concentrationMap.size()]);
+            String[] minerals = estimatedConcentrationMap.keySet().toArray(
+            		new String[estimatedConcentrationMap.size()]);
             if ((row >= 0) && (row < minerals.length)) { 
-            	if (column == 0) result = minerals[row];
-            	else result = concentrationMap.get(minerals[row]).intValue();
+            	if (column == 0) {
+            	    result = minerals[row];
+            	}
+            	else if (column == 1) {
+            	    result = estimatedConcentrationMap.get(minerals[row]);
+            	}
+            	else if (column == 2) {
+            	    if (actualConcentrationMap.containsKey(minerals[row])) {
+            	        result = actualConcentrationMap.get(minerals[row]);
+            	    }
+            	    else {
+            	        result = new Double(0D);
+            	    }
+            	}
             }
             
             return result;
@@ -210,9 +235,15 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     	 * Updates the table data.
     	 */
     	private void updateTable() {
-    		if (mission.getMiningSite() != null)
-    			concentrationMap = mission.getMiningSite().getEstimatedMineralConcentrations();
-    		else concentrationMap.clear();
+    		if (mission.getMiningSite() != null) {
+    			estimatedConcentrationMap = mission.getMiningSite().getEstimatedMineralConcentrations();
+    			actualConcentrationMap = Simulation.instance().getMars().getSurfaceFeatures()
+                        .getMineralMap().getAllMineralConcentrations(mission.getMiningSite().getLocation());
+    		}
+    		else {
+    		    estimatedConcentrationMap.clear();
+    		    actualConcentrationMap.clear();
+    		}
     		fireTableDataChanged();	
     	}
 	}
@@ -260,7 +291,7 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     	
     	@Override
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = Double.class;
             return dataType;
@@ -293,12 +324,9 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
     		String[] mineralNames = Simulation.instance().getMars().getSurfaceFeatures().
     				getMineralMap().getMineralTypeNames();
             for (String mineralName : mineralNames) {
-//    			try {
                 AmountResource mineral = AmountResource.findAmountResource(mineralName);
                 double amount = mission.getTotalMineralExcavatedAmount(mineral);
                 if (amount > 0D) excavationMap.put(mineral, amount);
-//    			}
-//    			catch (ResourceException e) {}
             }
     		
     		fireTableDataChanged();	
