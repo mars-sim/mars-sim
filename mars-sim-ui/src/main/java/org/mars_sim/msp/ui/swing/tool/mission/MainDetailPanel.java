@@ -280,6 +280,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         String collectIceMissionName = CollectIce.class.getName();
         customInfoPanels.put(collectIceMissionName, collectIcePanel);
         missionCustomPane.add(collectIcePanel, collectIceMissionName);
+        
+        // Create custom rescue/salvage vehicle mission panel.
+        MissionCustomInfoPanel rescuePanel = new RescueMissionCustomInfoPanel(desktop);
+        String rescueMissionName = RescueSalvageVehicle.class.getName();
+        customInfoPanels.put(rescueMissionName, rescuePanel);
+        missionCustomPane.add(rescuePanel, rescueMissionName);
 	}
 	
 	/**
