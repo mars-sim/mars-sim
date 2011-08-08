@@ -6,10 +6,14 @@
 <!ELEMENT power-required EMPTY>
 <!ATTLIST power-required base-power CDATA #REQUIRED>
 <!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
-<!ELEMENT functions (communication?, cooking?, dining?, EVA?, exercise?, farming?, 
-ground-vehicle-maintenance?, life-support?, living-accommodations?, manufacture?, 
-medical-care?, power-generation?, power-storage?, recreation?, research?, 
-resource-processing?, storage?,astronomical-observation? )>
+<!ELEMENT functions (astronomical-observation?, communication?, cooking?, dining?, 
+EVA?, exercise?, farming?, ground-vehicle-maintenance?, life-support?, 
+living-accommodations?, manufacture?, medical-care?, power-generation?, 
+power-storage?, recreation?, research?, resource-processing?, storage? )>
+<!ELEMENT astronomical-observation EMPTY>
+<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
+<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
+<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>
 <!ELEMENT communication EMPTY>
 <!ELEMENT cooking EMPTY>
 <!ATTLIST cooking capacity CDATA #REQUIRED>
@@ -72,7 +76,3 @@ resource-processing?, storage?,astronomical-observation? )>
 <!ELEMENT resource-initial EMPTY>
 <!ATTLIST resource-initial resource CDATA #REQUIRED>
 <!ATTLIST resource-initial amount CDATA #REQUIRED>
-<!ELEMENT astronomical-observation EMPTY>
-<!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
-<!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
-<!ATTLIST astronomical-observation power-required CDATA #REQUIRED>

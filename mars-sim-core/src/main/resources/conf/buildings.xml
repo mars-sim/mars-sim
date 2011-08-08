@@ -590,7 +590,7 @@
 	<building name="Bunkhouse" width="5.0" length="5.0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
-			<life-support capacity="2" power-required="2.0" />
+			<life-support capacity="2" power-required="4.0" />
 			<living-accommodations beds="2" />
 		</functions>
 	</building>
@@ -623,13 +623,14 @@
 	<building name="Astronomy Observatory" width="7.0" length="7.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<astronomical-observation tech-level="2" capacity="1" power-required="4.0"/>
+			<EVA airlock-capacity="1" />
 			<life-support capacity="4" power-required="8.0" />
 			<research tech-level="2" capacity="4">
 				<research-speciality name="Astronomy" />
 				<research-speciality name="Physics" />
 				<research-speciality name="Mathematics" />
 			</research>
-			<astronomical-observation tech-level="2" capacity="1" power-required="4.0"/>
 		</functions>
 	</building>
 	
@@ -637,6 +638,7 @@
 	<building name="Storage Hab" width="9.0" length="9.0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="4" />
 			<life-support capacity="4" power-required="8.0" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -649,6 +651,7 @@
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
 				<resource-storage resource="Food" capacity="2500.0" />
 				<resource-storage resource="Ice" capacity="500.0" />
+				<resource-storage resource="Methane" capacity="10000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -657,6 +660,7 @@
 	<building name="Research Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="4" />
 			<life-support capacity="4" power-required="8.0" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -676,6 +680,7 @@
 	<building name="Residential Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="4" />
 			<life-support capacity="8" power-required="16.0" />
 			<living-accommodations beds="8" />
 			<power-generation>
@@ -688,6 +693,7 @@
 	<building name="Medical Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="4" />
 			<life-support capacity="4" power-required="8.0" />
 			<medical-care tech-level="4" beds="4" />
 			<power-generation>
@@ -703,6 +709,7 @@
 	<building name="Machinery Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="4" />
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="2" concurrent-processes="3" />
 			<storage>
@@ -724,5 +731,51 @@
 			</storage>
 		</functions>
 	</building>
-
+	
+	<!-- A vaulted brick building used as the main hub of a trading outpost. -->
+	<building name="Outpost Hub" width="10.0" length="10.0">
+		<power-required base-power="2.0" base-power-down-power="0.0" />
+		<functions>
+			<communication />
+			<cooking capacity="1" />
+			<life-support capacity="6" power-required="12.0" />
+			<medical-care tech-level="2" beds="1" />
+			<recreation />
+			<storage>
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- An small brick building used for storage. -->
+	<building name="Storage Shed" width="5.0" length="5.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<storage>
+				<resource-storage resource="Oxygen" capacity="1000.0" />
+				<resource-storage resource="Water" capacity="5000.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
+				<resource-storage resource="Methane" capacity="2000.0" />
+				<resource-storage resource="Food" capacity="2000.0" />
+			</storage>
+		</functions>
+	</building>
+	
+	<!-- A brick loading dock and maintenance garage for rovers. -->
+	<building name="Loading Dock Garage" width="15.0" length="18.0">
+		<power-required base-power="8.0" base-power-down-power="0.0" />
+		<functions>
+			<ground-vehicle-maintenance vehicle-capacity="2" />
+			<life-support capacity="4" power-required="8.0" />
+			<storage>
+				<resource-storage resource="Methane" capacity="2000.0" />
+			</storage>
+		</functions>
+	</building>
+	
 </building-list>
