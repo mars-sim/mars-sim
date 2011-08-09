@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.00 2011-05-20
+ * @version 3.01 2011-08-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -73,6 +73,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("manufacturing shed", "manufacturing_shed");
         buildingSVGMap.put("small areothermal well", "small_areothermal_well");
         buildingSVGMap.put("large areothermal well", "large_areothermal_well");
+        buildingSVGMap.put("storage shed", "storage_shed");
     }
     
     /**
@@ -144,6 +145,7 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("large areothermal well", "large_areothermal_well_const");
         constructionSiteSVGMap.put("large areothermal well frame", "large_areothermal_well_frame_const");
         constructionSiteSVGMap.put("deep borehole drilling site", "deep_borehole_drilling_site_const");
+        constructionSiteSVGMap.put("storage shed", "storage_shed_const");
     }
     
     /**

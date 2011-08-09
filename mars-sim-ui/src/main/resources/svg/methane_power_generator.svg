@@ -209,10 +209,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.114"
-     inkscape:cx="186.37221"
+     inkscape:cx="250"
      inkscape:cy="250"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer3"
      showgrid="true"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -246,16 +246,30 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="foundation"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#5c5c5d;fill-opacity:0;fill-rule:nonzero;stroke:#444442;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3639"
+       width="500"
+       height="500"
+       x="0"
+       y="0" />
+  </g>
   <g
      inkscape:label="frame"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-552.36218)"
-     sodipodi:insensitive="true">
+     sodipodi:insensitive="true"
+     style="display:inline">
     <rect
        style="fill:#a3a680;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3594"
@@ -299,7 +313,9 @@
   <g
      inkscape:groupmode="layer"
      id="layer2"
-     inkscape:label="generator">
+     inkscape:label="generator"
+     sodipodi:insensitive="true"
+     style="display:inline">
     <rect
        style="fill:url(#linearGradient3658);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3650"
