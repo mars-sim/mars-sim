@@ -213,10 +213,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.557"
-     inkscape:cx="250"
-     inkscape:cy="500"
+     inkscape:cx="-73.159785"
+     inkscape:cy="591.00883"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer2"
      showgrid="true"
      showguides="true"
      inkscape:guide-bbox="true"
@@ -252,16 +252,29 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="foundation">
+    <rect
+       style="fill:#5c5c5d;fill-opacity:0;fill-rule:nonzero;stroke:#444442;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3723"
+       width="502.69302"
+       height="1003.5906"
+       x="1.7953322"
+       y="-1.7953322" />
+  </g>
   <g
      inkscape:label="frame"
      inkscape:groupmode="layer"
      id="layer1"
      transform="translate(0,-52.362183)"
-     sodipodi:insensitive="true">
+     sodipodi:insensitive="true"
+     style="display:inline">
     <path
        sodipodi:type="arc"
        style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
@@ -431,7 +444,8 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="battery frame"
-     sodipodi:insensitive="true">
+     sodipodi:insensitive="true"
+     style="display:inline">
     <rect
        style="fill:url(#linearGradient4254);fill-opacity:1;fill-rule:nonzero;stroke:#838385;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4224"
@@ -486,7 +500,9 @@
   <g
      inkscape:groupmode="layer"
      id="layer6"
-     inkscape:label="batteries">
+     inkscape:label="batteries"
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#d7d8d8;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4281"
@@ -1178,12 +1194,12 @@
        id="path4453"
        sodipodi:nodetypes="caaaaac" />
     <path
-       style="fill:none;stroke:#d90000;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;stroke:#d90000;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 328.54578,750.44883 c 0,0 4.66249,17.85587 6.28366,26.92998 1.27284,7.12441 5.80127,15.00824 2.693,21.54399 -2.42474,5.0985 -9.08655,6.96749 -14.36266,8.97666 -11.63085,4.42908 -25.79191,12.08199 -36.8043,6.28366 -3.79084,-1.99598 -2.93557,-8.15543 -5.386,-11.66966 -1.81527,-2.60333 -6.73249,-6.73249 -6.73249,-6.73249"
        id="path4457"
        sodipodi:nodetypes="caaaaac" />
     <path
-       style="fill:none;stroke:#c40000;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       style="fill:none;stroke:#c40000;stroke-width:8;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        d="m 171.00539,751.3465 c 0,0 -1.14084,10.46782 -3.14184,15.26032 -3.53325,8.46232 -15.51476,13.72371 -15.26032,22.89049 0.22831,8.22544 9.53326,13.43595 14.81149,19.74865 5.63601,6.74061 9.74039,16.17758 17.95332,19.29982 5.90013,2.243 13.09657,0.79873 18.85099,-1.79533 5.78987,-2.61004 13.14614,-6.71175 13.91382,-13.01616 0.86276,-7.08522 -11.66965,-17.95332 -11.66965,-17.95332"
        id="path4459"
        sodipodi:nodetypes="caaaaaac" />
