@@ -196,7 +196,7 @@
 			<building type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
 			<building type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
-			<vehicle type="Transport Rover" number="2" />
+			<vehicle type="Cargo Rover" number="2" />
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="100" />
 			<equipment type="Barrel" number="100" />

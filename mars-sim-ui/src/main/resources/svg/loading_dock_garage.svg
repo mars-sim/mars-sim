@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1500"
+   height="1800"
+   id="svg3645"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="loading_dock_garage.svg">
+  <defs
+     id="defs3647">
+    <linearGradient
+       id="linearGradient7825">
+      <stop
+         id="stop7827"
+         offset="0"
+         style="stop-color:#7c1200;stop-opacity:1;" />
+      <stop
+         style="stop-color:#dc5800;stop-opacity:1;"
+         offset="0.5"
+         id="stop7831" />
+      <stop
+         id="stop7829"
+         offset="1"
+         style="stop-color:#7c1200;stop-opacity:1;" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4210">
+      <stop
+         style="stop-color:#cc8046;stop-opacity:1;"
+         offset="0"
+         id="stop4212" />
+      <stop
+         style="stop-color:#6d3f1e;stop-opacity:1;"
+         offset="1"
+         id="stop4214" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4210"
+       id="linearGradient4216"
+       x1="750"
+       y1="1800"
+       x2="750"
+       y2="1100"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.6214,-1800)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4210"
+       id="linearGradient4231"
+       gradientUnits="userSpaceOnUse"
+       x1="1500"
+       y1="1460"
+       x2="1440"
+       y2="1460"
+       gradientTransform="matrix(-1,0,0,-1,1498.7572,1800)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4210"
+       id="linearGradient4233"
+       gradientUnits="userSpaceOnUse"
+       x1="1500"
+       y1="1460"
+       x2="1440"
+       y2="1460"
+       gradientTransform="matrix(1,0,0,-1,-0.6214,1800)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient7825"
+       id="linearGradient7823"
+       x1="-0.5"
+       y1="1250"
+       x2="1500.5"
+       y2="1250"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       id="linearGradient3627">
+      <stop
+         style="stop-color:#646564;stop-opacity:1;"
+         offset="0"
+         id="stop3629" />
+      <stop
+         id="stop3635"
+         offset="0.5"
+         style="stop-color:#979799;stop-opacity:1;" />
+      <stop
+         style="stop-color:#646564;stop-opacity:1;"
+         offset="1"
+         id="stop3631" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="translate(150,300)"
+       y2="585"
+       x2="630.5"
+       y1="585"
+       x1="569.5"
+       gradientUnits="userSpaceOnUse"
+       id="linearGradient7936"
+       xlink:href="#linearGradient3627"
+       inkscape:collect="always" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.30944444"
+     inkscape:cx="750"
+     inkscape:cy="900"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer5"
+     showgrid="true"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-grids="true"
+     inkscape:snap-global="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid4186"
+       empspacing="5"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="559.06643,900"
+       id="guide4188" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="750,1156.912"
+       id="guide4190" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata3650">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="foundation"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,747.63782)"
+     sodipodi:insensitive="true"
+     style="display:inline">
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect4192"
+       width="1520"
+       height="1800"
+       x="0"
+       y="0"
+       transform="translate(0,-747.63782)"
+       ry="0.6214084" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer3"
+     inkscape:label="ramp"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:url(#linearGradient4216);fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect4208"
+       width="1500"
+       height="700"
+       x="-0.6214"
+       y="-700"
+       ry="0.6214084"
+       transform="scale(1,-1)" />
+    <path
+       style="fill:url(#linearGradient4233);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+       d="m 1440,700 58.7572,0 c 0.3443,0 0.6214,-0.2771 0.6214,-0.6214 l 0,-698.7572 C 1499.3786,0.2771 1499.1015,0 1498.7572,0 l -19.3786,0 -40,699.3786 c 0,0.3443 0.2771,0.6214 0.6214,0.6214 z"
+       id="rect4218"
+       sodipodi:nodetypes="cccccccc" />
+    <path
+       sodipodi:nodetypes="cccccccc"
+       id="path4229"
+       d="m 58.1358,700 -58.7572,0 c -0.3443,0 -0.6214,-0.2771 -0.6214,-0.6214 l 0,-698.7572 C -1.2428,0.2771 -0.9657,0 -0.6214,0 l 19.3786,0 40,699.3786 c 0,0.3443 -0.2771,0.6214 -0.6214,0.6214 z"
+       style="fill:url(#linearGradient4231);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="frame"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+       id="rect4197"
+       width="1500"
+       height="40"
+       x="7.6293945e-06"
+       y="700"
+       ry="0.6214084" />
+    <rect
+       ry="0"
+       y="7.6293945e-06"
+       x="-1760"
+       height="39.999992"
+       width="1020.0001"
+       id="rect4199"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+       transform="matrix(0,-1,1,0,0,0)" />
+    <rect
+       ry="0.6214084"
+       y="1460"
+       x="-1760"
+       height="39.999393"
+       width="1020"
+       id="rect4203"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1"
+       transform="matrix(0,-1,1,0,0,0)" />
+    <rect
+       ry="0.6214084"
+       y="1760"
+       x="7.6293945e-06"
+       height="40"
+       width="1500"
+       id="rect4205"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-opacity:1" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer4"
+     inkscape:label="interior_floor"
+     style="display:inline"
+     sodipodi:insensitive="true" />
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="interior"
+     style="opacity:0.5;display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#cc8046;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect4236"
+       width="1420"
+       height="1020"
+       x="40"
+       y="740"
+       ry="0.6214084" />
+    <rect
+       style="fill:none;stroke:#ffff00;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8078"
+       width="180"
+       height="360"
+       x="660"
+       y="1420" />
+    <rect
+       style="fill:none;stroke:#ffff00;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3741"
+       width="360"
+       height="920"
+       x="120"
+       y="760" />
+    <rect
+       y="760"
+       x="1020"
+       height="920"
+       width="360"
+       id="rect7864"
+       style="fill:none;stroke:#ffff00;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <rect
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3734"
+       width="200"
+       height="640"
+       x="200"
+       y="900" />
+    <rect
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3621"
+       width="280"
+       height="40"
+       x="160"
+       y="1420" />
+    <rect
+       y="980"
+       x="160"
+       height="40"
+       width="280"
+       id="rect3623"
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <rect
+       y="900"
+       x="1100"
+       height="640"
+       width="200"
+       id="rect7894"
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#010100;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <rect
+       y="1420"
+       x="1060"
+       height="40"
+       width="280"
+       id="rect7896"
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <rect
+       style="fill:#2d3331;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect7898"
+       width="280"
+       height="40"
+       x="1060"
+       y="980" />
+    <rect
+       style="fill:none;stroke:#7c1200;stroke-width:10;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7900"
+       width="460"
+       height="360"
+       x="520"
+       y="1420" />
+    <rect
+       ry="10"
+       rx="0"
+       y="1410"
+       x="670"
+       height="20"
+       width="160.00002"
+       id="rect7907"
+       style="fill:#000080;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35829991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new" />
+    <rect
+       style="fill:#b1b5c4;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7912"
+       width="120"
+       height="180"
+       x="840"
+       y="1060"
+       ry="11.310593" />
+    <rect
+       style="fill:#858a91;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7914"
+       width="99.999931"
+       height="159.99998"
+       x="850"
+       y="1070"
+       ry="11.310593" />
+    <rect
+       style="fill:url(#linearGradient7936);fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect2846"
+       width="60"
+       height="130"
+       x="720"
+       y="820"
+       ry="20" />
+    <rect
+       style="fill:#444547;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3620"
+       width="60"
+       height="30"
+       x="720"
+       y="950" />
+    <rect
+       style="fill:#e51f19;fill-opacity:1;fill-rule:evenodd;stroke:#282d2e;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="rect3622"
+       width="10"
+       height="60"
+       x="710"
+       y="910"
+       ry="5" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7963"
+       width="71.921005"
+       height="120"
+       x="900"
+       y="1620" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7965"
+       width="5"
+       height="60"
+       x="895"
+       y="1620" />
+    <rect
+       y="1680"
+       x="895"
+       height="60"
+       width="5"
+       id="rect7967"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1490"
+       x="900"
+       height="120"
+       width="71.921005"
+       id="rect7969"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1490"
+       x="895"
+       height="60"
+       width="5"
+       id="rect7971"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7973"
+       width="5"
+       height="60"
+       x="895"
+       y="1550" />
+    <rect
+       y="1620"
+       x="-600"
+       height="120"
+       width="71.921005"
+       id="rect7975"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       transform="scale(-1,1)" />
+    <rect
+       y="1620"
+       x="-605"
+       height="60"
+       width="5"
+       id="rect7977"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       transform="scale(-1,1)" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7979"
+       width="5"
+       height="60"
+       x="-605"
+       y="1680"
+       transform="scale(-1,1)" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7981"
+       width="71.921005"
+       height="120"
+       x="-600"
+       y="1490"
+       transform="scale(-1,1)" />
+    <rect
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect7983"
+       width="5"
+       height="60"
+       x="-605"
+       y="1490"
+       transform="scale(-1,1)" />
+    <rect
+       y="1550"
+       x="-605"
+       height="60"
+       width="5"
+       id="rect7985"
+       style="fill:#c3c3c6;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       transform="scale(-1,1)" />
+    <path
+       style="fill:#060605;fill-opacity:1;fill-rule:evenodd;stroke:#3a3b3d;stroke-width:2.06900001;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 620,1295.5313 c -31.72911,0 -57.4375,25.7083 -57.4375,57.4374 0,31.7292 25.70839,57.4688 57.4375,57.4688 31.72911,0 57.46875,-25.7396 57.46875,-57.4688 0,-31.7291 -25.73964,-57.4374 -57.46875,-57.4374 z M 620,1330 c 12.69164,0 23,10.2771 23,22.9687 0,12.6917 -10.30836,23 -23,23 -12.69164,0 -22.96875,-10.3083 -22.96875,-23 C 597.03125,1340.2771 607.30836,1330 620,1330 z"
+       id="path3641" />
+    <path
+       id="path3646"
+       d="m 520,1356.8716 c -12.08494,0 -21.87672,9.7918 -21.87672,21.8767 0,12.085 9.79178,21.8887 21.87672,21.8887 12.08495,0 21.88863,-9.8037 21.88863,-21.8887 0,-12.0849 -9.80368,-21.8767 -21.88863,-21.8767 z M 520,1370 c 4.83398,0 8.76022,3.9144 8.76022,8.7483 0,4.834 -3.92624,8.7602 -8.76022,8.7602 -4.83397,0 -8.74831,-3.9262 -8.74831,-8.7602 0,-4.8339 3.91434,-8.7483 8.74831,-8.7483 z"
+       style="fill:#060605;fill-opacity:1;fill-rule:evenodd;stroke:#3a3b3d;stroke-width:0.78803819;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
+    <rect
+       style="fill:#800402;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8012"
+       width="60"
+       height="140"
+       x="850"
+       y="1080" />
+    <rect
+       style="fill:#ad2518;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8014"
+       width="25"
+       height="140"
+       x="850"
+       y="1080" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8016"
+       width="15"
+       height="10"
+       x="875"
+       y="1085" />
+    <rect
+       y="1085"
+       x="890"
+       height="10"
+       width="15"
+       id="rect8018"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1100"
+       x="875"
+       height="10"
+       width="15"
+       id="rect8020"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8022"
+       width="15"
+       height="10"
+       x="890"
+       y="1100" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8024"
+       width="15"
+       height="10"
+       x="875"
+       y="1115" />
+    <rect
+       y="1115"
+       x="890"
+       height="10"
+       width="15"
+       id="rect8026"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1130"
+       x="875"
+       height="10"
+       width="15"
+       id="rect8028"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8030"
+       width="15"
+       height="10"
+       x="890"
+       y="1130" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8032"
+       width="15"
+       height="10"
+       x="875"
+       y="1145" />
+    <rect
+       y="1145"
+       x="890"
+       height="10"
+       width="15"
+       id="rect8034"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1160"
+       x="875"
+       height="10"
+       width="15"
+       id="rect8036"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8038"
+       width="15"
+       height="10"
+       x="890"
+       y="1160" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8040"
+       width="15"
+       height="10"
+       x="875"
+       y="1175" />
+    <rect
+       y="1175"
+       x="890"
+       height="10"
+       width="15"
+       id="rect8042"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1190"
+       x="875"
+       height="10"
+       width="15"
+       id="rect8044"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8046"
+       width="15"
+       height="10"
+       x="890"
+       y="1190" />
+    <rect
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8048"
+       width="15"
+       height="10"
+       x="875"
+       y="1205" />
+    <rect
+       y="1205"
+       x="890"
+       height="10"
+       width="15"
+       id="rect8050"
+       style="fill:#49494c;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#2e3031;fill-opacity:1;fill-rule:nonzero;stroke:#800402;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8052"
+       width="25"
+       height="130"
+       x="910"
+       y="1085" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8054"
+       width="200"
+       height="50"
+       x="1020"
+       y="1710" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8056"
+       width="95"
+       height="5"
+       x="1025"
+       y="1705" />
+    <rect
+       y="1705"
+       x="1120"
+       height="5"
+       width="95"
+       id="rect8058"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1710"
+       x="1230"
+       height="50"
+       width="200"
+       id="rect8060"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1705"
+       x="1235"
+       height="5"
+       width="95"
+       id="rect8062"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8064"
+       width="95"
+       height="5"
+       x="1330"
+       y="1705" />
+    <rect
+       y="1710"
+       x="70"
+       height="50"
+       width="200"
+       id="rect8066"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       y="1705"
+       x="75"
+       height="5"
+       width="95"
+       id="rect8068"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8070"
+       width="95"
+       height="5"
+       x="170"
+       y="1705" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8072"
+       width="200"
+       height="50"
+       x="280"
+       y="1710" />
+    <rect
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect8074"
+       width="95"
+       height="5"
+       x="285"
+       y="1705" />
+    <rect
+       y="1705"
+       x="380"
+       height="5"
+       width="95"
+       id="rect8076"
+       style="fill:#909181;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="roof"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <path
+       id="rect6633"
+       style="fill:url(#linearGradient7823);fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dashoffset:0"
+       d="m 1440,1730 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 40,1040 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -30,30 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 10,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,40 20,0 0,10 -20,0 0,-10 z m 0,-20 20,0 0,10 -20,0 0,-10 z m 40,20 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -60,30 10,0 0,10 -10,0 0,-10 z m 30,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 30,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 30,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 0,-10 10,0 0,10 -10,0 0,-10 z m 50,0 10,0 0,10 -10,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m 30,-10 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z m -20,0 20,0 0,10 -20,0 0,-10 z" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer7"
+     inkscape:label="garage_door"
+     style="display:inline"
+     sodipodi:insensitive="true">
+    <rect
+       style="fill:#c9c9c8;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4242"
+       width="1379.9993"
+       height="40.000252"
+       x="60"
+       y="740"
+       ry="0.6214084" />
+    <rect
+       style="fill:#8f8f8f;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4246"
+       width="1379.9993"
+       height="20.000275"
+       x="60"
+       y="720"
+       ry="0.6214084" />
+    <rect
+       style="fill:#585754;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4248"
+       width="1379.9993"
+       height="9.9996109"
+       x="60"
+       y="710"
+       ry="0" />
+    <rect
+       style="fill:#282727;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect4250"
+       width="1379.9996"
+       height="9.9997482"
+       x="60"
+       y="700" />
+    <rect
+       style="fill:#000080;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35829991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new"
+       id="rect3611"
+       width="159.99998"
+       height="20"
+       x="670"
+       y="1780"
+       rx="0"
+       ry="9.4287291" />
+  </g>
+</svg>
