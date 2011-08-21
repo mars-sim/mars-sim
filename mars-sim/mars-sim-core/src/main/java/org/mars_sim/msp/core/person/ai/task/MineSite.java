@@ -25,12 +25,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Task for mining minerals at a site.
  */
 public class MineSite extends EVAOperation implements Serializable {
 
+    private static Logger logger = Logger.getLogger(MineSite.class.getName());
+    
 	// Task phases
 	private static final String MINING = "Mining";
 	
@@ -173,10 +176,15 @@ public class MineSite extends EVAOperation implements Serializable {
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)) {
-			luv.getInventory().storeUnit(person);
-			luv.setOperator(person);
-			operatingLUV = true;
-			setDescription("Excavating site with " + luv.getName());
+		    if (luv.getInventory().canStoreUnit(person)) {
+		        luv.getInventory().storeUnit(person);
+		        luv.setOperator(person);
+		        operatingLUV = true;
+		        setDescription("Excavating site with " + luv.getName());
+		    }
+		    else {
+		        logger.info(person.getName() + " could not operate " + luv.getName());
+		    }
 		}
 		
 		// Excavate minerals.

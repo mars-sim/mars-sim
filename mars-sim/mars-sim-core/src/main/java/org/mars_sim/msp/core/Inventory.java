@@ -891,7 +891,6 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error checking unit.
      */
     public boolean canStoreUnit(Unit unit) {
-//    	try {
         boolean result = false;
         if (unit != null) {
             if (unit.getMass() <= getRemainingGeneralCapacity()) {
@@ -908,10 +907,6 @@ public class Inventory implements Serializable {
             }
         }
         return result;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /** 
@@ -935,15 +930,10 @@ public class Inventory implements Serializable {
                 while (i.hasNext()) {
                     AmountResource resource = i.next();
                     double containerAmount = containerInv.getAmountResourceStored(resource);
-//            		try {
                     if (getAmountResourceRemainingCapacity(resource, false) >= containerAmount) {
                         containerInv.retrieveAmountResource(resource, containerAmount);
                         storeAmountResource(resource, containerAmount, false);
                     }
-//            		}
-//            		catch (InventoryException e) {
-//            			e.printStackTrace(System.err);
-//            		}
                 }
             }
 
