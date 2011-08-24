@@ -151,7 +151,7 @@ public class PowerGridTabPanel extends TabPanel {
                 formatter.format(powerStorageCapacityCache) + " kW hr.");
         }
         
-        // Update poewr stored label.
+        // Update power stored label.
         if (powerStoredCache != powerGrid.getStoredPower()) {
             powerStoredCache = powerGrid.getStoredPower();
             powerStoredLabel.setText("Total Power Stored: " +

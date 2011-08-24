@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-08-22
  * @author Scott Davis
  */
 
@@ -38,9 +38,7 @@ import java.util.logging.Logger;
 public class Settlement extends Structure implements Malfunctionable,
         org.mars_sim.msp.core.LifeSupport {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.structure.Settlement";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Settlement.class.getName());
 
     // Unit update events.
     public static final String ADD_ASSOCIATED_PERSON_EVENT = "add associated person";
@@ -64,6 +62,7 @@ public class Settlement extends Structure implements Malfunctionable,
     private boolean resourceProcessOverride; // Override flag for resource process at settlement.
     private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
     protected MalfunctionManager malfunctionManager;
+    private double zeroPopulationTime;  // Amount of time (millisols) that the settlement has had zero population.
 
     /**
      * Constructor for subclass extension.
@@ -349,10 +348,14 @@ public class Settlement extends Structure implements Malfunctionable,
         // Deliver supplies to settlement if they arrive.
         resupplyManager.timePassing(time);
 
-        // If no current population at settlement, power down buildings.
+        // If no current population at settlement for one sol, power down buildings.
         if (getCurrentPopulationNum() == 0) {
-            powerGrid.setPowerMode(PowerGrid.POWER_DOWN_MODE);
+            zeroPopulationTime += time;
+            if (zeroPopulationTime > 1000D) {
+                powerGrid.setPowerMode(PowerGrid.POWER_DOWN_MODE);
+            }
         } else {
+            zeroPopulationTime = 0D;
             powerGrid.setPowerMode(PowerGrid.POWER_UP_MODE);
         }
 
