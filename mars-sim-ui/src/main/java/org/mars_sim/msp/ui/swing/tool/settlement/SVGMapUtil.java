@@ -76,6 +76,7 @@ public final class SVGMapUtil {
         buildingSVGMap.put("storage shed", "storage_shed");
         buildingSVGMap.put("outpost hub", "outpost_hub");
         buildingSVGMap.put("loading dock garage", "loading_dock_garage");
+        buildingSVGMap.put("mining lab", "mining_lab");
     }
     
     /**
@@ -154,6 +155,7 @@ public final class SVGMapUtil {
         constructionSiteSVGMap.put("loading dock garage", "loading_dock_garage_const");
         constructionSiteSVGMap.put("garage_brick_frame", "garage_brick_frame_const");
         constructionSiteSVGMap.put("ramped subsurface foundation 15m x 18m x 5m", "ramped_subsurface_foundation_15x18x5_const");
+        constructionSiteSVGMap.put("mining log", "mining_lab_const");
     }
     
     /**

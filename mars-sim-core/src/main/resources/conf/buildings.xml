@@ -399,6 +399,7 @@
 	<building name="Garage" width="12.0" length="16.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="8" />
 			<ground-vehicle-maintenance vehicle-capacity="2" />
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
@@ -770,11 +771,25 @@
 	<building name="Loading Dock Garage" width="15.0" length="18.0">
 		<power-required base-power="8.0" base-power-down-power="0.0" />
 		<functions>
+			<EVA airlock-capacity="8" />
 			<ground-vehicle-maintenance vehicle-capacity="2" />
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
 				<resource-storage resource="Methane" capacity="2000.0" />
 			</storage>
+		</functions>
+	</building>
+	
+	<!-- A small brick laboratory for mining-related sciences. -->
+	<building name="Mining Lab" width="5.0" length="5.0">
+		<power-required base-power="3.0" base-power-down-power="0.0" />
+		<functions>
+			<life-support capacity="2" power-required="4.0" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Areology" />
+				<research-speciality name="Biology" />
+				<research-speciality name="Chemistry" />
+			</research>
 		</functions>
 	</building>
 	
