@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.00 2011-03-03
+ * @version 3.01 2011-08-23
  * @author Scott Davis
  */
 
@@ -485,7 +485,7 @@ public class GoodsManager implements Serializable {
 					techLevel).iterator();
 			while (i.hasNext()) {
 				double manufacturingDemand = getResourceManufacturingProcessDemand(resource, i.next());
-				if (manufacturingDemand > demand) demand = manufacturingDemand;
+				demand += manufacturingDemand;
 			}
 		}
 		
@@ -549,7 +549,7 @@ public class GoodsManager implements Serializable {
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) 
                     && isLocallyConstructable(stage)) {
                 double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
-                if (constructionDemand > demand) demand = constructionDemand;
+                demand += constructionDemand;
             }
         }
         
@@ -984,7 +984,7 @@ public class GoodsManager implements Serializable {
 					techLevel).iterator();
 			while (i.hasNext()) {
 				double manufacturingDemand = getPartManufacturingProcessDemand(part, i.next());
-				if (manufacturingDemand > demand) demand = manufacturingDemand;
+				demand += manufacturingDemand;
 			}
 		}
 		
@@ -1049,7 +1049,7 @@ public class GoodsManager implements Serializable {
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) && 
                     isLocallyConstructable(stage)) {
                 double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
-                if (constructionStageDemand > demand) demand = constructionStageDemand;
+                demand += constructionStageDemand;
             }
         }
         
