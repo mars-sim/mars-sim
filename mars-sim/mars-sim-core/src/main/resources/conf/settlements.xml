@@ -197,11 +197,57 @@
 			<building type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
 			<building type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
 			<vehicle type="Cargo Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="1" />
 			<equipment type="EVA Suit" number="8" />
 			<equipment type="Gas Canister" number="100" />
 			<equipment type="Barrel" number="100" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
+			<resource type="oxygen" amount="2672.0" />
+			<resource type="water" amount="10688.0" />
+			<resource type="food" amount="4128.0" />
+			<resource type="methane" amount="4000.0" />
+			<part-package name="package 1" number="1" />
+		</template>
+		
+		<template name="Mining Outpost">
+			<building type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0" />
+			<building type="Bunkhouse" x-location="-7.5" y-location="2.5" facing="270.0" />
+			<building type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0" />
+			<building type="Mining Lab" x-location="7.5" y-location="2.5" facing="90.0" />
+			<building type="Storage Shed" x-location="7.5" y-location="-2.5" facing="90.0" />
+			<building type="Manufacturing Shed" x-location="12.5" y-location="2.5" facing="90.0" />
+			<building type="Loading Dock Garage" x-location="0.0" y-location="-14.0" facing="180.0" />
+			<building type="Regolith Storage Bin" x-location="9.5" y-location="-12.5" facing="270.0" />
+			<building type="Sand Storage Bin" x-location="9.5" y-location="-15.0" facing="270.0" />
+			<building type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-50.5" y-location="62.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-38.5" y-location="51.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-44.5" y-location="51.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-50.5" y-location="51.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-38.5" y-location="40.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-44.5" y-location="40.0" facing="0.0" />
+			<building type="Solar Photovoltaic Array" x-location="-50.5" y-location="40.0" facing="0.0" />
+			<building type="Solar Thermal Array" x-location="-35.5" y-location="28.0" facing="0.0" />
+			<building type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
+			<building type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
+			<building type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
+			<building type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
+			<building type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
+			<building type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
+			<building type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
+			<building type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
+			<building type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
+			<building type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
+			<vehicle type="Explorer Rover" number="2" />
+			<vehicle type="Light Utility Vehicle" number="2" />
+			<equipment type="EVA Suit" number="8" />
+			<equipment type="Gas Canister" number="100" />
+			<equipment type="Barrel" number="100" />
+			<equipment type="Bag" number="100" />
+			<equipment type="Large Bag" number="20" />
+			<equipment type="Specimen Box" number="100" />
 			<resource type="oxygen" amount="2672.0" />
 			<resource type="water" amount="10688.0" />
 			<resource type="food" amount="4128.0" />
@@ -226,12 +272,20 @@
 			<location longitude="135.0 W" latitude="14.8 N" />
 		</settlement>
 		
-		<settlement name="Canyon's End" template="Mars Direct Base (phase 1)">
+		<settlement name="Canyon's End" template="Mining Outpost">
 			<location longitude="47.4 W" latitude="14.2 S" />
 		</settlement>
 		
-		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 1)">
+		<settlement name="Schiaparelli Point" template="Mining Outpost">
 			<location longitude="16.0 E" latitude="3.0 S" />
+		</settlement>
+		
+		<settlement name="Lowell Trading Post" template="Trading Outpost">
+			<location longitude="23.0 W" latitude="7.0 S" />
+		</settlement>
+		
+		<settlement name="Goddard Trading Post" template="Trading Outpost">
+			<location longitude="82.0 W" latitude="6.0 S" />
 		</settlement>
 		
 	</initial-settlement-list>
@@ -240,9 +294,7 @@
 	<settlement-name-list>
 	
 		<settlement-name value="Port Zubrin" />
-		<settlement-name value="Lowell Station" />
 		<settlement-name value="Sagan Station" />
-		<settlement-name value="Goddard Settlement" />
 		<settlement-name value="Port Braun" />
 		<settlement-name value="Burroughstown" />
 		<settlement-name value="McKay Base" />

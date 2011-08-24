@@ -882,6 +882,25 @@
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</building>
+		
+		<building name="mining lab" width="5.0" length="5.0" constructable="true" salvagable="true" work-time="20.0" 
+		 skill-required="3" frame="small brick shed frame" >
+		 	<resource name="cement" amount="20.0" />
+			<part name="steel pipe" number="3" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="10" />
+			<part name="gasket" number="10" />
+			<part name="plastic tubing" number="10" />
+			<part name="power cable" number="10" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="epoxy resin bottle" number="25" />
+			<part name="small electric motor" number="1" />
+			<part name="brick" number="100" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
 
 	</building-list>
 	
