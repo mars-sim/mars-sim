@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.00 2010-08-10
+ * @version 3.01 2011-08-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -147,17 +147,12 @@ public class UnloadVehicle extends Task implements Serializable {
     		while (i.hasNext()) {
     			Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
-//    			try {
-    				if (!vehicle.isReserved()) {
-                        if (vehicle.getInventory().getTotalInventoryMass() > 0D) needsUnloading = true;
-                        if (vehicle instanceof Towing) {
-                            if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
-                        }
+    			if (!vehicle.isReserved()) {
+                    if (vehicle.getInventory().getTotalInventoryMass() > 0D) needsUnloading = true;
+                    if (vehicle instanceof Towing) {
+                        if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
                     }
-//    			}
-//    			catch(InventoryException e) {
-//    				e.printStackTrace(System.err);
-//    			}
+                }
                 if (needsUnloading) result = vehicle;
     		}
     	}
@@ -176,7 +171,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	List<Mission> result = new ArrayList<Mission>();
     	
     	MissionManager manager = Simulation.instance().getMissionManager();
-    	Iterator i = manager.getMissions().iterator();
+    	Iterator<Mission> i = manager.getMissions().iterator();
     	while (i.hasNext()) {
     		Mission mission = (Mission) i.next();
     		if (mission instanceof VehicleMission) {
@@ -204,7 +199,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	
     	VehicleMission result = null;
     	
-    	List unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+    	List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
     	
     	if (unloadingMissions.size() > 0) {
     		int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
@@ -266,9 +261,9 @@ public class UnloadVehicle extends Task implements Serializable {
         }
         
         // Unload amount resources.
-        Iterator i = vehicleInv.getAllAmountResourcesStored().iterator();
+        Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored().iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
-        	AmountResource resource = (AmountResource) i.next();
+        	AmountResource resource = i.next();
         	double amount = vehicleInv.getAmountResourceStored(resource);
         	if (amount > amountUnloading) amount = amountUnloading;
         	double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true);
@@ -286,9 +281,9 @@ public class UnloadVehicle extends Task implements Serializable {
         
         // Unload item resources.
         if (amountUnloading > 0D) {
-        	Iterator j = vehicleInv.getAllItemResourcesStored().iterator();
+        	Iterator<ItemResource> j = vehicleInv.getAllItemResourcesStored().iterator();
         	while (j.hasNext() && (amountUnloading > 0D)) {
-        		ItemResource resource = (ItemResource) j.next();
+        		ItemResource resource = j.next();
         		int num = vehicleInv.getItemResourceNum(resource);
         		if ((num * resource.getMassPerItem()) > amountUnloading) {
         			num = (int) Math.round(amountUnloading / resource.getMassPerItem());
@@ -323,9 +318,9 @@ public class UnloadVehicle extends Task implements Serializable {
     	
         // Unload amount resources.
     	// Note: only unloading amount resources at the moment.
-        Iterator i = eInv.getAllAmountResourcesStored().iterator();
+        Iterator<AmountResource> i = eInv.getAllAmountResourcesStored().iterator();
         while (i.hasNext()) {
-        	AmountResource resource = (AmountResource) i.next();
+        	AmountResource resource = i.next();
         	double amount = eInv.getAmountResourceStored(resource);
         	double capacity = sInv.getAmountResourceRemainingCapacity(resource, true);
         	if (amount < capacity) amount = capacity;
