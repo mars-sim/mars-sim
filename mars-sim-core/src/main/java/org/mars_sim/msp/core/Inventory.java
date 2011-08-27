@@ -191,7 +191,10 @@ public class Inventory implements Serializable {
                         double containedCapacity = 0D;
                         Iterator<Unit> i = containedUnits.iterator();
                         while (i.hasNext()) {
-                            containedCapacity += i.next().getInventory().getAmountResourceCapacity(resource);
+                            Unit containedUnit = i.next();
+                            if (containedUnit instanceof Container) {
+                                containedCapacity += containedUnit.getInventory().getAmountResourceCapacity(resource);
+                            }
                         }
                         if (containedCapacity > generalCapacity) {
                             containedCapacity = generalCapacity;
@@ -325,7 +328,8 @@ public class Inventory implements Serializable {
     public double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits) {
         try {
             double result = 0D;
-            if (useContainedUnits && (amountResourceRemainingCache != null) && amountResourceRemainingCache.containsKey(resource)) {
+            if (useContainedUnits && (amountResourceRemainingCache != null) && 
+                    amountResourceRemainingCache.containsKey(resource)) {
                 return amountResourceRemainingCache.get(resource);
             } else {
                 if (resourceStorage != null) {
@@ -335,7 +339,11 @@ public class Inventory implements Serializable {
                     double containedRemainingCapacity = 0D;
                     Iterator<Unit> i = containedUnits.iterator();
                     while (i.hasNext()) {
-                        containedRemainingCapacity += i.next().getInventory().getAmountResourceRemainingCapacity(resource, true);
+                        Unit unit = i.next();
+                        if (unit instanceof Container) {
+                            containedRemainingCapacity += unit.getInventory().getAmountResourceRemainingCapacity(
+                                    resource, true);
+                        }
                     }
                     if (containedRemainingCapacity > getRemainingGeneralCapacity()) {
                         containedRemainingCapacity = getRemainingGeneralCapacity();
@@ -367,7 +375,7 @@ public class Inventory implements Serializable {
      */
     public synchronized void storeAmountResource(AmountResource resource, double amount,
             boolean useContainedUnits) {
-//    	try {
+
         if (amount < 0D) {
             throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
         }
@@ -390,15 +398,20 @@ public class Inventory implements Serializable {
                 if (useContainedUnits && (remainingAmount > 0D) && (containedUnits != null)) {
                     Iterator<Unit> i = containedUnits.iterator();
                     while (i.hasNext()) {
-                        Inventory unitInventory = i.next().getInventory();
-                        double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(resource, true);
-                        double storageAmount = remainingAmount;
-                        if (storageAmount > remainingUnitCapacity) {
-                            storageAmount = remainingUnitCapacity;
-                        }
-                        if (storageAmount > 0D) {
-                            unitInventory.storeAmountResource(resource, storageAmount, true);
-                            remainingAmount -= storageAmount;
+                        // Use only contained units that implement container interface.
+                        Unit unit = i.next();
+                        if (unit instanceof Container) {
+                            Inventory unitInventory = unit.getInventory();
+                            double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(
+                                    resource, true);
+                            double storageAmount = remainingAmount;
+                            if (storageAmount > remainingUnitCapacity) {
+                                storageAmount = remainingUnitCapacity;
+                            }
+                            if (storageAmount > 0D) {
+                                unitInventory.storeAmountResource(resource, storageAmount, true);
+                                remainingAmount -= storageAmount;
+                            }
                         }
                     }
                 }
@@ -418,10 +431,6 @@ public class Inventory implements Serializable {
                         + getAmountResourceRemainingCapacity(resource, useContainedUnits) + ", attempted: " + amount);
             }
         }
-//    	}
-//    	catch (ResourceException e) {
-//    	 	throw new IllegalStateException("Error storing amount resource: " + e.getMessage());
-//    	}
     }
 
     /**

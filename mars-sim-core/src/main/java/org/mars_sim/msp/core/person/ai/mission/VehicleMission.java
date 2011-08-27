@@ -307,23 +307,18 @@ public abstract class VehicleMission extends TravelMission implements UnitListen
     	Settlement settlement = vehicle.getSettlement();
     	double tripTime = getEstimatedRemainingMissionTime(true);
     	
-//    	try {
-    		boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, 
-    				vehicle, settlement);
-    		boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle, 
-    				resources, equipment, getPeopleNumber(), tripTime);
-    		if (!vehicleCapacity) {
-    			logger.info("Vehicle doesn't have capacity.");
-    		}
-        	if (!settlementSupplies) {
-        		logger.info("Settlement doesn't have supplies.");
-        	}
+   		boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(resources, equipment, 
+   				vehicle, settlement);
+   		boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement, vehicle, 
+   				resources, equipment, getPeopleNumber(), tripTime);
+   		if (!vehicleCapacity) {
+   			logger.info("Vehicle doesn't have capacity.");
+   		}
+       	if (!settlementSupplies) {
+       		logger.info("Settlement doesn't have supplies.");
+       	}
         	
-        	return vehicleCapacity && settlementSupplies;
-//    	}
-//    	catch (Exception e) {
-//    		throw new MissionException(getPhase(), e);
-//    	}
+       	return vehicleCapacity && settlementSupplies;
     }
     
     /**
