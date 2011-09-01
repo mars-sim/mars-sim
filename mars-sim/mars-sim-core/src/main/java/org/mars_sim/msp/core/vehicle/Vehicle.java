@@ -59,7 +59,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
-    private static final double MAINTENANCE_TIME = 1000D; // 1 Sol
+    private static final double MAINTENANCE_TIME = 500D; // 1 Sol
     
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.

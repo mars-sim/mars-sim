@@ -56,6 +56,8 @@ public class StudyFieldSamples extends Task implements
     // Mass (kg) of field sample to study.
     private static final double SAMPLE_MASS = 1D;
 
+    private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
+    
     // Data members.
     private ScientificStudy study; // The scientific study the person is researching for.
     private Lab lab;         // The laboratory the person is working in.
@@ -591,7 +593,7 @@ public class StudyFieldSamples extends Task implements
      * @param time the amount of time available (millisols).
      */
     private void improveMineralConcentrationEstimates(double time) {
-        double probability = (time / 500D) * getEffectiveSkillLevel();
+        double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
         if (RandomUtil.getRandomDouble(1.0D) <= probability) {
             
             // Determine explored site to improve estimations.
