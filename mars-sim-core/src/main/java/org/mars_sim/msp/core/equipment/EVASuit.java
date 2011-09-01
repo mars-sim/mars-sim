@@ -35,7 +35,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     private static final double WEAR_LIFETIME = 334000D; // 334 Sols (1/2 orbit)
-    private static final double MAINTENANCE_TIME = 250D; // 250 millisols.
+    private static final double MAINTENANCE_TIME = 100D; // 100 millisols.
     // Data members
     protected MalfunctionManager malfunctionManager; // The equipment's malfunction manager
 

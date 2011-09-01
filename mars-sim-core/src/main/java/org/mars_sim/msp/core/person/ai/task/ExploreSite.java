@@ -40,6 +40,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	// Static members
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 10D;
 	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D;
+	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
 	
 	// Data members
 	private ExploredLocation site;
@@ -206,7 +207,8 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	 * @param time the amount of time available (millisols).
 	 */
 	private void improveMineralConcentrationEstimates(double time) {
-		double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel();
+		double probability = (time / Exploration.EXPLORING_SITE_TIME) * getEffectiveSkillLevel() * 
+		        ESTIMATE_IMPROVEMENT_FACTOR;
 		if (RandomUtil.getRandomDouble(1.0D) <= probability) {
 			MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
 			Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();

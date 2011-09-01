@@ -47,7 +47,7 @@ public class Settlement extends Structure implements Malfunctionable,
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
 
-    private static final double MAINTENANCE_TIME = 3000D; // Amount of time (millisols) required for periodic
+    private static final double MAINTENANCE_TIME = 1000D; // Amount of time (millisols) required for periodic
                                                           // maintenance.
 
     // Data members

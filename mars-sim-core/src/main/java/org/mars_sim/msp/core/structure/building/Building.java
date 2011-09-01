@@ -37,7 +37,7 @@ public class Building implements Malfunctionable, Serializable {
     
     // Maintenance info
     private static final double WEAR_LIFETIME = 3340000D; // 3340 Sols (5 orbits)
-    private static final double MAINTENANCE_TIME = 1000D; // 1 Sol
+    private static final double MAINTENANCE_TIME = 500D; // 1 Sol
     
     // Data members
     protected BuildingManager manager; 

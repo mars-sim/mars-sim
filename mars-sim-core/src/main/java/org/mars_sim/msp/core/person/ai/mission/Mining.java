@@ -220,13 +220,9 @@ public class Mining extends RoverMission {
 			
 			// Check if there are enough bags at the settlement for collecting minerals.
 			boolean enoughBags = false;
-//			try {
-				int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class);
-				enoughBags = (numBags >= NUMBER_OF_BAGS);
-//			}
-//			catch (InventoryException e) {
-//				logger.log(Level.SEVERE, "Error checking if enough bags available.");
-//			}
+
+			int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(Bag.class);
+			enoughBags = (numBags >= NUMBER_OF_BAGS);
 			
 			// Check for embarking missions.
 			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);

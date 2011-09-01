@@ -223,7 +223,7 @@ public class Inventory implements Serializable {
         if (resource == null) {
             throw new IllegalArgumentException("resource is null");
         }
-//    	try {
+
         double result = 0D;
         if ((amountResourceStoredCache != null) && amountResourceStoredCache.containsKey(resource)) {
             result = amountResourceStoredCache.get(resource);
@@ -234,7 +234,10 @@ public class Inventory implements Serializable {
             if (containedUnits != null) {
                 Iterator<Unit> i = containedUnits.iterator();
                 while (i.hasNext()) {
-                    result += i.next().getInventory().getAmountResourceStored(resource);
+                    Unit unit = i.next();
+                    if (unit instanceof Container) {
+                        result += unit.getInventory().getAmountResourceStored(resource);
+                    }
                 }
             }
             if (amountResourceStoredCache == null) {
@@ -243,10 +246,6 @@ public class Inventory implements Serializable {
             amountResourceStoredCache.put(resource, result);
         }
         return result;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -459,14 +458,17 @@ public class Inventory implements Serializable {
             if ((remainingAmount > 0D) && (containedUnits != null)) {
                 Iterator<Unit> i = containedUnits.iterator();
                 while (i.hasNext()) {
-                    Inventory unitInventory = i.next().getInventory();
-                    double resourceStored = unitInventory.getAmountResourceStored(resource);
-                    double retrieveAmount = remainingAmount;
-                    if (retrieveAmount > resourceStored) {
-                        retrieveAmount = resourceStored;
+                    Unit unit = i.next();
+                    if (unit instanceof Container) {
+                        Inventory unitInventory = unit.getInventory();
+                        double resourceStored = unitInventory.getAmountResourceStored(resource);
+                        double retrieveAmount = remainingAmount;
+                        if (retrieveAmount > resourceStored) {
+                            retrieveAmount = resourceStored;
+                        }
+                        unitInventory.retrieveAmountResource(resource, retrieveAmount);
+                        remainingAmount -= retrieveAmount;
                     }
-                    unitInventory.retrieveAmountResource(resource, retrieveAmount);
-                    remainingAmount -= retrieveAmount;
                 }
             }
 
@@ -568,7 +570,6 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting item resource.
      */
     public int getItemResourceNum(ItemResource resource) {
-//    	try {
         int result = 0;
         if (containedItemResources != null){
             final Integer res = containedItemResources.get(resource);
@@ -578,18 +579,12 @@ public class Inventory implements Serializable {
         }
         if (containedUnits != null) {
             for(Unit u : containedUnits){
-                result+=u.getInventory().getItemResourceNum(resource);
+                if (u instanceof Container) {
+                    result+=u.getInventory().getItemResourceNum(resource);
+                }
             }
-//            Iterator<Unit> i = containedUnits.iterator();
-//            while (i.hasNext()) {
-//                result += i.next().getInventory().getItemResourceNum(resource);
-//            }
         }
         return result;
-//    	}
-//    	catch(Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -598,16 +593,11 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting all item resources.
      */
     public Set<ItemResource> getAllItemResourcesStored() {
-//    	try {
         if (containedItemResources != null) {
             return Collections.synchronizedSet(new HashSet<ItemResource>(containedItemResources.keySet()));
         } else {
             return Collections.synchronizedSet(new HashSet<ItemResource>(0));
         }
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -616,29 +606,14 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting total mass.
      */
     private double getItemResourceTotalMass() {
-//    	try {
         double result = 0D;
         if (containedItemResources != null) {
             final Set<Entry<ItemResource, Integer>> es = containedItemResources.entrySet();
             for(Entry<ItemResource, Integer> e : es){
                 result += e.getValue() * e.getKey().getMassPerItem();
             }
-//            for(ItemResource i : containedItemResources.keySet()){
-////                int resourceNum = getItemResourceNum(i);
-//                result += getItemResourceNum(i) * i.getMassPerItem();
-//            }
-//            Iterator<ItemResource> i = containedItemResources.keySet().iterator();
-//            while (i.hasNext()) {
-//                ItemResource resource = i.next();
-//                int resourceNum = getItemResourceNum(resource);
-//                result += resourceNum * resource.getMassPerItem();
-//            }
         }
         return result;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**

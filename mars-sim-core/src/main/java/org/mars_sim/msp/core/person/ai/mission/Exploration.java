@@ -158,6 +158,7 @@ public class Exploration extends RoverMission implements Serializable {
 
         // Initialize explored sites.
         exploredSites = new ArrayList<ExploredLocation>(NUM_SITES);
+        explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
         // Set exploration navpoints.
         for (int x = 0; x < explorationSites.size(); x++)
