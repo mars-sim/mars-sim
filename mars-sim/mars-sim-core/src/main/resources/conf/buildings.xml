@@ -793,4 +793,28 @@
 		</functions>
 	</building>
 	
+	<!-- A small inground greenhouse with a glass vaulted roof. --> 
+	<building name="Inground Greenhouse" width="5.0" length="10.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>		
+			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0" />
+			<life-support capacity="3" power-required="6.0" />
+			<research tech-level="1" capacity="1">
+				<research-speciality name="Botany" />
+			</research>	
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
+					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Water" capacity="500.0" />
+				<resource-storage resource="Waste Water" capacity="500.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>	
+		</functions>
+	</building>
+	
 </building-list>

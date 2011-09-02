@@ -91,6 +91,17 @@
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
+		
+		<foundation name="subsurface foundation 5m x 10m x 3m" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="30.0" skill-required="1" >
+			<resource name="concrete" amount="1200.0" />
+			<resource name="water" amount="400.0" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
 
 	</foundation-list>
 
@@ -321,6 +332,25 @@
 			<part name="wire connector" number="5" />
 			<part name="power cable" number="2" />
 			<part name="gasket" number="4" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="vaulted glass brick frame" width="5.0" length="10.0" constructable="true" salvagable="true" 
+		 work-time="100.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
+			<resource name="mortar" amount="7000.0" />
+			<resource name="water" amount="7000.0" />
+			<part name="brick" number="7000" />
+			<part name="steel scrap" number="5" />
+			<part name="aluminum scrap" number="7" />
+			<part name="glass sheet" number="10" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="5" />
+			<part name="gasket" number="5" />
+			<part name="electrical wire" number="6" />
+			<part name="wire connector" number="6" />
+			<part name="power cable" number="3" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
@@ -897,6 +927,23 @@
 			<part name="epoxy resin bottle" number="25" />
 			<part name="small electric motor" number="1" />
 			<part name="brick" number="100" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="inground greenhouse" width="5.0" length="10.0" constructable="true" salvagable="true" 
+		 work-time="50.0" skill-required="3" frame="vaulted glass brick frame" >
+		 	<resource name="polyester resin" amount="5.0" />
+			<resource name="styrene" amount="1.0" />
+			<resource name="polyethylene" amount="10.0" />
+			<part name="aluminum sheet" number="3" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="5" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
