@@ -62,8 +62,8 @@ public class MineralMapLayer implements MapLayer {
 			// Clear map concentration array.
 			Arrays.fill(mineralConcentrationArray, 0);
 		
-			int centerX = MAP_X_OFFSET+150;
-			int centerY = MAP_Y_OFFSET+150;
+			int centerX = 150;
+			int centerY = 150;
         
 			double rho = 0D;
 			if (USGSMarsMap.TYPE.equals(mapType)) rho = USGSMarsMap.PIXEL_RHO;
