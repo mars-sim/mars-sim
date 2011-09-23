@@ -136,8 +136,8 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourcePhaseStoreDeep() throws Exception {
 		Inventory inventory = new Inventory(null);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-		inventory.addGeneralCapacity(110D);
-		Unit testUnit = new MockUnit1();
+		inventory.addGeneralCapacity(130D);
+		Unit testUnit = new MockUnit3(Phase.GAS);
 		testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
 		inventory.storeUnit(testUnit);
 		inventory.storeAmountResource(hydrogen, 100D, true);
@@ -148,8 +148,8 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourceTypeStoreDeep() throws Exception {
 		Inventory inventory = new Inventory(null);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-		inventory.addGeneralCapacity(110D);
-		Unit testUnit = new MockUnit1();
+		inventory.addGeneralCapacity(130D);
+		Unit testUnit = new MockUnit3(Phase.GAS);
 		testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
 		inventory.storeUnit(testUnit);
 		inventory.storeAmountResource(hydrogen, 100D, true);
@@ -249,8 +249,8 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourcePhaseRetrieveDeep() throws Exception {
 		Inventory inventory = new Inventory(null);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-		inventory.addGeneralCapacity(110D);
-		Unit testUnit = new MockUnit1();
+		inventory.addGeneralCapacity(130D);
+		Unit testUnit = new MockUnit3(Phase.GAS);
 		testUnit.getInventory().addAmountResourcePhaseCapacity(Phase.GAS, 100D);
 		inventory.storeUnit(testUnit);
 		inventory.storeAmountResource(hydrogen, 100D, true);
@@ -262,8 +262,8 @@ public class TestInventory extends TestCase {
 	public void testInventoryAmountResourceTypeRetrieveDeep() throws Exception {
 		Inventory inventory = new Inventory(null);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
-		inventory.addGeneralCapacity(110D);
-		Unit testUnit = new MockUnit1();
+		inventory.addGeneralCapacity(130D);
+		Unit testUnit = new MockUnit3(Phase.GAS);
 		testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
 		inventory.storeUnit(testUnit);
 		inventory.storeAmountResource(hydrogen, 100D, true);
@@ -276,15 +276,15 @@ public class TestInventory extends TestCase {
 		Inventory inventory = new Inventory(null);
 		AmountResource hydrogen = AmountResource.findAmountResource(HYDROGEN);
 		AmountResource food = AmountResource.findAmountResource(FOOD);
-		inventory.addGeneralCapacity(110D);
+		inventory.addGeneralCapacity(130D);
 		inventory.addAmountResourcePhaseCapacity(Phase.GAS, 20D);
 		inventory.addAmountResourceTypeCapacity(food, 30D);
-		Unit testUnit = new MockUnit1();
+		Unit testUnit = new MockUnit3(Phase.GAS);
 		testUnit.getInventory().addAmountResourceTypeCapacity(hydrogen, 100D);
 		inventory.storeUnit(testUnit);
 		inventory.storeAmountResource(hydrogen, 120D, true);
 		inventory.storeAmountResource(food, 30D, true);
-		Set resources = inventory.getAllAmountResourcesStored();
+		Set<AmountResource> resources = inventory.getAllAmountResourcesStored();
 		assertEquals("Number of resources is correct.", 2, resources.size());
 		assertTrue("Resources contains hydrogen", resources.contains(hydrogen));
 		assertTrue("Resources contains food", resources.contains(food));
@@ -316,7 +316,7 @@ public class TestInventory extends TestCase {
 		inventory.storeUnit(testUnit);
 		testUnit.getInventory().storeItemResources(pipeWrench, 20);
 		int storedResource = inventory.getItemResourceNum(pipeWrench);
-		assertEquals("Item resources correct number.", 20, storedResource);
+		assertEquals("Item resources correct number.", 0, storedResource);
 		double storedMass = inventory.getGeneralStoredMass();
 		assertEquals("Item resources correct mass.", 60D, storedMass, 0D);
 	}
@@ -400,9 +400,15 @@ public class TestInventory extends TestCase {
 		inventory.storeUnit(testUnit);
 		testUnit.getInventory().addGeneralCapacity(50D);
 		testUnit.getInventory().storeItemResources(pipeWrench, 10);
-		inventory.retrieveItemResources(pipeWrench, 5);
+		try {
+		    inventory.retrieveItemResources(pipeWrench, 5);
+		    fail("pipewrenches should not be retrievable");
+		}
+		catch (Exception e) {
+		    // Should throw an exception since pipewrenches cannot be retrieved by parent inventory.
+		}
 		int remainingNum = inventory.getItemResourceNum(pipeWrench);
-		assertEquals("Item resource remaining is correct number.", 5, remainingNum);
+		assertEquals("Item resource remaining is correct number.", 0, remainingNum);
 	}
 	
 	public void testInventoryItemResourceRetrieveTooMuch() throws Exception {
@@ -590,7 +596,7 @@ public class TestInventory extends TestCase {
 		Unit testUnit2 = new MockUnit1();
 		inventory.storeUnit(testUnit1);
 		inventory.storeUnit(testUnit2);
-		Collection units = inventory.findAllUnitsOfClass(MockUnit1.class);
+		Collection<Unit> units = inventory.findAllUnitsOfClass(MockUnit1.class);
 		assertEquals("Found correct number of units.", 2, units.size());
 		assertTrue("Found test unit 1", units.contains(testUnit1));
 		assertTrue("Found test unit 2", units.contains(testUnit2));
@@ -599,7 +605,7 @@ public class TestInventory extends TestCase {
 	public void testInventoryFindAllUnitsFail() throws Exception {
 		Inventory inventory = new Inventory(null);
 		inventory.addGeneralCapacity(20D);
-		Collection units = inventory.findAllUnitsOfClass(MockUnit1.class);
+		Collection<Unit> units = inventory.findAllUnitsOfClass(MockUnit1.class);
 		assertEquals("Could not fine units of class", 0, units.size());
 	}
 	
