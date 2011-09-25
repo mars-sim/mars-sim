@@ -7,7 +7,7 @@
 	<groupId>net.sf</groupId>
 	<artifactId>mars-sim</artifactId>
 	<packaging>pom</packaging>
-	<version>3.01</version>
+	<version>3.02-SNAPSHOT</version>
 	<name>mars-sim</name>
 	<url>http://mars-sim.sourceforge.net/site</url>
 	<inceptionYear>2009</inceptionYear>
@@ -61,9 +61,9 @@
 	<!-- * Project Tools Section                                                                         * -->
 	<!-- ************************************************************************************************* -->
 	<scm>
-		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/tags/mars-sim-3.01</connection>
-		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/tags/mars-sim-3.01</developerConnection>
-		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/tags/mars-sim-3.01</url>
+		<connection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</connection>
+		<developerConnection>scm:svn:https://mars-sim.svn.sourceforge.net/svnroot/mars-sim/trunk/mars-sim</developerConnection>
+		<url>http://mars-sim.svn.sourceforge.net/viewvc/mars-sim/trunk/mars-sim</url>
 	</scm>
 	<issueManagement>
 		<system>sourceforge</system>
