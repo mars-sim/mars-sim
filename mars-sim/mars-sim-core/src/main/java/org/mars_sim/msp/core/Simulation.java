@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.01 2011-07-07
+ * @version 3.02 2011-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -34,7 +34,7 @@ public class Simulation implements ClockListener, Serializable {
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
     
     // Version string.
-    public final static String VERSION = "3.01";
+    public final static String VERSION = "3.02";
     
     // Default save file.
     public final static String DEFAULT_FILE = "default.sim";
