@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.01 2011-06-19
+ * @version 3.02 2011-10-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -44,8 +44,7 @@ import java.util.logging.Logger;
  */
 public class Trade extends RoverMission implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.Trade";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Trade.class.getName());
     // Mission event types
     public static final String BUY_LOAD_EVENT = "buy load";
     // Default description.
@@ -267,17 +266,22 @@ public class Trade extends RoverMission implements Serializable {
             try {
                 Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
                 if (rover != null) {
-                    // Only check a few times a Sol, else use cache.
+                    // Only check every couple of Sols, else use cache.
                     // Note: this method is very CPU intensive.
                     boolean useCache = false;
                     MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
                     if (TRADE_PROFIT_CACHE.containsKey(settlement)) {
                         TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(settlement);
                         double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
-                        if (timeDiff < 1000D) {
+                        if (timeDiff < 2000D) {
                             tradeProfit = profitInfo.profit;
                             useCache = true;
                         }
+                    }
+                    else {
+                        TRADE_PROFIT_CACHE.put(settlement, new TradeProfitInfo(tradeProfit,
+                                (MarsClock) currentTime.clone()));
+                        useCache = true;
                     }
 
                     if (!useCache) {
