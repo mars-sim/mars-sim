@@ -267,6 +267,7 @@ public class Simulation implements ClockListener, Serializable {
         final UpTimer ut = masterClock.getUpTimer();
 
         ut.updateTime();
+        
         if (debug) {
             logger.fine(ut.getUptime()
                     + " Master clock sending pulse to object: mars " + mars.toString());
