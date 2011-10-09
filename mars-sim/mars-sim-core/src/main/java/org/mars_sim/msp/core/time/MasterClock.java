@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.01 2011-05-10
+ * @version 3.02 2011-10-08
  * @author Scott Davis
  */
 
@@ -54,7 +54,7 @@ public class MasterClock implements Runnable, Serializable {
     private UpTimer uptimer; // Uptime Timer
     private transient volatile boolean keepRunning;  // Runnable flag
     private transient volatile boolean isPaused = false; // Pausing clock.
-    private volatile double timeRatio = 1;     // Simulation/real-time ratio
+    private volatile double timeRatio = 0D;     // Simulation/real-time ratio
     private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
     private transient volatile boolean saveSimulation; // Flag for saving a simulation.
     private transient volatile File file;            // The file to save or load the simulation.
@@ -204,13 +204,14 @@ public class MasterClock implements Runnable, Serializable {
     public double getTimePulse() {
 
         // Get time ratio from simulation configuration.
-        if (timeRatio == 0) setTimeRatio((int) SimulationConfig.instance().getSimulationTimeRatio());
+        if (timeRatio == 0) setTimeRatio(SimulationConfig.instance().getSimulationTimeRatio());
 
         double timePulse;
         if (timeRatio > 0D) {
             double timePulseSeconds = ((double) getElapsedmillis() * (timeRatio / 1000D));
             timePulse = MarsClock.convertSecondsToMillisols(timePulseSeconds);
-        } else timePulse = 1D;
+        } 
+        else timePulse = 1D;
 
         totalPulses++;
         return timePulse;
@@ -218,83 +219,6 @@ public class MasterClock implements Runnable, Serializable {
 
     public long getTotalPulses() {
         return totalPulses;
-    }
-
-
-    /*
-    	 * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
-    	 * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
-    	 * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
-    	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
-    	 * and lots of settlers die.
-    	 * */
-    //you can change these to suit:
-    private static final double ratioatmid = 1000.0D, //the "default" ratio that will be set at 50, the middle of the scale
-            maxratio = 10800.0D, //the max ratio the sim can be set at
-            minfracratio = 0.001D, //the minimum ratio the sim can be set at
-            maxfracratio = 0.98D, //the largest fractional ratio the sim can be set at
-
-            //don't recommend changing these:
-            minslider = 20.0D,
-            midslider = (50.0D - minslider),
-            maxslider = 100D - minslider,
-            minfracpos = 1D,
-            maxfracpos = minslider - 1D;
-
-
-    /**
-     * Sets the simulation/real-time ratio.
-     * accepts input in the range 1..100. It will do the rest.
-     *
-     * @param sliderValue the simulation/real-time ratio.
-     * @throws Exception if parameter is invalid.
-     */
-    public void setTimeRatio(int sliderValue) {
-        // sliderValue should be in the range 1..100 inclusive, if not it defaults to
-        // 1:15 real:sim ratio
-        
-        //double base;
-        double slope, offset;
-        //double e1, e2;
-
-        if ((sliderValue > 0) && (sliderValue <= 100)) {
-/*
-            if (sliderValue >= minslider) //generates ratios >= 1
-            {
-                offset = Math.pow(Math.E, ((Math.log(ratioatmid)) / midslider));
-                e1 = Math.pow(Math.E, ((Math.log(maxratio)) / maxslider));
-                e2 = Math.pow(Math.E, ((Math.log(ratioatmid)) / midslider));
-                slope = (e1 - e2) / (maxslider - midslider);
-                base = (sliderValue - minslider - 30) * slope + offset;
-
-                timeRatio = Math.pow(base, (sliderValue - minslider));
-                timeRatio = Math.round(timeRatio);
-*/
-            if (sliderValue >= (midslider + minslider)) {
-                // Creates exponential curve between ratioatmid and maxratio.
-                double a = ratioatmid;
-                double b = maxratio / ratioatmid;
-                double T = maxslider - midslider;
-                double expo = (sliderValue - minslider - midslider) / T;
-                timeRatio = a * Math.pow(b, expo);
-            }
-            else if (sliderValue >= minslider) {
-                // Creates exponential curve between 1 and ratioatmid.
-                double a = 1D;
-                double b = ratioatmid;
-                double T = midslider;
-                double expo = (sliderValue - minslider) / T;
-                timeRatio = a * Math.pow(b, expo);
-            } else //generates ratios < 1
-            {
-                offset = minfracratio;
-                slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
-                timeRatio = (sliderValue - minfracpos) * slope + offset;
-            }
-        } else {
-            timeRatio = 15D;
-            throw new IllegalArgumentException("Time ratio should be in 1..100");
-        }
     }
 
     /**
@@ -305,9 +229,8 @@ public class MasterClock implements Runnable, Serializable {
     public void setTimeRatio(double ratio) {
         if (ratio >= 0.0001D && ratio <= 500000D) {
             timeRatio = ratio;
-            //need to set slider bar in the correct position.
-
-        } else throw new IllegalArgumentException("Time ratio out of bounds ");
+        } 
+        else throw new IllegalArgumentException("Time ratio out of bounds ");
     }
 
     /**
