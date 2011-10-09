@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 2.85 2008-07-19
+ * @version 3.02 2011-10-08
  * @author Scott Davis
  */
 
@@ -41,7 +41,31 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 	// Tool name
 	public static final String NAME = "Time Tool";		
 	
-    //private final static int RATIO_SCALE = 10;
+    /*
+     * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
+     * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
+     * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
+     * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
+     * and lots of settlers die.
+     */
+	// the "default" ratio that will be set at 50, the middle of the scale
+	private static final double ratioatmid = 1000.0D;
+	
+	// the max ratio the sim can be set at
+    private static final double maxratio = 10800.0D;
+    
+    // the minimum ratio the sim can be set at
+    private static final double minfracratio = 0.001D;
+    
+    // the largest fractional ratio the sim can be set at
+    private static final double maxfracratio = 0.98D;
+
+    // don't recommend changing these:
+    private static final double minslider = 20.0D;
+    private static final double midslider = (50.0D - minslider);
+    private static final double maxslider = 100D - minslider;
+    private static final double minfracpos = 1D;
+    private static final double maxfracpos = minslider - 1D;
 
     // Data members
     private MasterClock master;      // Master Clock
@@ -218,13 +242,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         
         // create time ratio readout showing real / earth / mars time ratios currently set
         try {
-			master.setTimeRatio(sliderpos);
+            setTimeRatioFromSlider(sliderpos);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
         //String s = String.format("1 : %5.3f : %5.3f", master.getTimeRatio(),
     	//		MarsClock.convertSecondsToMillisols(master.getTimeRatio()) ).toString() ;
-        String s =master.getTimeString(master.getTimeRatio());
+        String s = master.getTimeString(master.getTimeRatio());
         final JLabel pulseCurRatioLabel = new JLabel(s, JLabel.CENTER);
         pulsePane.add(pulseCurRatioLabel, "Center");
 
@@ -248,7 +272,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         pulseSlider.addChangeListener(new ChangeListener() {
                 public void stateChanged(ChangeEvent e) {
                     try {
-                    	master.setTimeRatio(pulseSlider.getValue());
+                        setTimeRatioFromSlider(pulseSlider.getValue());
                     	if (pulseCurRatioLabel.getText().contains(":") ) 
                     	{pulseCurRatioLabel.setText(master.getTimeString(master.getTimeRatio()));}
                     	else 
@@ -271,8 +295,51 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         setSize(new Dimension((int)windowSize.getWidth() + 10, (int) windowSize.getHeight()));
     }
     
-    public void setTimeRatioSlider(int r)
-    {
+    /**
+     * Sets the time ratio for the simulation based on the slider value.
+     */
+    private void setTimeRatioFromSlider(int sliderValue) {
+        double slope; 
+        double offset;
+        double timeRatio;
+        
+        // sliderValue should be in the range 1..100 inclusive, if not it defaults to
+        // 1:15 real:sim ratio
+        if ((sliderValue > 0) && (sliderValue <= 100)) {
+            if (sliderValue >= (midslider + minslider)) {
+                
+                // Creates exponential curve between ratioatmid and maxratio.
+                double a = ratioatmid;
+                double b = maxratio / ratioatmid;
+                double T = maxslider - midslider;
+                double expo = (sliderValue - minslider - midslider) / T;
+                timeRatio = a * Math.pow(b, expo);
+            }
+            else if (sliderValue >= minslider) {
+                
+                // Creates exponential curve between 1 and ratioatmid.
+                double a = 1D;
+                double b = ratioatmid;
+                double T = midslider;
+                double expo = (sliderValue - minslider) / T;
+                timeRatio = a * Math.pow(b, expo);
+            } 
+            else {
+                // generates ratios < 1
+                offset = minfracratio;
+                slope = (maxfracratio - minfracratio) / (maxfracpos - minfracpos);
+                timeRatio = (sliderValue - minfracpos) * slope + offset;
+            }
+        }
+        else {
+            timeRatio = 15D;
+            throw new IllegalArgumentException("Time ratio should be in 1..100");
+        }
+        
+        master.setTimeRatio(timeRatio);
+    }
+    
+    public void setTimeRatioSlider(int r) {
     	//moves the slider bar appropriately given the ratio 
     	if (r>=pulseSlider.getMinimum() && r <= pulseSlider.getMaximum()) 
     		{pulseSlider.setValue(r);}
