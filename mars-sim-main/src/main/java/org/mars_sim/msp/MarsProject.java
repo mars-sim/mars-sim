@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.01 2011-07-07
+ * @version 3.02 2011-10-09
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -13,7 +13,6 @@ import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 
 import javax.swing.*;
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -28,9 +27,11 @@ import java.util.logging.Logger;
  */
 public class MarsProject {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.MarsProject";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    // Initialize logger for this class.
+    private static Logger logger = Logger.getLogger(MarsProject.class.getName());
+    
+    // True if displaying graphic user interface.
+    private boolean useGUI = true;
 
     /**
      * Constructor
@@ -41,29 +42,40 @@ public class MarsProject {
 
         logger.info("Starting Mars Simulation");
 
-        // Create a splash window
-        SplashWindow splashWindow = new SplashWindow();
-        splashWindow.show();
-
-        initializeSimulation(args, splashWindow);
-
-        // Create the main desktop window.
-        MainWindow w = new MainWindow();
-        w.getFrame().setVisible(true);
-     
-        // Start simulation
-        startSimulation();
+        List<String> argList = Arrays.asList(args);
+        useGUI = !argList.contains("-headless");
         
-        // Dispose the splash window.
-        splashWindow.hide();
+        if (useGUI) {
+            // Create a splash window
+            SplashWindow splashWindow = new SplashWindow();
+            splashWindow.show();
+
+            initializeSimulation(args);
+
+            // Create the main desktop window.
+            MainWindow w = new MainWindow();
+            w.getFrame().setVisible(true);
+     
+            // Start simulation
+            startSimulation();
+        
+            // Dispose the splash window.
+            splashWindow.hide();
+        }
+        else {
+            // Initialize the simulation.
+            initializeSimulation(args);
+            
+            // Start the simulation.
+            startSimulation();
+        }
     }
 
     /**
      * Initialize the simulation.
-     * @param args the command args.
-     * @param splashWindow the startup splash window.
+     * @param args the command arguments.
      */
-    private void initializeSimulation(String[] args, SplashWindow splashWindow) {
+    private void initializeSimulation(String[] args) {
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
@@ -77,16 +89,14 @@ public class MarsProject {
             try {
                 handleLoadSimulation(argList);
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not load the desired simulation, trying to create new...", e);
-                showError(splashWindow.getJFrame(), "Could not load the desired simulation, trying to create a new Simulation...");
+                showError("Could not load the desired simulation, trying to create a new Simulation...", e);
                 handleNewSimulation();
             }
         } else {
             try {
                 handleLoadDefaultSimulation();
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "Could not load the default simulation, trying to create new...", e);
-                showError(splashWindow.getJFrame(), "Could not load the default simulation, trying to create a new Simulation...");
+                showError("Could not load the default simulation, trying to create a new Simulation...", e);
                 handleNewSimulation();
             }
         }
@@ -94,21 +104,30 @@ public class MarsProject {
 
     /**
      * Exit the simulation with an error message.
-     * @param dialogParent the parent component.
      * @param message the error message.
+     * @param e the thrown exception or null if none.
      */
-    private void exitWithError(Component dialogParent, String message) {
-        showError(dialogParent, message);
+    private void exitWithError(String message, Exception e) {
+        showError(message, e);
         System.exit(1);
     }
 
     /**
      * Show a modal error message dialog.
-     * @param dialogParent the parent component.
      * @param message the error message.
+     * @param e the thrown exception or null if none.
      */
-    private void showError(Component dialogParent, String message) {
-        JOptionPane.showMessageDialog(dialogParent, message, "Error", JOptionPane.ERROR_MESSAGE);
+    private void showError(String message, Exception e) {
+        if (e != null) {
+            logger.log(Level.SEVERE, message, e);
+        }
+        else {
+            logger.log(Level.SEVERE, message);
+        }
+        
+        if (useGUI) {
+            JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     /**
@@ -138,9 +157,8 @@ public class MarsProject {
             if (loadFile.exists() && loadFile.canRead()) {
                 Simulation.instance().loadSimulation(loadFile);
             } else {
-                logger.log(Level.SEVERE, "Problem loading simulation");
-                logger.log(Level.SEVERE, argList.get(index + 1) + " not found.");
-                System.exit(0);
+                exitWithError("Problem loading simulation. " + argList.get(index + 1) + 
+                        " not found.", null); 
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Problem loading existing simulation", e);
@@ -154,14 +172,15 @@ public class MarsProject {
     private void handleNewSimulation() {
         try {
             SimulationConfig.loadConfig();
-            TempSimulationConfigEditor editor = new TempSimulationConfigEditor(null, 
-                    SimulationConfig.instance());
-            editor.setVisible(true);
+            if (useGUI) {
+                TempSimulationConfigEditor editor = new TempSimulationConfigEditor(null, 
+                        SimulationConfig.instance());
+                editor.setVisible(true);
+            }
             Simulation.createNewSimulation();
         } catch (Exception e) {
             e.printStackTrace();
-            logger.log(Level.SEVERE, "Could not create a new simulation", e);
-            exitWithError(null, "Could not create a new simulation, startup cannot continue");
+            exitWithError("Could not create a new simulation, startup cannot continue", e);
         }
     }
 
