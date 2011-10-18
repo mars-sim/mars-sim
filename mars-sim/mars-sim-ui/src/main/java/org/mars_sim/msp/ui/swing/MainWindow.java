@@ -247,7 +247,7 @@ public class MainWindow {
      */
     private void newSimulationProcess() {
 
-        if (JOptionPane.showInternalConfirmDialog(desktop,
+        if (JOptionPane.showConfirmDialog(desktop,
                 "Do you really want to create a new simulation and abandon the current running?",
                 UIManager.getString("OptionPane.titleText"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
