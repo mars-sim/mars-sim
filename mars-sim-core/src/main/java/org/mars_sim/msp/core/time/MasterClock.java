@@ -42,10 +42,11 @@ import java.util.logging.Logger;
  */
 public class MasterClock implements Runnable, Serializable {
 
-    private static String CLASS_NAME =
-            "org.mars_sim.msp.simulation.time.MasterClock";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    // Initialize logger.
+    private static Logger logger = Logger.getLogger(MasterClock.class.getName());
+    
+    // Clock thread sleep time (milliseconds).
+    private static long SLEEP_TIME = 10L;
 
     // Data members
     private MarsClock marsTime;   // Martian Clock
@@ -287,7 +288,14 @@ public class MasterClock implements Runnable, Serializable {
                         }
                     }
                 }
-
+                
+                // Pause simulation to allow other threads to complete.
+                try {
+                    Thread.sleep(SLEEP_TIME);
+                } catch (Exception e) {
+                    logger.fine("Problem with Thread.yield() in MasterClock.run() ");
+                }
+                
                 long endTime = System.nanoTime();
                 lastTimeDiff = (endTime - startTime) / 1000000L;
 
