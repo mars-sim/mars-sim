@@ -50,6 +50,7 @@ class GlobeDisplay extends JComponent implements Runnable {
     private boolean showDayNightShading; // True if day/night shading is to be
                                          // used
     private boolean update; // True if globe should be updated.
+    private boolean keepRunning; // True if refresh thread should continue.
     private static int dragx, dragy;
     private static final double HALF_PI = (Math.PI / 2);
 
@@ -253,7 +254,8 @@ class GlobeDisplay extends JComponent implements Runnable {
      * loop, refreshing the globe display when necessary 
      */
     public void refreshLoop() {
-        while (true) { // Endless refresh loop
+        keepRunning = true;
+        while (keepRunning) { // Endless refresh loop
             if (recreate) {
                 // Regenerate globe if recreate is true, then display
                 if (topo) {
@@ -479,6 +481,7 @@ class GlobeDisplay extends JComponent implements Runnable {
      */
     public void destroy() {
         update = false;
+        keepRunning = false;
         marsSphere = null;
         topoSphere = null;
         centerCoords = null;
