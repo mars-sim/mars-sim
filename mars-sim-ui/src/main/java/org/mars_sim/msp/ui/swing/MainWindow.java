@@ -185,7 +185,7 @@ public class MainWindow {
      */
     public void loadSimulation() {
         if ((loadSimThread == null) || !loadSimThread.isAlive()) {
-            loadSimThread = new Thread() {
+            loadSimThread = new Thread("Load Simulation Thread") {
                 @Override
                 public void run() {
                     loadSimulationProcess();
@@ -206,6 +206,7 @@ public class MainWindow {
         chooser.setDialogTitle("Select stored simulation");
         if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
             desktop.openAnnouncementWindow("Loading simulation...");
+            desktop.clearDesktop();
             MasterClock clock = Simulation.instance().getMasterClock();
             clock.loadSimulation(chooser.getSelectedFile());
             while (clock.isLoadingSimulation()) {
@@ -216,7 +217,6 @@ public class MainWindow {
                 }
             }
 
-            desktop.clearDesktop();
             desktop.resetDesktop();
             desktop.disposeAnnouncementWindow();
 
@@ -230,7 +230,7 @@ public class MainWindow {
      */
     public void newSimulation() {
         if ((newSimThread == null) || !newSimThread.isAlive()) {
-            newSimThread = new Thread() {
+            newSimThread = new Thread("New simulation Thread") {
                 @Override
                 public void run() {
                     newSimulationProcess();
@@ -252,22 +252,29 @@ public class MainWindow {
                 UIManager.getString("OptionPane.titleText"),
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             desktop.openAnnouncementWindow("Creating new simulation...");
-            /* Break up the creation of the new simulation, to allow interfering with the single steps.*/
-            desktop.clearDesktop();
+            
+            // Break up the creation of the new simulation, to allow interfering with the single steps.
             Simulation.stopSimulation();
+            
+            desktop.clearDesktop();
+            
             SimulationConfig.loadConfig();
+            
             //SimulationConfigEditor editor = new SimulationConfigEditor(frame.getOwner(), SimulationConfig.instance());
             TempSimulationConfigEditor editor = new TempSimulationConfigEditor(frame.getOwner(), 
                     SimulationConfig.instance());
             editor.setVisible(true);
+            
             Simulation.createNewSimulation();
             
             // Start the simulation.
             Simulation.instance().start();
             
             desktop.resetDesktop();
+            
             desktop.disposeAnnouncementWindow();
-            /* Open navigator tool after creating new simulation. */
+            
+            // Open navigator tool after creating new simulation.
             desktop.openToolWindow(NavigatorWindow.NAME);
         }
     }
@@ -280,7 +287,7 @@ public class MainWindow {
      */
     public void saveSimulation(final boolean useDefault) {
         if ((saveSimThread == null) || !saveSimThread.isAlive()) {
-            saveSimThread = new Thread() {
+            saveSimThread = new Thread("Save Simulation Thread") {
                 @Override
                 public void run() {
                     saveSimulationProcess(useDefault);
