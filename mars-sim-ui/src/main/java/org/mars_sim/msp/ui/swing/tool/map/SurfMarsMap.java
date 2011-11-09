@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfMarsMap.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-08
  * @author Scott Davis
  * @author Greg Whelan
  */
@@ -9,7 +9,8 @@
 package org.mars_sim.msp.ui.swing.tool.map;
 
 import javax.swing.*;
-import java.util.List;
+
+import org.mars_sim.msp.mapdata.MapDataUtil;
 
 
 /**
@@ -20,11 +21,6 @@ public class SurfMarsMap extends CannedMarsMap {
 
 	// The map type.
 	public static final String TYPE = "surface map";
-	
-    private static final String INDEX_FILE = "SurfaceMarsMap.index";
-    private static final String MAP_FILE = "SurfaceMarsMap.dat";
-    
-    private static List<int[]> surfMapArray;
 
     /** 
      * Constructor
@@ -34,7 +30,6 @@ public class SurfMarsMap extends CannedMarsMap {
     public SurfMarsMap(JComponent displayArea) {
 
 		// Parent constructor
-		super(displayArea, MAP_FILE, INDEX_FILE, surfMapArray);
-		surfMapArray = surfaceColors;
+        super(displayArea, MapDataUtil.instance().getSurfaceMapData());
     }
 }

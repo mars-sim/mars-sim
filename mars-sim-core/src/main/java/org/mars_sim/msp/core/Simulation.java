@@ -96,6 +96,8 @@ public class Simulation implements ClockListener, Serializable {
      */
     public static void createNewSimulation() {
 
+        logger.config("Creating new simulation");
+        
         Simulation simulation = instance();
         // Initialize intransient data members.
         simulation.initializeIntransientData();
