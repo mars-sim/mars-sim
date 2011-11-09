@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Map.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-09
  * @author Greg Whelan
  */
 
@@ -16,12 +16,10 @@ import java.awt.*;
  */
 public interface Map {
     
-//	public static final int DISPLAY_HEIGHT = 300; // Map display height in pixels.
-//	public static final int DISPLAY_WIDTH = 300; // Map display width in pixels.
 	public static final int DISPLAY_HEIGHT = 300; //created map height (for scrolling)
 	public static final int DISPLAY_WIDTH = 300;  // created map width (for scrolling)
-	public static final int 	MAP_VIS_WIDTH = 300;// Map display width in pixels.
-	public static final int  MAP_VIS_HEIGHT = 300;// Map display height in pixels.
+	public static final int MAP_VIS_WIDTH = 300;// Map display width in pixels.
+	public static final int MAP_VIS_HEIGHT = 300;// Map display height in pixels.
 	public static final double HALF_MAP_ANGLE = 0.48587D; //this is a mysterious variable 
 	public static final int MAP_HEIGHT = 1440; // Source map height in pixels.
 	public static final int MAP_WIDTH = 2880; // Source map width in pixels.
@@ -29,7 +27,6 @@ public interface Map {
 	public static final double TWO_PI = Math.PI * 2D;
 	public static final int SCREEN_OFFSET_X=300; // how far off center in the surface map are things placed
 	public static final int SCREEN_OFFSET_Y=300; // how far off center in the surface map are things placed
-	
     
 	
     /** 

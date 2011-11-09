@@ -158,5 +158,10 @@
     	<!--<type>jar</type>-->
 <!--&lt;!&ndash;    	<scope>runtime</scope>&ndash;&gt;-->
     <!--</dependency>-->
+    <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-mapdata</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>

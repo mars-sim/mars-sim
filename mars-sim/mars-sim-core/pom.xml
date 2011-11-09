@@ -33,5 +33,10 @@
     	<artifactId>plexus-core</artifactId>
     	<version>0.9</version>
     </dependency>
+    <dependency>
+    	<groupId>net.sf.mars-sim</groupId>
+    	<artifactId>mars-sim-mapdata</artifactId>
+    	<version>${project.version}</version>
+    </dependency>
   </dependencies>
 </project>
