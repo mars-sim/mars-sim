@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.01 2011-07-19
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -36,9 +36,7 @@ import java.util.logging.Logger;
 public abstract class CollectResourcesMission extends RoverMission implements
         Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.CollectResourcesMission";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
 
     // Mission phases
     final public static String COLLECT_RESOURCES = "Collecting Resources";
@@ -794,4 +792,13 @@ public abstract class CollectResourcesMission extends RoverMission implements
      * @return description
      */
     protected abstract String getCollectionSiteDescription(int siteNum);
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        resourceType = null;
+        containerType = null;
+        collectionSiteStartTime = null;
+    }
 }

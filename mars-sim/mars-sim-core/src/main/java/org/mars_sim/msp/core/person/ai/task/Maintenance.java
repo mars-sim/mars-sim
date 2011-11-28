@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -33,11 +33,8 @@ import java.util.logging.Logger;
  *  preventive maintenance on vehicles, settlements and equipment.
  */
 public class Maintenance extends Task implements Serializable {
-    
-	private static String CLASS_NAME = 
-    	    "org.mars_sim.msp.simulation.person.ai.task.Maintenance";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Maintenance.class.getName());
 
 	// Task phase
 	private static final String MAINTAIN = "Maintain";
@@ -373,4 +370,11 @@ public class Maintenance extends Task implements Serializable {
 		results.add(Skill.MECHANICS);
 		return results;
 	} 
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    entity = null;
+	}
 }

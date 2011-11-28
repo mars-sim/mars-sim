@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerSource.java
- * @version 3.01 2011-04-25
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -59,4 +59,11 @@ public abstract class PowerSource implements Serializable {
 	 * @return power(kW)
 	 */
 	public abstract double getAveragePower(Settlement settlement);
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    type = null;
+	}
 }

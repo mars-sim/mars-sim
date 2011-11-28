@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourcePhaseStorage.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis 
  */
 
@@ -188,5 +188,15 @@ class AmountResourcePhaseStorage implements Serializable {
     		this.resource = resource;
     		this.amount = amount;
     	}
+    }
+
+    /**
+     * Prepare object for garbage collection
+     */
+    public void destroy() {
+        if (amountResourcePhaseCapacities != null) amountResourcePhaseCapacities.clear();
+        amountResourcePhaseCapacities = null;
+        if (amountResourcePhaseStored != null) amountResourcePhaseStored.clear();
+        amountResourcePhaseStored = null;
     }
 }

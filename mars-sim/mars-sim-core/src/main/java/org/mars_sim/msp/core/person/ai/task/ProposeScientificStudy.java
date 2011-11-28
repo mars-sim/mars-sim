@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,8 +28,7 @@ import java.util.logging.Logger;
  */
 public class ProposeScientificStudy extends Task implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ProposeScientificStudy";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
     
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = 0D;
@@ -169,5 +168,12 @@ public class ProposeScientificStudy extends Task implements Serializable {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (PROPOSAL_PHASE.equals(getPhase())) return proposingPhase(time);
         else return time;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
     }
 }

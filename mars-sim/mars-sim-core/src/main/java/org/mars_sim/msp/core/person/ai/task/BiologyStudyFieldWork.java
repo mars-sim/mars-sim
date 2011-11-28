@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyFieldWork.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -220,5 +220,14 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
         if (FIELD_WORK.equals(getPhase())) return fieldWorkPhase(time);
         if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
         else return time;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        leadResearcher = null;
+        study = null;
+        rover = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -435,5 +435,17 @@ public class ScientificStudyManager implements Serializable {
     private boolean isPrimaryResearcherDead(ScientificStudy study) {
         Person primaryResearcher = study.getPrimaryResearcher();
         return primaryResearcher.getPhysicalCondition().isDead();
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+       Iterator<ScientificStudy> i = studies.iterator();
+       while (i.hasNext()) {
+           i.next().destroy();
+       }
+       studies.clear();
+       studies = null;
     }
 }

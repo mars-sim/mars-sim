@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Resource.java
- * @version 3.00 2010-08-10
+ * Inventory.java
+ * @version 3.02 2011-11-26
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -30,12 +30,14 @@ public class Inventory implements Serializable {
     public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
     public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
     public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
+    
     // Data members
     private Unit owner; // The unit that owns this inventory. 
     private Collection<Unit> containedUnits = null; // Collection of units in inventory.
     private ConcurrentHashMap<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
+    
     // Cache capacity variables.
     private transient ConcurrentHashMap<AmountResource, Double> amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
     private transient ConcurrentHashMap<AmountResource, Double> amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
@@ -1103,5 +1105,26 @@ public class Inventory implements Serializable {
         }
 
         return result;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        owner = null;
+        if (containedUnits != null) containedUnits.clear();
+        containedUnits = null;
+        if (containedItemResources != null) containedItemResources.clear();
+        containedItemResources = null;
+        if (resourceStorage != null) resourceStorage.destroy();
+        resourceStorage = null;
+        if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
+        amountResourceCapacityCache = null;
+        if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
+        amountResourceStoredCache = null;
+        if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
+        allStoredAmountResourcesCache = null;
+        if (amountResourceRemainingCache != null) amountResourceRemainingCache.clear();
+        amountResourceRemainingCache = null;
     }
 }

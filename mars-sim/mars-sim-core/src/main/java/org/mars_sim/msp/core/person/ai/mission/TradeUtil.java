@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -32,11 +32,8 @@ import java.util.logging.Logger;
  * Utility class for static trade methods.
  */
 public final class TradeUtil {
-    
-	private static String CLASS_NAME = 
-		"org.mars_sim.msp.simulation.person.ai.mission.TradeUtil";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(TradeUtil.class.getName());
 	
     // Estimated mission parts mass.
     private static final double MISSION_BASE_MASS = 1000D;

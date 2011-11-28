@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -323,4 +323,13 @@ public class MineSite extends EVAOperation implements Serializable {
 	
         return result;
     }
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    site = null;
+	    rover = null;
+	    luv = null;
+	}
 }

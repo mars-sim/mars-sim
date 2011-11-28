@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -482,4 +482,19 @@ public abstract class Task implements Serializable, Comparable {
 	protected double getTimeCompleted() {
 		return timeCompleted;
 	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        name = null;
+        person = null;
+        description = null;
+        if (subTask != null) subTask.destroy();
+        subTask = null;
+        phase = null;
+        teacher = null;
+        phases.clear();
+        phases = null;
+    }
 }

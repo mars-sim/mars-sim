@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -39,8 +39,7 @@ import java.util.logging.Logger;
  */
 public class ToggleFuelPowerSource extends EVAOperation implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ToggleFuelPowerSource";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
     
     // Task phase
     private static final String TOGGLE_POWER_SOURCE = "toggle power source";
@@ -463,5 +462,14 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
         chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) building.getMalfunctionManager().accident();
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        airlock = null;
+        powerSource = null;
+        building = null;
     }
 }

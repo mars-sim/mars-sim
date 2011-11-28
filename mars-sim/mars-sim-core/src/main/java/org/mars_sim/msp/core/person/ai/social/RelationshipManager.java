@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RelationshipManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -259,7 +259,7 @@ public class RelationshipManager implements Serializable {
 	 * @throws Exception if error
 	 */
 	private void updateRelationships(Person person, double time) {
-//		try {
+	    
 		double personStress = person.getPhysicalCondition().getStress();
 		
 		// Get the person's local group of people.
@@ -338,11 +338,6 @@ public class RelationshipManager implements Serializable {
 			}
 		}	
 		count2++;
-//		}
-//		catch (Exception e) {
-//			e.printStackTrace(System.err);
-//			throw new IllegalStateException(e.getMessage());
-//		}
 	}
 	
 	/**
@@ -360,5 +355,12 @@ public class RelationshipManager implements Serializable {
 		stressModifier = stressModifier * BASE_STRESS_MODIFIER * time;
 		PhysicalCondition condition = person.getPhysicalCondition();
 		condition.setStress(condition.getStress() + stressModifier);
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    relationshipGraph = null;
 	}
 }

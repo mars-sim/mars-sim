@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -131,13 +131,8 @@ public class BuildingConfig implements Serializable {
      * @throws Exception if building name cannot be found or XML parsing error.
      */
     public double getWidth(String buildingName) {
-//    	try {
-            Element buildingElement = getBuildingElement(buildingName);
-            return Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
-//        }
-//        catch (Exception e) {
-//            throw new IllegalStateException("width attribute not found for building: " + buildingName);
-//        }
+        Element buildingElement = getBuildingElement(buildingName);
+        return Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
     }
     
     /**
@@ -147,13 +142,8 @@ public class BuildingConfig implements Serializable {
      * @throws Exception if building name cannot be found or XML parsing error.
      */
     public double getLength(String buildingName) {
-//    	try {
-            Element buildingElement = getBuildingElement(buildingName);
-            return Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
-//        }
-//        catch (Exception e) {
-//            throw new Exception("length attribute not found for building: " + buildingName);
-//        }
+        Element buildingElement = getBuildingElement(buildingName);
+        return Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
     }
 	
 	/**
@@ -163,14 +153,9 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
 	public double getBasePowerRequirement(String buildingName) {
-//        try {
-            Element buildingElement = getBuildingElement(buildingName);
-            Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-            return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
-//        }
-//        catch (Exception e) {
-//            throw new Exception("power-required: base-power attribute not found for building: " + buildingName);
-//        }
+        Element buildingElement = getBuildingElement(buildingName);
+        Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+        return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER));
 	}
 	
 	/**
@@ -180,14 +165,9 @@ public class BuildingConfig implements Serializable {
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
 	public double getBasePowerDownPowerRequirement(String buildingName) {
-//        try {
-            Element buildingElement = getBuildingElement(buildingName);
-            Element powerElement = buildingElement.getChild(POWER_REQUIRED);
-            return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
-//        }
-//        catch (Exception e) {
-//            throw new Exception("power-required: base-power-down-power attribute not found for building: " + buildingName);
-//        }
+        Element buildingElement = getBuildingElement(buildingName);
+        Element powerElement = buildingElement.getChild(POWER_REQUIRED);
+        return Double.parseDouble(powerElement.getAttributeValue(BASE_POWER_DOWN_POWER));
 	}
 	
 	/**
@@ -765,4 +745,11 @@ public class BuildingConfig implements Serializable {
 		List<Element> elements = element2.getChildren(children);
 		return (elements.size() > 0);
 	}
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+       buildingDoc = null; 
+    }
 }

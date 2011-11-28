@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -24,11 +24,8 @@ import java.util.logging.Logger;
  * The Crop class is a food crop grown on a farm.
  */
 public class Crop implements Serializable {
-    
-    	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.structure.building.function.Crop";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Crop.class.getName());
     
 	// Static members
 	public static final double WASTE_WATER_NEEDED = 5D; // Amount of waste water needed / harvest mass.
@@ -289,9 +286,9 @@ public class Crop implements Serializable {
      */
     public static CropType getRandomCropType() {
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-    	List cropTypes = cropConfig.getCropList();    
+    	List<CropType> cropTypes = cropConfig.getCropList();    
         int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
-        return (CropType) cropTypes.get(r);
+        return cropTypes.get(r);
     }
     
     /**
@@ -302,9 +299,19 @@ public class Crop implements Serializable {
     public static double getAverageCropGrowingTime() {
     	CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
     	double totalGrowingTime = 0D;
-    	List cropTypes = cropConfig.getCropList();  
-    	Iterator i = cropTypes.iterator();
-    	while (i.hasNext()) totalGrowingTime += ((CropType) i.next()).getGrowingTime();
+    	List<CropType> cropTypes = cropConfig.getCropList();  
+    	Iterator<CropType> i = cropTypes.iterator();
+    	while (i.hasNext()) totalGrowingTime += i.next().getGrowingTime();
     	return totalGrowingTime / cropTypes.size();
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        cropType = null;
+        farm = null;
+        settlement = null;
+        phase = null;
     }
 }

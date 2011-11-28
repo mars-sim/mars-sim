@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageProcess.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.manufacture;
@@ -93,5 +93,15 @@ public class SalvageProcess implements Serializable {
      */
     public double getAverageSkillLevel() {
         return averageSkillLevel;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        workshop = null;
+        info.destroy();
+        info = null;
+        salvagedUnit = null;
     }
 }

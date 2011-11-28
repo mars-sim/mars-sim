@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -553,5 +553,21 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        malfunctionManager.destroy();
+        malfunctionManager = null;
+        direction = null;
+        vehicleOperator = null;
+        trail.clear();
+        trail = null;
+        towingVehicle = null;
+        status = null;
+        if (salvageInfo != null) salvageInfo.destroy();
+        salvageInfo = null;
     }
 }

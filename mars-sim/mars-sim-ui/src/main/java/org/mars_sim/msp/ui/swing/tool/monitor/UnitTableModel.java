@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Barry Evans
  */
 
@@ -72,7 +72,7 @@ abstract public class UnitTableModel extends AbstractTableModel
     }
 
     /**
-     * Remove a unit to the model.
+     * Remove a unit from the model.
      * @param oldUnit Unit to remove from the model.
      */
     protected void removeUnit(Unit oldUnit) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -31,10 +31,8 @@ import java.util.logging.Logger;
  * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.TendGreenhouse";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
 	
 	// Task phase
 	private static final String TENDING = "Tending";
@@ -273,5 +271,12 @@ public class TendGreenhouse extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.BOTANY);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    greenhouse = null;
 	}
 }

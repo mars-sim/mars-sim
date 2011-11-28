@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.01 2011-08-27
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -37,9 +37,7 @@ import java.util.logging.Logger;
  */
 public class UnloadVehicle extends Task implements Serializable {
 	
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.UnloadVehicle";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(UnloadVehicle.class.getName());
     
 	// Task phase
 	private static final String UNLOADING = "Unloading";
@@ -366,5 +364,13 @@ public class UnloadVehicle extends Task implements Serializable {
 	public List<String> getAssociatedSkills() {
 		List<String> results = new ArrayList<String>(0);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    vehicle = null;
+	    settlement = null;
 	}
 }

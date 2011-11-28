@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.02 2011-10-09
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -137,7 +137,7 @@ public class MarsProject {
     private void handleLoadDefaultSimulation() throws Exception {
         try {
             // Load a the default simulation
-            Simulation.instance().loadSimulation(null);
+            Simulation.loadSimulation(null);
         } catch (Exception e) {
             logger.log(Level.WARNING, "Could not load default simulation", e);
             throw e;
@@ -155,7 +155,7 @@ public class MarsProject {
             // Get the next argument as the filename.
             File loadFile = new File(argList.get(index + 1));
             if (loadFile.exists() && loadFile.canRead()) {
-                Simulation.instance().loadSimulation(loadFile);
+                Simulation.loadSimulation(loadFile);
             } else {
                 exitWithError("Problem loading simulation. " + argList.get(index + 1) + 
                         " not found.", null); 

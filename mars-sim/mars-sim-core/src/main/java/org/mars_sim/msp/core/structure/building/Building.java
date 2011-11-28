@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.00 2010-08-25
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -413,5 +413,20 @@ public class Building implements Malfunctionable, Serializable {
      */
     public String toString() {
         return name;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        name = null;
+        manager = null;
+        powerMode = null;
+        malfunctionManager.destroy();
+        malfunctionManager = null;
+        Iterator<Function> i = functions.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
     }
 }

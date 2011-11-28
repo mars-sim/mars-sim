@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineralMap.java
- * @version 3.00 2011-04-05
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -305,6 +305,12 @@ public class RandomMineralMap implements Serializable, MineralMap {
         }
         
         return result;
+    }
+    
+    @Override
+    public void destroy() {
+        mineralConcentrations.clear();
+        mineralConcentrations = null;
     }
 	
     /**

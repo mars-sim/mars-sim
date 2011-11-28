@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreothermalMap.java
- * @version 3.01 2011-04-24
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -127,5 +127,15 @@ public class AreothermalMap implements Serializable {
         }
         
         return result;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        hotspots.clear();
+        hotspots = null;
+        areothermalPotentialCache.clear();
+        areothermalPotentialCache = null;
     }
 }

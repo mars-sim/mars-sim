@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -12,7 +12,6 @@ import org.mars_sim.msp.core.resource.Part;
 
 import java.io.Serializable;
 import java.util.*;
-
 
 
 /**
@@ -366,4 +365,13 @@ public class VehicleConfig implements Serializable {
 		
 		return roverNames;
 	}
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        vehicleDoc = null;
+        roverNames.clear();
+        roverNames = null;
+    }
 }

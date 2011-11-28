@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -31,8 +31,6 @@ import java.util.logging.Logger;
  * related to that person and provides information about him/her.
  */
 public class Person extends Unit implements VehicleOperator, Serializable {
-
-//	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.Person";
 
 	private static transient Logger logger = Logger.getLogger(Person.class.getName());
 
@@ -569,5 +567,22 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 			achievementCredit += scientificAchievement.get(science);
 
 		scientificAchievement.put(science, achievementCredit);
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    attributes.destroy();
+	    attributes = null;
+	    mind.destroy();
+	    mind = null;
+	    health.destroy();
+	    health = null;
+	    gender = null;
+	    birthTimeStamp = null;
+	    associatedSettlement = null;
+	    scientificAchievement.clear();
+	    scientificAchievement = null;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.00 2011-03-03
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -269,5 +269,12 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	 */
 	public int getTechLevel() {
 		return medicalStation.getTreatmentLevel();
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    medicalStation = null;
 	}
 }

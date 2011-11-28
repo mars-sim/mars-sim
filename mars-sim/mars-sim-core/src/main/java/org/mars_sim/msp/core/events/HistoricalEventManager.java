@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Barry Evans
  */
 
@@ -18,10 +18,10 @@ import java.util.List;
 
 /**
  * This class provides a manager that maintains a model of the events that
- * have occured during the current simulation run. It provides support for a
+ * have occurred during the current simulation run. It provides support for a
  * listener pattern so the external objects can be notified when new events have
  * been registered.
- * The manager maintains an ordered list in terms of descreasing time, i.e.
+ * The manager maintains an ordered list in terms of decreasing time, i.e.
  * most recent event first.
  * It should be noted that the throughput of new events of the manager can be
  * in the order of 100 event per simulation tick.
@@ -45,11 +45,11 @@ public class HistoricalEventManager {
     private MarsClock mainClock;
 
     /**
-     * Create a new EventManager that represnets a particular simulation.
+     * Create a new EventManager that represents a particular simulation.
      */
     public HistoricalEventManager() {
 
-        // The main clock is not initialised until the simulation start
+        // The main clock is not initialized until the simulation start
         this.mainClock = null;
     }
 
@@ -80,7 +80,7 @@ public class HistoricalEventManager {
 
     /**
      * An new event needs registering with the manager. The event will be
-     * timestamped with the current clock time and inserted at position zero.
+     * time stamped with the current clock time and inserted at position zero.
      *
      * @param newEvent The event to register.
      */
@@ -123,9 +123,20 @@ public class HistoricalEventManager {
 
     /**
      * Get the number of events in the manager.
-     * @return Stored evnet count.
+     * @return Stored event count.
      */
     public int size() {
         return events.size();
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        listeners.clear();
+        listeners = null;
+        events.clear();
+        events = null;
+        mainClock = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -33,10 +33,8 @@ import java.util.logging.Logger;
  * This is an effort driven task.
  */
 public class CookMeal extends Task implements Serializable {
-    
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.CookMeal";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
 	// Task phase
 	private static final String COOKING = "Cooking";
@@ -333,5 +331,12 @@ public class CookMeal extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.COOKING);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    kitchen = null;
 	}
 }

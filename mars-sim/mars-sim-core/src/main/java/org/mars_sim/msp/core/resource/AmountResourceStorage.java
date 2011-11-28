@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.01 2011-07-17
+ * @version 3.02 2011-11-26
  * @author Scott Davis 
  */
 
@@ -297,5 +297,19 @@ public class AmountResourceStorage implements Serializable {
     	resourceCapacityKeyCache = null;
     	totalResourcesStored = -1D;
     	totalResourcesStoredSet = false;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        if (typeStorage != null) typeStorage.destroy();
+        typeStorage = null;
+        if (phaseStorage != null) phaseStorage.destroy();
+        phaseStorage = null;
+        resourceCapacityKeyCache = null;
+        resourceStoredKeyCache = null;
+        if (allStoredResourcesCache != null) allStoredResourcesCache.clear();
+        allStoredResourcesCache = null;
     }
 }

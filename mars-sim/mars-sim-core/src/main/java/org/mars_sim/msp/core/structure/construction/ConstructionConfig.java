@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 3.00 2010-08-18
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -212,5 +213,27 @@ public class ConstructionConfig implements Serializable {
         }
         
         return stageInfoList;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        constructionDoc = null;
+        
+        Iterator<ConstructionStageInfo> i = foundationStageInfoList.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
+        
+        Iterator<ConstructionStageInfo> j = frameStageInfoList.iterator();
+        while (j.hasNext()) {
+            j.next().destroy();
+        }
+        
+        Iterator<ConstructionStageInfo> k = buildingStageInfoList.iterator();
+        while (k.hasNext()) {
+            k.next().destroy();
+        }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -31,11 +31,8 @@ import java.util.logging.Logger;
  * A task in which a doctor prescribes (and provides) a medication to a patient.
  */
 public class PrescribeMedication extends Task implements Serializable {
-
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.PrescribeMedication";
     
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(PrescribeMedication.class.getName());
     
     // Task phase
     private static final String MEDICATING = "Medicating";
@@ -225,5 +222,13 @@ public class PrescribeMedication extends Task implements Serializable {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (MEDICATING.equals(getPhase())) return medicatingPhase(time);
         else return time;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        patient = null;
+        medication = null;
     }
 }

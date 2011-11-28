@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.00 2011-03-03
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -166,5 +166,17 @@ public class ResourceProcessing extends Function implements Serializable {
             if (process.isProcessRunning()) result += process.getPowerRequired();
         }
         return result;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    Iterator<ResourceProcess> i = resourceProcesses.iterator();
+	    while (i.hasNext()) {
+	        i.next().destroy();
+	    }
+	    resourceProcesses.clear();
+	    resourceProcesses = null;
 	}
 }

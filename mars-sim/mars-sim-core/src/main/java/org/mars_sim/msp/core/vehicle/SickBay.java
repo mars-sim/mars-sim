@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SickBay.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -39,5 +39,12 @@ public class SickBay extends MedicalStation implements Serializable {
      */
     public Vehicle getVehicle() {
         return vehicle;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        vehicle = null;
     }
 }

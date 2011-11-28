@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.00 2011-03-03
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -514,6 +514,21 @@ public class Manufacture extends Function implements Serializable {
             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
             logger.finest(getBuilding() + " at " + settlement + " ending salvage process: " + 
                     process.toString());
+        }
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        Iterator<ManufactureProcess> i = processes.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
+        
+        Iterator<SalvageProcess> j = salvages.iterator();
+        while (j.hasNext()) {
+            j.next().destroy();
         }
     }
 }

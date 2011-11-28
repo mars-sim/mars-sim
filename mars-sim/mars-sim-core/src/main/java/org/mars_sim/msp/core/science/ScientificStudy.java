@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudy.java
- * @version 3.01 2011-07-16
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -751,5 +751,32 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
             while (i.hasNext()) i.next().scientificStudyUpdate(
                     new ScientificStudyEvent(this, researcher, updateType));
         }
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        phase = null;
+        science = null;
+        primaryResearcher = null;
+        collaborativeResearchers.clear();
+        collaborativeResearchers = null;
+        invitedResearchers.clear();
+        invitedResearchers = null;
+        collaborativeResearchWorkTime.clear();
+        collaborativeResearchWorkTime = null;
+        collaborativePaperWorkTime.clear();
+        collaborativePaperWorkTime = null;
+        peerReviewStartTime = null;
+        completionState = null;
+        primarySettlement = null;
+        lastPrimaryResearchWorkTime = null;
+        lastCollaborativeResearchWorkTime.clear();
+        lastCollaborativeResearchWorkTime = null;
+        collaborativeAchievementEarned.clear();
+        collaborativeAchievementEarned = null;
+        listeners.clear();
+        listeners = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -36,11 +36,8 @@ import java.util.logging.Logger;
  * preventive maintenance on malfunctionable entities outdoors.
  */
 public class MaintenanceEVA extends EVAOperation implements Serializable {
-    
-    private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.ai.task.MaintenanceEVA";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(MaintenanceEVA.class.getName());
 	
 	// Task phase
 	private static final String MAINTAIN = "Maintenance";
@@ -372,5 +369,13 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		results.add(Skill.EVA_OPERATIONS);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    entity = null;
+	    airlock = null;
 	}
 }

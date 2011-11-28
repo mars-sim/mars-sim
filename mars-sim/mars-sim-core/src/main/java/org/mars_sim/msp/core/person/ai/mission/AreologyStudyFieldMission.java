@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.01 2011-07-16
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -36,9 +36,7 @@ import java.util.logging.Logger;
  */
 public class AreologyStudyFieldMission extends RoverMission implements Serializable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.mission.AreologyStudyFieldMission";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(AreologyStudyFieldMission.class.getName());
     
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Areology Study Field Mission";
@@ -88,16 +86,11 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
             recruitPeopleForMission(startingPerson);
             
             // Determine field site location.
-//            try {
-                if (hasVehicle()) {
-                    double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-                    determineFieldSite(getVehicle().getRange(), tripTimeLimit);
-                }
-//            }
-//            catch (Exception e) {
-//                throw new MissionException(getPhase(), e);
-//            }
-            
+            if (hasVehicle()) {
+                double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
+                determineFieldSite(getVehicle().getRange(), tripTimeLimit);
+            }
+
             // Add home settlement
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
                     getStartingSettlement(), getStartingSettlement().getName()));
@@ -664,29 +657,34 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
         int crewNum = getPeopleNumber();
         
         // Determine life support supplies needed for trip.
-//        try {
-            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(oxygen)) 
-                oxygenAmount += (Double) result.get(oxygen);
-            result.put(oxygen, oxygenAmount);
+        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(oxygen)) 
+            oxygenAmount += (Double) result.get(oxygen);
+        result.put(oxygen, oxygenAmount);
             
-            AmountResource water = AmountResource.findAmountResource("water");
-            double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(water)) 
-                waterAmount += (Double) result.get(water);
-            result.put(water, waterAmount);
+        AmountResource water = AmountResource.findAmountResource("water");
+        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(water)) 
+            waterAmount += (Double) result.get(water);
+        result.put(water, waterAmount);
             
-            AmountResource food = AmountResource.findAmountResource("food");
-            double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(food)) 
-                foodAmount += (Double) result.get(food);
-            result.put(food, foodAmount);
-//        }
-//        catch(Exception e) {
-//            throw new MissionException(getPhase(), e);
-//        }
+        AmountResource food = AmountResource.findAmountResource("food");
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(food)) 
+            foodAmount += (Double) result.get(food);
+        result.put(food, foodAmount);
         
         return result;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        fieldSiteStartTime = null;
+        fieldSite = null;
+        study = null;
+        leadResearcher = null;
     }
 }

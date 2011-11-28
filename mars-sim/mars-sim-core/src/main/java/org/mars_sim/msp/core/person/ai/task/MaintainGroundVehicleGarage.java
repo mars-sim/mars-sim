@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -36,11 +36,8 @@ import java.util.logging.Logger;
  * preventive maintenance on ground vehicles in a garage.
  */
 public class MaintainGroundVehicleGarage extends Task implements Serializable {
-    
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleGarage";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
 	
 	// Task phase
 	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
@@ -393,5 +390,13 @@ public class MaintainGroundVehicleGarage extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    garage = null;
+	    vehicle = null;
 	}
 }

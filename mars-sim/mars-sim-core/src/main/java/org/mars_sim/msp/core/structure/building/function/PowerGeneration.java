@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 3.01 2011-07-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -203,5 +203,15 @@ public class PowerGeneration extends Function implements Serializable {
      */
     public List<PowerSource> getPowerSources() {
         return new ArrayList<PowerSource>(powerSources);
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        Iterator<PowerSource> i = powerSources.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
     }
 }

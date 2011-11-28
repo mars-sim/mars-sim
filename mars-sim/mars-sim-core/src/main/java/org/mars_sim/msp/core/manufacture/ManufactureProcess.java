@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcess.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -88,4 +88,13 @@ public class ManufactureProcess implements Serializable {
 	public Manufacture getWorkshop() {
 		return workshop;
 	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        workshop = null;
+        info.destroy();
+        info = null;
+    }
 }

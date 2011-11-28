@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -333,5 +333,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
     	
     	// Need to update this to reflect the particular operator's average speed operating the vehicle.
     	return vehicle.getBaseSpeed() / 2D;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        vehicle = null;
+        destination = null;
+        startTripTime = null;
     }
 }

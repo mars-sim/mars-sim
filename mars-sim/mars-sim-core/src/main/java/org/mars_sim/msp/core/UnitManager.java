@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.01 2011-04-09
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -769,5 +769,32 @@ public class UnitManager implements Serializable {
             }
         }
         return result;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        Iterator<Unit> i = units.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
+        units.clear();
+        units = null;
+        
+        settlementNames.clear();
+        settlementNames = null;
+        vehicleNames.clear();
+        vehicleNames = null;
+        personMaleNames.clear();
+        personMaleNames = null;
+        personFemaleNames.clear();
+        personFemaleNames = null;
+        listeners.clear();
+        listeners = null;
+        equipmentNumberMap.clear();
+        equipmentNumberMap = null;
+        vehicleNumberMap.clear();
+        vehicleNumberMap = null;
     }
 }

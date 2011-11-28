@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mars.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -77,5 +77,14 @@ public class Mars implements Serializable {
     public void timePassing(double time) {
     	orbitInfo.addTime(time);
     	surfaceFeatures.timePassing(time);
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        surfaceFeatures.destroy();
+        orbitInfo.destroy();
+        weather.destroy();
     }
 }

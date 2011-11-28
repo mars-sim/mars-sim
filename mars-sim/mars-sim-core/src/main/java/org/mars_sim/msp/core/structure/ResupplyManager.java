@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 3.00 2010-08-25
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -63,21 +63,26 @@ public class ResupplyManager implements Serializable {
 	 * @throws Exception if error.
 	 */
 	public void timePassing(double time) {
-//		try {
-			Iterator<Resupply> i = resupplies.iterator();
-			while (i.hasNext()) {
-				Resupply resupply = i.next();
-				if (!resupply.isDelivered()) {
-					MarsClock currentDate = Simulation.instance().getMasterClock().getMarsClock();
-					if (MarsClock.getTimeDiff(resupply.getArrivalDate(), currentDate) <= 0D) {
-						// Deliver supplies
-						resupply.deliverSupplies();
-					}
+		Iterator<Resupply> i = resupplies.iterator();
+		while (i.hasNext()) {
+			Resupply resupply = i.next();
+			if (!resupply.isDelivered()) {
+				MarsClock currentDate = Simulation.instance().getMasterClock().getMarsClock();
+				if (MarsClock.getTimeDiff(resupply.getArrivalDate(), currentDate) <= 0D) {
+					// Deliver supplies
+					resupply.deliverSupplies();
 				}
-			} 
-//		}
-//		catch (Exception e) {
-//			throw new IllegalStateException("ResupplyManager.timePassing(): " + e.getMessage());
-//		}
-	}   	
+			}
+		}
+	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        Iterator<Resupply> i = resupplies.iterator();
+        while (i.hasNext()) i.next().destroy();
+        resupplies.clear();
+        resupplies = null;
+    }   	
 }

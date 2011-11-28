@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.01 2011-07-22
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -38,11 +38,8 @@ import java.util.logging.Logger;
  * the vehicle back if the crew is already dead.
  */
 public class RescueSalvageVehicle extends RoverMission implements Serializable {
-    
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.ai.mission.RescueSalvageVehicle";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
 
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
@@ -729,5 +726,12 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));
 		
 		return result;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    vehicleTarget = null;
 	}
 }

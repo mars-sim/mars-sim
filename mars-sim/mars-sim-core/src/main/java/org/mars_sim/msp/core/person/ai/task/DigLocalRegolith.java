@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -37,9 +37,7 @@ import java.util.logging.Logger;
  */
 public class DigLocalRegolith extends EVAOperation implements Serializable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.DigLocalRegolith";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
     
     // Phase name
     private static final String COLLECT_REGOLITH = "Collecting Regolith";
@@ -315,13 +313,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             finishedCollecting = true;
         }
         
-//        try {
-            person.getInventory().storeAmountResource(regolith, regolithCollected, true);
-//        }
-//        catch (InventoryException e) {
-//            logger.log(Level.SEVERE, "Error collecting regolith");
-//            setPhase(ENTER_AIRLOCK);
-//        }
+        person.getInventory().storeAmountResource(regolith, regolithCollected, true);
         
         if (finishedCollecting) setPhase(ENTER_AIRLOCK);
         
@@ -329,5 +321,14 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         addExperience(time);
         
         return 0D;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        airlock = null;
+        bag = null;
+        settlement = null;
     }
 }

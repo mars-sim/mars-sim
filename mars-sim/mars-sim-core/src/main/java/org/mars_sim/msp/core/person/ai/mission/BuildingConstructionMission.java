@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.00 2011-02-23
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -39,9 +39,7 @@ import java.util.logging.Logger;
  */
 public class BuildingConstructionMission extends Mission implements Serializable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.mission.BuildingConstructionMission";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
     
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Construct Building";
@@ -95,86 +93,80 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Recruit additional people to mission.
             recruitPeopleForMission(startingPerson);
             
-//            try {
-                // Determine construction site and stage.
-                int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(
-                        Skill.CONSTRUCTION);
-                ConstructionManager manager = settlement.getConstructionManager();
-                ConstructionValues values = manager.getConstructionValues();
-                double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
-                double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
+            // Determine construction site and stage.
+            int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(
+                    Skill.CONSTRUCTION);
+            ConstructionManager manager = settlement.getConstructionManager();
+            ConstructionValues values = manager.getConstructionValues();
+            double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
+            double newSiteProfit = values.getNewConstructionSiteProfit(constructionSkill);
                 
-                if (existingSitesProfit > newSiteProfit) {
-                    // Determine which existing construction site to work on.
-                    double topSiteProfit = 0D;
-                    Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
-                    while (i.hasNext()) {
-                        ConstructionSite site = i.next();
-                        double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
-                        if ((siteProfit > topSiteProfit) && 
-                                hasExistingSiteConstructionMaterials(site, constructionSkill)) {
-                            constructionSite = site;
-                            topSiteProfit = siteProfit;
-                        }
+            if (existingSitesProfit > newSiteProfit) {
+                // Determine which existing construction site to work on.
+                double topSiteProfit = 0D;
+                Iterator<ConstructionSite> i = manager.getConstructionSitesNeedingConstructionMission().iterator();
+                while (i.hasNext()) {
+                    ConstructionSite site = i.next();
+                    double siteProfit = values.getConstructionSiteProfit(site, constructionSkill);
+                    if ((siteProfit > topSiteProfit) && 
+                            hasExistingSiteConstructionMaterials(site, constructionSkill)) {
+                        constructionSite = site;
+                        topSiteProfit = siteProfit;
                     }
                 }
-                else if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
-                    // Create new site.
-                    constructionSite = manager.createNewConstructionSite();
+            }
+            else if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
+                // Create new site.
+                constructionSite = manager.createNewConstructionSite();
                     
-                    // Determine construction site location and facing.
+                // Determine construction site location and facing.
+                ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+                if (stageInfo != null) {
+                    constructionSite.setWidth(stageInfo.getWidth());
+                    constructionSite.setLength(stageInfo.getLength());
+                    positionNewConstructionSite(constructionSite, stageInfo);
+                       
+                    logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+                }
+                else {
+                    endMission("New construction stage could not be determined.");
+                }
+            }
+                
+            if (constructionSite != null) {
+                    
+                // Determine new stage to work on.
+                if (constructionSite.hasUnfinishedStage()) {
+                    constructionStage = constructionSite.getCurrentConstructionStage(); 
+                    finishingExistingStage = true;
+                    logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
+                }
+                else {
                     ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
+                       
                     if (stageInfo != null) {
-                        constructionSite.setWidth(stageInfo.getWidth());
-                        constructionSite.setLength(stageInfo.getLength());
-                        positionNewConstructionSite(constructionSite, stageInfo);
-                        
-                        logger.log(Level.INFO, "New construction site added at " + settlement.getName());
+                        constructionStage = new ConstructionStage(stageInfo, constructionSite);
+                        constructionSite.addNewStage(constructionStage);
+                        values.clearCache();
+                        logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
                     }
                     else {
                         endMission("New construction stage could not be determined.");
                     }
                 }
-                
-                if (constructionSite != null) {
                     
-                    // Determine new stage to work on.
-                    if (constructionSite.hasUnfinishedStage()) {
-                        constructionStage = constructionSite.getCurrentConstructionStage(); 
-                        finishingExistingStage = true;
-                        logger.log(Level.INFO, "Continuing work on existing site at " + settlement.getName());
-                    }
-                    else {
-                        ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
-                        
-                        if (stageInfo != null) {
-                            constructionStage = new ConstructionStage(stageInfo, constructionSite);
-                            constructionSite.addNewStage(constructionStage);
-                            values.clearCache();
-                            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
-                        }
-                        else {
-                            endMission("New construction stage could not be determined.");
-                        }
-                    }
-                    
-                    // Mark site as undergoing construction.
-                    if (constructionStage != null) constructionSite.setUndergoingConstruction(true);
-                }
-                else {
-                    endMission("Construction site could not be found or created.");
-                }
+                // Mark site as undergoing construction.
+                if (constructionStage != null) constructionSite.setUndergoingConstruction(true);
+            }
+            else {
+                endMission("Construction site could not be found or created.");
+            }
                 
-                // Reserve construction vehicles.
-                reserveConstructionVehicles();
+            // Reserve construction vehicles.
+            reserveConstructionVehicles();
                 
-                // Retrieve construction LUV attachment parts.
-                retrieveConstructionLUVParts();
-//            }
-//            catch (Exception e) {
-//                logger.log(Level.SEVERE, "Error determining construction sites.");
-//                throw new MissionException("Error determining construction sites.", e);
-//            }
+            // Retrieve construction LUV attachment parts.
+            retrieveConstructionLUVParts();
         }
         
         // Add phases.
@@ -954,5 +946,19 @@ public class BuildingConstructionMission extends Mission implements Serializable
         }
         
         return goodPosition;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        settlement = null;
+        constructionSite = null;
+        constructionStage = null;
+        if (constructionVehicles != null) constructionVehicles.clear();
+        constructionVehicles = null;
+        sitePreparationStartTime = null;
+        if (luvAttachmentParts != null) luvAttachmentParts.clear();
+        luvAttachmentParts = null;
     }
 }

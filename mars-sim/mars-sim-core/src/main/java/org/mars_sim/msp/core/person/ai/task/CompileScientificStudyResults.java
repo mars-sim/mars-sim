@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,9 +28,7 @@ import java.util.logging.Logger;
  */
 public class CompileScientificStudyResults extends Task implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai." + 
-            "task.CompileScientificStudyResults";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
     
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = 0D;
@@ -38,6 +36,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
     // Task phase.
     private static final String COMPILING_PHASE = "Compiling Study Data";
     
+    // Data members
     private ScientificStudy study; // The scientific study to compile.
     
     /**
@@ -267,5 +266,12 @@ public class CompileScientificStudyResults extends Task implements Serializable 
         addExperience(time);
         
         return 0D;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis 
  */
 
@@ -200,5 +200,15 @@ class AmountResourceTypeStorage implements Serializable {
     	public String getString() {
     		return "" + amount;
     	}
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        if (amountResourceTypeCapacities != null) amountResourceTypeCapacities.clear();
+        amountResourceTypeCapacities = null;
+        if (amountResourceTypeStored != null) amountResourceTypeStored.clear();
+        amountResourceTypeStored = null;
     }
 }

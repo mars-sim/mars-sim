@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -295,13 +295,9 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
     	
     	if (malfunctionable instanceof Building) {
     		Building building = (Building) malfunctionable;
-//    		try {
-                if(building instanceof LifeSupport){
-
+            if(building instanceof LifeSupport){
     			BuildingManager.addPersonToBuilding(person, building);
-                }
-//    		}
-//    		catch (BuildingException e) {}
+            }
     	}
     }
     
@@ -323,5 +319,12 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    entity = null;
 	}
 }

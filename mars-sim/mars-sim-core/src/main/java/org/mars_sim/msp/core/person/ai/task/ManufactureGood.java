@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Maintenance.java
- * @version 3.00 2010-08-10
+ * ManufactureGood.java
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -32,9 +32,7 @@ import java.util.logging.Logger;
  */
 public class ManufactureGood extends Task implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.ManufactureGood";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
 
     // Task phase
     private static final String MANUFACTURE = "Manufacture";
@@ -502,5 +500,12 @@ public class ManufactureGood extends Task implements Serializable {
             logger.info(person.getName() + " has accident while manufacturing.");
             workshop.getBuilding().getMalfunctionManager().accident();
         }
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        workshop = null;
     }
 }

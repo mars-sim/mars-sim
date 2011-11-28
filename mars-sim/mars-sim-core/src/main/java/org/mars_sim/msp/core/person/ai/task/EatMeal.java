@@ -33,10 +33,8 @@ import java.util.logging.Logger;
  *  Note: Eating a meal reduces hunger to 0.
  */
 class EatMeal extends Task implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.EatMeal";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
 	// Task phase
     private static final String EATING = "Eating";
@@ -248,5 +246,12 @@ class EatMeal extends Task implements Serializable {
 	public List<String> getAssociatedSkills() {
 		List<String> results = new ArrayList<String>(0);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    meal = null;
 	}
 }

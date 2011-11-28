@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.02 2011-10-08
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -318,5 +318,21 @@ public class Mind implements Serializable {
      */
     public SkillManager getSkillManager() {
         return skillManager;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        person = null;
+        taskManager.destroy();
+        if (mission != null) mission.destroy();
+        mission = null;
+        //job.destroy();
+        job = null;
+        personality.destroy();
+        personality = null;
+        skillManager.destroy();
+        skillManager = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -31,9 +31,8 @@ import java.util.logging.Logger;
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
 public class EnterAirlock extends Task implements Serializable {
-	
-	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.EnterAirlock";	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+		
+	private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
 	
 	// Task phase
 	private static final String ENTERING_AIRLOCK = "Entering Airlock";
@@ -280,5 +279,12 @@ public class EnterAirlock extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.EVA_OPERATIONS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    airlock = null;
 	}
 }

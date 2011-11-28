@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfaceFeatures.java
- * @version 3.01 2011-04-25
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.mars;
@@ -213,5 +213,20 @@ public class SurfaceFeatures implements Serializable {
                 }
             }
         }
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        surfaceTerrain = null;
+        landmarks.clear();
+        landmarks = null;
+        mineralMap.destroy();
+        mineralMap = null;
+        exploredLocations.clear();
+        exploredLocations = null;
+        areothermalMap.destroy();
+        areothermalMap = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -230,5 +230,20 @@ public class NegotiateTrade extends Task implements Serializable {
 	 */
 	public Map<Good, Integer> getBuyLoad() {
 		return buyLoad;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    if (buyLoad != null) buyLoad.clear();
+	    buyLoad = null;
+	    sellingSettlement = null;
+	    buyingSettlement = null;
+	    rover = null;
+	    if (soldLoad != null) soldLoad.clear();
+	    soldLoad = null;
+	    buyingTrader = null;
+	    sellingTrader = null;
 	}
 }

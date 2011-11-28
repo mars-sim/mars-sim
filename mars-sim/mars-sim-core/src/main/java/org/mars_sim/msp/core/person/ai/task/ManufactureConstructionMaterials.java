@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -37,27 +37,26 @@ import java.util.logging.Logger;
 /**
  * A task for working on a manufacturing process to produce construction materials.
  */
-public class ManufactureConstructionMaterials extends Task implements Serializable {
+public class ManufactureConstructionMaterials extends Task implements
+        Serializable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.ManufactureConstructionMaterials";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
 
     // Task phase
     private static final String MANUFACTURE = "Manufacture";
 
     // Static members
     private static final double STRESS_MODIFIER = .1D; // The stress modified
-                                                       // per millisol.
+    // per millisol.
 
     // Lists of construction material resources and parts.
     private static List<AmountResource> constructionResources;
     private static List<Part> constructionParts;
-    
+
     // Data members
     private Manufacture workshop; // The manufacturing workshop the person is
-                                  // using.
+
+    // using.
 
     /**
      * Constructor
@@ -65,27 +64,24 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @throws Exception if error constructing task.
      */
     public ManufactureConstructionMaterials(Person person) {
-        super("Manufacturing Construction Materials", person, true, false, STRESS_MODIFIER, 
-                true, RandomUtil.getRandomDouble(100D));
+        super("Manufacturing Construction Materials", person, true, false,
+                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
         // Initialize data members
         if (person.getSettlement() != null)
-            setDescription("Manufacturing construction materials at " + person.getSettlement().getName());
+            setDescription("Manufacturing construction materials at "
+                    + person.getSettlement().getName());
         else
             endTask();
 
         // Get available manufacturing workshop if any.
-//        try {
-            Building manufactureBuilding = getAvailableManufacturingBuilding(person);
-            if (manufactureBuilding != null) {
-                workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
-                BuildingManager.addPersonToBuilding(person, manufactureBuilding);
-            } else
-                endTask();
-//        } catch (BuildingException e) {
-//            logger.log(Level.SEVERE, "ManufactureConstructionMaterials", e);
-//            endTask();
-//        }
+        Building manufactureBuilding = getAvailableManufacturingBuilding(person);
+        if (manufactureBuilding != null) {
+            workshop = (Manufacture) manufactureBuilding
+                    .getFunction(Manufacture.NAME);
+            BuildingManager.addPersonToBuilding(person, manufactureBuilding);
+        } else
+            endTask();
 
         // Initialize phase
         addPhase(MANUFACTURE);
@@ -108,11 +104,14 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
                     result = 1D;
 
                     // Crowding modifier.
-                    result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                    result *= Task.getRelationshipModifier(person, manufacturingBuilding);
+                    result *= Task.getCrowdingProbabilityModifier(person,
+                            manufacturingBuilding);
+                    result *= Task.getRelationshipModifier(person,
+                            manufacturingBuilding);
 
                     // Manufacturing good value modifier.
-                    result *= getHighestManufacturingProcessValue(person, manufacturingBuilding);
+                    result *= getHighestManufacturingProcessValue(person,
+                            manufacturingBuilding);
 
                     // Add a base chance.
                     if (result > 0D)
@@ -120,8 +119,10 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
 
                     // If manufacturing building has process requiring work, add
                     // modifier.
-                    SkillManager skillManager = person.getMind().getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                    SkillManager skillManager = person.getMind()
+                            .getSkillManager();
+                    int skill = skillManager
+                            .getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
                     if (hasProcessRequiringWork(manufacturingBuilding, skill))
                         result += 10D;
                     // If settlement has manufacturing override, no new
@@ -130,7 +131,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
                         result = 0;
                 }
             } catch (Exception e) {
-                logger.log(Level.SEVERE, "ManufactureConstructionMaterials.getProbability()", e);
+                logger.log(Level.SEVERE,
+                        "ManufactureConstructionMaterials.getProbability()", e);
             }
         }
 
@@ -140,14 +142,15 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null)
-            result *= job.getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class);
+            result *= job
+                    .getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class);
 
         return result;
     }
 
     /**
-     * Gets an available manufacturing building that the person can use. Returns
-     * null if no manufacturing building is currently available.
+     * Gets an available manufacturing building that the person can use. Returns null if no manufacturing building is
+     * currently available.
      * @param person the person
      * @return available manufacturing building
      * @throws Exception if error finding manufacturing building.
@@ -157,17 +160,26 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Building result = null;
 
         SkillManager skillManager = person.getMind().getSkillManager();
-        int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skill = skillManager
+                .getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
-            manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
-            manufacturingBuildings = getManufacturingBuildingsNeedingWork(manufacturingBuildings, skill);
-            manufacturingBuildings = getBuildingsWithProcessesRequiringWork(manufacturingBuildings, skill);
+            BuildingManager manager = person.getSettlement()
+                    .getBuildingManager();
+            List<Building> manufacturingBuildings = manager
+                    .getBuildings(Manufacture.NAME);
+            manufacturingBuildings = BuildingManager
+                    .getNonMalfunctioningBuildings(manufacturingBuildings);
+            manufacturingBuildings = getManufacturingBuildingsNeedingWork(
+                    manufacturingBuildings, skill);
+            manufacturingBuildings = getBuildingsWithProcessesRequiringWork(
+                    manufacturingBuildings, skill);
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-            manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
-            manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
+            manufacturingBuildings = BuildingManager
+                    .getLeastCrowdedBuildings(manufacturingBuildings);
+            manufacturingBuildings = BuildingManager
+                    .getBestRelationshipBuildings(person,
+                            manufacturingBuildings);
 
             if (manufacturingBuildings.size() > 0)
                 result = manufacturingBuildings.get(0);
@@ -177,13 +189,11 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     }
 
     /**
-     * Gets a list of manufacturing buildings needing work from a list of
-     * buildings with the manufacture function.
+     * Gets a list of manufacturing buildings needing work from a list of buildings with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @param skill the materials science skill level of the person.
      * @return list of manufacture buildings needing work.
-     * @throws BuildingException if any buildings in building list don't have
-     *         the manufacture function.
+     * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingWork(
             List<Building> buildingList, int skill) {
@@ -193,7 +203,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+            Manufacture manufacturingFunction = (Manufacture) building
+                    .getFunction(Manufacture.NAME);
             if (manufacturingFunction.requiresManufacturingWork(skill))
                 result.add(building);
         }
@@ -202,12 +213,10 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     }
 
     /**
-     * Gets a subset list of manufacturing buildings with processes requiring
-     * work.
+     * Gets a subset list of manufacturing buildings with processes requiring work.
      * @param buildingList the original building list.
      * @param skill the materials science skill level of the person.
-     * @return subset list of buildings with processes requiring work, or
-     *         original list if none found.
+     * @return subset list of buildings with processes requiring work, or original list if none found.
      * @throws Exception if error determining building processes.
      */
     private static List<Building> getBuildingsWithProcessesRequiringWork(
@@ -237,46 +246,49 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
      * @return true if processes requiring work.
      * @throws Exception if building is not manufacturing.
      */
-    private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) 
-{
+    private static boolean hasProcessRequiringWork(
+            Building manufacturingBuilding, int skill) {
 
         boolean result = false;
 
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
-        Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses().iterator();
+        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
+                .getFunction(Manufacture.NAME);
+        Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses()
+                .iterator();
         while (i.hasNext()) {
             ManufactureProcess process = i.next();
             if (producesConstructionMaterials(process)) {
                 boolean workRequired = (process.getWorkTimeRemaining() > 0D);
-                boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
-                if (workRequired && skillRequired) result = true;
+                boolean skillRequired = (process.getInfo()
+                        .getSkillLevelRequired() <= skill);
+                if (workRequired && skillRequired)
+                    result = true;
             }
         }
 
         return result;
     }
-    
+
     /**
      * Checks if a manufacture process produces construction materials.
      * @param process the manufacture process.
      * @return true if produces construction materials.
      * @throws Exception if error checking manufacture process.
      */
-    private static boolean producesConstructionMaterials(ManufactureProcess process) 
-{
+    private static boolean producesConstructionMaterials(
+            ManufactureProcess process) {
         return producesConstructionMaterials(process.getInfo());
     }
 
     /**
-     * Gets a subset list of manufacturing buildings with the highest tech level
-     * from a list of buildings with the manufacture function.
+     * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings with the
+     * manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @return subset list of highest tech level buildings.
-     * @throws BuildingException if any buildings in building list don't have
-     *         the manufacture function.
+     * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
-    private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) 
-            {
+    private static List<Building> getHighestManufacturingTechLevelBuildings(
+            List<Building> buildingList) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -284,7 +296,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+            Manufacture manufacturingFunction = (Manufacture) building
+                    .getFunction(Manufacture.NAME);
             if (manufacturingFunction.getTechLevel() > highestTechLevel)
                 highestTechLevel = manufacturingFunction.getTechLevel();
         }
@@ -292,7 +305,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Iterator<Building> j = buildingList.iterator();
         while (j.hasNext()) {
             Building building = j.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+            Manufacture manufacturingFunction = (Manufacture) building
+                    .getFunction(Manufacture.NAME);
             if (manufacturingFunction.getTechLevel() == highestTechLevel)
                 result.add(building);
         }
@@ -301,105 +315,119 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     }
 
     /**
-     * Gets the highest manufacturing process goods value for the person and the
-     * manufacturing building.
+     * Gets the highest manufacturing process goods value for the person and the manufacturing building.
      * @param person the person to perform manufacturing.
      * @param manufacturingBuilding the manufacturing building.
      * @return highest process good value.
      * @throws BuildingException if error determining process value.
      */
-    private static double getHighestManufacturingProcessValue(Person person, 
+    private static double getHighestManufacturingProcessValue(Person person,
             Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
 
-        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skillLevel = person.getMind().getSkillManager()
+                .getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
 
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
+        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
+                .getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-//        try {
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
-                    techLevel, skillLevel).iterator();
-            while (i.hasNext()) {
-                ManufactureProcessInfo process = i.next();
-                if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
-                        isProcessRunning(process, manufacturingFunction)) {
-                    if (producesConstructionMaterials(process)) {
-                        Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-                        double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-                        if (processValue > highestProcessValue) highestProcessValue = processValue;
-                    }
+        Iterator<ManufactureProcessInfo> i = ManufactureUtil
+                .getManufactureProcessesForTechSkillLevel(techLevel, skillLevel)
+                .iterator();
+        while (i.hasNext()) {
+            ManufactureProcessInfo process = i.next();
+            if (ManufactureUtil.canProcessBeStarted(process,
+                    manufacturingFunction)
+                    || isProcessRunning(process, manufacturingFunction)) {
+                if (producesConstructionMaterials(process)) {
+                    Settlement settlement = manufacturingBuilding
+                            .getBuildingManager().getSettlement();
+                    double processValue = ManufactureUtil
+                            .getManufactureProcessValue(process, settlement);
+                    if (processValue > highestProcessValue)
+                        highestProcessValue = processValue;
                 }
             }
-//        } catch (Exception e) {
-//            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
-//        }
+        }
 
         return highestProcessValue;
     }
-    
+
     /**
      * Checks if a manufacture process produces construction materials.
      * @param process the manufacture process.
      * @return true if produces construction materials.
      * @throws Exception if error checking for construction materials.
      */
-    private static boolean producesConstructionMaterials(ManufactureProcessInfo info) 
-{
+    private static boolean producesConstructionMaterials(
+            ManufactureProcessInfo info) {
         boolean result = false;
-        
-        if (constructionResources == null) determineConstructionResources();
-        if (constructionParts == null) determineConstructionParts();
-        
+
+        if (constructionResources == null)
+            determineConstructionResources();
+        if (constructionParts == null)
+            determineConstructionParts();
+
         Iterator<ManufactureProcessItem> i = info.getOutputList().iterator();
         while (i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-                AmountResource resource = AmountResource.findAmountResource(item.getName());
-                if (constructionResources.contains(resource)) result = true;
-            }
-            else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
-                Part part = (Part) ItemResource.findItemResource(item.getName());
-                if (constructionParts.contains(part)) result = true;
+            if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item
+                    .getType())) {
+                AmountResource resource = AmountResource
+                        .findAmountResource(item.getName());
+                if (constructionResources.contains(resource))
+                    result = true;
+            } else if (ManufactureProcessItem.PART.equalsIgnoreCase(item
+                    .getType())) {
+                Part part = (Part) ItemResource
+                        .findItemResource(item.getName());
+                if (constructionParts.contains(part))
+                    result = true;
             }
         }
-        
+
         return result;
     }
-    
+
     /**
-     * Determines all resources needed for construction projects.
-     * throws Exception if error determining construction resources.
+     * Determines all resources needed for construction projects. throws Exception if error determining construction
+     * resources.
      */
     private static void determineConstructionResources() {
         constructionResources = new ArrayList<AmountResource>();
-        
-        Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
+
+        Iterator<ConstructionStageInfo> i = ConstructionUtil
+                .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
-            Iterator<AmountResource> j = info.getResources().keySet().iterator();
+            Iterator<AmountResource> j = info.getResources().keySet()
+                    .iterator();
             while (j.hasNext()) {
                 AmountResource resource = j.next();
-                if (!constructionResources.contains(resource)) constructionResources.add(resource);
+                if (!constructionResources.contains(resource))
+                    constructionResources.add(resource);
             }
         }
     }
-    
+
     /**
      * Determines all parts needed for construction projects.
      * @throws Exception if error determining construction parts.
      */
     private static void determineConstructionParts() {
         constructionParts = new ArrayList<Part>();
-        
-        Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList().iterator();
+
+        Iterator<ConstructionStageInfo> i = ConstructionUtil
+                .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
             Iterator<Part> j = info.getParts().keySet().iterator();
             while (j.hasNext()) {
                 Part part = j.next();
-                if (!constructionParts.contains(part)) constructionParts.add(part);
+                if (!constructionParts.contains(part))
+                    constructionParts.add(part);
             }
         }
     }
@@ -411,12 +439,14 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         // Experience points adjusted by person's "Experience Aptitude"
         // attribute.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = person.getNaturalAttributeManager()
+                .getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.MATERIALS_SCIENCE, newPoints / 2D);
-        person.getMind().getSkillManager().addExperience(Skill.CONSTRUCTION, newPoints / 2D);
+        person.getMind().getSkillManager().addExperience(
+                Skill.MATERIALS_SCIENCE, newPoints / 2D);
+        person.getMind().getSkillManager().addExperience(Skill.CONSTRUCTION,
+                newPoints / 2D);
     }
 
     @Override
@@ -464,8 +494,10 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         // skill.
         double workTime = time;
         int skill = getEffectiveSkillLevel();
-        if (skill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) skill);
+        if (skill == 0)
+            workTime /= 2;
+        else
+            workTime += workTime * (.2D * (double) skill);
 
         // Apply work time to manufacturing processes.
         while ((workTime > 0D) && !isDone()) {
@@ -478,7 +510,8 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
                 process.addWorkTime(providedWorkTime);
                 workTime -= providedWorkTime;
 
-                if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D))
+                if ((process.getWorkTimeRemaining() <= 0D)
+                        && (process.getProcessTimeRemaining() <= 0D))
                     workshop.endManufacturingProcess(process, false);
             } else {
                 if (!person.getSettlement().getManufactureOverride())
@@ -510,8 +543,9 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
         Iterator<ManufactureProcess> i = workshop.getProcesses().iterator();
         while (i.hasNext() && (result == null)) {
             ManufactureProcess process = i.next();
-            if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
-                    (process.getWorkTimeRemaining() > 0D) && producesConstructionMaterials(process)) {
+            if ((process.getInfo().getSkillLevelRequired() <= skillLevel)
+                    && (process.getWorkTimeRemaining() > 0D)
+                    && producesConstructionMaterials(process)) {
                 result = process;
             }
         }
@@ -520,17 +554,17 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     }
 
     /**
-     * Checks if a process type is currently running at a manufacturing
-     * building.
+     * Checks if a process type is currently running at a manufacturing building.
      * @param processInfo the process type.
      * @param manufactureBuilding the manufacturing building.
      * @return true if process is running.
      */
-    private static boolean isProcessRunning(ManufactureProcessInfo processInfo, 
+    private static boolean isProcessRunning(ManufactureProcessInfo processInfo,
             Manufacture manufactureBuilding) {
         boolean result = false;
 
-        Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses().iterator();
+        Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses()
+                .iterator();
         while (i.hasNext()) {
             ManufactureProcess process = i.next();
             if (process.getInfo().getName() == processInfo.getName())
@@ -548,21 +582,25 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
     private ManufactureProcess createNewManufactureProcess() {
         ManufactureProcess result = null;
 
-        if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {
+        if (workshop.getTotalProcessNumber() < workshop
+                .getConcurrentProcesses()) {
 
             int skillLevel = getEffectiveSkillLevel();
             int techLevel = workshop.getTechLevel();
 
             double highestValue = 0D;
             ManufactureProcessInfo highestValueProcess = null;
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
-                    techLevel, skillLevel).iterator();
+            Iterator<ManufactureProcessInfo> i = ManufactureUtil
+                    .getManufactureProcessesForTechSkillLevel(techLevel,
+                            skillLevel).iterator();
             while (i.hasNext()) {
                 ManufactureProcessInfo processInfo = i.next();
 
-                if (ManufactureUtil.canProcessBeStarted(processInfo, workshop) && producesConstructionMaterials(processInfo)) {
-                    double processValue = ManufactureUtil.getManufactureProcessValue(processInfo, 
-                            person.getSettlement());
+                if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)
+                        && producesConstructionMaterials(processInfo)) {
+                    double processValue = ManufactureUtil
+                            .getManufactureProcessValue(processInfo, person
+                                    .getSettlement());
                     if (processValue > highestValue) {
                         highestValue = processValue;
                         highestValueProcess = processInfo;
@@ -595,11 +633,21 @@ public class ManufactureConstructionMaterials extends Task implements Serializab
             chance /= (skill - 2);
 
         // Modify based on the workshop building's wear condition.
-        chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+        chance *= workshop.getBuilding().getMalfunctionManager()
+                .getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident while manufacturing construction materials.");
+            logger
+                    .info(person.getName()
+                            + " has accident while manufacturing construction materials.");
             workshop.getBuilding().getMalfunctionManager().accident();
         }
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        workshop = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfo.java
- * @version 3.00 2010-08-18
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -178,6 +178,21 @@ public class ConstructionStageInfo implements Serializable {
      */
     public double getWorkTime() {
         return workTime;
+    }
+    
+    /**
+     * Prepare for garbage collection.
+     */
+    public void destroy() {
+       name = null;
+       type = null;
+       prerequisiteStage = null;
+       parts.clear();
+       parts = null;
+       resources.clear();
+       resources = null;
+       vehicles.clear();
+       vehicles = null;
     }
     
     @Override

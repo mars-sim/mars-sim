@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NaturalAttributeManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -132,5 +132,13 @@ public class NaturalAttributeManager implements Serializable {
             }
         }
         if (!found) throw new IllegalArgumentException("Attribute: " + name + " is not a valid attribute.");
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        attributeList.clear();
+        attributeList = null;
     }
 }

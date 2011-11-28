@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -332,5 +332,14 @@ public class CollectResources extends EVAOperation implements Serializable {
 		results.add(Skill.EVA_OPERATIONS);
 		results.add(Skill.AREOLOGY);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    rover = null;
+	    resourceType = null;
+	    containerType = null;
 	}
 }

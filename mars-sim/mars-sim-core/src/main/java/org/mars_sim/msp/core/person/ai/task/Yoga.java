@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Sebastien Venot
  */
 
@@ -63,8 +63,7 @@ public class Yoga extends Task implements Serializable {
 
     @Override
     protected void addExperience(double time) {
-        // TODO Auto-generated method stub
-
+        // Do nothing
     }
 
     @Override
@@ -75,14 +74,11 @@ public class Yoga extends Task implements Serializable {
 
     @Override
     public int getEffectiveSkillLevel() {
-        // TODO Auto-generated method stub
         return 0;
     }
 
     @Override
     protected double performMappedPhase(double time) {
-        // TODO Auto-generated method stub
         return 0;
     }
-
 }

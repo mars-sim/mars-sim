@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.01 2011-08-27
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -38,10 +38,8 @@ import java.util.logging.Logger;
  * The LoadVehicle class is a task for loading a vehicle with fuel and supplies.
  */
 public class LoadVehicle extends Task implements Serializable {
-
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.ai.task.LoadVehicle";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
+	private static Logger logger = Logger.getLogger(LoadVehicle.class.getName());
 	
 	// Task phase
 	private static final String LOADING = "Loading";
@@ -745,5 +743,17 @@ public class LoadVehicle extends Task implements Serializable {
 	 */
 	public List<String> getAssociatedSkills() {
 		return new ArrayList<String>(0);
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    vehicle = null;
+	    settlement = null;
+	    if (resources != null) resources.clear();
+	    resources = null;
+	    if (equipment != null) equipment.clear();
+	    equipment = null;
 	}
 }

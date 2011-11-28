@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.02 2011-10-08
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -324,7 +324,7 @@ public class MasterClock implements Runnable, Serializable {
             } else if (loadSimulation) {
                 // Load the simulation from a file.
                 if (file.exists() && file.canRead()) {
-                    Simulation.instance().loadSimulation(file);
+                    Simulation.loadSimulation(file);
                     Simulation.instance().start();
                 } else {
                     logger.warning("Cannot access file " + file.getPath() + ", not reading");
@@ -447,5 +447,17 @@ public class MasterClock implements Runnable, Serializable {
 //        return /*YY+*/DD + HH + MM + SS;
 
         return b.toString();
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+       marsTime = null;
+       initialMarsTime = null;
+       earthTime = null;
+       uptimer = null;
+       listeners.clear();
+       listeners = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.01 2011-08-23
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -1644,4 +1644,25 @@ public class GoodsManager implements Serializable {
 			return bestTradeValue;
 		}
 	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        settlement = null;
+        goodsValues.clear();
+        goodsValues = null;
+        goodsDemandCache.clear();
+        goodsDemandCache = null;
+        goodsTradeCache.clear();
+        goodsTradeCache = null;
+        resourceProcessingCache.clear();
+        resourceProcessingCache = null;
+        vehicleBuyValueCache.clear();
+        vehicleBuyValueCache = null;
+        vehicleSellValueCache.clear();
+        vehicleSellValueCache = null;
+        partsDemandCache.clear();
+        partsDemandCache = null;
+    }
 }
