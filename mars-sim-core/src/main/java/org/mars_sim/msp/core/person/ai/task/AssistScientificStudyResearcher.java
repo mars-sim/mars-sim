@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -32,11 +32,8 @@ import java.util.logging.Logger;
  * Task for assisting a scientific study researcher.
  */
 public class AssistScientificStudyResearcher extends Task implements Serializable {
-
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.AssistScientificStudyResearcher";
     
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
     
     // Task phase
     private static final String ASSISTING = "Assisting Researcher";
@@ -343,5 +340,13 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         double newOpinion = currentOpinion + (BASE_RELATIONSHIP_MODIFIER * time);
         Relationship relationship = manager.getRelationship(researcher, person);
         if (relationship != null) relationship.setPersonOpinion(researcher, newOpinion);
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        researchTask = null;
+        researcher = null;
     }
 }

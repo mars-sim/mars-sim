@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.00 2011-03-03
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -623,5 +623,23 @@ public class BuildingManager implements Serializable {
         AffineTransform at = AffineTransform.getRotateInstance(randianRotation, rectangle.getCenterX(), 
                 rectangle.getCenterY());
         return new Path2D.Double(rectangle, at);
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        settlement = null;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            i.next().destroy();
+        }
+        buildings.clear();
+        buildings = null;
+        buildingValuesNewCache.clear();
+        buildingValuesNewCache = null;
+        buildingValuesOldCache.clear();
+        buildingValuesOldCache = null;
+        lastBuildingValuesUpdateTime = null;
     }
 }

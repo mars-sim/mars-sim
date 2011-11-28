@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGrid.java
- * @version 3.01 2011-07-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -450,5 +450,13 @@ public class PowerGrid implements Serializable {
     		powerValue = newPowerValue;
     		settlement.fireUnitUpdate(POWER_VALUE_EVENT);
     	}
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        powerMode = null;
+        settlement = null;
     }
 }

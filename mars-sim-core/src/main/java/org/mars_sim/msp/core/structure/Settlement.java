@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.01 2011-08-22
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -627,5 +627,26 @@ public class Settlement extends Structure implements Malfunctionable,
      */
     public MalfunctionManager getMalfunctionManager() {
         return malfunctionManager;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        buildingManager.destroy();
+        buildingManager = null;
+        resupplyManager.destroy();
+        resupplyManager = null;
+        goodsManager.destroy();
+        goodsManager = null;
+        constructionManager.destroy();
+        constructionManager = null;
+        powerGrid.destroy();
+        powerGrid = null;
+        template = null;
+        scientificAchievement.clear();
+        scientificAchievement = null;
+        malfunctionManager.destroy();
+        malfunctionManager = null;
     }
 }

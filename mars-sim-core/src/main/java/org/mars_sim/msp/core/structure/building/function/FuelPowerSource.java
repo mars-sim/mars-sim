@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 3.01 2011-04-25
+ * @version 3.02 2011-11-26
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -136,5 +136,12 @@ public class FuelPowerSource extends PowerSource implements Serializable {
         fuelPower -= fuelValue;
         if (fuelPower < 0D) fuelPower = 0D;
         return fuelPower;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        resource = null;
     }
 }

@@ -512,6 +512,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		// Stop update thread.
 		updateThread.setRun(false);
 
+		// Give some time for the update thread to finish updating.
+		try {
+		    Thread.sleep(100L);
+		}
+		catch (InterruptedException e) {};
+		
 		// Dispose unit windows
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
 		while (i1.hasNext()) {

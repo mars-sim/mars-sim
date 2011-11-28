@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * SalvageEquipment.java
- * @version 3.00 2010-08-10
+ * SalvageGood.java
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -32,11 +32,8 @@ import java.util.logging.Logger;
  * into parts.
  */
 public class SalvageGood extends Task implements Serializable {
-
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.SalvageGood";
     
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
     
     // Task phase
     private static final String SALVAGE = "Salvage";
@@ -505,5 +502,13 @@ public class SalvageGood extends Task implements Serializable {
         SalvageProcess process = getRunningSalvageProcess();
         if (process == null) process = createNewSalvageProcess();
         return process;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        workshop = null;
+        process = null;
     }
 }

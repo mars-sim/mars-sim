@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -22,8 +22,6 @@ import java.util.logging.Logger;
  * This class provides data members and methods common to all units.
  */
 public abstract class Unit implements Serializable, Comparable<Unit> {
-
-
 
 	// Unit event types
 	public static final String NAME_EVENT = "name";
@@ -51,26 +49,15 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
         listeners = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
     	
         // Initialize data members from parameters
-//        setName(name);
         this.name = name;
         description = name;
-//        setDescription(name);
         baseMass = Double.MAX_VALUE;
-//        setBaseMass(Double.MAX_VALUE);
 
         inventory = new Inventory(this);
-//        setInventory(new Inventory(this));
 
         this.location = new Coordinates(0D, 0D);
         this.location.setCoords(location);
         this.inventory.setCoordinates(location);
-//        setCoordinates(new Coordinates(location));
-
-
-//        setContainerUnit(null);
-	    
-//	    // Initialize unit listeners.
-//	    listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
     }
 
     /** 
@@ -150,14 +137,6 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
     public Inventory getInventory() {
         return inventory;
     }
-    
-    /**
-     * Sets the unit's inventory.
-     * @param inventory new inventory
-     */
-    private void setInventory(Inventory inventory) {
-    	this.inventory = inventory;
-    }
 
     /** 
      * Gets the unit's container unit.
@@ -228,8 +207,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
         return name;
     }
 
-    public synchronized boolean hasUnitListener(UnitListener listener)
-    {
+    public synchronized boolean hasUnitListener(UnitListener listener) {
         if(listeners == null) return false;
         return listeners.contains(listener);
     }
@@ -241,19 +219,19 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
     public synchronized final void addUnitListener(UnitListener newListener) {
         if(newListener == null) throw new IllegalArgumentException();
     	if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-//        synchronized (listeners){
 
-            if (!listeners.contains(newListener)) {
-                listeners.add(newListener);
-            }else{
-                try{
-                    throw new IllegalStateException("Already contains this listener of type " + newListener.getClass().getName() + " : " + newListener + ", not adding");
-                }catch (Exception e){
-                    e.printStackTrace();
-                    logger.log(Level.SEVERE,"Adding listener dupe",e);
-                }
+        if (!listeners.contains(newListener)) {
+            listeners.add(newListener);
+        }
+        else {
+            try {
+                throw new IllegalStateException("Already contains this listener of type " + newListener.getClass().getName() + " : " + newListener + ", not adding");
+            } 
+            catch (Exception e){
+                e.printStackTrace();
+                logger.log(Level.SEVERE,"Adding listener dupe",e);
             }
-//        }
+        }
     }
     
     /**
@@ -262,15 +240,12 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     public synchronized final void removeUnitListener(UnitListener oldListener) {
         if(oldListener == null) throw new IllegalArgumentException();
-//    	synchronized (listeners){
 
-            if(listeners == null){
-                listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
-            }
-            if(listeners.size() < 1) return;
-            listeners.remove(oldListener);
-//    	if (listeners.contains(oldListener)) listeners.remove(oldListener);
-//        }
+        if(listeners == null){
+            listeners = Collections.synchronizedList(new ArrayList<UnitListener>());
+        }
+        if(listeners.size() < 1) return;
+        listeners.remove(oldListener);
     }
     
     /**
@@ -310,5 +285,19 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     public int compareTo(Unit o) {
         return name.compareToIgnoreCase(o.name);
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        location = null;
+        name = null;
+        description = null;
+        inventory.destroy();
+        inventory = null;
+        containerUnit = null;
+        if (listeners != null) listeners.clear();
+        listeners = null;
     }
 }

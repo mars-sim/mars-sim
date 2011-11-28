@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureProcessInfo.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -151,6 +151,16 @@ public class ManufactureProcessInfo implements Serializable {
 	 */
 	public void setOutputList(List<ManufactureProcessItem> outputList) {
 		this.outputList = outputList;
+	}
+	
+	/**
+	 * Prepares object for garbage collection.
+	 */
+	public void destroy() {
+	    if (inputList != null) inputList.clear();
+	    inputList = null;
+	    if (outputList != null) outputList.clear();
+	    outputList = null;
 	}
 	
 	@Override

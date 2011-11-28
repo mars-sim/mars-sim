@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Equipment.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -101,5 +101,13 @@ public abstract class Equipment extends Unit implements Salvagable {
      */
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        if (salvageInfo != null) salvageInfo.destroy();
+        salvageInfo = null;
     }
 }

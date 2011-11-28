@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,9 +30,7 @@ import java.util.logging.Logger;
  */
 public class TaskManager implements Serializable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.TaskManager";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(TaskManager.class.getName());
     
     // Unit event types
     public static final String TASK_EVENT = "task";
@@ -349,5 +347,17 @@ public class TaskManager implements Serializable {
     private boolean useCache() {
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         return currentTime.equals(timeCache);
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        if (currentTask != null) currentTask.destroy();
+        mind = null;
+        availableTasks = null;
+        timeCache = null;
+        taskProbCache.clear();
+        taskProbCache = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.00 2011-02-19
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -222,5 +222,20 @@ public class ConstructionManager implements Serializable {
         values.clearCache();
         
         return site;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        settlement = null;
+        sites.clear();
+        sites = null;
+        values.destroy();
+        values = null;
+        salvageValues.destroy();
+        salvageValues = null;
+        constructedBuildingLog.clear();
+        constructedBuildingLog = null;
     }
 }

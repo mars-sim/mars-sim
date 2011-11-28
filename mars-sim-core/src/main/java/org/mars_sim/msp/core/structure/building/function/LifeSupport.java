@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -255,5 +255,13 @@ public class LifeSupport extends Function implements Serializable {
 	 */
 	public double getPowerDownPowerRequired() {
 		return 0;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    occupants.clear();
+	    occupants = null;
 	}
 }

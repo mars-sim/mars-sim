@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -345,5 +345,13 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 		results.add(Skill.EVA_OPERATIONS);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    entity = null;
+	    airlock = null;
 	}
 }

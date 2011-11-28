@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.malfunction;
@@ -265,6 +265,17 @@ public class MalfunctionConfig implements Serializable {
         return result;
     }
 
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        malfunctionDoc = null;
+        malfunctionList.clear();
+        malfunctionList = null;
+        repairParts.clear();
+        repairParts = null;
+    }
+    
     /**
      * Private inner class for repair part information.
      */

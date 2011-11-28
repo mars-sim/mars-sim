@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * InviteStudyCollaborator.java
- * @version 3.00 2010-08-10
+ * RespondToStudyInvitation.java
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -31,8 +31,7 @@ import java.util.logging.Logger;
  */
 public class RespondToStudyInvitation extends Task implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.RespondToStudyInvitation";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(RespondToStudyInvitation.class.getName());
     
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = 0D;
@@ -235,5 +234,12 @@ public class RespondToStudyInvitation extends Task implements Serializable {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
         if (RESPONDING_INVITATION.equals(getPhase())) return respondingToInvitationPhase(time);
         else return time;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
     }
 }

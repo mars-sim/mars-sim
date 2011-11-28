@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -37,12 +37,12 @@ public class CreditManager implements Serializable {
 	 * Constructor
 	 * @param settlements collection of settlements to use.
 	 */
-	public CreditManager(Collection settlements) {
+	public CreditManager(Collection<Settlement> settlements) {
 		// Create new graph for credit.
 		creditGraph = new DefaultGraph();
 		
 		// Add all settlements as nodes.
-		Iterator i = settlements.iterator();
+		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) creditGraph.addNode(i.next());
 	}
 	
@@ -124,5 +124,14 @@ public class CreditManager implements Serializable {
      */
     public void removeListener(CreditListener oldListener) {
     	if (getListeners().contains(oldListener)) getListeners().remove(oldListener);
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+       creditGraph = null;
+       if (listeners != null) listeners.clear();
+       listeners = null;
     }
 }

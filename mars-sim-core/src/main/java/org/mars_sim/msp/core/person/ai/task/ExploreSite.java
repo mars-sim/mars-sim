@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -326,5 +326,13 @@ public class ExploreSite extends EVAOperation implements Serializable {
     	if (EXPLORING.equals(getPhase())) return exploringPhase(time);
     	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
     	else return time;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    site = null;
+	    rover = null;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -616,8 +616,7 @@ public abstract class Mission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws MissionException if error determining needed equipment.
      */
-    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) 
-    		;
+    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer);
     
     /** 
      * Time passing for mission.
@@ -660,5 +659,21 @@ public abstract class Mission implements Serializable {
         if (result > 0) result--;
         
         return result;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        if (people != null) people.clear();
+        people = null;
+        name = null;
+        description = null;
+        if (phases != null) phases.clear();
+        phases = null;
+        phase = null;
+        phaseDescription = null;
+        if (listeners != null) listeners.clear();
+        listeners = null;
     }
 }

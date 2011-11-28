@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -371,5 +371,18 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	if (oxygenRange < range) range = oxygenRange;
     	
     	return range;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        if (airlock != null) airlock.destroy();
+        airlock = null;
+        if (lab != null) lab.destroy();
+        lab = null;
+        if (sickbay != null) sickbay.destroy();
+        sickbay = null;
+        towedVehicle = null;
     }
 }

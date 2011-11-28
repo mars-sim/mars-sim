@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -27,10 +27,8 @@ import java.util.logging.Logger;
  * Note: Sleeping reduces fatigue and stress.
  */
 class Sleep extends Task implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Sleep";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Sleep.class.getName());
 	
 	// Task phase
 	private static final String SLEEPING = "Sleeping";
@@ -198,12 +196,12 @@ class Sleep extends Task implements Serializable {
 	 * @return list of buildings with empty beds.
 	 * @throws BuildingException if any buildings in list don't have the living accommodations function.
 	 */
-	private static List<Building> getQuartersWithEmptyBeds(List buildingList) {
+	private static List<Building> getQuartersWithEmptyBeds(List<Building> buildingList) {
 		List<Building> result = new ArrayList<Building>();
 		
-		Iterator i = buildingList.iterator();
+		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
-			Building building = (Building) i.next();
+			Building building = i.next();
 			LivingAccommodations quarters = (LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
 			if (quarters.getSleepers() < quarters.getBeds()) result.add(building);
 		}
@@ -238,5 +236,12 @@ class Sleep extends Task implements Serializable {
 	public List<String> getAssociatedSkills() {
 		List<String> results = new ArrayList<String>(0);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    accommodations = null;
 	}
 }

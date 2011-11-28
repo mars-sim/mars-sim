@@ -132,9 +132,9 @@
 		<module>mars-sim-core</module>
 		<module>mars-sim-ui</module>
 		<module>mars-sim-main</module>
-		<module>mars-sim-mapdata</module>
-    <module>mars-sim-services</module>
-	 <!--<module>mars-sim-package</module>-->
+                <module>mars-sim-mapdata</module> 
+                <module>mars-sim-services</module>
+	        <!--<module>mars-sim-package</module>-->
 	</modules>
     <!-- ************************************************************************************************* -->
 	<!-- * Build Section                                                                                 * -->

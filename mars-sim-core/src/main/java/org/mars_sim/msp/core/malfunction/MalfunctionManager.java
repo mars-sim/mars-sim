@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.00 2011-03-03
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -29,10 +29,8 @@ import java.util.logging.Logger;
  * The MalfunctionManager class manages the current malfunctions in a unit.
  */
 public class MalfunctionManager implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.malfunction.MalfunctionManager";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
 
     // Unit update events.
     public static final String MALFUNCTION_EVENT = "malfunction";
@@ -810,4 +808,17 @@ public class MalfunctionManager implements Serializable {
 	public double getWearConditionAccidentModifier() {
 	    return (100D - wearCondition) / 100D * WEAR_ACCIDENT_FACTOR + 1D;
 	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        entity = null;
+        scope.clear();
+        scope = null;
+        malfunctions.clear();
+        malfunctions = null;
+        partsNeededForMaintenance.clear();
+        partsNeededForMaintenance = null;
+    }
 }

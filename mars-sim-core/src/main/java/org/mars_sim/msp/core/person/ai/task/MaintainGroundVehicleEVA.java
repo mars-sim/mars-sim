@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -35,11 +35,8 @@ import java.util.logging.Logger;
  * preventive maintenance on ground vehicles outside a settlement.
  */
 public class MaintainGroundVehicleEVA extends EVAOperation implements Serializable {
-
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.ai.task.MaintainGroundVehicleEVA";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
 	
     // Phase names
     private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
@@ -389,5 +386,13 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 		results.add(Skill.EVA_OPERATIONS);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    vehicle = null;
+	    airlock = null;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.02 2011-10-07
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -62,6 +62,7 @@ public class Simulation implements ClockListener, Serializable {
     private CreditManager creditManager; // Manages trade credit between settlements.
     private ScientificStudyManager scientificStudyManager; // Manages scientific studies.
     private boolean defaultLoad = false;
+    private boolean initialSimulationCreated = false;
 
     /**
      * Constructor
@@ -99,11 +100,35 @@ public class Simulation implements ClockListener, Serializable {
         logger.config("Creating new simulation");
         
         Simulation simulation = instance();
+        
+        // Destroy old simulation.
+        if (simulation.initialSimulationCreated) {
+            simulation.destroyOldSimulation();
+        }
+        
         // Initialize intransient data members.
         simulation.initializeIntransientData();
 
         // Initialize transient data members.
         simulation.initializeTransientData();
+        
+        simulation.initialSimulationCreated = true;
+    }
+    
+    /**
+     * Destroys the current simulation to prepare for creating or loading a new simulation.
+     */
+    private void destroyOldSimulation() {
+        malfunctionFactory.destroy();
+        mars.destroy();
+        missionManager.destroy();
+        relationshipManager.destroy();
+        medicalManager.destroy();
+        masterClock.destroy();
+        unitManager.destroy();
+        creditManager.destroy();
+        scientificStudyManager.destroy();
+        eventManager.destroy();
     }
 
     /**
@@ -136,7 +161,7 @@ public class Simulation implements ClockListener, Serializable {
      * @param file the file to be loaded from.
      * @throws Exception if simulation could not be loaded.
      */
-    public void loadSimulation(final File file) {
+    public static void loadSimulation(final File file) {
         File f = file;
 
         logger.config("Loading simulation from " + file);
@@ -149,15 +174,15 @@ public class Simulation implements ClockListener, Serializable {
         if (f == null) {
             /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
             f = new File(DEFAULT_DIR, DEFAULT_FILE);
-            defaultLoad = true;
+            simulation.defaultLoad = true;
         } 
         else {
-            defaultLoad = false;
+            simulation.defaultLoad = false;
         }
         
         if (f.exists() && f.canRead()) {
             try {
-                readFromFile(f);
+                simulation.readFromFile(f);
             } catch (ClassNotFoundException ex) {
                 throw new IllegalStateException(ex);
             } catch (IOException ex) {
@@ -172,6 +197,10 @@ public class Simulation implements ClockListener, Serializable {
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
         
         ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
+        
+        // Destroy old simulation.
+        destroyOldSimulation();
+        
         // Load intransient objects.
         SimulationConfig.setInstance((SimulationConfig) p.readObject());
         malfunctionFactory = (MalfunctionFactory) p.readObject();
@@ -185,6 +214,9 @@ public class Simulation implements ClockListener, Serializable {
         unitManager = (UnitManager) p.readObject();
         masterClock = (MasterClock) p.readObject();
         p.close();
+        
+        // Initialize transient data.
+        initializeTransientData();
     }
 
     /**

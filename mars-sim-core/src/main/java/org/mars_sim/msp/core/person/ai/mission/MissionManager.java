@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -168,8 +168,8 @@ public class MissionManager implements Serializable {
             if (listeners == null) listeners = 
             	Collections.synchronizedList(new ArrayList<MissionManagerListener>());
             synchronized(listeners) {
-            	Iterator i = listeners.iterator();
-            	while (i.hasNext()) ((MissionManagerListener) i.next()).removeMission(oldMission);
+            	Iterator<MissionManagerListener> i = listeners.iterator();
+            	while (i.hasNext()) i.next().removeMission(oldMission);
             }
             
             if(logger.isLoggable(Level.FINER)) {
@@ -354,5 +354,20 @@ public class MissionManager implements Serializable {
     public void timePassing(double time) {
     	Iterator<Mission> i = missions.iterator();
     	while (i.hasNext()) i.next().timePassing(time);
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        missions.clear();
+        missions = null;
+        listeners.clear();
+        listeners = null;
+        personCache = null;
+        timeCache = null;
+        missionProbCache.clear();
+        missionProbCache = null;
+        potentialMissions = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 3.00 2010-08-25
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -160,5 +160,24 @@ public class SettlementTemplate implements Serializable {
      */
     public List<ResupplyMissionTemplate> getResupplyMissionTemplates() {
         return new ArrayList<ResupplyMissionTemplate>(resupplies);
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        name = null;
+        buildings.clear();
+        buildings = null;
+        vehicles.clear();
+        vehicles = null;
+        equipment.clear();
+        equipment = null;
+        resources.clear();
+        resources = null;
+        parts.clear();
+        parts = null;
+        resupplies.clear();
+        resupplies = null;
     }
 }

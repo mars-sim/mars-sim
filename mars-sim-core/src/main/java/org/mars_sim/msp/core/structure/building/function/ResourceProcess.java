@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
  
@@ -227,9 +227,9 @@ public class ResourceProcess implements Serializable {
             // logger.info(name + " production level: " + productionLevel);
             
             // Input resources from inventory.
-            Iterator inputI = maxInputResourceRates.keySet().iterator();
+            Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
             while (inputI.hasNext()) {
-                AmountResource resource = (AmountResource) inputI.next();
+                AmountResource resource = inputI.next();
                 double maxRate = maxInputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
@@ -243,9 +243,9 @@ public class ResourceProcess implements Serializable {
             }
             
             // Output resources to inventory.
-            Iterator outputI = maxOutputResourceRates.keySet().iterator();
+            Iterator<AmountResource> outputI = maxOutputResourceRates.keySet().iterator();
             while (outputI.hasNext()) {
-            	AmountResource resource = (AmountResource) outputI.next();
+            	AmountResource resource = outputI.next();
                 double maxRate = maxOutputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
@@ -281,9 +281,9 @@ public class ResourceProcess implements Serializable {
         // Convert time from millisols to seconds.
         // double timeSec = MarsClock.convertMillisolsToSeconds(time);
         
-        Iterator inputI = maxInputResourceRates.keySet().iterator();
+        Iterator<AmountResource> inputI = maxInputResourceRates.keySet().iterator();
         while (inputI.hasNext()) {
-        	AmountResource resource = (AmountResource) inputI.next();
+        	AmountResource resource = inputI.next();
             double maxRate = maxInputResourceRates.get(resource);
             double desiredResourceAmount = maxRate * time;
             double inventoryResourceAmount = inventory.getAmountResourceStored(resource);
@@ -310,5 +310,20 @@ public class ResourceProcess implements Serializable {
      */
     public double getPowerRequired() {
         return powerRequired;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        name = null;
+        maxInputResourceRates.clear();
+        maxInputResourceRates = null;
+        maxAmbientInputResourceRates.clear();
+        maxAmbientInputResourceRates = null;
+        maxOutputResourceRates.clear();
+        maxOutputResourceRates = null;
+        maxWasteOutputResourceRates.clear();
+        maxWasteOutputResourceRates = null;
     }
 }

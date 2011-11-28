@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;
@@ -123,5 +123,13 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     	
     	// Add active time if crewed.
     	if (getCrewNum() > 0) malfunctionManager.activeTimePassing(time);
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        attachments.clear();
+        attachments = null;
     }
 }

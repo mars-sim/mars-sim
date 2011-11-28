@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -113,5 +113,12 @@ public class EVA extends Function implements Serializable {
 	 */
 	public double getPowerDownPowerRequired() {
 		return 0D;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    airlock = null;
 	}
 }

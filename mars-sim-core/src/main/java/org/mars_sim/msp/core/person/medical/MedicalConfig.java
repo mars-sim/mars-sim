@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.medical;
@@ -219,4 +219,15 @@ public class MedicalConfig implements Serializable {
 		
 		return treatmentList;
 	}
+    
+    /**
+     * Prepare the object for garbage collection.
+     */
+    public void destroy() {
+        medicalDoc = null;
+        complaintList.clear();
+        complaintList = null;
+        treatmentList.clear();
+        treatmentList = null;
+    }
 }

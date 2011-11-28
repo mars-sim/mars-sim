@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -21,7 +21,7 @@ public class MobileLaboratory implements Lab, Serializable {
     // Data members
     private int laboratorySize; // Number of researchers supportable at any given time. 
     private int technologyLevel; // How advanced the laboratories are (units defined later)
-    private List techSpecialities; // What fields of science the laboratories specialize in.
+    private List<String> techSpecialities; // What fields of science the laboratories specialize in.
     private int researcherNum; // The number of people currently doing research in laboratory.
 
     /** 
@@ -30,7 +30,7 @@ public class MobileLaboratory implements Lab, Serializable {
      * @param techlevel how advanced the laboratories are (units defined later)
      * @param techFocus the names of the technologies the labs are focused on
      */
-    MobileLaboratory(int size, int techLevel, List techSpecialities) {
+    MobileLaboratory(int size, int techLevel, List<String> techSpecialities) {
 
         // Initialize data members.
         this.laboratorySize = size;
@@ -63,10 +63,10 @@ public class MobileLaboratory implements Lab, Serializable {
      */
     public String[] getTechSpecialities() {
         String[] result = new String[techSpecialities.size()];
-        Iterator i = techSpecialities.iterator();
+        Iterator<String> i = techSpecialities.iterator();
         int count = 0;
         while (i.hasNext()) {
-            result[count] = (String) i.next();
+            result[count] = i.next();
             count ++;
         }
         
@@ -79,7 +79,7 @@ public class MobileLaboratory implements Lab, Serializable {
      */
     public boolean hasSpeciality(String speciality) {
         boolean result = false;
-        Iterator i = techSpecialities.iterator();
+        Iterator<String> i = techSpecialities.iterator();
         while (i.hasNext()) {
             if (speciality.equals(i.next())) result = true;
         }
@@ -117,5 +117,11 @@ public class MobileLaboratory implements Lab, Serializable {
         	researcherNum = 0;
             throw new IllegalStateException("Lab is already empty of researchers.");
         }
+    }
+
+    @Override
+    public void destroy() {
+        techSpecialities.clear();
+        techSpecialities = null;
     }
 }

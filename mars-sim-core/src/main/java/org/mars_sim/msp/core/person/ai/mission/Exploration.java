@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -39,9 +39,7 @@ import java.util.logging.Logger;
  */
 public class Exploration extends RoverMission implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.Exploration";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Exploration.class.getName());
 
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Mineral Exploration";
@@ -844,5 +842,17 @@ public class Exploration extends RoverMission implements Serializable {
      */
     public Map<String, Double> getExplorationSiteCompletion() {
         return new HashMap<String, Double>(explorationSiteCompletion);
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        if (explorationSiteCompletion != null) explorationSiteCompletion.clear();
+        explorationSiteCompletion = null;
+        explorationSiteStartTime = null;
+        currentSite = null;
+        if (exploredSites != null) exploredSites.clear();
+        exploredSites = null;
     }
 }

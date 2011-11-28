@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PartPackageConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -88,6 +88,17 @@ public class PartPackageConfig implements Serializable {
 		else throw new IllegalStateException("name: " + name + " does not match any part packages.");
 		
 		return result;
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    Iterator<PartPackage> i = partPackages.iterator();
+	    while (i.hasNext()) {
+	        i.next().parts.clear();
+	    }
+	    partPackages.clear();
 	}
 	
 	/**

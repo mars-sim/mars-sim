@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.02 2011-10-07
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -1014,6 +1014,21 @@ public class Trade extends RoverMission implements Serializable {
         }
 
         return result;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        tradingSettlement = null;
+        if (sellLoad != null) sellLoad.clear();
+        sellLoad = null;
+        if (buyLoad != null) buyLoad.clear();
+        buyLoad = null;
+        if (desiredBuyLoad != null) desiredBuyLoad.clear();
+        desiredBuyLoad = null;
+        startNegotiationTime = null;
+        negotiationTask = null;
     }
 
     /**

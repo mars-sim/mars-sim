@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -43,9 +43,7 @@ import java.util.logging.Logger;
 public class StudyFieldSamples extends Task implements 
         ResearchScientificStudy, Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai." + 
-        "task.PerformLaboratoryResearch";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(StudyFieldSamples.class.getName());
 
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = -.1D; 
@@ -735,5 +733,16 @@ public class StudyFieldSamples extends Task implements
      */
     public void setResearchAssistant(Person researchAssistant) {
         this.researchAssistant = researchAssistant;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
+        lab = null;
+        science = null;
+        malfunctions = null;
+        researchAssistant = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.00 2011-03-14
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -347,6 +347,22 @@ public class SettlementConfig implements Serializable {
 	    settlement.latitude = latitude;
 	    settlement.longitude = longitude;
 	    initialSettlements.add(settlement);
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    Iterator<SettlementTemplate> i = settlementTemplates.iterator();
+	    while (i.hasNext()) {
+	        i.next().destroy();
+	    }
+	    settlementTemplates.clear();
+	    settlementTemplates = null;
+	    initialSettlements.clear();
+	    initialSettlements = null;
+	    settlementNames.clear();
+	    settlementNames = null;
 	}
 	
 	/**

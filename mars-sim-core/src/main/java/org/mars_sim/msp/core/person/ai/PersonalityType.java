@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonalityType.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -244,4 +244,14 @@ public class PersonalityType implements Serializable {
 			condition.setStress(condition.getStress() - companyStressModifier);
 		}
 	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+    public void destroy() {
+        if (personalityTypes != null) personalityTypes.clear();
+        personalityTypes = null;
+        personalityType = null;
+        person = null;
+    }
 }

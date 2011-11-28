@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -242,6 +242,27 @@ public class ResupplyConfig implements Serializable {
 	public Map<AmountResource, Double> getResupplyResources(String resupplyName) {
 		ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
 		return new HashMap<AmountResource, Double>(foundTemplate.resources);
+	}
+	
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+	    Iterator<ResupplyTemplate> i = resupplyTemplates.iterator();
+	    while (i.hasNext()) {
+	        ResupplyTemplate template = i.next();
+	        template.name = null;
+	        template.buildings.clear();
+	        template.buildings = null;
+	        template.vehicles.clear();
+	        template.vehicles = null;
+	        template.equipment.clear();
+	        template.equipment = null;
+	        template.resources.clear();
+	        template.resources = null;
+	        template.parts.clear();
+	        template.parts = null;
+	    }
 	}
 	
 	/**

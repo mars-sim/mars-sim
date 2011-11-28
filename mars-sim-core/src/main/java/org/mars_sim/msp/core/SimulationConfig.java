@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SimulationConfig.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -113,7 +113,6 @@ public class SimulationConfig implements Serializable {
 	 * ---------------------------------------------------------------------------------------------------- */
 
 	private SimulationConfig() {
-		loadDefaultConfiguration();
 	}
 	
 	/* ---------------------------------------------------------------------------------------------------- *
@@ -141,6 +140,9 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public static void loadConfig() {
+	    if (instance.simulationDoc != null) {
+	        instance.destroyOldConfiguration();
+	    }
 		instance.loadDefaultConfiguration();
 	}
 	
@@ -350,6 +352,26 @@ public class SimulationConfig implements Serializable {
 			e.printStackTrace();
 		}
     }
+    
+    /**
+     * Prepares all configuration objects for garbage collection.
+     */
+    private void destroyOldConfiguration() {
+        simulationDoc = null;
+        partPackageConfig.destroy();
+        personConfig.destroy();
+        medicalConfig.destroy();
+        landmarkConfig.destroy();
+        mineralMapConfig.destroy();
+        malfunctionConfig.destroy();
+        cropConfig.destroy();
+        vehicleConfig.destroy();
+        buildingConfig.destroy();
+        resupplyConfig.destroy();
+        settlementConfig.destroy();
+        manufactureConfig.destroy();
+        constructionConfig.destroy();
+    }
 	
 	/**
      * Parses an XML file into a DOM document.
@@ -384,5 +406,4 @@ public class SimulationConfig implements Serializable {
 
 		return stream;
 	}
-	
 }

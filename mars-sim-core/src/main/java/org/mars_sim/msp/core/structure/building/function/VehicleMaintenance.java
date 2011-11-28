@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -143,5 +143,13 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
 	 */
 	public double getPowerDownPowerRequired() {
 		return 0D;
-	}    
+	} 
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    vehicles.clear();
+	    vehicles = null;
+	}
 }

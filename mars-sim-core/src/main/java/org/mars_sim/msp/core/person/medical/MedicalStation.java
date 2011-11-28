@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalStation.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  * Based on Barry Evan's SickBay class
  */
@@ -90,9 +90,9 @@ public class MedicalStation implements MedicalAid, Serializable {
      */
     public Collection<Person> getPatients() {
         Collection<Person> result = new ConcurrentLinkedQueue<Person>();
-        Iterator i = problemsBeingTreated.iterator();
+        Iterator<HealthProblem> i = problemsBeingTreated.iterator();
         while (i.hasNext()) {
-            Person patient = ((HealthProblem) i.next()).getSufferer();
+            Person patient = i.next().getSufferer();
             if (!result.contains(patient)) result.add(patient);
         }
         
@@ -204,5 +204,17 @@ public class MedicalStation implements MedicalAid, Serializable {
      */
     public int getTreatmentLevel() {
     	return level;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        problemsBeingTreated.clear();
+        problemsBeingTreated = null;
+        problemsAwaitingTreatment.clear();
+        problemsAwaitingTreatment = null;
+        supportedTreatments.clear();
+        supportedTreatments = null;
     }
 }

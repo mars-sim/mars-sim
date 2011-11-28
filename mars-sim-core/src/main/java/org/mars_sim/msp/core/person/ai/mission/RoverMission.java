@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.01 2011-08-28
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -600,5 +600,12 @@ public abstract class RoverMission extends VehicleMission {
             e.printStackTrace(System.err);
         }
         return hasBasicResources;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        startingSettlement = null;
     }
 }

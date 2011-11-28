@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -316,5 +316,15 @@ public class Farming extends Function implements Serializable {
 		int solsInOrbit = MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;
 		return maxHarvest * aveGrowingCyclesPerOrbit;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    Iterator<Crop> i = crops.iterator();
+	    while (i.hasNext()) {
+	        i.next().destroy();
+	    }
 	}
 }

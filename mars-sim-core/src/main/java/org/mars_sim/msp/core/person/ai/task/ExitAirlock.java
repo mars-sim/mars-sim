@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -277,5 +277,12 @@ public class ExitAirlock extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.EVA_OPERATIONS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    airlock = null;
 	}
 }

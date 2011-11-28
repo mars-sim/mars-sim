@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Barry Evans
  */
 
@@ -664,5 +664,18 @@ public class PhysicalCondition implements Serializable {
         if (medication == null) 
             throw new IllegalArgumentException("medication is null");
         medicationList.add(medication);
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        deathDetails = null;
+        problems.clear();
+        problems = null;
+        serious = null;
+        person = null;
+        medicationList.clear();
+        medicationList = null;
     }
 }

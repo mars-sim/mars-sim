@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 
@@ -52,10 +52,7 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		// Add person to malfunctioning building if necessary.
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 			if (entity instanceof Building) {
-//				try {
-					BuildingManager.addPersonToBuilding(person, (Building) entity);
-//				}
-//				catch (BuildingException e) {}
+				BuildingManager.addPersonToBuilding(person, (Building) entity);
 			}
 		}
 
@@ -139,9 +136,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
         boolean result = false;
 
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext()) {
-            Malfunctionable entity = (Malfunctionable) i.next();
+            Malfunctionable entity = i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
             if (manager.hasEmergencyMalfunction()) result = true;
         }
@@ -154,9 +151,9 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 	 */
     private void claimMalfunction() {
         malfunction = null;
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
         while (i.hasNext() && (malfunction == null)) {
-            Malfunctionable e = (Malfunctionable) i.next();
+            Malfunctionable e = i.next();
             MalfunctionManager manager = e.getMalfunctionManager();
             if (manager.hasEmergencyMalfunction()) {
                 malfunction = manager.getMostSeriousEmergencyMalfunction();
@@ -192,5 +189,13 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MECHANICS);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    entity = null;
+	    malfunction = null;
 	}
 }

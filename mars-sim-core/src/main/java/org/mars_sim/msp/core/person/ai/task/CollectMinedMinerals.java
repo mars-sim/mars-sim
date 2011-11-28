@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -300,4 +300,12 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
     	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
     	else return time;
     }
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    rover = null;
+	    mineralType = null;
+	}
 }

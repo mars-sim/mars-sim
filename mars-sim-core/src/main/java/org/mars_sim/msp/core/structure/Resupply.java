@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.00 2011-02-23
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -318,5 +318,24 @@ public class Resupply implements Serializable {
         }
         
         return newPosition;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        resupplyName = null;
+        settlement = null;
+        arrivalDate = null;
+        newBuildings.clear();
+        newBuildings = null;
+        newVehicles.clear();
+        newVehicles = null;
+        newEquipment.clear();
+        newEquipment = null;
+        newResources.clear();
+        newResources = null;
+        newParts.clear();
+        newParts = null;
     }
 }

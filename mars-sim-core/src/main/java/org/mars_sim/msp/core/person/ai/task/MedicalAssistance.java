@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MedicalHelp.java
- * @version 3.00 2010-08-10
+ * MedicalAssistance.java
+ * @version 3.02 2011-11-26
  * @author Barry Evans
  */
 
@@ -40,10 +40,8 @@ import java.util.logging.Logger;
  * help to someone else. 
  */
 public class MedicalAssistance extends Task implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.MedicalAssistance";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(MedicalAssistance.class.getName());
 	
 	private static final String TREATMENT = "Treatment";
 
@@ -389,5 +387,13 @@ public class MedicalAssistance extends Task implements Serializable {
 		List<String> results = new ArrayList<String>(1);
 		results.add(Skill.MEDICAL);
 		return results;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    medical = null;
+	    problem = null;
 	}
 }

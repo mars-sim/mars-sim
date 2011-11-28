@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 
@@ -30,14 +30,13 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 /**
- * The TravelToSettlement class is a mission to travel from one settlement to
- * another randomly selected one within range of an available rover.
+ * The TravelToSettlement class is a mission to travel from one settlement to another randomly selected one within range
+ * of an available rover.
  */
 public class TravelToSettlement extends RoverMission implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.TravelToSettlement";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(TravelToSettlement.class
+            .getName());
 
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
@@ -53,7 +52,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     private static final double JOB_MODIFIER = 1D;
 
     private static final double CROWDING_MODIFIER = 50D;
-    
+
     private static final double SCIENCE_MODIFIER = 1D;
 
     private static final double RANGE_BUFFER = .8D;
@@ -62,8 +61,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     private Settlement destinationSettlement;
 
     /**
-     * Constructs a TravelToSettlement object with destination settlement
-     * randomly determined.
+     * Constructs a TravelToSettlement object with destination settlement randomly determined.
      * 
      * @param startingPerson the person starting the mission.
      * @throws MissionException if error constructing mission.
@@ -80,41 +78,43 @@ public class TravelToSettlement extends RoverMission implements Serializable {
             // Set mission capacity.
             if (hasVehicle())
                 setMissionCapacity(getRover().getCrewCapacity());
-            int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingPerson.getSettlement());
+            int availableSuitNum = Mission
+                    .getNumberAvailableEVASuitsAtSettlement(startingPerson
+                            .getSettlement());
             if (availableSuitNum < getMissionCapacity())
                 setMissionCapacity(availableSuitNum);
 
             // Choose destination settlement.
-            setDestinationSettlement(getRandomDestinationSettlement(startingPerson, getStartingSettlement()));
+            setDestinationSettlement(getRandomDestinationSettlement(
+                    startingPerson, getStartingSettlement()));
             if (destinationSettlement != null) {
-                addNavpoint(new NavPoint(destinationSettlement.getCoordinates(), destinationSettlement, destinationSettlement
-                        .getName()));
+                addNavpoint(new NavPoint(
+                        destinationSettlement.getCoordinates(),
+                        destinationSettlement, destinationSettlement.getName()));
                 setDescription("Travel To " + destinationSettlement.getName());
             } else
                 endMission("Destination is null.");
-            
-            //Check mission available space
-            int availableSpace = destinationSettlement.getPopulationCapacity() -
-                    destinationSettlement.getAllAssociatedPeople().size();
 
-            if (availableSpace < getMissionCapacity()) setMissionCapacity(availableSpace);
+            // Check mission available space
+            int availableSpace = destinationSettlement.getPopulationCapacity()
+                    - destinationSettlement.getAllAssociatedPeople().size();
+
+            if (availableSpace < getMissionCapacity())
+                setMissionCapacity(availableSpace);
 
             // Recruit additional people to mission.
             if (!isDone())
                 recruitPeopleForMission(startingPerson);
 
             // Check if vehicle can carry enough supplies for the mission.
-//            try {
-                if (hasVehicle() && !isVehicleLoadable())
-                    endMission("Vehicle is not loadable. (TravelToSettlement)");
-//            } catch (Exception e) {
-//                throw new MissionException(getPhase(), e);
-//            }
+            if (hasVehicle() && !isVehicleLoadable())
+                endMission("Vehicle is not loadable. (TravelToSettlement)");
         }
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription("Embarking from "
+                + getStartingSettlement().getName());
 
         logger.info("Travel to Settlement mission");
     }
@@ -129,8 +129,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param description the mission's description.
      * @throws MissionException if error constructing mission.
      */
-    public TravelToSettlement(Collection<Person> members, Settlement startingSettlement, Settlement destinationSettlement, Rover rover,
-            String description) {
+    public TravelToSettlement(Collection<Person> members,
+            Settlement startingSettlement, Settlement destinationSettlement,
+            Rover rover, String description) {
         // Use RoverMission constructor.
         super(description, (Person) members.toArray()[0], 1, rover);
 
@@ -139,13 +140,16 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         // Sets the mission capacity.
         setMissionCapacity(getRover().getCrewCapacity());
-        int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(startingSettlement);
+        int availableSuitNum = Mission
+                .getNumberAvailableEVASuitsAtSettlement(startingSettlement);
         if (availableSuitNum < getMissionCapacity())
             setMissionCapacity(availableSuitNum);
 
         // Set mission destination.
         setDestinationSettlement(destinationSettlement);
-        addNavpoint(new NavPoint(this.destinationSettlement.getCoordinates(), this.destinationSettlement, this.destinationSettlement.getName()));
+        addNavpoint(new NavPoint(this.destinationSettlement.getCoordinates(),
+                this.destinationSettlement, this.destinationSettlement
+                        .getName()));
 
         // Add mission members.
         Iterator<Person> i = members.iterator();
@@ -154,21 +158,17 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription("Embarking from "
+                + getStartingSettlement().getName());
 
         // Check if vehicle can carry enough supplies for the mission.
-//        try {
-            if (hasVehicle() && !isVehicleLoadable()) {
-                endMission("Vehicle is not loadable.");
-            }
-//        } catch (Exception e) {
-//            throw new MissionException(getPhase(), e);
-//        }
+        if (hasVehicle() && !isVehicleLoadable()) {
+            endMission("Vehicle is not loadable.");
+        }
     }
 
     /**
-     * Gets the weighted probability that a given person would start this
-     * mission.
+     * Gets the weighted probability that a given person would start this mission.
      * 
      * @param person the given person
      * @return the weighted probability
@@ -201,31 +201,29 @@ public class TravelToSettlement extends RoverMission implements Serializable {
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE)
                 missionPossible = false;
-            
+
             // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement)) 
+            if (!RoverMission.hasEnoughBasicResources(settlement))
                 missionPossible = false;
 
             // Check if there are any desirable settlements within range.
             double topSettlementDesirability = 0D;
-//            try {
-                Vehicle vehicle = getVehicleWithGreatestRange(settlement, false);
-                if (vehicle != null) {
-                    Map<Settlement, Double> desirableSettlements = 
-                        getDestinationSettlements(person, settlement, vehicle.getRange());
-                    if (desirableSettlements.size() == 0)
-                        missionPossible = false;
-                    Iterator<Settlement> i = desirableSettlements.keySet().iterator();
-                    while (i.hasNext()) {
-                        Settlement desirableSettlement = i.next();
-                        double desirability = desirableSettlements.get(desirableSettlement);
-                        if (desirability > topSettlementDesirability)
-                            topSettlementDesirability = desirability;
-                    }
+            Vehicle vehicle = getVehicleWithGreatestRange(settlement, false);
+            if (vehicle != null) {
+                Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
+                        person, settlement, vehicle.getRange());
+                if (desirableSettlements.size() == 0)
+                    missionPossible = false;
+                Iterator<Settlement> i = desirableSettlements.keySet()
+                        .iterator();
+                while (i.hasNext()) {
+                    Settlement desirableSettlement = i.next();
+                    double desirability = desirableSettlements
+                            .get(desirableSettlement);
+                    if (desirability > topSettlementDesirability)
+                        topSettlementDesirability = desirability;
                 }
-//            } catch (Exception e) {
-//                logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
-//            }
+            }
 
             // Check for embarking missions.
             if (VehicleMission.hasEmbarkingMissions(settlement))
@@ -233,17 +231,20 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
             // Determine mission probability.
             if (missionPossible) {
-                missionProbability = BASE_MISSION_WEIGHT + (topSettlementDesirability / 100D);
+                missionProbability = BASE_MISSION_WEIGHT
+                        + (topSettlementDesirability / 100D);
 
                 // Crowding modifier.
-                int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
+                int crowding = settlement.getCurrentPopulationNum()
+                        - settlement.getPopulationCapacity();
                 if (crowding > 0)
                     missionProbability *= (crowding + 1);
 
                 // Job modifier.
                 Job job = person.getMind().getJob();
                 if (job != null)
-                    missionProbability *= job.getStartMissionProbabilityModifier(TravelToSettlement.class);
+                    missionProbability *= job
+                            .getStartMissionProbabilityModifier(TravelToSettlement.class);
             }
         }
 
@@ -259,12 +260,14 @@ public class TravelToSettlement extends RoverMission implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription("Driving to "
+                    + getNextNavpoint().getDescription());
             associateAllMembersWithSettlement(destinationSettlement);
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
+                setPhaseDescription("Disembarking at "
+                        + getCurrentNavpoint().getDescription());
             }
         } else if (DISEMBARKING.equals(getPhase()))
             endMission("Successfully disembarked.");
@@ -297,23 +300,22 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @return randomly determined settlement
      * @throws MissionException if problem determining destination settlement.
      */
-    private Settlement getRandomDestinationSettlement(Person person, Settlement startingSettlement) {
+    private Settlement getRandomDestinationSettlement(Person person,
+            Settlement startingSettlement) {
 
-//        try {
-            double range = getVehicle().getRange();
-            Settlement result = null;
+        double range = getVehicle().getRange();
+        Settlement result = null;
 
-            // Find all desirable destination settlements.
-            Map desirableSettlements = getDestinationSettlements(person, startingSettlement, range);
+        // Find all desirable destination settlements.
+        Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
+                person, startingSettlement, range);
 
-            // Randomly select a desirable settlement.
-            if (desirableSettlements.size() > 0)
-                result = (Settlement) RandomUtil.getWeightedRandomObject(desirableSettlements);
+        // Randomly select a desirable settlement.
+        if (desirableSettlements.size() > 0)
+            result = (Settlement) RandomUtil
+                    .getWeightedRandomObject(desirableSettlements);
 
-            return result;
-//        } catch (Exception e) {
-//            throw new MissionException(getPhase(), e);
-//        }
+        return result;
     }
 
     /**
@@ -324,7 +326,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param range the range (km) that can be travelled.
      * @return map of destination settlements.
      */
-    private static Map<Settlement, Double> getDestinationSettlements(Person person, Settlement startingSettlement, double range) {
+    private static Map<Settlement, Double> getDestinationSettlements(
+            Person person, Settlement startingSettlement, double range) {
         Map<Settlement, Double> result = new HashMap<Settlement, Double>();
 
         UnitManager unitManager = startingSettlement.getUnitManager();
@@ -332,9 +335,12 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         while (i.hasNext()) {
             Settlement settlement = i.next();
-            double distance = startingSettlement.getCoordinates().getDistance(settlement.getCoordinates());
-            if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER))) {
-                double desirability = getDestinationSettlementDesirability(person, startingSettlement, settlement);
+            double distance = startingSettlement.getCoordinates().getDistance(
+                    settlement.getCoordinates());
+            if ((startingSettlement != settlement)
+                    && (distance <= (range * RANGE_BUFFER))) {
+                double desirability = getDestinationSettlementDesirability(
+                        person, startingSettlement, settlement);
                 if (desirability > 0D)
                     result.put(settlement, desirability);
             }
@@ -351,24 +357,32 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @param destinationSettlement the new settlement.
      * @return negative or positive desirability weight value.
      */
-    private static double getDestinationSettlementDesirability(Person person, Settlement startingSettlement, Settlement destinationSettlement) {
+    private static double getDestinationSettlementDesirability(Person person,
+            Settlement startingSettlement, Settlement destinationSettlement) {
 
         // Determine relationship factor in destination settlement relative to
         // starting settlement.
-        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(person, startingSettlement.getAllAssociatedPeople());
-        double destinationOpinion = relationshipManager.getAverageOpinionOfPeople(person, destinationSettlement.getAllAssociatedPeople());
+        RelationshipManager relationshipManager = Simulation.instance()
+                .getRelationshipManager();
+        double currentOpinion = relationshipManager.getAverageOpinionOfPeople(
+                person, startingSettlement.getAllAssociatedPeople());
+        double destinationOpinion = relationshipManager
+                .getAverageOpinionOfPeople(person, destinationSettlement
+                        .getAllAssociatedPeople());
         double relationshipFactor = (destinationOpinion - currentOpinion) / 100D;
 
         // Determine job opportunities in destination settlement relative to
         // starting settlement.
         Job currentJob = person.getMind().getJob();
-        double currentJobProspect = JobManager.getJobProspect(person, currentJob, startingSettlement, true);
+        double currentJobProspect = JobManager.getJobProspect(person,
+                currentJob, startingSettlement, true);
         double destinationJobProspect = 0D;
         if (person.getMind().getJobLock())
-            destinationJobProspect = JobManager.getJobProspect(person, currentJob, destinationSettlement, false);
+            destinationJobProspect = JobManager.getJobProspect(person,
+                    currentJob, destinationSettlement, false);
         else
-            destinationJobProspect = JobManager.getBestJobProspect(person, destinationSettlement, false);
+            destinationJobProspect = JobManager.getBestJobProspect(person,
+                    destinationSettlement, false);
         double jobFactor = 0D;
         if (destinationJobProspect > currentJobProspect)
             jobFactor = 1D;
@@ -377,29 +391,39 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         // Determine available space in destination settlement relative to
         // starting settlement.
-        int startingCrowding = startingSettlement.getPopulationCapacity() - startingSettlement.getAllAssociatedPeople().size() - 1;
-        int destinationCrowding = destinationSettlement.getPopulationCapacity() - destinationSettlement.getAllAssociatedPeople().size();
+        int startingCrowding = startingSettlement.getPopulationCapacity()
+                - startingSettlement.getAllAssociatedPeople().size() - 1;
+        int destinationCrowding = destinationSettlement.getPopulationCapacity()
+                - destinationSettlement.getAllAssociatedPeople().size();
         double crowdingFactor = destinationCrowding - startingCrowding;
-        
+
         // Determine science achievement factor for destination relative to starting settlement.
-        double totalScienceAchievementFactor = (destinationSettlement.getTotalScientificAchievement() - 
-                startingSettlement.getTotalScientificAchievement()) / 10D;
+        double totalScienceAchievementFactor = (destinationSettlement
+                .getTotalScientificAchievement() - startingSettlement
+                .getTotalScientificAchievement()) / 10D;
         double jobScienceAchievementFactor = 0D;
-        Science jobScience = ScienceUtil.getAssociatedScience(person.getMind().getJob());
+        Science jobScience = ScienceUtil.getAssociatedScience(person.getMind()
+                .getJob());
         if (jobScience != null) {
-            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
-            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
-            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
+            double startingJobScienceAchievement = startingSettlement
+                    .getScientificAchievement(jobScience);
+            double destinationJobScienceAchievement = destinationSettlement
+                    .getScientificAchievement(jobScience);
+            jobScienceAchievementFactor = destinationJobScienceAchievement
+                    - startingJobScienceAchievement;
         }
-        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
-        
-        if(destinationCrowding < RoverMission.MIN_PEOPLE) {
-        	return 0;
+        double scienceAchievementFactor = totalScienceAchievementFactor
+                + jobScienceAchievementFactor;
+
+        if (destinationCrowding < RoverMission.MIN_PEOPLE) {
+            return 0;
         }
 
         // Return the sum of the factors with modifiers.
-        return (relationshipFactor * RELATIONSHIP_MODIFIER) + (jobFactor * JOB_MODIFIER) + 
-            (crowdingFactor * CROWDING_MODIFIER) + (scienceAchievementFactor * SCIENCE_MODIFIER);
+        return (relationshipFactor * RELATIONSHIP_MODIFIER)
+                + (jobFactor * JOB_MODIFIER)
+                + (crowdingFactor * CROWDING_MODIFIER)
+                + (scienceAchievementFactor * SCIENCE_MODIFIER);
     }
 
     /**
@@ -419,11 +443,9 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     }
 
     /**
-     * Gets the mission qualification value for the person. Person is qualified
-     * and interested in joining the mission if the value is larger than 0. The
-     * larger the qualification value, the more likely the person will be picked
-     * for the mission. Qualification values of zero or negative will not join
-     * missions.
+     * Gets the mission qualification value for the person. Person is qualified and interested in joining the mission if
+     * the value is larger than 0. The larger the qualification value, the more likely the person will be picked for the
+     * mission. Qualification values of zero or negative will not join missions.
      * 
      * @param person the person to check.
      * @return mission qualification value.
@@ -434,26 +456,32 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         if (isCapableOfMission(person)) {
             result = super.getMissionQualification(person);
-            RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+            RelationshipManager relationshipManager = Simulation.instance()
+                    .getRelationshipManager();
 
             // Add modifier for average relationship with inhabitants of
             // destination settlement.
             if (destinationSettlement != null) {
-                Collection<Person> destinationInhabitants = destinationSettlement.getAllAssociatedPeople();
-                double destinationSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person, destinationInhabitants) - 50D) / 50D;
+                Collection<Person> destinationInhabitants = destinationSettlement
+                        .getAllAssociatedPeople();
+                double destinationSocialModifier = (relationshipManager
+                        .getAverageOpinionOfPeople(person,
+                                destinationInhabitants) - 50D) / 50D;
                 result += destinationSocialModifier;
             }
 
             // Subtract modifier for average relationship with non-mission
             // inhabitants of starting settlement.
             if (getStartingSettlement() != null) {
-                Collection<Person> startingInhabitants = getStartingSettlement().getAllAssociatedPeople();
+                Collection<Person> startingInhabitants = getStartingSettlement()
+                        .getAllAssociatedPeople();
                 Iterator<Person> i = startingInhabitants.iterator();
                 while (i.hasNext()) {
                     if (hasPerson(i.next()))
                         i.remove();
                 }
-                double startingSocialModifier = (relationshipManager.getAverageOpinionOfPeople(person, startingInhabitants) - 50D) / 50D;
+                double startingSocialModifier = (relationshipManager
+                        .getAverageOpinionOfPeople(person, startingInhabitants) - 50D) / 50D;
                 result -= startingSocialModifier;
             }
 
@@ -475,7 +503,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         // Make sure there is at least one person left at the starting
         // settlement.
-        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(), startingPerson)) {
+        if (!atLeastOnePersonRemainingAtSettlement(getStartingSettlement(),
+                startingPerson)) {
             // Remove last person added to the mission.
             Object[] array = getPeople().toArray();
             int amount = getPeopleNumber() - 1;
@@ -508,7 +537,8 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      * @return map of equipment class and Integer number.
      * @throws MissionException if error determining needed equipment.
      */
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+            boolean useBuffer) {
         if (equipmentNeededCache != null)
             return equipmentNeededCache;
         else {
@@ -523,41 +553,48 @@ public class TravelToSettlement extends RoverMission implements Serializable {
     }
 
     /**
-     * Compares the quality of two vehicles for use in this mission. (This
-     * method should be added to by children)
+     * Compares the quality of two vehicles for use in this mission. (This method should be added to by children)
      * 
      * @param firstVehicle the first vehicle to compare
      * @param secondVehicle the second vehicle to compare
-     * @return -1 if the second vehicle is better than the first vehicle, 0 if
-     *         vehicle are equal in quality, and 1 if the first vehicle is
-     *         better than the second vehicle.
-     * @throws IllegalArgumentException if firstVehicle or secondVehicle is
-     *         null.
+     * @return -1 if the second vehicle is better than the first vehicle, 0 if vehicle are equal in quality, and 1 if
+     *         the first vehicle is better than the second vehicle.
+     * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
      * @throws MissionException if error comparing vehicles.
      */
     protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
         int result = super.compareVehicles(firstVehicle, secondVehicle);
 
-        if ((result == 0) && isUsableVehicle(firstVehicle) && isUsableVehicle(secondVehicle)) {
+        if ((result == 0) && isUsableVehicle(firstVehicle)
+                && isUsableVehicle(secondVehicle)) {
             // Check if one can hold more crew than the other.
-            if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle).getCrewCapacity())
+            if (((Rover) firstVehicle).getCrewCapacity() > ((Rover) secondVehicle)
+                    .getCrewCapacity()) {
                 result = 1;
-            else if (((Rover) firstVehicle).getCrewCapacity() < ((Rover) secondVehicle).getCrewCapacity())
+            }
+            else if (((Rover) firstVehicle).getCrewCapacity() < ((Rover) secondVehicle)
+                    .getCrewCapacity()) {
                 result = -1;
+            }
 
             // Vehicle with superior range should be ranked higher.
             if (result == 0) {
-//                try {
-                    if (firstVehicle.getRange() > secondVehicle.getRange())
-                        result = 1;
-                    else if (firstVehicle.getRange() < secondVehicle.getRange())
-                        result = -1;
-//                } catch (Exception e) {
-//                    throw new MissionException(getPhase(), e);
-//                }
+                if (firstVehicle.getRange() > secondVehicle.getRange()) {
+                    result = 1;
+                }
+                else if (firstVehicle.getRange() < secondVehicle.getRange()) {
+                    result = -1;
+                }
             }
         }
 
         return result;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        destinationSettlement = null;
     }
 }

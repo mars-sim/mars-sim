@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis 
  */
 
@@ -159,9 +159,10 @@ public final class MalfunctionFactory implements Serializable {
     	Collection<Malfunctionable> entities = getMalfunctionables(settlement);
     	
     	// Add all associated rovers out on missions and their inventories.
-    	Iterator i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+    	Iterator<Mission> i = Simulation.instance().getMissionManager()
+    	        .getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
-			Mission mission = (Mission) i.next();
+			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
 				Vehicle vehicle = ((VehicleMission) mission).getVehicle();
 				if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
@@ -238,5 +239,12 @@ public final class MalfunctionFactory implements Serializable {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Prepares the object for garbage collection.
+     */
+    public void destroy() {
+        malfunctions = null;
     }
 }

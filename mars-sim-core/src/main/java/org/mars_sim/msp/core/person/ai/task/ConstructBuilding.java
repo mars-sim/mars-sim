@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -339,5 +339,17 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             result = true;
     
         return result;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        settlement = null;
+        stage = null;
+        if (vehicles != null) vehicles.clear();
+        vehicles = null;
+        airlock = null;
+        luv = null;
     }
 }

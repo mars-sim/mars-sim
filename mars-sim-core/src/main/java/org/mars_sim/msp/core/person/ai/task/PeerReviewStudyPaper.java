@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,9 +28,7 @@ import java.util.logging.Logger;
  */
 public class PeerReviewStudyPaper extends Task implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai." + 
-            "task.PeerReviewStudyPaper";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
 
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = 0D;
@@ -40,6 +38,10 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
 
     private ScientificStudy study; // The scientific study to review.
     
+    /**
+     * Constructor
+     * @param person the person performing the task.
+     */
     public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
         super("Peer Review Compiled Study Paper", person, true, false, 
@@ -193,5 +195,12 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
         addExperience(time);
         
         return 0D;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -151,5 +151,13 @@ public class Storage extends Function implements Serializable {
 	 */
 	public double getPowerDownPowerRequired() {
 		return 0D;
+	}
+	
+	@Override
+	public void destroy() {
+	    super.destroy();
+	    
+	    storageCapacity.clear();
+	    storageCapacity = null;
 	}
 }

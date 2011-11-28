@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.01 2011-07-16
+ * @version 3.02 2011-11-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -88,15 +88,10 @@ public class BiologyStudyFieldMission extends RoverMission
             recruitPeopleForMission(startingPerson);
             
             // Determine field site location.
-//            try {
-                if (hasVehicle()) {
-                    double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
-                    determineFieldSite(getVehicle().getRange(), tripTimeLimit);
-                }
-//            }
-//            catch (Exception e) {
-//                throw new MissionException(getPhase(), e);
-//            }
+            if (hasVehicle()) {
+                double tripTimeLimit = getTotalTripTimeLimit(getRover(), getPeopleNumber(), true);
+                determineFieldSite(getVehicle().getRange(), tripTimeLimit);
+            }
             
             // Add home settlement
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), 
@@ -664,29 +659,34 @@ public class BiologyStudyFieldMission extends RoverMission
         int crewNum = getPeopleNumber();
         
         // Determine life support supplies needed for trip.
-//        try {
-            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(oxygen)) 
-                oxygenAmount += (Double) result.get(oxygen);
-            result.put(oxygen, oxygenAmount);
+        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(oxygen)) 
+            oxygenAmount += (Double) result.get(oxygen);
+        result.put(oxygen, oxygenAmount);
             
-            AmountResource water = AmountResource.findAmountResource("water");
-            double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(water)) 
-                waterAmount += (Double) result.get(water);
-            result.put(water, waterAmount);
+        AmountResource water = AmountResource.findAmountResource("water");
+        double waterAmount = PhysicalCondition.getWaterConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(water)) 
+            waterAmount += (Double) result.get(water);
+        result.put(water, waterAmount);
             
-            AmountResource food = AmountResource.findAmountResource("food");
-            double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
-            if (result.containsKey(food)) 
-                foodAmount += (Double) result.get(food);
-            result.put(food, foodAmount);
-//        }
-//        catch(Exception e) {
-//            throw new MissionException(getPhase(), e);
-//        }
+        AmountResource food = AmountResource.findAmountResource("food");
+        double foodAmount = PhysicalCondition.getFoodConsumptionRate() * timeSols * crewNum;
+        if (result.containsKey(food)) 
+            foodAmount += (Double) result.get(food);
+        result.put(food, foodAmount);
         
         return result;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        fieldSiteStartTime = null;
+        fieldSite = null;
+        study = null;
+        leadResearcher = null;
     }
 }
