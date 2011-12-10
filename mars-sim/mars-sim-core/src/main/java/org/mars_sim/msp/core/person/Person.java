@@ -96,11 +96,8 @@ public class Person extends Unit implements VehicleOperator, Serializable {
 
 		// Initialize data members
 		this.gender = gender;
-                 String timeString = createTimeString();
-
-
-                 birthTimeStamp = new EarthClock(timeString);
-
+		String timeString = createTimeString();
+        birthTimeStamp = new EarthClock(timeString);
 		attributes = new NaturalAttributeManager(this);
 		mind = new Mind(this);
 		isBuried = false;

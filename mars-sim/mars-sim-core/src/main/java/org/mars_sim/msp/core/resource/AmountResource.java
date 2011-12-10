@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResource.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-12-09
  * @author Scott Davis
  */
 
@@ -9,18 +9,16 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * The AmountResource class represents a type of resource that is a material 
  * measured in mass kg.
  */
 public final class AmountResource implements Resource, Serializable {
-	
-    // Set of all amount resources.
-    private static final Set<AmountResource> resources = new HashSet<AmountResource>(10);
     
 	// Data members
 	private String name;
@@ -42,7 +40,6 @@ public final class AmountResource implements Resource, Serializable {
 		this.name = name;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
-		resources.add(this);
 	}
 	
 	/**
@@ -84,7 +81,7 @@ public final class AmountResource implements Resource, Serializable {
 	 */
 	public static AmountResource findAmountResource(String name) {
 		AmountResource result = null;
-		Iterator<AmountResource> i = resources.iterator();
+		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
 			if (resource.name.equalsIgnoreCase(name)) result = resource;
@@ -98,6 +95,8 @@ public final class AmountResource implements Resource, Serializable {
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
+	    Set<AmountResource> resources = SimulationConfig.instance().getResourceConfiguration().
+	            getAmountResources();
 		return Collections.unmodifiableSet(resources);
 	}
 	
