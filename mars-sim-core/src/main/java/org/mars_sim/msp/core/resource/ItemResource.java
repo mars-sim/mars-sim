@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ItemResource.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2011-12-09
  * @author Scott Davis
  */
 
@@ -9,9 +9,10 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * The ItemResource class represents a type of resource that is measured in units, 
@@ -19,9 +20,6 @@ import java.util.Set;
  */
 public class ItemResource implements Resource, Serializable {
 
-	// Set of all item resources.
-	private static final Set<ItemResource> resources = new HashSet<ItemResource>();
-	
 	// Data members
 	private String name;
 	private double massPerItem;
@@ -39,7 +37,6 @@ public class ItemResource implements Resource, Serializable {
 	protected ItemResource(String name, double massPerItem) {
 		this.name = name;
 		this.massPerItem = massPerItem;
-		if (!resources.contains(this)) resources.add(this);
 	}
 	
 	/**
@@ -91,29 +88,6 @@ public class ItemResource implements Resource, Serializable {
         return hash;
     }
 	
-//	/**
-//	 * Checks if an object is equal to this object.
-//	 * @return true if equal
-//	 */
-//	public boolean equals(Object object) {
-//		if (object instanceof ItemResource) {
-//			ItemResource otherObject = (ItemResource) object;
-//			if ((name.equals(otherObject.name)) && (massPerItem == otherObject.massPerItem))
-//				return true;
-//		}
-//		return false;
-//	}
-	
-        
-
-
-//	/**
-//	 * Gets the hash code value.
-//	 */
-//	public int hashCode() {
-//		return (name.hashCode() * new Double(massPerItem).hashCode());
-//	}
-	
 	/**
 	 * Finds an item resource by name.
 	 * @param name the name of the resource.
@@ -122,7 +96,7 @@ public class ItemResource implements Resource, Serializable {
 	 */
 	public static ItemResource findItemResource(String name) {
 		ItemResource result = null;
-		Iterator<ItemResource> i = resources.iterator();
+		Iterator<ItemResource> i = getItemResources().iterator();
 		while (i.hasNext()) {
 			ItemResource resource = i.next();
 			if (resource.name.equals(name)) result = resource;
@@ -136,6 +110,8 @@ public class ItemResource implements Resource, Serializable {
 	 * @return set of item resources.
 	 */
 	public static Set<ItemResource> getItemResources() {
+	    Set<ItemResource> resources = SimulationConfig.instance().getPartConfiguration().
+                getItemResources();
 		return Collections.unmodifiableSet(resources);
 	}
 	

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2011-12-09
  * @author Scott Davis
  */
 
@@ -11,7 +11,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides configuration information about amount resources. Uses a DOM document to get the information.
@@ -23,6 +25,9 @@ public class AmountResourceConfig implements Serializable {
     private static final String NAME = "name";
     private static final String PHASE = "phase";
     private static final String LIFE_SUPPORT = "life-support";
+    
+    // Data members.
+    private Set<AmountResource> resources;
 
     /**
      * Constructor
@@ -30,6 +35,7 @@ public class AmountResourceConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public AmountResourceConfig(Document amountResourceDoc) {
+        resources = new HashSet<AmountResource>();
         loadAmountResources(amountResourceDoc);
     }
 
@@ -58,7 +64,16 @@ public class AmountResourceConfig implements Serializable {
                     .getAttributeValue(LIFE_SUPPORT));
 
             // Create new amount resource.
-            new AmountResource(name, phase, lifeSupport);
+            AmountResource resource = new AmountResource(name, phase, lifeSupport);
+            resources.add(resource);
         }
+    }
+    
+    /**
+     * Gets a set of all amount resources.
+     * @return set of resources.
+     */
+    public Set<AmountResource> getAmountResources() {
+        return resources;
     }
 }

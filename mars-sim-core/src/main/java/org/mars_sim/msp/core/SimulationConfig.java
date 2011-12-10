@@ -358,6 +358,8 @@ public class SimulationConfig implements Serializable {
      */
     private void destroyOldConfiguration() {
         simulationDoc = null;
+        resourceConfig = null;
+        partConfig = null;
         partPackageConfig.destroy();
         personConfig.destroy();
         medicalConfig.destroy();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PartConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2011-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.resource;
@@ -10,7 +10,9 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import java.io.Serializable;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides configuration information about parts. Uses a DOM document to get the information.
@@ -25,6 +27,9 @@ public final class PartConfig implements Serializable {
     private static final String ENTITY = "entity";
     private static final String PROBABILITY = "probability";
     private static final String MAX_NUMBER = "max-number";
+    
+    // Data members.
+    private Set<ItemResource> itemResources;
 
     /**
      * Constructor
@@ -32,6 +37,7 @@ public final class PartConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
+        itemResources = new HashSet<ItemResource>();
         loadItemResources(itemResourceDoc);
     }
 
@@ -56,6 +62,7 @@ public final class PartConfig implements Serializable {
 
             // Add part to item resources.
             Part part = new Part(name, mass);
+            itemResources.add(part);
 
             // Add maintenance entities for part.
             Element entityListElement = partElement
@@ -74,5 +81,13 @@ public final class PartConfig implements Serializable {
                 }
             }
         }
+    }
+    
+    /**
+     * Gets a set of all item resources.
+     * @return set of item resources.
+     */
+    public Set<ItemResource> getItemResources() {
+        return itemResources;
     }
 }

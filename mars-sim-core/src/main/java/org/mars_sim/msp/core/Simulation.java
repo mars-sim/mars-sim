@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2011-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -119,6 +119,7 @@ public class Simulation implements ClockListener, Serializable {
      * Destroys the current simulation to prepare for creating or loading a new simulation.
      */
     private void destroyOldSimulation() {
+        
         malfunctionFactory.destroy();
         mars.destroy();
         missionManager.destroy();
@@ -161,14 +162,13 @@ public class Simulation implements ClockListener, Serializable {
      * @param file the file to be loaded from.
      * @throws Exception if simulation could not be loaded.
      */
-    public static void loadSimulation(final File file) {
+    public void loadSimulation(final File file) {
         File f = file;
 
         logger.config("Loading simulation from " + file);
 
         Simulation simulation = instance();
         simulation.stop();
-
 
         // Use default file path if file is null.
         if (f == null) {
@@ -199,7 +199,9 @@ public class Simulation implements ClockListener, Serializable {
         ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
         
         // Destroy old simulation.
-        destroyOldSimulation();
+        if (instance().initialSimulationCreated) {
+            destroyOldSimulation();
+        }
         
         // Load intransient objects.
         SimulationConfig.setInstance((SimulationConfig) p.readObject());
