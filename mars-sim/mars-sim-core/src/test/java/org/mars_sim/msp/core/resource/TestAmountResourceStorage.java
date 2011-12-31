@@ -2,6 +2,7 @@ package org.mars_sim.msp.core.resource;
 
 import java.util.Set;
 import junit.framework.TestCase;
+import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestAmountResourceStorage extends TestCase {
 
@@ -12,8 +13,13 @@ public class TestAmountResourceStorage extends TestCase {
 	public TestAmountResourceStorage() {
 		super();
 	}
-	
-	public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
+
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+    }
+
+    public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
 		AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
 		storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);

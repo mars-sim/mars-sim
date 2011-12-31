@@ -280,8 +280,11 @@ public class SalvageValues implements Serializable {
      */
     public void destroy() {
         settlement = null;
-        settlementSalvageValueCache.clear();
-        settlementSalvageValueCache = null;
-        settlementSalvageValueCacheTime = null;
+        if(settlementSalvageValueCache != null){
+
+            settlementSalvageValueCache.clear();
+            settlementSalvageValueCache = null;
+            settlementSalvageValueCacheTime = null;
+        }
     }
 }

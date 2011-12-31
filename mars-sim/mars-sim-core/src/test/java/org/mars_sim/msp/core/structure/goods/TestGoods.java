@@ -4,50 +4,57 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 
 public class TestGoods extends TestCase {
 
-	public TestGoods() {
+    private List<Good> goodsList;
+    private ItemResource hammer;
+
+    public TestGoods() {
 		super();
 	}
-	
-	public void testGoodsListNotNull() {
-		List goodsList = GoodsUtil.getGoodsList();
-		assertTrue("Goods list not null", (goodsList != null));
+
+    protected void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+        hammer = ItemResource.createItemResource("hammer", 1.4D);
+        goodsList = GoodsUtil.getGoodsList();
+    }
+
+    public void testGoodsListNotNull() {
+        assertNotNull(goodsList);
 	}
 	
 	public void testGoodsListNotZero() {
-		List goodsList = GoodsUtil.getGoodsList();
-		assertTrue("Goods list not zero", (goodsList.size() > 0));
+		assertTrue(goodsList.size() > 0);
 	}
 	
 	public void testGoodsListContainsWater() throws Exception {
 		AmountResource water = AmountResource.findAmountResource("water");
 		Good waterGood = GoodsUtil.getResourceGood(water);
-		assertTrue("Goods list contains water", GoodsUtil.containsGood(waterGood));
+		assertTrue( GoodsUtil.containsGood(waterGood));
 	}
 	
 	public void testGoodsListContainsHammer() {
-		ItemResource hammer = ItemResource.getTestResourceHammer();
-		Good hammerGood = GoodsUtil.getResourceGood(hammer);
-		assertTrue("Goods list contains hammer", GoodsUtil.containsGood(hammerGood));
+        Good hammerGood = GoodsUtil.getResourceGood(hammer);
+		assertTrue(GoodsUtil.containsGood(hammerGood));
 	}
 	
 	public void testGoodsListContainsBag() {
 		Good bagGood = GoodsUtil.getEquipmentGood(Bag.class);
-		assertTrue("Goods list contains bag", GoodsUtil.containsGood(bagGood));
+		assertTrue(GoodsUtil.containsGood(bagGood));
 	}
 	
 	public void testGoodsListContainsExplorerRover() {
 		Good explorerRoverGood = GoodsUtil.getVehicleGood("Transport Rover");
-		assertTrue("Goods list contains explorer rover", GoodsUtil.containsGood(explorerRoverGood));
+		assertTrue( GoodsUtil.containsGood(explorerRoverGood));
 	}
 	
 	public void testGoodsListDoesntContainFalseRover() {
 		Good falseRoverGood = GoodsUtil.getVehicleGood("False Rover");
-		assertTrue("Goods list doesn't contain false rover", !GoodsUtil.containsGood(falseRoverGood));
+		assertTrue( !GoodsUtil.containsGood(falseRoverGood));
 	}
 }

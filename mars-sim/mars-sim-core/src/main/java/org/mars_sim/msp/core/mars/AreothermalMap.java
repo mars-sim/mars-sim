@@ -135,7 +135,10 @@ public class AreothermalMap implements Serializable {
     public void destroy() {
         hotspots.clear();
         hotspots = null;
-        areothermalPotentialCache.clear();
-        areothermalPotentialCache = null;
+        if(areothermalPotentialCache != null){
+
+            areothermalPotentialCache.clear();
+            areothermalPotentialCache = null;
+        }
     }
 }

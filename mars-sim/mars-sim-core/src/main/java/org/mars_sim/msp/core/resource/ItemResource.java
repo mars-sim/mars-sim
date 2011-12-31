@@ -27,7 +27,9 @@ public class ItemResource implements Resource, Serializable {
 	/**
 	 * Default private constructor
 	 */
-	private ItemResource() {}
+	private ItemResource() {
+        throw new UnsupportedOperationException("invalid constructor");
+    }
 	
 	/**
 	 * Constructor
@@ -102,7 +104,7 @@ public class ItemResource implements Resource, Serializable {
 			if (resource.name.equals(name)) result = resource;
 		}
 		if (result != null) return result;
-		else throw new IllegalStateException("Resource: " + name + " could not be found.");
+		else throw new UnknownResourceName(name);
 	}
 	
 	/**
@@ -110,35 +112,16 @@ public class ItemResource implements Resource, Serializable {
 	 * @return set of item resources.
 	 */
 	public static Set<ItemResource> getItemResources() {
+
 	    Set<ItemResource> resources = SimulationConfig.instance().getPartConfiguration().
                 getItemResources();
 		return Collections.unmodifiableSet(resources);
 	}
-	
-	/**
-	 * Gets a mock item resource of a hammer.
-	 * @return item resource.
-	 */
-	public static ItemResource getTestResourceHammer() {
-		return new ItemResource("hammer", 1.4D);
-	}
-	
-	/**
-	 * Gets a mock item resource of a socket wrench.
-	 * @return item resource.
-	 */
-	public static ItemResource getTestResourceSocketWrench() {
-		return new ItemResource("socket wrench", .5D);
-	}
-	
-	/**
-	 * Gets a mock item resource of a pipe wrench.
-	 * @return item resource.
-	 */
-	public static ItemResource getTestResourcePipeWrench() {
-		return new ItemResource("pipe wrench", 2.5D);
-	}
-    
+
+    public static ItemResource createItemResource(String resourceName, double massPerItem) {
+        return new ItemResource(resourceName, massPerItem);
+    }
+
     /**
      * Compares this object with the specified object for order.
      * @param o the Object to be compared.
@@ -147,5 +130,18 @@ public class ItemResource implements Resource, Serializable {
      */
     public int compareTo(Resource o) {
         return name.compareTo(o.getName());
+    }
+
+    private static class UnknownResourceName extends RuntimeException {
+        private String name;
+
+        public UnknownResourceName(String name) {
+            super("Unknown resource name : " + name);
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }

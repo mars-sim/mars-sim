@@ -430,7 +430,10 @@ public class PersonConfig implements Serializable {
      */
     public void destroy() {
         personDoc = null;
-        nameList.clear();
-        nameList = null;
+        if(nameList != null){
+
+            nameList.clear();
+            nameList = null;
+        }
     }
 }

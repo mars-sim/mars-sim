@@ -80,8 +80,11 @@ public class MineralMapConfig implements Serializable {
      */
     public void destroy() {
         mineralDoc = null;
-        mineralTypes.clear();
-        mineralTypes = null;
+        if(mineralTypes != null){
+
+            mineralTypes.clear();
+            mineralTypes = null;
+        }
     }
 
     static class MineralType implements Serializable {

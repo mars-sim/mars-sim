@@ -22,7 +22,6 @@ public class MarsProjectStarter {
 	 */
 	public static void main(String[] args) {
 		
-		try {
             StringBuilder command = new StringBuilder();
 			
 			String javaHome = System.getenv("JAVA_HOME");
@@ -43,11 +42,14 @@ public class MarsProjectStarter {
 			
 			String commandStr = command.toString();
 			System.out.println("Command: " + commandStr);
-			Runtime.getRuntime().exec(commandStr);
-		}
-		catch(IOException e) {
-			System.out.println("Error starting MarsProject");
-			e.printStackTrace(System.err);
-		}
-	}
+        try {
+            Process process = Runtime.getRuntime().exec(commandStr);
+
+            process.waitFor();
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        } catch (InterruptedException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }

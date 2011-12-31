@@ -4,14 +4,19 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 
 import junit.framework.TestCase;
 
 public class TestMalfunctionManager extends TestCase {
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+    }
 
-	public void testGetEVAMalfunctions() throws Exception {
+    public void testGetEVAMalfunctions() throws Exception {
 		EVASuit suit = (EVASuit) EquipmentFactory.getEquipment(EVASuit.TYPE, new Coordinates(0D, 0D), false);
 		MalfunctionManager manager = suit.getMalfunctionManager();
 		Malfunction malfunction1 = new MockMalfunction("test malfunction1", 10, 0D, 100D, 50D);

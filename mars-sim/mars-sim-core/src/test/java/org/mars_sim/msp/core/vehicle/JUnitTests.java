@@ -15,62 +15,59 @@ import junit.framework.TestSuite;
  * JUnit test suite
  */
 public class JUnitTests extends TestCase {
-	
-	private static final Class thisClass = JUnitTests.class;
 
-	// Get test properites.
-	private static final java.util.Properties properties =
-		System.getProperties();
-	{
-		try {
-			properties.load(
-				new java.io.BufferedInputStream(
-					new java.io.FileInputStream(
-						thisClass.getName() + ".properties")));
-		}
-		catch (java.io.IOException e) {
-			// do nothing
-		}
-	}
+    private static final Class thisClass = JUnitTests.class;
 
-	/**
-	 * Any initialization necessary for all tests.
-	 */
-	public JUnitTests() {
-		super();
-	}
+    // Get test properites.
+    private static final java.util.Properties properties =
+            System.getProperties();
 
-	/**
-	 * Run all JUnit tests.
-	 */
-	public static void main(String[] args) {
-		TestRunner.run(thisClass);
-	}
+    {
+        try {
+            properties.load(
+                    new java.io.BufferedInputStream(
+                            new java.io.FileInputStream(
+                                    thisClass.getName() + ".properties")));
+        } catch (java.io.IOException e) {
+            // do nothing
+        }
+    }
 
-	/**
-	 * Collection of external test suites to be included in current testing.
-	 */
-	public static Test suite() {
-		return new TestSuite(thisClass);
-	}
+    /**
+     * Any initialization necessary for all tests.
+     */
+    public JUnitTests() {
+        super();
+    }
 
-	/**
-	 * Every JUnit test suite needs at least one test.This one obviously does nothing.
-	 * Any others begining with "test..." will be automatically included as well.
-	 */
-	public void testNothing() {
-	}
-	
-	public void testLightUtilityVehicle() {
-	    try {
-	    	LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
-	    	int crewCapacity = vehicle.getCrewCapacity();
-	    	int slots = vehicle.getAtachmentSlotNumber();
-		
-	    	assertEquals("Wrong crew capacity", 1, crewCapacity);
-	    	assertEquals("Wrong slot number", 2, slots);
-		
-	    	} catch (Exception e) {
-	    }
-	}
+    /**
+     * Run all JUnit tests.
+     */
+    public static void main(String[] args) {
+        TestRunner.run(thisClass);
+    }
+
+    /**
+     * Collection of external test suites to be included in current testing.
+     */
+    public static Test suite() {
+        return new TestSuite(thisClass);
+    }
+
+    /**
+     * Every JUnit test suite needs at least one test.This one obviously does nothing.
+     * Any others begining with "test..." will be automatically included as well.
+     */
+    public void testNothing() {
+    }
+
+    public void testLightUtilityVehicle() {
+        LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
+        int crewCapacity = vehicle.getCrewCapacity();
+        int slots = vehicle.getAtachmentSlotNumber();
+
+        assertEquals("Wrong crew capacity", 1, crewCapacity);
+        assertEquals("Wrong slot number", 2, slots);
+
+    }
 }

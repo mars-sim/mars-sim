@@ -371,7 +371,10 @@ public class VehicleConfig implements Serializable {
      */
     public void destroy() {
         vehicleDoc = null;
-        roverNames.clear();
-        roverNames = null;
+        if(roverNames != null){
+
+            roverNames.clear();
+            roverNames = null;
+        }
     }
 }

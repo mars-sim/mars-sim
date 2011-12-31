@@ -27,7 +27,7 @@ public class AmountResourceConfig implements Serializable {
     private static final String LIFE_SUPPORT = "life-support";
     
     // Data members.
-    private Set<AmountResource> resources;
+    private Set<AmountResource> resources = new HashSet<AmountResource>();
 
     /**
      * Constructor
@@ -35,7 +35,6 @@ public class AmountResourceConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public AmountResourceConfig(Document amountResourceDoc) {
-        resources = new HashSet<AmountResource>();
         loadAmountResources(amountResourceDoc);
     }
 
