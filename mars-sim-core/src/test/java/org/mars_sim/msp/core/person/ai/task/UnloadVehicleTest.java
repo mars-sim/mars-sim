@@ -3,6 +3,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -14,15 +15,21 @@ import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 public class UnloadVehicleTest extends TestCase {
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+    }
 
-	public void testUnloadingPhase() throws Exception {
+    public void testUnloadingPhase() throws Exception {
 		
 		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
 		AmountResource food = AmountResource.findAmountResource("food");
 		AmountResource water = AmountResource.findAmountResource("water");
 		AmountResource methane = AmountResource.findAmountResource("methane");
-		
-		ItemResource hammer = ItemResource.getTestResourceHammer();
+
+        String resourceName = "hammer";
+        double massPerItem = 1.4D;
+        ItemResource hammer = ItemResource.createItemResource(resourceName, massPerItem);
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);

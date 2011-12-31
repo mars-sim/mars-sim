@@ -426,14 +426,23 @@ public class ConstructionValues implements Serializable {
      */
     public void destroy() {
         settlement = null;
-        settlementConstructionValueCache.clear();
-        settlementConstructionValueCache = null;
-        settlementConstructionValueCacheTime = null;
-        stageInfoValueCache.clear();
-        stageInfoValueCache = null;
-        stageInfoValueCacheTime = null;
-        allStageInfoValueCache.clear();
-        allStageInfoValueCache = null;
-        allStageInfoValueCacheTime = null;
+        if(settlementConstructionValueCache != null){
+
+            settlementConstructionValueCache.clear();
+            settlementConstructionValueCache = null;
+            settlementConstructionValueCacheTime = null;
+        }
+        if(stageInfoValueCache != null){
+
+            stageInfoValueCache.clear();
+            stageInfoValueCache = null;
+            stageInfoValueCacheTime = null;
+        }
+        if(allStageInfoValueCache != null){
+
+            allStageInfoValueCache.clear();
+            allStageInfoValueCache = null;
+            allStageInfoValueCacheTime = null;
+        }
     }
 }

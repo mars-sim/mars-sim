@@ -55,14 +55,14 @@ public class GoodsUtil {
 	 * @return good for the resource.
 	 */
 	public static Good getResourceGood(Resource resource) {
-		if (resource != null) {
-			String category = null;
-			if (resource instanceof AmountResource) category = Good.AMOUNT_RESOURCE;
-			else if (resource instanceof ItemResource) category = Good.ITEM_RESOURCE;
-			return new Good(resource.getName(), resource, category);
-		}
-		else throw new IllegalArgumentException("resource cannot be null");
-	}
+        if (resource == null) {
+            throw new IllegalArgumentException("resource cannot be null");
+        }
+            String category = null;
+            if (resource instanceof AmountResource) category = Good.AMOUNT_RESOURCE;
+            else if (resource instanceof ItemResource) category = Good.ITEM_RESOURCE;
+            return new Good(resource.getName(), resource, category);
+    }
 	
 	/**
 	 * Gets a good object for a given equipment class.
@@ -70,20 +70,20 @@ public class GoodsUtil {
 	 * @return good for the resource class or null if none.
 	 */
 	public static Good getEquipmentGood(Class<? extends Unit> equipmentClass) {
-		if (equipmentClass != null) {
-			Good result = null;
-			
-			Iterator<Good> i = getGoodsList().iterator();
-			while (i.hasNext()) {
-				Good good = i.next();
-				if (good.getClassType() == equipmentClass) 
-					result = new Good(good.getName(), equipmentClass, Good.EQUIPMENT);
-			}
-			
-			return result;
-		}
-		else throw new IllegalArgumentException("goodClass cannot be null");
-	}
+        if (equipmentClass == null) {
+            throw new IllegalArgumentException("goodClass cannot be null");
+        }
+            Good result = null;
+
+            Iterator<Good> i = getGoodsList().iterator();
+            while (i.hasNext()) {
+                Good good = i.next();
+                if (good.getClassType() == equipmentClass)
+                    result = new Good(good.getName(), equipmentClass, Good.EQUIPMENT);
+            }
+
+            return result;
+    }
 	
 	/**
 	 * Gets a good object for the given vehicle type.
@@ -91,14 +91,15 @@ public class GoodsUtil {
 	 * @return good for the vehicle type.
 	 */
 	public static Good getVehicleGood(String vehicleType) {
-		if ((vehicleType != null) && vehicleType.trim().length() != 0) {
-			Class<?> vehicleClass = Rover.class;
-			if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) 
-				vehicleClass = LightUtilityVehicle.class;
-			return new Good(vehicleType, vehicleClass, Good.VEHICLE);
-		}
-		else throw new IllegalArgumentException("vehicleType cannot be blank or null.");
-	}
+        if ((vehicleType == null) || vehicleType.trim().length() == 0) {
+            throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+        }
+            Class<?> vehicleClass = Rover.class;
+            if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
+                vehicleClass = LightUtilityVehicle.class;
+            return new Good(vehicleType, vehicleClass, Good.VEHICLE);
+
+    }
 	
 	/**
 	 * Checks if a good is valid in the simulation.
@@ -106,9 +107,11 @@ public class GoodsUtil {
 	 * @return true if good is valid.
 	 */
 	public static boolean containsGood(Good good) {
-		if (good != null) return getGoodsList().contains(good);
-		else throw new IllegalArgumentException("good cannot be null.");
-	}
+        if (good == null) {
+            throw new IllegalArgumentException("good cannot be null.");
+        }
+        return getGoodsList().contains(good);
+    }
 	
 	/**
 	 * Populates the goods list with all goods.

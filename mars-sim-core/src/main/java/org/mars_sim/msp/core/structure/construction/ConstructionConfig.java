@@ -220,20 +220,29 @@ public class ConstructionConfig implements Serializable {
      */
     public void destroy() {
         constructionDoc = null;
-        
-        Iterator<ConstructionStageInfo> i = foundationStageInfoList.iterator();
-        while (i.hasNext()) {
-            i.next().destroy();
+
+        if(foundationStageInfoList != null){
+
+            Iterator<ConstructionStageInfo> i = foundationStageInfoList.iterator();
+            while (i.hasNext()) {
+                i.next().destroy();
+            }
         }
-        
-        Iterator<ConstructionStageInfo> j = frameStageInfoList.iterator();
-        while (j.hasNext()) {
-            j.next().destroy();
+
+        if(frameStageInfoList != null){
+
+            Iterator<ConstructionStageInfo> j = frameStageInfoList.iterator();
+            while (j.hasNext()) {
+                j.next().destroy();
+            }
         }
-        
-        Iterator<ConstructionStageInfo> k = buildingStageInfoList.iterator();
-        while (k.hasNext()) {
-            k.next().destroy();
+
+        if(buildingStageInfoList != null){
+
+            Iterator<ConstructionStageInfo> k = buildingStageInfoList.iterator();
+            while (k.hasNext()) {
+                k.next().destroy();
+            }
         }
     }
 }

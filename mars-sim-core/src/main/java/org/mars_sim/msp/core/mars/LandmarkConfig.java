@@ -79,7 +79,10 @@ public class LandmarkConfig implements Serializable {
      */
     public void destroy() {
         landmarkDoc = null;
-        landmarkList.clear();
-        landmarkList = null;
+        if(landmarkList != null){
+
+            landmarkList.clear();
+            landmarkList = null;
+        }
     }
 }

@@ -253,19 +253,25 @@ public class ManufactureConfig implements Serializable {
      */
     public void destroy() {
         manufactureDoc = null;
-        
-        Iterator<ManufactureProcessInfo> i = manufactureProcessList.iterator();
-        while (i.hasNext()) {
-            i.next().destroy();
+
+        if(manufactureProcessList != null){
+
+            Iterator<ManufactureProcessInfo> i = manufactureProcessList.iterator();
+            while (i.hasNext()) {
+                i.next().destroy();
+            }
+            manufactureProcessList.clear();
+            manufactureProcessList = null;
         }
-        manufactureProcessList.clear();
-        manufactureProcessList = null;
-        
-        Iterator<SalvageProcessInfo> j = salvageList.iterator();
-        while (j.hasNext()) {
-            j.next().destroy();
+
+        if(salvageList != null){
+
+            Iterator<SalvageProcessInfo> j = salvageList.iterator();
+            while (j.hasNext()) {
+                j.next().destroy();
+            }
+            salvageList.clear();
+            salvageList = null;
         }
-        salvageList.clear();
-        salvageList = null;
     }
 }

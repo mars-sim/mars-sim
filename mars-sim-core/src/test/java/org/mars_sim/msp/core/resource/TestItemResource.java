@@ -3,49 +3,54 @@ package org.mars_sim.msp.core.resource;
 import java.util.Set;
 
 import junit.framework.TestCase;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestItemResource extends TestCase {
 
-	public TestItemResource() {
-		super();
-	}
-	
-	public void testResourceMass() {
-		double hammerMass = ItemResource.getTestResourceHammer().getMassPerItem();
-		assertEquals("Hammer mass is correct.", 1.4D, hammerMass, 0D);
-	}
-	
-	public void testResourceName() {
-		String hammerName = ItemResource.getTestResourceHammer().getName();
-		assertEquals("Hammer name is correct", "hammer", hammerName);
-	}
-	
-	public void testFindItemResourcePositive() {
-		try {
-			ItemResource hammer = ItemResource.getTestResourceHammer();
-			ItemResource hammerResource = ItemResource.findItemResource("hammer");
-			assertEquals("Hammer found in resource types.", hammer, hammerResource);
-		}
-		catch (Exception e) {
-			fail("Hammer found in resource types.");
-		}
-	}
-	
-	public void testFindItemResourceNegative() {
-		try {
-			ItemResource.findItemResource("test");
-			fail("Throws exception if unknown item resource name.");
-		}
-		catch (Exception e) {}
-	}
-	
-	public void testGetItemResourcesContents() {
-		ItemResource hammer = ItemResource.getTestResourceHammer();
-		ItemResource socketWrench = ItemResource.getTestResourceSocketWrench();
-		ItemResource pipeWrench = ItemResource.getTestResourcePipeWrench();
-		Set resources = ItemResource.getItemResources();
-		assertTrue("Contains hammer.", (resources.contains(hammer)));
-		assertTrue("Contains socket wrench.", (resources.contains(socketWrench)));
-		assertTrue("Contains pipe wrench.", (resources.contains(pipeWrench)));
-	}
+//    private Simulation simulation;
+    private ItemResource hammer;
+    private ItemResource socketWrench;
+    private ItemResource pipeWrench;
+    private Set<ItemResource> resources;
+
+    public TestItemResource() {
+        super();
+    }
+
+    public void testResourceMass() {
+        double hammerMass = hammer.getMassPerItem();
+        assertEquals(1.4D, hammerMass, 0D);
+    }
+
+    public void testResourceName() {
+        String name = hammer.getName();
+        assertEquals("hammer", name);
+    }
+
+    public void testFindItemResourcePositive() {
+        ItemResource hammerResource = ItemResource.findItemResource("hammer");
+        assertEquals(hammer, hammerResource);
+    }
+
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+//        simulation = Simulation.instance();
+        hammer = ItemResource.createItemResource("hammer", 1.4D);
+        socketWrench = ItemResource.createItemResource("socket wrench", .5D);
+        pipeWrench = ItemResource.createItemResource("pipe wrench", 2.5D);
+        resources = ItemResource.getItemResources();
+    }
+
+    public void testFindItemResourceNegative() {
+        ItemResource.findItemResource("test");
+    }
+
+    public void testGetItemResourcesContents() {
+        assertTrue(resources.contains(hammer));
+        assertTrue(resources.contains(socketWrench));
+        assertTrue(resources.contains(pipeWrench));
+    }
 }

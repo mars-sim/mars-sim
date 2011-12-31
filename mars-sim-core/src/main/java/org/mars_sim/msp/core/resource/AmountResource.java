@@ -95,9 +95,11 @@ public final class AmountResource implements Resource, Serializable {
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
-	    Set<AmountResource> resources = SimulationConfig.instance().getResourceConfiguration().
+        SimulationConfig simulationConfig = SimulationConfig.instance();
+        AmountResourceConfig resourceConfiguration = simulationConfig.getResourceConfiguration();
+        Set<AmountResource> amountResources = resourceConfiguration.
 	            getAmountResources();
-		return Collections.unmodifiableSet(resources);
+		return Collections.unmodifiableSet(amountResources);
 	}
 	
 	/**

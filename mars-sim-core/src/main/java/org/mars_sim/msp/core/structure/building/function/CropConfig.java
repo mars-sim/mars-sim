@@ -73,7 +73,9 @@ public class CropConfig implements Serializable {
      */
     public void destroy() {
         cropDoc = null;
-        cropList.clear();
-        cropList = null;
+        if(cropList != null){
+            cropList.clear();
+            cropList = null;
+        }
     }
 }

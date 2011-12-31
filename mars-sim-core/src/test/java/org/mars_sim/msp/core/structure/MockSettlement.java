@@ -11,7 +11,7 @@ public class MockSettlement extends Settlement {
 	/**
 	 * Constructor
 	 */
-	public MockSettlement() throws Exception {
+	public MockSettlement()  {
 		// Use Settlement constructor.
 		super("Mock Settlement", new Coordinates(0, 0));
 		
