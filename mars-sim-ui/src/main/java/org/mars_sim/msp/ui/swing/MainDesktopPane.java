@@ -57,7 +57,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	private final MainWindow mainWindow; // The main window frame.
 	private final ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
 	private final JLabel backgroundLabel; // Label that contains the tiled background.
-	private final JLabel logoLabel; // Label that has the centered logo for the project.
 	private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
 	private final UpdateThread updateThread; // The desktop update thread.
 	private final AudioPlayer soundPlayer; // The sound player
@@ -86,11 +85,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
 		// Set component listener
 		addComponentListener(this);
-
-		// Create background logo label and make it partially transparent
-		logoLabel = new JLabel(ImageLoader.getIcon("logo2"), SwingConstants.LEFT);
-		add(logoLabel, Integer.MIN_VALUE);
-		logoLabel.setOpaque(false);
 
 		// Create background label and set it to the back layer
 		backgroundImageIcon = new ImageIcon();
@@ -155,7 +149,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 			backgroundImageIcon.setImage(backgroundImage);
 
 			backgroundLabel.setSize(getSize());
-			logoLabel.setSize(logoLabel.getPreferredSize());
 
 			firstDisplay = false;
 		}
@@ -163,12 +156,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		// Set the backgroundLabel size to the size of the desktop
 		backgroundLabel.setSize(getSize());
 
-		// Recenter the logo on the window
-		int Xpos = ((mainWindow.getFrame().getWidth() - logoLabel.getWidth()) / 2) -
-		        (int) getLocation().getX();
-		int Ypos = ((mainWindow.getFrame().getHeight() - logoLabel.getHeight()) /
-				2) - 45;
-		logoLabel.setLocation(Xpos, Ypos);
 	}
 
 	// Additional Component Listener methods implemented but not used.
