@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.01 2011-06-18
+ * @version 3.01 2012-01-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -33,7 +33,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 public class LabelMapLayer implements SettlementMapLayer {
 
     // Static members
-    private static final Color LABEL_COLOR = Color.BLUE;
+    private static final Color LABEL_COLOR = new Color(0, 0, 255);
     private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
     
     // Data members
@@ -119,7 +119,7 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param site the construction site.
      * @return the construction label.
      */
-    private String getConstructionLabel(ConstructionSite site) {
+    public static String getConstructionLabel(ConstructionSite site) {
         String label = "";
         ConstructionStage stage = site.getCurrentConstructionStage();
         if (stage != null) {
