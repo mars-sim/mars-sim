@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-01-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -339,6 +339,14 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             result = true;
     
         return result;
+    }
+    
+    /**
+     * Gets the construction stage that is being worked on.
+     * @return construction stage.
+     */
+    public ConstructionStage getConstructionStage() {
+        return stage;
     }
     
     @Override
