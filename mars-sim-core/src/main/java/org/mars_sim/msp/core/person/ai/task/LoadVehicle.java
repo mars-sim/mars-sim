@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-01-14
  * @author Scott Davis
  */
 
@@ -220,7 +220,7 @@ public class LoadVehicle extends Task implements Serializable {
     	
         // Determine load rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
-        double strengthModifier = (double) strength / 50D;
+        double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time;
         
         // If vehicle is not in a garage, load rate is reduced.
