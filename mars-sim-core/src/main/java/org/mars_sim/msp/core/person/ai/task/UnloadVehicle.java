@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.02 2011-11-27
+ * @version 3.02 2012-01-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -69,6 +69,12 @@ public class UnloadVehicle extends Task implements Serializable {
     	if (vehicle != null) {
     		setDescription("Unloading " + vehicle.getName());
     		
+    		// If vehicle is in a garage, add person to garage.
+            Building garage = BuildingManager.getBuilding(vehicle);
+            if (garage != null) {
+                BuildingManager.addPersonToBuilding(person, garage);
+            }
+    		
     		// Initialize task phase
             addPhase(UNLOADING);
             setPhase(UNLOADING);
@@ -90,6 +96,12 @@ public class UnloadVehicle extends Task implements Serializable {
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
+        
+        // If vehicle is in a garage, add person to garage.
+        Building garage = BuildingManager.getBuilding(vehicle);
+        if (garage != null) {
+            BuildingManager.addPersonToBuilding(person, garage);
+        }
         
         // Initialize phase
         addPhase(UNLOADING);
@@ -229,7 +241,7 @@ public class UnloadVehicle extends Task implements Serializable {
     	
         // Determine unload rate.
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
-		double strengthModifier = (double) strength / 50D;
+		double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;
 
         // If vehicle is not in a garage, unload rate is reduced.
