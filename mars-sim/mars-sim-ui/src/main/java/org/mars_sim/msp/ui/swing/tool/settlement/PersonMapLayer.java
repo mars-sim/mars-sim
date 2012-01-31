@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.02 2012-01-14
+ * @version 3.02 2012-01-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -15,7 +15,9 @@ import java.awt.Stroke;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
@@ -71,6 +73,9 @@ public class PersonMapLayer implements SettlementMapLayer {
             
             // Restore original graphic transforms.
             g2d.setTransform(saveTransform);
+            
+            // Draw the labels for all people out on EVA's.
+            drawEVAPersonLabels(g2d, settlement);
         }
     }
     
@@ -103,36 +108,49 @@ public class PersonMapLayer implements SettlementMapLayer {
                 ConstructionSite site = j.next();
                 String siteLabel = LabelMapLayer.getConstructionLabel(site);
                 int offset = 1;
-                Iterator<Person> k = settlement.getAllAssociatedPeople().iterator();
+                Iterator<Person> k = getConstructionSalvageWorkers(site, settlement).iterator();
                 while (k.hasNext()) {
                     Person person = k.next();
-                    if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                        Task task = person.getMind().getTaskManager().getTask();
-                        if ((task != null)) {
-                            boolean workOnSite = false;
-                            if (task instanceof ConstructBuilding) {
-                                ConstructBuilding constTask = (ConstructBuilding) task;
-                                if (constTask.getConstructionStage().equals(site.getCurrentConstructionStage())) {
-                                    workOnSite = true;
-                                }
-                            }
-                            else if (task instanceof SalvageBuilding) {
-                                SalvageBuilding salvTask = (SalvageBuilding) task;
-                                if (salvTask.getConstructionStage().equals(site.getCurrentConstructionStage())) {
-                                    workOnSite = true;
-                                }
-                            }
-                        
-                            if (workOnSite) {
-                                drawPersonLabel(g2d, person, siteLabel, site.getXLocation(), 
-                                        site.getYLocation(), offset);
-                                offset++;
-                            }
+                    drawPersonLabel(g2d, person, siteLabel, site.getXLocation(), site.getYLocation(), offset);
+                    offset++;
+                }
+            }
+        }
+    }
+    
+    /**
+     * Gets a list of all people actively working on a construction or salvage site.
+     * @param site the construction site.
+     * @param settlement the settlement.
+     * @return list of construction workers.
+     */
+    private List<Person> getConstructionSalvageWorkers(ConstructionSite site, Settlement settlement) {
+        
+        List<Person> result = new ArrayList<Person>();
+        
+        Iterator<Person> k = settlement.getAllAssociatedPeople().iterator();
+        while (k.hasNext()) {
+            Person person = k.next();
+            if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                Task task = person.getMind().getTaskManager().getTask();
+                if ((task != null)) {
+                    if (task instanceof ConstructBuilding) {
+                        ConstructBuilding constTask = (ConstructBuilding) task;
+                        if (constTask.getConstructionStage().equals(site.getCurrentConstructionStage())) {
+                            result.add(person);
+                        }
+                    }
+                    else if (task instanceof SalvageBuilding) {
+                        SalvageBuilding salvTask = (SalvageBuilding) task;
+                        if (salvTask.getConstructionStage().equals(site.getCurrentConstructionStage())) {
+                            result.add(person);
                         }
                     }
                 }
             }
         }
+        
+        return result;
     }
     
     /**
@@ -199,6 +217,93 @@ public class PersonMapLayer implements SettlementMapLayer {
         // Restore original font and graphic transforms.
         g2d.setFont(saveFont);
         g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Draw labels for people out on EVA's (not construction/salvage workers).
+     * @param g2d the graphics 2D context.
+     * @param settlement the settlement.
+     */
+    private void drawEVAPersonLabels(Graphics2D g2d, Settlement settlement) {
+        // Save original font and transform.
+        Font saveFont = g2d.getFont();
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        int x = 20;
+        int y = 20;
+        
+        g2d.translate(x, y);
+        
+        TextLayout headingLayout = new TextLayout("Outside Settlement (EVA)", g2d.getFont(), g2d.getFontRenderContext());
+        Shape headingShape = headingLayout.getOutline(null);
+        Stroke saveStroke = g2d.getStroke();
+        g2d.setColor(LABEL_OUTLINE_COLOR);
+        g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+        g2d.draw(headingShape);
+        g2d.setStroke(saveStroke);
+        g2d.setColor(LABEL_COLOR);
+        g2d.fill(headingShape);
+        
+        Font personFont = new Font(saveFont.getName(), saveFont.getStyle(), saveFont.getSize() - 3);
+        g2d.setFont(personFont);
+        
+        int offset = 1;
+        Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+        while (i.hasNext()) {
+            Person person = i.next();
+            boolean isEVAatSettlement = true;
+            if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
+                isEVAatSettlement = false;
+            }
+            
+            if (!person.getCoordinates().equals(settlement.getCoordinates())) {
+                isEVAatSettlement = false;
+            }
+            
+            // Don't display construction/salvage workers as they are already displayed at those construction sites.
+            if (isConstructingSalvaging(person)) {
+                isEVAatSettlement = false;
+            }
+            
+            if (isEVAatSettlement) {
+                g2d.translate(0, 15);
+                
+                TextLayout personLayout = new TextLayout("* " + person.getName(), g2d.getFont(), g2d.getFontRenderContext());
+                Shape personShape = personLayout.getOutline(null);
+                g2d.setColor(LABEL_OUTLINE_COLOR);
+                g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+                g2d.draw(personShape);
+                g2d.setStroke(saveStroke);
+                g2d.setColor(LABEL_COLOR);
+                g2d.fill(personShape);
+                
+                offset++;
+            }
+        }
+        
+        // Restore original font and transform.
+        g2d.setTransform(saveTransform);
+        g2d.setFont(saveFont);
+    }
+    
+    /**
+     * Checks if a person is actively doing construction/salvage work at a construction site.
+     * @param person the person.
+     * @return true if doing construction/salvage work.
+     */
+    private boolean isConstructingSalvaging(Person person) {
+        
+        boolean result = false;
+        if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            Task task = person.getMind().getTaskManager().getTask();
+            if ((task != null)) {
+                if ((task instanceof ConstructBuilding) || (task instanceof SalvageBuilding)) {
+                    result = true;
+                }
+            }
+        }
+        
+        return result;
     }
     
     @Override
