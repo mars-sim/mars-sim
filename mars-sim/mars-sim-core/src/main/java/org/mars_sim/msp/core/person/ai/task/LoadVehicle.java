@@ -76,6 +76,12 @@ public class LoadVehicle extends Task implements Serializable {
     		settlement = person.getSettlement();
     		if (settlement == null) endTask();
     		
+    		// If vehicle is in a garage, add person to garage.
+            Building garage = BuildingManager.getBuilding(vehicle);
+            if (garage != null) {
+                BuildingManager.addPersonToBuilding(person, garage);
+            }
+    		
     		// Initialize task phase
             addPhase(LOADING);
             setPhase(LOADING);
@@ -107,6 +113,12 @@ public class LoadVehicle extends Task implements Serializable {
         // tripProportion = tripDistance / vehicle.getRange();
         
         settlement = person.getSettlement();
+        
+        // If vehicle is in a garage, add person to garage.
+        Building garage = BuildingManager.getBuilding(vehicle);
+        if (garage != null) {
+            BuildingManager.addPersonToBuilding(person, garage);
+        }
         
         // Initialize task phase
         addPhase(LOADING);
