@@ -43,6 +43,7 @@ public class SettlementWindow extends ToolWindow {
     private SettlementMapPanel mapPane; // Map panel.
     private int xLast; // Last X mouse drag position.
     private int yLast; // Last Y mouse drag position.
+    private JPopupMenu labelsMenu; // Popup menu for label display options.
     
     /**
      * Constructor
@@ -194,13 +195,15 @@ public class SettlementWindow extends ToolWindow {
         });
 		buttonsPane.add(recenterButton);
 		
-		// Create labels toggle button.
-		JToggleButton labelsButton = new JToggleButton("Labels");
+		// Create labels button.
+		JButton labelsButton = new JButton("Labels");
 		labelsButton.setToolTipText("Add/remove label overlays");
 		labelsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                JToggleButton button = (JToggleButton) evt.getSource();
-                mapPane.setShowLabels(button.isSelected());
+                JButton button = (JButton) evt.getSource();
+                if (labelsMenu == null) labelsMenu = createLabelsMenu();
+                labelsMenu.show(button, 0, button.getHeight());
+                //mapPane.setShowLabels(button.isSelected());
             }
         });
 		buttonsPane.add(labelsButton);
@@ -220,6 +223,56 @@ public class SettlementWindow extends ToolWindow {
 		
 		// Pack window.
 		pack();
+	}
+	
+	/**
+	 * Create the labels popup menu.
+	 * @return popup menu.
+	 */
+	private JPopupMenu createLabelsMenu() {
+	   JPopupMenu result = new JPopupMenu("Label Display Options:");
+	   
+	   // Create building label menu item.
+	   JCheckBoxMenuItem buildingLabelMenuItem = new JCheckBoxMenuItem(
+	           "Buildings", getMapPanel().isShowBuildingLabels());
+	   buildingLabelMenuItem.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent arg0) {
+	           getMapPanel().setShowBuildingLabels(!getMapPanel().isShowBuildingLabels());
+	       }
+	   });
+	   result.add(buildingLabelMenuItem);
+	   
+	   // Create construction/salvage label menu item.
+	   JCheckBoxMenuItem constructionLabelMenuItem = new JCheckBoxMenuItem(
+	           "Construction Sites", getMapPanel().isShowConstructionLabels());
+	   constructionLabelMenuItem.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent arg0) {
+	            getMapPanel().setShowConstructionLabels(!getMapPanel().isShowConstructionLabels());
+	        }
+	   });
+	   result.add(constructionLabelMenuItem);
+	   
+	   // Create person label menu item.
+	   JCheckBoxMenuItem personLabelMenuItem = new JCheckBoxMenuItem(
+	           "People", getMapPanel().isShowPersonLabels());
+	   personLabelMenuItem.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent arg0) {
+               getMapPanel().setShowPersonLabels(!getMapPanel().isShowPersonLabels());
+           }
+	   });
+	   result.add(personLabelMenuItem);
+	   
+	   result.pack();
+	   
+	   return result;
+	}
+	
+	/**
+	 * Gets the settlement map panel.
+	 * @return the settlement map panel.
+	 */
+	private SettlementMapPanel getMapPanel() {
+	    return mapPane;
 	}
 	
 	/**

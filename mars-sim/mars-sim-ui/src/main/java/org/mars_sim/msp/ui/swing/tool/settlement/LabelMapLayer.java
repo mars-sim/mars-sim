@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.01 2012-01-13
+ * @version 3.01 2012-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -55,31 +55,32 @@ public class LabelMapLayer implements SettlementMapLayer {
     public void displayLayer(Graphics2D g2d, Settlement settlement,
             double xPos, double yPos, int mapWidth, int mapHeight,
             double rotation, double scale) {
-        
-        if (mapPanel.isShowLabels()) {
             
-            // Save original graphics transforms.
-            AffineTransform saveTransform = g2d.getTransform();
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
             
-            // Get the map center point.
-            double mapCenterX = mapWidth / 2D;
-            double mapCenterY = mapHeight / 2D;
+        // Get the map center point.
+        double mapCenterX = mapWidth / 2D;
+        double mapCenterY = mapHeight / 2D;
             
-            // Translate map from settlement center point.
-            g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
+        // Translate map from settlement center point.
+        g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
             
-            // Rotate map from North.
-            g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+        // Rotate map from North.
+        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
             
-            // Draw all building labels.
+        // Draw all building labels.
+        if (mapPanel.isShowBuildingLabels()) {
             drawBuildingLabels(g2d, settlement);
-            
-            // Draw all construction site labels.
-            drawConstructionSiteLabels(g2d, settlement);
-            
-            // Restore original graphic transforms.
-            g2d.setTransform(saveTransform);
         }
+            
+        // Draw all construction site labels.
+        if (mapPanel.isShowConstructionLabels()) {
+            drawConstructionSiteLabels(g2d, settlement);
+        }
+            
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
     }
     
     /**

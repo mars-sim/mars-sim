@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.02 2012-01-30
+ * @version 3.02 2012-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -53,7 +53,7 @@ public class PersonMapLayer implements SettlementMapLayer {
             double xPos, double yPos, int mapWidth, int mapHeight,
             double rotation, double scale) {
         
-        if (mapPanel.isShowLabels()) {
+        if (mapPanel.isShowPersonLabels()) {
             
             // Save original graphics transforms.
             AffineTransform saveTransform = g2d.getTransform();
@@ -94,7 +94,8 @@ public class PersonMapLayer implements SettlementMapLayer {
                 Building building = i.next();
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
                 Iterator<Person> j = lifeSupport.getOccupants().iterator();
-                int offset = 1;
+                int offset = 0;
+                if (mapPanel.isShowBuildingLabels()) offset = 1;
                 while (j.hasNext()) {
                     drawPersonLabel(g2d, j.next(), building.getName(), building.getXLocation(), 
                             building.getYLocation(), offset);
@@ -107,7 +108,8 @@ public class PersonMapLayer implements SettlementMapLayer {
             while (j.hasNext()) {
                 ConstructionSite site = j.next();
                 String siteLabel = LabelMapLayer.getConstructionLabel(site);
-                int offset = 1;
+                int offset = 0;
+                if (mapPanel.isShowConstructionLabels()) offset = 1;
                 Iterator<Person> k = getConstructionSalvageWorkers(site, settlement).iterator();
                 while (k.hasNext()) {
                     Person person = k.next();
