@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.02 2011-12-15
+ * @version 3.02 2012-01-31
  * @author Scott Davis
  */
 
@@ -39,7 +39,9 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     private double yPos;
     private double rotation;
     private double scale;
-    private boolean showLabels;
+    private boolean showBuildingLabels;
+    private boolean showConstructionLabels;
+    private boolean showPersonLabels;
     private List<SettlementMapLayer> mapLayers;
     
     /**
@@ -55,7 +57,9 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
         rotation = 0D;
         scale = DEFAULT_SCALE;
         settlement = null;
-        showLabels = false;
+        showBuildingLabels = true;
+        showConstructionLabels = true;
+        showPersonLabels = true;
         
         // Create map layers.
         mapLayers = new ArrayList<SettlementMapLayer>(3);
@@ -156,19 +160,53 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     }
     
     /**
-     * Checks if labels should be displayed.
-     * @return true if labels should be displayed.
+     * Checks if building labels should be displayed.
+     * @return true if building labels should be displayed.
      */
-    public boolean isShowLabels() {
-        return showLabels;
+    public boolean isShowBuildingLabels() {
+        return showBuildingLabels;
     }
     
     /**
-     * Sets if labels should be displayed.
-     * @param showLabels true if labels should be displayed.
+     * Sets if building labels should be displayed.
+     * @param showLabels true if building labels should be displayed.
      */
-    public void setShowLabels(boolean showLabels) {
-        this.showLabels = showLabels;
+    public void setShowBuildingLabels(boolean showLabels) {
+        this.showBuildingLabels = showLabels;
+        repaint();
+    }
+    
+    /**
+     * Checks if construction site labels should be displayed.
+     * @return true if construction site labels should be displayed.
+     */
+    public boolean isShowConstructionLabels() {
+        return showConstructionLabels;
+    }
+    
+    /**
+     * Sets if construction site labels should be displayed.
+     * @param showLabels true if construction site labels should be displayed.
+     */
+    public void setShowConstructionLabels(boolean showLabels) {
+        this.showConstructionLabels = showLabels;
+        repaint();
+    }
+    
+    /**
+     * Checks if person labels should be displayed.
+     * @return true if person labels should be displayed.
+     */
+    public boolean isShowPersonLabels() {
+        return showPersonLabels;
+    }
+    
+    /**
+     * Sets if person labels should be displayed.
+     * @param showLabels true if person labels should be displayed.
+     */
+    public void setShowPersonLabels(boolean showLabels) {
+        this.showPersonLabels = showLabels;
         repaint();
     }
     
