@@ -97,10 +97,19 @@ public class Direction implements Cloneable, Serializable {
      *  @return cleaned direction
      */
     private double cleanDirection(double direction) {
+        
+        while (direction < 0D) {
+            direction += TWO_PI;
+        }
+        
+        while (direction > TWO_PI) {
+            direction -= TWO_PI;
+        }
+        /*
         if ((direction < 0.0) || (direction > TWO_PI)) {
             direction = Math.IEEEremainder(direction, TWO_PI);
         }
-       
+        */
         return direction;
     }
 }

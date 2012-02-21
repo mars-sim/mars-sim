@@ -18,7 +18,7 @@ public class JUnitTests extends TestCase {
 
     private static final Class thisClass = JUnitTests.class;
 
-    // Get test properites.
+    // Get test properties.
     private static final java.util.Properties properties =
             System.getProperties();
 
@@ -67,7 +67,7 @@ public class JUnitTests extends TestCase {
         int slots = vehicle.getAtachmentSlotNumber();
 
         assertEquals("Wrong crew capacity", 1, crewCapacity);
-        assertEquals("Wrong slot number", 2, slots);
+        assertEquals("Wrong slot number", 3, slots);
 
     }
 }

@@ -25,6 +25,7 @@ public class AllJUnitTests extends TestCase {
 	public static Test suite() {
 		TestSuite suite = new TestSuite(thisClass);
 
+		suite.addTestSuite(org.mars_sim.msp.core.TestCoordinates.class);
 		suite.addTestSuite(org.mars_sim.msp.core.TestInventory.class);
 		suite.addTestSuite(org.mars_sim.msp.core.equipment.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.events.JUnitTests.class);
@@ -44,7 +45,7 @@ public class AllJUnitTests extends TestCase {
 		suite.addTestSuite(org.mars_sim.msp.core.structure.goods.TestGoods.class);
 		suite.addTestSuite(org.mars_sim.msp.core.structure.goods.TestCreditManager.class);
 		suite.addTestSuite(org.mars_sim.msp.core.vehicle.JUnitTests.class);
-
+        
 		return suite;
 	}
 	

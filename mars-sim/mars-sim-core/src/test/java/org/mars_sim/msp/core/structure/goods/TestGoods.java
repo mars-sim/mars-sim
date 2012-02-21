@@ -40,7 +40,7 @@ public class TestGoods extends TestCase {
 	
 	public void testGoodsListContainsHammer() {
         Good hammerGood = GoodsUtil.getResourceGood(hammer);
-		assertTrue(GoodsUtil.containsGood(hammerGood));
+		assertFalse(GoodsUtil.containsGood(hammerGood));
 	}
 	
 	public void testGoodsListContainsBag() {
