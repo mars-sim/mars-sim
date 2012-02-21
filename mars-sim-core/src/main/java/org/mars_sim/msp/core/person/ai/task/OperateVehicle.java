@@ -30,8 +30,8 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	// Task phases
 	public final static String MOBILIZE = "Mobilize Vehicle";
 	
-    // Distance buffer for arriving at destination.
-    private final static double DESTINATION_BUFFER = 4D;
+    // Distance buffer for arriving at destination (km).
+    private final static double DESTINATION_BUFFER = .001D;
     
     // The base percentage chance of an accident while operating vehicle per millisol.
     public static final double BASE_ACCIDENT_CHANCE = .001D; 
@@ -199,7 +199,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double result = 0;
 
         // If starting distance to destination is less than distance traveled, stop at destination.
-        if (startingDistanceToDestination < (distanceTraveled + DESTINATION_BUFFER)) {
+        if (startingDistanceToDestination <= (distanceTraveled + DESTINATION_BUFFER)) {
             distanceTraveled = startingDistanceToDestination;
             vehicle.setCoordinates(destination);
             vehicle.setSpeed(0D);

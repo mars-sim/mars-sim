@@ -24,6 +24,8 @@ import java.util.logging.Logger;
  */
 public class Coordinates implements Serializable {
 
+    private static Logger logger = Logger.getLogger(Coordinates.class.getName());
+    
     // Data members
     private double phi; // Phi value of coordinates PHI is latitude in (-PI - PI) radians (although only 0-PI) seem to be legal values 
     private double theta; // Theta value of coordinates, THETA is longitute in (0-2PI) radians
@@ -32,12 +34,6 @@ public class Coordinates implements Serializable {
     private double sinTheta; // Sine of theta (stored for efficiency)
     private double cosPhi; // Cosine of phi (stored for efficiency)
     private double cosTheta; // Cosine of theta (stored for efficiency)
-
-    // Half the map circumference in pixels.
-    private static final double HALF_CIRCUM_PIXELS = 1440D;
-    
-    // 2 x PI
-    private static final double TWO_PI = 2.0D * Math.PI;
 
     /** Constructs a Coordinates object
      *  @param phi the phi angle of the spherical coordinate
@@ -123,8 +119,8 @@ public class Coordinates implements Serializable {
      */
     public void setTheta(double newTheta) {
         theta = newTheta;
-        while (theta < 0D) theta += TWO_PI;
-        while (theta > TWO_PI) theta -= TWO_PI;
+        while (theta < 0D) theta += (Math.PI * 2D);
+        while (theta > (Math.PI * 2D)) theta -= (Math.PI * 2D);
     	setTrigFunctions();
     }
 
@@ -164,10 +160,9 @@ public class Coordinates implements Serializable {
     public void setCoords(Coordinates newCoordinates) {
 
         // Update coordinates
-        //phi = newCoordinates.getPhi();
-        //theta = newCoordinates.getTheta();
-    	this.setPhi(newCoordinates.phi);
-    	this.setTheta(newCoordinates.theta);
+    	setPhi(newCoordinates.phi);
+    	setTheta(newCoordinates.theta);
+    	
         // Update trigonometric functions
         setTrigFunctions();
     }
@@ -195,23 +190,89 @@ public class Coordinates implements Serializable {
     	return (int) ((phi * 1000D) + (theta * 1000D));
     }
 
-    /** Returns the arc angle in radians between this location and the
-     *  given coordinates
-     *  @param otherCoords remote Coordinates object
-     *  @return angle (in radians) to the remote Coordinates object
+    /**
+     * Gets the arc angle between this location and a given 
+     * coordinates.
+     * @param otherCoords the destination location.
+     * @return the arc angle (radians).
      */
     public double getAngle(Coordinates otherCoords) {
+        
+        return getAngleVincenty(otherCoords);
+    }
+    
+    /** 
+     * Calculates the arc angle between this location and a
+     * given coordinates using the spherical law of cosines.
+     * http://en.wikipedia.org/wiki/Spherical_law_of_cosines
+     * @param otherCoords the destination location.
+     * @return the arc angle (radians)
+     */
+    public double getAngleSLC(Coordinates otherCoords) {
 
-        double temp1 = cosPhi * otherCoords.cosPhi;
-        double temp2 = sinPhi * otherCoords.sinPhi;
-        double temp3 = Math.cos(Math.abs(theta - otherCoords.theta));
-        double temp4 = temp1 + (temp2 * temp3);
+        double phi1 = -1D * (phi - (Math.PI / 2D));
+        double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+        double diffTheta = Math.abs(theta - otherCoords.theta);
+        
+        double temp1 = Math.cos(phi1) * Math.cos(phi2);
+        double temp2 = Math.sin(phi1) * Math.sin(phi2);
+        double temp3 = Math.cos(diffTheta);
+        double temp4 = temp2 + (temp1 * temp3);
         
         // Make sure temp4 is in valid -1 to 1 range.
         if (temp4 > 1D) temp4 = 1D;
         else if (temp4 < -1D) temp4 = -1D;
 
-        return Math.acos(temp4);
+        double result = Math.acos(temp4);
+        return result;
+    }
+    
+    /**
+     * Calculates the arc angle between this location and a 
+     * given location using the haversine formula.
+     * http://en.wikipedia.org/wiki/Haversine_formula
+     * @param otherCoords the destination location.
+     * @return the arc angle (radians).
+     */
+    public double getAngleHaversine(Coordinates otherCoords) {
+        
+        double phi1 = -1D * (phi - (Math.PI / 2D));
+        double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+        double diffPhi = Math.abs(phi1 - phi2);
+        double diffTheta = Math.abs(theta - otherCoords.theta);
+        
+        double temp1 = Math.pow(Math.sin(diffPhi / 2D), 2D);
+        double temp2 = Math.cos(phi1) * Math.cos(phi2) * Math.pow(Math.sin(diffTheta / 2D), 2D);
+        double temp3 = Math.sqrt(temp1 + temp2);
+        double result = 2D * Math.asin(temp3);
+        return result;
+    }
+    
+    /**
+     * Calculates the arc angle between this location and a 
+     * given location using Vincenty's formula.
+     * http://en.wikipedia.org/wiki/Vincenty%27s_formulae
+     * @param otherCoords the destination location.
+     * @return the arc angle (radians).
+     */
+    public double getAngleVincenty(Coordinates otherCoords) {
+        
+        double phi1 = -1D * (phi - (Math.PI / 2D));
+        double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+        double diffTheta = Math.abs(theta - otherCoords.theta);
+        
+        double temp1 = Math.pow(Math.cos(phi2) * Math.sin(diffTheta), 2D);
+        double temp2 = Math.cos(phi1) * Math.sin(phi2);
+        double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+        double temp4 = Math.pow(temp2 - temp3, 2D);
+        double temp5 = Math.sqrt(temp1 + temp4);
+        
+        double temp6 = Math.sin(phi1) * Math.sin(phi2);
+        double temp7 = Math.cos(phi1) * Math.cos(phi2) * Math.cos(diffTheta);
+        double temp8 = temp6 + temp7;
+        
+        double result = Math.atan2(temp5, temp8);
+        return result;
     }
 
     /** Returns the distance in kilometers between this location and
@@ -223,8 +284,9 @@ public class Coordinates implements Serializable {
 
         double rho = Mars.MARS_RADIUS_KM;
         double angle = getAngle(otherCoords);
-
-        return rho * angle;
+        double result = rho * angle;
+        
+        return result;
     }
 
     /** 
@@ -269,7 +331,7 @@ public class Coordinates implements Serializable {
             degrees = Math.toDegrees(theta);
             direction = 'E';
         } else if (theta >= Math.PI) {
-            degrees = Math.toDegrees(TWO_PI - theta);
+            degrees = Math.toDegrees((Math.PI * 2D) - theta);
             direction = 'W';
         }
 
@@ -320,23 +382,19 @@ public class Coordinates implements Serializable {
     /** Converts spherical coordinates to rectangular coordinates.
      *  Returns integer x and y display coordinates for spherical
      *  location.
-     *  @param newCoords offsetted location
+     *  @param newCoords the offset location
      *  @param centerCoords location of the center of the map
-     *  @param rho diameter of planet (in km)
+     *  @param rho radius of planet (in km)
      *  @param half_map half the map's width (in pixels)
      *  @param low_edge lower edge of map (in pixels)
      *  @return pixel offset value for map
      */
-    static public IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords,
+    public static IntPoint findRectPosition(Coordinates newCoords, Coordinates centerCoords,
             double rho, int half_map, int low_edge) {
 
         return centerCoords.findRectPosition(newCoords.phi, newCoords.theta, rho,
             half_map, low_edge);
     }
-    
-    static Logger logger = Logger.getLogger(Coordinates.class.getSimpleName());
-    
-    private static final double PI_HALF_NEG = Math.PI / -2D;
     
     /**
      * Converts spherical coordinates to rectangular coordinates.
@@ -350,17 +408,16 @@ public class Coordinates implements Serializable {
      * @param low_edge lower edge of map (in pixels)
      * @return pixel offset value for map
      */
-    public IntPoint findRectPosition(double newPhi, double newTheta, double rho, int half_map, int low_edge) {
+    public IntPoint findRectPosition(double newPhi, double newTheta, 
+            double rho, int half_map, int low_edge) {
         
-//        double sin_offset = 0D - sinPhi;
-//        double cos_offset = 0D - cosPhi;
-//        double col_correction = (Math.PI / -2D) - getTheta();
-        final double temp_col = newTheta + (PI_HALF_NEG - theta);
-        final double temp_buff_x = rho * Math.sin(newPhi);
-//        double temp_buff_y1 = temp_buff_x * (0D - cosPhi);
-//        double temp_buff_y2 = rho * Math.cos(newPhi) * (0D - sinPhi);
-        int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) + half_map) - low_edge;
-        int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) * Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) + half_map) - low_edge;
+        double temp_col = newTheta + ((Math.PI / -2D) - theta);
+        double temp_buff_x = rho * Math.sin(newPhi);
+        int buff_x = ((int) Math.round(temp_buff_x * Math.cos(temp_col)) 
+                + half_map) - low_edge;
+        int buff_y = ((int) Math.round(((temp_buff_x * (0D - cosPhi)) * 
+                Math.sin(temp_col)) + (rho * Math.cos(newPhi) * (0D - sinPhi))) + 
+                half_map) - low_edge;
         return new IntPoint(buff_x, buff_y);
     }
 
@@ -370,14 +427,14 @@ public class Coordinates implements Serializable {
      *  @return new spherical location
      */
     public Coordinates convertRectToSpherical(double x, double y) {
-    	return convertRectToSpherical(x, y, HALF_CIRCUM_PIXELS / Math.PI);
+    	return convertRectToSpherical(x, y, Mars.MARS_RADIUS_KM);
    	}
 
     /** Converts linear rectangular XY position change to spherical coordinates
      *  with rho value for map.
      *  @param x change in x value (in km)
      *  @param y change in y value (in km)
-     *  @param rho rho value of map used
+     *  @param rho rho value of map used (in km)
      *  @return new spherical location
      */
     public Coordinates convertRectToSpherical(double x, double y, double rho) {
@@ -390,7 +447,7 @@ public class Coordinates implements Serializable {
      *  with rho value for map.
      *  @param x change in x value (in km)
      *  @param y change in y value (in km)
-     *  @param rho rho value of map used
+     *  @param rho rho value of map used (in km)
      *  @param newCoordinates Coordinates object to put the result in
      */
     public void convertRectToSpherical(double x, double y, double rho, Coordinates newCoordinates) {
@@ -415,7 +472,7 @@ public class Coordinates implements Serializable {
             if (y3 < 0)
                 theta_new = Math.PI - theta_new;
             else
-                theta_new = TWO_PI + theta_new;
+                theta_new = (Math.PI * 2D) + theta_new;
         }
 
         newCoordinates.setPhi(phi_new);
@@ -429,46 +486,15 @@ public class Coordinates implements Serializable {
      */
     public Direction getDirectionToPoint(Coordinates otherCoords) {
 
-        double rho = HALF_CIRCUM_PIXELS / Math.PI;
-        int half_map = 720;
-        int low_edge = 0;
-
-        IntPoint pos = findRectPosition(otherCoords, this, rho, half_map, low_edge);
-        pos.setLocation(pos.getX() - half_map, pos.getY() - half_map);
-
-        double result = 0D;
-
-        if ((pos.getX() == 0) && (pos.getY() == 0)) {
-            double tempAngle = getAngle(otherCoords);
-            if (tempAngle > (Math.PI / 2D)) {
-                result = 0D;
-            } else {
-                if (getDistance(otherCoords) <= 1D) {
-                    result = 0D;
-                } else {
-                    if ((otherCoords.phi - phi) != 0D) {
-                        result = Math.atan((otherCoords.theta - theta) / (otherCoords.phi - phi));
-                    }
-                }
-            }
-        } else {
-            result = Math.atan(Math.abs(pos.getX() / pos.getY()));
-        }
-
-        if (pos.getX() < 0) {
-            if (pos.getY() < 0) {
-                result = TWO_PI - result;
-            } else {
-                result = Math.PI + result;
-            }
-        } else {
-            if (pos.getY() < 0) {
-//              result = result;
-            } else {
-                result = Math.PI - result;
-            }
-        }
-
+        double phi1 = -1D * (phi - (Math.PI / 2D));
+        double phi2 = -1D * (otherCoords.phi - (Math.PI / 2D));
+        double thetaDiff = otherCoords.theta - theta;
+        double temp1 = Math.sin(thetaDiff) * Math.cos(phi2);
+        double temp2 = Math.cos(phi1) * Math.sin(phi2);
+        double temp3 = Math.sin(phi1) * Math.cos(phi2) * Math.cos(thetaDiff);
+        double temp4 = temp2 - temp3;
+        double result = Math.atan2(temp1, temp4);
+        
         return new Direction(result);
     }
 
@@ -479,7 +505,10 @@ public class Coordinates implements Serializable {
      *  @return new location coordinates
      */
     public Coordinates getNewLocation(Direction direction, double distance) {
-
+        
+        // Breaking line into iterative set of 10km plumb lines to estimate 
+        // cardinal direction on sphere.
+        
         double iterationDistance = 10D;
         int iterations = (int) (distance / iterationDistance);
         double remainder = 0D;
@@ -489,14 +518,14 @@ public class Coordinates implements Serializable {
         // Get successive iteration locations.
         Coordinates startCoords = this;
         for (int x=0; x < iterations; x++) {
-            double newY = -1D * direction.getCosDirection() * (iterationDistance / 7.4D);
-            double newX = direction.getSinDirection() * (iterationDistance / 7.4D);
+            double newY = -1D * direction.getCosDirection() * (iterationDistance);
+            double newX = direction.getSinDirection() * (iterationDistance);
             startCoords = startCoords.convertRectToSpherical(newX, newY);
         }
 
         // Get final location based on remainder.
-        double finalY = -1D * direction.getCosDirection() * (remainder / 7.4D);
-        double finalX = direction.getSinDirection() * (remainder / 7.4D);
+        double finalY = -1D * direction.getCosDirection() * (remainder);
+        double finalX = direction.getSinDirection() * (remainder);
         Coordinates finalCoordinates = startCoords.convertRectToSpherical(finalX, finalY);
 
         return finalCoordinates;
