@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -24,6 +25,7 @@ public class ConstructionManagerTest extends TestCase {
     protected void setUp() throws Exception {
         super.setUp();
         
+        SimulationConfig.loadConfig();
         Settlement settlement = new MockSettlement();
         manager = new ConstructionManager(settlement);
     }

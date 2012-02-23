@@ -13,7 +13,8 @@ public class TestAmountResourceTypeStorage extends TestCase {
 	
 	public TestAmountResourceTypeStorage() {
 		super();
-		SimulationConfig.instance();
+		
+		SimulationConfig.loadConfig();
 	}
 	
 	public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
@@ -162,7 +163,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
 		storage.addAmountResourceTypeCapacity(oxygen, 100D);
 		storage.storeAmountResourceType(carbonDioxide, 10D);
 		storage.storeAmountResourceType(oxygen, 20D);
-		Set allResources = storage.getAllAmountResourcesStored();
+		Set<AmountResource> allResources = storage.getAllAmountResourcesStored();
 		assertTrue("All resources contains carbon dioxide.", allResources.contains(carbonDioxide));
 		assertTrue("All resources contains oxygen.", allResources.contains(oxygen));
 	}
