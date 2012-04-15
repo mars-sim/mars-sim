@@ -12,6 +12,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -148,6 +149,12 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		add(scienceButton);
 		toolButtons.addElement(scienceButton);
 
+		// Add resupply tool button
+		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, "Resupply");
+		resupplyButton.addActionListener(this);
+		add(resupplyButton);
+		toolButtons.addElement(resupplyButton);
+		
 		addSeparator();
 
 		// Add guide button
