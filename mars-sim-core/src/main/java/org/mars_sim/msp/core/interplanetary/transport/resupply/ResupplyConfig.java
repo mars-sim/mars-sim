@@ -1,21 +1,20 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-04-12
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure;
+package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 
 import java.io.Serializable;
 import java.util.*;
-
-
 
 
 /**
@@ -176,14 +175,19 @@ public class ResupplyConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of all building templates in the resupply mission.
+	 * Gets a list of all building in the resupply mission.
 	 * @param resupplyName the resupply mission name.
-	 * @return list of building templates.
+	 * @return list of building types.
 	 */
-	public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
-	    List<BuildingTemplate> result = new ArrayList<BuildingTemplate>();
+	public List<String> getResupplyBuildings(String resupplyName) {
+	    List<String> result = new ArrayList<String>();
 	    ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
-	    if (foundTemplate != null) result.addAll(foundTemplate.buildings);
+	    if (foundTemplate != null) {
+	        Iterator<BuildingTemplate> i = foundTemplate.buildings.iterator();
+	        while (i.hasNext()) {
+	            result.add(i.next().getType());
+	        }
+	    }
 	    return result;
 	}
 	

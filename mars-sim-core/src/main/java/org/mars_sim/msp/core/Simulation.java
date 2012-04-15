@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.02 2011-12-09
+ * @version 3.02 2012-04-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
 
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -61,6 +62,7 @@ public class Simulation implements ClockListener, Serializable {
     private MasterClock masterClock; // Master clock for the simulation.
     private CreditManager creditManager; // Manages trade credit between settlements.
     private ScientificStudyManager scientificStudyManager; // Manages scientific studies.
+    private ResupplyManager resupplyManager; // Manages settlement resupplies from Earth.
     private boolean defaultLoad = false;
     private boolean initialSimulationCreated = false;
 
@@ -129,6 +131,7 @@ public class Simulation implements ClockListener, Serializable {
         unitManager.destroy();
         creditManager.destroy();
         scientificStudyManager.destroy();
+        relationshipManager.destroy();
         eventManager.destroy();
     }
 
@@ -155,6 +158,7 @@ public class Simulation implements ClockListener, Serializable {
         unitManager.constructInitialUnits();
         creditManager = new CreditManager();
         scientificStudyManager = new ScientificStudyManager();
+        resupplyManager = new ResupplyManager();
     }
 
     /**
@@ -212,6 +216,7 @@ public class Simulation implements ClockListener, Serializable {
         relationshipManager = (RelationshipManager) p.readObject();
         medicalManager = (MedicalManager) p.readObject();
         scientificStudyManager = (ScientificStudyManager) p.readObject();
+        resupplyManager = (ResupplyManager) p.readObject();
         creditManager = (CreditManager) p.readObject();
         unitManager = (UnitManager) p.readObject();
         masterClock = (MasterClock) p.readObject();
@@ -253,6 +258,7 @@ public class Simulation implements ClockListener, Serializable {
             p.writeObject(relationshipManager);
             p.writeObject(medicalManager);
             p.writeObject(scientificStudyManager);
+            p.writeObject(resupplyManager);
             p.writeObject(creditManager);
             p.writeObject(unitManager);
             p.writeObject(masterClock);
@@ -327,6 +333,7 @@ public class Simulation implements ClockListener, Serializable {
                     + " Master clock sending pulse to object: scientificStudyManager " + scientificStudyManager);
         }
         scientificStudyManager.updateStudies();
+        resupplyManager.timePassing(time);
     }
 
     /**
@@ -399,6 +406,14 @@ public class Simulation implements ClockListener, Serializable {
      */
     public ScientificStudyManager getScientificStudyManager() {
         return scientificStudyManager;
+    }
+    
+    /**
+     * Get the resupply manager.
+     * @return resupply manager.
+     */
+    public ResupplyManager getResupplyManager() {
+        return resupplyManager;
     }
 
     /**
