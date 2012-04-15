@@ -13,6 +13,7 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -44,6 +45,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
     private JCheckBoxMenuItem settlementToolItem; // Settlement tool menu item
     private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
+    private JCheckBoxMenuItem resupplyToolItem;   // Resupply tool menu item
     private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
     private JCheckBoxMenuItem guideItem;          // User Guide menu item
 
@@ -150,6 +152,12 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
         toolsMenu.add(scienceToolItem);
           
+        // Create resupply tool menu item
+        resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME);
+        resupplyToolItem.addActionListener(this);
+        resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
+        toolsMenu.add(resupplyToolItem);
+        
         // Create help menu
         JMenu helpMenu = new JMenu("Help");
         helpMenu.addMenuListener(this);
@@ -167,7 +175,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         guideItem.addActionListener(this);
         guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
         helpMenu.add(guideItem);
-
     }
 
     // ActionListener method overriding
@@ -223,6 +230,11 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
             if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
             else desktop.closeToolWindow(ScienceWindow.NAME);
         }
+        
+        if (selectedItem == resupplyToolItem) {
+            if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
+            else desktop.closeToolWindow(ResupplyWindow.NAME);
+        }
 
         if (selectedItem == aboutMspItem) {
             if (aboutMspItem.isSelected()) desktop.openToolWindow(AboutWindow.NAME);
@@ -246,6 +258,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
         settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
         scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
+        resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
         aboutMspItem.setSelected(desktop.isToolWindowOpen(AboutWindow.NAME));
         guideItem.setSelected(desktop.isToolWindowOpen(GuideWindow.NAME));
    }

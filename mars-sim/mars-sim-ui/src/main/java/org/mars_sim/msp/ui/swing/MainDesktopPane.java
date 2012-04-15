@@ -20,6 +20,7 @@ import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.UnitTableModel;
 import org.mars_sim.msp.ui.swing.tool.navigator.NavigatorWindow;
 import org.mars_sim.msp.ui.swing.tool.preferences.PreferencesWindow;
+import org.mars_sim.msp.ui.swing.tool.resupply.ResupplyWindow;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
@@ -218,6 +219,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		try { scienceWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(scienceWindow);
+		
+		// Prepare resupply tool window
+		ResupplyWindow resupplyWindow = new ResupplyWindow(this);
+		try { resupplyWindow.setClosed(true); }
+		catch (PropertyVetoException e) { }
+		toolWindows.add(resupplyWindow);
 
 		// Prepare about tool window
 		AboutWindow aboutWindow = new AboutWindow(this);
