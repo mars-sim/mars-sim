@@ -4,7 +4,7 @@
  * @version 3.00 2010-08-25
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure;
+package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import java.io.Serializable;
 

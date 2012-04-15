@@ -1,10 +1,10 @@
 /**
  * Mars Simulation Project
  * ResupplyEvent.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-04-09
  * @author Scott Davis
  */
-package org.mars_sim.msp.core.structure;
+package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
@@ -18,10 +18,10 @@ public class ResupplyEvent extends HistoricalEvent {
 	/**
 	 * Constructor
 	 * @param settlement the name of the settlement getting the supplies.
-	 * @param resupplyName the name of the resupply mission.
+	 * @param description of the event.
 	 */
-	public ResupplyEvent(Settlement settlement, String resupplyName) {
-		super(HistoricalEventManager.SUPPLY, "Supplies delivered", settlement, 
-			resupplyName + " arrive at " + settlement.getName());
+	public ResupplyEvent(Resupply resupply, String description) {
+		super(HistoricalEventManager.SUPPLY, resupply.getState(), resupply, 
+			description);
 	}
 }

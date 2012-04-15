@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MarsClock.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-04-15
  * @author Scott Davis
  */
 
@@ -177,25 +177,43 @@ public class MarsClock implements Serializable {
         return result;
     }
 
-    /** Adds time to the calendar
-     *  @param addedMillisols millisols to be added to the calendar
+    /** 
+     * Adds time to the calendar
+     * Note: negative time should be used to subtract time.
+     * @param addedMillisols millisols to be added to the calendar
      */ 
     public void addTime(double addedMillisols) {
         
         millisol += addedMillisols;
         
-        while (millisol >= 1000D) {
-            millisol -= 1000D;
-            sol += 1;
-            if (sol > getSolsInMonth(month, orbit)) {
-                sol = 1;
-                month += 1;
-                if (month > MONTHS_IN_ORBIT) {
-                    month = 1;
-                    orbit += 1;
+        if (addedMillisols > 0D) {
+            while (millisol >= 1000D) {
+                millisol -= 1000D;
+                sol += 1;
+                if (sol > getSolsInMonth(month, orbit)) {
+                    sol = 1;
+                    month += 1;
+                    if (month > MONTHS_IN_ORBIT) {
+                        month = 1;
+                        orbit += 1;
+                    }
                 }
             }
-        } 
+        }
+        else if (addedMillisols < 0D) {
+            while (millisol < 0D) {
+                millisol += 1000D;
+                sol -= 1;
+                if (sol < 1) {
+                    month -= 1;
+                    if (month < 1) {
+                        month = MONTHS_IN_ORBIT;
+                        orbit -= 1;
+                    }
+                    sol = getSolsInMonth(month, orbit);
+                }
+            }
+        }
     }
 
     /** Returns formatted time stamp string.

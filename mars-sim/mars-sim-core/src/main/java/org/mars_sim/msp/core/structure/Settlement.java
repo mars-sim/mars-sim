@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-04-08
  * @author Scott Davis
  */
 
@@ -52,7 +52,6 @@ public class Settlement extends Structure implements Malfunctionable,
 
     // Data members
     protected BuildingManager buildingManager; // The settlement's building manager.
-    protected ResupplyManager resupplyManager; // The settlement's resupply manager.
     protected GoodsManager goodsManager; // The settlement's goods manager.
     protected ConstructionManager constructionManager; // The settlement's construction manager.
     protected PowerGrid powerGrid; // The settlement's building power grid.
@@ -92,9 +91,6 @@ public class Settlement extends Structure implements Malfunctionable,
 
         // Initialize building manager
         buildingManager = new BuildingManager(this);
-
-        // Initialize resupply manager
-        resupplyManager = new ResupplyManager(this);
 
         // Initialize goods manager.
         goodsManager = new GoodsManager(this);
@@ -345,9 +341,6 @@ public class Settlement extends Structure implements Malfunctionable,
             }
         }
 
-        // Deliver supplies to settlement if they arrive.
-        resupplyManager.timePassing(time);
-
         // If no current population at settlement for one sol, power down buildings.
         if (getCurrentPopulationNum() == 0) {
             zeroPopulationTime += time;
@@ -420,14 +413,6 @@ public class Settlement extends Structure implements Malfunctionable,
      */
     public BuildingManager getBuildingManager() {
         return buildingManager;
-    }
-
-    /**
-     * Gets the settlement's resupply manager.
-     * @return resupply manager
-     */
-    public ResupplyManager getResupplyManager() {
-        return resupplyManager;
     }
 
     /**
@@ -635,8 +620,6 @@ public class Settlement extends Structure implements Malfunctionable,
         
         buildingManager.destroy();
         buildingManager = null;
-        resupplyManager.destroy();
-        resupplyManager = null;
         goodsManager.destroy();
         goodsManager = null;
         constructionManager.destroy();

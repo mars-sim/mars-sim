@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.core.structure;
 
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 
