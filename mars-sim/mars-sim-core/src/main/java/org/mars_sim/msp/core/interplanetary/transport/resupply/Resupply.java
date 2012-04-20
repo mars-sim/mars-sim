@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.02 2012-04-09
+ * @version 3.02 2012-04-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -18,7 +20,7 @@ import java.util.Map;
 /**
  * Resupply mission from Earth for a settlement.
  */
-public class Resupply implements Serializable {
+public class Resupply implements Serializable, Comparable<Resupply> {
 
     // Static data members.
     // Delivery states.
@@ -210,6 +212,15 @@ public class Resupply implements Serializable {
     public void setSettlement(Settlement settlement) {
         this.settlement = settlement;
     }
+    
+    /**
+     * Commits a set of modifications for the resupply mission.
+     */
+    public void commitModification() {
+        HistoricalEvent newEvent = new ResupplyEvent(this, ResupplyEvent.RESUPPLY_MODIFIED, 
+                "Resupply mission modified");
+        Simulation.instance().getEventManager().registerNewEvent(newEvent);  
+    }
 
     /**
      * Prepare object for garbage collection.
@@ -228,5 +239,33 @@ public class Resupply implements Serializable {
         newResources = null;
         newParts.clear();
         newParts = null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuffer buff = new StringBuffer();
+        buff.append(getSettlement().getName());
+        buff.append(": ");
+        buff.append(getArrivalDate().getDateString());
+        return buff.toString();
+    }
+    
+    @Override
+    public int compareTo(Resupply o) {
+        int result = 0;
+        
+        double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
+        if (arrivalTimeDiff < 0D) {
+            result = -1;
+        }
+        else if (arrivalTimeDiff > 0D) {
+            result = 1;
+        }
+        else {
+            // If arrival time is the same, compare by settlement name alphabetically.
+            result = settlement.compareTo(o.getSettlement());
+        }
+        
+        return result;
     }
 }

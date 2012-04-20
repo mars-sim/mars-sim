@@ -178,7 +178,7 @@ public class ResupplyManager implements Serializable {
 			    if (MarsClock.getTimeDiff(currentTime, resupply.getLaunchDate()) >= 0D) {
 			        // Resupply mission is launched.
 			        resupply.setState(Resupply.IN_TRANSIT);
-			        HistoricalEvent newEvent = new ResupplyEvent(resupply, 
+			        HistoricalEvent newEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_LAUNCHED, 
 			                "Resupply mission launched");
 			        Simulation.instance().getEventManager().registerNewEvent(newEvent);  
 			        continue;
@@ -189,7 +189,7 @@ public class ResupplyManager implements Serializable {
                     // Resupply mission has arrived at settlement.
                     resupply.setState(Resupply.DELIVERED);
                     deliverSupplies(resupply);
-                    HistoricalEvent newEvent = new ResupplyEvent(resupply, 
+                    HistoricalEvent newEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_ARRIVED,
                             "Resupply mission arrived at settlement");
                     Simulation.instance().getEventManager().registerNewEvent(newEvent);  
                 }
