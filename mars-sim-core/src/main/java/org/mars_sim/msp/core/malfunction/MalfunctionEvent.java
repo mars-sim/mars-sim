@@ -16,7 +16,7 @@ public class MalfunctionEvent extends HistoricalEvent {
      * Create an event associated to a Malfunction.
      *
      * @param entity Malfunctionable entity with problem.
-     * @param malfunction Problem that has occured.
+     * @param malfunction Problem that has occurred.
      * @param fixed Is the malfunction resolved.
      */
     public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, boolean fixed) {

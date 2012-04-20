@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.02 2012-04-03
+ * @version 3.02 2012-04-18
  * @author Scott Davis
  */
 
@@ -59,8 +59,14 @@ public class ResupplyWindow extends ToolWindow {
         arrivedListPane = new ArrivedListPanel();
         listPane.add(arrivedListPane);
         
+        // Set incoming and arrived list panels to listen to each other's list selections.
+        incomingListPane.getIncomingList().addListSelectionListener(arrivedListPane);
+        arrivedListPane.getArrivedList().addListSelectionListener(incomingListPane);
+        
         // Create detail panel.
         detailPane = new ResupplyDetailPanel();
+        incomingListPane.getIncomingList().addListSelectionListener(detailPane);
+        arrivedListPane.getArrivedList().addListSelectionListener(detailPane);
         mainPane.add(detailPane, BorderLayout.CENTER);
         
         // Create button panel.
