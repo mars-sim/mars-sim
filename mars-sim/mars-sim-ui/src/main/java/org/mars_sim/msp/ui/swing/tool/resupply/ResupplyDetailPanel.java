@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.02 2012-04-19
+ * @version 3.02 2012-04-25
  * @author Scott Davis
  */
 
@@ -12,16 +12,27 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -29,9 +40,12 @@ import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyEvent;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
  * A panel showing a selected resupply mission details.
@@ -47,6 +61,8 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
     private JLabel timeArrivalValueLabel;
     private JLabel immigrantsValueLabel;
     private int solsToArrival = -1;
+    //private Box innerSupplyPane;
+    private JPanel innerSupplyPane;
     
     /**
      * Constructor
@@ -138,12 +154,13 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         immigrantsPane.add(immigrantsValueLabel);
         
         // Create the outer supply panel.
-        JPanel outerSupplyPane = new JPanel();
+        JPanel outerSupplyPane = new JPanel(new BorderLayout(0, 0));
         outerSupplyPane.setBorder(new TitledBorder("Supplies"));
         add(outerSupplyPane, BorderLayout.CENTER);
         
         // Create the inner supply panel.
-        Box innerSupplyPane = Box.createVerticalBox();
+        innerSupplyPane = new JPanel();
+        innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
         outerSupplyPane.add(new JScrollPane(innerSupplyPane), BorderLayout.CENTER);
         
         // Set as clock listener.
@@ -188,8 +205,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         arrivalDateValueLabel.setText("");
         timeArrivalValueLabel.setText("");
         immigrantsValueLabel.setText("");
-        
-        // TODO
+        innerSupplyPane.removeAll();
     }
 
     /**
@@ -207,7 +223,337 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         
         immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
         
-        // TODO
+        updateSupplyPanel();
+    }
+    
+    /**
+     * Update the supply panel with the current resupply mission.
+     */
+    private void updateSupplyPanel() {
+        
+        // Clear any previous data.
+        innerSupplyPane.removeAll();
+        
+        // Create buildings panel.
+        JPanel buildingsPanel = createBuildingsDisplayPanel();
+        if (buildingsPanel != null) {
+            innerSupplyPane.add(buildingsPanel);
+            innerSupplyPane.add(Box.createVerticalStrut(10));
+        }
+            
+        // Create vehicles panel.
+        JPanel vehiclesPanel = createVehiclesDisplayPanel();
+        if (vehiclesPanel != null) {
+            innerSupplyPane.add(vehiclesPanel);
+            innerSupplyPane.add(Box.createVerticalStrut(10));
+        }
+        
+        // Create equipment panel.
+        JPanel equipmentPanel = createEquipmentDisplayPanel();
+        if (equipmentPanel != null) {
+            innerSupplyPane.add(equipmentPanel);
+            innerSupplyPane.add(Box.createVerticalStrut(10));
+        }
+        
+        // Create resources panel.
+        JPanel resourcesPanel = createResourcesDisplayPanel();
+        if (resourcesPanel != null) {
+            innerSupplyPane.add(resourcesPanel);
+            innerSupplyPane.add(Box.createVerticalStrut(10));
+        }
+        
+        // Create parts panel.
+        JPanel partsPanel = createPartsDisplayPanel();
+        if (partsPanel != null) {
+            innerSupplyPane.add(partsPanel);
+        }
+        
+        innerSupplyPane.add(Box.createVerticalGlue());
+    }
+        
+    /**
+     * Create the building display panel.
+     * @return panel.
+     */
+    private JPanel createBuildingsDisplayPanel() {
+        
+        JPanel buildingsPanel = null;
+        
+        List<String> buildings = resupply.getNewBuildings();
+        if (buildings.size() > 0) {
+            // Create buildings panel.
+            buildingsPanel = new JPanel(new BorderLayout());
+        
+            // Create buildings label.
+            JLabel buildingsLabel = new JLabel("Buildings", JLabel.CENTER);
+            buildingsPanel.add(buildingsLabel, BorderLayout.NORTH);
+        
+            // Create table data.
+            Map<String, Integer> buildingMap = new HashMap<String, Integer>(buildings.size());
+            Iterator<String> i = buildings.iterator();
+            while (i.hasNext()) {
+                String building = i.next();
+                if (buildingMap.containsKey(building)) {
+                    int num = buildingMap.get(building) + 1;
+                    buildingMap.put(building, num);
+                }
+                else {
+                    buildingMap.put(building, 1);
+                }
+            }
+            
+            // Create table model.
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.addColumn("Building Type");
+            tableModel.addColumn("Num");
+            
+            // Populate table model with data.
+            List<String> buildingTypes = new ArrayList<String>(buildingMap.keySet());
+            Collections.sort(buildingTypes);
+            Iterator<String> j = buildingTypes.iterator();
+            while (j.hasNext()) {
+                String buildingName = j.next();
+                int num = buildingMap.get(buildingName);
+                Vector rowData = new Vector(2);
+                rowData.add(buildingName);
+                rowData.add(num);
+                tableModel.addRow(rowData);
+            }
+            
+            // Create table
+            JTable buildingTable = new JTable(tableModel);
+            buildingTable.setCellSelectionEnabled(false);
+            buildingTable.getColumnModel().getColumn(1).setMaxWidth(50);
+            buildingTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+            buildingsPanel.add(new JScrollPane(buildingTable), BorderLayout.CENTER);
+            
+            // Set preferred height for panel to show all of table.
+            int panelHeight = buildingTable.getPreferredSize().height + 
+                    buildingTable.getTableHeader().getPreferredSize().height + 
+                    buildingsLabel.getPreferredSize().height + 7;
+            buildingsPanel.setPreferredSize(new Dimension(100, panelHeight));
+        }
+        
+        return buildingsPanel;
+    }
+    
+    /**
+     * Create the vehicle display panel.
+     * @return panel.
+     */
+    private JPanel createVehiclesDisplayPanel() {
+        
+        JPanel vehiclesPanel = null;
+        
+        List<String> vehicles = resupply.getNewVehicles();
+        if (vehicles.size() > 0) {
+            // Create vehicles panel.
+            vehiclesPanel = new JPanel(new BorderLayout());
+        
+            // Create vehicles label.
+            JLabel vehiclesLabel = new JLabel("Vehicles", JLabel.CENTER);
+            vehiclesPanel.add(vehiclesLabel, BorderLayout.NORTH);
+        
+            // Create table data.
+            Map<String, Integer> vehicleMap = new HashMap<String, Integer>(vehicles.size());
+            Iterator<String> i = vehicles.iterator();
+            while (i.hasNext()) {
+                String vehicle = i.next();
+                if (vehicleMap.containsKey(vehicle)) {
+                    int num = vehicleMap.get(vehicle) + 1;
+                    vehicleMap.put(vehicle, num);
+                }
+                else {
+                    vehicleMap.put(vehicle, 1);
+                }
+            }
+            
+            // Create table model.
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.addColumn("Vehicle Type");
+            tableModel.addColumn("Num");
+            
+            // Populate table model with data.
+            List<String> vehicleTypes = new ArrayList<String>(vehicleMap.keySet());
+            Collections.sort(vehicleTypes);
+            Iterator<String> j = vehicleTypes.iterator();
+            while (j.hasNext()) {
+                String vehicleName = j.next();
+                int num = vehicleMap.get(vehicleName);
+                Vector rowData = new Vector(2);
+                rowData.add(vehicleName);
+                rowData.add(num);
+                tableModel.addRow(rowData);
+            }
+            
+            // Create table
+            JTable vehicleTable = new JTable(tableModel);
+            vehicleTable.setCellSelectionEnabled(false);
+            vehicleTable.getColumnModel().getColumn(1).setMaxWidth(50);
+            vehicleTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+            vehiclesPanel.add(new JScrollPane(vehicleTable), BorderLayout.CENTER);
+            
+            // Set preferred height for panel to show all of table.
+            int panelHeight = vehicleTable.getPreferredSize().height + 
+                    vehicleTable.getTableHeader().getPreferredSize().height + 
+                    vehiclesLabel.getPreferredSize().height + 7;
+            vehiclesPanel.setPreferredSize(new Dimension(100, panelHeight));
+        }
+        
+        return vehiclesPanel;
+    }
+    
+    /**
+     * Create the equipment display panel.
+     * @return panel.
+     */
+    private JPanel createEquipmentDisplayPanel() {
+        
+        JPanel equipmentPanel = null;
+        
+        Map<String, Integer> equipment = resupply.getNewEquipment();
+        if (equipment.size() > 0) {
+            // Create equipment panel.
+            equipmentPanel = new JPanel(new BorderLayout());
+        
+            // Create equipment label.
+            JLabel equipmentLabel = new JLabel("Equipment", JLabel.CENTER);
+            equipmentPanel.add(equipmentLabel, BorderLayout.NORTH);
+            
+            // Create table model.
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.addColumn("Equipment Type");
+            tableModel.addColumn("Num");
+            
+            // Populate table model with data.
+            List<String> equipmentTypes = new ArrayList<String>(equipment.keySet());
+            Collections.sort(equipmentTypes);
+            Iterator<String> j = equipmentTypes.iterator();
+            while (j.hasNext()) {
+                String equipmentType = j.next();
+                int num = equipment.get(equipmentType);
+                Vector rowData = new Vector(2);
+                rowData.add(equipmentType);
+                rowData.add(num);
+                tableModel.addRow(rowData);
+            }
+            
+            // Create table
+            JTable equipmentTable = new JTable(tableModel);
+            equipmentTable.setCellSelectionEnabled(false);
+            equipmentTable.getColumnModel().getColumn(1).setMaxWidth(50);
+            equipmentTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+            equipmentPanel.add(new JScrollPane(equipmentTable), BorderLayout.CENTER);
+            
+            // Set preferred height for panel to show all of table.
+            int panelHeight = equipmentTable.getPreferredSize().height + 
+                    equipmentTable.getTableHeader().getPreferredSize().height + 
+                    equipmentLabel.getPreferredSize().height + 7;
+            equipmentPanel.setPreferredSize(new Dimension(100, panelHeight));
+        }
+        
+        return equipmentPanel;
+    }
+    
+    /**
+     * Create the resources display panel.
+     * @return panel.
+     */
+    private JPanel createResourcesDisplayPanel() {
+        
+        JPanel resourcesPanel = null;
+        
+        Map<AmountResource, Double> resources = resupply.getNewResources();
+        if (resources.size() > 0) {
+            // Create resources panel.
+            resourcesPanel = new JPanel(new BorderLayout());
+        
+            // Create resources label.
+            JLabel resourcesLabel = new JLabel("Resources", JLabel.CENTER);
+            resourcesPanel.add(resourcesLabel, BorderLayout.NORTH);
+            
+            // Create table model.
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.addColumn("Resource Type");
+            tableModel.addColumn("Amount");
+            
+            // Populate table model with data.
+            List<AmountResource> resourceTypes = new ArrayList<AmountResource>(resources.keySet());
+            Collections.sort(resourceTypes);
+            Iterator<AmountResource> j = resourceTypes.iterator();
+            while (j.hasNext()) {
+                AmountResource resourceType = j.next();
+                double amount = resources.get(resourceType);
+                Vector rowData = new Vector(2);
+                rowData.add(resourceType);
+                rowData.add(amount);
+                tableModel.addRow(rowData);
+            }
+            
+            // Create table
+            JTable resourcesTable = new JTable(tableModel);
+            resourcesTable.setCellSelectionEnabled(false);
+            resourcesTable.getColumnModel().getColumn(1).setMaxWidth(70);
+            resourcesTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(1));
+            resourcesPanel.add(new JScrollPane(resourcesTable), BorderLayout.CENTER);
+            
+            // Set preferred height for panel to show all of table.
+            int panelHeight = resourcesTable.getPreferredSize().height + 
+                    resourcesTable.getTableHeader().getPreferredSize().height + 
+                    resourcesLabel.getPreferredSize().height + 7;
+            resourcesPanel.setPreferredSize(new Dimension(100, panelHeight));
+        }
+        
+        return resourcesPanel;
+    }
+    
+    /**
+     * Create the parts display panel.
+     * @return panel.
+     */
+    private JPanel createPartsDisplayPanel() {
+        
+        JPanel partsPanel = null;
+        
+        Map<Part, Integer> parts = resupply.getNewParts();
+        if (parts.size() > 0) {
+            // Create parts panel.
+            partsPanel = new JPanel(new BorderLayout());
+        
+            // Create parts label.
+            JLabel partsLabel = new JLabel("Parts", JLabel.CENTER);
+            partsPanel.add(partsLabel, BorderLayout.NORTH);
+            
+            // Create table model.
+            DefaultTableModel tableModel = new DefaultTableModel();
+            tableModel.addColumn("Part Type");
+            tableModel.addColumn("Num");
+            
+            // Populate table model with data.
+            List<Part> partTypes = new ArrayList<Part>(parts.keySet());
+            Collections.sort(partTypes);
+            Iterator<Part> j = partTypes.iterator();
+            while (j.hasNext()) {
+                Part partType = j.next();
+                int num = parts.get(partType);
+                Vector rowData = new Vector(2);
+                rowData.add(partType);
+                rowData.add(num);
+                tableModel.addRow(rowData);
+            }
+            
+            // Create table
+            JTable partsTable = new JTable(tableModel);
+            partsTable.setCellSelectionEnabled(false);
+            partsTable.getColumnModel().getColumn(1).setMaxWidth(50);
+            partsTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
+            partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
+            
+            // Set preferred height for panel.
+            partsPanel.setPreferredSize(new Dimension(100, 200));
+        }
+        
+        return partsPanel;
     }
     
     /**
