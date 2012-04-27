@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.02 2012-04-25
+ * @version 3.02 2012-04-26
  * @author Scott Davis
  */
 
@@ -27,7 +27,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -549,8 +548,11 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
             partsTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
             partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
             
-            // Set preferred height for panel.
-            partsPanel.setPreferredSize(new Dimension(100, 200));
+            // Set preferred height for panel to show all of table.
+            int panelHeight = partsTable.getPreferredSize().height + 
+                    partsTable.getTableHeader().getPreferredSize().height + 
+                    partsLabel.getPreferredSize().height + 7;
+            partsPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
         
         return partsPanel;
