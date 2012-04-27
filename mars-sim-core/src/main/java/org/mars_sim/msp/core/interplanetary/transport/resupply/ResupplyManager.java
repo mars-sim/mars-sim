@@ -164,6 +164,17 @@ public class ResupplyManager implements Serializable {
 	}
 	
 	/**
+	 * Cancels a resupply mission.
+	 * @param resupply the resupply mission.
+	 */
+	public void cancelResupplyMission(Resupply resupply) {
+	    resupply.setState(Resupply.CANCELED);
+	    HistoricalEvent cancelEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_CANCELLED,
+                "Resupply mission cancelled");
+	    Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
+	}
+	
+	/**
 	 * Time passing.
 	 *
 	 * @param time amount of time passing (in millisols)
@@ -178,9 +189,9 @@ public class ResupplyManager implements Serializable {
 			    if (MarsClock.getTimeDiff(currentTime, resupply.getLaunchDate()) >= 0D) {
 			        // Resupply mission is launched.
 			        resupply.setState(Resupply.IN_TRANSIT);
-			        HistoricalEvent newEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_LAUNCHED, 
+			        HistoricalEvent deliverEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_LAUNCHED, 
 			                "Resupply mission launched");
-			        Simulation.instance().getEventManager().registerNewEvent(newEvent);  
+			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);  
 			        continue;
 			    }
 			}
@@ -189,9 +200,9 @@ public class ResupplyManager implements Serializable {
                     // Resupply mission has arrived at settlement.
                     resupply.setState(Resupply.DELIVERED);
                     deliverSupplies(resupply);
-                    HistoricalEvent newEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_ARRIVED,
+                    HistoricalEvent deliverEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_ARRIVED,
                             "Resupply mission arrived at settlement");
-                    Simulation.instance().getEventManager().registerNewEvent(newEvent);  
+                    Simulation.instance().getEventManager().registerNewEvent(deliverEvent);  
                 }
 			}
 		}
