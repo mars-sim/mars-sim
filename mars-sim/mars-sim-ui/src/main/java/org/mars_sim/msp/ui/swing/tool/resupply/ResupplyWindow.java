@@ -123,7 +123,8 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         // Pause simulation.
         desktop.getMainWindow().pauseSimulation();
         
-        // TODO
+        // Create new resupply mission dialog.
+        new NewModifyResupplyDialog(desktop.getMainWindow().getFrame());
         
         // Unpause simulation.
         desktop.getMainWindow().unpauseSimulation();
@@ -136,8 +137,14 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         // Pause simulation.
         desktop.getMainWindow().pauseSimulation();
         
-        // TODO
+        // Get currently selected incoming resupply mission.
+        Resupply resupply = (Resupply) incomingListPane.getIncomingList().getSelectedValue();
         
+        if (resupply != null) {
+            // Create modify resupply mission dialog.
+            new NewModifyResupplyDialog(desktop.getMainWindow().getFrame(), resupply);
+        }
+            
         // Unpause simulation.
         desktop.getMainWindow().unpauseSimulation();
     }
