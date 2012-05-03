@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.time;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /** The MarsClock class keeps track of Martian time.
  *  This uses Shaun Moss's Mars Calendar, which is
@@ -114,6 +115,22 @@ public class MarsClock implements Serializable {
         return getTotalMillisols(firstTime) - getTotalMillisols(secondTime);
     }
     
+    /**
+     * Gets the names of the Martian months.
+     * @return array of month names.
+     */
+    public static String[] getMonthNames() {
+        return Arrays.copyOf(MONTH_NAMES, MONTH_NAMES.length);
+    }
+    
+    /**
+     * Gets the names of the Martian sols of the week.
+     * @return array of week sol names.
+     */
+    public static String[] getWeekSolNames() {
+        return Arrays.copyOf(WEEK_SOL_NAMES, WEEK_SOL_NAMES.length);
+    }
+    
     /** Returns the total millisols in the Mars clock from orbit 0.
      *  @param time Mars clock instance
      *  @return total millisols
@@ -150,7 +167,7 @@ public class MarsClock implements Serializable {
         // Standard month has 28 sols.
         int result = SOLS_IN_MONTH_LONG;
 
-        // If month number is divisable by 6, month has 27 sols 
+        // If month number is divisible by 6, month has 27 sols 
         if ((month % 6) == 0) result = SOLS_IN_MONTH_SHORT;
 
         // If leap orbit and month number is 24, month has 28 sols 
