@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * NewModifyResupplyDialog.java
- * @version 3.02 2012-05-03
+ * @version 3.02 2012-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -25,6 +26,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
 
@@ -33,6 +36,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
  * A dialog for modifying or creating new resupply missions.
@@ -55,6 +59,7 @@ public class NewModifyResupplyDialog extends JDialog {
     private JComboBox orbitCB;
     private JTextField solsTF;
     private JLabel solInfoLabel;
+    private JTextField immigrantsTF;
     
     /**
      * Constructor for creating new resupply mission.
@@ -239,12 +244,54 @@ public class NewModifyResupplyDialog extends JDialog {
         solInfoLabel.setEnabled(false);
         timeUntilArrivalPane.add(solInfoLabel);
         
+        // Create immigrants panel.
+        JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        topEditPane.add(immigrantsPane, BorderLayout.SOUTH);
+        
+        // Create immigrants label.
+        JLabel immigrantsLabel = new JLabel("Number of Immigrants: ");
+        immigrantsPane.add(immigrantsLabel);
+        
+        // Create immigrants text field.
+        int immigrantsNum = 0;
+        if (resupply != null) {
+            immigrantsNum = resupply.getNewImmigrantNum();
+        }
+        immigrantsTF = new JTextField(6);
+        immigrantsTF.setText(Integer.toString(immigrantsNum));
+        immigrantsTF.setHorizontalAlignment(JTextField.RIGHT);
+        immigrantsPane.add(immigrantsTF);
+        
         // Create bottom edit pane.
-        JPanel bottomEditPane = new JPanel(new BorderLayout(10, 10));
+        JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
         bottomEditPane.setBorder(new TitledBorder("Supplies"));
         editPane.add(bottomEditPane, BorderLayout.CENTER);
         
-        // TODO
+        // Create supply table.
+        SupplyTableModel supplyTableModel = new SupplyTableModel(resupply);
+        JTable supplyTable = new JTable(supplyTableModel);
+        supplyTable.getColumnModel().getColumn(2).setCellRenderer(new NumberCellRenderer(0));
+        supplyTable.getColumnModel().getColumn(0).setMaxWidth(100);
+        supplyTable.getColumnModel().getColumn(1).setMaxWidth(200);
+        supplyTable.getColumnModel().getColumn(2).setMaxWidth(150);
+        
+        // Create supply scroll pane.
+        JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
+        supplyScrollPane.setPreferredSize(new Dimension(450, 200));
+        bottomEditPane.add(supplyScrollPane, BorderLayout.CENTER);
+        
+        // Create supply button pane.
+        JPanel supplyButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        bottomEditPane.add(supplyButtonPane, BorderLayout.SOUTH);
+        
+        // Create add supply button.
+        JButton addSupplyButton = new JButton("Add");
+        supplyButtonPane.add(addSupplyButton);
+        
+        // Create remove supply button.
+        JButton removeSupplyButton = new JButton("Remove");
+        removeSupplyButton.setEnabled(false);
+        supplyButtonPane.add(removeSupplyButton);
         
         // Create the button pane.
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
