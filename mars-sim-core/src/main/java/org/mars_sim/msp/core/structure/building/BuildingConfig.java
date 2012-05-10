@@ -14,8 +14,10 @@ import org.mars_sim.msp.core.structure.building.function.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 /**
@@ -89,6 +91,7 @@ public class BuildingConfig implements Serializable {
     private static final String AREOTHERMAL_POWER_SOURCE = "Areothermal Power Source";
 	
 	private Document buildingDoc;
+	private Set<String> buildingNames;
 	
 	/**
 	 * Constructor
@@ -96,6 +99,25 @@ public class BuildingConfig implements Serializable {
 	 */
 	public BuildingConfig(Document buildingDoc) {
 		this.buildingDoc = buildingDoc;	
+	}
+	
+	/**
+	 * Gets a set of all building names.
+	 * @return set of building names.
+	 */
+	@SuppressWarnings("unchecked")
+	public Set<String> getBuildingNames() {
+	    
+	    if (buildingNames == null) {
+	        buildingNames = new HashSet<String>();
+	        Element root = buildingDoc.getRootElement();
+	        List<Element> buildingNodes = root.getChildren(BUILDING);
+	        for (Element buildingElement : buildingNodes) {
+	            buildingNames.add(buildingElement.getAttributeValue(NAME));
+	        }
+	    }
+	    
+	    return buildingNames;
 	}
 	
 	/**

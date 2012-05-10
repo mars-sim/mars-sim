@@ -60,7 +60,6 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
     private JLabel timeArrivalValueLabel;
     private JLabel immigrantsValueLabel;
     private int solsToArrival = -1;
-    //private Box innerSupplyPane;
     private JPanel innerSupplyPane;
     
     /**
@@ -223,6 +222,8 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
         
         updateSupplyPanel();
+        
+        validate();
     }
     
     /**
@@ -578,7 +579,6 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         JList resupplyList = (JList) evt.getSource();
         if (!resupplyList.getValueIsAdjusting()) {
             Resupply newResupply = (Resupply) ((JList) evt.getSource()).getSelectedValue();
-            System.out.println("Setting new resupply mission: " + newResupply);
             setResupply(newResupply);
         }
     }

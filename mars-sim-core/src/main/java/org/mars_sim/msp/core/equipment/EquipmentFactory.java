@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EquipmentFactory.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-05-07
  * @author Scott Davis
  */
 
@@ -10,7 +10,9 @@ package org.mars_sim.msp.core.equipment;
 import org.mars_sim.msp.core.Coordinates;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * A factory for equipment units.
@@ -18,14 +20,34 @@ import java.util.Map;
 public final class EquipmentFactory {
 	
 	// Cache maps.
-	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(5);
+	private static final Map<String, Equipment> equipmentTypeCache = new HashMap<String, Equipment>(6);
 	private static final Map<Class<? extends Equipment>, Equipment> equipmentClassCache = 
-	    new HashMap<Class<? extends Equipment>, Equipment>(5);
+	    new HashMap<Class<? extends Equipment>, Equipment>(6);
+	private static Set<String> equipmentNamesCache;
 	
 	/**
 	 * Private constructor for static factory class.
 	 */
 	private EquipmentFactory() {}
+	
+	/**
+	 * Gets a set of all equipment names.
+	 * @return set of equipment name strings.
+	 */
+	public static Set<String> getEquipmentNames() {
+	    
+	    if (equipmentNamesCache == null) {
+	        equipmentNamesCache = new HashSet<String>(6);
+	        equipmentNamesCache.add(Bag.TYPE);
+	        equipmentNamesCache.add(Barrel.TYPE);
+	        equipmentNamesCache.add(EVASuit.TYPE);
+	        equipmentNamesCache.add(GasCanister.TYPE);
+	        equipmentNamesCache.add(LargeBag.TYPE);
+	        equipmentNamesCache.add(SpecimenContainer.TYPE);
+	    }
+	    
+	    return new HashSet<String>(equipmentNamesCache);
+	}
 	
 	/**
 	 * Gets an equipment instance from an equipment type string.

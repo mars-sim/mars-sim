@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 3.02 2012-04-15
+ * @version 3.02 2012-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -119,6 +119,17 @@ public class ResupplyManager implements Serializable {
                 resupplies.add(resupply);
             }
         }
+	}
+	
+	/**
+	 * Adds a new resupply mission.
+	 * @param newResupply the new resupply mission.
+	 */
+	public void addNewResupplyMission(Resupply newResupply) {
+	    resupplies.add(newResupply);
+	    HistoricalEvent newEvent = new ResupplyEvent(newResupply, ResupplyEvent.RESUPPLY_CREATED,
+            "Resupply mission created");
+	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 	
 	/**
