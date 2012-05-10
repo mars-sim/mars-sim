@@ -153,12 +153,14 @@ public class GoodsUtil {
 	 * Populates the goods list with all equipment.
 	 */
 	private static void populateEquipment() {
-		goodsList.add(new Good(EVASuit.TYPE, EVASuit.class, Good.EQUIPMENT));
-		goodsList.add(new Good(Bag.TYPE, Bag.class, Good.EQUIPMENT));
-		goodsList.add(new Good(Barrel.TYPE, Barrel.class, Good.EQUIPMENT));
-		goodsList.add(new Good(GasCanister.TYPE, GasCanister.class, Good.EQUIPMENT));
-		goodsList.add(new Good(LargeBag.TYPE, LargeBag.class, Good.EQUIPMENT));
-		goodsList.add(new Good(SpecimenContainer.TYPE, SpecimenContainer.class, Good.EQUIPMENT));
+	    List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
+	    Collections.sort(equipmentNames);
+	    Iterator<String> i = equipmentNames.iterator();
+	    while (i.hasNext()) {
+	        String name = i.next();
+	        Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
+	        goodsList.add(new Good(name, equipmentClass, Good.EQUIPMENT));
+	    }
 	}
 	
 	/**

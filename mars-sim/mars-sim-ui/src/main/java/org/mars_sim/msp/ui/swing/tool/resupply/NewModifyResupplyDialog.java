@@ -1,21 +1,28 @@
 /**
  * Mars Simulation Project
  * NewModifyResupplyDialog.java
- * @version 3.02 2012-05-05
+ * @version 3.02 2012-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.NumberFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -30,13 +37,19 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableCellEditor;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyManager;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
+import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
 /**
  * A dialog for modifying or creating new resupply missions.
@@ -60,6 +73,9 @@ public class NewModifyResupplyDialog extends JDialog {
     private JTextField solsTF;
     private JLabel solInfoLabel;
     private JTextField immigrantsTF;
+    private SupplyTableModel supplyTableModel;
+    private JTable supplyTable;
+    private JButton removeSupplyButton;
     
     /**
      * Constructor for creating new resupply mission.
@@ -268,12 +284,22 @@ public class NewModifyResupplyDialog extends JDialog {
         editPane.add(bottomEditPane, BorderLayout.CENTER);
         
         // Create supply table.
-        SupplyTableModel supplyTableModel = new SupplyTableModel(resupply);
-        JTable supplyTable = new JTable(supplyTableModel);
-        supplyTable.getColumnModel().getColumn(2).setCellRenderer(new NumberCellRenderer(0));
+        supplyTableModel = new SupplyTableModel(resupply);
+        supplyTable = new JTable(supplyTableModel);
         supplyTable.getColumnModel().getColumn(0).setMaxWidth(100);
+        supplyTable.getColumnModel().getColumn(0).setCellEditor(new CategoryCellEditor());
         supplyTable.getColumnModel().getColumn(1).setMaxWidth(200);
+        supplyTable.getColumnModel().getColumn(1).setCellEditor(new TypeCellEditor());
         supplyTable.getColumnModel().getColumn(2).setMaxWidth(150);
+        supplyTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            public void valueChanged(ListSelectionEvent evt) {
+                if (!evt.getValueIsAdjusting()) {
+                    // If rows are selected, enable remove supply button.
+                    boolean hasSelection = supplyTable.getSelectedRow() > -1;
+                    removeSupplyButton.setEnabled(hasSelection);
+                }
+            }
+        });
         
         // Create supply scroll pane.
         JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
@@ -286,10 +312,22 @@ public class NewModifyResupplyDialog extends JDialog {
         
         // Create add supply button.
         JButton addSupplyButton = new JButton("Add");
+        addSupplyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // Add new supply row.
+                addNewSupplyRow();
+            }
+        });
         supplyButtonPane.add(addSupplyButton);
         
         // Create remove supply button.
-        JButton removeSupplyButton = new JButton("Remove");
+        removeSupplyButton = new JButton("Remove");
+        removeSupplyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                // Remove selected supply rows.
+                removeSelectedSupplyRows();
+            }
+        });
         removeSupplyButton.setEnabled(false);
         supplyButtonPane.add(removeSupplyButton);
         
@@ -301,7 +339,7 @@ public class NewModifyResupplyDialog extends JDialog {
             // Create modify button.
             JButton modifyButton = new JButton("Modify");
             modifyButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent arg0) {
+                public void actionPerformed(ActionEvent evt) {
                     // Modify resupply mission and close dialog.
                     modifyResupplyMission();
                     dispose();
@@ -312,7 +350,7 @@ public class NewModifyResupplyDialog extends JDialog {
             // Create create button.
             JButton createButton = new JButton("Create");
             createButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent arg0) {
+                public void actionPerformed(ActionEvent evt) {
                     // Create new resupply mission and close dialog.
                     createResupplyMission();
                     dispose();
@@ -364,17 +402,214 @@ public class NewModifyResupplyDialog extends JDialog {
     }
     
     /**
+     * Adds a new supply row to the supply table.
+     */
+    private void addNewSupplyRow() {
+        // Add new supply row.
+        supplyTableModel.addNewSupplyItem();
+        
+        // Select new row.
+        int index = supplyTable.getRowCount() - 1;
+        supplyTable.setRowSelectionInterval(index, index);
+        
+        // Scroll to bottom of table.
+        supplyTable.scrollRectToVisible(supplyTable.getCellRect(index, 0, true));
+    }
+    
+    /**
+     * Remove the selected supply rows.
+     */
+    private void removeSelectedSupplyRows() {
+        
+        // Get all selected row indexes and remove items from table.
+        int[] removedIndexes = supplyTable.getSelectedRows();
+        supplyTableModel.removeSupplyItems(removedIndexes);
+    }
+    
+    /**
      * Modify the resupply mission.
      */
     private void modifyResupplyMission() {
-        // TODO
+        // Modify resupply mission and dispose dialog.
+        populateResupplyMission(resupply);
+        resupply.commitModification();
+        dispose();
     }
     
     /**
      * Create the new resupply mission.
      */
     private void createResupplyMission() {
-        // TODO
+        // Create new resupply mission and dispose dialog.
+        Settlement destination = (Settlement) destinationCB.getSelectedItem();
+        MarsClock arrivalDate = getArrivalDate();
+        Resupply newResupply = new Resupply(arrivalDate, destination);
+        populateResupplyMission(newResupply);
+        Simulation.instance().getResupplyManager().addNewResupplyMission(newResupply);
+        dispose();
+    }
+    
+    /**
+     * Populates a resupply mission from the dialog info.
+     * @param resupplyMission the resupply mission to populate.
+     */
+    private void populateResupplyMission(Resupply resupplyMission) {
+        
+        // Set destination settlement.
+        Settlement destination = (Settlement) destinationCB.getSelectedItem();
+        resupplyMission.setSettlement(destination);
+        
+        // Set arrival date.
+        MarsClock arrivalDate = getArrivalDate();
+        resupplyMission.setArrivalDate(arrivalDate);
+        
+        // Determine launch date.
+        MarsClock launchDate = (MarsClock) arrivalDate.clone();
+        launchDate.addTime(-1D * ResupplyManager.AVG_TRANSIT_TIME * 1000D);
+        resupplyMission.setLaunchDate(launchDate);
+        
+        // Set resupply state based on launch and arrival time.
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        String state = Resupply.PLANNED;
+        if (MarsClock.getTimeDiff(currentTime, launchDate) >= 0D) {
+            state = Resupply.IN_TRANSIT;
+            if (MarsClock.getTimeDiff(currentTime, arrivalDate) >= 0D) {
+                state = Resupply.DELIVERED;
+            }
+        }
+        resupplyMission.setState(state);
+        
+        // Set immigrant num.
+        int immigrantNum = 0;
+        try {
+            immigrantNum = Integer.parseInt(immigrantsTF.getText());
+            if (immigrantNum < 0) immigrantNum = 0;
+            resupplyMission.setNewImmigrantNum(immigrantNum);
+        }
+        catch (NumberFormatException e) {
+            e.printStackTrace(System.err);
+        }
+        
+        // Commit any active editing cell in the supply table.
+        if (supplyTable.isEditing()) {
+            supplyTable.getCellEditor().stopCellEditing();
+        }
+        
+        List<SupplyItem> supplyItems = supplyTableModel.getSupplyItems();
+        
+        // Set new buildings.
+        List<String> newBuildings = new ArrayList<String>();
+        Iterator<SupplyItem> i = supplyItems.iterator();
+        while (i.hasNext()) {
+            SupplyItem item = i.next();
+            if (SupplyTableModel.BUILDING.equals(item.category)) {
+                int num = item.number.intValue();
+                for (int x = 0; x < num; x++) {
+                    newBuildings.add(item.type);
+                }
+            }
+        }
+        resupplyMission.setNewBuildings(newBuildings);
+        
+        // Set new vehicles.
+        List<String> newVehicles = new ArrayList<String>();
+        Iterator<SupplyItem> j = supplyItems.iterator();
+        while (j.hasNext()) {
+            SupplyItem item = j.next();
+            if (SupplyTableModel.VEHICLE.equals(item.category)) {
+                int num = item.number.intValue();
+                for (int x = 0; x < num; x++) {
+                    newVehicles.add(item.type);
+                }
+            }
+        }
+        resupplyMission.setNewVehicles(newVehicles);
+        
+        // Set new equipment.
+        Map<String, Integer> newEquipment = new HashMap<String, Integer>();
+        Iterator<SupplyItem> k = supplyItems.iterator();
+        while (k.hasNext()) {
+            SupplyItem item = k.next();
+            if (SupplyTableModel.EQUIPMENT.equals(item.category)) {
+                String type = item.type;
+                int num = item.number.intValue();
+                if (newEquipment.containsKey(type)) {
+                    num += newEquipment.get(type);
+                }
+                newEquipment.put(type, num);
+            }
+        }
+        resupplyMission.setNewEquipment(newEquipment);
+        
+        // Set new resources.
+        Map<AmountResource, Double> newResources = new HashMap<AmountResource, Double>();
+        Iterator<SupplyItem> l = supplyItems.iterator();
+        while (l.hasNext()) {
+            SupplyItem item = l.next();
+            if (SupplyTableModel.RESOURCE.equals(item.category)) {
+                String type = item.type;
+                AmountResource resource = AmountResource.findAmountResource(type);
+                double amount = item.number.doubleValue();
+                if (newResources.containsKey(resource)) {
+                    amount += newResources.get(resource);
+                }
+                newResources.put(resource, amount);
+            }
+        }
+        resupplyMission.setNewResources(newResources);
+        
+        // Set new parts.
+        Map<Part, Integer> newParts = new HashMap<Part, Integer>();
+        Iterator<SupplyItem> m = supplyItems.iterator();
+        while (m.hasNext()) {
+            SupplyItem item = m.next();
+            if (SupplyTableModel.PART.equals(item.category)) {
+                String type = item.type;
+                Part part = (Part) Part.findItemResource(type);
+                int num = item.number.intValue();
+                if (newParts.containsKey(part)) {
+                    num += newParts.get(part);
+                }
+                newParts.put(part, num);
+            }
+        }
+        resupplyMission.setNewParts(newParts);
+    }
+    
+    /**
+     * Gets the arrival date from the dialog info.
+     * @return arrival date.
+     */
+    private MarsClock getArrivalDate() {
+        MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        MarsClock result = (MarsClock) currentTime.clone();
+        
+        if (arrivalDateRB.isSelected()) {
+            // Determine arrival date from arrival date combo boxes.
+            try {
+                int sol = solCB.getSelectedIndex() + 1;
+                int month = monthCB.getSelectedIndex() + 1;
+                int orbit = Integer.parseInt((String) orbitCB.getSelectedItem());
+                result = new MarsClock(orbit, month, sol, 0D);
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        else if (timeUntilArrivalRB.isSelected()) {
+            // Determine arrival date from time until arrival text field.
+            try {
+                int solsDiff = Integer.parseInt(solsTF.getText());
+                if (solsDiff > 0) {
+                    result.addTime(solsDiff * 1000D);
+                }
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        
+        return result;
     }
     
     /**
@@ -418,6 +653,97 @@ public class NewModifyResupplyDialog extends JDialog {
                     addElement(newMaxSolNum);
                 }
             }
+        }
+    }
+    
+    private class CategoryCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+
+        // Data members.
+        private JComboBox categoryCB;
+        private int editingRow;
+        private String previousCategory;
+        
+        /**
+         * Constructor
+         */
+        private CategoryCellEditor() {
+            super();
+            categoryCB = new JComboBox();
+            Iterator<String> i = SupplyTableModel.getCategoryList().iterator();
+            while (i.hasNext()) {
+                categoryCB.addItem(i.next());
+            }
+            categoryCB.addActionListener(this);
+        }
+        
+        @Override
+        public Object getCellEditorValue() {
+            return categoryCB.getSelectedItem();
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            editingRow = row;
+            previousCategory = (String) table.getValueAt(row, column);
+            return categoryCB;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            String category = (String) categoryCB.getSelectedItem();
+            if ((editingRow > -1) && (!category.equals(previousCategory))) {
+                supplyTable.setValueAt(category, editingRow, 0);
+                
+                // Update supply type cell in row if category has changed.
+                String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
+                supplyTable.setValueAt(defaultType, editingRow, 1);
+            }
+        }
+    }
+    
+    private class TypeCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+        // Data members.
+        private Map<String, JComboBox> typeCBMap;
+        private JComboBox currentCB;
+        
+        /**
+         * Constructor
+         */
+        private TypeCellEditor() {
+            
+            Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
+            typeCBMap = new HashMap<String, JComboBox>(categoryTypeMap.keySet().size());
+            Iterator<String> i = categoryTypeMap.keySet().iterator();
+            while (i.hasNext()) {
+                String category = i.next();
+                JComboBox categoryCB = new JComboBox();
+                List<String> types = categoryTypeMap.get(category);
+                Iterator<String> j = types.iterator();
+                while (j.hasNext()) {
+                    String type = j.next();
+                    categoryCB.addItem(type);
+                }
+                typeCBMap.put(category, categoryCB);
+            }
+        }
+        
+        @Override
+        public Object getCellEditorValue() {
+            Object result = null;
+            if (currentCB != null) result = currentCB.getSelectedItem();
+            return result;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            
+            // Get type combo box based on first column category value.
+            String category = (String) table.getValueAt(row, 0);
+            currentCB = typeCBMap.get(category);
+            return currentCB;
         }
     }
 }

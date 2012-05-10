@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SupplyTableModel.java
- * @version 3.02 2012-05-06
+ * @version 3.02 2012-05-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -12,9 +12,12 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -22,14 +25,18 @@ import org.mars_sim.msp.core.resource.Part;
 public class SupplyTableModel extends AbstractTableModel {
 
     // Supply categories.
-    private final static String BUILDING = "Building";
-    private final static String VEHICLE = "Vehicle";
-    private final static String EQUIPMENT = "Equipment";
-    private final static String RESOURCE = "Resource";
-    private final static String PART = "Part";
+    public final static String BUILDING = "Building";
+    public final static String VEHICLE = "Vehicle";
+    public final static String EQUIPMENT = "Equipment";
+    public final static String RESOURCE = "Resource";
+    public final static String PART = "Part";
+    
+    private static List<String> categoryList;
+    private static Map<String, List<String>> categoryTypeMap;
     
     // Data members
     private List<SupplyItem> supplyList;
+    
     
     /**
      * Constructor
@@ -135,6 +142,14 @@ public class SupplyTableModel extends AbstractTableModel {
     }
     
     @Override
+    public Class<?> getColumnClass(int column) {
+        Class<?> result = null;
+        if ((column == 0) || (column == 1)) result = String.class;
+        else if (column == 2) result = Integer.class;
+        return result;
+    }
+    
+    @Override
     public String getColumnName(int column) {
         String result = null;
         if (column == 0) result = "Category";
@@ -155,9 +170,140 @@ public class SupplyTableModel extends AbstractTableModel {
             SupplyItem item = supplyList.get(rowIndex);
             if (colIndex == 0) result = item.category;
             else if (colIndex == 1) result = item.type;
-            else if (colIndex == 2) result = item.number;
+            else if (colIndex == 2) result = item.number.intValue();
         }
         return result;
+    }
+    
+    @Override
+    public boolean isCellEditable(int row, int col) {
+        return true;
+    }
+    
+    @Override
+    public void setValueAt(Object value, int row, int col) {
+        
+        SupplyItem item = supplyList.get(row);
+        if (col == 0) {
+            item.category = (String) value;
+        }
+        else if (col == 1) {
+            item.type = (String) value;
+        }
+        else if (col == 2) {
+            try {
+                item.number = (Integer) value;
+            }
+            catch (NumberFormatException e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        fireTableCellUpdated(row, col);
+    }
+    
+    /**
+     * Add a new supply item with default values.
+     */
+    public void addNewSupplyItem() {
+        String category = getCategoryList().get(0);
+        String type = getCategoryTypeMap().get(category).get(0);
+        int num = 1;
+        supplyList.add(new SupplyItem(category, type, num));
+        fireTableRowsInserted(supplyList.size() - 1, supplyList.size() - 1);
+    }
+    
+    /**
+     * Remove items from the given rows.
+     * @param rows an array of row indexes to remove.
+     */
+    public void removeSupplyItems(int[] rows) {
+        
+        List<SupplyItem> items = new ArrayList<SupplyItem>(rows.length);
+        for (int x = 0; x < rows.length; x++) {
+            items.add(supplyList.get(rows[x]));
+        }
+        
+        supplyList.removeAll(items);
+        
+        fireTableDataChanged();
+    }
+    
+    /**
+     * Gets the list of supply items.
+     * @return list of supply items.
+     */
+    public List<SupplyItem> getSupplyItems() {
+        return new ArrayList<SupplyItem>(supplyList);
+    }
+    
+    /**
+     * Gets a list of all categories.
+     * @return list of category strings.
+     */
+    public static List<String> getCategoryList() {
+        
+        if (categoryList == null) {
+            categoryList = new ArrayList<String>(5);
+            categoryList.add(BUILDING);
+            categoryList.add(VEHICLE);
+            categoryList.add(EQUIPMENT);
+            categoryList.add(RESOURCE);
+            categoryList.add(PART);
+        }
+        
+        return categoryList;
+    }
+    
+    /**
+     * Gets a map of categories and a list of their types.
+     * @return map of categories to lists of types.
+     */
+    public static Map<String, List<String>> getCategoryTypeMap() {
+        
+        if (categoryTypeMap == null) {
+            // Create and populate category type map.
+            categoryTypeMap = new HashMap<String, List<String>>(5);
+            
+            // Create building type list.
+            Set<String> buildingTypes = 
+                SimulationConfig.instance().getBuildingConfiguration().getBuildingNames();
+            List<String> sortedBuildingTypes = new ArrayList<String>(buildingTypes);
+            Collections.sort(sortedBuildingTypes);
+            categoryTypeMap.put(BUILDING, sortedBuildingTypes);
+            
+            // Create vehicle type list.
+            Set<String> vehicleTypes = 
+                SimulationConfig.instance().getVehicleConfiguration().getVehicleTypes();
+            List<String> sortedVehicleTypes = new ArrayList<String>(vehicleTypes);
+            Collections.sort(sortedVehicleTypes);
+            categoryTypeMap.put(VEHICLE, sortedVehicleTypes);
+            
+            // Create equipment type list.
+            Set<String> equipmentTypes = EquipmentFactory.getEquipmentNames();
+            List<String> sortedEquipmentTypes = new ArrayList<String>(equipmentTypes);
+            Collections.sort(sortedEquipmentTypes);
+            categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
+            
+            // Create resource type list.
+            List<String> resourceNames = new ArrayList<String>();
+            Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+            while (i.hasNext()) {
+                resourceNames.add(i.next().getName());
+            }
+            Collections.sort(resourceNames);
+            categoryTypeMap.put(RESOURCE, resourceNames);
+            
+            // Create part type list.
+            List<String> partNames = new ArrayList<String>();
+            Iterator<Part> j = Part.getParts().iterator();
+            while (j.hasNext()) {
+                partNames.add(j.next().getName());
+            }
+            Collections.sort(partNames);
+            categoryTypeMap.put(PART, partNames);
+        }
+        
+        return categoryTypeMap;
     }
     
     /**
