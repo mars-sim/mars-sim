@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NewModifyResupplyDialog.java
- * @version 3.02 2012-05-09
+ * @version 3.02 2012-05-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -656,7 +656,11 @@ public class NewModifyResupplyDialog extends JDialog {
         }
     }
     
-    private class CategoryCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
+    /**
+     * Inner class for editing the Category cell with a combo box.
+     */
+    private class CategoryCellEditor extends AbstractCellEditor 
+            implements TableCellEditor, ActionListener {
 
         // Data members.
         private JComboBox categoryCB;
@@ -686,6 +690,7 @@ public class NewModifyResupplyDialog extends JDialog {
                 boolean isSelected, int row, int column) {
             editingRow = row;
             previousCategory = (String) table.getValueAt(row, column);
+            categoryCB.setSelectedItem(previousCategory);
             return categoryCB;
         }
 
@@ -702,6 +707,9 @@ public class NewModifyResupplyDialog extends JDialog {
         }
     }
     
+    /**
+     * Inner class for editing the Type cell with a combo box.
+     */
     private class TypeCellEditor extends AbstractCellEditor implements TableCellEditor {
 
         // Data members.
@@ -743,6 +751,7 @@ public class NewModifyResupplyDialog extends JDialog {
             // Get type combo box based on first column category value.
             String category = (String) table.getValueAt(row, 0);
             currentCB = typeCBMap.get(category);
+            currentCB.setSelectedItem(table.getValueAt(row, column));
             return currentCB;
         }
     }
