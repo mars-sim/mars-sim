@@ -652,6 +652,8 @@ public class NewModifyResupplyDialog extends JDialog {
                 else {
                     addElement(newMaxSolNum);
                 }
+                
+                maxSolNum = newMaxSolNum;
             }
         }
     }
