@@ -471,9 +471,9 @@ public class NewModifyResupplyDialog extends JDialog {
         // Set resupply state based on launch and arrival time.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         String state = Resupply.PLANNED;
-        if (MarsClock.getTimeDiff(currentTime, launchDate) >= 0D) {
+        if (MarsClock.getTimeDiff(currentTime, launchDate) > 0D) {
             state = Resupply.IN_TRANSIT;
-            if (MarsClock.getTimeDiff(currentTime, arrivalDate) >= 0D) {
+            if (MarsClock.getTimeDiff(currentTime, arrivalDate) > 0D) {
                 state = Resupply.DELIVERED;
             }
         }
@@ -590,7 +590,15 @@ public class NewModifyResupplyDialog extends JDialog {
                 int sol = solCB.getSelectedIndex() + 1;
                 int month = monthCB.getSelectedIndex() + 1;
                 int orbit = Integer.parseInt((String) orbitCB.getSelectedItem());
-                result = new MarsClock(orbit, month, sol, 0D);
+                
+                // Set millisols to current time if resupply is current date, otherwise 0.
+                double millisols = 0D;
+                if ((sol == currentTime.getSolOfMonth()) && (month == currentTime.getMonth()) && 
+                        (orbit == currentTime.getOrbit())) {
+                    millisols = currentTime.getMillisol();
+                }
+                
+                result = new MarsClock(orbit, month, sol, millisols);
             }
             catch (NumberFormatException e) {
                 e.printStackTrace(System.err);
@@ -602,6 +610,9 @@ public class NewModifyResupplyDialog extends JDialog {
                 int solsDiff = Integer.parseInt(solsTF.getText());
                 if (solsDiff > 0) {
                     result.addTime(solsDiff * 1000D);
+                }
+                else {
+                    result.addTime(currentTime.getMillisol());
                 }
             }
             catch (NumberFormatException e) {

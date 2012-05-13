@@ -35,12 +35,15 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * Manages resupply missions from Earth.
  */
 public class ResupplyManager implements Serializable {
 	
+    private static Logger logger = Logger.getLogger(ResupplyManager.class.getName());
+    
     // Average transit time for supplies from Earth to Mars (sols).
     public static int AVG_TRANSIT_TIME = 200;
     
@@ -130,6 +133,7 @@ public class ResupplyManager implements Serializable {
 	    HistoricalEvent newEvent = new ResupplyEvent(newResupply, ResupplyEvent.RESUPPLY_CREATED,
             "Resupply mission created");
 	    Simulation.instance().getEventManager().registerNewEvent(newEvent);
+	    logger.info("New resupply mission created: " + newResupply.toString());
 	}
 	
 	/**
@@ -183,6 +187,7 @@ public class ResupplyManager implements Serializable {
 	    HistoricalEvent cancelEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_CANCELLED,
                 "Resupply mission cancelled");
 	    Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
+	    logger.info("Resupply mission cancelled: " + resupply.toString());
 	}
 	
 	/**
@@ -202,7 +207,8 @@ public class ResupplyManager implements Serializable {
 			        resupply.setState(Resupply.IN_TRANSIT);
 			        HistoricalEvent deliverEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_LAUNCHED, 
 			                "Resupply mission launched");
-			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);  
+			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
+			        logger.info("Resupply mission launched: " + resupply.toString());
 			        continue;
 			    }
 			}
@@ -213,7 +219,8 @@ public class ResupplyManager implements Serializable {
                     deliverSupplies(resupply);
                     HistoricalEvent deliverEvent = new ResupplyEvent(resupply, ResupplyEvent.RESUPPLY_ARRIVED,
                             "Resupply mission arrived at settlement");
-                    Simulation.instance().getEventManager().registerNewEvent(deliverEvent);  
+                    Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
+                    logger.info("Resupply mission arrived: " + resupply.toString());
                 }
 			}
 		}
