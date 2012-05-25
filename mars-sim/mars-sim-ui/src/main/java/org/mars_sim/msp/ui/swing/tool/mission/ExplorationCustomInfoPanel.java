@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * ExplorationCustomInfoPanel.java
- * @version 3.01 2011-07-16
+ * @version 3.02 2012-05-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.util.HashMap;
@@ -47,8 +46,7 @@ public class ExplorationCustomInfoPanel extends MissionCustomInfoPanel {
         
         // Create the main scroll panel.
         JScrollPane mainScrollPane = new JScrollPane();
-        mainScrollPane.setPreferredSize(new Dimension(-1, -1));
-        add(mainScrollPane, BorderLayout.CENTER);
+        add(mainScrollPane, BorderLayout.NORTH);
         
         // Create main panel.
         mainPane = Box.createVerticalBox();
