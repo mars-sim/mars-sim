@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.02 2012-01-13
+ * @version 3.02 2012-05-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -25,12 +26,17 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Task for constructing a building construction site stage.
  */
 public class ConstructBuilding extends EVAOperation implements Serializable {
 
+    // Logger
+    private static Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+    
     // Task phases
     private static final String CONSTRUCTION = "Construction";
     
@@ -222,7 +228,17 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             while (i.hasNext()) {
                 // Assume part has already be retrieved from settlement at 
                 // construction mission start.
-                luv.getInventory().storeItemResources(i.next(), 1);
+                Part attachmentPart = i.next();
+                double mass = attachmentPart.getMassPerItem();
+                Inventory inv = luv.getInventory();
+                if (inv.getRemainingGeneralCapacity() >= mass) {
+                    luv.getInventory().storeItemResources(attachmentPart, 1);
+                }
+                else {
+                    logger.log(Level.SEVERE, person.getName() + " unable to load attachment part " + 
+                            attachmentPart + " on " + luv.getName() + " due to lack of mass carrying capacity: " + 
+                            inv.getRemainingGeneralCapacity() + " kg.");
+                }
             }
         }
     }
@@ -253,7 +269,15 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             while (i.hasNext()) {
                 // Assume part will be stored in the settlement when 
                 // construction mission ends.
-                luv.getInventory().retrieveItemResources(i.next(), 1);
+                Part attachmentPart = i.next();
+                Inventory inv = luv.getInventory();
+                if (inv.hasItemResource(attachmentPart)) {
+                    luv.getInventory().retrieveItemResources(attachmentPart, 1);
+                }
+                else {
+                    logger.log(Level.SEVERE, person.getName() + " unable to remove attachment part " + 
+                            attachmentPart + " from " + luv.getName() + " because it's not in inventory.");
+                }
             }
         }
     }
