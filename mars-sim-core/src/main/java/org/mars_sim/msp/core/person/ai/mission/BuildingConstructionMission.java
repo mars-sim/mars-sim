@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-05-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -226,10 +226,11 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         if (constructionSite.hasUnfinishedStage()) {
             constructionStage = constructionSite.getCurrentConstructionStage();
+            logger.log(Level.INFO, "Using existing construction stage: " + constructionStage);
         }
         else {
-            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
             constructionStage = new ConstructionStage(stageInfo, constructionSite);
+            logger.log(Level.INFO, "Starting new construction stage: " + constructionStage);
             try {
                 constructionSite.addNewStage(constructionStage);
             }
