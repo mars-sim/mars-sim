@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.01 2011-07-20
+ * @version 3.02 2012-05-24
  * @author Scott Davis
  */
 
@@ -309,7 +309,13 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
 			phaseLabel.setText("Phase: " + phaseText);
 			int memberNum = mission.getPeopleNumber();
 			int minMembers = mission.getMinPeople();
-			int maxMembers = mission.getMissionCapacity();
+			String maxMembers = "";
+            if (mission instanceof VehicleMission) {
+                maxMembers = "" + mission.getMissionCapacity();
+            }
+            else {
+                maxMembers = "unlimited";
+            }
 			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
 					" - Max: " + maxMembers + ")");
 			memberTableModel.setMission(mission);
@@ -459,7 +465,13 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
     			int memberNum = mission.getPeopleNumber();
     			int minMembers = mission.getMinPeople();
-    			int maxMembers = mission.getMissionCapacity();
+    			String maxMembers = "";
+    			if (mission instanceof VehicleMission) {
+    			    maxMembers = "" + mission.getMissionCapacity();
+    			}
+    			else {
+    			    maxMembers = "unlimited";
+    			}
     			memberNumLabel.setText("Mission Members: " + memberNum + " (Min: " + minMembers + 
     					" - Max: " + maxMembers + ")");
     			memberTableModel.updateMembers();
