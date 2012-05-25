@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-05-24
  * @author Scott Davis
  */
 
@@ -270,11 +270,16 @@ class MembersPanel extends WizardPanel {
 	 */
 	void updateRoverCapacityLabel() {
         String type = getWizard().getMissionData().getType();
-        if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) 
+        System.out.println("Mission type: " + type);
+        if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) {
             roverCapacityLabel.setText(" ");
-        if (MissionDataBean.SALVAGE_MISSION.equals(type)) 
+        }
+        else if (MissionDataBean.SALVAGE_MISSION.equals(type)) { 
             roverCapacityLabel.setText(" ");
-        else roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
+        }
+        else {
+            roverCapacityLabel.setText("Remaining rover capacity: " + getRemainingRoverCapacity());
+        }
 	}
 	
 	/**
