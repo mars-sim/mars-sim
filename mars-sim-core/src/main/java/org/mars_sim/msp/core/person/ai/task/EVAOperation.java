@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-05-30
  * @author Scott Davis
  */
 
@@ -18,12 +18,15 @@ import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
+import java.util.logging.Logger;
 
 /** 
  * The EVAOperation class is an abstract task that involves an extra vehicular activity. 
  */
 public abstract class EVAOperation extends Task implements Serializable {
 
+    private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
+    
     // Task phase names
     protected static final String EXIT_AIRLOCK = "Exit Airlock";
     protected static final String ENTER_AIRLOCK = "Enter Airlock";
@@ -75,7 +78,6 @@ public abstract class EVAOperation extends Task implements Serializable {
     protected double exitAirlock(double time, Airlock airlock) {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-            // System.out.printl(person.getName() + " exiting airlock of " + airlock.getEntityName());
             exitedAirlock = true;
             return time;
         }
@@ -86,7 +88,8 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
             else {
                 endTask();
-                throw new IllegalStateException(person.getName() + " unable to exit airlock of " + airlock.getEntityName());
+                throw new IllegalStateException(person.getName() + " unable to exit airlock of " + 
+                        airlock.getEntityName());
             }
         }
     }
@@ -108,11 +111,11 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
             else {
                 endTask();
-                throw new IllegalStateException(person.getName() + " unable to enter airlock of " + airlock.getEntityName());
+                throw new IllegalStateException(person.getName() + " unable to enter airlock of " + 
+                        airlock.getEntityName());
             }
         }
         else {
-            // logger.info(person.getName() + " entering airlock of " + airlock.getEntityName());
             enteredAirlock = true;
             return time;
         }
@@ -133,14 +136,14 @@ public abstract class EVAOperation extends Task implements Serializable {
         // Check if it is night time. 
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
-            // logger.info(person.getName() + " should end EVA: night time.");
+            logger.fine(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
             	result = true;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit == null) {
-            // logger.info(person.getName() + " should end EVA: No EVA suit found.");
+            logger.fine(person.getName() + " should end EVA: No EVA suit found.");
             return true;
         }
         Inventory suitInv = suit.getInventory();
@@ -151,7 +154,7 @@ public abstract class EVAOperation extends Task implements Serializable {
         	double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource);
         	double oxygen = suitInv.getAmountResourceStored(oxygenResource);
         	if (oxygen <= (oxygenCap * .15D)) {
-        		// logger.info(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
+        		logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
         		result = true;
         	}
 
@@ -160,13 +163,13 @@ public abstract class EVAOperation extends Task implements Serializable {
         	double waterCap = suitInv.getAmountResourceCapacity(waterResource);
         	double water = suitInv.getAmountResourceStored(waterResource);
         	if (water <= (waterCap * .15D)) {
-        		// logger.info(person.getName() + " should end EVA: EVA suit water level less than 15%");	
+        		logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");	
         		result = true;
         	}
 
         	// Check if life support system in suit is working properly.
         	if (!suit.lifeSupportCheck()) {
-        		// logger.info(person.getName() + " should end EVA: EVA suit failed life support check.");	
+        		logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");	
         		result = true;
         	}
         }
@@ -176,13 +179,13 @@ public abstract class EVAOperation extends Task implements Serializable {
 
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
-            // logger.info(person.getName() + " should end EVA: EVA suit has malfunction.");	
+            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");	
             result = true;
         }
 	
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
-            // logger.info(person.getName() + " should end EVA: medical problems.");	
+            logger.fine(person.getName() + " should end EVA: medical problems.");	
             result = true;
         }
 	
@@ -209,7 +212,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             chance *= suit.getMalfunctionManager().getWearConditionAccidentModifier();
             
             if (RandomUtil.lessThanRandPercent(chance * time)) {
-                // logger.info(person.getName() + " has accident during EVA operation.");
+                logger.fine(person.getName() + " has accident during EVA operation.");
                 suit.getMalfunctionManager().accident();
             }
         }

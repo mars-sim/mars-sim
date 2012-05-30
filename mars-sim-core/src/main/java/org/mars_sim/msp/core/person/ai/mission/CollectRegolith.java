@@ -25,10 +25,8 @@ import java.util.logging.Logger;
  * random locations around a settlement and collect Regolith.
  */
 public class CollectRegolith  extends CollectResourcesMission {
-
-	private static String CLASS_NAME = 
-		"org.mars_sim.msp.simulation.person.ai.mission.CollectRegolith";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+    
+	private static Logger logger = Logger.getLogger(CollectRegolith.class.getName());
 	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
@@ -40,7 +38,7 @@ public class CollectRegolith  extends CollectResourcesMission {
 	public static final int REQUIRED_BAGS = 10;
 	
 	// Collection rate of regolith during EVA (kg/millisol).
-	private static final double COLLECTION_RATE = 20D;
+	private static final double COLLECTION_RATE = 5D;
 	
 	// Number of collection sites.
 	private static final int NUM_SITES = 1;

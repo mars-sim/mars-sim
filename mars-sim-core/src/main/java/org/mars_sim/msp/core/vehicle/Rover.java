@@ -91,7 +91,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
 		setTerrainHandlingCapability(0D);
 
 		// Create the rover's airlock.
-		try { airlock = new VehicleAirlock(this, 1); }
+		try { airlock = new VehicleAirlock(this, 2); }
 		catch (Exception e) { e.printStackTrace(System.err); }
     }
     
