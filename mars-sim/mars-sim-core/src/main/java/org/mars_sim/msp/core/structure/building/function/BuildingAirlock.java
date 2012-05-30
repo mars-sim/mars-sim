@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
- * VehicleAirlock.java
- * @version 3.00 2010-08-10
+ * BuildingAirlock.java
+ * @version 3.02 2012-05-30
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure.building.function;
+
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
@@ -18,9 +20,12 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  * The BuildingAirlock class represents an airlock for a building.
  */
 public class BuildingAirlock extends Airlock {
-    
+
+    private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
+
+    // Data members.
     private Building building; // The building this airlock is for.
-    
+
     /**
      * Constructor
      * 
@@ -32,12 +37,12 @@ public class BuildingAirlock extends Airlock {
     public BuildingAirlock(Building building, int capacity) {
         // User Airlock constructor
         super(capacity);
-        
+
         this.building = building;
-        
+
         if (building == null) throw new IllegalArgumentException("building is null.");
     }
-    
+
     /**
      * Enters a person into the airlock from either the inside or the outside.
      * Inner or outer door (respectively) must be open for person to enter.
@@ -48,16 +53,16 @@ public class BuildingAirlock extends Airlock {
      */
     public boolean enterAirlock(Person person, boolean inside) {
         boolean result = super.enterAirlock(person, inside);
-    
+
+        // Check if person is entering airlock from inside.
         if (result && inside) {
-//            try {
-				BuildingManager.addPersonToBuilding(person, building);
-//            }sBuildingException e) {}
+            // Add person to the building.
+            BuildingManager.addPersonToBuilding(person, building);
         }
-        
+
         return result;
-    }           
-    
+    }         
+
     /**
      * Causes a person within the airlock to exit either inside or outside.
      *
@@ -66,22 +71,27 @@ public class BuildingAirlock extends Airlock {
      */
     protected void exitAirlock(Person person) {
         Inventory inv = building.getInventory();
-        
+
         if (inAirlock(person)) {
-			LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-        	
-            if (pressurized) {
+            LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+
+            if (PRESSURIZED.equals(getState())) {
+                // Exit person to inside building.
                 lifeSupport.addPerson(person);
                 inv.storeUnit(person);
             }
+            else if (DEPRESSURIZED.equals(getState())) {
+                // Exit person to outside building.
+                if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
+                inv.retrieveUnit(person);
+            }
             else {
-            	if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
-            	inv.retrieveUnit(person);
+                logger.severe("Building airlock in incorrect state for exiting: " + getState());
             }
         }
         else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
     }
-    
+
     /**
      * Gets the name of the entity this airlock is attached to.
      *
@@ -91,7 +101,7 @@ public class BuildingAirlock extends Airlock {
         Settlement settlement = building.getBuildingManager().getSettlement();
         return settlement.getName() + ": " + building.getName();
     }
-    
+
     /**
      * Gets the inventory of the entity this airlock is attached to.
      *

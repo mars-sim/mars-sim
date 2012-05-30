@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-05-30
  * @author Scott Davis
  */
 
@@ -24,21 +24,20 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
 public class EnterAirlock extends Task implements Serializable {
-		
-	private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
-	
-	// Task phase
-	private static final String ENTERING_AIRLOCK = "Entering Airlock";
 
-	// Static members
-	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+    private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
+
+    // Task phase
+    private static final String ENTERING_AIRLOCK = "Entering Airlock from Outside";
+
+    // Static members
+    private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
 
     // Data members
     private Airlock airlock; // The airlock to be used.
@@ -55,22 +54,22 @@ public class EnterAirlock extends Task implements Serializable {
         // Initialize data members
         setDescription("Entering " + airlock.getEntityName() + " from EVA");
         this.airlock = airlock;
-        
+
         // Initialize task phase
         addPhase(ENTERING_AIRLOCK);
         setPhase(ENTERING_AIRLOCK);
 
-        // logger.info(person.getName() + " is starting to enter " + airlock.getEntityName());
+        logger.fine(person.getName() + " is starting to enter " + airlock.getEntityName());
     }
 
     /**
      * Constructs a EnterAirlock object without an airlock.
      * @param person the person to perform the task.
-     * @throws Exception if erro constructing task.
+     * @throws Exception if error constructing task.
      */
     public EnterAirlock(Person person) {
         super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
-	
+
         // Determine airlock from other people on mission.
         if (person.getMind().getMission() != null) {
             Iterator<Person> i = person.getMind().getMission().getPeople().iterator();
@@ -106,7 +105,7 @@ public class EnterAirlock extends Task implements Serializable {
             while (i.hasNext() && (airlock == null)) {
                 Vehicle vehicle = i.next();
                 if (person.getCoordinates().equals(vehicle.getCoordinates())) {
-            	    if (vehicle instanceof Airlockable) 
+                    if (vehicle instanceof Airlockable) 
                         airlock = ((Airlockable) vehicle).getAirlock();
                 }
             }
@@ -115,12 +114,18 @@ public class EnterAirlock extends Task implements Serializable {
         // Initialize task phase
         addPhase(ENTERING_AIRLOCK);
         setPhase(ENTERING_AIRLOCK);
-        
+
         // If still no airlock, end task.
-        if (airlock == null) endTask();
-        else setDescription("Entering " + airlock.getEntityName() + " from EVA");
+        if (airlock == null) {
+            endTask();
+            logger.severe(person.getName() + " cannot find an airlock to enter.");
+        }
+        else {
+            setDescription("Entering " + airlock.getEntityName() + " from EVA");
+            logger.fine(person.getName() + " is starting to enter " + airlock.getEntityName());
+        }
     }
-   
+
     /** Returns the weighted probability that a person might perform this task.
      *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
      *  @param person the person to perform the task
@@ -136,7 +141,7 @@ public class EnterAirlock extends Task implements Serializable {
 
         return result;
     }
-    
+
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time (millisols) the phase is to be performed.
@@ -144,66 +149,91 @@ public class EnterAirlock extends Task implements Serializable {
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (ENTERING_AIRLOCK.equals(getPhase())) return enteringAirlockPhase(time);
-    	else return time;
+        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+        if (ENTERING_AIRLOCK.equals(getPhase())) return enteringAirlockPhase(time);
+        else return time;
     }
-    
+
     /**
      * Performs the enter airlock phase of the task.
-     * @param time the amount of time to perform the task.
-     * @return
-     * @throws Exception
+     * @param time the amount of time to perform the task phase.
+     * @return remaining time after performing task phase.
+     * @throws Exception if error performing task.
      */
     private double enteringAirlockPhase(double time) {
-    	double remainingTime = time;
-    	
-    	if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-    		if (!airlock.inAirlock(person)) {
-    			// If airlock outer door isn't open, activate airlock to depressurize it.
-    			if (!airlock.isOuterDoorOpen()) 
-    				remainingTime = airlock.addActivationTime(remainingTime);
-    			
-    			// If airlock outer door is now open, enter airlock.
-    			if (airlock.isOuterDoorOpen()) 
-    				airlock.enterAirlock(person, false);
-    		}
-    	}
-    	
-    	// If person is in airlock, add activation time.
-		if (airlock.inAirlock(person)) 
-    		remainingTime = airlock.addActivationTime(remainingTime);
-    	
-    	// If person is inside, put stuff away and end task.
-    	if (!person.getLocationSituation().equals(Person.OUTSIDE)) {  
+        double remainingTime = time;
+
+        // Check if person is outside or in airlock.
+        while ((person.getLocationSituation().equals(Person.OUTSIDE) || airlock.inAirlock(person)) 
+                && (remainingTime > 0D)) {
+
+            if (!airlock.inAirlock(person)) {
+                
+                // If airlock is depressurized and outer door unlocked, enter and activate airlock.
+                if (Airlock.DEPRESSURIZED.equals(airlock.getState()) && !airlock.isOuterDoorLocked()) {
+                    airlock.enterAirlock(person, false);
+                }
+                else {
+                    // Add person to queue awaiting airlock at outer door if not already.
+                    airlock.addAwaitingAirlockOuterDoor(person);
+                }
+                
+                // If airlock has not been activated, activate it.
+                if (!airlock.isActivated()) {
+                    airlock.activateAirlock(person);
+                }
+            }
+            
+            // Check if person is the airlock operator.
+            if (person.equals(airlock.getOperator())) {
+                // If person is airlock operator, add cycle time to airlock.
+                double activationTime = remainingTime;
+                if (airlock.getRemainingCycleTime() < activationTime) {
+                    activationTime = airlock.getRemainingCycleTime();
+                }
+                remainingTime -= activationTime;
+                boolean activationSuccessful = airlock.addCycleTime(activationTime);
+                if (!activationSuccessful) {
+                    logger.severe("Problem with airlock activation: " + person.getName());
+                }
+            }
+            else {
+                // If person is not airlock operator, set remaining time to zero.
+                remainingTime = 0D;
+            }
+        }
+
+        // If person is inside, put stuff away and end task.
+        if (!person.getLocationSituation().equals(Person.OUTSIDE) && !airlock.inAirlock(person)) {
+            logger.fine(person.getName() + " successfully entered airlock of " + airlock.getEntityName());
             putAwayEVASuit();
-        	endTask();
-    	}
-        
-		// Add experience
+            endTask();
+        }
+
+        // Add experience
         addExperience(time - remainingTime);
 
         return remainingTime;
     }
-    
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-		
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-		
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
-	}
+
+    /**
+     * Adds experience to the person's skills used in this task.
+     * @param time the amount of time (ms) the person performed this task.
+     */
+    protected void addExperience(double time) {
+
+        // Add experience to "EVA Operations" skill.
+        // (1 base experience point per 100 millisols of time spent)
+        double evaExperience = time / 100D;
+
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+        evaExperience += evaExperience * experienceAptitudeModifier;
+        evaExperience *= getTeachingExperienceModifier();
+        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+    }
 
     /**
      * Puts the person's EVA suite back into the entity's inventory.
@@ -211,42 +241,42 @@ public class EnterAirlock extends Task implements Serializable {
      * @throws Exception if error putting away suit.
      */
     private void putAwayEVASuit() {
-       
+
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
         if (suit != null) {
-        	Inventory suitInv = suit.getInventory();
-        	Inventory personInv = person.getInventory();
-        	Inventory entityInv = person.getContainerUnit().getInventory();
+            Inventory suitInv = suit.getInventory();
+            Inventory personInv = person.getInventory();
+            Inventory entityInv = person.getContainerUnit().getInventory();
 
-        	// Unload oxygen from suit.
-        	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        	double oxygenAmount = suitInv.getAmountResourceStored(oxygen);
-        	double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true);
-        	if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
-        	try {
-        		suitInv.retrieveAmountResource(oxygen, oxygenAmount);
-        		entityInv.storeAmountResource(oxygen, oxygenAmount, true);
-        	}
-        	catch (Exception e) {}
-        	
-        	// Unload water from suit.
-        	AmountResource water = AmountResource.findAmountResource("water");
-        	double waterAmount = suitInv.getAmountResourceStored(water);
-        	double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true);
-        	if (waterAmount > waterCapacity) waterAmount = waterCapacity;
-        	try {
-        		suitInv.retrieveAmountResource(water, waterAmount);
-        		entityInv.storeAmountResource(water, waterAmount, true);
-        	}
-        	catch (Exception e) {}
+            // Unload oxygen from suit.
+            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+            double oxygenAmount = suitInv.getAmountResourceStored(oxygen);
+            double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true);
+            if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
+            try {
+                suitInv.retrieveAmountResource(oxygen, oxygenAmount);
+                entityInv.storeAmountResource(oxygen, oxygenAmount, true);
+            }
+            catch (Exception e) {}
 
-        	// Return suit to entity's inventory.
-        	// logger.info(person.getName() + " putting away EVA suit into " + entity.getName());
-        	personInv.retrieveUnit(suit);
-        	entityInv.storeUnit(suit);
+            // Unload water from suit.
+            AmountResource water = AmountResource.findAmountResource("water");
+            double waterAmount = suitInv.getAmountResourceStored(water);
+            double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true);
+            if (waterAmount > waterCapacity) waterAmount = waterCapacity;
+            try {
+                suitInv.retrieveAmountResource(water, waterAmount);
+                entityInv.storeAmountResource(water, waterAmount, true);
+            }
+            catch (Exception e) {}
+
+            // Return suit to entity's inventory.
+            // logger.info(person.getName() + " putting away EVA suit into " + entity.getName());
+            personInv.retrieveUnit(suit);
+            entityInv.storeUnit(suit);
         }
         else {
-        	logger.log(Level.SEVERE, person.getName() + " doesn't have an EVA suit to put away.");
+            logger.severe(person.getName() + " doesn't have an EVA suit to put away.");
         }
     }
 
@@ -260,31 +290,31 @@ public class EnterAirlock extends Task implements Serializable {
     public static boolean canEnterAirlock(Person person, Airlock airlock) {
         return true;
     }
-    
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-	}
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.EVA_OPERATIONS);
-		return results;
-	}
-	
-	@Override
-	public void destroy() {
-	    super.destroy();
-	    
-	    airlock = null;
-	}
+
+    /**
+     * Gets the effective skill level a person has at this task.
+     * @return effective skill level
+     */
+    public int getEffectiveSkillLevel() {
+        SkillManager manager = person.getMind().getSkillManager();
+        return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+    }
+
+    /**
+     * Gets a list of the skills associated with this task.
+     * May be empty list if no associated skills.
+     * @return list of skills as strings
+     */
+    public List<String> getAssociatedSkills() {
+        List<String> results = new ArrayList<String>(1);
+        results.add(Skill.EVA_OPERATIONS);
+        return results;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        airlock = null;
+    }
 }

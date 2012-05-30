@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-05-30
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.vehicle;
+
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
@@ -16,9 +18,12 @@ import org.mars_sim.msp.core.person.Person;
  * The VehicleAirlock class represents an airlock for a vehicle.
  */
 public class VehicleAirlock extends Airlock {
-    
+
+    private static Logger logger = Logger.getLogger(VehicleAirlock.class.getName());
+
+    // Data members.
     private Vehicle vehicle; // The vehicle this airlock is for.
-    
+
     /**
      * Constructor
      * 
@@ -30,13 +35,13 @@ public class VehicleAirlock extends Airlock {
     public VehicleAirlock(Vehicle vehicle, int capacity) {
         // User Airlock constructor
         super(capacity);
-        
+
         if (vehicle == null) throw new IllegalArgumentException("vehicle is null.");
         else if (!(vehicle instanceof Crewable)) throw new IllegalArgumentException("vehicle not crewable.");
         else if (!(vehicle instanceof LifeSupport)) throw new IllegalArgumentException("vehicle has no life support.");
         else this.vehicle = vehicle;
     }
-    
+
     /**
      * Causes a person within the airlock to exit either inside or outside.
      *
@@ -44,23 +49,23 @@ public class VehicleAirlock extends Airlock {
      * @throws Exception if person is not in the airlock.
      */
     protected void exitAirlock(Person person) {
-        
+
         if (inAirlock(person)) {
-            if (pressurized) vehicle.getInventory().storeUnit(person);
+            if (PRESSURIZED.equals(getState())) {
+                // Exit person to inside vehicle.
+                vehicle.getInventory().storeUnit(person);
+            }
+            else if (DEPRESSURIZED.equals(getState())){
+                // Exit person outside vehicle.  
+                vehicle.getInventory().retrieveUnit(person);
+            }
             else {
-            	// Drop person outside.  If person, for some reason, is not in vehicle,
-            	// put them outside anyway.
-//            	try {
-            		vehicle.getInventory().retrieveUnit(person);
-//            	}
-//            	catch (InventoryException e) {
-//            		person.setContainerUnit(null);
-//            	}
-            } 
+                logger.severe("Vehicle airlock in incorrect state for exiting: " + getState());
+            }
         }
         else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
     }
-    
+
     /**
      * Gets the name of the entity this airlock is attached to.
      *
@@ -69,7 +74,7 @@ public class VehicleAirlock extends Airlock {
     public String getEntityName() {
         return vehicle.getName();
     }
-    
+
     /**
      * Gets the inventory of the entity this airlock is attached to.
      *

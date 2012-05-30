@@ -26,9 +26,7 @@ import java.util.logging.Logger;
  */
 public class CollectIce extends CollectResourcesMission {
 
-	private static String CLASS_NAME = 
-		"org.mars_sim.msp.simulation.person.ai.mission.CollectIce";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(CollectIce.class.getName());
 	
 	// Default description.
 	public static final String DEFAULT_DESCRIPTION = "Ice Prospecting";
