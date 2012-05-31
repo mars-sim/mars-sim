@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.00 2010-08-10
+ * @version 3.02 2012-05-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -25,8 +25,8 @@ import java.util.logging.Logger;
  */
 public class EVASuit extends Equipment implements LifeSupport, Serializable, Malfunctionable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.equipment.EVASuit";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(EVASuit.class.getName());
+    
     // Static members
     public static final String TYPE = "EVA Suit";
     public static final double EMPTY_MASS = 45D; // Unloaded mass of EVA suit (kg.)
@@ -36,6 +36,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
     private static final double WEAR_LIFETIME = 334000D; // 334 Sols (1/2 orbit)
     private static final double MAINTENANCE_TIME = 100D; // 100 millisols.
+    
     // Data members
     protected MalfunctionManager malfunctionManager; // The equipment's malfunction manager
 
@@ -135,11 +136,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         if (oxygenTaken > oxygenLeft) {
             oxygenTaken = oxygenLeft;
         }
-//        try {
-            getInventory().retrieveAmountResource(oxygen, oxygenTaken);
-//        } catch (InventoryException e) {
-//        }
-//        ;
+        
+        getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -156,11 +155,9 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         if (waterTaken > waterLeft) {
             waterTaken = waterLeft;
         }
-//        try {
-            getInventory().retrieveAmountResource(water, waterTaken);
-//        } catch (InventoryException e) {
-//        }
-//        ;
+
+        getInventory().retrieveAmountResource(water, waterTaken);
+
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -223,16 +220,12 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
      * @throws Exception if error during time.
      */
     public void timePassing(double time) {
-//    	try {
+
         Unit container = getContainerUnit();
         if (container instanceof Person) {
             malfunctionManager.activeTimePassing(time);
         }
         malfunctionManager.timePassing(time);
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException("EVASuit.timePassing(): " + e.getMessage());
-//    	}
     }
 
     @Override
