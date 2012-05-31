@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyEvent.java
- * @version 3.01 2011-07-16
+ * @version 3.02 2012-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -74,7 +74,7 @@ public class ScientificStudyEvent extends EventObject {
     
     /**
      * Get the event type.
-     * @return
+     * @return event type string.
      */
     public String getType() {
         return type;

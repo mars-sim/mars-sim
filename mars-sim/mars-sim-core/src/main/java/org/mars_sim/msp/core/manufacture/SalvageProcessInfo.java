@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageProcessInfo.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.manufacture;
@@ -32,7 +32,7 @@ public class SalvageProcessInfo implements Serializable {
     
     /**
      * Sets the salvage item name.
-     * @param name the name.
+     * @param itemName the item name.
      */
     public void setItemName(String itemName) {
         this.itemName = itemName;
@@ -112,7 +112,7 @@ public class SalvageProcessInfo implements Serializable {
     
     /**
      * Sets the list of the parts that can be salvaged.
-     * @param partsSalvageList the list of salvage parts.
+     * @param partSalvageList the list of salvage parts.
      */
     public void setPartSalvageList(List<PartSalvage> partSalvageList) {
         this.partSalvageList = partSalvageList;
