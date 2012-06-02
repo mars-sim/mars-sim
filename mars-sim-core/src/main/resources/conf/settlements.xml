@@ -203,10 +203,10 @@
 			<equipment type="Barrel" number="100" />
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
-			<resource type="oxygen" amount="2672.0" />
-			<resource type="water" amount="10688.0" />
-			<resource type="food" amount="4128.0" />
-			<resource type="methane" amount="4000.0" />
+			<resource type="oxygen" amount="10688.0" />
+			<resource type="water" amount="42752.0" />
+			<resource type="food" amount="16512.0" />
+			<resource type="methane" amount="16000.0" />
 			<part-package name="package 1" number="1" />
 		</template>
 		
@@ -248,10 +248,10 @@
 			<equipment type="Bag" number="100" />
 			<equipment type="Large Bag" number="20" />
 			<equipment type="Specimen Box" number="100" />
-			<resource type="oxygen" amount="2672.0" />
-			<resource type="water" amount="10688.0" />
-			<resource type="food" amount="4128.0" />
-			<resource type="methane" amount="4000.0" />
+			<resource type="oxygen" amount="10688.0" />
+			<resource type="water" amount="42752.0" />
+			<resource type="food" amount="16512.0" />
+			<resource type="methane" amount="16000.0" />
 			<part-package name="package 1" number="1" />
 		</template>
 	
