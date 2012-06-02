@@ -622,15 +622,25 @@ public abstract class VehicleMission extends TravelMission implements
                 double amount = (Double) neededResources.get(resource);
                 double amountStored = inv
                         .getAmountResourceStored((AmountResource) resource);
-                if (amountStored < amount)
+                if (amountStored < amount) {
+                    logger.severe(vehicle.getName() + " does not have enough " + resource + 
+                            " to continue with " + getName() + " (required: " + amount + 
+                            " kg, stored: " + amountStored + " kg)");
                     result = false;
+                }
             } else if (resource instanceof ItemResource) {
                 int num = (Integer) neededResources.get(resource);
-                if (inv.getItemResourceNum((ItemResource) resource) < num)
+                int numStored = inv.getItemResourceNum((ItemResource) resource);
+                if (numStored < num) {
+                    logger.severe(vehicle.getName() + " does not have enough " + resource + 
+                            " to continue with " + getName() + " (required: " + num +
+                            ", stored: " + numStored + ")");
                     result = false;
-            } else
+                }
+            } else {
                 throw new IllegalStateException(getPhase()
                         + " : Unknown resource type: " + resource);
+            }
         }
 
         return result;
