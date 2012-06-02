@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-02
  * @author Scott Davis
  */
 
@@ -67,6 +67,8 @@ public class GoodsManager implements Serializable {
 	// Value multiplier factors for certain goods.
 	private static final double EVA_SUIT_FACTOR = 100D;
 	private static final double VEHICLE_FACTOR = 1000D;
+	private static final double LIFE_SUPPORT_FACTOR = 4D;
+	private static final double VEHICLE_FUEL_FACTOR = 10D;
 	
 	// Data members
 	private Settlement settlement;
@@ -287,7 +289,7 @@ public class GoodsManager implements Serializable {
             
 			double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
 			int numPeople = settlement.getAllAssociatedPeople().size();
-			return numPeople * amountNeededOrbit;
+			return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
 		}
 		else return 0D;
 	}
@@ -304,7 +306,7 @@ public class GoodsManager implements Serializable {
             double amountNeededSol = LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL;
             double amountNeededOrbit = amountNeededSol * MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
             int numPeople = settlement.getCurrentPopulationNum();
-            return numPeople * amountNeededOrbit;
+            return numPeople * amountNeededOrbit * LIFE_SUPPORT_FACTOR;
         }
         else return 0D;
     }
@@ -320,7 +322,10 @@ public class GoodsManager implements Serializable {
 		AmountResource methane = AmountResource.findAmountResource("methane");
 		if (resource.isLifeSupport() || resource.equals(methane)) {
 			Iterator<Vehicle> i = getAssociatedVehicles().iterator();
-			while (i.hasNext()) demand += i.next().getInventory().getAmountResourceCapacity(resource);
+			while (i.hasNext()) {
+			    double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource);
+			    demand += fuelDemand * VEHICLE_FUEL_FACTOR;
+			}
 		}
 		return demand;
 	}
