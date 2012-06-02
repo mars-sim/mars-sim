@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -751,6 +751,27 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                         GoodsUtil.getResourceGood(part), false);
             }
         }
+    }
+    
+    @Override
+    protected boolean hasEmergency() {
+        boolean result = super.hasEmergency();
+        
+        try {
+            // Cancel construction mission if there are any beacon vehicles within range that need help.
+            Vehicle vehicleTarget = null;
+            Vehicle vehicle = RoverMission.getVehicleWithGreatestRange(settlement, true);
+            if (vehicle != null) {
+                vehicleTarget = RescueSalvageVehicle.findAvailableBeaconVehicle(settlement, vehicle.getRange());
+                if (vehicleTarget != null) {
+                    if (!RescueSalvageVehicle.isClosestCapableSettlement(settlement, vehicleTarget)) 
+                        result = true;
+                }
+            }
+        }
+        catch (Exception e) {}
+        
+        return result;
     }
 
     /**
