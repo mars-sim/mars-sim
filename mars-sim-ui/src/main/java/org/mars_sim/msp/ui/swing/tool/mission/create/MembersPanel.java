@@ -270,7 +270,6 @@ class MembersPanel extends WizardPanel {
 	 */
 	void updateRoverCapacityLabel() {
         String type = getWizard().getMissionData().getType();
-        System.out.println("Mission type: " + type);
         if (MissionDataBean.CONSTRUCTION_MISSION.equals(type)) {
             roverCapacityLabel.setText(" ");
         }
