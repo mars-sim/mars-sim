@@ -18,6 +18,9 @@ public class ConstructionStage implements Serializable {
     public static final String ADD_CONSTRUCTION_WORK_EVENT = "adding construction work";
     public static final String ADD_SALVAGE_WORK_EVENT = "adding salvage work";
     
+    // Work time modifier for salvaging a construction stage.
+    private static final double SALVAGE_WORK_TIME_MODIFIER = .25D;
+    
     // Data members
     private ConstructionStageInfo info;
     private ConstructionSite site;
@@ -58,6 +61,18 @@ public class ConstructionStage implements Serializable {
     public void setCompletedWorkTime(double completedWorkTime) {
         this.completedWorkTime = completedWorkTime;
     }
+    
+    /**
+     * Gets the required work time for the stage.
+     * @return work time (in millisols).
+     */
+    public double getRequiredWorkTime() {
+        double requiredWorkTime = info.getWorkTime();
+        if (isSalvaging) {
+            requiredWorkTime *= SALVAGE_WORK_TIME_MODIFIER;
+        }
+        return requiredWorkTime;
+    }
  
     /**
      * Adds work time to the construction stage.
@@ -65,12 +80,18 @@ public class ConstructionStage implements Serializable {
      */
     public void addWorkTime(double workTime) {
         completedWorkTime += workTime;
-        if (completedWorkTime > info.getWorkTime())
-            completedWorkTime = info.getWorkTime();
+        
+        if (completedWorkTime > getRequiredWorkTime()) {
+            completedWorkTime = getRequiredWorkTime();
+        }
         
         // Fire construction event
-        if (isSalvaging) site.fireConstructionUpdate(ADD_SALVAGE_WORK_EVENT, this);
-        else site.fireConstructionUpdate(ADD_CONSTRUCTION_WORK_EVENT, this);
+        if (isSalvaging) {
+            site.fireConstructionUpdate(ADD_SALVAGE_WORK_EVENT, this);
+        }
+        else {
+            site.fireConstructionUpdate(ADD_CONSTRUCTION_WORK_EVENT, this);
+        }
     }
     
     /**
@@ -78,7 +99,7 @@ public class ConstructionStage implements Serializable {
      * @return true if stage is complete.
      */
     public boolean isComplete() {
-        return (completedWorkTime == info.getWorkTime());
+        return (completedWorkTime >= getRequiredWorkTime());
     }
     
     /**

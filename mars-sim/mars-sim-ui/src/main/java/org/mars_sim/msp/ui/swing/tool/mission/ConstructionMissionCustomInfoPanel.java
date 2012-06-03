@@ -154,7 +154,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
             ConstructionStage stage = mission.getConstructionStage();
             if (stage != null) {
                 double completedWork = stage.getCompletedWorkTime();
-                double requiredWork = stage.getInfo().getWorkTime();
+                double requiredWork = stage.getRequiredWorkTime();
                 if (requiredWork > 0D) workProgress = (int) (100D * completedWork / requiredWork);
             }
         }
@@ -184,7 +184,7 @@ public class ConstructionMissionCustomInfoPanel extends MissionCustomInfoPanel
             if (stage.isSalvaging()) result.append("Work Type: salvage<br>");
             else result.append("Work Type: Construction<br>");
             DecimalFormat formatter = new DecimalFormat("0.0");
-            String requiredWorkTime = formatter.format(info.getWorkTime() / 1000D);
+            String requiredWorkTime = formatter.format(stage.getRequiredWorkTime() / 1000D);
             result.append("Work Time Required: ").append(requiredWorkTime).append(" Sols<br>");
             String completedWorkTime = formatter.format(stage.getCompletedWorkTime() / 1000D);
             result.append("Work Time Completed: ").append(completedWorkTime).append(" Sols<br>");
