@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-03
  * @author Scott Davis
  */
 
@@ -25,12 +25,15 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * Task to perform a trade negotiation between the buyer and seller for a Trade mission.
  */
 public class NegotiateTrade extends Task implements Serializable {
 
+    private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
+    
 	// Task phase
 	private static final String NEGOTIATING = "Negotiating";
 	private static final double DURATION = 50D; // The predetermined duration of task in millisols
@@ -88,33 +91,26 @@ public class NegotiateTrade extends Task implements Serializable {
 		// If duration, complete trade.
 		if (getDuration() < (getTimeCompleted() + time)) {
             
-            buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover);
+		    double soldLoadValue = determineModifiedSoldLoadValue();
+		    
+		    CreditManager creditManager = Simulation.instance().getCreditManager();
+            double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
+		    
+		    double maxBuyLoadValue = soldLoadValue + credit;
+		    if (maxBuyLoadValue < 0D) {
+		        maxBuyLoadValue = 0D;
+		    }
+		    
+		    buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, maxBuyLoadValue);
             double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
             
-			double soldLoadValue = determineModifiedSoldLoadValue();
-			
-			// Add in credit to buy or sell load.
-            CreditManager creditManager = Simulation.instance().getCreditManager();
-            double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
-            if (credit > 0D) soldLoadValue += credit;
-            else if (credit < 0D) buyLoadValue -= credit;
-            
-            // Add nonprofit goods to buy load if sold value is higher.
-            if (buyLoadValue < soldLoadValue) {
-                buyLoad = TradeUtil.addNonProfitsToLoad(buyingSettlement, sellingSettlement, rover, buyLoad, 
-                        soldLoad.keySet(), buyLoadValue, soldLoadValue);
-            }
-            
-			// Set credit between settlements.
-            buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
-            soldLoadValue = determineModifiedSoldLoadValue();
-            credit += (soldLoadValue - buyLoadValue);
-			creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
-			// logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + 
-            // " is " + credit);
+            credit += soldLoadValue - buyLoadValue;
+            creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
+            logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + 
+                    " is " + credit);
 		}
 		
-		return 0D;
+		return getTimeCompleted() + time - getDuration();
 	}
 	
 	/**
@@ -137,6 +133,8 @@ public class NegotiateTrade extends Task implements Serializable {
 		
 		double modifier = 1D;
 		
+		// Note: buying and selling traders are reversed here since this is regarding the goods
+		// that the buyer is selling and the seller is buying.
 		NaturalAttributeManager sellerAttributes = buyingTrader.getNaturalAttributeManager();
 		NaturalAttributeManager buyerAttributes = sellingTrader.getNaturalAttributeManager();
 		
