@@ -136,7 +136,7 @@ public final class TradeUtil {
         double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
         
         // Determine best sell load.
-        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue + credit);
+        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue - credit);
         
         // Determine buy and sell load values for starting settlement.
         double startingSettlementSellValue = determineLoadValue(sellLoad, startingSettlement, false);
@@ -184,7 +184,7 @@ public final class TradeUtil {
         double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
         
         // Determine best sell load.
-        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue + credit);
+        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue - credit);
         
     	return sellLoad;
     }
