@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
-import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -995,12 +994,6 @@ public class Trade extends RoverMission implements Serializable {
             double buyingValue = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
 
             double revenue = buyingValue - sellingValue;
-
-            CreditManager creditManager = Simulation.instance().getCreditManager();
-            double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
-            if (credit < 0D) {
-                revenue -= credit;
-            }
 
             double estimatedDistance = getStartingSettlement().getCoordinates().getDistance(
                     tradingSettlement.getCoordinates()) * 2D;
