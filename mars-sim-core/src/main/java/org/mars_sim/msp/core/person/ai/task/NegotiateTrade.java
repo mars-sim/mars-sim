@@ -96,10 +96,7 @@ public class NegotiateTrade extends Task implements Serializable {
 		    CreditManager creditManager = Simulation.instance().getCreditManager();
             double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 		    
-		    double maxBuyLoadValue = soldLoadValue + credit;
-		    if (maxBuyLoadValue < 0D) {
-		        maxBuyLoadValue = 0D;
-		    }
+		    double maxBuyLoadValue = soldLoadValue - credit;
 		    
 		    buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, maxBuyLoadValue);
             double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
