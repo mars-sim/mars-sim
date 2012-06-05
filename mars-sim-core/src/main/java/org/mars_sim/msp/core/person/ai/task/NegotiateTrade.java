@@ -91,16 +91,28 @@ public class NegotiateTrade extends Task implements Serializable {
 		// If duration, complete trade.
 		if (getDuration() < (getTimeCompleted() + time)) {
             
+		    // Get the value of the load that is being sold to the destination settlement.
 		    double soldLoadValue = determineModifiedSoldLoadValue();
 		    
+		    // Get the credit that the starting settlement has with the destination settlement.
 		    CreditManager creditManager = Simulation.instance().getCreditManager();
             double credit = creditManager.getCredit(buyingSettlement, sellingSettlement);
 		    
+            // Get the maximum value the starting settlement can buy from the destination settlement.
 		    double maxBuyLoadValue = soldLoadValue + credit;
 		    
+		    // Determine the initial buy load based on goods that are profitable for the destination settlement to sell.
 		    buyLoad = TradeUtil.determineLoad(buyingSettlement, sellingSettlement, rover, maxBuyLoadValue);
             double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
             
+            // If starting settlement still has positive credit, try to buy more goods from destination settlement.
+            if (buyLoadValue < maxBuyLoadValue) {
+                buyLoad = TradeUtil.addNonProfitsToLoad(buyingSettlement, sellingSettlement, rover, buyLoad,
+                        soldLoad.keySet(), buyLoadValue, maxBuyLoadValue);
+                buyLoadValue = TradeUtil.determineLoadValue(buyLoad, buyingSettlement, true);
+            }
+            
+            // Update the credit value between the starting and destination settlements.
             credit += soldLoadValue - buyLoadValue;
             creditManager.setCredit(buyingSettlement, sellingSettlement, credit);
             logger.info("Credit at " + buyingSettlement.getName() + " for " + sellingSettlement.getName() + 

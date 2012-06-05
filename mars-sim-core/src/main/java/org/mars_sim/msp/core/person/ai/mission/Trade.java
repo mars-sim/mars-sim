@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -108,27 +109,33 @@ public class Trade extends RoverMission implements Serializable {
                 endMission("Could not determine trading settlement.");
             }
 
-            try {
-                // Get sell load
-                if (!isDone()) {
-                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(),
-                            getRover(), tradingSettlement);
-                }
-            } catch (Exception e) {
-                e.printStackTrace(System.err);
-                endMission("Could not determine sell load.");
-            }
-
+            double buyLoadValue = 0D;
             try {
                 // Determine desired buy load
                 if (!isDone()) {
                     desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(),
                             getRover(), tradingSettlement);
                     desiredProfit = estimateTradeProfit(desiredBuyLoad);
+                    buyLoadValue = TradeUtil.determineLoadValue(desiredBuyLoad, tradingSettlement, true);
                 }
             } catch (Exception e) {
                 e.printStackTrace(System.err);
                 endMission("Could not determine desired buy load.");
+            }
+            
+            // Get the credit that the starting settlement has with the destination settlement.
+            CreditManager creditManager = Simulation.instance().getCreditManager();
+            double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
+            
+            try {
+                // Get sell load
+                if (!isDone()) {
+                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(),
+                            getRover(), tradingSettlement, buyLoadValue - credit);
+                }
+            } catch (Exception e) {
+                e.printStackTrace(System.err);
+                endMission("Could not determine sell load.");
             }
 
             // Recruit additional people to mission.
