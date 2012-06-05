@@ -129,14 +129,15 @@ public final class TradeUtil {
     		Settlement tradingSettlement) {
     	
         // Determine best buy load.
-        Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, rover, Double.POSITIVE_INFINITY);
+        Map<Good, Integer> buyLoad = getDesiredBuyLoad(startingSettlement, rover, tradingSettlement);
         double buyValue = determineLoadValue(buyLoad, startingSettlement, true);
         
+        // Get credit between starting settlement and trading settlement.
         CreditManager creditManager = Simulation.instance().getCreditManager();
         double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
         
         // Determine best sell load.
-        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue - credit);
+        Map<Good, Integer> sellLoad = determineBestSellLoad(startingSettlement, rover, tradingSettlement, buyValue - credit);
         
         // Determine buy and sell load values for starting settlement.
         double startingSettlementSellValue = determineLoadValue(sellLoad, startingSettlement, false);
@@ -162,6 +163,18 @@ public final class TradeUtil {
         // Determine best buy load.
         Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, rover, Double.POSITIVE_INFINITY);
         
+        // Get credit between starting settlement and trading settlement.
+        CreditManager creditManager = Simulation.instance().getCreditManager();
+        double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
+        
+        // Add more desired items to buy from credit.
+        if (credit > 0D) {
+            double buyLoadValue = TradeUtil.determineLoadValue(buyLoad, startingSettlement, true);
+            double maxBuyLoadValue = buyLoadValue + credit;
+            buyLoad = TradeUtil.addNonProfitsToLoad(startingSettlement, tradingSettlement, rover, buyLoad,
+                    new HashSet<Good>(), buyLoadValue, maxBuyLoadValue);
+        }
+        
         return buyLoad;
     }
     
@@ -170,21 +183,15 @@ public final class TradeUtil {
      * @param startingSettlement the settlement to trade from.
      * @param rover the rover to carry the goods.
      * @param tradingSettlement the settlement to trade to.
+     * @param the maximum sell value.
      * @return a map of goods and numbers in the load.
      * @throws Exception if error determining best sell load.
      */
     static Map<Good, Integer> determineBestSellLoad(Settlement startingSettlement, Rover rover, 
-    		Settlement tradingSettlement) {
+    		Settlement tradingSettlement, double maxSellValue) {
     	
-        // Determine best buy load.
-        Map<Good, Integer> buyLoad = determineLoad(startingSettlement, tradingSettlement, rover, Double.POSITIVE_INFINITY);
-        double buyValue = determineLoadValue(buyLoad, startingSettlement, true);
-        
-        CreditManager creditManager = Simulation.instance().getCreditManager();
-        double credit = creditManager.getCredit(startingSettlement, tradingSettlement);
-        
         // Determine best sell load.
-        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, buyValue - credit);
+        Map<Good, Integer> sellLoad = determineLoad(tradingSettlement, startingSettlement, rover, maxSellValue);
         
     	return sellLoad;
     }
@@ -302,7 +309,6 @@ public final class TradeUtil {
      * @return map of goods and their number.
      * @throws Exception if error determining the load.
      */
-    /*
     public static Map<Good, Integer> addNonProfitsToLoad(Settlement buyingSettlement, Settlement sellingSettlement,
             Rover rover, Map<Good, Integer> currentLoad, Set<Good> nonAddGoods, double currentValue, 
             double targetValue) {
@@ -341,8 +347,9 @@ public final class TradeUtil {
         Good previousGood = null;
         GoodsManager manager = buyingSettlement.getGoodsManager();
         while (!done && (loadValue < targetValue)) {
+            double remainingValue = targetValue - loadValue;
             Good good = findBestTradeGood(sellingSettlement, buyingSettlement, tradeList, nonAddGoods, massCapacity, 
-                    hasRover, rover, previousGood, true, repairParts);
+                    hasRover, rover, previousGood, true, repairParts, remainingValue);
             if (good != null) {
                 try {
                     boolean isAmountResource = good.getCategory().equals(Good.AMOUNT_RESOURCE);
@@ -405,7 +412,6 @@ public final class TradeUtil {
         
         return tradeList;
     }
-    */
     
     /**
      * Determines the value of a load to a settlement.
@@ -415,8 +421,8 @@ public final class TradeUtil {
      * @return value of the load (value points).
      * @throws Exception if error determining the load value.
      */
-    public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, boolean buy) 
-			{
+    public static double determineLoadValue(Map<Good, Integer> load, Settlement settlement, 
+            boolean buy) {
 
     	double result = 0D;
 
