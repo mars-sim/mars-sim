@@ -438,10 +438,9 @@ public class Inventory implements Serializable {
      * Retrieves an amount of a resource from storage.
      * @param resource the resource.
      * @param amount the amount (kg).
-     * @throws InventoryException if error retrieving resource.
      */
     public synchronized void retrieveAmountResource(AmountResource resource, double amount) {
-//    	try {
+        
         if (amount <= getAmountResourceStored(resource)) {
             double remainingAmount = amount;
 
