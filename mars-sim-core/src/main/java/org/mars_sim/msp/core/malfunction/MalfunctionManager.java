@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-06
  * @author Scott Davis
  */
 
@@ -42,7 +42,7 @@ public class MalfunctionManager implements Serializable {
     private static double ESTIMATED_MAINTENANCES_PER_ORBIT = 10D;
     
     // Factor for chance of malfunction by time since last maintenance.
-    private static double MAINTENANCE_MALFUNCTION_FACTOR = .0000001D;
+    private static double MAINTENANCE_MALFUNCTION_FACTOR = .000000001D;
     
     // Factor for chance of malfunction due to wear condition.
     private static double WEAR_MALFUNCTION_FACTOR = 9D;
