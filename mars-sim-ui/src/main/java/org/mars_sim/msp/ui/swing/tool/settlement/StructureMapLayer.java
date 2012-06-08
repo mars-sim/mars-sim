@@ -20,6 +20,7 @@ import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 
 /**
  * A settlement map layer for displaying buildings and construction sites.
@@ -133,8 +134,11 @@ public class StructureMapLayer implements SettlementMapLayer {
     private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
         
         // Use SVG image for construction site if available.
-        String stageName = site.getCurrentConstructionStage().getInfo().getName().toLowerCase();
-        GraphicsNode svg = SVGMapUtil.getConstructionSiteSVG(stageName);
+    	GraphicsNode svg = null;
+    	ConstructionStage stage = site.getCurrentConstructionStage();
+    	if (stage != null) {
+    		svg = SVGMapUtil.getConstructionSiteSVG(stage.getInfo().getName().toLowerCase());
+    	}
         if (svg != null) {
             drawSVGStructure(g2d, site.getXLocation(), site.getYLocation(), 
                     site.getWidth(), site.getLength(), site.getFacing(), svg);
