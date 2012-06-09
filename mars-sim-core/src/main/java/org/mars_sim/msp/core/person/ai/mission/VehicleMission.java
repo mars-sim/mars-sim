@@ -396,11 +396,12 @@ public abstract class VehicleMission extends TravelMission implements
             if (person != lastOperator) {
                 // If vehicle doesn't currently have an operator, set this person as the operator.
                 if (vehicle.getOperator() == null) {
-                    if (operateVehicleTask != null)
+                    if (operateVehicleTask != null) {
                         operateVehicleTask = getOperateVehicleTask(person,
                                 operateVehicleTask.getTopPhase());
-                    else
+                    } else {
                         operateVehicleTask = getOperateVehicleTask(person, null);
+                    }
                     assignTask(person, operateVehicleTask);
                     lastOperator = person;
                 } else {
@@ -413,8 +414,9 @@ public abstract class VehicleMission extends TravelMission implements
                                 + getNextNavpoint().getDescription());
                     }
                 }
-            } else
+            } else {
                 lastOperator = null;
+            }
         }
 
         // If the destination has been reached, end the phase.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.02 2011-11-26
+ * @version 3.02 2012-06-08
  * @author Scott Davis
  */
 
@@ -28,7 +28,7 @@ import java.util.List;
  * A person's TaskManager keeps track of one current task for the person, but a task may use other
  * tasks internally to accomplish things.
  */
-public abstract class Task implements Serializable, Comparable {
+public abstract class Task implements Serializable, Comparable<Task> {
 	
 	// Unit event types
 	public static final String TASK_NAME_EVENT = "task name";
@@ -244,22 +244,37 @@ public abstract class Task implements Serializable, Comparable {
         
         // If no subtask, perform this task.
         if ((subTask == null) || subTask.done) {
+            
             // If task is effort-driven and person is incapacitated, end task.
-            if (effortDriven && (person.getPerformanceRating() == 0D)) endTask();
+            if (effortDriven && (person.getPerformanceRating() == 0D)) {
+                endTask();
+            } else {
             
-            // Perform phases of task until time is up or task is done.
-            while ((timeLeft > 0D) && !done) timeLeft = performMappedPhase(timeLeft);
-            
-            // Keep track of the duration of the task if necesary.
-            timeCompleted += time;
-            if (hasDuration && (timeCompleted >= duration)) {
-            	timeLeft = timeCompleted - duration;
-            	endTask();
+                // Perform phases of task until time is up or task is done.
+                while ((timeLeft > 0D) && !done) {
+                    if (hasDuration) {
+                        
+                        // Keep track of the duration of the task.
+                        if ((timeCompleted + timeLeft) >= duration) {
+                            double performTime = duration - timeCompleted;
+                            double extraTime = timeCompleted + timeLeft - duration;
+                            timeLeft = performMappedPhase(performTime) + extraTime;
+                            timeCompleted = duration;
+                            endTask();
+                        }
+                        else {
+                            timeCompleted += timeLeft;
+                            timeLeft = performMappedPhase(timeLeft);
+                        }
+                    } else {
+                        timeLeft = performMappedPhase(timeLeft);
+                    }
+                }        
             }
         }
         
         // Modify stress performing task.
-        modifyStress(timeLeft);
+        modifyStress(time - timeLeft);
         
         return timeLeft;
     }
@@ -295,11 +310,11 @@ public abstract class Task implements Serializable, Comparable {
      * on the alphabetic ordering of the Name attribute.
      *
      * @param other Object to compare against.
-     * @return integer comparasion of the two objects.
+     * @return integer comparison of the two objects.
      * @throws ClassCastException if the object in not of a Task.
      */
-    public int compareTo(Object other) {
-        return name.compareTo(((Task)other).name);
+    public int compareTo(Task other) {
+        return name.compareTo(other.name);
     }
     
     /**
