@@ -327,8 +327,9 @@ public abstract class Airlock implements Serializable {
             if (operator != null) {
                 if (operator.getPhysicalCondition().isDead()) {
                     // If operator is dead, deactivate airlock.
+                	String operatorName = operator.getName();
                     deactivateAirlock();
-                    logger.severe("Airlock operator " + operator.getName() +
+                    logger.severe("Airlock operator " + operatorName +
                     " is dead.  Deactivating airlock.");
                 }
             }
