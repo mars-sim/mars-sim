@@ -4,11 +4,11 @@
   <parent>
     <artifactId>mars-sim</artifactId>
     <groupId>net.sf</groupId>
-    <version>3.02-SNAPSHOT</version>
+    <version>3.02</version>
   </parent>
   <groupId>net.sf.mars-sim</groupId>
   <artifactId>mars-sim-core</artifactId>
-  <version>3.02-SNAPSHOT</version>
+  <version>3.02</version>
   <name>mars-sim-core</name>
   <dependencies>
     <dependency>
