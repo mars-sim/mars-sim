@@ -316,23 +316,32 @@ public class Simulation implements ClockListener, Serializable {
         }
         mars.timePassing(time);
         ut.updateTime();
+        
         if (debug) {
             logger.fine(masterClock.getUpTimer().getUptime()
                     + " Master clock sending pulse to object: missionManager " + missionManager.toString());
         }
         missionManager.timePassing(time);
         ut.updateTime();
+        
         if (debug) {
             logger.fine(masterClock.getUpTimer().getUptime()
                     + " Master clock sending pulse to object: unitManager " + unitManager.toString());
         }
         unitManager.timePassing(time);
         ut.updateTime();
+        
         if (debug) {
             logger.fine(masterClock.getUpTimer().getUptime()
                     + " Master clock sending pulse to object: scientificStudyManager " + scientificStudyManager);
         }
         scientificStudyManager.updateStudies();
+        ut.updateTime();
+        
+        if (debug) {
+            logger.fine(masterClock.getUpTimer().getUptime()
+                    + " Master clock sending pulse to object: resupplyManager " + resupplyManager);
+        }
         resupplyManager.timePassing(time);
     }
 
