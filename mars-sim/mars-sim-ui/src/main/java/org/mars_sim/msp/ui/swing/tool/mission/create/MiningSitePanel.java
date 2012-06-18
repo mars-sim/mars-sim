@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningSitePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-06-18
  * @author Scott Davis
  */
 
@@ -170,7 +170,7 @@ public class MiningSitePanel extends WizardPanel {
 		selectedSitePane.add(mineralConcentrationTable.getTableHeader());
 		selectedSitePane.add(mineralConcentrationTable);
 		
-		// Create verticle glue.
+		// Create vertical glue.
 		selectedSitePane.add(Box.createVerticalGlue());
 		
         // Create the error message label.
@@ -190,7 +190,7 @@ public class MiningSitePanel extends WizardPanel {
 
 	/**
 	 * Commits changes from this wizard panel.
-	 * @retun true if changes can be committed.
+	 * @return true if changes can be committed.
 	 */
 	boolean commitChanges() {
 		if (selectedSite != null) {
