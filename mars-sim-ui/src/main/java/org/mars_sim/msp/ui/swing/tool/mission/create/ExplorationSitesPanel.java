@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationSitesPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-06-18
  * @author Scott Davis
  */
 
@@ -138,7 +138,8 @@ class ExplorationSitesPanel extends WizardPanel {
     					// Add a new exploration site to the mission.
     					SitePanel sitePane = new SitePanel(siteListPane.getComponentCount(), getNewSiteLocation());
     					siteListPane.add(sitePane);
-    					navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+    					navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), 
+    					        SurfMarsMap.TYPE));
     					mapPane.repaint();
     					addButton.setEnabled(canAddMoreSites());
     					validate();
@@ -215,14 +216,15 @@ class ExplorationSitesPanel extends WizardPanel {
 		Coordinates startingSite = getCenterCoords().getNewLocation(new Direction(0D), range / 4D);
 		SitePanel startingSitePane = new SitePanel(0, startingSite);
 		siteListPane.add(startingSitePane);
-		navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+		navLayer.addNavpointPosition(MapUtils.getRectPosition(startingSitePane.getSite(), getCenterCoords(), 
+		        SurfMarsMap.TYPE));
 		mapPane.showMap(getCenterCoords());
 		addButton.setEnabled(canAddMoreSites());
 		getWizard().setButtons(true);
 	}
 	
 	/**
-	 * Checks if mission can add more exporation sites.
+	 * Checks if mission can add more exploration sites.
 	 * @return true if can add more sites.
 	 */
 	private boolean canAddMoreSites() {
@@ -356,7 +358,8 @@ class ExplorationSitesPanel extends WizardPanel {
 		for (int x = 0; x < siteListPane.getComponentCount(); x++) {
 			SitePanel sitePane = (SitePanel) siteListPane.getComponent(x);
 			sitePane.setSiteNum(x);
-			navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), SurfMarsMap.TYPE));
+			navLayer.addNavpointPosition(MapUtils.getRectPosition(sitePane.getSite(), getCenterCoords(), 
+			        SurfMarsMap.TYPE));
 		}
 		mapPane.repaint();
 	}
@@ -378,12 +381,16 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private Coordinates determineNewSiteLocation(Coordinates prevNav, Coordinates nextNav, double range) {
 		double fociDistance = prevNav.getDistance(nextNav);
-		double distanceFromCenterOfAxis = Math.sqrt(Math.pow(((range + fociDistance) / 2D), 2D) - Math.pow((fociDistance / 2D), 2D));
+		double distanceFromCenterOfAxis = Math.sqrt(Math.pow(((range + fociDistance) / 2D), 2D) - 
+		        Math.pow((fociDistance / 2D), 2D));
 		double initialDistanceFromAxis = distanceFromCenterOfAxis / 2D;
-		double initialDistanceFromFoci = Math.sqrt(Math.pow((fociDistance / 2D), 2D) + Math.pow(initialDistanceFromAxis, 2D));
-		Direction initialDirectionFromFoci = new Direction(Math.asin(initialDistanceFromAxis / initialDistanceFromFoci)); 
+		double initialDistanceFromFoci = Math.sqrt(Math.pow((fociDistance / 2D), 2D) + 
+		        Math.pow(initialDistanceFromAxis, 2D));
+		Direction initialDirectionFromFoci = new Direction(Math.asin(initialDistanceFromAxis / 
+		        initialDistanceFromFoci)); 
 		Direction fociDirection = prevNav.getDirectionToPoint(nextNav);
-		Direction directionToNewSite = new Direction(fociDirection.getDirection() - initialDirectionFromFoci.getDirection());
+		Direction directionToNewSite = new Direction(fociDirection.getDirection() - 
+		        initialDirectionFromFoci.getDirection());
 		return prevNav.getNewLocation(directionToNewSite, initialDistanceFromFoci);
 	}
 	
@@ -495,8 +502,10 @@ class ExplorationSitesPanel extends WizardPanel {
 				navLayer.selectNavpoint(navSelected);
 				navOffset = determineOffset(event.getX(), event.getY());
 				
-				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(), SurfMarsMap.TYPE);
-				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(), SurfMarsMap.TYPE);
+				IntPoint prevNavpoint = MapUtils.getRectPosition(getPreviousNavpoint(), getCenterCoords(), 
+				        SurfMarsMap.TYPE);
+				IntPoint nextNavpoint = MapUtils.getRectPosition(getNextNavpoint(), getCenterCoords(), 
+				        SurfMarsMap.TYPE);
 				int radiusPixels = convertDistanceToMapPixels(getRadius());
 				ellipseLayer.setEllipseDetails(prevNavpoint, nextNavpoint, radiusPixels);
 				ellipseLayer.setDisplayEllipse(true);
@@ -524,7 +533,8 @@ class ExplorationSitesPanel extends WizardPanel {
 			Coordinates currentNavpoint = getCurrentNavpoint();
 			Coordinates prevNavpoint = getPreviousNavpoint();
 			Coordinates nextNavpoint = getNextNavpoint();
-			double currentDistance = prevNavpoint.getDistance(currentNavpoint) + currentNavpoint.getDistance(nextNavpoint);
+			double currentDistance = prevNavpoint.getDistance(currentNavpoint) + 
+			        currentNavpoint.getDistance(nextNavpoint);
 			double straightDistance = prevNavpoint.getDistance(nextNavpoint);
 			return currentDistance - straightDistance + getRemainingRange(false);
 		}
@@ -566,7 +576,8 @@ class ExplorationSitesPanel extends WizardPanel {
 				int displayY = event.getPoint().y + navOffset.getiY();
 				IntPoint displayPos = new IntPoint(displayX, displayY);
 				Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
+				Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, 
+				        displayPos.getiY() - 150, CannedMarsMap.PIXEL_RHO);
 				
 				// Only drag navpoint flag if within ellipse range bounds.
 				if (withinBounds(displayPos, navpoint)) {
@@ -580,10 +591,10 @@ class ExplorationSitesPanel extends WizardPanel {
 		}
 		
 		/**
-		 * Checks if mouse location is within range boundries and edge of map display. 
+		 * Checks if mouse location is within range boundaries and edge of map display. 
 		 * @param position the mouse location.
 		 * @param location the navpoint location.
-		 * @return true if within boundries.
+		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position, Coordinates location) {
 			boolean result = true;

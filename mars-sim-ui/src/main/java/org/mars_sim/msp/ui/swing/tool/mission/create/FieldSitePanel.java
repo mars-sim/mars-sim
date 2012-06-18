@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * FieldSitePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-06-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -98,7 +98,7 @@ public class FieldSitePanel extends WizardPanel {
     boolean commitChanges() {
         IntPoint navpointPixel = navLayer.getNavpointPosition(0);
         Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
-                navpointPixel.getiY() - 150);
+                navpointPixel.getiY() - 150, CannedMarsMap.PIXEL_RHO);
         getWizard().getMissionData().setFieldSite(navpoint);
         return true;
     }
@@ -116,7 +116,8 @@ public class FieldSitePanel extends WizardPanel {
             ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
             IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
             navLayer.addNavpointPosition(initialNavpointPos);
-            Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)));
+            Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
+                    CannedMarsMap.PIXEL_RHO);
             locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
             mapPane.showMap(getCenterCoords());
         }
@@ -205,7 +206,7 @@ public class FieldSitePanel extends WizardPanel {
                     navLayer.setNavpointPosition(0, displayPos);
                     Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
                     Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, 
-                            displayPos.getiY() - 150);
+                            displayPos.getiY() - 150, CannedMarsMap.PIXEL_RHO);
                     locationLabel.setText("Location: " + navpoint.getFormattedString());
                 
                     mapPane.repaint();

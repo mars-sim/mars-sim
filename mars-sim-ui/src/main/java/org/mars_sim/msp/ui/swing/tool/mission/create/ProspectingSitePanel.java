@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProspectingSitePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-06-18
  * @author Scott Davis
  */
 
@@ -109,7 +109,7 @@ class ProspectingSitePanel extends WizardPanel {
 	boolean commitChanges() {
 		IntPoint navpointPixel = navLayer.getNavpointPosition(0);
 		Coordinates navpoint = getCenterCoords().convertRectToSpherical(navpointPixel.getiX() - 150, 
-				navpointPixel.getiY() - 150);
+				navpointPixel.getiY() - 150, CannedMarsMap.PIXEL_RHO);
 		String type = getWizard().getMissionData().getType();
 		if (type.equals(MissionDataBean.ICE_MISSION)) 
 			getWizard().getMissionData().setIceCollectionSite(navpoint);
@@ -136,7 +136,8 @@ class ProspectingSitePanel extends WizardPanel {
 			ellipseLayer.setEllipseDetails(new IntPoint(150, 150), new IntPoint(150, 150), (pixelRange * 2));
 			IntPoint initialNavpointPos = new IntPoint(150, 150 - (pixelRange / 2));
 			navLayer.addNavpointPosition(initialNavpointPos);
-			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)));
+			Coordinates initialNavpoint = getCenterCoords().convertRectToSpherical(0, (-1 * (pixelRange / 2)), 
+			        CannedMarsMap.PIXEL_RHO);
 			locationLabel.setText("Location: " + initialNavpoint.getFormattedString());
 			mapPane.showMap(getCenterCoords());
 		}
@@ -224,7 +225,8 @@ class ProspectingSitePanel extends WizardPanel {
 				if (withinBounds(displayPos)) {
 					navLayer.setNavpointPosition(0, displayPos);
 					Coordinates center = getWizard().getMissionData().getStartingSettlement().getCoordinates();
-					Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, displayPos.getiY() - 150);
+					Coordinates navpoint = center.convertRectToSpherical(displayPos.getiX() - 150, 
+					        displayPos.getiY() - 150, CannedMarsMap.PIXEL_RHO);
 					locationLabel.setText("Location: " + navpoint.getFormattedString());
 				
 					mapPane.repaint();
@@ -233,16 +235,17 @@ class ProspectingSitePanel extends WizardPanel {
 		}
 		
 		/**
-		 * Checks if mouse location is within range boundries and edge of map display. 
+		 * Checks if mouse location is within range boundaries and edge of map display. 
 		 * @param position the mouse location.
-		 * @return true if within boundries.
+		 * @return true if within boundaries.
 		 */
 		private boolean withinBounds(IntPoint position) {
 			boolean result = true;
 			
 			if (!navLayer.withinDisplayEdges(position)) result = false;
 			
-			int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) + Math.pow(150D - position.getY(), 2D)));
+			int radius = (int) Math.round(Math.sqrt(Math.pow(150D - position.getX(), 2D) + 
+			        Math.pow(150D - position.getY(), 2D)));
 			if (radius > pixelRange) result = false;
 			
 			return result;
