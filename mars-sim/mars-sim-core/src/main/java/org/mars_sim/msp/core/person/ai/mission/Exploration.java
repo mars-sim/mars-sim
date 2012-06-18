@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-18
  * @author Scott Davis
  */
 
@@ -159,9 +159,11 @@ public class Exploration extends RoverMission implements Serializable {
         explorationSiteCompletion = new HashMap<String, Double>(NUM_SITES);
 
         // Set exploration navpoints.
-        for (int x = 0; x < explorationSites.size(); x++)
-            addNavpoint(new NavPoint(explorationSites.get(x),
-                    "exploration site " + (x + 1)));
+        for (int x = 0; x < explorationSites.size(); x++) {
+            String siteName = "exploration site " + (x + 1);
+            addNavpoint(new NavPoint(explorationSites.get(x), siteName));
+            explorationSiteCompletion.put(siteName, 0D);
+        }
 
         // Add home navpoint.
         addNavpoint(new NavPoint(startingSettlement.getCoordinates(),
