@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.02 2012-05-24
+ * @version 3.03 2012-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -301,7 +301,10 @@ public class BuildingConstructionMission extends Mission implements Serializable
             }
             boolean enoughPeople = (availablePeopleNum >= MIN_PEOPLE);
             
-            if (reservableLUV && availableAttachmentParts && enoughPeople) {
+            // Check if settlement has construction override flag set.
+            boolean constructionOverride = settlement.getConstructionOverride();
+            
+            if (reservableLUV && availableAttachmentParts && enoughPeople && !constructionOverride) {
                 
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(

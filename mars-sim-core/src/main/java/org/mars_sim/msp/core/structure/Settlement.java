@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.02 2012-04-08
+ * @version 3.03 2012-06-22
  * @author Scott Davis
  */
 
@@ -59,6 +59,7 @@ public class Settlement extends Structure implements Malfunctionable,
     private boolean missionCreationOverride; // Override flag for mission creation at settlement.
     private boolean manufactureOverride; // Override flag for manufacturing at settlement.
     private boolean resourceProcessOverride; // Override flag for resource process at settlement.
+    private boolean constructionOverride; // Override flag for construction/salvage mission creation at settlement.
     private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
     protected MalfunctionManager malfunctionManager;
     private double zeroPopulationTime;  // Amount of time (millisols) that the settlement has had zero population.
@@ -524,7 +525,24 @@ public class Settlement extends Structure implements Malfunctionable,
     public boolean getMissionCreationOverride() {
         return missionCreationOverride;
     }
+    
+    /**
+     * Sets the construction override flag.
+     * @param constructionOverride override for settlement construction/salvage 
+     * mission creation.
+     */
+    public void setConstructionOverride(boolean constructionOverride) {
+        this.constructionOverride = constructionOverride;
+    }
 
+    /**
+     * Gets the construction override flag.
+     * @return override for settlement construction mission creation.
+     */
+    public boolean getConstructionOverride() {
+        return constructionOverride;
+    }
+    
     /**
      * Sets the manufacture override flag.
      * @param manufactureOverride override for manufacture.
