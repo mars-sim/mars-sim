@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-23
  * @author Scott Davis
  */
 
@@ -29,12 +29,9 @@ import java.util.logging.Logger;
  * The simulation has only one mission manager. 
  */
 public class MissionManager implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.mission.MissionManager";
 	
-    private static transient Logger logger = Logger.getLogger(CLASS_NAME);
+    private static transient Logger logger = Logger.getLogger(MissionManager.class.getName());
  
-
     // Data members
     private List<Mission> missions; // Current missions in the simulation.
     private transient List<MissionManagerListener> listeners; // Mission listeners.
@@ -322,10 +319,19 @@ public class MissionManager implements Serializable {
         for (Class<? extends Mission> potentialMission : potentialMissions) {
             try {
                 Class<? extends Mission> probabilityClass = potentialMission;
-                Method probabilityMethod = probabilityClass.getMethod("getNewMissionProbability", parametersForFindingMethod);
+                Method probabilityMethod = probabilityClass.getMethod("getNewMissionProbability", 
+                        parametersForFindingMethod);
                 Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
-                missionProbCache.put(probabilityClass, probability);
-                totalProbCache += probability;
+                if ((probability >= 0D) && (probability != Double.NaN) && 
+                        (probability != Double.POSITIVE_INFINITY)) {
+                    missionProbCache.put(probabilityClass, probability);
+                    totalProbCache += probability;
+                }
+                else {
+                    missionProbCache.put(probabilityClass, 0D);
+                    logger.severe(probabilityClass.getName() + " returning bad mission probability: " + 
+                            probability);
+                }
             } catch (Exception e) {
                 logger.log(Level.SEVERE, "MissionManager.getTotalMissionProbability()", e);
             }

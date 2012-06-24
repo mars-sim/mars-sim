@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,6 +19,7 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -197,13 +198,7 @@ public class TaskManager implements Serializable {
             }
             checkForEmergency();
 
-//            try {
             remainingTime = currentTask.performTask(time);
-//            }
-//            catch (Exception e) {
-//            	e.printStackTrace(System.err);
-//            	throw new Exception("TaskManager.performTask(): " + currentTask.getName() + ": " + e.getMessage());
-//            }
         }
 
         return remainingTime;
@@ -268,7 +263,6 @@ public class TaskManager implements Serializable {
         Class[] parametersForFindingMethod = {Person.class};
         Object[] parametersForInvokingMethod = {mind.getPerson()};
 
-//        try {
         Constructor construct;
         try {
             construct = selectedTask.getConstructor(parametersForFindingMethod);
@@ -286,11 +280,6 @@ public class TaskManager implements Serializable {
         } catch (InvocationTargetException ex) {
             throw new IllegalStateException(ex);
         }
-//        }
-//        catch (Exception e) {
-//        	e.printStackTrace(System.err);
-//        	throw new IllegalStateException("TaskManager.getNewTask(): " + e.getMessage());
-//        }
     }
 
     /** 
@@ -324,15 +313,17 @@ public class TaskManager implements Serializable {
                 Class<? extends Task> probabilityClass = availableTask;
                 Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
                 Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
-                taskProbCache.put(probabilityClass, probability);
-                totalProbCache += probability;
-                
-                if (totalProbCache == Double.NaN) {
-                    logger.severe(mind.getPerson().getName() + " has a total task probability of NaN caused by " 
-                            + availableTask.getName() + " with a task probability of " + probability);
+                if ((probability >= 0D) && (probability != Double.NaN) && (probability != Double.POSITIVE_INFINITY)) {
+                    taskProbCache.put(probabilityClass, probability);
+                    totalProbCache += probability;
+                }
+                else {
+                    taskProbCache.put(probabilityClass, 0D);
+                    logger.severe(mind.getPerson().getName() + " bad task probability: " +  availableTask.getName() + 
+                            " probability: " + probability);
                 }
             } catch (Exception e) {
-                e.printStackTrace(System.err);
+                logger.log(Level.SEVERE, "Error calculating task probabilities.", e);
             }
         }
 

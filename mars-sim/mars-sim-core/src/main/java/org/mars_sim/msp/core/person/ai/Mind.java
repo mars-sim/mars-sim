@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-23
  * @author Scott Davis
  */
 
@@ -249,9 +249,11 @@ public class Mind implements Serializable {
             missionWeights = missionManager.getTotalMissionProbability(person);
             weightSum += missionWeights;
         }
-        if (weightSum <= 0D)
+        if ((weightSum <= 0D) || (weightSum == Double.NaN) || 
+                (weightSum == Double.POSITIVE_INFINITY)) {
             throw new IllegalStateException("Mind.getNewAction(): weight sum: "
                     + weightSum);
+        }
 
         // Select randomly across the total weight sum.
         double rand = RandomUtil.getRandomDouble(weightSum);
@@ -261,8 +263,9 @@ public class Mind implements Serializable {
             if (rand < taskWeights) {
                 taskManager.addTask(taskManager.getNewTask());
                 return;
-            } else
+            } else {
                 rand -= taskWeights;
+            }
         }
         if (missions) {
             if (rand < missionWeights) {
@@ -276,8 +279,9 @@ public class Mind implements Serializable {
                     setMission(newMission);
                 }
                 return;
-            } else
+            } else {
                 rand -= missionWeights;
+            }
         }
 
         // If reached this point, no task or mission has been found.
