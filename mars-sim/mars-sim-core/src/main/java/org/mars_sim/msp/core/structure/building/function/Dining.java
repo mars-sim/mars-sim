@@ -1,13 +1,15 @@
 /**
  * Mars Simulation Project
  * Dining.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-06-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 import java.io.Serializable;
 import java.util.Iterator;
@@ -19,6 +21,9 @@ public class Dining extends Function implements Serializable {
         
 	public static final String NAME = "Dining";
 	
+	// Data members
+	private int capacity;
+	
 	/**
 	 * Constructor
 	 * @param building the building this function is for.
@@ -26,6 +31,10 @@ public class Dining extends Function implements Serializable {
 	public Dining(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
+		
+		// Populate data members.
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		capacity = config.getDiningCapacity(building.getName());
 	}
     
     /**
@@ -39,22 +48,36 @@ public class Dining extends Function implements Serializable {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
         
-        // Settlements need one dining building.
-        double demand = 1D;
+        // Settlements need enough dining capacity for all associated people.
+        double demand = settlement.getAllAssociatedPeople().size();
         
         // Supply based on wear condition of buildings.
         double supply = 0D;
         Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (i.hasNext()) {
-            supply += (i.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+            Building diningBuilding = i.next();
+            Dining dining = (Dining) diningBuilding.getFunction(NAME);
+            double capacity = dining.getDiningCapacity();
+            double wearFactor = ((diningBuilding.getMalfunctionManager().getWearCondition() / 100D) * .75D) + .25D;
+            supply += capacity * wearFactor;
         }
         
         if (!newBuilding) {
-            supply -= 1D;
+            BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+            double capacity = config.getDiningCapacity(buildingName);
+            supply -= capacity;
             if (supply < 0D) supply = 0D;
         }
         
         return demand / (supply + 1D);
+    }
+    
+    /**
+     * Gets the dining capacity of the building.
+     * @return capacity.
+     */
+    public int getDiningCapacity() {
+        return capacity;
     }
 	
 	/**

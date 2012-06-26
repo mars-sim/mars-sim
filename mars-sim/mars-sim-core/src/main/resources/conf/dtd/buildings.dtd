@@ -7,8 +7,8 @@
 <!ATTLIST power-required base-power CDATA #REQUIRED>
 <!ATTLIST power-required base-power-down-power CDATA #REQUIRED>
 <!ELEMENT functions (astronomical-observation?, communication?, cooking?, dining?, 
-EVA?, exercise?, farming?, ground-vehicle-maintenance?, life-support?, 
-living-accommodations?, manufacture?, medical-care?, power-generation?, 
+earth-return?, EVA?, exercise?, farming?, ground-vehicle-maintenance?, life-support?, 
+living-accommodations?, manufacture?, management?, medical-care?, power-generation?, 
 power-storage?, recreation?, research?, resource-processing?, storage? )>
 <!ELEMENT astronomical-observation EMPTY>
 <!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
@@ -18,6 +18,9 @@ power-storage?, recreation?, research?, resource-processing?, storage? )>
 <!ELEMENT cooking EMPTY>
 <!ATTLIST cooking capacity CDATA #REQUIRED>
 <!ELEMENT dining EMPTY>
+<!ATTLIST dining capacity CDATA #REQUIRED>
+<!ELEMENT earth-return EMPTY>
+<!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
 <!ELEMENT EVA EMPTY>
 <!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
 <!ELEMENT exercise EMPTY>
@@ -34,6 +37,8 @@ power-storage?, recreation?, research?, resource-processing?, storage? )>
 <!ATTLIST life-support power-required CDATA #REQUIRED>
 <!ELEMENT living-accommodations EMPTY>
 <!ATTLIST living-accommodations beds CDATA #REQUIRED>
+<!ELEMENT management EMPTY>
+<!ATTLIST management population-support CDATA #REQUIRED>
 <!ELEMENT manufacture EMPTY>
 <!ATTLIST manufacture tech-level CDATA #REQUIRED>
 <!ATTLIST manufacture concurrent-processes CDATA #REQUIRED>
@@ -50,6 +55,7 @@ power-storage?, recreation?, research?, resource-processing?, storage? )>
 <!ELEMENT power-storage EMPTY>
 <!ATTLIST power-storage capacity CDATA #REQUIRED>
 <!ELEMENT recreation EMPTY>
+<!ATTLIST recreation population-support CDATA #REQUIRED>
 <!ELEMENT research (research-speciality+)>
 <!ATTLIST research tech-level CDATA #REQUIRED>
 <!ATTLIST research capacity CDATA #REQUIRED>
