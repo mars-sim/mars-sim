@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -26,7 +26,7 @@ import java.util.Set;
  */
 public class BuildingConfig implements Serializable {
 
-	// Element names
+	// Element and attribute names
 	private static final String BUILDING = "building";
 	private static final String NAME = "name";
 	private static final String WIDTH = "width";
@@ -81,6 +81,10 @@ public class BuildingConfig implements Serializable {
 	private static final String TOGGLE = "toggle";
     private static final String POWER_STORAGE = "power-storage";
     private static final String ASTRONOMICAL_OBSERVATION = "astronomical-observation";
+    private static final String EARTH_RETURN = "earth-return";
+    private static final String CREW_CAPACITY = "crew-capacity";
+    private static final String MANAGEMENT = "management";
+    private static final String POPULATION_SUPPORT = "population-support";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -330,7 +334,16 @@ public class BuildingConfig implements Serializable {
 	 */
 	public boolean hasRecreation(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,RECREATION);
-	}	
+	}
+	
+	/**
+	 * Gets the population number supported by the building's recreation function.
+	 * @param buildingName the name of the building.
+	 * @return population support.
+	 */
+	public int getRecreationPopulationSupport(String buildingName) {
+	    return getValueAsInteger(buildingName, FUNCTIONS, RECREATION, POPULATION_SUPPORT);
+	}
 	
 	/**
 	 * Checks if the building has a dining facility.
@@ -340,6 +353,15 @@ public class BuildingConfig implements Serializable {
 	 */
 	public boolean hasDining(String buildingName) {
 		return hasElements(buildingName,FUNCTIONS,DINING);
+	}
+	
+	/**
+	 * Gets the capacity for dining at the building.
+	 * @param buildingName the name of the building.
+	 * @return capacity.
+	 */
+	public int getDiningCapacity(String buildingName) {
+	    return getValueAsInteger(buildingName, FUNCTIONS, DINING, CAPACITY);
 	}
 	
 	/**
@@ -695,9 +717,9 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
-	 * Checks if the building has 
+	 * Checks if the building has an astronomical observation function.
 	 * @param buildingName the name of the building.
-	 * @return true if ASTRONOMICAL_OBSERVATION.
+	 * @return true if building has astronomical observation function.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
 	public boolean hasAstronomicalObservation(String buildingName) {
@@ -742,6 +764,42 @@ public class BuildingConfig implements Serializable {
 	 */
 	public int getManufactureConcurrentProcesses(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,MANUFACTURE,CONCURRENT_PROCESSES);
+	}
+	
+	/**
+	 * Checks if the building has the management function.
+	 * @param buildingName the name of the building.
+	 * @return true if building has management function.
+	 */
+	public boolean hasManagement(String buildingName) {
+	    return hasElements(buildingName, FUNCTIONS, MANAGEMENT);
+	}
+	
+	/**
+	 * Gets the management population support for a building. 
+	 * @param buildingName the name of the building.
+	 * @return population support
+	 */
+	public int getManagementPopulationSupport(String buildingName) {
+	    return getValueAsInteger(buildingName, FUNCTIONS, MANAGEMENT, POPULATION_SUPPORT);
+	}
+	
+	/**
+	 * Checks if the building has an Earth return function.
+	 * @param buildingName the name of the building.
+	 * @return true if building has earth return function.
+	 */
+	public boolean hasEarthReturn(String buildingName) {
+	    return hasElements(buildingName, FUNCTIONS, EARTH_RETURN);
+	}
+	
+	/**
+	 * Gets the Earth return crew capacity of a building.
+	 * @param buildingName the name of the building.
+	 * @return the crew capacity.
+	 */
+	public int getEarthReturnCrewCapacity(String buildingName) {
+	    return getValueAsInteger(buildingName, FUNCTIONS, EARTH_RETURN, CREW_CAPACITY);
 	}
 	
 	private int getValueAsInteger(String buildingName, String child, 

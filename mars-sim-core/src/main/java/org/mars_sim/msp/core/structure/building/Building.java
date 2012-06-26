@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-25
  * @author Scott Davis
  */
  
@@ -183,8 +183,14 @@ public class Building implements Malfunctionable, Serializable {
         // Set power storage function.
         if (config.hasPowerStorage(name)) buildingFunctions.add(new PowerStorage(this));
         
-        //set astronomical observation function
-        if(config.hasAstronomicalObservation(name)) buildingFunctions.add(new AstronomicalObservation(this));
+        // Set astronomical observation function
+        if (config.hasAstronomicalObservation(name)) buildingFunctions.add(new AstronomicalObservation(this));
+        
+        // Set management function.
+        if (config.hasManagement(name)) buildingFunctions.add(new Management(this));
+        
+        // Set Earth return function.
+        if (config.hasEarthReturn(name)) buildingFunctions.add(new EarthReturn(this));
     	
     	return buildingFunctions;
     }

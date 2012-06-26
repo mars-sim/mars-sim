@@ -28,7 +28,7 @@
 			<cooking capacity="1" />
 		
 			<!-- The building has facilities for eating meals. -->
-			<dining />
+			<dining capacity="4" />
 		
 			<!-- The building has an airlock and changing room for EVA operations. -->
 			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
@@ -66,7 +66,7 @@
 			</power-generation>
 		
 			<!-- The building has recreation facilities (movies, games, music, etc.). -->
-			<recreation />
+			<recreation population-support="4"/>
 		
 			<!-- The building has a research laboratory. -->
 			<!-- tech-level: the technology level of the lab. (see tech_level.txt) -->
@@ -191,6 +191,7 @@
 	<building name="Starting ERV Base" width="10.0" length="10.0">
 		<power-required base-power="2.0" base-power-down-power="1.0" />
 		<functions>
+			<earth-return crew-capacity="4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -228,6 +229,7 @@
 	<building name="ERV Base" width="10.0" length="10.0">
 		<power-required base-power="8.0" base-power-down-power="1.0" />
 		<functions>
+			<earth-return crew-capacity="4" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -326,10 +328,10 @@
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<cooking capacity="4" />
-			<dining />
+			<dining capacity="10" />
 			<exercise capacity="10" />
 			<life-support capacity="20" power-required="40.0" />
-			<recreation />
+			<recreation population-support="25" />
 		</functions>
 	</building>
 	
@@ -352,6 +354,7 @@
 			<communication />
 			<EVA airlock-capacity="8" />
 			<life-support capacity="10" power-required="20.0" />
+			<management population-support="25" />
 		</functions>
 	</building>
 	
@@ -733,15 +736,16 @@
 		</functions>
 	</building>
 	
-	<!-- A vaulted brick building used as the main hub of a trading outpost. -->
+	<!-- A vaulted brick building used as the main hub of a trading or mining outpost. -->
 	<building name="Outpost Hub" width="10.0" length="10.0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
 			<communication />
 			<cooking capacity="1" />
+			<dining capacity="4" />
 			<life-support capacity="6" power-required="12.0" />
 			<medical-care tech-level="2" beds="1" />
-			<recreation />
+			<recreation population-support="4" />
 			<storage>
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />

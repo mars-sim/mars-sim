@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-25
  * @author Scott Davis
  */
  
@@ -499,6 +499,10 @@ public class BuildingManager implements Serializable {
                 result += Storage.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasAstronomicalObservation(buildingName))
                 result += AstronomicalObservation.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasManagement(buildingName))
+                result += Management.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasEarthReturn(buildingName))
+                result += EarthReturn.getFunctionValue(buildingName, newBuilding, settlement);
         
             // Multiply value.
             result *= 1000D;
