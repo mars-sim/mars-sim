@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-27
  * @author Scott Davis
  */
 
@@ -217,14 +217,11 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 }
                 
                 if (emptyBag != null) {
-//                    try {
+                    if (person.getInventory().canStoreUnit(emptyBag)) {
                         settlement.getInventory().retrieveUnit(emptyBag);
                         person.getInventory().storeUnit(emptyBag);
                         bag = emptyBag;
-//                    }
-//                    catch (InventoryException e) {
-//                        logger.log(Level.SEVERE, "Error retrieving bag from settlement inventory");
-//                    }
+                    }
                 }
             }
             
