@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-27
  * @author Scott Davis
  */
 
@@ -27,6 +27,9 @@ import java.util.Map;
  */
 public class ConstructionValues implements Serializable {
 
+    // Value modifier for lower stages.
+    public final static double LOWER_STAGE_VALUE_MODIFIER = .75D;
+    
     // Data members
     private Settlement settlement;
     private Map<Integer, Double> settlementConstructionValueCache;
@@ -297,11 +300,13 @@ public class ConstructionValues implements Serializable {
                 Iterator<ConstructionStageInfo> i = 
                         ConstructionUtil.getNextPossibleStages(stageInfo).iterator();
                 while (i.hasNext()) {
-                    double stageValue = getConstructionStageProfit(i.next(), true) / 2D;
+                    ConstructionStageInfo nextStageInfo = i.next();
+                    double stageValue = getConstructionStageProfit(nextStageInfo, true) * 
+                            LOWER_STAGE_VALUE_MODIFIER;
                     if (stageValue > result) result = stageValue;
                 }
             }
-        
+            //System.out.println(settlement.getName() + " - " + stageInfo.getName() + ": " + (int) result);
             stageInfoValueCache.put(stageInfo, result);
         }
         
@@ -384,7 +389,10 @@ public class ConstructionValues implements Serializable {
             AmountResource resource = j.next();
             double amount = resources.get(resource);
             double stored = settlement.getInventory().getAmountResourceStored(resource);
-            if (stored < amount) result = false;
+            if (stored < amount) {
+                result = false;
+                break;
+            }
         }
     
         // Check parts.
@@ -394,7 +402,10 @@ public class ConstructionValues implements Serializable {
             Part part = k.next();
             int number = parts.get(part);
             int stored = settlement.getInventory().getItemResourceNum(part);
-            if (stored < number) result = false;
+            if (stored < number) {
+                result = false;
+                break;
+            }
         }
         
         return result;

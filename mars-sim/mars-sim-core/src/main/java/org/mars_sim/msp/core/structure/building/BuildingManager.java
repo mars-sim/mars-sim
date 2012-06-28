@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.03 2012-06-25
+ * @version 3.03 2012-06-27
  * @author Scott Davis
  */
  
@@ -15,7 +15,10 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -200,15 +203,17 @@ public class BuildingManager implements Serializable {
         List<Building> habs = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
         List<Building> goodHabs = getLeastCrowdedBuildings(habs);
         
-        int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
-        
         Building building = null;
-        int count = 0;
-        Iterator<Building> i = goodHabs.iterator();
-        while (i.hasNext()) {
-        	Building tempBuilding = i.next();
-            if (count == rand) building = tempBuilding;
-            count++;
+        if (goodHabs.size() >= 1) {
+            int rand = RandomUtil.getRandomInt(goodHabs.size() - 1);
+            
+            int count = 0;
+            Iterator<Building> i = goodHabs.iterator();
+            while (i.hasNext()) {
+                Building tempBuilding = i.next();
+                if (count == rand) building = tempBuilding;
+                count++;
+            }
         }
         
         if (building != null) addPersonToBuilding(person, building);
@@ -460,7 +465,7 @@ public class BuildingManager implements Serializable {
             return buildingValuesOldCache.get(buildingName);
         else {
             double result = 0D;
-        
+            
             // Determine value of all building functions.
             BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
             if (config.hasCommunication(buildingName))
@@ -515,6 +520,24 @@ public class BuildingManager implements Serializable {
             result -= powerValue;
         
             if (result < 0D) result = 0D;
+            
+            // Check if a new non-constructable building has a frame that already exists at the settlement. 
+            if (newBuilding) {
+                ConstructionStageInfo buildingConstInfo = ConstructionUtil.getConstructionStageInfo(buildingName);
+                if (buildingConstInfo != null) {
+                    ConstructionStageInfo frameConstInfo = ConstructionUtil.getPrerequisiteStage(buildingConstInfo);
+                    if (frameConstInfo != null) {
+                        // Check if frame is not constructable.
+                        if (!frameConstInfo.isConstructable()) {
+                            // Check if the building's frame exists at the settlement.
+                            if (!hasBuildingFrame(frameConstInfo.getName())) {
+                                // If frame doesn't exist and isn't constructable, the building has zero value.
+                                result = 0D;
+                            }
+                        }
+                    }
+                }
+            }
         
             if (newBuilding) buildingValuesNewCache.put(buildingName, result);
             else buildingValuesOldCache.put(buildingName, result);
@@ -627,6 +650,50 @@ public class BuildingManager implements Serializable {
         AffineTransform at = AffineTransform.getRotateInstance(randianRotation, rectangle.getCenterX(), 
                 rectangle.getCenterY());
         return new Path2D.Double(rectangle, at);
+    }
+    
+    /**
+     * Checks if a building frame exists at the settlement.
+     * Either with an existing building or at a construction site.
+     * @param frameName the frame's name.
+     * @return true if frame exists.
+     */
+    public boolean hasBuildingFrame(String frameName) {
+        boolean result = false;
+        
+        // Check if any existing buildings have this frame.
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            ConstructionStageInfo buildingStageInfo = ConstructionUtil.getConstructionStageInfo(building.getName());
+            if (buildingStageInfo != null) {
+                ConstructionStageInfo frameStageInfo = ConstructionUtil.getPrerequisiteStage(buildingStageInfo);
+                if (frameStageInfo != null) {
+                    if (frameStageInfo.getName().equals(frameName)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Check if any construction projects have this frame.
+        if (!result) {
+            ConstructionStageInfo frameStageInfo = ConstructionUtil.getConstructionStageInfo(frameName);
+            if (frameStageInfo != null) {
+                ConstructionManager constManager = settlement.getConstructionManager();
+                Iterator<ConstructionSite> j = constManager.getConstructionSites().iterator();
+                while (j.hasNext()) {
+                    ConstructionSite site = j.next();
+                    if (site.hasStage(frameStageInfo)) {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return result;
     }
 
     /**
