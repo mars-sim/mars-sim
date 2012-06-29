@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.03 2012-06-22
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -110,7 +110,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                         settlement, constructionSkill);
             } else {
                 // Determine existing building to salvage.
-                Building salvageBuilding = determineMostProfitableSalvageBuilding(
+                Building salvageBuilding = determineBuildingToSalvage(
                         settlement, constructionSkill);
 
                 if (salvageBuilding != null) {
@@ -364,29 +364,31 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     }
 
     /**
-     * Determines which building at the settlement would be the most profitable to salvage.
+     * Determines a random profitable building at the settlement to salvage.
      * @param settlement the settlement.
      * @param constructionSkill the architect's construction skill.
      * @return building to salvage or null in none found.
      * @throws Exception if error determining building.
      */
-    private Building determineMostProfitableSalvageBuilding(
-            Settlement settlement, int constructionSkill) {
+    private Building determineBuildingToSalvage(Settlement settlement, 
+            int constructionSkill) {
         Building result = null;
 
-        double topSalvageProfit = 0D;
+        SalvageValues values = settlement.getConstructionManager().getSalvageValues();
+        Map<Building, Double> salvageBuildings = new HashMap<Building, Double>();
         Iterator<Building> i = settlement.getBuildingManager().getBuildings()
                 .iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            SalvageValues values = settlement.getConstructionManager()
-                    .getSalvageValues();
             double salvageProfit = values.getNewBuildingSalvageProfit(building,
                     constructionSkill);
-            if (salvageProfit > topSalvageProfit) {
-                result = building;
-                topSalvageProfit = salvageProfit;
+            if (salvageProfit > 0D) {
+                salvageBuildings.put(building, salvageProfit);
             }
+        }
+        
+        if (!salvageBuildings.isEmpty()) {
+            result = RandomUtil.getWeightedRandomObject(salvageBuildings);
         }
 
         return result;
@@ -470,17 +472,12 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
             // 75% chance of assigning task, otherwise allow break.
             if (RandomUtil.lessThanRandPercent(75D)) {
-                // try {
+                
                 // Assign salvage building task to person.
                 if (SalvageBuilding.canSalvage(person)) {
                     assignTask(person, new SalvageBuilding(person,
                             constructionStage, constructionVehicles));
                 }
-                // }
-                // catch(Exception e) {
-                // logger.log(Level.SEVERE, "Error during salvage.", e);
-                // throw new MissionException(getPhase(), e);
-                // }
             }
         }
 
