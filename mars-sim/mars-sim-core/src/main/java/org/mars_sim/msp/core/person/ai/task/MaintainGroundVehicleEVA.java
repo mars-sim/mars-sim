@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 
@@ -322,27 +322,24 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         // Find all vehicles that can be maintained.
         Collection<Vehicle> availableVehicles = getAllVehicleCandidates(person);
         
-        // Determine total probability weight.
-        double totalProbWeight = 0D;
+        // Populate vehicles and probabilities.
+        Map<Vehicle, Double> vehicleProb = new HashMap<Vehicle, Double>(availableVehicles.size());
         Iterator<Vehicle> i = availableVehicles.iterator();
         while (i.hasNext()) {
-            totalProbWeight += getProbabilityWeight(i.next());
+            Vehicle vehicle = i.next();
+            double prob = getProbabilityWeight(vehicle);
+            if (prob > 0D) {
+                vehicleProb.put(vehicle, prob);
+            }
         }
         
-        // Get random value
-        double rand = RandomUtil.getRandomDouble(totalProbWeight);
+        // Randomly determine needy vehicle.
+        if (!vehicleProb.isEmpty()) {
+            result = (GroundVehicle) RandomUtil.getWeightedRandomObject(vehicleProb);
+        }
         
-        // Determine which vehicle was picked.
-        Iterator<Vehicle> i2 = availableVehicles.iterator();
-        while (i2.hasNext() && (result == null)) {
-            Vehicle vehicle = i2.next();
-            double probWeight = getProbabilityWeight(vehicle);
-            if (rand < probWeight) {
-            	result = (GroundVehicle) vehicle;
-            	setDescription("Performing maintenance on " + result.getName());
-            	break;
-            }
-            else rand -= probWeight;
+        if (result != null) {
+            setDescription("Performing maintenance on " + result.getName());
         }
         
         return result;

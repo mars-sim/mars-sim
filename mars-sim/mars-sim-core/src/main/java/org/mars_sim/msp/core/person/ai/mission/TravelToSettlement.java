@@ -311,10 +311,10 @@ public class TravelToSettlement extends RoverMission implements Serializable {
                 person, startingSettlement, range);
 
         // Randomly select a desirable settlement.
-        if (desirableSettlements.size() > 0)
-            result = (Settlement) RandomUtil
-                    .getWeightedRandomObject(desirableSettlements);
-
+        if (desirableSettlements.size() > 0) {
+            result = RandomUtil.getWeightedRandomObject(desirableSettlements);
+        }
+            
         return result;
     }
 

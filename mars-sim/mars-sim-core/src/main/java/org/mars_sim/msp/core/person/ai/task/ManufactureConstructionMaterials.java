@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 
@@ -29,8 +29,10 @@ import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -47,7 +49,7 @@ public class ManufactureConstructionMaterials extends Task implements
 
     // Static members
     private static final double STRESS_MODIFIER = .1D; // The stress modified
-    // per millisol.
+                                                       // per millisol.
 
     // Lists of construction material resources and parts.
     private static List<AmountResource> constructionResources;
@@ -55,8 +57,7 @@ public class ManufactureConstructionMaterials extends Task implements
 
     // Data members
     private Manufacture workshop; // The manufacturing workshop the person is
-
-    // using.
+                                  // using.
 
     /**
      * Constructor
@@ -68,11 +69,13 @@ public class ManufactureConstructionMaterials extends Task implements
                 STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
         // Initialize data members
-        if (person.getSettlement() != null)
+        if (person.getSettlement() != null) {
             setDescription("Manufacturing construction materials at "
                     + person.getSettlement().getName());
-        else
+        }
+        else {
             endTask();
+        }
 
         // Get available manufacturing workshop if any.
         Building manufactureBuilding = getAvailableManufacturingBuilding(person);
@@ -80,8 +83,9 @@ public class ManufactureConstructionMaterials extends Task implements
             workshop = (Manufacture) manufactureBuilding
                     .getFunction(Manufacture.NAME);
             BuildingManager.addPersonToBuilding(person, manufactureBuilding);
-        } else
+        } else {
             endTask();
+        }
 
         // Initialize phase
         addPhase(MANUFACTURE);
@@ -114,8 +118,9 @@ public class ManufactureConstructionMaterials extends Task implements
                             manufacturingBuilding);
 
                     // Add a base chance.
-                    if (result > 0D)
+                    if (result > 0D) {
                         result += 100D;
+                    }
 
                     // If manufacturing building has process requiring work, add
                     // modifier.
@@ -123,12 +128,15 @@ public class ManufactureConstructionMaterials extends Task implements
                             .getSkillManager();
                     int skill = skillManager
                             .getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
-                    if (hasProcessRequiringWork(manufacturingBuilding, skill))
+                    if (hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
+                    }
+                    
                     // If settlement has manufacturing override, no new
                     // manufacturing processes can be created.
-                    else if (person.getSettlement().getManufactureOverride())
+                    else if (person.getSettlement().getManufactureOverride()) {
                         result = 0;
+                    }
                 }
             } catch (Exception e) {
                 logger.log(Level.SEVERE,
@@ -141,9 +149,10 @@ public class ManufactureConstructionMaterials extends Task implements
 
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null)
+        if (job != null) {
             result *= job
                     .getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class);
+        }
 
         return result;
     }
@@ -392,8 +401,8 @@ public class ManufactureConstructionMaterials extends Task implements
     }
 
     /**
-     * Determines all resources needed for construction projects. throws Exception if error determining construction
-     * resources.
+     * Determines all resources needed for construction projects. throws Exception if error 
+     * determining construction resources.
      */
     private static void determineConstructionResources() {
         constructionResources = new ArrayList<AmountResource>();
@@ -505,19 +514,23 @@ public class ManufactureConstructionMaterials extends Task implements
             if (process != null) {
                 double remainingWorkTime = process.getWorkTimeRemaining();
                 double providedWorkTime = workTime;
-                if (providedWorkTime > remainingWorkTime)
+                if (providedWorkTime > remainingWorkTime) {
                     providedWorkTime = remainingWorkTime;
+                }
                 process.addWorkTime(providedWorkTime);
                 workTime -= providedWorkTime;
 
                 if ((process.getWorkTimeRemaining() <= 0D)
-                        && (process.getProcessTimeRemaining() <= 0D))
+                        && (process.getProcessTimeRemaining() <= 0D)) {
                     workshop.endManufacturingProcess(process, false);
+                }
             } else {
-                if (!person.getSettlement().getManufactureOverride())
+                if (!person.getSettlement().getManufactureOverride()) {
                     process = createNewManufactureProcess();
-                if (process == null)
+                }
+                if (process == null) {
                     endTask();
+                }
             }
         }
 
@@ -588,28 +601,34 @@ public class ManufactureConstructionMaterials extends Task implements
             int skillLevel = getEffectiveSkillLevel();
             int techLevel = workshop.getTechLevel();
 
-            double highestValue = 0D;
-            ManufactureProcessInfo highestValueProcess = null;
+            // Determine all manufacturing processes that are possible and profitable.
+            Map<ManufactureProcessInfo, Double> processProbMap = 
+                    new HashMap<ManufactureProcessInfo, Double>();
             Iterator<ManufactureProcessInfo> i = ManufactureUtil
                     .getManufactureProcessesForTechSkillLevel(techLevel,
-                            skillLevel).iterator();
+                    skillLevel).iterator();
             while (i.hasNext()) {
                 ManufactureProcessInfo processInfo = i.next();
 
                 if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)
                         && producesConstructionMaterials(processInfo)) {
-                    double processValue = ManufactureUtil
-                            .getManufactureProcessValue(processInfo, person
-                                    .getSettlement());
-                    if (processValue > highestValue) {
-                        highestValue = processValue;
-                        highestValueProcess = processInfo;
+                    double processValue = ManufactureUtil.getManufactureProcessValue(
+                            processInfo, person.getSettlement());
+                    if (processValue > 0D) {
+                        processProbMap.put(processInfo, processValue);
                     }
                 }
             }
 
-            if (highestValueProcess != null) {
-                result = new ManufactureProcess(highestValueProcess, workshop);
+            // Randomly choose among possible manufacturing processes based on their relative profitability. 
+            ManufactureProcessInfo chosenProcess = null;
+            if (!processProbMap.isEmpty()) {
+                chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
+            }
+
+            // Create chosen manufacturing process.
+            if (chosenProcess != null) {
+                result = new ManufactureProcess(chosenProcess, workshop);
                 workshop.addProcess(result);
             }
         }

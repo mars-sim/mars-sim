@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 
@@ -23,8 +23,10 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -54,23 +56,21 @@ public class ManufactureGood extends Task implements Serializable {
         super("Manufacturing", person, true, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
 
         // Initialize data members
-        if (person.getSettlement() != null)
+        if (person.getSettlement() != null) {
             setDescription("Manufacturing at " + person.getSettlement().getName());
-        else
+        }
+        else {
             endTask();
-
+        }
+            
         // Get available manufacturing workshop if any.
-//        try {
-            Building manufactureBuilding = getAvailableManufacturingBuilding(person);
-            if (manufactureBuilding != null) {
-                workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
-                BuildingManager.addPersonToBuilding(person, manufactureBuilding);
-            } else
-                endTask();
-//        } catch (BuildingException e) {
-//            logger.log(Level.SEVERE, "ManufactureGood", e);
-//            endTask();
-//        }
+        Building manufactureBuilding = getAvailableManufacturingBuilding(person);
+        if (manufactureBuilding != null) {
+            workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
+            BuildingManager.addPersonToBuilding(person, manufactureBuilding);
+        } else {
+            endTask();
+        }
 
         // Initialize phase
         addPhase(MANUFACTURE);
@@ -86,37 +86,38 @@ public class ManufactureGood extends Task implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//            try {
-                // See if there is an available manufacturing building.
-                Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-                if (manufacturingBuilding != null) {
-                    result = 1D;
 
-                    // Crowding modifier.
-                    result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                    result *= Task.getRelationshipModifier(person, manufacturingBuilding);
+            // See if there is an available manufacturing building.
+            Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
+            if (manufacturingBuilding != null) {
+                result = 1D;
 
-                    // Manufacturing good value modifier.
-                    result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
+                // Crowding modifier.
+                result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+                result *= Task.getRelationshipModifier(person, manufacturingBuilding);
 
-                    // Add a base chance.
-                    if (result > 0D)
-                        result += 25D;
+                // Manufacturing good value modifier.
+                result *= getHighestManufacturingProcessValue(person, manufacturingBuilding) * 10D;
 
-                    // If manufacturing building has process requiring work, add
-                    // modifier.
-                    SkillManager skillManager = person.getMind().getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
-                    if (hasProcessRequiringWork(manufacturingBuilding, skill))
-                        result += 10D;
-                    // If settlement has manufacturing override, no new
-                    // manufacturing processes can be created.
-                    else if (person.getSettlement().getManufactureOverride())
-                        result = 0;
+                // Add a base chance.
+                if (result > 0D) {
+                    result += 25D;
                 }
-//            } catch (BuildingException e) {
-//                logger.log(Level.SEVERE, "ManufactureGood.getProbability()", e);
-//            }
+
+                // If manufacturing building has process requiring work, add
+                // modifier.
+                SkillManager skillManager = person.getMind().getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                if (hasProcessRequiringWork(manufacturingBuilding, skill)) {
+                    result += 10D;
+                }
+                
+                // If settlement has manufacturing override, no new
+                // manufacturing processes can be created.
+                else if (person.getSettlement().getManufactureOverride()) {
+                    result = 0;
+                }
+            }
         }
 
         // Effort-driven task modifier.
@@ -124,9 +125,10 @@ public class ManufactureGood extends Task implements Serializable {
 
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null)
+        if (job != null) {
             result *= job.getStartTaskProbabilityModifier(ManufactureGood.class);
-
+        }
+            
         return result;
     }
 
@@ -246,8 +248,8 @@ public class ManufactureGood extends Task implements Serializable {
      * @throws BuildingException if any buildings in building list don't have
      *         the manufacture function.
      */
-    private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList) 
-            {
+    private static List<Building> getHighestManufacturingTechLevelBuildings(
+            List<Building> buildingList) {
 
         List<Building> result = new ArrayList<Building>();
 
@@ -289,22 +291,18 @@ public class ManufactureGood extends Task implements Serializable {
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-//        try {
-            Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
-                    techLevel, skillLevel).iterator();
-            while (i.hasNext()) {
-                ManufactureProcessInfo process = i.next();
-                if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
-                        isProcessRunning(process, manufacturingFunction)) {
-                    Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-                    double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-                    if (processValue > highestProcessValue)
-                        highestProcessValue = processValue;
-                }
+        Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
+                techLevel, skillLevel).iterator();
+        while (i.hasNext()) {
+            ManufactureProcessInfo process = i.next();
+            if (ManufactureUtil.canProcessBeStarted(process, manufacturingFunction) || 
+                    isProcessRunning(process, manufacturingFunction)) {
+                Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+                double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
+                if (processValue > highestProcessValue)
+                    highestProcessValue = processValue;
             }
-//        } catch (Exception e) {
-//            throw new BuildingException("ManufactureGood.getHighestManufacturingProcessValue()", e);
-//        }
+        }
 
         return highestProcessValue;
     }
@@ -381,10 +379,12 @@ public class ManufactureGood extends Task implements Serializable {
                 if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D))
                     workshop.endManufacturingProcess(process, false);
             } else {
-                if (!person.getSettlement().getManufactureOverride())
+                if (!person.getSettlement().getManufactureOverride()) {
                     process = createNewManufactureProcess();
-                if (process == null)
+                }
+                if (process == null) {
                     endTask();
+                }
             }
         }
 
@@ -452,25 +452,30 @@ public class ManufactureGood extends Task implements Serializable {
             int skillLevel = getEffectiveSkillLevel();
             int techLevel = workshop.getTechLevel();
 
-            double highestValue = 0D;
-            ManufactureProcessInfo highestValueProcess = null;
+            // Determine all manufacturing processes that are possible and profitable.
+            Map<ManufactureProcessInfo, Double> processProbMap = new HashMap<ManufactureProcessInfo, Double>();
             Iterator<ManufactureProcessInfo> i = ManufactureUtil.getManufactureProcessesForTechSkillLevel(
                     techLevel, skillLevel).iterator();
             while (i.hasNext()) {
                 ManufactureProcessInfo processInfo = i.next();
-
                 if (ManufactureUtil.canProcessBeStarted(processInfo, workshop)) {
                     double processValue = ManufactureUtil.getManufactureProcessValue(processInfo, 
                             person.getSettlement());
-                    if (processValue > highestValue) {
-                        highestValue = processValue;
-                        highestValueProcess = processInfo;
+                    if (processValue > 0D) {
+                        processProbMap.put(processInfo, processValue);
                     }
                 }
             }
+            
+            // Randomly choose among possible manufacturing processes based on their relative profitability. 
+            ManufactureProcessInfo chosenProcess = null;
+            if (!processProbMap.isEmpty()) {
+                chosenProcess = RandomUtil.getWeightedRandomObject(processProbMap);
+            }
 
-            if (highestValueProcess != null) {
-                result = new ManufactureProcess(highestValueProcess, workshop);
+            // Create chosen manufacturing process.
+            if (chosenProcess != null) {
+                result = new ManufactureProcess(chosenProcess, workshop);
                 workshop.addProcess(result);
             }
         }

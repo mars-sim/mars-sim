@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.03 2012-06-22
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -386,28 +386,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
         ConstructionValues values = settlement.getConstructionManager().getConstructionValues();
         Map<ConstructionStageInfo, Double> stageProfits = 
             values.getNewConstructionStageProfits(site, skill);
-        double totalProfit = 0D;
-        Iterator<ConstructionStageInfo> i = stageProfits.keySet().iterator();
-        while (i.hasNext()) {
-            ConstructionStageInfo info = i.next();
-            double infoProfit = stageProfits.get(info);
-            if (infoProfit > 0D) totalProfit += infoProfit;
-        }
-        
-        double randomValue = RandomUtil.getRandomDouble(totalProfit);
-        
-        double totalProfit2 = 0D;
-        Iterator<ConstructionStageInfo> j = stageProfits.keySet().iterator();
-        while (j.hasNext()) {
-            ConstructionStageInfo info = j.next();
-            double infoProfit = stageProfits.get(info);
-            if (infoProfit > 0D) {
-                totalProfit2 += infoProfit;
-                if (totalProfit2 > randomValue) {
-                    result = info;
-                    break;
-                }
-            }
+        if (!stageProfits.isEmpty()) {
+            result = RandomUtil.getWeightedRandomObject(stageProfits);
         }
         
         return result;
@@ -505,29 +485,23 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Load all resources needed for construction.
             Inventory inv = settlement.getInventory();
             
-//            try {
-                // Load amount resources.
-                Iterator<AmountResource> i = constructionStage.getInfo().getResources().keySet().iterator();
-                while (i.hasNext()) {
-                    AmountResource resource = i.next();
-                    double amount = constructionStage.getInfo().getResources().get(resource);
-                    if (inv.getAmountResourceStored(resource) >= amount)
-                        inv.retrieveAmountResource(resource, amount);
-                }
-                
-                // Load parts.
-                Iterator<Part> j = constructionStage.getInfo().getParts().keySet().iterator();
-                while (j.hasNext()) {
-                    Part part = j.next();
-                    int number = constructionStage.getInfo().getParts().get(part);
-                    if (inv.getItemResourceNum(part) >= number)
-                        inv.retrieveItemResources(part, number);
-                }
-//            }
-//            catch (InventoryException e) {
-//                logger.log(Level.SEVERE, "Error in getting construction resources.");
-//                throw new MissionException("Error in getting construction resources.", e);
-//            }
+            // Load amount resources.
+            Iterator<AmountResource> i = constructionStage.getInfo().getResources().keySet().iterator();
+            while (i.hasNext()) {
+                AmountResource resource = i.next();
+                double amount = constructionStage.getInfo().getResources().get(resource);
+                if (inv.getAmountResourceStored(resource) >= amount)
+                    inv.retrieveAmountResource(resource, amount);
+            }
+
+            // Load parts.
+            Iterator<Part> j = constructionStage.getInfo().getParts().keySet().iterator();
+            while (j.hasNext()) {
+                Part part = j.next();
+                int number = constructionStage.getInfo().getParts().get(part);
+                if (inv.getItemResourceNum(part) >= number)
+                    inv.retrieveItemResources(part, number);
+            }
             
             constructionSuppliesLoaded = true;
         }
@@ -554,17 +528,12 @@ public class BuildingConstructionMission extends Mission implements Serializable
             
             // 75% chance of assigning task, otherwise allow break.
             if (RandomUtil.lessThanRandPercent(75D)) {
-//                try {
-                    // Assign construction task to person.
-                    if (ConstructBuilding.canConstruct(person)) {
-                        assignTask(person, new ConstructBuilding(person, constructionStage, 
-                                constructionVehicles));
-                    }
-//                }
-//                catch(Exception e) {
-//                    logger.log(Level.SEVERE, "Error during construction.", e);
-//                    throw new MissionException(getPhase(), e);
-//                }
+
+                // Assign construction task to person.
+                if (ConstructBuilding.canConstruct(person)) {
+                    assignTask(person, new ConstructBuilding(person, constructionStage, 
+                            constructionVehicles));
+                }
             }
         }
         
@@ -574,16 +543,12 @@ public class BuildingConstructionMission extends Mission implements Serializable
             
             // Construct building if all site construction complete.
             if (constructionSite.isAllConstructionComplete()) {
-//                try {
-                    Building building = constructionSite.createBuilding(settlement.getBuildingManager());
-                    settlement.getConstructionManager().removeConstructionSite(constructionSite);
-                    settlement.fireUnitUpdate(ConstructionManager.FINISH_BUILDING_EVENT, building);
-                    logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
-                            " building constructed at " + settlement.getName());
-//                }
-//                catch (Exception e) {
-//                    throw new MissionException("Error constructing new building.", e);
-//                }
+
+                Building building = constructionSite.createBuilding(settlement.getBuildingManager());
+                settlement.getConstructionManager().removeConstructionSite(constructionSite);
+                settlement.fireUnitUpdate(ConstructionManager.FINISH_BUILDING_EVENT, building);
+                logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
+                        " building constructed at " + settlement.getName());
             }
         }
     }

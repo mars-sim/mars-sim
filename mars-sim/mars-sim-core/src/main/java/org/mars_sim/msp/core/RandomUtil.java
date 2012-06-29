@@ -130,24 +130,26 @@ public final class RandomUtil {
      * @param weightedMap a map of objects and their weights as Double values.
      * @return randomly selected object from the list (or null if empty map).
      */
-    public static Object getWeightedRandomObject(Map weightedMap) {
+    public static <T extends Object> T getWeightedRandomObject(Map<T, Double> weightedMap) {
     	if (weightedMap == null) throw new IllegalArgumentException("weightedMap is null");
     
-    	Object result = null;
+    	T result = null;
     	
     	// Get the total weight of all the objects in the map.
     	double totalWeight = 0D;
-    	Iterator i = weightedMap.values().iterator();
-    	while (i.hasNext()) totalWeight += (Double) i.next();
+    	Iterator<Double> i = weightedMap.values().iterator();
+    	while (i.hasNext()) {
+    	    totalWeight += i.next();
+    	}
     	
     	// Randomly select a weight value.
     	double randWeight = getRandomDouble(totalWeight);
     	
     	// Determine which object the weight applies to.
-    	Iterator j = weightedMap.keySet().iterator();
+    	Iterator<T> j = weightedMap.keySet().iterator();
     	while (j.hasNext()) {
-    		Object key = j.next();
-    		double weight = (Double) weightedMap.get(key);
+    		T key = j.next();
+    		double weight = weightedMap.get(key);
     		if (randWeight <= weight) {
     			result = key;
     			break;

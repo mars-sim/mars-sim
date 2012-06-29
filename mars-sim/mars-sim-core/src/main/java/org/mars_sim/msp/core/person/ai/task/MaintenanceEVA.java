@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-06-28
  * @author Scott Davis
  */
 
@@ -302,27 +302,23 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	private Malfunctionable getMaintenanceMalfunctionable() {
 		Malfunctionable result = null;
     	
-		// Determine entity to maintain.
-		double totalProbabilityWeight = 0D;
+		// Determine all malfunctionables local to the person.
+		Map<Malfunctionable, Double> malfunctionables = new HashMap<Malfunctionable, Double>();
+        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+        while (i.hasNext()) {
+            Malfunctionable entity = i.next();
+            double probability = getProbabilityWeight(entity);
+            if (probability > 0D) {
+                malfunctionables.put(entity, probability);
+            }
+        }
+        
+        if (!malfunctionables.isEmpty()) {
+            result = RandomUtil.getWeightedRandomObject(malfunctionables);
+        }
 		
-		// Total probabilities for all malfunctionable entities in person's local.
-		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-		while (i.hasNext()) totalProbabilityWeight += getProbabilityWeight(i.next());
-		
-		// Randomly determine a malfunctionable entity.
-		double chance = RandomUtil.getRandomDouble(totalProbabilityWeight);
-		
-		// Get the malfunctionable entity chosen.
-		i = MalfunctionFactory.getMalfunctionables(person).iterator();
-		while (i.hasNext()) {
-			Malfunctionable malfunctionable = i.next();
-			double entityWeight = getProbabilityWeight(malfunctionable);
-			if (chance < entityWeight) {
-				result = malfunctionable;
-				setDescription("Performing maintenance on " + result.getName());
-				break;
-			}
-			else chance -= entityWeight;
+		if (result != null) {
+		    setDescription("Performing maintenance on " + result.getName());
 		}
     	
 		return result;
