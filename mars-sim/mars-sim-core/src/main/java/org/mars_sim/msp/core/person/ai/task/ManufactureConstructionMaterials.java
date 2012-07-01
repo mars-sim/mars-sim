@@ -117,17 +117,14 @@ public class ManufactureConstructionMaterials extends Task implements
                     result *= getHighestManufacturingProcessValue(person,
                             manufacturingBuilding);
 
-                    // Add a base chance.
-                    if (result > 0D) {
-                        result += 100D;
+                    if (result > 100D) {
+                        result = 100D;
                     }
 
                     // If manufacturing building has process requiring work, add
                     // modifier.
-                    SkillManager skillManager = person.getMind()
-                            .getSkillManager();
-                    int skill = skillManager
-                            .getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                    SkillManager skillManager = person.getMind().getSkillManager();
+                    int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
                     if (hasProcessRequiringWork(manufacturingBuilding, skill)) {
                         result += 10D;
                     }
@@ -150,16 +147,16 @@ public class ManufactureConstructionMaterials extends Task implements
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
-            result *= job
-                    .getStartTaskProbabilityModifier(ManufactureConstructionMaterials.class);
+            result *= job.getStartTaskProbabilityModifier(
+                    ManufactureConstructionMaterials.class);
         }
 
         return result;
     }
 
     /**
-     * Gets an available manufacturing building that the person can use. Returns null if no manufacturing building is
-     * currently available.
+     * Gets an available manufacturing building that the person can use. Returns null 
+     * if no manufacturing building is currently available.
      * @param person the person
      * @return available manufacturing building
      * @throws Exception if error finding manufacturing building.
@@ -401,8 +398,7 @@ public class ManufactureConstructionMaterials extends Task implements
     }
 
     /**
-     * Determines all resources needed for construction projects. throws Exception if error 
-     * determining construction resources.
+     * Determines all resources needed for construction projects.
      */
     private static void determineConstructionResources() {
         constructionResources = new ArrayList<AmountResource>();
@@ -411,19 +407,21 @@ public class ManufactureConstructionMaterials extends Task implements
                 .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
-            Iterator<AmountResource> j = info.getResources().keySet()
-                    .iterator();
-            while (j.hasNext()) {
-                AmountResource resource = j.next();
-                if (!constructionResources.contains(resource))
-                    constructionResources.add(resource);
+            if (info.isConstructable()) {
+                Iterator<AmountResource> j = info.getResources().keySet()
+                        .iterator();
+                while (j.hasNext()) {
+                    AmountResource resource = j.next();
+                    if (!constructionResources.contains(resource)) {
+                        constructionResources.add(resource);
+                    }
+                }
             }
         }
     }
 
     /**
      * Determines all parts needed for construction projects.
-     * @throws Exception if error determining construction parts.
      */
     private static void determineConstructionParts() {
         constructionParts = new ArrayList<Part>();
@@ -432,11 +430,14 @@ public class ManufactureConstructionMaterials extends Task implements
                 .getAllConstructionStageInfoList().iterator();
         while (i.hasNext()) {
             ConstructionStageInfo info = i.next();
-            Iterator<Part> j = info.getParts().keySet().iterator();
-            while (j.hasNext()) {
-                Part part = j.next();
-                if (!constructionParts.contains(part))
-                    constructionParts.add(part);
+            if (info.isConstructable()) {
+                Iterator<Part> j = info.getParts().keySet().iterator();
+                while (j.hasNext()) {
+                    Part part = j.next();
+                    if (!constructionParts.contains(part)) {
+                        constructionParts.add(part);
+                    }
+                }
             }
         }
     }
@@ -656,9 +657,8 @@ public class ManufactureConstructionMaterials extends Task implements
                 .getWearConditionAccidentModifier();
 
         if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger
-                    .info(person.getName()
-                            + " has accident while manufacturing construction materials.");
+            logger.info(person.getName() + " has accident while manufacturing " + 
+                    "construction materials.");
             workshop.getBuilding().getMalfunctionManager().accident();
         }
     }
