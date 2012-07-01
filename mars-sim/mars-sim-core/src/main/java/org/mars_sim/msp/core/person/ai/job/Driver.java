@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -94,7 +94,7 @@ public class Driver extends Job implements Serializable {
 			if (mission instanceof VehicleMission) settlementVehicleNum++;
 		}
 		
-		result = settlementVehicleNum * 2D;
+		result = settlementVehicleNum;
         
         return result;
 	}

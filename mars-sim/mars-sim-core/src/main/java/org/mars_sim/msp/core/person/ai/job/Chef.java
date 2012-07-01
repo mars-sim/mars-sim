@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chef.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -27,10 +27,8 @@ import java.util.logging.Logger;
  * The Chef class represents a job for a chef.
  */
 public class Chef extends Job implements Serializable {
-    
-	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Chef";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Chef.class.getName());
 
 	public Chef() {
 		// Use Job constructor
@@ -81,19 +79,14 @@ public class Chef extends Job implements Serializable {
 		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(Cooking.NAME);
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-//			try {
-				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME); 
-				result += (double) kitchen.getCookCapacity();
-//			}
-//			catch (BuildingException e) {
-//			   logger.log(Level.SEVERE, "Chef.getSettlementNeed()", e);
-//			}
+		    Building building = i.next();
+		    Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME); 
+		    result += (double) kitchen.getCookCapacity();
 		}
 		
-		// Add total population / 2.
+		// Add total population / 10.
 		int population = settlement.getCurrentPopulationNum();
-		result+= ((double) population / 2D);
+		result+= ((double) population / 10D);
 		
 		return result;			
 	}

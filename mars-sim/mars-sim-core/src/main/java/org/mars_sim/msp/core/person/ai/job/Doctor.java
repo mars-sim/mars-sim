@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -29,10 +29,8 @@ import java.util.logging.Logger;
  * The Doctor class represents a job for an medical treatment expert.
  */
 public class Doctor extends Job implements Serializable {
-    
-    	private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Doctor";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Doctor.class.getName());
 
 	/**
 	 * Constructor
@@ -84,37 +82,27 @@ public class Doctor extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		// Add total population / 2
+		// Add total population / 10
 		int population = settlement.getAllAssociatedPeople().size();
-		result+= population / 2D;
+		result+= population / 10D;
 		
-		// Add (labspace * tech level) / 2 for all labs with medical specialities.
+		// Add (labspace * tech level) / 2 for all labs with medical specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-//			try {
-				Research lab = (Research) building.getFunction(Research.NAME);
-				if (lab.hasSpeciality(Skill.MEDICAL)) 
-					result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
-//			}
+		    Building building = i.next();
+		    Research lab = (Research) building.getFunction(Research.NAME);
+		    if (lab.hasSpeciality(Skill.MEDICAL)) 
+		        result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 		}		
 		
 		// Add (tech level / 2) for all medical infirmaries.
 		List<Building> medicalBuildings = settlement.getBuildingManager().getBuildings(MedicalCare.NAME);
 		Iterator<Building> j = medicalBuildings.iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-//			try {
-				MedicalCare infirmary = (MedicalCare) building.getFunction(MedicalCare.NAME);
-				result+= (double) infirmary.getTechLevel() / 2D;
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Doctor.getSettlementNeed()", e);
-//			}
+		    Building building = j.next();
+		    MedicalCare infirmary = (MedicalCare) building.getFunction(MedicalCare.NAME);
+		    result+= (double) infirmary.getTechLevel() / 2D;
 		}			
 		
 		return result;	

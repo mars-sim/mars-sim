@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Physicist.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,10 +26,8 @@ import java.util.logging.Logger;
  * The Physicist class represents a job for a physicist.
  */
 public class Physicist extends Job implements Serializable {
-
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Physicist";
     
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Physicist.class.getName());
 
     /**
      * Constructor
@@ -74,17 +72,10 @@ public class Physicist extends Job implements Serializable {
         Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-//            try {
-                Research lab = (Research) building.getFunction(Research.NAME);
-                if (lab.hasSpeciality(Skill.PHYSICS)) 
-                    result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-//            }
-//            catch (BuildingException e) {
-//                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-//            }
+            Research lab = (Research) building.getFunction(Research.NAME);
+            if (lab.hasSpeciality(Skill.PHYSICS)) 
+                result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
         }
-
-        result *= 5D;
         
         return result;  
     }

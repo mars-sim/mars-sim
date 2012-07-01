@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Architect.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,8 +26,7 @@ import java.util.logging.Logger;
  */
 public class Architect extends Job implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Architect";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Architect.class.getName());
     
     /**
      * Constructor
@@ -76,7 +75,7 @@ public class Architect extends Job implements Serializable {
         double result = 0D;
         
         // Add number of buildings currently at settlement.
-        result += settlement.getBuildingManager().getBuildingNum();
+        result += settlement.getBuildingManager().getBuildingNum() / 10D;
         
         return result;  
     }

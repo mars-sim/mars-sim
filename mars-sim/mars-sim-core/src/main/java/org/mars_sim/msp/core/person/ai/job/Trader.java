@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 
@@ -18,8 +18,8 @@ import java.util.Iterator;
 
 public class Trader extends Job implements Serializable {
 
-    private static double TRADING_RANGE = 5000D;
-    private static double SETTLEMENT_MULTIPLIER = 1D;
+    private static double TRADING_RANGE = 1500D;
+    private static double SETTLEMENT_MULTIPLIER = 3D;
     
 	/**
 	 * Constructor

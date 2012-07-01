@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -31,10 +31,8 @@ import java.util.logging.Logger;
  * The Botanist class represents a job for a botanist.
  */
 public class Botanist extends Job implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Botanist";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Botanist.class.getName());
 
 	/**
 	 * Constructor
@@ -86,44 +84,29 @@ public class Botanist extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 		
-		// Add (labspace * tech level) / 2 for all labs with botany specialities.
+		// Add (labspace * tech level) / 2 for all labs with botany specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-//			try {
-				Research lab = (Research) building.getFunction(Research.NAME);
-				if (lab.hasSpeciality(Skill.BOTANY)) 
-					result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Botanist.getSettlementNeed()", e);
-//			}
+		    Building building = i.next();
+		    Research lab = (Research) building.getFunction(Research.NAME);
+		    if (lab.hasSpeciality(Skill.BOTANY)) 
+		        result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 		}
-		
-		// Add (growing area in greenhouses) / 100
+
+		// Add (growing area in greenhouses) / 25
 		List<Building> greenhouseBuildings = settlement.getBuildingManager().getBuildings(Farming.NAME);
 		Iterator<Building> j = greenhouseBuildings.iterator();
 		while (j.hasNext()) {
-			Building building = j.next();
-//			try {
-				Farming farm = (Farming) building.getFunction(Farming.NAME);
-				result += (farm.getGrowingArea() / 100D);
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Botanist.getSettlementNeed()", e);
-//			}
+		    Building building = j.next();
+		    Farming farm = (Farming) building.getFunction(Farming.NAME);
+		    result += (farm.getGrowingArea() / 25D);
 		}
-		
+
 		// Multiply by food value at settlement.
-//		try {
-			Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
-			double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
-			result *= foodValue;
-//		}
-//		catch (Exception e) {
-//		    logger.log(Level.SEVERE, "Botanist.getSettlementNeed()", e);
-//		}
+		//Good foodGood = GoodsUtil.getResourceGood(AmountResource.findAmountResource("food"));
+		//double foodValue = settlement.getGoodsManager().getGoodValuePerItem(foodGood);
+		//result *= foodValue;
 		
 		return result;	
 	}	
