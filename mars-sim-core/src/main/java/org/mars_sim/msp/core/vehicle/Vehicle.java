@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-29
  * @author Scott Davis
  */
 
@@ -36,9 +36,7 @@ import java.util.logging.Logger;
 public abstract class Vehicle extends Unit implements Serializable, 
         Malfunctionable, Salvagable {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.vehicle.Vehicle";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Vehicle.class.getName());
     
 	// Unit Event Types
 	public final static String STATUS_EVENT = "vehicle status";
@@ -55,7 +53,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public final static String TOWED = "Towed";
     
     // The error margin for determining vehicle range. (actual distance / safe distance)
-    public final static double RANGE_ERROR_MARGIN = 1.5D;
+    public final static double RANGE_ERROR_MARGIN = 1.6D;
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
