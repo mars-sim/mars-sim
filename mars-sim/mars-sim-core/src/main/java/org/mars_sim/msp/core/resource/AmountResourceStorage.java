@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-01
  * @author Scott Davis 
  */
 
@@ -9,11 +9,14 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Storage for amount resources.
  */
 public class AmountResourceStorage implements Serializable {
+	
+	private static Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
 	
 	// Domain members
 	private AmountResourceTypeStorage typeStorage = null;
@@ -34,8 +37,7 @@ public class AmountResourceStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error setting capacity.
      */
-	public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) 
-            {
+	public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
 		if (typeStorage == null) typeStorage = new AmountResourceTypeStorage();
 		typeStorage.addAmountResourceTypeCapacity(resource, capacity);
 		resourceCapacityKeyCache = null;
@@ -66,8 +68,7 @@ public class AmountResourceStorage implements Serializable {
      * @param capacity the capacity amount (kg).
      * @throws ResourceException if error adding capacity.
      */
-    public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) 
-            {
+    public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
     	if (phaseStorage == null)  phaseStorage = new AmountResourcePhaseStorage();
     	phaseStorage.addAmountResourcePhaseCapacity(phase, capacity);
     	resourceCapacityKeyCache = null;
@@ -205,8 +206,7 @@ public class AmountResourceStorage implements Serializable {
      * @param amount the amount (kg).
      * @throws ResourceException if error storing resource.
      */
-    public synchronized void storeAmountResource(AmountResource resource, double amount) 
-            {
+    public synchronized void storeAmountResource(AmountResource resource, double amount) {
     	if (amount < 0D) throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
     	if (amount > 0D) {
     		boolean storable = false;
@@ -240,6 +240,10 @@ public class AmountResourceStorage implements Serializable {
     					storable = true;
     					clearStoredCache();
     				}
+    				else {
+    					logger.severe("Amount resource " + resource + " of amount: " + amount + " to store.  Amount remaining capacity: " + 
+    	    					getAmountResourceRemainingCapacity(resource) + " remaining: " + remainingAmount);
+    				}
     			}
     		}
     		if (!storable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount + 
@@ -253,8 +257,7 @@ public class AmountResourceStorage implements Serializable {
      * @param amount the amount (kg).
      * @throws ResourceException if error retrieving resource.
      */
-    public synchronized void retrieveAmountResource(AmountResource resource, double amount) 
-            {
+    public synchronized void retrieveAmountResource(AmountResource resource, double amount) {
     	if (amount < 0D) throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
     	boolean retrievable = false;
     	if (getAmountResourceStored(resource) >= amount) {
@@ -283,6 +286,14 @@ public class AmountResourceStorage implements Serializable {
     			retrievable = true;
     			clearStoredCache();
     		}
+    		else {
+    			logger.severe("Amount resource " + resource + " of amount: " + amount + " needed to retrieve.  Amount stored: " + 
+    					getAmountResourceStored(resource) + " remaining: " + remainingAmount);
+    		}
+    	}
+    	else {
+    		logger.severe("Amount resource " + resource + " of amount: " + amount + " needed to retrieve.  Amount stored: " +
+    				getAmountResourceStored(resource));
     	}
     	if (!retrievable) throw new IllegalStateException("Amount resource: " + resource + " of amount: " + amount + 
     			" could not be retrieved from inventory.");
