@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.03 2012-06-27
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -49,35 +49,25 @@ public class Farming extends Function implements Serializable {
     	// Use Function constructor.
     	super(NAME, building);
     	
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		
-//		try {
-			cropNum = config.getCropNum(building.getName());
-			powerGrowingCrop = config.getPowerForGrowingCrop(building.getName());
-			powerSustainingCrop = config.getPowerForSustainingCrop(building.getName());
-			growingArea = config.getCropGrowingArea(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Farming.constructor: " + e.getMessage());
-//		}
-		
-		// Determine maximum harvest.
-		maxHarvest = growingArea * HARVEST_MULTIPLIER;
-		
-		// Create initial crops.
-		crops = new ArrayList<Crop>();
-//		try {
-			Settlement settlement = building.getBuildingManager().getSettlement();
-			for (int x=0; x < cropNum; x++) {
-				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
-						this, settlement, false);
-				crops.add(crop);
-				building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
-			}
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Crops could not be loaded for greenhouse: " + e.getMessage());
-//		}
+    	BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
+    	cropNum = config.getCropNum(building.getName());
+    	powerGrowingCrop = config.getPowerForGrowingCrop(building.getName());
+    	powerSustainingCrop = config.getPowerForSustainingCrop(building.getName());
+    	growingArea = config.getCropGrowingArea(building.getName());
+
+    	// Determine maximum harvest.
+    	maxHarvest = growingArea * HARVEST_MULTIPLIER;
+
+    	// Create initial crops.
+    	crops = new ArrayList<Crop>();
+    	Settlement settlement = building.getBuildingManager().getSettlement();
+    	for (int x=0; x < cropNum; x++) {
+    		Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+    				this, settlement, false);
+    		crops.add(crop);
+    		building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
+    	}
     }
     
     /**
@@ -156,7 +146,7 @@ public class Farming extends Function implements Serializable {
 		double workTimeRemaining = workTime;
 		int needyCrops = 0;
 		// Scott - I used the comparison criteria 00001D rather than 0D
-		// because sometimes math anomolies result in workTimeRemaining
+		// because sometimes math anomalies result in workTimeRemaining
 		// becoming very small double values and an endless loop occurs.
 		while (((needyCrops = getNeedyCrops()) > 0) && (workTimeRemaining > 00001D)) {
 			double maxCropTime = workTimeRemaining / (double) needyCrops;
@@ -232,35 +222,25 @@ public class Farming extends Function implements Serializable {
 		// Add time to each crop.
 		Iterator<Crop> i = crops.iterator();
 		int newCrops = 0;
-//		try {
-			while (i.hasNext()) {
-				Crop crop = i.next();
-				crop.timePassing(time * productionLevel);
-            
-				// Remove old crops.
-				if (crop.getPhase().equals(Crop.FINISHED)) {
-					i.remove();
-					newCrops++;
-				}
+		while (i.hasNext()) {
+			Crop crop = i.next();
+			crop.timePassing(time * productionLevel);
+
+			// Remove old crops.
+			if (crop.getPhase().equals(Crop.FINISHED)) {
+				i.remove();
+				newCrops++;
 			}
-//        }
-//        catch (Exception e) {
-//        	throw new BuildingException("Farming.timePassing(): Problem with crops");
-//        }
-        
+		}
+
 		// Add any new crops.
-//		try {
-			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			for (int x=0; x < newCrops; x++) {
-				Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
-						this, settlement, true);
-				crops.add(crop);
-				getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
-			}
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Farming could not add new crop: " + e.getMessage());
-//		}
+		Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+		for (int x=0; x < newCrops; x++) {
+			Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+					this, settlement, true);
+			crops.add(crop);
+			getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
+		}
 	}
 	
 	/**
