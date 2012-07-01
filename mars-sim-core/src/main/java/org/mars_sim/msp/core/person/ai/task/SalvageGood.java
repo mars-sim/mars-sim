@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -23,8 +23,10 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -55,18 +57,12 @@ public class SalvageGood extends Task implements Serializable {
                 true, RandomUtil.getRandomDouble(100D));
         
         // Get available manufacturing workshop if any.
-//        try {
-            Building manufactureBuilding = getAvailableManufacturingBuilding(person);
-            if (manufactureBuilding != null) {
-                workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
-                BuildingManager.addPersonToBuilding(person, manufactureBuilding);
-            }
-            else endTask();
-//        }
-//        catch (BuildingException e) {
-//            logger.log(Level.SEVERE, "SalvageGood", e);
-//            endTask();
-//        }
+        Building manufactureBuilding = getAvailableManufacturingBuilding(person);
+        if (manufactureBuilding != null) {
+            workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
+            BuildingManager.addPersonToBuilding(person, manufactureBuilding);
+        }
+        else endTask();
         
         if (workshop != null) {
             // Determine salvage process.
@@ -89,34 +85,37 @@ public class SalvageGood extends Task implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//            try {
-                // See if there is an available manufacturing building.
-                Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-                if (manufacturingBuilding != null) {
-                    result = 1D;
 
-                    // Crowding modifier.
-                    result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                    result *= Task.getRelationshipModifier(person, manufacturingBuilding);
+            // See if there is an available manufacturing building.
+            Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
+            if (manufacturingBuilding != null) {
+                result = 1D;
 
-                    // Salvaging good value modifier.
-                    result *= getHighestSalvagingProcessValue(person, manufacturingBuilding);
+                // Crowding modifier.
+                result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+                result *= Task.getRelationshipModifier(person, manufacturingBuilding);
 
-                    // Add a base chance.
-                    if (result > 0D) result += 25D;
+                // Salvaging good value modifier.
+                result *= getHighestSalvagingProcessValue(person, manufacturingBuilding);
 
-                    // If manufacturing building has salvage process requiring work, add
-                    // modifier.
-                    SkillManager skillManager = person.getMind().getSkillManager();
-                    int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
-                    if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) result += 10D;
-                    // If settlement has manufacturing override, no new
-                    // salvage processes can be created.
-                    else if (person.getSettlement().getManufactureOverride()) result = 0;
+                if (result > 100D) {
+                    result = 100D;
                 }
-//            } catch (BuildingException e) {
-//                logger.log(Level.SEVERE, "SalvageGood.getProbability()", e);
-//            }
+
+                // If manufacturing building has salvage process requiring work, add
+                // modifier.
+                SkillManager skillManager = person.getMind().getSkillManager();
+                int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
+                    result += 10D;
+                }
+                
+                // If settlement has manufacturing override, no new
+                // salvage processes can be created.
+                else if (person.getSettlement().getManufactureOverride()) {
+                    result = 0;
+                }
+            }
         }
 
         // Effort-driven task modifier.
@@ -124,7 +123,9 @@ public class SalvageGood extends Task implements Serializable {
 
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null) result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
+        }
 
         return result;
     }
@@ -389,22 +390,18 @@ public class SalvageGood extends Task implements Serializable {
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
-//        try {
-            Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
-                    techLevel, skillLevel).iterator();
-            while (i.hasNext()) {
-                SalvageProcessInfo process = i.next();
-                if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
-                        isSalvageProcessRunning(process, manufacturingFunction)) {
-                    Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-                    double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, person);
-                    if (processValue > highestProcessValue)
-                        highestProcessValue = processValue;
-                }
+        Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
+                techLevel, skillLevel).iterator();
+        while (i.hasNext()) {
+            SalvageProcessInfo process = i.next();
+            if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
+                    isSalvageProcessRunning(process, manufacturingFunction)) {
+                Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+                double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, person);
+                if (processValue > highestProcessValue)
+                    highestProcessValue = processValue;
             }
-//        } catch (Exception e) {
-//            throw new BuildingException("Error getting highest salvage process value.", e);
-//        }
+        }
 
         return highestProcessValue;
     }
@@ -464,8 +461,7 @@ public class SalvageGood extends Task implements Serializable {
             int skillLevel = getEffectiveSkillLevel();
             int techLevel = workshop.getTechLevel();
 
-            double highestValue = 0D;
-            SalvageProcessInfo highestValueProcess = null;
+            Map<SalvageProcessInfo, Double> processValues = new HashMap<SalvageProcessInfo, Double>();
             Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
                     techLevel, skillLevel).iterator();
             while (i.hasNext()) {
@@ -473,18 +469,20 @@ public class SalvageGood extends Task implements Serializable {
                 if (ManufactureUtil.canSalvageProcessBeStarted(processInfo, workshop)) {
                     double processValue = ManufactureUtil.getSalvageProcessValue(processInfo, 
                             person.getSettlement(), person);
-                    if (processValue > highestValue) {
-                        highestValue = processValue;
-                        highestValueProcess = processInfo;
+                    if (processValue > 0D) {
+                        processValues.put(processInfo, processValue);
                     }
                 }
             }
+            
+            // Randomly determine process based on value weights.
+            SalvageProcessInfo selectedProcess = RandomUtil.getWeightedRandomObject(processValues);
 
-            if (highestValueProcess != null) {
-                Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(highestValueProcess, 
+            if (selectedProcess != null) {
+                Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess, 
                         person.getSettlement());
                 if (salvagedUnit != null) {
-                    result = new SalvageProcess(highestValueProcess, workshop, salvagedUnit);
+                    result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);
                     workshop.addSalvageProcess(result);
                 }
             }
