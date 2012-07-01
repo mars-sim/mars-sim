@@ -161,12 +161,16 @@ public class BuildingConstructionMission extends Mission implements Serializable
             else {
                 endMission("Construction site could not be found or created.");
             }
-                
-            // Reserve construction vehicles.
-            reserveConstructionVehicles();
-                
-            // Retrieve construction LUV attachment parts.
-            retrieveConstructionLUVParts();
+            
+            if (!isDone()) {
+                // Reserve construction vehicles.
+                reserveConstructionVehicles();
+            }
+             
+            if (!isDone()) {
+                // Retrieve construction LUV attachment parts.
+                retrieveConstructionLUVParts();
+            }
         }
         
         // Add phases.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-06-29
  * @author Scott Davis
  */
 
@@ -129,10 +129,12 @@ public class Mining extends RoverMission {
             if (hasVehicle() && !isVehicleLoadable())
                 endMission("Vehicle is not loadable. (Mining)");
 
-            // Reserve light utility vehicle.
-            luv = reserveLightUtilityVehicle();
-            if (luv == null)
-                endMission("Light utility vehicle not available.");
+            if (!isDone()) {
+                // Reserve light utility vehicle.
+                luv = reserveLightUtilityVehicle();
+                if (luv == null)
+                    endMission("Light utility vehicle not available.");
+            }
         }
 
         // Add mining site phase.
