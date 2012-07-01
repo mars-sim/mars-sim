@@ -12,7 +12,7 @@
 	<!--             workers will produce more effort time than lower skilled workers. -->
 	<!-- process-time - The minimum time (in millisols) required for the process regardless of effort time. -->
 	<!-- power-required - The total amount of power (kW hr) required for the process. -->
-	<process name="extract iron oxide from regolith" tech="1" skill="1" work-time="100" process-time="0" 
+	<process name="extract iron oxide from regolith" tech="1" skill="0" work-time="100" process-time="0" 
 			power-required="0.0">
 		
 		<!-- List of inputs for the process (resources and parts). -->
@@ -29,7 +29,7 @@
 		</outputs>
 	</process>
 	
-	<process name="extract aluminum oxide from regolith" tech="1" skill="1" work-time="100" process-time="0"
+	<process name="extract aluminum oxide from regolith" tech="1" skill="0" work-time="100" process-time="0"
 			power-required="0.0">
 		<inputs>
 			<resource name="regolith" amount="50.0" />
@@ -39,7 +39,7 @@
 		</outputs>
 	</process>
 	
-	<process name="extract aluminum oxide from sand" tech="1" skill="1" work-time="100" process-time="0" 
+	<process name="extract aluminum oxide from sand" tech="1" skill="0" work-time="100" process-time="0" 
 			power-required="0.0">
 		<inputs>
 			<resource name="sand" amount="50.0" />
@@ -1687,7 +1687,7 @@
 	</process>
 	
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="regolith brick baking" tech="1" skill="1" work-time="10" process-time="50" 
+	<process name="regolith brick baking" tech="1" skill="0" work-time="10" process-time="50" 
 			power-required="4.0">
 		<inputs>
 			<resource name="regolith" amount="28.6" />
@@ -1699,7 +1699,7 @@
 	</process>
 	
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="sand brick baking" tech="1" skill="1" work-time="10" process-time="50" 
+	<process name="sand brick baking" tech="1" skill="0" work-time="10" process-time="50" 
 			power-required="4.0">
 		<inputs>
 			<resource name="sand" amount="28.6" />
@@ -1735,7 +1735,7 @@
 	</process>
 	
 	<!-- Melting permafrost ice and filtering the water. -->
-	<process name="melting/filtering ice" tech="1" skill="1" work-time="10.0" process-time="50" 
+	<process name="melting/filtering ice" tech="1" skill="0" work-time="10.0" process-time="50" 
 			power-required="4.0">
 		<inputs>
 			<resource name="ice" amount="100.0" />
@@ -1878,7 +1878,7 @@
 	</process>
 	
 	<!-- Pumping carbon dioxide in from the ambient atmosphere. -->
-	<process name="co2 pumping" tech="1" skill="1" work-time="10" process-time="100" power-required="4.0">
+	<process name="co2 pumping" tech="1" skill="0" work-time="10" process-time="100" power-required="4.0">
 		<inputs />
 		<outputs>
 			<resource name="carbon dioxide" amount="10.0" />
