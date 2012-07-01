@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 
@@ -80,10 +80,10 @@ public class Technician extends Job implements Serializable {
 		double result = 0D;
 		
 		// Add number of buildings in settlement.
-		result+= settlement.getBuildingManager().getBuildingNum();
+		result+= settlement.getBuildingManager().getBuildingNum() / 3D;
 		
 		// Add number of vehicles parked at settlement.
-		result+= settlement.getParkedVehicleNum();
+		result+= settlement.getParkedVehicleNum() / 3D;
 		
 		return result;	
 	}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -31,8 +31,7 @@ import java.util.logging.Logger;
  */
 public class Engineer extends Job implements Serializable {
     
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Engineer";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/**
 	 * Constructor
@@ -87,18 +86,13 @@ public class Engineer extends Job implements Serializable {
 		
 		double result = 0D;
 		
-		// Add (tech level * process number) for all manufacture buildings.
+		// Add (tech level * process number / 2) for all manufacture buildings.
 		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-//			try {
-				Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
-				result += workshop.getTechLevel() * workshop.getConcurrentProcesses() * 2D;
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Engineer.getSettlementNeed()",e);
-//			}
+		    Building building = i.next();
+		    Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
+		    result += workshop.getTechLevel() * workshop.getConcurrentProcesses() / 2D;
 		}
 		
 		return result;	

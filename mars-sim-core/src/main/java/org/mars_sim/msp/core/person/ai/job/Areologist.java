@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -31,7 +31,7 @@ public class Areologist extends Job implements Serializable {
     
     private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Areologist";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
 	/**
 	 * Constructor
@@ -93,22 +93,17 @@ public class Areologist extends Job implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
 		
-		// Add (labspace * tech level / 2) for all labs with areology specialities.
+		// Add (labspace * tech level / 2) for all labs with areology specialties.
 		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
 		Iterator<Building> i = laboratoryBuildings.iterator();
 		while (i.hasNext()) {
-			Building building = i.next();
-//			try {
-				Research lab = (Research) building.getFunction(Research.NAME);
-				if (lab.hasSpeciality(Skill.AREOLOGY)) 
-					result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-//			}
-//			catch (BuildingException e) {
-//			    logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-//			}
+		    Building building = i.next();
+		    Research lab = (Research) building.getFunction(Research.NAME);
+		    if (lab.hasSpeciality(Skill.AREOLOGY)) 
+		        result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
 		}
 		
-		// Add (labspace * tech level / 2) for all parked rover labs with areology specialities.
+		// Add (labspace * tech level / 2) for all parked rover labs with areology specialties.
 		Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
 		while (j.hasNext()) {
 			Vehicle vehicle = j.next();
@@ -122,7 +117,7 @@ public class Areologist extends Job implements Serializable {
 			}
 		}
 		
-		// Add (labspace * tech level / 2) for all labs with areology specialities in rovers out on missions.
+		// Add (labspace * tech level / 2) for all labs with areology specialties in rovers out on missions.
 		MissionManager missionManager = Simulation.instance().getMissionManager();
 		Iterator<Mission> k = missionManager.getMissionsForSettlement(settlement).iterator();
 		while (k.hasNext()) {
@@ -138,8 +133,6 @@ public class Areologist extends Job implements Serializable {
                 }
 			}
 		}
-        
-        result *= 5D;
         
 		return result;	
 	}

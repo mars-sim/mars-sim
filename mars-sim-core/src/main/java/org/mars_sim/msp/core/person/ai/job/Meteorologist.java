@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Meteorologist.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -26,10 +26,8 @@ import java.util.logging.Logger;
  * The Meteorologist class represents a job for a meteorologist.
  */
 public class Meteorologist extends Job implements Serializable {
-
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.job.Meteorologist";
     
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Meteorologist.class.getName());
 
     /**
      * Constructor
@@ -69,22 +67,15 @@ public class Meteorologist extends Job implements Serializable {
     public double getSettlementNeed(Settlement settlement) {
         double result = 0D;
         
-        // Add (labspace * tech level / 2) for all labs with meteorology specialities.
+        // Add (labspace * tech level / 2) for all labs with meteorology specialties.
         List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
         Iterator<Building> i = laboratoryBuildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-//            try {
-                Research lab = (Research) building.getFunction(Research.NAME);
-                if (lab.hasSpeciality(Skill.METEOROLOGY)) 
-                    result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-//            }
-//            catch (BuildingException e) {
-//                logger.log(Level.SEVERE,"Issues in getSettlementNeeded", e);
-//            }
+            Research lab = (Research) building.getFunction(Research.NAME);
+            if (lab.hasSpeciality(Skill.METEOROLOGY)) 
+                result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
         }
-
-        result *= 5D;
         
         return result;  
     }
