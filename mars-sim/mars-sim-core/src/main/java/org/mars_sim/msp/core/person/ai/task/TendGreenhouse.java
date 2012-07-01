@@ -58,18 +58,12 @@ public class TendGreenhouse extends Task implements Serializable {
         else endTask();
         
         // Get available greenhouse if any.
-//        try {
-        	Building farmBuilding = getAvailableGreenhouse(person);
-        	if (farmBuilding != null) {
-        		greenhouse = (Farming) farmBuilding.getFunction(Farming.NAME);
-        		BuildingManager.addPersonToBuilding(person, farmBuilding);
-        	}
-        	else endTask();
-//        }
-//        catch (BuildingException e) {
-//			logger.log(Level.SEVERE,"TendGreenhouse: " + e.getMessage());
-//			endTask();
-//        }
+        Building farmBuilding = getAvailableGreenhouse(person);
+        if (farmBuilding != null) {
+            greenhouse = (Farming) farmBuilding.getFunction(Farming.NAME);
+            BuildingManager.addPersonToBuilding(person, farmBuilding);
+        }
+        else endTask();
         
         // Initialize phase
         addPhase(TENDING);
@@ -97,10 +91,10 @@ public class TendGreenhouse extends Task implements Serializable {
         		}
         	
         		// Food value modifier.
-        		GoodsManager manager = person.getSettlement().getGoodsManager();
-        		AmountResource foodResource = AmountResource.findAmountResource("food");
-        		double foodValue = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(foodResource));
-        		result *= foodValue;
+        		//GoodsManager manager = person.getSettlement().getGoodsManager();
+        		//AmountResource foodResource = AmountResource.findAmountResource("food");
+        		//double foodValue = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(foodResource));
+        		//result *= foodValue;
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
@@ -147,7 +141,7 @@ public class TendGreenhouse extends Task implements Serializable {
         double workTime = time;
         int greenhouseSkill = getEffectiveSkillLevel();
         if (greenhouseSkill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) greenhouseSkill);
+        else workTime += workTime * (double) greenhouseSkill;
         
         // Add this work to the greenhouse.
         greenhouse.addWork(workTime);
