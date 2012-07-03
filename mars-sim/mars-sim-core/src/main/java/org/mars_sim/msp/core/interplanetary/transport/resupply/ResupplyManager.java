@@ -321,7 +321,8 @@ public class ResupplyManager implements Serializable {
             Collections.shuffle(inhabitableBuildings);
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
-                newPosition = positionNextToBuilding(buildingType, i.next(), 0D, settlement);
+                Building building = i.next();
+                newPosition = positionNextToBuilding(buildingType, building, 0D, settlement);
                 if (newPosition != null) break;
             }
         }
@@ -331,7 +332,8 @@ public class ResupplyManager implements Serializable {
             Collections.shuffle(sameBuildings);
             Iterator<Building> j = sameBuildings.iterator();
             while (j.hasNext()) {
-                newPosition = positionNextToBuilding(buildingType, j.next(), 0D, settlement);
+                Building building = j.next();
+                newPosition = positionNextToBuilding(buildingType, building, 0D, settlement);
                 if (newPosition != null) break;
             }
         }
@@ -347,7 +349,8 @@ public class ResupplyManager implements Serializable {
                     Collections.shuffle(allBuildings);
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {
-                        newPosition = positionNextToBuilding(buildingType, i.next(), (double) x, settlement);
+                        Building building = i.next();
+                        newPosition = positionNextToBuilding(buildingType, building, (double) x, settlement);
                         if (newPosition != null) break;
                     }
                 }
@@ -408,7 +411,7 @@ public class ResupplyManager implements Serializable {
             
             double distance = structureDistance + separationDistance;
             double radianDirection = Math.PI * direction / 180D;
-            double rectCenterX = building.getXLocation() + (distance * Math.sin(radianDirection));
+            double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
             double rectRotation = building.getFacing();
             
