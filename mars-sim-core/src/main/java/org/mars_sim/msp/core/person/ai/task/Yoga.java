@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-01
  * @author Sebastien Venot
  */
 
@@ -9,7 +9,6 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -35,27 +34,10 @@ public class Yoga extends Task implements Serializable {
 
     public static double getProbability(Person person) {
 
-        double result = 10D;
+        double result = 0D;
 
         // Stress modifier
-        result += person.getPhysicalCondition().getStress();
-
-        // Check if current settlement is a crowded one
-        Settlement settlement = person.getSettlement();
-
-        if (settlement != null) {
-            int currentPopulation = settlement.getCurrentPopulationNum();
-            int maxPopulation = settlement.getPopulationCapacity();
-            if (maxPopulation <= 0) maxPopulation = 1;
-            int percentange = (currentPopulation * 100) / maxPopulation;
-            if (percentange > 70) {
-                result = result + 10;
-
-                if (result > 100) {
-                    result = 100;
-                }
-            }
-        }
+        result += person.getPhysicalCondition().getStress() / 2D;
 
         return result;
 

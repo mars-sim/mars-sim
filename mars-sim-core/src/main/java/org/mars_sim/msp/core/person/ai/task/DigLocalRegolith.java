@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.03 2012-06-27
+ * @version 3.03 2012-07-01
  * @author Scott Davis
  */
 
@@ -101,13 +101,8 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             if (numSuits == 0) result = 0D;
             
             // Check if at least one empty bag at settlement.
-//            try {
-                int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class);
-                if (numEmptyBags == 0) result = 0D;
-//            }
-//            catch (InventoryException e) {
-//                logger.log(Level.SEVERE, "Error checking empty bags in settlement inventory.");
-//            }
+            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class);
+            if (numEmptyBags == 0) result = 0D;
 
             // Check if an airlock is available
             if (getAvailableAirlock(person) == null) result = 0D;
@@ -255,23 +250,13 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 
                 // Try to store regolith in settlement.
                 if (collectedAmount < settlementCap) {
-//                    try {
-                        bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
-                        settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
-//                    }
-//                    catch (InventoryException e) {
-//                        logger.log(Level.SEVERE, "Error storing regolith in settlement inventory");
-//                    }
+                    bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
+                    settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
                 }
-                
+
                 // Store bag.
-//                try {
-                    person.getInventory().retrieveUnit(bag);
-                    settlement.getInventory().storeUnit(bag);
-//                }
-//                catch (InventoryException e) {
-//                    logger.log(Level.SEVERE, "Error storing bag in settlement inventory");
-//                }
+                person.getInventory().retrieveUnit(bag);
+                settlement.getInventory().storeUnit(bag);
                 
                 // Recalculate settlement good value for output item.
                 GoodsManager goodsManager = settlement.getGoodsManager();
