@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-01
  * @author Barry Evans
  */
 
@@ -298,7 +298,7 @@ public class PersonTableModel extends UnitTableModel {
             	case TASK : {
             		// If the Person is dead, there is no Task Manager
             		TaskManager mgr = person.getMind().getTaskManager();
-            		result = ((mgr != null)? mgr.getTaskName() : null);
+            		result = ((mgr != null)? mgr.getTaskDescription() : null);
             	} break;
 
             	case MISSION : {
@@ -309,7 +309,7 @@ public class PersonTableModel extends UnitTableModel {
 //            			// cellValue.append(" - ");
 //            			// cellValue.append(mission.getPhase());
 //            			result = cellValue.toString();
-                        result = mission.getName();
+                        result = mission.getDescription();
             		}
             	} break;
         	}
