@@ -902,7 +902,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             
             double distance = structureDistance + separationDistance;
             double radianDirection = Math.PI * direction / 180D;
-            double rectCenterX = building.getXLocation() + (distance * Math.sin(radianDirection));
+            double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
             double rectRotation = building.getFacing();
             
