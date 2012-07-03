@@ -213,7 +213,7 @@ public class MissionManager implements Serializable {
         		else r -= probWeight;
         	}
         }
-
+        
         // Initialize construction parameters
         Class[] parametersForFindingConstructor = { Person.class };
         Object[] parametersForInvokingConstructor = { person };

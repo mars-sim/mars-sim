@@ -595,16 +595,16 @@ public class BuildingManager implements Serializable {
         boolean goodLocation = true;
         
         // Create path for proposed new building position.
-        Rectangle2D newBuildingRect = new Rectangle2D.Double(xLoc + (width / 2D), 
-                yLoc + (length / 2D), width, length);
+        Rectangle2D newBuildingRect = new Rectangle2D.Double(xLoc - (width / 2D), 
+                yLoc - (length / 2D), width, length);
         Path2D newBuildingPath = getPathFromRectangleRotation(newBuildingRect, facing);
         
         // Check to see if proposed new building position intersects with any existing buildings.
         Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
         while (i.hasNext()) {
             Building existingBuilding = i.next();
-            Rectangle2D existingBuildingRect = new Rectangle2D.Double(existingBuilding.getXLocation() + 
-                    (existingBuilding.getWidth() / 2D), existingBuilding.getYLocation() + 
+            Rectangle2D existingBuildingRect = new Rectangle2D.Double(existingBuilding.getXLocation() - 
+                    (existingBuilding.getWidth() / 2D), existingBuilding.getYLocation() - 
                     (existingBuilding.getLength() / 2D), existingBuilding.getWidth(), existingBuilding.getLength());
             Path2D existingBuildingPath = getPathFromRectangleRotation(existingBuildingRect, 
                     existingBuilding.getFacing());
@@ -618,12 +618,12 @@ public class BuildingManager implements Serializable {
         
         // Check to see if proposed new building position intersects with any existing construction sites.
         Iterator<ConstructionSite> j = settlement.getConstructionManager().getConstructionSites().iterator();
-        while (j.hasNext()) {
+        while (j.hasNext() && goodLocation) {
             ConstructionSite existingSite = j.next();
             // Check if existing site is not the same as the new construction site.
             if ((site == null) || (!site.equals(existingSite))) {
-                Rectangle2D existingSiteRect = new Rectangle2D.Double(existingSite.getXLocation() + 
-                        (existingSite.getWidth() / 2D), existingSite.getYLocation() + 
+                Rectangle2D existingSiteRect = new Rectangle2D.Double(existingSite.getXLocation() - 
+                        (existingSite.getWidth() / 2D), existingSite.getYLocation() - 
                         (existingSite.getLength() / 2D), existingSite.getWidth(), existingSite.getLength());
                 Path2D existingSitePath = getPathFromRectangleRotation(existingSiteRect, 
                         existingSite.getFacing());
@@ -646,8 +646,8 @@ public class BuildingManager implements Serializable {
      * @return path representing rotated rectangle.
      */
     private Path2D getPathFromRectangleRotation(Rectangle2D rectangle, double rotation) {
-        double randianRotation = rotation * (Math.PI / 180D);
-        AffineTransform at = AffineTransform.getRotateInstance(randianRotation, rectangle.getCenterX(), 
+        double radianRotation = rotation * (Math.PI / 180D);
+        AffineTransform at = AffineTransform.getRotateInstance(radianRotation, rectangle.getCenterX(), 
                 rectangle.getCenterY());
         return new Path2D.Double(rectangle, at);
     }
