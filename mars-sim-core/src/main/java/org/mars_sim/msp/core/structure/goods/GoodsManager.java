@@ -1461,6 +1461,7 @@ public class GoodsManager implements Serializable {
         else if (COLLECT_ICE_MISSION.equals(missionType)) {
             AmountResource ice = AmountResource.findAmountResource("ice");
             demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ice));
+            if (demand > 100D) demand = 100D;
         }
         else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
             demand = getDriverNum();
@@ -1471,6 +1472,7 @@ public class GoodsManager implements Serializable {
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
             AmountResource regolith = AmountResource.findAmountResource("regolith");
             demand = getGoodValuePerItem(GoodsUtil.getResourceGood(regolith));
+            if (demand > 100D) demand = 100D;
         }
         else if (MINING_MISSION.equals(missionType)) {
             demand = getAreologistNum();

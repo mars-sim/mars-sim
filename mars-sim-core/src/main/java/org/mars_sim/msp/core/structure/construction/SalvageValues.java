@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -59,8 +60,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSettlementSalvageProfit(int constructionSkill) 
-{
+    public double getSettlementSalvageProfit(int constructionSkill) {
         
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((settlementSalvageValueCacheTime == null) || 
@@ -93,8 +93,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getAllSalvageSitesProfit(int constructionSkill) 
-{
+    public double getAllSalvageSitesProfit(int constructionSkill) {
         
         double result = 0D;
         
@@ -125,8 +124,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getSalvageSiteProfit(ConstructionSite site, int constructionSkill) 
-{
+    public double getSalvageSiteProfit(ConstructionSite site, int constructionSkill) {
         
         double result = 0D;
         
@@ -172,8 +170,7 @@ public class SalvageValues implements Serializable {
      * @return profit (VP)
      * @throws Exception if error determining profit.
      */
-    public double getNewSalvageSiteProfit(int constructionSkill) 
-{
+    public double getNewSalvageSiteProfit(int constructionSkill) {
         
         double result = 0D;
         
@@ -195,8 +192,7 @@ public class SalvageValues implements Serializable {
      * @return salvage profit (VP).
      * @throws Exception if error determining salvage profit.
      */
-    public double getNewBuildingSalvageProfit(Building building, int constructionSkill)
-{
+    public double getNewBuildingSalvageProfit(Building building, int constructionSkill) {
         double result = 0D;
         
         // Get current value of building.
@@ -221,10 +217,21 @@ public class SalvageValues implements Serializable {
         
         // Check that building doesn't have remaining life support at settlement.
         if (building.hasFunction(LifeSupport.NAME)) {
-            LifeSupport buildingLS = (LifeSupport) building.getFunction(LifeSupport.NAME);
-            int buildingLSCapacity = buildingLS.getOccupantCapacity();
-            int settlementLSCapacity = settlement.getLifeSupportCapacity();
-            if (buildingLSCapacity >= settlementLSCapacity) result = 0D;
+            if (settlement.getBuildingManager().getBuildings(LifeSupport.NAME).size() == 1) {
+                result = 0D;
+            }
+        }
+        
+        // Check if building has needed living accommodations for settlement population.
+        if (building.hasFunction(LivingAccommodations.NAME)) {
+            int popSize = settlement.getAllAssociatedPeople().size();
+            int popCapacity = settlement.getPopulationCapacity();
+            LivingAccommodations livingAccommodations = (LivingAccommodations) 
+                    building.getFunction(LivingAccommodations.NAME);
+            int buildingPopCapacity = livingAccommodations.getBeds();
+            if ((popCapacity - buildingPopCapacity) < popSize) {
+                result = 0D;
+            }
         }
         
         // Check that building doesn't have only airlock at settlement.
