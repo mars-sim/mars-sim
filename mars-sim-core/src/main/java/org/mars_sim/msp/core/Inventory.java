@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-07
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -62,16 +62,13 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error setting capacity.
      */
     public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
+        
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-//		try {
+
         resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
         clearAmountResourceCapacityCache();
-//		}
-//		catch (ResourceException e) {
-//			throw new IllegalStateException("Error adding resource type capacity: " + e.getMessage());
-//		}
     }
 
     /**
@@ -81,16 +78,13 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error adding capacity.
      */
     public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+        
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-//    	try {
+
         resourceStorage.addAmountResourcePhaseCapacity(phase, capacity);
         clearAmountResourceCapacityCache();
-//    	}
-//    	catch (ResourceException e) {
-//    		throw new IllegalStateException("Error adding resource phase capacity: " + e.getMessage());
-//    	}
     }
 
     /**
@@ -98,7 +92,8 @@ public class Inventory implements Serializable {
      * @param resource the resource.
      * @return true if storage capacity.
      */
-    public boolean hasAmountResourceCapacity(AmountResource resource) {
+    public synchronized boolean hasAmountResourceCapacity(AmountResource resource) {
+        
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
@@ -132,7 +127,8 @@ public class Inventory implements Serializable {
      * @return true if storage capacity.
      * @throws InventoryException if error checking capacity.
      */
-    public boolean hasAmountResourceCapacity(AmountResource resource, double amount) {
+    public synchronized boolean hasAmountResourceCapacity(AmountResource resource, double amount) {
+        
         try {
             boolean result = false;
             if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
@@ -176,7 +172,8 @@ public class Inventory implements Serializable {
      * @return capacity amount (kg).
      * @throws InventoryException if error determining capacity.
      */
-    public double getAmountResourceCapacity(AmountResource resource) {
+    public synchronized double getAmountResourceCapacity(AmountResource resource) {
+        
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
@@ -221,7 +218,8 @@ public class Inventory implements Serializable {
      * @return stored amount (kg).
      * @throws InventoryException if error getting amount stored.
      */
-    public double getAmountResourceStored(AmountResource resource) {
+    public synchronized double getAmountResourceStored(AmountResource resource) {
+        
         if (resource == null) {
             throw new IllegalArgumentException("resource is null");
         }
@@ -255,38 +253,28 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      * @throws InventoryException if error getting all amount resources.
      */
-    public Set<AmountResource> getAllAmountResourcesStored() {
-//    	try {
+    public synchronized Set<AmountResource> getAllAmountResourcesStored() {
+        
         if (allStoredAmountResourcesCache != null) {
-            return Collections.synchronizedSet(
-                    new HashSet<AmountResource>(allStoredAmountResourcesCache));
+            return new HashSet<AmountResource>(allStoredAmountResourcesCache);
         } else {
-            allStoredAmountResourcesCache = Collections.synchronizedSet(new HashSet<AmountResource>(1, 1));
-            synchronized (allStoredAmountResourcesCache) {
-                if (resourceStorage != null) {
-                    synchronized (resourceStorage) {
-                        allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
-                    }
+            allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
+            if (resourceStorage != null) {
+                synchronized (resourceStorage) {
+                    allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
                 }
-                if (containedUnits != null) {
-                    Iterator<Unit> i = containedUnits.iterator();
-                    while (i.hasNext()) {
-                        Set<AmountResource> containedResources =
-                                i.next().getInventory().getAllAmountResourcesStored();
-                        synchronized (containedResources) {
-                            allStoredAmountResourcesCache.addAll(containedResources);
-                        }
-                    }
-                }
-
-                return Collections.synchronizedSet(
-                        new HashSet<AmountResource>(allStoredAmountResourcesCache));
             }
+            if (containedUnits != null) {
+                Iterator<Unit> i = containedUnits.iterator();
+                while (i.hasNext()) {
+                    Set<AmountResource> containedResources =
+                            i.next().getInventory().getAllAmountResourcesStored();
+                    allStoredAmountResourcesCache.addAll(containedResources);
+                }
+            }
+
+            return new HashSet<AmountResource>(allStoredAmountResourcesCache);
         }
-//    	}
-//    	catch(Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -295,7 +283,7 @@ public class Inventory implements Serializable {
      * throws InventoryException if error getting total amount resources stored.
      */
     private double getTotalAmountResourcesStored() {
-//    	try {
+
         double result = 0D;
         if (totalAmountResourcesStoredSet) {
             result = totalAmountResourcesStored;
@@ -313,10 +301,6 @@ public class Inventory implements Serializable {
             totalAmountResourcesStoredSet = true;
         }
         return result;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -326,7 +310,9 @@ public class Inventory implements Serializable {
      * @return remaining capacity amount (kg).
      * throws InventoryException if error getting remaining capacity.
      */
-    public double getAmountResourceRemainingCapacity(AmountResource resource, boolean useContainedUnits) {
+    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource, 
+            boolean useContainedUnits) {
+        
         try {
             double result = 0D;
             if (useContainedUnits && (amountResourceRemainingCache != null) && 
@@ -501,7 +487,7 @@ public class Inventory implements Serializable {
      * Gets the general capacity.
      * @return amount capacity (kg).
      */
-    public double getGeneralCapacity() {
+    public synchronized double getGeneralCapacity() {
         return generalCapacity;
     }
 
@@ -510,13 +496,9 @@ public class Inventory implements Serializable {
      * @return stored mass (kg).
      * @throws InventoryException if error getting stored mass.
      */
-    public double getGeneralStoredMass() {
-//    	try {
+    public synchronized double getGeneralStoredMass() {
+
         return getItemResourceTotalMass() + getUnitTotalMass();
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -524,17 +506,13 @@ public class Inventory implements Serializable {
      * @return amount capacity (kg).
      * @throws InventoryException if error getting remaining capacity.
      */
-    public double getRemainingGeneralCapacity() {
-//    	try {
+    public synchronized double getRemainingGeneralCapacity() {
+
         double result = generalCapacity - getGeneralStoredMass();
         if (result > getContainerUnitGeneralCapacityLimit()) {
             result = getContainerUnitGeneralCapacityLimit();
         }
         return result;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /**
@@ -543,7 +521,8 @@ public class Inventory implements Serializable {
      * @return true if has resource.
      * @throws InventoryException if error checking resource.
      */
-    public boolean hasItemResource(ItemResource resource) {
+    public synchronized boolean hasItemResource(ItemResource resource) {
+        
         try {
             boolean result = false;
             if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
@@ -570,7 +549,8 @@ public class Inventory implements Serializable {
      * @return number of resources.
      * @throws InventoryException if error getting item resource.
      */
-    public int getItemResourceNum(ItemResource resource) {
+    public synchronized int getItemResourceNum(ItemResource resource) {
+        
         int result = 0;
         if (containedItemResources != null){
             final Integer res = containedItemResources.get(resource);
@@ -593,11 +573,14 @@ public class Inventory implements Serializable {
      * @return set of item resources.
      * @throws InventoryException if error getting all item resources.
      */
-    public Set<ItemResource> getAllItemResourcesStored() {
+    public synchronized Set<ItemResource> getAllItemResourcesStored() {
+        
         if (containedItemResources != null) {
-            return Collections.synchronizedSet(new HashSet<ItemResource>(containedItemResources.keySet()));
+            //return Collections.synchronizedSet(new HashSet<ItemResource>(containedItemResources.keySet()));
+            return new HashSet<ItemResource>(containedItemResources.keySet());
         } else {
-            return Collections.synchronizedSet(new HashSet<ItemResource>(0));
+            //return Collections.synchronizedSet(new HashSet<ItemResource>(0));
+            return new HashSet<ItemResource>(0);
         }
     }
 
@@ -607,6 +590,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting total mass.
      */
     private double getItemResourceTotalMass() {
+        
         double result = 0D;
         if (containedItemResources != null) {
             final Set<Entry<ItemResource, Integer>> es = containedItemResources.entrySet();
@@ -624,6 +608,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error storing the resources.
      */
     public synchronized void storeItemResources(ItemResource resource, int number) {
+        
         if (number < 0) {
             throw new IllegalStateException("Cannot store negative number of resources.");
         }
@@ -652,6 +637,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error retrieving the resources.
      */
     public synchronized void retrieveItemResources(ItemResource resource, int number) {
+        
         if (number < 0) {
             throw new IllegalStateException("Cannot retrieve negative number of resources.");
         }
@@ -709,8 +695,8 @@ public class Inventory implements Serializable {
      * @return total mass (kg).
      * @throws InventoryException if error getting mass.
      */
-    public double getUnitTotalMass() {
-//    	try {
+    public synchronized double getUnitTotalMass() {
+
         double totalMass = 0D;
         if (containedUnits != null) {
             Iterator<Unit> unitIt = containedUnits.iterator();
@@ -719,17 +705,14 @@ public class Inventory implements Serializable {
             }
         }
         return totalMass;
-//    	}
-//    	catch (Exception e) {
-//    		throw new IllegalStateException(e);
-//    	}
     }
 
     /** 
      * Gets a collection of all the stored units.
      * @return Collection of all units
      */
-    public Collection<Unit> getContainedUnits() {
+    public synchronized Collection<Unit> getContainedUnits() {
+        
         if (containedUnits != null) {
             return containedUnits;
         } else {
@@ -742,7 +725,8 @@ public class Inventory implements Serializable {
      * @param unit the unit.
      * @return true if unit is in storage.
      */
-    public boolean containsUnit(Unit unit) {
+    public synchronized boolean containsUnit(Unit unit) {
+        
         boolean result = false;
         if (containedUnits != null) {
             // See if this unit contains the unit in question.
@@ -759,6 +743,7 @@ public class Inventory implements Serializable {
      * @return true if class of unit is in storage.
      */
     private boolean containsUnitClassLocal(Class<? extends Unit> unitClass) {
+        
         boolean result = false;
         if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -776,7 +761,8 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return if class of unit is in storage.
      */
-    public boolean containsUnitClass(Class<? extends Unit> unitClass) {
+    public synchronized boolean containsUnitClass(Class<? extends Unit> unitClass) {
+        
         boolean result = false;
         if (containedUnits != null) {
             // Check if unit of class is in inventory.
@@ -792,7 +778,8 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return the instance of the unit class or null if none.
      */
-    public Unit findUnitOfClass(Class<? extends Unit> unitClass) {
+    public synchronized Unit findUnitOfClass(Class<? extends Unit> unitClass) {
+        
         Unit result = null;
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -811,7 +798,8 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
+    public synchronized Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
+        
         Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -830,7 +818,8 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return number of units
      */
-    public int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
+    public synchronized int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
+        
         int result = 0;
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -851,7 +840,8 @@ public class Inventory implements Serializable {
      * @return number of empty units.
      * @throws InventoryException if error determining number of units.
      */
-    public int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass) {
+    public synchronized int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass) {
+        
         int result = 0;
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
@@ -875,7 +865,8 @@ public class Inventory implements Serializable {
      * @return true if unit can be added to inventory
      * @throws InventoryException if error checking unit.
      */
-    public boolean canStoreUnit(Unit unit) {
+    public synchronized boolean canStoreUnit(Unit unit) {
+        
         boolean result = false;
         if (unit != null) {
             if (unit.getMass() <= getRemainingGeneralCapacity()) {
@@ -900,6 +891,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if unit could not be stored.
      */
     public synchronized void storeUnit(Unit unit) {
+        
         if (canStoreUnit(unit)) {
             if (containedUnits == null) {
                 containedUnits = new ConcurrentLinkedQueue<Unit>();
@@ -947,6 +939,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if unit could not be retrieved.
      */
     public synchronized void retrieveUnit(Unit unit) {
+        
         boolean retrieved = false;
         if (containsUnit(unit)) {
             if (containedUnits.contains(unit)) {
@@ -955,10 +948,12 @@ public class Inventory implements Serializable {
                 clearAmountResourceStoredCache();
                 if (owner != null) {
                     owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+
                     Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored().iterator();
                     while (i.hasNext()) {
                         owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, i.next());
                     }
+                    
                     Iterator<ItemResource> j = unit.getInventory().getAllItemResourcesStored().iterator();
                     while (j.hasNext()) {
                         owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, j.next());
@@ -978,7 +973,8 @@ public class Inventory implements Serializable {
      * Sets the coordinates of all units in the inventory.
      * @param newLocation the new coordinate location
      */
-    public void setCoordinates(Coordinates newLocation) {
+    public synchronized void setCoordinates(Coordinates newLocation) {
+        
         if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -992,7 +988,8 @@ public class Inventory implements Serializable {
      * @return stored mass (kg).
      * @throws InventoryException if error getting mass.
      */
-    public double getTotalInventoryMass() {
+    public synchronized double getTotalInventoryMass() {
+        
         double result = 0D;
 
         // Add total amount resource mass stored.
@@ -1009,7 +1006,8 @@ public class Inventory implements Serializable {
      * @return true if empty.
      * @throws InventoryException if error checking inventory.
      */
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
+        
         return (getTotalInventoryMass() == 0D);
     }
 
@@ -1019,6 +1017,7 @@ public class Inventory implements Serializable {
      * @throws InventoryException if error getting capacity.
      */
     private double getContainerUnitGeneralCapacityLimit() {
+        
         double result = Double.MAX_VALUE;
         if ((owner != null) && (owner.getContainerUnit() != null)) {
             Inventory containerInv = owner.getContainerUnit().getInventory();
@@ -1038,6 +1037,7 @@ public class Inventory implements Serializable {
      * Clears the amount resource capacity cache as well as the container's cache if any.
      */
     private void clearAmountResourceCapacityCache() {
+        
         if (amountResourceCapacityCache != null) {
             amountResourceCapacityCache.clear();
         }
@@ -1056,13 +1056,16 @@ public class Inventory implements Serializable {
      * Clears the amount resource stored cache as well as the container's cache if any.
      */
     private void clearAmountResourceStoredCache() {
+        
         if (amountResourceStoredCache != null) {
             amountResourceStoredCache.clear();
         }
 
         if (allStoredAmountResourcesCache != null) {
-            allStoredAmountResourcesCache.clear();
-            allStoredAmountResourcesCache = null;
+            synchronized(allStoredAmountResourcesCache) {
+                allStoredAmountResourcesCache.clear();
+                allStoredAmountResourcesCache = null;
+            }
         }
         totalAmountResourcesStored = -1D;
         totalAmountResourcesStoredSet = false;
@@ -1085,7 +1088,8 @@ public class Inventory implements Serializable {
      * @return inventory clone.
      * @throws InventoryException if error creating inventory clone.
      */
-    public Inventory clone(Unit owner) {
+    public synchronized Inventory clone(Unit owner) {
+        
         Inventory result = new Inventory(owner);
         result.addGeneralCapacity(generalCapacity);
 
@@ -1109,7 +1113,8 @@ public class Inventory implements Serializable {
     /**
      * Prepare object for garbage collection.
      */
-    public void destroy() {
+    public synchronized void destroy() {
+        
         owner = null;
         if (containedUnits != null) containedUnits.clear();
         containedUnits = null;

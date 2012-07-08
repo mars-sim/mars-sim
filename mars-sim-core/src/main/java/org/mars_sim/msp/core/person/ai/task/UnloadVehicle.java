@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -273,20 +274,20 @@ public class UnloadVehicle extends Task implements Serializable {
         // Unload amount resources.
         Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored().iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
-        	AmountResource resource = i.next();
-        	double amount = vehicleInv.getAmountResourceStored(resource);
-        	if (amount > amountUnloading) amount = amountUnloading;
-        	double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true);
-        	if (capacity < amount) {
-        		amount = capacity;
-        		amountUnloading = 0D;
-        	}
-        	try {
-        		vehicleInv.retrieveAmountResource(resource, amount);
-        		settlementInv.storeAmountResource(resource, amount, true);
-        	}
-        	catch (Exception e) {}
-			amountUnloading -= amount;
+            AmountResource resource = i.next();
+            double amount = vehicleInv.getAmountResourceStored(resource);
+            if (amount > amountUnloading) amount = amountUnloading;
+            double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true);
+            if (capacity < amount) {
+                amount = capacity;
+                amountUnloading = 0D;
+            }
+            try {
+                vehicleInv.retrieveAmountResource(resource, amount);
+                settlementInv.storeAmountResource(resource, amount, true);
+            }
+            catch (Exception e) {}
+            amountUnloading -= amount;
         }
         
         // Unload item resources.
@@ -328,18 +329,18 @@ public class UnloadVehicle extends Task implements Serializable {
     	
         // Unload amount resources.
     	// Note: only unloading amount resources at the moment.
-        Iterator<AmountResource> i = eInv.getAllAmountResourcesStored().iterator();
-        while (i.hasNext()) {
-        	AmountResource resource = i.next();
-        	double amount = eInv.getAmountResourceStored(resource);
-        	double capacity = sInv.getAmountResourceRemainingCapacity(resource, true);
-        	if (amount < capacity) amount = capacity;
-        	try {
-        		eInv.retrieveAmountResource(resource, amount);
-        		sInv.storeAmountResource(resource, amount, true);
-        	}
-        	catch (Exception e) {}
-        }
+    	Iterator<AmountResource> i = eInv.getAllAmountResourcesStored().iterator();
+    	while (i.hasNext()) {
+    	    AmountResource resource = i.next();
+    	    double amount = eInv.getAmountResourceStored(resource);
+    	    double capacity = sInv.getAmountResourceRemainingCapacity(resource, true);
+    	    if (amount < capacity) amount = capacity;
+    	    try {
+    	        eInv.retrieveAmountResource(resource, amount);
+    	        sInv.storeAmountResource(resource, amount, true);
+    	    }
+    	    catch (Exception e) {}
+    	}
     }
     
 	/**
