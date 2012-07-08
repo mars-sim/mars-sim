@@ -106,7 +106,6 @@ public class OngoingStudyListPanel extends JPanel {
                 
                 if (scrollSelection) {
                     Rectangle cellRect = studyTable.getCellRect(studyIndex, 0, true);
-                    System.out.println("Scrolling selection");
                     listScrollPane.getViewport().setViewPosition(cellRect.getLocation());
                 }
             }
