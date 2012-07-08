@@ -128,28 +128,23 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             
-//            try {
-            	keys.addAll(inventory.getAllAmountResourcesStored());
-            	Iterator<Resource> iAmount = keys.iterator();
-            	while (iAmount.hasNext()) {
-            		AmountResource resource = (AmountResource) iAmount.next();
-            		resources.put(resource, inventory.getAmountResourceStored(resource));
-            	}
-            	
-            	Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
-            	keys.addAll(itemResources);
-            	Iterator<ItemResource> iItem = itemResources.iterator();
-            	while (iItem.hasNext()) {
-            		ItemResource resource = iItem.next();
-            		resources.put(resource, inventory.getItemResourceNum(resource));
-            	}
-                
-                // Sort resources alphabetically by name.
-                Collections.sort(keys);
-//            }
-//            catch (InventoryException e) {
-//                e.printStackTrace(System.err);
-//            }
+            keys.addAll(inventory.getAllAmountResourcesStored());
+            Iterator<Resource> iAmount = keys.iterator();
+            while (iAmount.hasNext()) {
+                AmountResource resource = (AmountResource) iAmount.next();
+                resources.put(resource, inventory.getAmountResourceStored(resource));
+            }
+
+            Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
+            keys.addAll(itemResources);
+            Iterator<ItemResource> iItem = itemResources.iterator();
+            while (iItem.hasNext()) {
+                ItemResource resource = iItem.next();
+                resources.put(resource, inventory.getItemResourceNum(resource));
+            }
+
+            // Sort resources alphabetically by name.
+            Collections.sort(keys);
         }
         
         public int getRowCount() {
