@@ -178,7 +178,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
         if (isDone()) return time;
         
         // If duration, send invitation.
-        if (getDuration() < (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
             
             // Add invitation to study.
             study.addInvitedResearcher(invitee);

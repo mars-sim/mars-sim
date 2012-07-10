@@ -94,7 +94,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
         if (isDone()) return time;
         
         // If duration, send respond to invitation.
-        if (getDuration() < (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
             
             study.respondingInvitedResearcher(person);
             Job job = person.getMind().getJob();

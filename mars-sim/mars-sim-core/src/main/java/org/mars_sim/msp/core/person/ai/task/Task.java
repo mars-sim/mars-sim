@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.02 2012-06-08
+ * @version 3.03 2012-07-09
  * @author Scott Davis
  */
 
@@ -263,8 +263,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
                             endTask();
                         }
                         else {
-                            timeCompleted += timeLeft;
+                            double remainingTime = timeLeft;
                             timeLeft = performMappedPhase(timeLeft);
+                            timeCompleted += remainingTime;
                         }
                     } else {
                         timeLeft = performMappedPhase(timeLeft);

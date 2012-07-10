@@ -132,7 +132,7 @@ class EatMeal extends Task implements Serializable {
 			condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
 		}
     	
-        if (getDuration() < (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
     		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     		try {
     			person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
