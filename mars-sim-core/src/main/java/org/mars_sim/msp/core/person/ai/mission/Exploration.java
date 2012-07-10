@@ -726,7 +726,7 @@ public class Exploration extends RoverMission implements Serializable {
         Coordinates startingLocation = getCurrentMissionLocation();
 
         // Determine the first exploration site.
-        Coordinates newLocation = determineFirstExplorationSite((range / 3D),
+        Coordinates newLocation = determineFirstExplorationSite((range / 2D),
                 areologySkill);
         if (newLocation != null) {
             unorderedSites.add(newLocation);
