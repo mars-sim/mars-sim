@@ -222,7 +222,9 @@ public class TendGreenhouse extends Task implements Serializable {
 			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
 			farmBuildings = BuildingManager.getBestRelationshipBuildings(person, farmBuildings);
 			
-			if (farmBuildings.size() > 0) result = farmBuildings.get(0);
+			if (farmBuildings.size() > 0) {
+			    result = farmBuildings.get(RandomUtil.getRandomInt(farmBuildings.size() - 1));
+			}
         }
         
         return result;
