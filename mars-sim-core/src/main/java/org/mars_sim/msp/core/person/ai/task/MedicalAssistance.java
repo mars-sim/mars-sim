@@ -173,7 +173,7 @@ public class MedicalAssistance extends Task implements Serializable {
         // Check for accident in infirmary.
         checkForAccident(time);
 
-        if (getDuration() < (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
             problem.startRecovery();
             endTask();
         }

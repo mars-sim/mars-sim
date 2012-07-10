@@ -169,7 +169,7 @@ public class PrescribeMedication extends Task implements Serializable {
     private double medicatingPhase(double time) {
         
         // If duration, provide medication.
-        if (getDuration() < (getTimeCompleted() + time)) {
+        if (getDuration() <= (getTimeCompleted() + time)) {
             if (patient != null) {
                 if (medication != null) {
                     PhysicalCondition condition = patient.getPhysicalCondition();

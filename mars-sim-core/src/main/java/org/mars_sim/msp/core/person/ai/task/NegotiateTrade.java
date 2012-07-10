@@ -89,7 +89,7 @@ public class NegotiateTrade extends Task implements Serializable {
 		followSeller();
 		
 		// If duration, complete trade.
-		if (getDuration() < (getTimeCompleted() + time)) {
+		if (getDuration() <= (getTimeCompleted() + time)) {
             
 		    // Get the value of the load that is being sold to the destination settlement.
 		    double soldLoadValue = determineModifiedSoldLoadValue();
