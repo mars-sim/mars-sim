@@ -26,7 +26,7 @@ import java.util.List;
 public class ResourceProcessing extends Function implements Serializable {
         
 	public static final String NAME = "Resource Processing";
-	private static final double PROCESS_MAX_VALUE = 10D;
+	private static final double PROCESS_MAX_VALUE = 100D;
         
 	private double powerDownProcessingLevel;
     private List<ResourceProcess> resourceProcesses;

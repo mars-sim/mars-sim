@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-09
  * @author Scott Davis
  */
 
@@ -59,13 +59,8 @@ public class Manufacture extends Function implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-//		try {
-			techLevel = config.getManufactureTechLevel(building.getName());
-			concurrentProcesses = config.getManufactureConcurrentProcesses(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Manufacture.constructor: " + e.getMessage());
-//		}
+		techLevel = config.getManufactureTechLevel(building.getName());
+		concurrentProcesses = config.getManufactureConcurrentProcesses(building.getName());
 		
 		processes = new ArrayList<ManufactureProcess>();
 		salvages = new ArrayList<SalvageProcess>();
@@ -176,30 +171,26 @@ public class Manufacture extends Function implements Serializable {
 		processes.add(process);
 		
 		// Consume inputs.
-//		try {
-			Inventory inv = getBuilding().getInventory();
-			Iterator<ManufactureProcessItem> i = process.getInfo().getInputList().iterator();
-			while (i.hasNext()) {
-				ManufactureProcessItem item = i.next();
-				if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-					AmountResource resource = AmountResource.findAmountResource(item.getName());
-					inv.retrieveAmountResource(resource, item.getAmount());
-				}
-				else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
-					Part part = (Part) ItemResource.findItemResource(item.getName());
-					inv.retrieveItemResources(part, (int) item.getAmount());
-				}
-				else throw new IllegalStateException("Manufacture process input: " +
-						item.getType() + " not a valid type.");
-				
-				// Recalculate settlement good value for input item.
-				GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-				goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
-			}
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Problem adding manufacturing process.", e);
-//		}
+		Inventory inv = getBuilding().getInventory();
+		Iterator<ManufactureProcessItem> i = process.getInfo().getInputList().iterator();
+		while (i.hasNext()) {
+		    ManufactureProcessItem item = i.next();
+		    if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+		        AmountResource resource = AmountResource.findAmountResource(item.getName());
+		        inv.retrieveAmountResource(resource, item.getAmount());
+		    }
+		    else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+		        Part part = (Part) ItemResource.findItemResource(item.getName());
+		        inv.retrieveItemResources(part, (int) item.getAmount());
+		    }
+		    else throw new IllegalStateException("Manufacture process input: " +
+		            item.getType() + " not a valid type.");
+
+		    // Recalculate settlement good value for input item.
+		    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+		    goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+		}
+
 		
 		// Log manufacturing process starting.
 		if (logger.isLoggable(Level.FINEST)) {
@@ -232,34 +223,30 @@ public class Manufacture extends Function implements Serializable {
         
         salvages.add(process);
         
-//        try {
-            // Retrieve salvaged unit from inventory and remove from unit manager.
-            Inventory inv = getBuilding().getInventory();
-            Unit salvagedUnit = process.getSalvagedUnit();
-            if (salvagedUnit != null) {
-                inv.retrieveUnit(salvagedUnit);
-            }
-            else throw new IllegalStateException("Salvaged unit is null");
-            
-            // Set the salvage process info for the salvaged unit.
-            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-            ((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement);
-            
-            // Recalculate settlement good value for salvaged unit.
-            GoodsManager goodsManager = settlement.getGoodsManager();
-            Good salvagedGood = null;
-            if (salvagedUnit instanceof Equipment) {
-                salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
-            }
-            else if (salvagedUnit instanceof Vehicle) {
-                salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
-            }
-            if (salvagedGood != null) goodsManager.updateGoodValue(salvagedGood, false);
-            else throw new IllegalStateException("Salvaged good is null");
-//        }
-//        catch (Exception e) {
-//            throw new IllegalStateException("Problem adding salvage process.", e);
-//        }
+
+        // Retrieve salvaged unit from inventory and remove from unit manager.
+        Inventory inv = getBuilding().getInventory();
+        Unit salvagedUnit = process.getSalvagedUnit();
+        if (salvagedUnit != null) {
+            inv.retrieveUnit(salvagedUnit);
+        }
+        else throw new IllegalStateException("Salvaged unit is null");
+
+        // Set the salvage process info for the salvaged unit.
+        Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+        ((Salvagable) salvagedUnit).startSalvage(process.getInfo(), settlement);
+
+        // Recalculate settlement good value for salvaged unit.
+        GoodsManager goodsManager = settlement.getGoodsManager();
+        Good salvagedGood = null;
+        if (salvagedUnit instanceof Equipment) {
+            salvagedGood = GoodsUtil.getEquipmentGood(salvagedUnit.getClass());
+        }
+        else if (salvagedUnit instanceof Vehicle) {
+            salvagedGood = GoodsUtil.getVehicleGood(salvagedUnit.getDescription());
+        }
+        if (salvagedGood != null) goodsManager.updateGoodValue(salvagedGood, false);
+        else throw new IllegalStateException("Salvaged good is null");
         
         // Log salvage process starting.
         if (logger.isLoggable(Level.FINEST)) {
@@ -372,68 +359,63 @@ public class Manufacture extends Function implements Serializable {
     	
         if (!premature) {
             // Produce outputs.
-//            try {
-                Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-                UnitManager manager = Simulation.instance().getUnitManager();
-                Inventory inv = getBuilding().getInventory();
-			
-                Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
-                while (j.hasNext()) {
-                    ManufactureProcessItem item = j.next();
-                    if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
-                        if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
-                            // Produce amount resources.
-                            AmountResource resource = AmountResource.findAmountResource(item.getName());
-                            double amount = item.getAmount();
-                            double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
-                            if (item.getAmount() > capacity) amount = capacity;  
-                            inv.storeAmountResource(resource, amount, true);
-                        }
-                        else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
-                            // Produce parts.
-                            Part part = (Part) ItemResource.findItemResource(item.getName());
-                            double mass = item.getAmount() * part.getMassPerItem();
-                            double capacity = inv.getGeneralCapacity();
-                            if (mass <= capacity)
-                                inv.storeItemResources(part, (int) item.getAmount());
-                        }
-                        else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
-                            // Produce equipment.
-                            String equipmentType = item.getName();
-                            int number = (int) item.getAmount();
-                            for (int x = 0; x < number; x++) {
-                                Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
-                                equipment.setName(manager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
-                                inv.storeUnit(equipment);
-                            }
-                        }
-                        else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
-                            // Produce vehicles.
-                            String vehicleType = item.getName();
-                            int number = (int) item.getAmount();
-                            for (int x = 0; x < number; x++) {
-                                if (LightUtilityVehicle.NAME.equals(vehicleType)) {
-                                    String name = manager.getNewName(UnitManager.VEHICLE, "LUV", null);
-                                    manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
-                                }
-                                else {
-                                    String name = manager.getNewName(UnitManager.VEHICLE, null, null);
-                                    manager.addUnit(new Rover(name, vehicleType, settlement));
-                                }
-                            }
-                        }
-                        else throw new IllegalStateException("Manufacture.addProcess(): output: " +
-                                item.getType() + " not a valid type.");
-					
-                        // Recalculate settlement good value for output item.
-                        GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
-                        goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            UnitManager manager = Simulation.instance().getUnitManager();
+            Inventory inv = getBuilding().getInventory();
+
+            Iterator<ManufactureProcessItem> j = process.getInfo().getOutputList().iterator();
+            while (j.hasNext()) {
+                ManufactureProcessItem item = j.next();
+                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
+                    if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+                        // Produce amount resources.
+                        AmountResource resource = AmountResource.findAmountResource(item.getName());
+                        double amount = item.getAmount();
+                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
+                        if (item.getAmount() > capacity) amount = capacity;  
+                        inv.storeAmountResource(resource, amount, true);
                     }
+                    else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+                        // Produce parts.
+                        Part part = (Part) ItemResource.findItemResource(item.getName());
+                        double mass = item.getAmount() * part.getMassPerItem();
+                        double capacity = inv.getGeneralCapacity();
+                        if (mass <= capacity)
+                            inv.storeItemResources(part, (int) item.getAmount());
+                    }
+                    else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+                        // Produce equipment.
+                        String equipmentType = item.getName();
+                        int number = (int) item.getAmount();
+                        for (int x = 0; x < number; x++) {
+                            Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+                            equipment.setName(manager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
+                            inv.storeUnit(equipment);
+                        }
+                    }
+                    else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+                        // Produce vehicles.
+                        String vehicleType = item.getName();
+                        int number = (int) item.getAmount();
+                        for (int x = 0; x < number; x++) {
+                            if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                                String name = manager.getNewName(UnitManager.VEHICLE, "LUV", null);
+                                manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
+                            }
+                            else {
+                                String name = manager.getNewName(UnitManager.VEHICLE, null, null);
+                                manager.addUnit(new Rover(name, vehicleType, settlement));
+                            }
+                        }
+                    }
+                    else throw new IllegalStateException("Manufacture.addProcess(): output: " +
+                            item.getType() + " not a valid type.");
+
+                    // Recalculate settlement good value for output item.
+                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+                    goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
                 }
-//            }
-//            catch (Exception e) {
-//                throw new BuildingException("Problem completing manufacturing process.", e);
-//            }
+            }
         }
         
         processes.remove(process);
@@ -458,50 +440,45 @@ public class Manufacture extends Function implements Serializable {
         
         if (!premature) {    
             // Produce salvaged parts.
-//            try {
-                Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-                GoodsManager goodsManager = settlement.getGoodsManager();
-                Inventory inv = getBuilding().getInventory();
-            
-                // Determine the salvage chance based on the wear condition of the item.
-                double salvageChance = 50D;
-                Unit salvagedUnit = process.getSalvagedUnit();
-                if (salvagedUnit instanceof Malfunctionable) {
-                    Malfunctionable malfunctionable = (Malfunctionable) salvagedUnit;
-                    double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
-                    salvageChance = (wearCondition * .25D) + 25D;
+            Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            GoodsManager goodsManager = settlement.getGoodsManager();
+            Inventory inv = getBuilding().getInventory();
+
+            // Determine the salvage chance based on the wear condition of the item.
+            double salvageChance = 50D;
+            Unit salvagedUnit = process.getSalvagedUnit();
+            if (salvagedUnit instanceof Malfunctionable) {
+                Malfunctionable malfunctionable = (Malfunctionable) salvagedUnit;
+                double wearCondition = malfunctionable.getMalfunctionManager().getWearCondition();
+                salvageChance = (wearCondition * .25D) + 25D;
+            }
+
+            // Add the average material science skill of the salvagers.
+            salvageChance += process.getAverageSkillLevel() * 5D;
+
+            // Salvage parts.
+            List<PartSalvage> partsToSalvage = process.getInfo().getPartSalvageList();
+            Iterator<PartSalvage> i = partsToSalvage.iterator();
+            while (i.hasNext()) {
+                PartSalvage partSalvage = i.next();
+                Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
+
+                int totalNumber = 0;
+                for (int x = 0; x < partSalvage.getNumber(); x++) {
+                    if (RandomUtil.lessThanRandPercent(salvageChance)) totalNumber++;
                 }
-            
-                // Add the average materal science skill of the salvagers.
-                salvageChance += process.getAverageSkillLevel() * 5D;
-            
-                // Salvage parts.
-                List<PartSalvage> partsToSalvage = process.getInfo().getPartSalvageList();
-                Iterator<PartSalvage> i = partsToSalvage.iterator();
-                while (i.hasNext()) {
-                    PartSalvage partSalvage = i.next();
-                    Part part = (Part) ItemResource.findItemResource(partSalvage.getName());
-                
-                    int totalNumber = 0;
-                    for (int x = 0; x < partSalvage.getNumber(); x++) {
-                        if (RandomUtil.lessThanRandPercent(salvageChance)) totalNumber++;
-                    }
-                
-                    if (totalNumber > 0) {
-                        partsSalvaged.put(part, totalNumber);
-                    
-                        double mass = totalNumber * part.getMassPerItem();
-                        double capacity = inv.getGeneralCapacity();
-                        if (mass <= capacity) inv.storeItemResources(part, totalNumber);
-                    
-                        // Recalculate settlement good value for salvaged part.
-                        goodsManager.updateGoodValue(GoodsUtil.getResourceGood(part), false);
-                    }
+
+                if (totalNumber > 0) {
+                    partsSalvaged.put(part, totalNumber);
+
+                    double mass = totalNumber * part.getMassPerItem();
+                    double capacity = inv.getGeneralCapacity();
+                    if (mass <= capacity) inv.storeItemResources(part, totalNumber);
+
+                    // Recalculate settlement good value for salvaged part.
+                    goodsManager.updateGoodValue(GoodsUtil.getResourceGood(part), false);
                 }
-//            }
-//            catch (Exception e) {
-//                throw new BuildingException("Problem completing manufacturing process.", e);
-//            }
+            }
         }
             
         // Finish the salvage.
