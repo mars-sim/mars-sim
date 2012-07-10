@@ -538,7 +538,7 @@ public class BuildingManager implements Serializable {
                     }
                 }
             }
-        
+            
             if (newBuilding) buildingValuesNewCache.put(buildingName, result);
             else buildingValuesOldCache.put(buildingName, result);
             

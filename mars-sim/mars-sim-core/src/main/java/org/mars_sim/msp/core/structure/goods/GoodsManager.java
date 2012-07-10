@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.03 2012-06-27
+ * @version 3.03 2012-07-08
  * @author Scott Davis
  */
 
@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Architect;
 import org.mars_sim.msp.core.person.ai.job.Areologist;
+import org.mars_sim.msp.core.person.ai.job.Biologist;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Trader;
 import org.mars_sim.msp.core.person.ai.mission.*;
@@ -59,6 +60,8 @@ public class GoodsManager implements Serializable {
     private static final String COLLECT_REGOLITH_MISSION = "collect regolith";
     private static final String MINING_MISSION = "mining";
     private static final String CONSTRUCTION_MISSION = "construction";
+    private static final String AREOLOGY_STUDY_FIELD_MISSION = "areology field study";
+    private static final String BIOLOGY_STUDY_FIELD_MISSION = "biology field study";
 
     // Number modifiers for outstanding repair and maintenance parts.
     private static final int OUTSTANDING_REPAIR_PART_MODIFIER = 100;
@@ -66,7 +69,7 @@ public class GoodsManager implements Serializable {
 
     // Value multiplier factors for certain goods.
     private static final double EVA_SUIT_FACTOR = 100D;
-    private static final double VEHICLE_FACTOR = 1000D;
+    private static final double VEHICLE_FACTOR = 10000D;
     private static final double LIFE_SUPPORT_FACTOR = 4D;
     private static final double VEHICLE_FUEL_FACTOR = 10D;
     private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .75D;
@@ -1249,6 +1252,19 @@ public class GoodsManager implements Serializable {
         }
         return result;
     }
+    
+    /**
+     * Gets the number of biologists associated with the settlement.
+     * @return number of biologists.
+     */
+    private int getBiologistNum() {
+        int result = 0;
+        Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+        while (i.hasNext()) {
+            if (i.next().getMind().getJob() instanceof Biologist) result ++;
+        }
+        return result;
+    }
 
     /**
      * Gets the number of architect associated with the settlement.
@@ -1384,6 +1400,12 @@ public class GoodsManager implements Serializable {
 
                 double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
                 if (constructionMissionValue > value) value = constructionMissionValue;
+                
+                double areologyFieldMissionValue = determineMissionVehicleValue(AREOLOGY_STUDY_FIELD_MISSION, vehicleType, buy);
+                if (areologyFieldMissionValue > value) value = areologyFieldMissionValue;
+                
+                double biologyFieldMissionValue = determineMissionVehicleValue(BIOLOGY_STUDY_FIELD_MISSION, vehicleType, buy);
+                if (biologyFieldMissionValue > value) value = biologyFieldMissionValue;
             }
 
             // Multiply by vehicle factor.
@@ -1461,7 +1483,7 @@ public class GoodsManager implements Serializable {
         else if (COLLECT_ICE_MISSION.equals(missionType)) {
             AmountResource ice = AmountResource.findAmountResource("ice");
             demand = getGoodValuePerItem(GoodsUtil.getResourceGood(ice));
-            if (demand > 100D) demand = 100D;
+            if (demand > 10D) demand = 10D;
         }
         else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
             demand = getDriverNum();
@@ -1472,13 +1494,19 @@ public class GoodsManager implements Serializable {
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
             AmountResource regolith = AmountResource.findAmountResource("regolith");
             demand = getGoodValuePerItem(GoodsUtil.getResourceGood(regolith));
-            if (demand > 100D) demand = 100D;
+            if (demand > 10D) demand = 10D;
         }
         else if (MINING_MISSION.equals(missionType)) {
             demand = getAreologistNum();
         }
         else if (CONSTRUCTION_MISSION.equals(missionType)) {
             // No demand for rover vehicles.
+        }
+        else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+            demand = getAreologistNum();
+        }
+        else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+            demand = getBiologistNum();
         }
 
         return demand;
@@ -1556,6 +1584,36 @@ public class GoodsManager implements Serializable {
         }
         else if (CONSTRUCTION_MISSION.equals(missionType)) {
             // No rover vehicles needed.
+        }
+        else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+            if (crewCapacity >= 2) capacity = 1D;
+            
+            if (config.hasLab(vehicleType)) {
+                if (config.getLabTechSpecialities(vehicleType).contains("Areology")) {
+                    capacity += config.getLabTechLevel(vehicleType);
+                }
+                else {
+                    capacity /= 2D;
+                }
+            }
+
+            double range = getVehicleRange(vehicleType);
+            if (range == 0D) capacity = 0D;
+        }
+        else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
+            if (crewCapacity >= 2) capacity = 1D;
+            
+            if (config.hasLab(vehicleType)) {
+                if (config.getLabTechSpecialities(vehicleType).contains("Biology")) {
+                    capacity += config.getLabTechLevel(vehicleType);
+                }
+                else {
+                    capacity /= 2D;
+                }
+            }
+
+            double range = getVehicleRange(vehicleType);
+            if (range == 0D) capacity = 0D;
         }
 
         return capacity;
