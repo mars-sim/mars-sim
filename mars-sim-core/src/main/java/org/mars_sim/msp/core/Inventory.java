@@ -259,17 +259,22 @@ public class Inventory implements Serializable {
             return new HashSet<AmountResource>(allStoredAmountResourcesCache);
         } else {
             allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
-            if (resourceStorage != null) {
-                synchronized (resourceStorage) {
-                    allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
+            synchronized (allStoredAmountResourcesCache) {
+                if (resourceStorage != null) {
+                    synchronized (resourceStorage) {
+                        allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
+                    }
                 }
-            }
-            if (containedUnits != null) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    Set<AmountResource> containedResources =
-                            i.next().getInventory().getAllAmountResourcesStored();
-                    allStoredAmountResourcesCache.addAll(containedResources);
+                
+                if (containedUnits != null) {
+                    synchronized (containedUnits) {
+                        Iterator<Unit> i = containedUnits.iterator();
+                        while (i.hasNext()) {
+                            Set<AmountResource> containedResources =
+                                    i.next().getInventory().getAllAmountResourcesStored();
+                            allStoredAmountResourcesCache.addAll(containedResources);
+                        }
+                    }
                 }
             }
 
@@ -1062,10 +1067,8 @@ public class Inventory implements Serializable {
         }
 
         if (allStoredAmountResourcesCache != null) {
-            synchronized(allStoredAmountResourcesCache) {
-                allStoredAmountResourcesCache.clear();
-                allStoredAmountResourcesCache = null;
-            }
+            allStoredAmountResourcesCache.clear();
+            allStoredAmountResourcesCache = null;
         }
         totalAmountResourcesStored = -1D;
         totalAmountResourcesStoredSet = false;
