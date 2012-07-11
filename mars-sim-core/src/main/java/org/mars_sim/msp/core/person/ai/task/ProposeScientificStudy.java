@@ -89,7 +89,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
                 // Increase probability if person's current job is related to study's science.
                 Job job = person.getMind().getJob();
                 Science science = study.getScience();
-                if ((job != null) && science.equals(ScienceUtil.getAssociatedScience(job))) result = 100D;
+                if ((job != null) && science.equals(ScienceUtil.getAssociatedScience(job))) result = 50D;
                 else result = 10D;
             }
         }

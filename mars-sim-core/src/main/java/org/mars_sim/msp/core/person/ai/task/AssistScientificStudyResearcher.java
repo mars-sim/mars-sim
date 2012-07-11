@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -67,17 +67,11 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
                 
                 // If in settlement, move teacher to building researcher is in.
                 if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//                    try {
-                        Building assistantBuilding = BuildingManager.getBuilding(person);
-                        Building researcherBuilding = BuildingManager.getBuilding(researcher);
-                        if (!assistantBuilding.equals(researcherBuilding)) 
-                            BuildingManager.addPersonToBuilding(person, researcherBuilding);
-//                    }
-//                    catch (BuildingException e) {
-//                        logger.log(Level.SEVERE, "AssistScientificStudyResearcher.constructor(): " +
-//                                e.getMessage());
-//                        endTask();
-//                    }
+
+                    Building assistantBuilding = BuildingManager.getBuilding(person);
+                    Building researcherBuilding = BuildingManager.getBuilding(researcher);
+                    if (!assistantBuilding.equals(researcherBuilding)) 
+                        BuildingManager.addPersonToBuilding(person, researcherBuilding);
                 }
             }
             else {
@@ -105,25 +99,20 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         double result = 0D;
         
         // Find potential researchers.
-        Collection potentialResearchers = getBestResearchers(person);
+        Collection<Person> potentialResearchers = getBestResearchers(person);
         if (potentialResearchers.size() > 0) {
             result = 50D; 
         
             // If assistant is in a settlement, use crowding modifier.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
                 Person researcher = (Person) potentialResearchers.toArray()[0];
-//                try {
-                    Building building = BuildingManager.getBuilding(researcher);
-                    if (building != null) {
-                        result *= Task.getCrowdingProbabilityModifier(person, building);
-                        result *= Task.getRelationshipModifier(person, building);
-                    }
-                    else result = 0D;
-//                }
-//                catch (BuildingException e) {
-//                    logger.log(Level.SEVERE,"AssistScientificStudyResearcher.getProbability(): " +
-//                            e.getMessage());
-//                }
+
+                Building building = BuildingManager.getBuilding(researcher);
+                if (building != null) {
+                    result *= Task.getCrowdingProbabilityModifier(person, building);
+                    result *= Task.getRelationshipModifier(person, building);
+                }
+                else result = 0D;
             }
         }
         
@@ -159,35 +148,33 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         // If assistant is in a settlement, best researchers are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
         if (assistant.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//            try {
-                // Find the least crowded buildings that researchers are in.
-                int crowding = Integer.MAX_VALUE;
-                Iterator<Person> i = researchers.iterator();
-                while (i.hasNext()) {
-                    Person researcher = i.next();
-                    Building building = BuildingManager.getBuilding(researcher);
-                    if (building != null) {
-                        LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-                        int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-                        if (buildingCrowding < -1) buildingCrowding = -1;
-                        if (buildingCrowding < crowding) crowding = buildingCrowding;
-                    }
+
+            // Find the least crowded buildings that researchers are in.
+            int crowding = Integer.MAX_VALUE;
+            Iterator<Person> i = researchers.iterator();
+            while (i.hasNext()) {
+                Person researcher = i.next();
+                Building building = BuildingManager.getBuilding(researcher);
+                if (building != null) {
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+                    if (buildingCrowding < -1) buildingCrowding = -1;
+                    if (buildingCrowding < crowding) crowding = buildingCrowding;
                 }
-                
-                // Add researchers in least crowded buildings to result.
-                Iterator<Person> j = researchers.iterator();
-                while (j.hasNext()) {
-                    Person researcher = j.next();
-                    Building building = BuildingManager.getBuilding(researcher);
-                    if (building != null) {
-                        LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-                        int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
-                        if (buildingCrowding < -1) buildingCrowding = -1;
-                        if (buildingCrowding == crowding) leastCrowded.add(researcher);
-                    }
+            }
+
+            // Add researchers in least crowded buildings to result.
+            Iterator<Person> j = researchers.iterator();
+            while (j.hasNext()) {
+                Person researcher = j.next();
+                Building building = BuildingManager.getBuilding(researcher);
+                if (building != null) {
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
+                    if (buildingCrowding < -1) buildingCrowding = -1;
+                    if (buildingCrowding == crowding) leastCrowded.add(researcher);
                 }
-//            }
-//            catch (BuildingException e) {}
+            }
         }
         else leastCrowded = researchers;
         

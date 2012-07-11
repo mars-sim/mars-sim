@@ -139,7 +139,7 @@ public class LoadVehicle extends Task implements Serializable {
         	// Check all vehicle missions occurring at the settlement.
         	try {
         		List<Mission> missions = getAllMissionsNeedingLoading(person.getSettlement());
-        		result = 100D * missions.size();
+        		result = 50D * missions.size();
         	}
         	catch (Exception e) {
         	    logger.log(Level.SEVERE, "Error finding loading missions.", e);

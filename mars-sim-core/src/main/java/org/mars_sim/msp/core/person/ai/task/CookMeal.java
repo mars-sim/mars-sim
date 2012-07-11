@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -24,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -42,7 +43,7 @@ public class CookMeal extends Task implements Serializable {
 	// Static members
 	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
 	
-	// Starting mealtimes (millisol) for 0 degrees longitude.
+	// Starting meal times (millisol) for 0 degrees longitude.
 	private static final double BREAKFAST_START = 300D;
 	private static final double LUNCH_START = 500D;
 	private static final double DINNER_START = 700D;
@@ -283,9 +284,12 @@ public class CookMeal extends Task implements Serializable {
 			kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
 			kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
 			kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
-			kitchenBuildings = BuildingManager.getBestRelationshipBuildings(person, kitchenBuildings);
 			
-			if (kitchenBuildings.size() > 0) result = kitchenBuildings.get(0);
+			if (kitchenBuildings.size() > 0) {
+                Map<Building, Double> kitchenBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, kitchenBuildings);
+                result = RandomUtil.getWeightedRandomObject(kitchenBuildingProbs);
+            }
 		}		
 		
 		return result;

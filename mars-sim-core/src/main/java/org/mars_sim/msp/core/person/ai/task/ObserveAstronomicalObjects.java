@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -105,7 +106,7 @@ public class ObserveAstronomicalObjects extends Task implements
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
                         if (astronomy.equals(primaryStudy.getScience())) {
                             try {
-                                double primaryResult = 200D;
+                                double primaryResult = 100D;
                             
                                 // Get observatory building crowding modifier.
                                 primaryResult *= getObservatoryCrowdingModifier(person, observatory);
@@ -134,7 +135,7 @@ public class ObserveAstronomicalObjects extends Task implements
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                             if (astronomy.equals(collabStudy.getCollaborativeResearchers().get(person))) {
                                 try {
-                                    double collabResult = 100D;
+                                    double collabResult = 50D;
                                 
                                     // Get observatory building crowding modifier.
                                     collabResult *= getObservatoryCrowdingModifier(person, observatory);
@@ -173,22 +174,19 @@ public class ObserveAstronomicalObjects extends Task implements
         AstronomicalObservation result = null;
         
         if (Person.INSETTLEMENT.equals(observer.getLocationSituation())) {
-//            try {
-                BuildingManager manager = observer.getSettlement().getBuildingManager();
-                List<Building> observatoryBuildings = manager.getBuildings(AstronomicalObservation.NAME);
-                observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
-                observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
-                observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
-                observatoryBuildings = BuildingManager.getBestRelationshipBuildings(observer, observatoryBuildings);
-            
-                if (observatoryBuildings.size() > 0) {
-                    Building building = observatoryBuildings.get(0);
-                    result = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
-                }
-//            }
-//            catch (BuildingException e) {
-//                logger.log(Level.SEVERE, "determineObservatory(): " + e.getMessage());
-//            }
+
+            BuildingManager manager = observer.getSettlement().getBuildingManager();
+            List<Building> observatoryBuildings = manager.getBuildings(AstronomicalObservation.NAME);
+            observatoryBuildings = BuildingManager.getNonMalfunctioningBuildings(observatoryBuildings);
+            observatoryBuildings = getObservatoriesWithAvailableSpace(observatoryBuildings);
+            observatoryBuildings = BuildingManager.getLeastCrowdedBuildings(observatoryBuildings);
+
+            if (observatoryBuildings.size() > 0) {
+                Map<Building, Double> observatoryBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        observer, observatoryBuildings);
+                Building building = RandomUtil.getWeightedRandomObject(observatoryBuildingProbs);
+                result = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
+            }
         }
         
         return result;

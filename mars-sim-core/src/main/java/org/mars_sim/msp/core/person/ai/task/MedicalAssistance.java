@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-10
  * @author Barry Evans
  */
 
@@ -32,6 +32,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -329,9 +330,12 @@ public class MedicalAssistance extends Task implements Serializable {
 			
 			List<Building> bestMedicalBuildings = BuildingManager.getNonMalfunctioningBuildings(needyMedicalBuildings);
 			bestMedicalBuildings = BuildingManager.getLeastCrowdedBuildings(bestMedicalBuildings);
-			bestMedicalBuildings = BuildingManager.getBestRelationshipBuildings(person, bestMedicalBuildings);
-		
-			if (bestMedicalBuildings.size() > 0) result = bestMedicalBuildings.get(0);
+			
+			if (bestMedicalBuildings.size() > 0) {
+                Map<Building, Double> medBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, bestMedicalBuildings);
+                result = RandomUtil.getWeightedRandomObject(medBuildingProbs);
+            }
     	}
     	else throw new IllegalStateException("MedicalAssistance.getMedicalAidBuilding(): Person is not in settlement.");
     	
