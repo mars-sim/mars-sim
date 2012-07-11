@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -103,7 +104,7 @@ public class PerformMathematicalModeling extends Task implements
                     try {
                         Lab lab = getLocalLab(person);
                         if (lab != null) {
-                            double primaryResult = 100D;
+                            double primaryResult = 50D;
                     
                             // Get lab building crowding modifier.
                             primaryResult *= getLabCrowdingModifier(person, lab);
@@ -136,7 +137,7 @@ public class PerformMathematicalModeling extends Task implements
                         try {
                             Lab lab = getLocalLab(person);
                             if (lab != null) {
-                                double collabResult = 50D;
+                                double collabResult = 25D;
                         
                                 // Get lab building crowding modifier.
                                 collabResult *= getLabCrowdingModifier(person, lab);
@@ -256,23 +257,19 @@ public class PerformMathematicalModeling extends Task implements
     private static Lab getSettlementLab(Person person) {
         Lab result = null;
         
-//        try {
-            BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> labBuildings = manager.getBuildings(Research.NAME);
-            labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
-            labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
-            labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
-            labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
-            labBuildings = BuildingManager.getBestRelationshipBuildings(person, labBuildings);
-        
-            if (labBuildings.size() > 0) {
-                Building building = labBuildings.get(0);
-                result = (Research) building.getFunction(Research.NAME);
-            }
-//        }
-//        catch (BuildingException e) {
-//            logger.severe("getSettlementLab(): " + e.getMessage());
-//        }
+        BuildingManager manager = person.getSettlement().getBuildingManager();
+        List<Building> labBuildings = manager.getBuildings(Research.NAME);
+        labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
+        labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
+        labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
+        labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
+
+        if (labBuildings.size() > 0) {
+            Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                    person, labBuildings);
+            Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
+            result = (Research) building.getFunction(Research.NAME);
+        }
         
         return result;
     }

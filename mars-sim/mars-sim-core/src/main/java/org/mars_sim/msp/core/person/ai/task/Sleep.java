@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /** 
@@ -182,9 +183,12 @@ class Sleep extends Task implements Serializable {
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
-			quartersBuildings = BuildingManager.getBestRelationshipBuildings(person, quartersBuildings);
-        	
-			if (quartersBuildings.size() > 0) result = quartersBuildings.get(0);
+			
+			if (quartersBuildings.size() > 0) {
+                Map<Building, Double> quartersBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, quartersBuildings);
+                result = RandomUtil.getWeightedRandomObject(quartersBuildingProbs);
+            }
 		}
         
 		return result;

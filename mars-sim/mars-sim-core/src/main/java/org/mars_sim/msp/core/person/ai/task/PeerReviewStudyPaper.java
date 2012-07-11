@@ -86,7 +86,7 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
                     Job job = person.getMind().getJob();
                     if (job != null) {
                         Science jobScience = ScienceUtil.getAssociatedScience(job);
-                        if (study.getScience().equals(jobScience)) result += 100D;
+                        if (study.getScience().equals(jobScience)) result += 50D;
                     }
                 }
             }

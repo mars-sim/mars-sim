@@ -78,7 +78,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
         if ((primaryStudy != null) && ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())) {
             if (!primaryStudy.isPrimaryPaperCompleted()) {
                 try {
-                    double primaryResult = 100D;
+                    double primaryResult = 50D;
                     
                     // If researcher's current job isn't related to study science, divide by two.
                     Job job = person.getMind().getJob();
@@ -104,7 +104,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
                     try {
                         Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
                     
-                        double collabResult = 50D;
+                        double collabResult = 25D;
                         
                         // If researcher's current job isn't related to study science, divide by two.
                         Job job = person.getMind().getJob();

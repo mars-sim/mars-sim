@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.03 2012-07-01
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -245,8 +245,7 @@ public class SalvageGood extends Task implements Serializable {
      * @return available manufacturing building
      * @throws BuildingException if error finding manufacturing building.
      */
-    private static Building getAvailableManufacturingBuilding(Person person) 
-            {
+    private static Building getAvailableManufacturingBuilding(Person person) {
         
         Building result = null;
         
@@ -261,9 +260,12 @@ public class SalvageGood extends Task implements Serializable {
             manufacturingBuildings = getBuildingsWithSalvageProcessesRequiringWork(manufacturingBuildings, skill);
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
-            manufacturingBuildings = BuildingManager.getBestRelationshipBuildings(person, manufacturingBuildings);
             
-            if (manufacturingBuildings.size() > 0) result = manufacturingBuildings.get(0);
+            if (manufacturingBuildings.size() > 0) {
+                Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, manufacturingBuildings);
+                result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
+            }
         }
         
         return result;

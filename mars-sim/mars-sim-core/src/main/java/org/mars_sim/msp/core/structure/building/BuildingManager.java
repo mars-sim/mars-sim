@@ -361,44 +361,42 @@ public class BuildingManager implements Serializable {
     }
     
     /**
-     * Gets a list of buildings with the best relationships for a given person from a list of buildings.
+     * Gets a map of buildings and their probabilities for being chosen based on the best relationships 
+     * for a given person from a list of buildings.
      * @param person the person to check for.
      * @param buildingList the list of buildings to filter.
-     * @return list of buildings with the best relationships.
-     * @throws BuildingException if building in list does not have the life support function.if building in list does not have the life support function.
+     * @return map of buildings and their probabilities.
      */
-    public static List<Building> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
-    	List<Building> result = new ArrayList<Building>();
+    public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
+    	Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
     	
-    	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-    	
+    	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();	
 
-		// Find best relationship buildings.
-		double bestRelationships = Double.NEGATIVE_INFINITY;
+		// Determine probabilities based on relationships in buildings.
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
-			LifeSupport lifeSupport = (LifeSupport) i.next().getFunction(LifeSupport.NAME);
-			double buildingRelationships = 0D;
-			Iterator<Person> j = lifeSupport.getOccupants().iterator();
-			while (j.hasNext()) {
-				Person occupant = j.next();
-				if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
-			} 
-			if (buildingRelationships > bestRelationships) bestRelationships = buildingRelationships;
-		}
-			
-		// Add bestRelationships buildings to list.
-		i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
+		    Building building = i.next();
 			LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 			double buildingRelationships = 0D;
+			int numPeople = 0;
 			Iterator<Person> j = lifeSupport.getOccupants().iterator();
 			while (j.hasNext()) {
 				Person occupant = j.next();
-				if (person != occupant) buildingRelationships+= (relationshipManager.getOpinionOfPerson(person, occupant) - 50D);
-			} 
-			if (buildingRelationships == bestRelationships) result.add(building);
+				if (person != occupant) {
+				    buildingRelationships+= relationshipManager.getOpinionOfPerson(person, occupant);
+				    numPeople++;
+				}
+			}
+			
+			double prob = 50D;
+			if (numPeople > 0) {
+			    prob = buildingRelationships / numPeople;
+			    if (prob < 0D) {
+			        prob = 0D;
+			    }
+			}
+			
+			result.put(building, prob);
 		}
     	
     	return result;

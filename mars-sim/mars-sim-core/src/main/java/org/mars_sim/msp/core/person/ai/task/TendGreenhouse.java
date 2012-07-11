@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,17 +12,15 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Farming;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
-import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -219,11 +217,12 @@ public class TendGreenhouse extends Task implements Serializable {
             List<Building> farmBuildings = manager.getBuildings(Farming.NAME);
 			farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);
 			farmBuildings = getFarmsNeedingWork(farmBuildings);
-			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings); 
-			farmBuildings = BuildingManager.getBestRelationshipBuildings(person, farmBuildings);
+			farmBuildings = BuildingManager.getLeastCrowdedBuildings(farmBuildings);
 			
 			if (farmBuildings.size() > 0) {
-			    result = farmBuildings.get(RandomUtil.getRandomInt(farmBuildings.size() - 1));
+			    Map<Building, Double> farmBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+			            person, farmBuildings);
+			    result = RandomUtil.getWeightedRandomObject(farmBuildingProbs);
 			}
         }
         

@@ -122,12 +122,12 @@ public class UnloadVehicle extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
         	
-        	// Check all vehicle missions occuring at the settlement.
+        	// Check all vehicle missions occurring at the settlement.
         	try {
         		int numVehicles = 0;
         		numVehicles += getAllMissionsNeedingUnloading(person.getSettlement()).size();
         		if (getNonMissionVehicleNeedingUnloading(person.getSettlement()) != null) numVehicles++;
-        		result = 500D * numVehicles;
+        		result = 50D * numVehicles;
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());

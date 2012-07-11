@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.structure.building.function.Recreation;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -135,9 +136,12 @@ class Relax extends Task implements Serializable {
 			List<Building> recreationBuildings = manager.getBuildings(Recreation.NAME);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);
 			recreationBuildings = BuildingManager.getLeastCrowdedBuildings(recreationBuildings);
-			recreationBuildings = BuildingManager.getBestRelationshipBuildings(person, recreationBuildings);
-        	
-			if (recreationBuildings.size() > 0) result = recreationBuildings.get(0);
+			
+			if (recreationBuildings.size() > 0) {
+                Map<Building, Double> recreationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, recreationBuildings);
+                result = RandomUtil.getWeightedRandomObject(recreationBuildingProbs);
+            }
 		}
         
 		return result;

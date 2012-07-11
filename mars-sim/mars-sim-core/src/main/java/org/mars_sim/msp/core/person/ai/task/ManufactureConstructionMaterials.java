@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.03 2012-06-28
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 
@@ -183,12 +183,12 @@ public class ManufactureConstructionMaterials extends Task implements
             manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
             manufacturingBuildings = BuildingManager
                     .getLeastCrowdedBuildings(manufacturingBuildings);
-            manufacturingBuildings = BuildingManager
-                    .getBestRelationshipBuildings(person,
-                            manufacturingBuildings);
-
-            if (manufacturingBuildings.size() > 0)
-                result = manufacturingBuildings.get(0);
+            
+            if (manufacturingBuildings.size() > 0) {
+                Map<Building, Double> manufacturingBuildingProbs = BuildingManager.
+                        getBestRelationshipBuildings(person, manufacturingBuildings);
+                result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
+            }
         }
 
         return result;

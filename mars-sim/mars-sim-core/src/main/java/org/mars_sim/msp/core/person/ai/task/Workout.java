@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /**
@@ -157,10 +158,12 @@ public class Workout extends Task implements Serializable {
             List<Building> gyms = buildingManager.getBuildings(Exercise.NAME);
             gyms = BuildingManager.getNonMalfunctioningBuildings(gyms);
             gyms = BuildingManager.getLeastCrowdedBuildings(gyms);
-            gyms = BuildingManager.getBestRelationshipBuildings(person, gyms);
-
-            if (gyms.size() > 0)
-                result = gyms.get(0);
+            
+            if (gyms.size() > 0) {
+                Map<Building, Double> gymProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, gyms);
+                result = RandomUtil.getWeightedRandomObject(gymProbs);
+            }
         }
 
         return result;

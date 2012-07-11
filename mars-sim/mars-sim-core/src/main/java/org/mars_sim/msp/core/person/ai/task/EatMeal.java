@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -25,6 +26,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 /** The EatMeal class is a task for eating a meal.
@@ -83,16 +85,11 @@ class EatMeal extends Task implements Serializable {
         
         if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 0D;
 	
-//		try {
-			Building building = getAvailableDiningBuilding(person);
-			if (building != null) {
-				result *= Task.getCrowdingProbabilityModifier(person, building);
-				result *= Task.getRelationshipModifier(person, building);
-			}
-//		}
-//		catch (BuildingException e) {
-//		    	logger.log(Level.SEVERE,"EatMeal.getProbability()",e);
-//		}
+        Building building = getAvailableDiningBuilding(person);
+        if (building != null) {
+            result *= Task.getCrowdingProbabilityModifier(person, building);
+            result *= Task.getRelationshipModifier(person, building);
+        }
 		
 		// Check if there's a cooked meal at a local kitchen.
 		if (getKitchenWithFood(person) != null) result *= 5D;
@@ -173,9 +170,12 @@ class EatMeal extends Task implements Serializable {
         	List<Building> diningBuildings = manager.getBuildings(Dining.NAME);
         	diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
         	diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
-        	diningBuildings = BuildingManager.getBestRelationshipBuildings(person, diningBuildings);
         	
-			if (diningBuildings.size() > 0) result = diningBuildings.get(0);
+        	if (diningBuildings.size() > 0) {
+                Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, diningBuildings);
+                result = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
+            }
 		}
         
         return result;
@@ -189,23 +189,18 @@ class EatMeal extends Task implements Serializable {
     private static Cooking getKitchenWithFood(Person person) {
     	Cooking result = null;
     	
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Settlement settlement = person.getSettlement();
-			BuildingManager manager = settlement.getBuildingManager();
-			List cookingBuildings = manager.getBuildings(Cooking.NAME);
-			Iterator i = cookingBuildings.iterator();
-			while (i.hasNext()) {
-				Building building = (Building) i.next();
-//				try {
-					Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
-					if (kitchen.hasCookedMeal()) result = kitchen;
-//				}
-//				catch (BuildingException e) {
-//				    logger.log(Level.SEVERE,"EatMeal.Cooking()",e);
-//				}
-			}
-		}
-    	
+    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    	    Settlement settlement = person.getSettlement();
+    	    BuildingManager manager = settlement.getBuildingManager();
+    	    List<Building> cookingBuildings = manager.getBuildings(Cooking.NAME);
+    	    Iterator<Building> i = cookingBuildings.iterator();
+    	    while (i.hasNext()) {
+    	        Building building = i.next();
+    	        Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+    	        if (kitchen.hasCookedMeal()) result = kitchen;
+    	    }
+    	}
+
     	return result;
     }
     
