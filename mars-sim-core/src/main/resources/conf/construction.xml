@@ -324,8 +324,9 @@
 			<resource name="mortar" amount="40000.0" />
 			<resource name="water" amount="40000.0" />
 			<part name="brick" number="40000" />
-			<part name="steel scrap" number="5" />
-			<part name="aluminum scrap" number="5" />
+			<part name="steel truss" number="2" />
+			<part name="steel sheet" number="5" />
+			<part name="aluminum sheet" number="5" />
 			<part name="plastic pipe" number="10" />
 			<part name="valve" number="5" />
 			<part name="electrical wire" number="5" />
@@ -342,8 +343,8 @@
 			<resource name="mortar" amount="7000.0" />
 			<resource name="water" amount="7000.0" />
 			<part name="brick" number="7000" />
-			<part name="steel scrap" number="5" />
-			<part name="aluminum scrap" number="7" />
+			<part name="steel truss" number="4" />
+			<part name="aluminum sheet" number="7" />
 			<part name="glass sheet" number="10" />
 			<part name="plastic pipe" number="7" />
 			<part name="valve" number="5" />
