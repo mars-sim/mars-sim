@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -195,7 +195,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 				double rockSampleMass = RandomUtil.getRandomDouble(AVERAGE_ROCK_SAMPLE_MASS * 2D);
 				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				double rockSampleCapacity = inv.getAmountResourceRemainingCapacity(
-						rockSamples, true);
+						rockSamples, true, false);
 				if (rockSampleMass < rockSampleCapacity) 
 					inv.storeAmountResource(rockSamples, rockSampleMass, true);
 			}
@@ -242,7 +242,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 	private void takeContainer() {
 		Unit container = findLeastFullContainer(rover);
 		if (container != null) {
-			if (person.getInventory().canStoreUnit(container)) {
+			if (person.getInventory().canStoreUnit(container, false)) {
 				rover.getInventory().retrieveUnit(container);
 				person.getInventory().storeUnit(container);
 			}
@@ -264,7 +264,7 @@ public class ExploreSite extends EVAOperation implements Serializable {
 			try {
 				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
 				double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
-						rockSamples, false);
+						rockSamples, false, false);
 			
 				if (remainingCapacity > mostCapacity) {
 					result = container;

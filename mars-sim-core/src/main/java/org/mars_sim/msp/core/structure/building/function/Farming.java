@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.03 2012-07-01
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -105,7 +105,7 @@ public class Farming extends Function implements Serializable {
         
         // Add food in settlement inventory to supply.
         AmountResource food = AmountResource.findAmountResource("food");
-        supply += settlement.getInventory().getAmountResourceStored(food);
+        supply += settlement.getInventory().getAmountResourceStored(food, false);
         
         double growingAreaValue = demand / (supply + 1D);
         
@@ -178,7 +178,7 @@ public class Farming extends Function implements Serializable {
     	try {
     		Inventory inv = getBuilding().getInventory();
     		AmountResource food = AmountResource.findAmountResource("food");
-    		double remainingCapacity = inv.getAmountResourceRemainingCapacity(food, false);
+    		double remainingCapacity = inv.getAmountResourceRemainingCapacity(food, false, false);
     		if (remainingCapacity < harvest) harvest = remainingCapacity;
     		inv.storeAmountResource(food, harvest, false);
     	}

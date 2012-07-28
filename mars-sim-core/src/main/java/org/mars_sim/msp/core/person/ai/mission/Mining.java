@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.03 2012-06-29
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -236,7 +236,7 @@ public class Mining extends RoverMission {
             boolean enoughBags = false;
 
             int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(
-                    Bag.class);
+                    Bag.class, false);
             enoughBags = (numBags >= NUMBER_OF_BAGS);
 
             // Check for embarking missions.
@@ -734,7 +734,7 @@ public class Mining extends RoverMission {
         // Check food capacity as time limit.
         AmountResource food = AmountResource.findAmountResource("food");
         double foodConsumptionRate = config.getFoodConsumptionRate();
-        double foodCapacity = vInv.getAmountResourceCapacity(food);
+        double foodCapacity = vInv.getAmountResourceCapacity(food, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
@@ -742,7 +742,7 @@ public class Mining extends RoverMission {
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource("water");
         double waterConsumptionRate = config.getWaterConsumptionRate();
-        double waterCapacity = vInv.getAmountResourceCapacity(water);
+        double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit)
@@ -751,7 +751,7 @@ public class Mining extends RoverMission {
         // Check oxygen capacity as time limit.
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
         double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
+        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit)
@@ -768,8 +768,9 @@ public class Mining extends RoverMission {
     @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
-        if (equipmentNeededCache != null)
+        if (equipmentNeededCache != null) {
             return equipmentNeededCache;
+        }
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.03 2012-07-01
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -101,7 +101,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             if (numSuits == 0) result = 0D;
             
             // Check if at least one empty bag at settlement.
-            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class);
+            int numEmptyBags = inv.findNumEmptyUnitsOfClass(Bag.class, false);
             if (numEmptyBags == 0) result = 0D;
 
             // Check if an airlock is available
@@ -208,11 +208,11 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
                 while (i.hasNext() && (emptyBag == null)) {
                     Bag foundBag = (Bag) i.next();
-                    if (foundBag.getInventory().getTotalInventoryMass() == 0D) emptyBag = foundBag;
+                    if (foundBag.getInventory().getTotalInventoryMass(false) == 0D) emptyBag = foundBag;
                 }
                 
                 if (emptyBag != null) {
-                    if (person.getInventory().canStoreUnit(emptyBag)) {
+                    if (person.getInventory().canStoreUnit(emptyBag, false)) {
                         settlement.getInventory().retrieveUnit(emptyBag);
                         person.getInventory().storeUnit(emptyBag);
                         bag = emptyBag;
@@ -244,9 +244,9 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         if (enteredAirlock) {
             if (bag != null) {
                 AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource);
+                double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource, false);
                 double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-                        regolithResource, false);
+                        regolithResource, false, false);
                 
                 // Try to store regolith in settlement.
                 if (collectedAmount < settlementCap) {
@@ -286,7 +286,8 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         }
         
         AmountResource regolith = AmountResource.findAmountResource("regolith");
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(regolith, true);
+        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
+                regolith, true, false);
         
         double regolithCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;

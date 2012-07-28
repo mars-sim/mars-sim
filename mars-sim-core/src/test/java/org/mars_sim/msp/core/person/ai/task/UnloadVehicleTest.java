@@ -65,6 +65,6 @@ public class UnloadVehicleTest extends TestCase {
 		unloadVehicle.unloadingPhase(16D);
 		unloadVehicle.unloadingPhase(100D);
 		
-		assertEquals("Vehicle unloaded correctly.", 0D, vehicleInv.getTotalInventoryMass(), 0D);
+		assertEquals("Vehicle unloaded correctly.", 0D, vehicleInv.getTotalInventoryMass(false), 0D);
 	}
 }

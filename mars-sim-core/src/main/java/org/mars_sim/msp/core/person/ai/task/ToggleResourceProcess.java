@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -280,7 +280,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
 			if (!process.isAmbientInputResource(resource)) {
-				double stored = settlement.getInventory().getAmountResourceStored(resource);
+				double stored = settlement.getInventory().getAmountResourceStored(resource, false);
 				if (stored == 0D) result = true;
 			}
 		}

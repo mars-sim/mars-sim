@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -378,7 +378,7 @@ class ConstructionProjectPanel extends WizardPanel {
         while (i.hasNext()) {
             AmountResource resource = i.next();
             double amount = stageInfo.getResources().get(resource);
-            if (inv.getAmountResourceStored(resource) < amount) result = false;
+            if (inv.getAmountResourceStored(resource, false) < amount) result = false;
         }
         
         // Check parts.
@@ -493,7 +493,7 @@ class ConstructionProjectPanel extends WizardPanel {
                     while (i.hasNext()) {
                         AmountResource resource = i.next();
                         double amountRequired = info.getResources().get(resource);
-                        double amountAvailable = inv.getAmountResourceStored(resource);
+                        double amountAvailable = inv.getAmountResourceStored(resource, false);
                         materialsList.add(new ConstructionMaterial(resource.getName(), 
                                 (int) amountRequired, (int) amountAvailable));
                     }

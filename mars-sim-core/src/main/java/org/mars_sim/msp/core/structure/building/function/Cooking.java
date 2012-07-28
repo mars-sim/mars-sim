@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -268,7 +268,8 @@ public class Cooking extends Function implements Serializable {
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 					AmountResource food = AmountResource.findAmountResource("food");
 					double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(food, false);
+					double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(
+					        food, false, false);
 					if (foodAmount > foodCapacity) foodAmount = foodCapacity;
 					getBuilding().getInventory().storeAmountResource(food, foodAmount, false);
 					i.remove();

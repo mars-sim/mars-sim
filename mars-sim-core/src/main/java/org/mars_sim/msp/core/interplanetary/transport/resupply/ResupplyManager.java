@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 3.02 2012-05-09
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -275,7 +275,7 @@ public class ResupplyManager implements Serializable {
         while (resourcesI.hasNext()) {
             AmountResource resource = resourcesI.next();
             double amount = resupply.getNewResources().get(resource);
-            double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
+            double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
             if (amount > capacity) amount = capacity;
             inv.storeAmountResource(resource, amount, true);
         }

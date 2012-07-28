@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -138,7 +138,7 @@ public abstract class RoverMission extends VehicleMission {
                 usable = false;
             if (!vehicle.getStatus().equals(Vehicle.PARKED))
                 usable = false;
-            if (vehicle.getInventory().getTotalInventoryMass() > 0D)
+            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
                 usable = false;
             if (!(vehicle instanceof Rover))
                 usable = false;
@@ -179,7 +179,7 @@ public abstract class RoverMission extends VehicleMission {
             if (!(vehicle instanceof Rover))
                 usable = false;
 
-            if (vehicle.getInventory().getTotalInventoryMass() > 0D)
+            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D)
                 usable = false;
 
             if (usable)
@@ -581,24 +581,31 @@ public abstract class RoverMission extends VehicleMission {
      */
     protected static boolean hasEnoughBasicResources(Settlement settlement) {
         boolean hasBasicResources = true;
+        
         Inventory inv = settlement.getInventory();
         try {
             AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            if (inv.getAmountResourceStored(oxygen) < 50D)
+            if (inv.getAmountResourceStored(oxygen, false) < 50D) {
                 hasBasicResources = false;
+            }
             AmountResource water = AmountResource.findAmountResource("water");
-            if (inv.getAmountResourceStored(water) < 50D)
+            if (inv.getAmountResourceStored(water, false) < 50D) {
                 hasBasicResources = false;
+            }
             AmountResource food = AmountResource.findAmountResource("food");
-            if (inv.getAmountResourceStored(food) < 50D)
+            if (inv.getAmountResourceStored(food, false) < 50D) {
                 hasBasicResources = false;
+            }
             AmountResource methane = AmountResource
                     .findAmountResource("methane");
-            if (inv.getAmountResourceStored(methane) < 100D)
+            if (inv.getAmountResourceStored(methane, false) < 100D) {
                 hasBasicResources = false;
-        } catch (Exception e) {
+            }
+        } 
+        catch (Exception e) {
             e.printStackTrace(System.err);
         }
+        
         return hasBasicResources;
     }
     

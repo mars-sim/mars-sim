@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -233,7 +233,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
             String status = newVehicle.getStatus();
             if (!status.equals(Vehicle.PARKED) && !status.equals(Vehicle.MAINTENANCE)) 
                 usable = false;
-            if (newVehicle.getInventory().getTotalInventoryMass() > 0D) usable = false;
+            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D) usable = false;
             
             return usable;
         }
@@ -325,8 +325,9 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 				double amount = (Double) rescueResources.get(resource);
 				Inventory roverInv = getRover().getInventory();
 				Inventory targetInv = vehicleTarget.getInventory();
-				double amountNeeded = amount - targetInv.getAmountResourceStored(resource);
-				if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource) > amountNeeded)) {
+				double amountNeeded = amount - targetInv.getAmountResourceStored(resource, false);
+				if ((amountNeeded > 0) && (roverInv.getAmountResourceStored(resource, false) > 
+				        amountNeeded)) {
 					roverInv.retrieveAmountResource(resource, amountNeeded);
 					targetInv.storeAmountResource(resource, amountNeeded, true);
 				}
@@ -714,13 +715,14 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		// Override and full rover with fuel and life support resources.
 		Map<Resource, Number> result = new HashMap<Resource, Number>(4);
 		Inventory inv = getVehicle().getInventory();
-		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(getVehicle().getFuelType()));
+		result.put(getVehicle().getFuelType(), inv.getAmountResourceCapacity(
+		        getVehicle().getFuelType(), false));
 		AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-		result.put(oxygen, inv.getAmountResourceCapacity(oxygen));
+		result.put(oxygen, inv.getAmountResourceCapacity(oxygen, false));
 		AmountResource water = AmountResource.findAmountResource("water");
-		result.put(water, inv.getAmountResourceCapacity(water));
+		result.put(water, inv.getAmountResourceCapacity(water, false));
 		AmountResource food = AmountResource.findAmountResource("food");
-		result.put(food, inv.getAmountResourceCapacity(food));
+		result.put(food, inv.getAmountResourceCapacity(food, false));
 		
 		// Get parts too.
 		result.putAll(getPartsNeededForTrip(getTotalRemainingDistance()));

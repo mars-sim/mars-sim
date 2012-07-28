@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.02 2012-06-05
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.*;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -716,23 +717,29 @@ public final class TradeUtil {
      * @throws Exception if error getting number of goods in inventory.
      */
     public static double getNumInInventory(Good good, Inventory inventory) {
-    	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) 
-    		return inventory.getAmountResourceStored((AmountResource) good.getObject());
-    	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) 
+    	if (good.getCategory().equals(Good.AMOUNT_RESOURCE)) {
+    		return inventory.getAmountResourceStored((AmountResource) good.getObject(), false);
+    	}
+    	else if (good.getCategory().equals(Good.ITEM_RESOURCE)) {
     		return inventory.getItemResourceNum((ItemResource) good.getObject());
+    	}
     	else if (good.getCategory().equals(Good.EQUIPMENT)) {
-    		return inventory.findNumEmptyUnitsOfClass(good.getClassType());
+    		return inventory.findNumEmptyUnitsOfClass(good.getClassType(), false);
         }
     	else if (good.getCategory().equals(Good.VEHICLE)) {
     		int count = 0;
-    		Iterator i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
+    		Iterator<Unit> i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
     		while (i.hasNext()) {
     			Vehicle vehicle = (Vehicle) i.next();
-    			if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved()) count++;
+    			if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved()) {
+    			    count++;
+    			}
     		}
     		return count;
     	}
-    	else return 0D;
+    	else {
+    	    return 0D;
+    	}
     }
     
     /**
@@ -756,7 +763,7 @@ public final class TradeUtil {
     	
     	Inventory settlementInv = settlement.getInventory();
     	
-    	int containersStored = settlementInv.findNumEmptyUnitsOfClass(containerType);
+    	int containersStored = settlementInv.findNumEmptyUnitsOfClass(containerType, false);
     	
     	Good containerGood = GoodsUtil.getEquipmentGood(containerType);
     	int containersTraded = 0;
@@ -836,7 +843,7 @@ public final class TradeUtil {
     		containerTypeCache.put(containerType, container);
     	}
     	
-    	result = container.getInventory().getAmountResourceCapacity(resource);
+    	result = container.getInventory().getAmountResourceCapacity(resource, false);
     	
     	return result;
     }

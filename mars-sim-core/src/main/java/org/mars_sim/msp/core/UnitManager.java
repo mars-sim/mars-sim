@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.03 2012-06-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -385,7 +385,7 @@ public class UnitManager implements Serializable {
                     AmountResource resource = j.next();
                     double amount = resourceMap.get(resource);
                     Inventory inv = settlement.getInventory();
-                    double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
+                    double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                     if (amount > capacity) {
                         amount = capacity;
                     }

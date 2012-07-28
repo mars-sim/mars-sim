@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -154,9 +154,9 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
         boolean result = true;
 
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        if (getInventory().getAmountResourceStored(oxygen) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(oxygen, false) <= 0D) result = false;
         AmountResource water = AmountResource.findAmountResource("water");
-        if (getInventory().getAmountResourceStored(water) <= 0D) result = false;
+        if (getInventory().getAmountResourceStored(water, false) <= 0D) result = false;
         if (malfunctionManager.getOxygenFlowModifier() < 100D) result = false;
         if (malfunctionManager.getWaterFlowModifier() < 100D) result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE) result = false;
@@ -180,7 +180,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double provideOxygen(double amountRequested) {
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenTaken = amountRequested;
-    	double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
+    	double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
 //    	try {
     		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
@@ -197,7 +197,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public double provideWater(double amountRequested) {
     	AmountResource water = AmountResource.findAmountResource("water");
     	double waterTaken = amountRequested;
-    	double waterLeft = getInventory().getAmountResourceStored(water);
+    	double waterLeft = getInventory().getAmountResourceStored(water, false);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
 //    	try {
     		getInventory().retrieveAmountResource(water, waterTaken);
@@ -349,7 +349,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	// Check food capacity as range limit.
     	AmountResource food = AmountResource.findAmountResource("food");
     	double foodConsumptionRate = config.getFoodConsumptionRate();
-    	double foodCapacity = getInventory().getAmountResourceCapacity(food);
+    	double foodCapacity = getInventory().getAmountResourceCapacity(food, false);
     	double foodSols = foodCapacity / (foodConsumptionRate * crewCapacity);
     	double foodRange = distancePerSol * foodSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (foodRange < range) range = foodRange;
@@ -357,7 +357,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	// Check water capacity as range limit.
     	AmountResource water = AmountResource.findAmountResource("water");
     	double waterConsumptionRate = config.getWaterConsumptionRate();
-    	double waterCapacity = getInventory().getAmountResourceCapacity(water);
+    	double waterCapacity = getInventory().getAmountResourceCapacity(water, false);
     	double waterSols = waterCapacity / (waterConsumptionRate * crewCapacity);
     	double waterRange = distancePerSol * waterSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (waterRange < range) range = waterRange;
@@ -365,7 +365,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	// Check oxygen capacity as range limit.
     	AmountResource oxygen = AmountResource.findAmountResource("oxygen");
     	double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-    	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen);
+    	double oxygenCapacity = getInventory().getAmountResourceCapacity(oxygen, false);
     	double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewCapacity);
     	double oxygenRange = distancePerSol * oxygenSols / LIFE_SUPPORT_RANGE_ERROR_MARGIN;
     	if (oxygenRange < range) range = oxygenRange;

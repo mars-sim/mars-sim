@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -128,11 +128,11 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             
-            keys.addAll(inventory.getAllAmountResourcesStored());
+            keys.addAll(inventory.getAllAmountResourcesStored(true));
             Iterator<Resource> iAmount = keys.iterator();
             while (iAmount.hasNext()) {
                 AmountResource resource = (AmountResource) iAmount.next();
-                resources.put(resource, inventory.getAmountResourceStored(resource));
+                resources.put(resource, inventory.getAmountResourceStored(resource, true));
             }
 
             Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
@@ -184,12 +184,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
-        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored());
+        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(true));
         		Map<Resource, Number> newResources = new HashMap<Resource, Number>();
         		Iterator<Resource> i = newResourceKeys.iterator();
         		while (i.hasNext()) {
         			AmountResource resource = (AmountResource) i.next();
-        			newResources.put(resource, inventory.getAmountResourceStored(resource));
+        			newResources.put(resource, inventory.getAmountResourceStored(resource, true));
         		}
         		
         		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();

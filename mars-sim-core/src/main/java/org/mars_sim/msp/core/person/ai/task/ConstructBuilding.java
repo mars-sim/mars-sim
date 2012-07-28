@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.02 2012-05-24
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -231,13 +231,13 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
                 Part attachmentPart = i.next();
                 double mass = attachmentPart.getMassPerItem();
                 Inventory inv = luv.getInventory();
-                if (inv.getRemainingGeneralCapacity() >= mass) {
+                if (inv.getRemainingGeneralCapacity(false) >= mass) {
                     luv.getInventory().storeItemResources(attachmentPart, 1);
                 }
                 else {
                     logger.log(Level.SEVERE, person.getName() + " unable to load attachment part " + 
                             attachmentPart + " on " + luv.getName() + " due to lack of mass carrying capacity: " + 
-                            inv.getRemainingGeneralCapacity() + " kg.");
+                            inv.getRemainingGeneralCapacity(false) + " kg.");
                 }
             }
         }

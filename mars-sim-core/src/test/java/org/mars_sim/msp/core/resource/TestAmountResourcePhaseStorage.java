@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core.resource;
 
+import org.mars_sim.msp.core.SimulationConfig;
+
 import junit.framework.TestCase;
 
 public class TestAmountResourcePhaseStorage extends TestCase {
@@ -8,9 +10,10 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 	private static final String OXYGEN = "oxygen";
 	private static final String WATER = "water";
 	
-	public TestAmountResourcePhaseStorage() {
-		super();
-	}
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+    }
 	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
 		AmountResourcePhaseStorage storage = new AmountResourcePhaseStorage();
@@ -157,7 +160,7 @@ public class TestAmountResourcePhaseStorage extends TestCase {
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		storage.storeAmountResourcePhase(oxygen, 10D);
 		storage.storeAmountResourcePhase(water, 20D);
-		double totalStored = storage.getTotalAmountResourcePhasesStored();
+		double totalStored = storage.getTotalAmountResourcePhasesStored(false);
 		assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
 	}
 }

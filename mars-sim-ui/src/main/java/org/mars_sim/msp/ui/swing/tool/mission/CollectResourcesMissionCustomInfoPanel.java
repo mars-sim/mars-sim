@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMissionCustomInfoPanel.java
- * @version 3.01 2011-07-19
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -105,7 +105,7 @@ public class CollectResourcesMissionCustomInfoPanel extends
     private void updateCollectionValueLabel() {
         double resourceAmount = 0D;
         if (missionRover != null) {
-            resourceAmount = missionRover.getInventory().getAmountResourceStored(resource);
+            resourceAmount = missionRover.getInventory().getAmountResourceStored(resource, true);
             if (resourceAmount > resourceAmountCache) {
                 resourceAmountCache = resourceAmount;
             }

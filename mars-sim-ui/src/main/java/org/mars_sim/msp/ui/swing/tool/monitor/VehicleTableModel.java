@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-19
  * @author Barry Evans
  */
 
@@ -27,10 +27,8 @@ import java.util.logging.Logger;
  * It maps key attributes of the Vehicle into Columns.
  */
 public class VehicleTableModel extends UnitTableModel {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.monitor.VehicleTableModel";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(VehicleTableModel.class.getName());
 
     // Column indexes
     private final static int NAME = 0;
@@ -388,7 +386,7 @@ public class VehicleTableModel extends UnitTableModel {
     private Integer getResourceStored(Unit unit, AmountResource resource) {
         Integer result = null;	
         Inventory inv = unit.getInventory();
-        result = (int) inv.getAmountResourceStored(resource);
+        result = (int) inv.getAmountResourceStored(resource, true);
         
         return result;
     }

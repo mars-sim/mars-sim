@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.03 2012-07-10
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -79,7 +79,8 @@ public class CookMeal extends Task implements Serializable {
 		setPhase(COOKING);
 		
 		// String jobName = person.getMind().getJob().getName();
-		// logger.info(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + " in " + person.getSettlement());
+		// logger.info(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
+		// " in " + person.getSettlement());
 	}
 	
 	/** 
@@ -106,7 +107,8 @@ public class CookMeal extends Task implements Serializable {
 					PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
 					double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
 					AmountResource food = AmountResource.findAmountResource("food");
-					double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(food);
+					double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(
+					        food, false);
 					if (foodAvailable < foodRequired) result = 0D;
 				}
 			}
@@ -243,9 +245,15 @@ public class CookMeal extends Task implements Serializable {
 		double modifiedTime = timeOfDay + timeDiff;
 		if (modifiedTime >= 1000D) modifiedTime -= 1000D;
         
-		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) result = true;
-		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) result = true;
-		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) result = true;		
+		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) {
+		    result = true;
+		}
+		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) {
+		    result = true;
+		}
+		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
+		    result = true;		
+		}
 		
 		return result;
 	}
@@ -262,9 +270,15 @@ public class CookMeal extends Task implements Serializable {
 		double modifiedTime = timeOfDay + timeDiff;
 		if (modifiedTime >= 1000D) modifiedTime -= 1000D;
 		
-		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) result = "Breakfast";
-		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) result = "Lunch";
-		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) result = "Dinner";
+		if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) {
+		    result = "Breakfast";
+		}
+		if ((modifiedTime >= LUNCH_START) && (modifiedTime <= (LUNCH_START + MEALTIME_DURATION))) {
+		    result = "Lunch";
+		}
+		if ((modifiedTime >= DINNER_START) && (modifiedTime <= (DINNER_START + MEALTIME_DURATION))) {
+		    result = "Dinner";
+		}
 		
 		return result;
 	}

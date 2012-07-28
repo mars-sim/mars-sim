@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.03 2012-07-07
+ * @version 3.03 2012-07-27
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -31,26 +31,39 @@ public class Inventory implements Serializable {
     public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
     public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
     
+    // Comparison to indicate a small but non-zero amount.
+    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+
     // Data members
     private Unit owner; // The unit that owns this inventory. 
     private Collection<Unit> containedUnits = null; // Collection of units in inventory.
-    private ConcurrentHashMap<ItemResource, Integer> containedItemResources = null; // Map of item resources.
+    private Map<ItemResource, Integer> containedItemResources = null; // Map of item resources.
     private double generalCapacity = 0D; // General mass capacity of inventory.
     private AmountResourceStorage resourceStorage = null; // Resource storage.
-    
+
     // Cache capacity variables.
-    private transient ConcurrentHashMap<AmountResource, Double> amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
-    private transient ConcurrentHashMap<AmountResource, Double> amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
+    private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
+    private transient Map<AmountResource, Double> amountResourceStoredCache = null;
+    private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
     private transient Set<AmountResource> allStoredAmountResourcesCache = null;
-    private transient double totalAmountResourcesStored = -1D;
-    private transient boolean totalAmountResourcesStoredSet = false;
-    private transient ConcurrentHashMap<AmountResource, Double> amountResourceRemainingCache = new ConcurrentHashMap<AmountResource, Double>(10);
+    private transient boolean allStoredAmountResourcesCacheDirty = true;
+    private transient double totalAmountResourcesStoredCache;
+    private transient boolean totalAmountResourcesStoredCacheDirty = true;
+    private transient double itemResourceTotalMassCache;
+    private transient boolean itemResourceTotalMassCacheDirty = true;
+    private transient double unitTotalMassCache;
+    private transient boolean unitTotalMassCacheDirty = true;
+    private transient double totalInventoryMassCache;
+    private transient boolean totalInventoryMassCacheDirty = true;
+    
 
     /** 
      * Constructor
      * @param owner the unit that owns this inventory
      */
     public Inventory(Unit owner) {
+
         // Set owning unit.
         this.owner = owner;
     }
@@ -59,329 +72,197 @@ public class Inventory implements Serializable {
      * Adds capacity for a resource type.
      * @param resource the resource.
      * @param capacity the capacity amount (kg).
-     * @throws InventoryException if error setting capacity.
      */
-    public synchronized void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
-        
+    public void addAmountResourceTypeCapacity(AmountResource resource, 
+            double capacity) {
+
+        // Set capacity cache to dirty because capacity values are changing.
+        setAmountResourceCapacityCacheDirty(resource);
+
+        // Initialize resource storage if necessary.
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-
+        
         resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
-        clearAmountResourceCapacityCache();
     }
 
     /**
      * Adds capacity for a resource phase.
      * @param phase the phase
      * @param capacity the capacity amount (kg).
-     * @throws InventoryException if error adding capacity.
      */
-    public synchronized void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
+    public void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
         
+        // Set capacity cache to all dirty because capacity values are changing.
+        setAmountResourceCapacityCacheAllDirty();
+
+        // Initialize resource storage if necessary.
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-
+        
         resourceStorage.addAmountResourcePhaseCapacity(phase, capacity);
-        clearAmountResourceCapacityCache();
     }
 
     /**
      * Checks if storage has capacity for a resource.
      * @param resource the resource.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return true if storage capacity.
      */
-    public synchronized boolean hasAmountResourceCapacity(AmountResource resource) {
-        
+    public boolean hasAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
+
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
-        try {
-            boolean result = false;
-            if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
-                double amountCapacity = amountResourceCapacityCache.get(resource);
-                result = (amountCapacity > 0D);
-            } else {
-                if ((resourceStorage != null) && resourceStorage.hasAmountResourceCapacity(resource)) {
-                    result = true;
-                } else if ((containedUnits != null) && (getRemainingGeneralCapacity() > 0D)) {
-                    Iterator<Unit> i = containedUnits.iterator();
-                    while (i.hasNext()) {
-                        if (i.next().getInventory().hasAmountResourceCapacity(resource)) {
-                            result = true;
-                        }
-                    }
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+
+        return (getAmountResourceCapacityCacheValue(resource, allowDirty) > 0D);
     }
 
     /**
      * Checks if storage has capacity for an amount of a resource.
      * @param resource the resource.
      * @param amount the amount (kg).
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return true if storage capacity.
-     * @throws InventoryException if error checking capacity.
      */
-    public synchronized boolean hasAmountResourceCapacity(AmountResource resource, double amount) {
-        
-        try {
-            boolean result = false;
-            if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
-                double amountCapacity = amountResourceCapacityCache.get(resource);
-                result = (amountCapacity >= amount);
-            } else {
-                double capacity = 0D;
-                if (resourceStorage != null) {
-                    capacity += resourceStorage.getAmountResourceCapacity(resource);
-                }
-                if (amount < capacity) {
-                    result = true;
-                } else if ((containedUnits != null) && (getRemainingGeneralCapacity() > 0D)) {
-                    double containedCapacity = 0D;
-                    Iterator<Unit> i = containedUnits.iterator();
-                    while (i.hasNext()) {
-                        containedCapacity += i.next().getInventory().getAmountResourceCapacity(resource);
-                    }
-                    if (containedCapacity > generalCapacity) {
-                        containedCapacity = generalCapacity;
-                    }
-                    capacity += containedCapacity;
-                    if ((capacity + containedCapacity) > amount) {
-                        result = true;
-                    }
-                }
-                if (amountResourceCapacityCache == null) {
-                    amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
-                }
-                amountResourceCapacityCache.put(resource, capacity);
-            }
-            return result;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+    public boolean hasAmountResourceCapacity(AmountResource resource, double amount, 
+            boolean allowDirty) {
+
+        if (resource == null) {
+            throw new IllegalArgumentException("resource cannot be null.");
         }
+
+        if (amount < 0D) {
+            throw new IllegalArgumentException("amount cannot be a negative value.");
+        }
+
+        return (getAmountResourceCapacityCacheValue(resource, allowDirty) >= amount);
     }
 
     /**
      * Gets the storage capacity for a resource.
      * @param resource the resource.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return capacity amount (kg).
-     * @throws InventoryException if error determining capacity.
      */
-    public synchronized double getAmountResourceCapacity(AmountResource resource) {
-        
+    public double getAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
+
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
-        try {
-            double result = 0D;
-            if ((amountResourceCapacityCache != null) && amountResourceCapacityCache.containsKey(resource)) {
-                result = amountResourceCapacityCache.get(resource);
-            } else {
-                if (hasAmountResourceCapacity(resource)) {
-                    if (resourceStorage != null) {
-                        result += resourceStorage.getAmountResourceCapacity(resource);
-                    }
-                    if ((containedUnits != null) && (generalCapacity > 0D)) {
-                        double containedCapacity = 0D;
-                        Iterator<Unit> i = containedUnits.iterator();
-                        while (i.hasNext()) {
-                            Unit containedUnit = i.next();
-                            if (containedUnit instanceof Container) {
-                                containedCapacity += containedUnit.getInventory().getAmountResourceCapacity(resource);
-                            }
-                        }
-                        if (containedCapacity > generalCapacity) {
-                            containedCapacity = generalCapacity;
-                        }
-                        result += containedCapacity;
-                    }
-                }
-                if (amountResourceCapacityCache == null) {
-                    amountResourceCapacityCache = new ConcurrentHashMap<AmountResource, Double>(10);
-                }
-                amountResourceCapacityCache.put(resource, result);
-            }
-            return result;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
+
+        return getAmountResourceCapacityCacheValue(resource, allowDirty);
     }
 
     /**
      * Gets the amount of a resource stored.
      * @param resource the resource.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored amount (kg).
-     * @throws InventoryException if error getting amount stored.
      */
-    public synchronized double getAmountResourceStored(AmountResource resource) {
-        
+    public double getAmountResourceStored(AmountResource resource, 
+            boolean allowDirty) {
+
         if (resource == null) {
             throw new IllegalArgumentException("resource is null");
         }
 
-        double result = 0D;
-        if ((amountResourceStoredCache != null) && amountResourceStoredCache.containsKey(resource)) {
-            result = amountResourceStoredCache.get(resource);
-        } else {
-            if (resourceStorage != null) {
-                result += resourceStorage.getAmountResourceStored(resource);
-            }
-            if (containedUnits != null) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    Unit unit = i.next();
-                    if (unit instanceof Container) {
-                        result += unit.getInventory().getAmountResourceStored(resource);
-                    }
-                }
-            }
-            if (amountResourceStoredCache == null) {
-                amountResourceStoredCache = new ConcurrentHashMap<AmountResource, Double>(10);
-            }
-            amountResourceStoredCache.put(resource, result);
-        }
-        return result;
+        return getAmountResourceStoredCacheValue(resource, allowDirty);
     }
 
     /**
      * Gets all of the amount resources stored.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return set of amount resources.
-     * @throws InventoryException if error getting all amount resources.
      */
-    public synchronized Set<AmountResource> getAllAmountResourcesStored() {
+    public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
         
-        if (allStoredAmountResourcesCache != null) {
-            return new HashSet<AmountResource>(allStoredAmountResourcesCache);
-        } else {
-            allStoredAmountResourcesCache = new HashSet<AmountResource>(1, 1);
-            synchronized (allStoredAmountResourcesCache) {
-                if (resourceStorage != null) {
-                    synchronized (resourceStorage) {
-                        allStoredAmountResourcesCache.addAll(resourceStorage.getAllAmountResourcesStored());
-                    }
-                }
-                
-                if (containedUnits != null) {
-                    synchronized (containedUnits) {
-                        Iterator<Unit> i = containedUnits.iterator();
-                        while (i.hasNext()) {
-                            Set<AmountResource> containedResources =
-                                    i.next().getInventory().getAllAmountResourcesStored();
-                            allStoredAmountResourcesCache.addAll(containedResources);
-                        }
-                    }
-                }
-            }
-
-            return new HashSet<AmountResource>(allStoredAmountResourcesCache);
-        }
+        return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
     }
 
     /**
      * Gets the total mass of amount resources stored.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored amount (kg).
-     * throws InventoryException if error getting total amount resources stored.
      */
-    private double getTotalAmountResourcesStored() {
+    private double getTotalAmountResourcesStored(boolean allowDirty) {
 
-        double result = 0D;
-        if (totalAmountResourcesStoredSet) {
-            result = totalAmountResourcesStored;
-        } else {
-            if (resourceStorage != null) {
-                result += resourceStorage.getTotalAmountResourcesStored();
-            }
-            if (containedUnits != null) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    result += i.next().getInventory().getTotalAmountResourcesStored();
-                }
-            }
-            totalAmountResourcesStored = result;
-            totalAmountResourcesStoredSet = true;
-        }
-        return result;
+        return getTotalAmountResourcesStoredCache(allowDirty);
     }
 
     /**
      * Gets the remaining capacity available for a resource.
      * @param resource the resource.
      * @param useContainedUnits should the capacity of contained units be added?
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return remaining capacity amount (kg).
-     * throws InventoryException if error getting remaining capacity.
      */
-    public synchronized double getAmountResourceRemainingCapacity(AmountResource resource, 
-            boolean useContainedUnits) {
-        
-        try {
-            double result = 0D;
-            if (useContainedUnits && (amountResourceRemainingCache != null) && 
-                    amountResourceRemainingCache.containsKey(resource)) {
-                return amountResourceRemainingCache.get(resource);
-            } else {
-                if (resourceStorage != null) {
-                    result += resourceStorage.getAmountResourceRemainingCapacity(resource);
-                }
-                if (useContainedUnits && (containedUnits != null)) {
-                    double containedRemainingCapacity = 0D;
-                    Iterator<Unit> i = containedUnits.iterator();
-                    while (i.hasNext()) {
-                        Unit unit = i.next();
-                        if (unit instanceof Container) {
-                            containedRemainingCapacity += unit.getInventory().getAmountResourceRemainingCapacity(
-                                    resource, true);
-                        }
-                    }
-                    if (containedRemainingCapacity > getRemainingGeneralCapacity()) {
-                        containedRemainingCapacity = getRemainingGeneralCapacity();
-                    }
-                    result += containedRemainingCapacity;
-                }
-                if (result > getContainerUnitGeneralCapacityLimit()) {
-                    result = getContainerUnitGeneralCapacityLimit();
-                }
+    public double getAmountResourceRemainingCapacity(AmountResource resource, 
+            boolean useContainedUnits, boolean allowDirty) {
 
-                if (useContainedUnits) {
-                    if (amountResourceRemainingCache == null) {
-                        amountResourceRemainingCache = new ConcurrentHashMap<AmountResource, Double>(10);
-                    }
-                    amountResourceRemainingCache.put(resource, result);
-                }
-            }
-            return result;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
+        double result = 0D;
+
+        if (useContainedUnits) {
+            double capacity = getAmountResourceCapacity(resource, allowDirty);
+            double stored = getAmountResourceStored(resource, allowDirty);
+            result += capacity - stored;
         }
+        else if (resourceStorage != null) {
+            result += resourceStorage.getAmountResourceRemainingCapacity(resource);
+        }
+
+        // Check if remaining capacity exceeds container unit's remaining general capacity.
+        double containerUnitLimit = getContainerUnitGeneralCapacityLimit(allowDirty);
+        if (result > containerUnitLimit) {
+            result = containerUnitLimit;
+        }
+        
+        return result;
     }
 
     /**
      * Store an amount of a resource.
      * @param resource the resource.
      * @param amount the amount (kg).
-     * @throws InventoryException if error storing resource.
      */
-    public synchronized void storeAmountResource(AmountResource resource, double amount,
+    public void storeAmountResource(AmountResource resource, double amount,
             boolean useContainedUnits) {
 
         if (amount < 0D) {
             throw new IllegalStateException("Cannot store negative amount of resource: " + amount);
         }
+
         if (amount > 0D) {
-            if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits)) {
+
+            if (amount <= getAmountResourceRemainingCapacity(resource, useContainedUnits, false)) {
+
+                // Set modified cache values as dirty.
+                setAmountResourceCapacityCacheAllDirty();
+                setAmountResourceStoredCacheAllDirty();
+                setAllStoredAmountResourcesCacheDirty();
+                setTotalAmountResourcesStoredCacheDirty();
+
                 double remainingAmount = amount;
+                double remainingStorageCapacity = 0D;
+                if (resourceStorage != null) {
+                    remainingStorageCapacity += resourceStorage.getAmountResourceRemainingCapacity(resource);
+                }
+
+                // Check if local resource storage can hold resources if not using contained units.
+                if (!useContainedUnits && (remainingAmount > remainingStorageCapacity)) {
+                    throw new IllegalStateException(resource.getName()
+                            + " could not be totally stored. Remaining: " + (remainingAmount - 
+                                    remainingStorageCapacity));
+                }
 
                 // Store resource in local resource storage.
-                if (resourceStorage != null) {
-                    double remainingStorageCapacity = resourceStorage.getAmountResourceRemainingCapacity(resource);
-                    double storageAmount = remainingAmount;
-                    if (storageAmount > remainingStorageCapacity) {
-                        storageAmount = remainingStorageCapacity;
-                    }
+                double storageAmount = remainingAmount;
+                if (storageAmount > remainingStorageCapacity) {
+                    storageAmount = remainingStorageCapacity;
+                }
+                if ((storageAmount > 0D) && (resourceStorage != null)) {
                     resourceStorage.storeAmountResource(resource, storageAmount);
                     remainingAmount -= storageAmount;
                 }
@@ -395,32 +276,32 @@ public class Inventory implements Serializable {
                         if (unit instanceof Container) {
                             Inventory unitInventory = unit.getInventory();
                             double remainingUnitCapacity = unitInventory.getAmountResourceRemainingCapacity(
-                                    resource, true);
-                            double storageAmount = remainingAmount;
-                            if (storageAmount > remainingUnitCapacity) {
-                                storageAmount = remainingUnitCapacity;
+                                    resource, true, false);
+                            double unitStorageAmount = remainingAmount;
+                            if (unitStorageAmount > remainingUnitCapacity) {
+                                unitStorageAmount = remainingUnitCapacity;
                             }
-                            if (storageAmount > 0D) {
-                                unitInventory.storeAmountResource(resource, storageAmount, true);
-                                remainingAmount -= storageAmount;
+                            if (unitStorageAmount > 0D) {
+                                unitInventory.storeAmountResource(resource, unitStorageAmount, true);
+                                remainingAmount -= unitStorageAmount;
                             }
                         }
                     }
                 }
 
-                if (remainingAmount <= .000001D) {
-                    clearAmountResourceStoredCache();
-                } else {
+                if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
                     throw new IllegalStateException(resource.getName()
                             + " could not be totally stored. Remaining: " + remainingAmount);
                 }
 
+                // Fire inventory event.
                 if (owner != null) {
                     owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
                 }
             } else {
-                throw new IllegalStateException("Insufficiant capacity to store " + resource.getName() + ", capacity: "
-                        + getAmountResourceRemainingCapacity(resource, useContainedUnits) + ", attempted: " + amount);
+                throw new IllegalStateException("Insufficiant capacity to store " + resource.getName() + 
+                        ", capacity: " + getAmountResourceRemainingCapacity(resource, useContainedUnits, 
+                                false) + ", attempted: " + amount);
             }
         }
     }
@@ -430,53 +311,78 @@ public class Inventory implements Serializable {
      * @param resource the resource.
      * @param amount the amount (kg).
      */
-    public synchronized void retrieveAmountResource(AmountResource resource, double amount) {
-        
-        if (amount <= getAmountResourceStored(resource)) {
-            double remainingAmount = amount;
+    public void retrieveAmountResource(AmountResource resource, double amount) {
 
-            // Retrieve from local resource storage.
-            if (resourceStorage != null) {
-                double resourceStored = resourceStorage.getAmountResourceStored(resource);
+        if (amount < 0D) {
+            throw new IllegalStateException("Cannot retrieve negative amount of resource: " + amount);
+        }
+
+        if (amount > 0D) {
+
+            if (amount <= getAmountResourceStored(resource, false)) {
+
+                // Set modified cache values as dirty.
+                setAmountResourceCapacityCacheAllDirty();
+                setAmountResourceStoredCacheAllDirty();
+                setAllStoredAmountResourcesCacheDirty();
+                setTotalAmountResourcesStoredCacheDirty();
+
+                double remainingAmount = amount;
+
+                // Retrieve from local resource storage.
+                double resourceStored = 0D;
+                if (resourceStorage != null) {
+                    resourceStored += resourceStorage.getAmountResourceStored(resource);
+                }
                 double retrieveAmount = remainingAmount;
                 if (retrieveAmount > resourceStored) {
                     retrieveAmount = resourceStored;
                 }
-                resourceStorage.retrieveAmountResource(resource, retrieveAmount);
-                remainingAmount -= retrieveAmount;
-            }
+                if ((retrieveAmount > 0D) && (resourceStorage != null)) {
+                    resourceStorage.retrieveAmountResource(resource, retrieveAmount);
+                    remainingAmount -= retrieveAmount;
+                }
 
-            // Retrieve remaining resource from contained units.
-            if ((remainingAmount > 0D) && (containedUnits != null)) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    Unit unit = i.next();
-                    if (unit instanceof Container) {
-                        Inventory unitInventory = unit.getInventory();
-                        double resourceStored = unitInventory.getAmountResourceStored(resource);
-                        double retrieveAmount = remainingAmount;
-                        if (retrieveAmount > resourceStored) {
-                            retrieveAmount = resourceStored;
+                // Retrieve remaining resource from contained units.
+                if ((remainingAmount > 0D) && (containedUnits != null)) {
+                    Iterator<Unit> i = containedUnits.iterator();
+                    while (i.hasNext()) {
+                        Unit unit = i.next();
+                        if (unit instanceof Container) {
+                            Inventory unitInventory = unit.getInventory();
+                            double unitResourceStored = unitInventory.getAmountResourceStored(resource, 
+                                    false);
+                            double unitRetrieveAmount = remainingAmount;
+                            if (unitRetrieveAmount > unitResourceStored) {
+                                unitRetrieveAmount = unitResourceStored;
+                            }
+                            if (unitRetrieveAmount > 0D) {
+                                unitInventory.retrieveAmountResource(resource, unitRetrieveAmount);
+                                remainingAmount -= unitRetrieveAmount;
+                            }
                         }
-                        unitInventory.retrieveAmountResource(resource, retrieveAmount);
-                        remainingAmount -= retrieveAmount;
                     }
                 }
-            }
 
-            if (remainingAmount <= .0000001D) {
-                clearAmountResourceStoredCache();
-            } else {
-                throw new IllegalStateException(resource.getName()
-                        + " could not be totally retrieved. Remaining: " + remainingAmount);
-            }
+                if (remainingAmount > SMALL_AMOUNT_COMPARISON) {
+                    throw new IllegalStateException(resource.getName()
+                            + " could not be totally retrieved. Remaining: " + remainingAmount);
+                }
 
-            if (owner != null) {
-                owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                // Update caches.
+                updateAmountResourceCapacityCache(resource);
+                updateAmountResourceStoredCache(resource);
+
+                // Fire inventory event.
+                if (owner != null) {
+                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                }
             }
-        } else {
-            throw new IllegalStateException("Insufficiant stored amount to retrieve " + resource.getName()
-                    + ", stored: " + getAmountResourceStored(resource) + ", attempted: " + amount);
+            else {
+                throw new IllegalStateException("Insufficiant stored amount to retrieve " + 
+                        resource.getName() + ", stored: " + getAmountResourceStored(resource, false) + 
+                        ", attempted: " + amount);
+            }
         }
     }
 
@@ -484,39 +390,46 @@ public class Inventory implements Serializable {
      * Adds a capacity to general capacity.
      * @param capacity amount capacity (kg).
      */
-    public synchronized void addGeneralCapacity(double capacity) {
+    public void addGeneralCapacity(double capacity) {
+
         generalCapacity += capacity;
+        
+        // Mark amount resource capacity cache as dirty.
+        setAmountResourceCapacityCacheAllDirty();
     }
 
     /**
      * Gets the general capacity.
      * @return amount capacity (kg).
      */
-    public synchronized double getGeneralCapacity() {
+    public double getGeneralCapacity() {
+
         return generalCapacity;
     }
 
     /**
      * Gets the mass stored in general capacity.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored mass (kg).
-     * @throws InventoryException if error getting stored mass.
      */
-    public synchronized double getGeneralStoredMass() {
+    public double getGeneralStoredMass(boolean allowDirty) {
 
-        return getItemResourceTotalMass() + getUnitTotalMass();
+        return getItemResourceTotalMass(allowDirty) + getUnitTotalMass(allowDirty);
     }
 
     /**
      * Gets the remaining general capacity available.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return amount capacity (kg).
-     * @throws InventoryException if error getting remaining capacity.
      */
-    public synchronized double getRemainingGeneralCapacity() {
+    public double getRemainingGeneralCapacity(boolean allowDirty) {
 
-        double result = generalCapacity - getGeneralStoredMass();
-        if (result > getContainerUnitGeneralCapacityLimit()) {
-            result = getContainerUnitGeneralCapacityLimit();
+        double result = generalCapacity - getGeneralStoredMass(allowDirty);
+        
+        if (result > getContainerUnitGeneralCapacityLimit(allowDirty)) {
+            result = getContainerUnitGeneralCapacityLimit(allowDirty);
         }
+        
         return result;
     }
 
@@ -524,114 +437,118 @@ public class Inventory implements Serializable {
      * Checks if storage has an item resource.
      * @param resource the resource.
      * @return true if has resource.
-     * @throws InventoryException if error checking resource.
      */
-    public synchronized boolean hasItemResource(ItemResource resource) {
-        
-        try {
-            boolean result = false;
-            if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-                if (containedItemResources.get(resource) > 0) {
+    public boolean hasItemResource(ItemResource resource) {
+
+        boolean result = false;
+
+        if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
+            if (containedItemResources.get(resource) > 0) {
+                result = true;
+            }
+        } 
+        else if (containedUnits != null) {
+            Iterator<Unit> i = containedUnits.iterator();
+            while (i.hasNext()) {
+                if (i.next().getInventory().hasItemResource(resource)) {
                     result = true;
                 }
-            } else if (containedUnits != null) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    if (i.next().getInventory().hasItemResource(resource)) {
-                        result = true;
-                    }
-                }
             }
-            return result;
-        } catch (Exception e) {
-            throw new IllegalStateException(e);
         }
+
+        return result;
     }
 
     /**
      * Gets the number of an item resource in storage.
      * @param resource the resource.
      * @return number of resources.
-     * @throws InventoryException if error getting item resource.
      */
-    public synchronized int getItemResourceNum(ItemResource resource) {
-        
+    public int getItemResourceNum(ItemResource resource) {
+
         int result = 0;
-        if (containedItemResources != null){
-            final Integer res = containedItemResources.get(resource);
-            if(res != null){
-                result += res;
-            }
+
+        if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
+            result += containedItemResources.get(resource);
         }
+
         if (containedUnits != null) {
-            for(Unit u : containedUnits){
+            for (Unit u : containedUnits) {
                 if (u instanceof Container) {
-                    result+=u.getInventory().getItemResourceNum(resource);
+                    result += u.getInventory().getItemResourceNum(resource);
                 }
             }
         }
+
         return result;
     }
 
     /**
      * Gets a set of all the item resources in storage.
      * @return set of item resources.
-     * @throws InventoryException if error getting all item resources.
      */
-    public synchronized Set<ItemResource> getAllItemResourcesStored() {
+    public Set<ItemResource> getAllItemResourcesStored() {
+
+        Set<ItemResource> result = null;
         
         if (containedItemResources != null) {
-            //return Collections.synchronizedSet(new HashSet<ItemResource>(containedItemResources.keySet()));
-            return new HashSet<ItemResource>(containedItemResources.keySet());
-        } else {
-            //return Collections.synchronizedSet(new HashSet<ItemResource>(0));
-            return new HashSet<ItemResource>(0);
+            result = new HashSet<ItemResource>(containedItemResources.keySet());
         }
+        else {
+            result = new HashSet<ItemResource>(0);
+        }
+        
+        return result;
     }
 
     /**
      * Gets the total mass of item resources in storage.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return the total mass (kg).
-     * @throws InventoryException if error getting total mass.
      */
-    private double getItemResourceTotalMass() {
+    private double getItemResourceTotalMass(boolean allowDirty) {
         
-        double result = 0D;
-        if (containedItemResources != null) {
-            final Set<Entry<ItemResource, Integer>> es = containedItemResources.entrySet();
-            for(Entry<ItemResource, Integer> e : es){
-                result += e.getValue() * e.getKey().getMassPerItem();
-            }
-        }
-        return result;
+        return getItemResourceTotalMassCache(allowDirty);
     }
 
     /**
      * Stores item resources.
      * @param resource the resource to store.
      * @param number the number of resources to store.
-     * @throws InventoryException if error storing the resources.
      */
-    public synchronized void storeItemResources(ItemResource resource, int number) {
-        
+    public void storeItemResources(ItemResource resource, int number) {
+
         if (number < 0) {
             throw new IllegalStateException("Cannot store negative number of resources.");
         }
-        double totalMass = resource.getMassPerItem() * number;
-        if (totalMass <= getRemainingGeneralCapacity()) {
-            if (containedItemResources == null) {
-                containedItemResources = new ConcurrentHashMap<ItemResource, Integer>();
-            }
-            int totalNum = number + getItemResourceNum(resource);
-            if (totalNum > 0) {
-                containedItemResources.put(resource, totalNum);
-            }
 
-            if (owner != null) {
-                owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+        double totalMass = resource.getMassPerItem() * number;
+
+        if (number > 0) {
+            if (totalMass <= getRemainingGeneralCapacity(false)) {
+
+                // Mark caches as dirty.
+                setAmountResourceCapacityCacheAllDirty();
+                setItemResourceTotalMassCacheDirty();
+                
+                // Initialize contained item resources if necessary.
+                if (containedItemResources == null) {
+                    containedItemResources = new ConcurrentHashMap<ItemResource, Integer>();
+                }
+                
+                int totalNum = number + getItemResourceNum(resource);
+                if (totalNum > 0) {
+                    containedItemResources.put(resource, totalNum);
+                }
+                
+                // Fire inventory event.
+                if (owner != null) {
+                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                }
+            } 
+            else {
+                throw new IllegalStateException("Could not store item resources.");
             }
-        } else {
-            throw new IllegalStateException("Could not store item resources.");
         }
     }
 
@@ -639,90 +556,98 @@ public class Inventory implements Serializable {
      * Retrieves item resources.
      * @param resource the resource to retrieve.
      * @param number the number of resources to retrieve.
-     * @throws InventoryException if error retrieving the resources.
      */
-    public synchronized void retrieveItemResources(ItemResource resource, int number) {
-        
+    public void retrieveItemResources(ItemResource resource, int number) {
+
         if (number < 0) {
             throw new IllegalStateException("Cannot retrieve negative number of resources.");
         }
-        if (hasItemResource(resource) && (number <= getItemResourceNum(resource))) {
-            int remainingNum = number;
 
-            // Retrieve resources from local storage.
-            if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
-                int storedLocal = containedItemResources.get(resource);
-                int retrieveNum = remainingNum;
-                if (retrieveNum > storedLocal) {
-                    retrieveNum = storedLocal;
-                }
-                int remainingLocal = storedLocal - retrieveNum;
-                if (remainingLocal > 0) {
-                    containedItemResources.put(resource, remainingLocal);
-                } else {
-                    containedItemResources.remove(resource);
-                }
-                remainingNum -= retrieveNum;
-            }
+        if (number > 0) {
+            if (number <= getItemResourceNum(resource)) {
+                int remainingNum = number;
 
-            // Retrieve resources from contained units.
-            if ((remainingNum > 0) && (containedUnits != null)) {
-                Iterator<Unit> i = containedUnits.iterator();
-                while (i.hasNext()) {
-                    Inventory unitInventory = i.next().getInventory();
-                    if (unitInventory.hasItemResource(resource)) {
-                        int storedUnit = unitInventory.getItemResourceNum(resource);
-                        int retrieveNum = remainingNum;
-                        if (retrieveNum > storedUnit) {
-                            retrieveNum = storedUnit;
+                // Mark caches as dirty.
+                setAmountResourceCapacityCacheAllDirty();
+                setItemResourceTotalMassCacheDirty();
+                
+                // Retrieve resources from local storage.
+                if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
+                    int storedLocal = containedItemResources.get(resource);
+                    int retrieveNum = remainingNum;
+                    if (retrieveNum > storedLocal) {
+                        retrieveNum = storedLocal;
+                    }
+                    int remainingLocal = storedLocal - retrieveNum;
+                    if (remainingLocal > 0) {
+                        containedItemResources.put(resource, remainingLocal);
+                    } else {
+                        containedItemResources.remove(resource);
+                    }
+                    remainingNum -= retrieveNum;
+                }
+
+                // Retrieve resources from contained units.
+                if ((remainingNum > 0) && (containedUnits != null)) {
+                    Iterator<Unit> i = containedUnits.iterator();
+                    while (i.hasNext()) {
+                        Inventory unitInventory = i.next().getInventory();
+                        if (unitInventory.hasItemResource(resource)) {
+                            int storedUnit = unitInventory.getItemResourceNum(resource);
+                            int retrieveNum = remainingNum;
+                            if (retrieveNum > storedUnit) {
+                                retrieveNum = storedUnit;
+                            }
+                            unitInventory.retrieveItemResources(resource, retrieveNum);
+                            remainingNum -= retrieveNum;
                         }
-                        unitInventory.retrieveItemResources(resource, retrieveNum);
-                        remainingNum -= retrieveNum;
                     }
                 }
-            }
-            if (owner != null) {
-                owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
-            }
 
-            if (remainingNum > 0) {
-                throw new IllegalStateException(resource.getName()
-                        + " could not be totally retrieved. Remaining: " + remainingNum);
+                // Fire inventory event.
+                if (owner != null) {
+                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                }
+
+                if (remainingNum > 0) {
+                    throw new IllegalStateException(resource.getName()
+                            + " could not be totally retrieved. Remaining: " + remainingNum);
+                }
+            } 
+            else {
+                throw new IllegalStateException("Insufficiant stored number to retrieve " + 
+                        resource.getName() + ", stored: " + getItemResourceNum(resource) + 
+                        ", attempted: " + number);
             }
-        } else {
-            throw new IllegalStateException("Insufficiant stored number to retrieve " + resource.getName()
-                    + ", stored: " + getItemResourceNum(resource) + ", attempted: " + number);
         }
     }
 
     /** 
      * Gets the total unit mass in storage.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return total mass (kg).
-     * @throws InventoryException if error getting mass.
      */
-    public synchronized double getUnitTotalMass() {
+    public double getUnitTotalMass(boolean allowDirty) {
 
-        double totalMass = 0D;
-        if (containedUnits != null) {
-            Iterator<Unit> unitIt = containedUnits.iterator();
-            while (unitIt.hasNext()) {
-                totalMass += unitIt.next().getMass();
-            }
-        }
-        return totalMass;
+        return getUnitTotalMassCache(allowDirty);
     }
 
     /** 
      * Gets a collection of all the stored units.
      * @return Collection of all units
      */
-    public synchronized Collection<Unit> getContainedUnits() {
+    public Collection<Unit> getContainedUnits() {
+
+        Collection<Unit> result = null;
         
         if (containedUnits != null) {
-            return containedUnits;
-        } else {
-            return Collections.emptySet();
+            result = new ArrayList<Unit>(containedUnits);
         }
+        else {
+            result = new ArrayList<Unit>(0);
+        }
+        
+        return result; 
     }
 
     /** 
@@ -730,15 +655,14 @@ public class Inventory implements Serializable {
      * @param unit the unit.
      * @return true if unit is in storage.
      */
-    public synchronized boolean containsUnit(Unit unit) {
-        
+    public boolean containsUnit(Unit unit) {
+
         boolean result = false;
+        
         if (containedUnits != null) {
-            // See if this unit contains the unit in question.
-            if (containedUnits.contains(unit)) {
-                result = true;
-            }
+            result = containedUnits.contains(unit);
         }
+        
         return result;
     }
 
@@ -748,8 +672,9 @@ public class Inventory implements Serializable {
      * @return true if class of unit is in storage.
      */
     private boolean containsUnitClassLocal(Class<? extends Unit> unitClass) {
-        
+
         boolean result = false;
+
         if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -758,6 +683,7 @@ public class Inventory implements Serializable {
                 }
             }
         }
+
         return result;
     }
 
@@ -766,15 +692,15 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return if class of unit is in storage.
      */
-    public synchronized boolean containsUnitClass(Class<? extends Unit> unitClass) {
-        
+    public boolean containsUnitClass(Class<? extends Unit> unitClass) {
+
         boolean result = false;
-        if (containedUnits != null) {
-            // Check if unit of class is in inventory.
-            if (containsUnitClassLocal(unitClass)) {
-                result = true;
-            }
+
+        // Check if unit of class is in inventory.
+        if (containsUnitClassLocal(unitClass)) {
+            result = true;
         }
+
         return result;
     }
 
@@ -783,18 +709,21 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return the instance of the unit class or null if none.
      */
-    public synchronized Unit findUnitOfClass(Class<? extends Unit> unitClass) {
-        
+    public Unit findUnitOfClass(Class<? extends Unit> unitClass) {
+
         Unit result = null;
+
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) {
                     result = unit;
+                    break;
                 }
             }
         }
+
         return result;
     }
 
@@ -803,9 +732,10 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return collection of units or empty collection if none.
      */
-    public synchronized Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
-        
+    public Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
+
         Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
+
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -815,6 +745,7 @@ public class Inventory implements Serializable {
                 }
             }
         }
+
         return result;
     }
 
@@ -823,9 +754,10 @@ public class Inventory implements Serializable {
      * @param unitClass the unit class.
      * @return number of units
      */
-    public synchronized int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
-        
+    public int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
+
         int result = 0;
+
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -835,6 +767,7 @@ public class Inventory implements Serializable {
                 }
             }
         }
+
         return result;
     }
 
@@ -842,19 +775,20 @@ public class Inventory implements Serializable {
      * Finds the number of units of a class that are contained in 
      * storage and have an empty inventory.
      * @param unitClass the unit class.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return number of empty units.
-     * @throws InventoryException if error determining number of units.
      */
-    public synchronized int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass) {
-        
+    public int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass, boolean allowDirty) {
+
         int result = 0;
+
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
                 if (unitClass.isInstance(unit)) {
                     Inventory inv = unit.getInventory();
-                    if ((inv != null) && inv.isEmpty()) {
+                    if ((inv != null) && inv.isEmpty(allowDirty)) {
                         result++;
                     }
                 }
@@ -867,73 +801,91 @@ public class Inventory implements Serializable {
     /**
      * Checks if a unit can be stored.
      * @param unit the unit.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return true if unit can be added to inventory
-     * @throws InventoryException if error checking unit.
      */
-    public synchronized boolean canStoreUnit(Unit unit) {
-        
+    public boolean canStoreUnit(Unit unit, boolean allowDirty) {
+
         boolean result = false;
+
         if (unit != null) {
-            if (unit.getMass() <= getRemainingGeneralCapacity()) {
+
+            if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
                 result = true;
             }
+
             if (unit == owner) {
                 result = false;
             }
-            if ((containedUnits != null) && containsUnit(unit)) {
+
+            if (containsUnit(unit)) {
                 result = false;
             }
+
             if (unit.getInventory().containsUnit(owner)) {
                 result = false;
             }
         }
+
         return result;
     }
 
     /** 
      * Stores a unit.
      * @param unit the unit
-     * @throws InventoryException if unit could not be stored.
      */
-    public synchronized void storeUnit(Unit unit) {
-        
-        if (canStoreUnit(unit)) {
+    public void storeUnit(Unit unit) {
+
+        if (canStoreUnit(unit, false)) {
+
+            // Set modified cache values as dirty.
+            setAmountResourceCapacityCacheAllDirty();
+            setAmountResourceStoredCacheAllDirty();
+            setAllStoredAmountResourcesCacheDirty();
+            setTotalAmountResourcesStoredCacheDirty();
+            setUnitTotalMassCacheDirty();
+
+            // Initialize containedUnits if necessary.
             if (containedUnits == null) {
                 containedUnits = new ConcurrentLinkedQueue<Unit>();
             }
-
+            
             containedUnits.add(unit);
             unit.setContainerUnit(owner);
 
             // Try to empty amount resources into parent if container.
             if (unit instanceof Container) {
                 Inventory containerInv = unit.getInventory();
-                Iterator<AmountResource> i = containerInv.getAllAmountResourcesStored().iterator();
+                Iterator<AmountResource> i = containerInv.getAllAmountResourcesStored(false).iterator();
                 while (i.hasNext()) {
                     AmountResource resource = i.next();
-                    double containerAmount = containerInv.getAmountResourceStored(resource);
-                    if (getAmountResourceRemainingCapacity(resource, false) >= containerAmount) {
+                    double containerAmount = containerInv.getAmountResourceStored(resource, false);
+                    if (getAmountResourceRemainingCapacity(resource, false, false) >= containerAmount) {
                         containerInv.retrieveAmountResource(resource, containerAmount);
                         storeAmountResource(resource, containerAmount, false);
                     }
                 }
             }
 
-            clearAmountResourceCapacityCache();
-            clearAmountResourceStoredCache();
+            // Update owner
             if (owner != null) {
                 unit.setCoordinates(owner.getCoordinates());
                 owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit);
-                Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored().iterator();
+                Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored(false).
+                        iterator();
                 while (i.hasNext()) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, i.next());
+                    AmountResource resource = i.next();
+                    updateAmountResourceCapacityCache(resource);
+                    updateAmountResourceStoredCache(resource);
+                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
                 }
                 Iterator<ItemResource> j = unit.getInventory().getAllItemResourcesStored().iterator();
                 while (j.hasNext()) {
                     owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, j.next());
                 }
             }
-        } else {
+        } 
+        else {
             throw new IllegalStateException("Unit: " + unit + " could not be stored.");
         }
     }
@@ -941,32 +893,47 @@ public class Inventory implements Serializable {
     /**
      * Retrieves a unit from storage.
      * @param unit the unit.
-     * @throws InventoryException if unit could not be retrieved.
      */
-    public synchronized void retrieveUnit(Unit unit) {
-        
+    public void retrieveUnit(Unit unit) {
+
         boolean retrieved = false;
+
         if (containsUnit(unit)) {
+
+            // Set modified cache values as dirty.
+            setAmountResourceCapacityCacheAllDirty();
+            setAmountResourceStoredCacheAllDirty();
+            setAllStoredAmountResourcesCacheDirty();
+            setTotalAmountResourcesStoredCacheDirty();
+            setUnitTotalMassCacheDirty();
+
             if (containedUnits.contains(unit)) {
+
                 containedUnits.remove(unit);
-                clearAmountResourceCapacityCache();
-                clearAmountResourceStoredCache();
+
+                // Update owner
                 if (owner != null) {
                     owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
-                    Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored().iterator();
+                    Iterator<AmountResource> i = unit.getInventory().getAllAmountResourcesStored(false).
+                            iterator();
                     while (i.hasNext()) {
-                        owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, i.next());
+                        AmountResource resource = i.next();
+                        updateAmountResourceCapacityCache(resource);
+                        updateAmountResourceStoredCache(resource);
+                        owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
                     }
-                    
+
                     Iterator<ItemResource> j = unit.getInventory().getAllItemResourcesStored().iterator();
                     while (j.hasNext()) {
                         owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, j.next());
                     }
                 }
+
                 retrieved = true;
             }
         }
+
         if (retrieved) {
             unit.setContainerUnit(null);
         } else {
@@ -978,8 +945,8 @@ public class Inventory implements Serializable {
      * Sets the coordinates of all units in the inventory.
      * @param newLocation the new coordinate location
      */
-    public synchronized void setCoordinates(Coordinates newLocation) {
-        
+    public void setCoordinates(Coordinates newLocation) {
+
         if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -990,124 +957,593 @@ public class Inventory implements Serializable {
 
     /**
      * Gets the total mass stored in inventory.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored mass (kg).
-     * @throws InventoryException if error getting mass.
      */
-    public synchronized double getTotalInventoryMass() {
-        
-        double result = 0D;
+    public double getTotalInventoryMass(boolean allowDirty) {
 
-        // Add total amount resource mass stored.
-        result += getTotalAmountResourcesStored();
-
-        // Add general storage mass.
-        result += getGeneralStoredMass();
-
-        return result;
+        return getTotalInventoryMassCache(allowDirty);
     }
 
     /**
      * Checks if inventory is empty.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return true if empty.
-     * @throws InventoryException if error checking inventory.
      */
-    public synchronized boolean isEmpty() {
-        
-        return (getTotalInventoryMass() == 0D);
+    public boolean isEmpty(boolean allowDirty) {
+
+        return (getTotalInventoryMass(allowDirty) == 0D);
     }
 
     /**
      * Gets any limits in the owner's general capacity.
+     * @param allowDirty will allow dirty (possibly out of date) results.
      * @return owner general capacity limit (kg).
-     * @throws InventoryException if error getting capacity.
      */
-    private double getContainerUnitGeneralCapacityLimit() {
-        
+    private double getContainerUnitGeneralCapacityLimit(boolean allowDirty) {
+
         double result = Double.MAX_VALUE;
+
         if ((owner != null) && (owner.getContainerUnit() != null)) {
             Inventory containerInv = owner.getContainerUnit().getInventory();
-            if (containerInv.getRemainingGeneralCapacity() < result) {
-                result =
-                        containerInv.getRemainingGeneralCapacity();
+            if (containerInv.getRemainingGeneralCapacity(allowDirty) < result) {
+                result = containerInv.getRemainingGeneralCapacity(allowDirty);
             }
-            if (containerInv.getContainerUnitGeneralCapacityLimit() < result) {
-                result =
-                        containerInv.getContainerUnitGeneralCapacityLimit();
+
+            if (containerInv.getContainerUnitGeneralCapacityLimit(allowDirty) < result) {
+                result = containerInv.getContainerUnitGeneralCapacityLimit(allowDirty);
             }
         }
+
         return result;
     }
-
+    
     /**
-     * Clears the amount resource capacity cache as well as the container's cache if any.
+     * Initializes the amount resource capacity cache.
      */
-    private void clearAmountResourceCapacityCache() {
+    private synchronized void initializeAmountResourceCapacityCache() {
         
-        if (amountResourceCapacityCache != null) {
-            amountResourceCapacityCache.clear();
+        Set<AmountResource> resources = AmountResource.getAmountResources();
+        amountResourceCapacityCache = new HashMap<AmountResource, Double>(resources.size());
+        amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
+        
+        Iterator<AmountResource> i = resources.iterator();
+        while (i.hasNext()) {
+            AmountResource resource = i.next();
+            amountResourceCapacityCache.put(resource, 0D);
+            amountResourceCapacityCacheDirty.put(resource, true);
         }
+    }
+    
+    /**
+     * Checks if the amount resource capacity cache is dirty for a resource.
+     * @param resource the resource to check.
+     * @return true if resource is dirty in cache.
+     */
+    private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
+        
+        // Initialize amount resource capacity cache if necessary.
+        if (amountResourceCapacityCache == null) {
+            initializeAmountResourceCapacityCache();
+        }
+        
+        return amountResourceCapacityCacheDirty.get(resource);
+    }
+    
+    /**
+     * Sets a resource in the amount resource capacity cache to dirty.
+     * @param resource the dirty resource.
+     */
+    private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
+        
+        // Initialize amount resource capacity cache if necessary.
+        if (amountResourceCapacityCache == null) {
+            initializeAmountResourceCapacityCache();
+        }
+        
+        amountResourceCapacityCacheDirty.put(resource, true);
+    }
+    
+    /**
+     * Sets all of the resources in the amount resource capacity cache to dirty.
+     */
+    private void setAmountResourceCapacityCacheAllDirty() {
+        
+        // Initialize amount resource capacity cache if necessary.
+        if (amountResourceCapacityCache == null) {
+            initializeAmountResourceCapacityCache();
+        }
+        
+        Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+        while (i.hasNext()) {
+            setAmountResourceCapacityCacheDirty(i.next());
+        }
+        
+        // Set owner unit's amount resource capacity cache as dirty (if any).
         if (owner != null) {
             Unit container = owner.getContainerUnit();
             if (container != null) {
-                container.getInventory().clearAmountResourceCapacityCache();
+                container.getInventory().setAmountResourceCapacityCacheAllDirty();
             }
         }
-        if (amountResourceRemainingCache != null) {
-            amountResourceRemainingCache.clear();
+    }
+    
+    /**
+     * Gets the cached capacity value for an amount resource.
+     * @param resource the amount resource.
+     * @param allowDirty true if cache value can be dirty.
+     * @return capacity (kg) for the amount resource.
+     */
+    private double getAmountResourceCapacityCacheValue(AmountResource resource, boolean allowDirty) {
+        
+        // Initialize amount resource capacity cache if necessary.
+        if (amountResourceCapacityCache == null) {
+            initializeAmountResourceCapacityCache();
         }
+        
+        // Update amount resource capacity cache if it is dirty.
+        if (isAmountResourceCapacityCacheDirty(resource) && !allowDirty) {
+            updateAmountResourceCapacityCache(resource);
+        }
+        
+        return amountResourceCapacityCache.get(resource);
     }
 
     /**
-     * Clears the amount resource stored cache as well as the container's cache if any.
+     * Update the amount resource capacity cache for an amount resource.
+     * @param resource the resource to update.
      */
-    private void clearAmountResourceStoredCache() {
+    private void updateAmountResourceCapacityCache(AmountResource resource) {
+
+        // Initialize amount resource capacity cache if necessary.
+        if (amountResourceCapacityCache == null) {
+            initializeAmountResourceCapacityCache();
+        }
         
-        if (amountResourceStoredCache != null) {
-            amountResourceStoredCache.clear();
+        // Determine local resource capacity.
+        double capacity = 0D;
+        if (resourceStorage != null) {
+            capacity += resourceStorage.getAmountResourceCapacity(resource);
         }
 
-        if (allStoredAmountResourcesCache != null) {
-            allStoredAmountResourcesCache.clear();
-            allStoredAmountResourcesCache = null;
-        }
-        totalAmountResourcesStored = -1D;
-        totalAmountResourcesStoredSet = false;
-
-        if (owner != null) {
-            Unit container = owner.getContainerUnit();
-            if (container != null) {
-                container.getInventory().clearAmountResourceStoredCache();
+        // Determine capacity for all contained units.
+        double containedCapacity = 0D;
+        double containedStored = 0D;
+        if (containedUnits != null) {
+            Iterator<Unit> j = containedUnits.iterator();
+            while (j.hasNext()) {
+                // Only add unit capacity if unit is a container.
+                Unit unit = j.next();
+                if (unit instanceof Container) {
+                    containedCapacity += unit.getInventory().getAmountResourceCapacity(
+                            resource, false);
+                    containedStored += unit.getInventory().getAmountResourceStored(resource, 
+                            false);
+                }
             }
         }
 
-        if (amountResourceRemainingCache != null) {
-            amountResourceRemainingCache.clear();
+        // Limit container capacity to this inventory's remaining general capacity.
+        // Add container's resource stored as this is already factored into inventory's 
+        // remaining general capacity.
+        double generalResourceCapacity = getRemainingGeneralCapacity(false) + containedStored;
+        if (containedCapacity > generalResourceCapacity) {
+            containedCapacity = generalResourceCapacity;
         }
+
+        capacity += containedCapacity;
+
+        amountResourceCapacityCache.put(resource, capacity);
+        amountResourceCapacityCacheDirty.put(resource, false);
+    }
+    
+    /**
+     * Initializes the amount resource stored cache.
+     */
+    private synchronized void initializeAmountResourceStoredCache() {
+        
+        Set<AmountResource> resources = AmountResource.getAmountResources();
+        amountResourceStoredCache = new HashMap<AmountResource, Double>(resources.size());
+        amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
+        
+        Iterator<AmountResource> i = resources.iterator();
+        while (i.hasNext()) {
+            AmountResource resource = i.next();
+            amountResourceStoredCache.put(resource, 0D);
+            amountResourceStoredCacheDirty.put(resource, true);
+        }
+    }
+    
+    /**
+     * Checks if the amount resource stored cache is dirty for a resource.
+     * @param resource the resource to check.
+     * @return true if resource is dirty in cache.
+     */
+    private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
+        
+        // Initialize amount resource stored cache if necessary.
+        if (amountResourceStoredCache == null) {
+            initializeAmountResourceStoredCache();
+        }
+        
+        return amountResourceStoredCacheDirty.get(resource);
+    }
+    
+    /**
+     * Sets a resource in the amount resource stored cache to dirty.
+     * @param resource the dirty resource.
+     */
+    private void setAmountResourceStoredCacheDirty(AmountResource resource) {
+        
+        // Initialize amount resource stored cache if necessary.
+        if (amountResourceStoredCache == null) {
+            initializeAmountResourceStoredCache();
+        }
+        
+        amountResourceStoredCacheDirty.put(resource, true);
+    }
+    
+    /**
+     * Sets all of the resources in the amount resource stored cache to dirty.
+     */
+    private void setAmountResourceStoredCacheAllDirty() {
+        
+        // Initialize amount resource stored cache if necessary.
+        if (amountResourceStoredCache == null) {
+            initializeAmountResourceStoredCache();
+        }
+        
+        Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+        while (i.hasNext()) {
+            setAmountResourceStoredCacheDirty(i.next());
+        }
+        
+        // Set owner unit's amount resource stored cache as dirty (if any).
+        if (owner != null) {
+            Unit container = owner.getContainerUnit();
+            if (container != null) {
+                container.getInventory().setAmountResourceStoredCacheAllDirty();
+            }
+        }
+    }
+    
+    /**
+     * Gets the cached stored value for an amount resource.
+     * @param resource the amount resource.
+     * @param allowDirty true if cache value can be dirty.
+     * @return stored amount (kg) for the amount resource.
+     */
+    private double getAmountResourceStoredCacheValue(AmountResource resource, boolean allowDirty) {
+        
+        // Initialize amount resource stored cache if necessary.
+        if (amountResourceStoredCache == null) {
+            initializeAmountResourceStoredCache();
+        }
+        
+        // Update amount resource stored cache if it is dirty.
+        if (isAmountResourceStoredCacheDirty(resource) && !allowDirty) {
+            updateAmountResourceStoredCache(resource);
+        }
+        
+        return amountResourceStoredCache.get(resource);
+    }
+
+    /**
+     * Update the amount resource stored cache for an amount resource.
+     * @param resource the resource to update.
+     */
+    private void updateAmountResourceStoredCache(AmountResource resource) {
+
+        double stored = 0D;
+
+        if (resourceStorage != null) {
+            stored += resourceStorage.getAmountResourceStored(resource);
+        }
+
+        if (containedUnits != null) {
+            Iterator<Unit> j = containedUnits.iterator();
+            while (j.hasNext()) {
+                Unit unit = j.next();
+                if (unit instanceof Container) {
+                    stored += unit.getInventory().getAmountResourceStored(resource, false);
+                }
+            }
+        }
+
+        amountResourceStoredCache.put(resource, stored);
+        amountResourceStoredCacheDirty.put(resource, false);
+    }
+
+    /**
+     * Initializes the all stored amount resources cache.
+     */
+    private synchronized void initializeAllStoredAmountResourcesCache() {
+        
+        allStoredAmountResourcesCache = new HashSet<AmountResource>();
+        allStoredAmountResourcesCacheDirty = true;
+    }
+    
+    /**
+     * Sets the all stored amount resources cache as dirty.
+     */
+    private void setAllStoredAmountResourcesCacheDirty() {
+        
+        // Update all stored amount resources cache if it hasn't been initialized.
+        if (allStoredAmountResourcesCache == null) {
+            initializeAllStoredAmountResourcesCache();
+        }
+        
+        allStoredAmountResourcesCacheDirty = true;
+        
+        // Mark owner unit's all stored amount resources stored as dirty, if any.
+        if (owner != null) {
+            Unit container = owner.getContainerUnit();
+            if (container != null) {
+                container.getInventory().setAllStoredAmountResourcesCacheDirty();
+            }
+        }
+    }
+    
+    /**
+     * Gets the all stored amount resources cache.
+     * @param allowDirty true if cache value can be dirty.
+     * @return all stored amount resources cache value.
+     */
+    private Set<AmountResource> getAllStoredAmountResourcesCache(boolean allowDirty) {
+        
+        // Update all stored amount resources cache if it hasn't been initialized.
+        if (allStoredAmountResourcesCache == null) {
+            initializeAllStoredAmountResourcesCache();
+        }
+
+        if (allStoredAmountResourcesCacheDirty && !allowDirty) {
+            updateAllStoredAmountResourcesCache();
+        }
+
+        return allStoredAmountResourcesCache;
+    }
+    
+    /**
+     * Update the all stored amount resources cache as well as the container's cache if any.
+     */
+    private void updateAllStoredAmountResourcesCache() {
+
+        Set<AmountResource> tempAllStored = new HashSet<AmountResource>();
+
+        if (resourceStorage != null) {
+            tempAllStored.addAll(resourceStorage.getAllAmountResourcesStored(false));
+        }
+
+        if (containedUnits != null) {
+            Iterator<Unit> j = containedUnits.iterator();
+            while (j.hasNext()) {
+                Unit unit = j.next();
+                if (unit instanceof Container) {
+                    tempAllStored.addAll(unit.getInventory().getAllAmountResourcesStored(false));
+                }
+            }
+        }
+
+        allStoredAmountResourcesCache = tempAllStored;
+        allStoredAmountResourcesCacheDirty = false;
+    }
+
+    /**
+     * Sets the total amount resources stored cache as dirty.
+     */
+    private void setTotalAmountResourcesStoredCacheDirty() {
+        
+        totalAmountResourcesStoredCacheDirty = true;
+        
+        // Set total inventory mass cache dirty as well.
+        setTotalInventoryMassCacheDirty();
+        
+        // Mark owner unit's total resources stored as dirty, if any.
+        if (owner != null) {
+            Unit container = owner.getContainerUnit();
+            if (container != null) {
+                container.getInventory().setTotalAmountResourcesStoredCacheDirty();
+            }
+        }
+    }
+    
+    /**
+     * Gets the total amount resource stored cache value.
+     * @param allowDirty true if cache value can be dirty.
+     * @return total amount resources stored cache value.
+     */
+    private double getTotalAmountResourcesStoredCache(boolean allowDirty) {
+        
+        // Update total amount resources stored cache if it is dirty.
+        if (totalAmountResourcesStoredCacheDirty && !allowDirty) {
+            updateTotalAmountResourcesStoredCache();
+        }
+
+        return totalAmountResourcesStoredCache;
+    }
+    
+    /**
+     * Update the total amount resources stored cache as well as the container's cache if any.
+     */
+    private void updateTotalAmountResourcesStoredCache() {
+
+        double tempStored = 0D;
+        if (resourceStorage != null) {
+            tempStored += resourceStorage.getTotalAmountResourcesStored(false);
+        }
+
+        if (containedUnits != null) {
+            Iterator<Unit> i = containedUnits.iterator();
+            while (i.hasNext()) {
+                Unit unit = i.next();
+                tempStored = unit.getInventory().getTotalAmountResourcesStored(false);
+            }
+        }
+
+        totalAmountResourcesStoredCache = tempStored;
+        totalAmountResourcesStoredCacheDirty = false;
+    }
+    
+    /**
+     * Sets the item resource total mass cache as dirty.
+     */
+    private void setItemResourceTotalMassCacheDirty() {
+        
+        itemResourceTotalMassCacheDirty = true;
+        
+        // Set total inventory mass cache dirty as well.
+        setTotalInventoryMassCacheDirty();
+    }
+    
+    /**
+     * Gets the total amount resource stored cache value.
+     * @param allowDirty true if cache value can be dirty.
+     * @return total amount resources stored cache value.
+     */
+    private double getItemResourceTotalMassCache(boolean allowDirty) {
+        
+        // Update item resource total mass cache if it is dirty.
+        if (itemResourceTotalMassCacheDirty && !allowDirty) {
+            updateItemResourceTotalMassCache();
+        }
+        
+        return itemResourceTotalMassCache;
+    }
+    
+    /**
+     * Update the item resource total mass cache.
+     */
+    private void updateItemResourceTotalMassCache() {
+        
+        double tempMass = 0D;
+
+        if (containedItemResources != null) {
+            Set<Entry<ItemResource, Integer>> es = containedItemResources.entrySet();
+            for(Entry<ItemResource, Integer> e : es){
+                tempMass += e.getValue() * e.getKey().getMassPerItem();
+            }
+        }
+
+        itemResourceTotalMassCache = tempMass;
+        itemResourceTotalMassCacheDirty = false;
+    }
+    
+    /**
+     * Sets the unit total mass cache as dirty.
+     */
+    private void setUnitTotalMassCacheDirty() {
+        
+        unitTotalMassCacheDirty = true;
+        
+        // Set total inventory mass cache dirty as well.
+        setTotalInventoryMassCacheDirty();
+    }
+    
+    /**
+     * Gets the unit total mass cache value.
+     * @param allowDirty true if cache value can be dirty.
+     * @return unit total mass cache value.
+     */
+    private double getUnitTotalMassCache(boolean allowDirty) {
+        
+        // Update unit total mass cache if it is dirty.
+        if (unitTotalMassCacheDirty && !allowDirty) {
+            updateUnitTotalMassCache();
+        }
+        
+        return unitTotalMassCache;
+    }
+    
+    /**
+     * Update the unit total mass cache.
+     */
+    private void updateUnitTotalMassCache() {
+        
+        double tempMass = 0D;
+
+        if (containedUnits != null) {
+            Iterator<Unit> unitIt = containedUnits.iterator();
+            while (unitIt.hasNext()) {
+                tempMass += unitIt.next().getMass();
+            }
+        }
+
+        unitTotalMassCache = tempMass;
+        unitTotalMassCacheDirty = false;
+    }
+    
+    /**
+     * Sets the total inventory mass cache as dirty.
+     */
+    private void setTotalInventoryMassCacheDirty() {
+        
+        totalInventoryMassCacheDirty = true;
+        
+        // Set owner's unit total mass to dirty, if any.
+        if (owner != null) {
+            Unit container = owner.getContainerUnit();
+            if (container != null) {
+                container.getInventory().setUnitTotalMassCacheDirty();
+            }
+        }
+    }
+    
+    /**
+     * Gets the total inventory mass cache value.
+     * @param allowDirty true if cache value can be dirty.
+     * @return total inventory mass cache value.
+     */
+    private double getTotalInventoryMassCache(boolean allowDirty) {
+        
+        // Update total inventory mass cache if it is dirty.
+        if (totalInventoryMassCacheDirty && !allowDirty) {
+            updateTotalInventoryMassCache();
+        }
+        
+        return totalInventoryMassCache;
+    }
+    
+    /**
+     * Update the total inventory mass cache.
+     */
+    private void updateTotalInventoryMassCache() {
+        
+        double tempMass = 0D;
+
+        // Add total amount resource mass stored.
+        tempMass += getTotalAmountResourcesStored(false);
+
+        // Add general storage mass.
+        tempMass += getGeneralStoredMass(false);
+
+        totalInventoryMassCache = tempMass;
+        totalInventoryMassCacheDirty = false;
     }
 
     /**
      * Creates a clone of this inventory (not including the inventory contents).
      * @param owner the unit owner of the inventory (or null).
      * @return inventory clone.
-     * @throws InventoryException if error creating inventory clone.
      */
-    public synchronized Inventory clone(Unit owner) {
-        
+    public Inventory clone(Unit owner) {
+
         Inventory result = new Inventory(owner);
         result.addGeneralCapacity(generalCapacity);
 
-        Map<AmountResource, Double> typeCapacities = resourceStorage.getAmountResourceTypeCapacities();
-        Iterator<AmountResource> i = typeCapacities.keySet().iterator();
-        while (i.hasNext()) {
-            AmountResource type = i.next();
-            result.addAmountResourceTypeCapacity(type, typeCapacities.get(type));
-        }
+        if (resourceStorage != null) {
+            Map<AmountResource, Double> typeCapacities = resourceStorage.getAmountResourceTypeCapacities();
+            Iterator<AmountResource> i = typeCapacities.keySet().iterator();
+            while (i.hasNext()) {
+                AmountResource type = i.next();
+                result.addAmountResourceTypeCapacity(type, typeCapacities.get(type));
+            }
 
-        Map<Phase, Double> phaseCapacities = resourceStorage.getAmountResourcePhaseCapacities();
-        Iterator<Phase> j = phaseCapacities.keySet().iterator();
-        while (j.hasNext()) {
-            Phase phase = j.next();
-            result.addAmountResourcePhaseCapacity(phase, phaseCapacities.get(phase));
+            Map<Phase, Double> phaseCapacities = resourceStorage.getAmountResourcePhaseCapacities();
+            Iterator<Phase> j = phaseCapacities.keySet().iterator();
+            while (j.hasNext()) {
+                Phase phase = j.next();
+                result.addAmountResourcePhaseCapacity(phase, phaseCapacities.get(phase));
+            }
         }
 
         return result;
@@ -1116,8 +1552,8 @@ public class Inventory implements Serializable {
     /**
      * Prepare object for garbage collection.
      */
-    public synchronized void destroy() {
-        
+    public void destroy() {
+
         owner = null;
         if (containedUnits != null) containedUnits.clear();
         containedUnits = null;
@@ -1127,11 +1563,13 @@ public class Inventory implements Serializable {
         resourceStorage = null;
         if (amountResourceCapacityCache != null) amountResourceCapacityCache.clear();
         amountResourceCapacityCache = null;
+        if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
+        amountResourceCapacityCacheDirty = null;
         if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
+        if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
+        amountResourceStoredCacheDirty = null;
         amountResourceStoredCache = null;
         if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
         allStoredAmountResourcesCache = null;
-        if (amountResourceRemainingCache != null) amountResourceRemainingCache.clear();
-        amountResourceRemainingCache = null;
     }
 }

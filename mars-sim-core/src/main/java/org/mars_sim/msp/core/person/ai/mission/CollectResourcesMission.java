@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -84,7 +84,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
                 setMissionCapacity(getRover().getCrewCapacity());
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
-                            .getSettlement());
+                    .getSettlement());
             if (availableSuitNum < getMissionCapacity())
                 setMissionCapacity(availableSuitNum);
 
@@ -100,18 +100,18 @@ public abstract class CollectResourcesMission extends RoverMission implements
             recruitPeopleForMission(startingPerson);
 
             // Determine collection sites
-            if (hasVehicle())
-                determineCollectionSites(getVehicle().getRange(),
-                        getTotalTripTimeLimit(getRover(), getPeopleNumber(),
-                                true), numSites);
+            if (hasVehicle()) determineCollectionSites(getVehicle().getRange(),
+                    getTotalTripTimeLimit(getRover(), getPeopleNumber(),
+                    true), numSites);
 
             // Add home settlement
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(),
                     getStartingSettlement(), getStartingSettlement().getName()));
 
             // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable())
+            if (hasVehicle() && !isVehicleLoadable()) {
                 endMission("Vehicle is not loadable. (CollectingResourcesMission)");
+            }
         }
 
         // Add collecting phase.
@@ -119,8 +119,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from "
-                + getStartingSettlement().getName());
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
 
         // int emptyContainers = numCollectingContainersAvailable(getStartingSettlement(), containerType);
         // logger.info("Starting " + getName() + " with " + emptyContainers + " " + containerType);
@@ -322,8 +321,8 @@ public abstract class CollectResourcesMission extends RoverMission implements
      */
     private void collectingPhase(Person person) {
         Inventory inv = getRover().getInventory();
-        double resourcesCollected = inv.getAmountResourceStored(resourceType);
-        double resourcesCapacity = inv.getAmountResourceCapacity(resourceType);
+        double resourcesCollected = inv.getAmountResourceStored(resourceType, false);
+        double resourcesCapacity = inv.getAmountResourceCapacity(resourceType, false);
 
         // Set total collected resources.
         totalResourceCollected = resourcesCollected;
@@ -388,7 +387,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
                             "Collecting Resources", person, getRover(),
                             resourceType, resourceCollectionRate,
                             siteResourceGoal - siteCollectedResources, inv
-                                    .getAmountResourceStored(resourceType),
+                                    .getAmountResourceStored(resourceType, false),
                             containerType);
                     assignTask(person, collectResources);
                 }
@@ -554,7 +553,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
     protected static int numCollectingContainersAvailable(
             Settlement settlement, Class containerType) {
         return settlement.getInventory()
-                .findNumEmptyUnitsOfClass(containerType);
+                .findNumEmptyUnitsOfClass(containerType, false);
     }
 
     /**
@@ -731,7 +730,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
         // Check food capacity as time limit.
         AmountResource food = AmountResource.findAmountResource("food");
         double foodConsumptionRate = config.getFoodConsumptionRate();
-        double foodCapacity = vInv.getAmountResourceCapacity(food);
+        double foodCapacity = vInv.getAmountResourceCapacity(food, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
@@ -739,7 +738,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource("water");
         double waterConsumptionRate = config.getWaterConsumptionRate();
-        double waterCapacity = vInv.getAmountResourceCapacity(water);
+        double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit)
@@ -748,7 +747,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
         // Check oxygen capacity as time limit.
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
         double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
+        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit)

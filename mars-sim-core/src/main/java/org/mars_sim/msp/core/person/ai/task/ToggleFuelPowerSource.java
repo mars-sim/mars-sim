@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -274,7 +274,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
         boolean result = false;
         
         AmountResource resource = fuelSource.getFuelResource();
-        double stored = settlement.getInventory().getAmountResourceStored(resource);
+        double stored = settlement.getInventory().getAmountResourceStored(resource, false);
         if (stored == 0D) result = true;
         
         return result;

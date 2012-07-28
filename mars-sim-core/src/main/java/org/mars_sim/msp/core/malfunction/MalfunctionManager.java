@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionManager.java
- * @version 3.02 2012-06-06
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -493,7 +493,7 @@ public class MalfunctionManager implements Serializable {
                         double amount = effects.get(resource);
                         double amountDepleted = amount * time;
                         Inventory inv = entity.getInventory();
-                        double amountStored = inv.getAmountResourceStored(resource);
+                        double amountStored = inv.getAmountResourceStored(resource, false);
                         if (amountStored < amountDepleted) amountDepleted = amountStored;
 //                        try {
                         	if(amountDepleted >= 0)inv.retrieveAmountResource(resource, amountDepleted);

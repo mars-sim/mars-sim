@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
  
@@ -19,11 +19,8 @@ import java.util.logging.Logger;
  * converting one set of resources to another.
  */
 public class ResourceProcess implements Serializable {
-    
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.structure.building.function.ResourceProcess";
 	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(ResourceProcess.class.getName());
     
 	// The work time required to toggle this process on or off. 
 	public static final double TOGGLE_RUNNING_WORK_TIME_REQUIRED = 10D;
@@ -233,7 +230,7 @@ public class ResourceProcess implements Serializable {
                 double maxRate = maxInputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
-                double remainingAmount = inventory.getAmountResourceStored(resource);
+                double remainingAmount = inventory.getAmountResourceStored(resource, false);
                 if (resourceAmount > remainingAmount) resourceAmount = remainingAmount;
                 try {
                 	inventory.retrieveAmountResource(resource, resourceAmount);
@@ -249,7 +246,8 @@ public class ResourceProcess implements Serializable {
                 double maxRate = maxOutputResourceRates.get(resource);
                 double resourceRate = maxRate * productionLevel;
                 double resourceAmount = resourceRate * time;
-                double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, false);
+                double remainingCapacity = inventory.getAmountResourceRemainingCapacity(resource, 
+                        false, false);
                 if (resourceAmount > remainingCapacity) resourceAmount = remainingCapacity;
                 try {
                 	inventory.storeAmountResource(resource, resourceAmount, false);
@@ -286,7 +284,7 @@ public class ResourceProcess implements Serializable {
         	AmountResource resource = inputI.next();
             double maxRate = maxInputResourceRates.get(resource);
             double desiredResourceAmount = maxRate * time;
-            double inventoryResourceAmount = inventory.getAmountResourceStored(resource);
+            double inventoryResourceAmount = inventory.getAmountResourceStored(resource, false);
             double proportionAvailable = 1D;
             if (desiredResourceAmount > 0D) 
                 proportionAvailable = inventoryResourceAmount / desiredResourceAmount;

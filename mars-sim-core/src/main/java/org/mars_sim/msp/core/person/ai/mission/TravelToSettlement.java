@@ -163,7 +163,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable()) {
-            endMission("Vehicle is not loadable.");
+            endMission("Vehicle is not loadable. (TravelToSettlement)");
         }
     }
 

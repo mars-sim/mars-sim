@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehiclePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -199,7 +199,7 @@ class VehiclePanel extends WizardPanel {
             		else if (column == 6)
             			result = (int) inv.getGeneralCapacity();
                     else if (column == 7)
-                        result = (int) inv.getTotalInventoryMass();
+                        result = (int) inv.getTotalInventoryMass(true);
             		else if (column == 8)
             			result = vehicle.getStatus();
             		else if (column == 9) {
@@ -241,7 +241,7 @@ class VehiclePanel extends WizardPanel {
     		
             if (column == 7) {
 //                try {
-                    if (vehicle.getInventory().getTotalInventoryMass() > 0D) result = true;
+                    if (vehicle.getInventory().getTotalInventoryMass(true) > 0D) result = true;
 //                }
 //                catch (InventoryException e) {
 //                    e.printStackTrace(System.err);

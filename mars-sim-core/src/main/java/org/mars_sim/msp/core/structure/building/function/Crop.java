@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.03 2012-07-01
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -235,11 +235,11 @@ public class Crop implements Serializable {
                     double wasteWaterRequired = maxPeriodHarvest * WASTE_WATER_NEEDED;
                     AmountResource wasteWater = AmountResource.findAmountResource("waste water");
                     AmountResource water = AmountResource.findAmountResource("water");
-                    double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater);
+                    double wasteWaterAvailable = inv.getAmountResourceStored(wasteWater, false);
                     double wasteWaterUsed = wasteWaterRequired;
                     if (wasteWaterUsed > wasteWaterAvailable) wasteWaterUsed = wasteWaterAvailable;
                     double waterAmount = wasteWaterUsed * .8D;
-                    double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false);
+                    double waterCapacity = inv.getAmountResourceRemainingCapacity(water, false, false);
                     if (waterAmount > waterCapacity) waterAmount = waterCapacity;
                     inv.retrieveAmountResource(wasteWater, wasteWaterUsed);
                     inv.storeAmountResource(water, waterAmount, false);
@@ -249,22 +249,26 @@ public class Crop implements Serializable {
                     AmountResource carbonDioxide = AmountResource.findAmountResource("carbon dioxide");
                     AmountResource oxygen = AmountResource.findAmountResource("oxygen");
                     double carbonDioxideRequired = maxPeriodHarvest * CARBON_DIOXIDE_NEEDED;
-                    double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide);
+                    double carbonDioxideAvailable = inv.getAmountResourceStored(carbonDioxide, false);
                     double carbonDioxideUsed = carbonDioxideRequired;
-                    if (carbonDioxideUsed > carbonDioxideAvailable) carbonDioxideUsed = carbonDioxideAvailable;
+                    if (carbonDioxideUsed > carbonDioxideAvailable) {
+                        carbonDioxideUsed = carbonDioxideAvailable;
+                    }
                     double oxygenAmount = carbonDioxideUsed * .9D;
-                    double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false);
+                    double oxygenCapacity = inv.getAmountResourceRemainingCapacity(oxygen, false, false);
                     if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
                     inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
                     inv.storeAmountResource(oxygen, oxygenAmount, false);
-                    harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * .5D) + .5D);   
+                    harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * 
+                            .5D) + .5D);   
 
                     // Modifiy harvest amount.
                     actualHarvest += maxPeriodHarvest * harvestModifier;
 
                     // Check if crop is dying if it's at least 25% along on it's growing time and its condition 
                     // is less than 10% normal.
-                    if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && (getCondition() < .1D)) {
+                    if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && 
+                            (getCondition() < .1D)) {
                         phase = FINISHED;
                         logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
                     }

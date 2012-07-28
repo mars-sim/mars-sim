@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.03 2012-07-01
+ * @version 3.03 2012-07-25
  * @author Barry Evans
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
 import javax.swing.*;
+
 import java.util.*;
 
 /**
@@ -84,7 +85,7 @@ public class PersonTableModel extends UnitTableModel {
     private static final String SETTLEMENT_ALL_ASSOCIATED_PEOPLE = "All People Associated with Settlement";
     private static final String MISSION_PEOPLE = "Mission People";
 
-
+/*
     static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
 
         static {
@@ -102,7 +103,7 @@ public class PersonTableModel extends UnitTableModel {
             m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
                     EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
         }
-
+*/
 
     private String sourceType; // The type of source for the people table.
     
@@ -198,8 +199,9 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-//		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
-        String eventType = event.getType();
+		SwingUtilities.invokeLater(new PersonTableUpdater(event, this));
+/*
+		String eventType = event.getType();
 
             Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 
@@ -220,6 +222,7 @@ public class PersonTableModel extends UnitTableModel {
                 Unit unit = (Unit) event.getSource();
                 fireTableCellUpdated(getUnitIndex(unit), column);
             }
+*/
 	}
 
     /**
@@ -286,7 +289,7 @@ public class PersonTableModel extends UnitTableModel {
             	} break;
             
             	case JOB : {
-            		// If person is dead, get job from deathinfo.
+            		// If person is dead, get job from death info.
             		if (person.getPhysicalCondition().isDead()) 
             			result = person.getPhysicalCondition().getDeathDetails().getJob();
             		else {
@@ -304,11 +307,6 @@ public class PersonTableModel extends UnitTableModel {
             	case MISSION : {
             		Mission mission = person.getMind().getMission();
             		if (mission != null) {
-//                        StringBuilder cellValue = new StringBuilder();
-//            			cellValue.append(mission.getName());
-//            			// cellValue.append(" - ");
-//            			// cellValue.append(mission.getPhase());
-//            			result = cellValue.toString();
                         result = mission.getDescription();
             		}
             	} break;
@@ -358,62 +356,62 @@ public class PersonTableModel extends UnitTableModel {
     	return result;
     }
     
-//    /**
-//     * Inner class for updating the person table.
-//     */
-//    private static class PersonTableUpdater implements Runnable {
-//
-////        static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
-////
-////        static {
-////            HashMap<String, Integer> m = new HashMap<String, Integer>();
-////            m.put(Unit.NAME_EVENT, NAME);
-////            m.put(Unit.LOCATION_EVENT, LOCATION);
-////            m.put(PhysicalCondition.HUNGER_EVENT, HUNGER);
-////            m.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
-////            m.put(PhysicalCondition.STRESS_EVENT, STRESS);
-////            m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
-////            m.put(Mind.JOB_EVENT, JOB);
-////            m.put(TaskManager.TASK_EVENT, TASK);
-////            m.put(Mind.MISSION_EVENT, MISSION);
-////            m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
-////            m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
-////                    EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
-////        }
-//
-//    	private final UnitEvent event;
-//
-//        private final UnitTableModel tableModel;
-//
-//    	private PersonTableUpdater(UnitEvent event, UnitTableModel tableModel) {
-//    		this.event = event;
-//            this.tableModel = tableModel;
-//        }
-//
-//    	public void run() {
-//    		String eventType = event.getType();
-//
-//            Integer column = EVENT_COLUMN_MAPPING.get(eventType);
-//
-////            int columnNum = -1;
-////    		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-////    		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-////    		else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
-////    		else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
-////    		else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
-////    		else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
-////    		else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
-////    		else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
-////    		else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
-////    		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
-////    				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
-//
-//            if (column != null && column> -1) {
-//                Unit unit = (Unit) event.getSource();
-//                tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);
-//            }
-//    	}
-//    }
+    /**
+     * Inner class for updating the person table.
+     */
+    private static class PersonTableUpdater implements Runnable {
+
+        static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
+
+        static {
+            HashMap<String, Integer> m = new HashMap<String, Integer>();
+            m.put(Unit.NAME_EVENT, NAME);
+            m.put(Unit.LOCATION_EVENT, LOCATION);
+            m.put(PhysicalCondition.HUNGER_EVENT, HUNGER);
+            m.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
+            m.put(PhysicalCondition.STRESS_EVENT, STRESS);
+            m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
+            m.put(Mind.JOB_EVENT, JOB);
+            m.put(TaskManager.TASK_EVENT, TASK);
+            m.put(Mind.MISSION_EVENT, MISSION);
+            m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
+            m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
+            EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
+        }
+
+    	private final UnitEvent event;
+
+        private final UnitTableModel tableModel;
+
+    	private PersonTableUpdater(UnitEvent event, UnitTableModel tableModel) {
+    		this.event = event;
+            this.tableModel = tableModel;
+        }
+
+    	public void run() {
+    		String eventType = event.getType();
+
+            Integer column = EVENT_COLUMN_MAPPING.get(eventType);
+/*
+            int columnNum = -1;
+    		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
+    		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
+    		else if (eventType.equals(PhysicalCondition.HUNGER_EVENT)) columnNum = HUNGER;
+    		else if (eventType.equals(PhysicalCondition.FATIGUE_EVENT)) columnNum = FATIGUE;
+    		else if (eventType.equals(PhysicalCondition.STRESS_EVENT)) columnNum = STRESS;
+    		else if (eventType.equals(PhysicalCondition.PERFORMANCE_EVENT)) columnNum = PERFORMANCE;
+    		else if (eventType.equals(Mind.JOB_EVENT)) columnNum = JOB;
+    		else if (eventType.equals(TaskManager.TASK_EVENT)) columnNum = TASK;
+    		else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
+    		else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
+    				eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
+*/
+            if (column != null && column> -1) {
+                Unit unit = (Unit) event.getSource();
+                tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);
+            }
+    	}
+    }
 
     /**
      * UnitListener inner class for crewable vehicle.

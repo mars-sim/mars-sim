@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -175,7 +175,7 @@ public abstract class VehicleMission extends TravelMission implements
                 usable = false;
             if (!newVehicle.getStatus().equals(Vehicle.PARKED))
                 usable = false;
-            if (newVehicle.getInventory().getTotalInventoryMass() > 0D)
+            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
                 usable = false;
             return usable;
         } else
@@ -623,7 +623,7 @@ public abstract class VehicleMission extends TravelMission implements
             if (resource instanceof AmountResource) {
                 double amount = (Double) neededResources.get(resource);
                 double amountStored = inv
-                        .getAmountResourceStored((AmountResource) resource);
+                        .getAmountResourceStored((AmountResource) resource, false);
                 if (amountStored < amount) {
                     logger.severe(vehicle.getName() + " does not have enough " + resource + 
                             " to continue with " + getName() + " (required: " + amount + 

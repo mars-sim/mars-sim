@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -176,7 +176,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		
 		// Operate light utility vehicle if no one else is operating it.
 		if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)) {
-		    if (luv.getInventory().canStoreUnit(person)) {
+		    if (luv.getInventory().canStoreUnit(person, false)) {
 		        luv.getInventory().storeUnit(person);
 		        luv.setOperator(person);
 		        operatingLUV = true;
