@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.03 2012-06-29
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -282,7 +282,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @throws Exception if error getting range.
      */
     public double getRange() {
-    	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType());
+    	double fuelCapacity = getInventory().getAmountResourceCapacity(getFuelType(), false);
         return fuelCapacity * fuelEfficiency / RANGE_ERROR_MARGIN;
     }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LoadVehicle.java
- * @version 3.02 2012-01-14
+ * UnloadVehicle.java
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -29,7 +29,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -159,7 +158,7 @@ public class UnloadVehicle extends Task implements Serializable {
     			Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
     			if (!vehicle.isReserved()) {
-                    if (vehicle.getInventory().getTotalInventoryMass() > 0D) needsUnloading = true;
+                    if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) needsUnloading = true;
                     if (vehicle instanceof Towing) {
                         if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
                     }
@@ -272,12 +271,12 @@ public class UnloadVehicle extends Task implements Serializable {
         }
         
         // Unload amount resources.
-        Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored().iterator();
+        Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored(false).iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
             AmountResource resource = i.next();
-            double amount = vehicleInv.getAmountResourceStored(resource);
+            double amount = vehicleInv.getAmountResourceStored(resource, false);
             if (amount > amountUnloading) amount = amountUnloading;
-            double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true);
+            double capacity = settlementInv.getAmountResourceRemainingCapacity(resource, true, false);
             if (capacity < amount) {
                 amount = capacity;
                 amountUnloading = 0D;
@@ -329,11 +328,11 @@ public class UnloadVehicle extends Task implements Serializable {
     	
         // Unload amount resources.
     	// Note: only unloading amount resources at the moment.
-    	Iterator<AmountResource> i = eInv.getAllAmountResourcesStored().iterator();
+    	Iterator<AmountResource> i = eInv.getAllAmountResourcesStored(false).iterator();
     	while (i.hasNext()) {
     	    AmountResource resource = i.next();
-    	    double amount = eInv.getAmountResourceStored(resource);
-    	    double capacity = sInv.getAmountResourceRemainingCapacity(resource, true);
+    	    double amount = eInv.getAmountResourceStored(resource, false);
+    	    double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
     	    if (amount < capacity) amount = capacity;
     	    try {
     	        eInv.retrieveAmountResource(resource, amount);
@@ -358,7 +357,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @throws InventoryException if error checking vehicle.
      */
     static public boolean isFullyUnloaded(Vehicle vehicle) {
-        return (vehicle.getInventory().getTotalInventoryMass() == 0D);
+        return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
     }
     
 	/**

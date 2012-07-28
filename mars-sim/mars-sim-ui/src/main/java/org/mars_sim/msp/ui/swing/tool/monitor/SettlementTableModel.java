@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -355,7 +355,7 @@ public class SettlementTableModel extends UnitTableModel {
     private Integer getResourceStored(Unit unit, AmountResource resource) {
         Integer result = null;	
         Inventory inv = unit.getInventory();
-        result = (int) inv.getAmountResourceStored(resource);
+        result = (int) inv.getAmountResourceStored(resource, true);
         return result;
     }
 

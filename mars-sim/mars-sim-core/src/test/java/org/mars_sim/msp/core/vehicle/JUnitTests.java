@@ -1,6 +1,9 @@
 package org.mars_sim.msp.core.vehicle;
 
 import junit.textui.TestRunner;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.MockSettlement;
 
 import junit.framework.Test;
@@ -56,12 +59,15 @@ public class JUnitTests extends TestCase {
 
     /**
      * Every JUnit test suite needs at least one test.This one obviously does nothing.
-     * Any others begining with "test..." will be automatically included as well.
+     * Any others beginning with "test..." will be automatically included as well.
      */
     public void testNothing() {
     }
 
     public void testLightUtilityVehicle() {
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+        
         LightUtilityVehicle vehicle = new LightUtilityVehicle("Subaru", "Light Utility Vehicle", new MockSettlement());
         int crewCapacity = vehicle.getCrewCapacity();
         int slots = vehicle.getAtachmentSlotNumber();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.03 2012-07-10
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -103,7 +103,7 @@ public class StudyFieldSamples extends Task implements
             if (container != null) {
                 AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
                 Inventory inv = container.getInventory();
-                double totalRockSampleMass = inv.getAmountResourceStored(rockSamples);
+                double totalRockSampleMass = inv.getAmountResourceStored(rockSamples, false);
                 if (totalRockSampleMass >= SAMPLE_MASS) {
                     double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
                     if (fieldSampleMass > totalRockSampleMass) fieldSampleMass = totalRockSampleMass;
@@ -199,7 +199,7 @@ public class StudyFieldSamples extends Task implements
             if (container != null) {
                 Inventory inv = container.getInventory();
                 AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-                if (inv.getAmountResourceStored(rockSamples) < SAMPLE_MASS) result = 0D;
+                if (inv.getAmountResourceStored(rockSamples, false) < SAMPLE_MASS) result = 0D;
             }
         }
         catch (Exception e) {

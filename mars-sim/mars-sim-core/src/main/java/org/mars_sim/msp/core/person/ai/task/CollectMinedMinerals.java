@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -107,7 +107,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
     private void takeBag() {
         Bag bag = findMostFullBag(rover.getInventory(), mineralType);
         if (bag != null) {
-            if (person.getInventory().canStoreUnit(bag)) {
+            if (person.getInventory().canStoreUnit(bag, false)) {
                 rover.getInventory().retrieveUnit(bag);
                 person.getInventory().storeUnit(bag);
             }
@@ -127,7 +127,8 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         Iterator<Unit> i = inv.findAllUnitsOfClass(Bag.class).iterator();
         while (i.hasNext()) {
             Bag bag = (Bag) i.next();
-            double remainingCapacity = bag.getInventory().getAmountResourceRemainingCapacity(resource, true);
+            double remainingCapacity = bag.getInventory().getAmountResourceRemainingCapacity(
+                    resource, true, false);
 
             if ((remainingCapacity > 0D) && (remainingCapacity < leastCapacity)) {
                 result = bag;
@@ -160,7 +161,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
         double mineralsExcavated = mission.getMineralExcavationAmount(mineralType);
         double remainingPersonCapacity = 
-            person.getInventory().getAmountResourceRemainingCapacity(mineralType, true);
+            person.getInventory().getAmountResourceRemainingCapacity(mineralType, true, false);
 
         double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
@@ -254,9 +255,9 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         if (suit != null) {
             carryMass += suit.getMass();
             AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
             AmountResource waterResource = AmountResource.findAmountResource("water");
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
         }
         double carryCapacity = person.getInventory().getGeneralCapacity();
         boolean canCarryEquipment = (carryCapacity >= carryMass);

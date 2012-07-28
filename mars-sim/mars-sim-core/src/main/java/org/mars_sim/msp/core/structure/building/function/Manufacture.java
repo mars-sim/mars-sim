@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.03 2012-07-09
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -371,7 +371,7 @@ public class Manufacture extends Function implements Serializable {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
-                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true);
+                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                         if (item.getAmount() > capacity) amount = capacity;  
                         inv.storeAmountResource(resource, amount, true);
                     }

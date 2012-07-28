@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Unit.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -179,7 +179,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @throws Exception if error getting the mass.
      */
     public double getMass() {
-        return baseMass + inventory.getTotalInventoryMass();
+        return baseMass + inventory.getTotalInventoryMass(false);
     }
     
     /**

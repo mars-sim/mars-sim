@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Barry Evans
  */
 
@@ -230,7 +230,7 @@ public class PhysicalCondition implements Serializable {
     	if (container == null) throw new IllegalArgumentException("container is null");
     	AmountResource food = AmountResource.findAmountResource("food");
     	double foodEaten = amount;
-        double foodAvailable = container.getInventory().getAmountResourceStored(food);
+        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
         if (foodAvailable == 0D) throw new IllegalStateException("No food available.");
         if (foodEaten > foodAvailable) foodEaten = foodAvailable;
 //        try {

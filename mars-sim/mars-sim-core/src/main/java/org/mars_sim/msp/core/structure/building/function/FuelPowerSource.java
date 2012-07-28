@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -21,9 +21,7 @@ public class FuelPowerSource extends PowerSource implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.structure.building.function.FuelPowerSource";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(FuelPowerSource.class.getName());
 
     private final static String TYPE = "Fuel Power Source";
 
@@ -59,7 +57,7 @@ public class FuelPowerSource extends PowerSource implements Serializable {
     public double getCurrentPower(Building building) {
 
         if (toggle) {
-            double fuelStored = building.getInventory().getAmountResourceStored(resource);
+            double fuelStored = building.getInventory().getAmountResourceStored(resource, false);
             if (fuelStored > 0) {
                 return getMaxPower();
             } else {
@@ -86,7 +84,7 @@ public class FuelPowerSource extends PowerSource implements Serializable {
         
         double consumptionRateMillisol = consumptionSpeed / 1000D;
         double consumedFuel = time * consumptionRateMillisol;
-        double fuelStored = inv.getAmountResourceStored(resource);
+        double fuelStored = inv.getAmountResourceStored(resource, false);
 
         if (fuelStored < consumedFuel) {
             consumedFuel = fuelStored;

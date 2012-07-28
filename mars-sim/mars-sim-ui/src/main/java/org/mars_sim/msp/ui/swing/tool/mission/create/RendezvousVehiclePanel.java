@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RendezvousVehiclePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -194,15 +194,15 @@ class RendezvousVehiclePanel extends WizardPanel {
             			result = vehicle.getCrewNum();
             		else if (column == 3) {
             			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            			result = (int) inv.getAmountResourceStored(oxygen);
+            			result = (int) inv.getAmountResourceStored(oxygen, false);
             		}
                 	else if (column == 4) {
                 		AmountResource water = AmountResource.findAmountResource("water");
-                		result = (int) inv.getAmountResourceStored(water);
+                		result = (int) inv.getAmountResourceStored(water, false);
                 	}
                 	else if (column == 5) { 
                 		AmountResource food = AmountResource.findAmountResource("food");
-                		result = (int) inv.getAmountResourceStored(food);
+                		result = (int) inv.getAmountResourceStored(food, false);
                 	}
                 	else if (column == 6) {
                 		Vehicle rescueVehicle = getRescueVehicle(vehicle);

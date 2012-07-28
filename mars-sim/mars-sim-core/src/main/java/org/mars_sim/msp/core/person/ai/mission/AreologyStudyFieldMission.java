@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -97,7 +97,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
             
             // Check if vehicle can carry enough supplies for the mission.
             if (hasVehicle() && !isVehicleLoadable()) 
-                endMission("Vehicle is not loadable. (AreologyFieldMission)");
+                endMission("Vehicle is not loadable. (AreologyStudyFieldMission)");
         }
         
         // Add researching site phase.
@@ -313,8 +313,7 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
      * @return time (millisols) limit.
      * @throws MissionException if error determining time limit.
      */
-    public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) 
-             {
+    public static double getTotalTripTimeLimit(Rover rover, int memberNum, boolean useBuffer) {
         
         Inventory vInv = rover.getInventory();
         
@@ -322,31 +321,26 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
         
         PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
         
-//        try {
-            // Check food capacity as time limit.
-            AmountResource food = AmountResource.findAmountResource("food");
-            double foodConsumptionRate = config.getFoodConsumptionRate();
-            double foodCapacity = vInv.getAmountResourceCapacity(food);
-            double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-            if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
-            
-            // Check water capacity as time limit.
-            AmountResource water = AmountResource.findAmountResource("water");
-            double waterConsumptionRate = config.getWaterConsumptionRate();
-            double waterCapacity = vInv.getAmountResourceCapacity(water);
-            double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
-            if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
-            
-            // Check oxygen capacity as time limit.
-            AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-            double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
-            double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
-            if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
-//        }
-//        catch (Exception e) {
-//            throw new MissionException(null, e);
-//        }
+        // Check food capacity as time limit.
+        AmountResource food = AmountResource.findAmountResource("food");
+        double foodConsumptionRate = config.getFoodConsumptionRate();
+        double foodCapacity = vInv.getAmountResourceCapacity(food, false);
+        double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
+        if (foodTimeLimit < timeLimit) timeLimit = foodTimeLimit;
+
+        // Check water capacity as time limit.
+        AmountResource water = AmountResource.findAmountResource("water");
+        double waterConsumptionRate = config.getWaterConsumptionRate();
+        double waterCapacity = vInv.getAmountResourceCapacity(water, false);
+        double waterTimeLimit = waterCapacity / (waterConsumptionRate * memberNum);
+        if (waterTimeLimit < timeLimit) timeLimit = waterTimeLimit;
+
+        // Check oxygen capacity as time limit.
+        AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+        double oxygenConsumptionRate = config.getOxygenConsumptionRate();
+        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
+        double oxygenTimeLimit = oxygenCapacity / (oxygenConsumptionRate * memberNum);
+        if (oxygenTimeLimit < timeLimit) timeLimit = oxygenTimeLimit;
         
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -157,7 +157,7 @@ public class CollectResources extends EVAOperation implements Serializable {
     private void takeContainer() {
         Unit container = findLeastFullContainer(rover.getInventory(), containerType, resourceType);
         if (container != null) {
-            if (person.getInventory().canStoreUnit(container)) {
+            if (person.getInventory().canStoreUnit(container, false)) {
                 rover.getInventory().retrieveUnit(container);
                 person.getInventory().storeUnit(container);
             }
@@ -171,14 +171,16 @@ public class CollectResources extends EVAOperation implements Serializable {
      * @param resourceType the resource for capacity.
      * @return container.
      */
-    private static Unit findLeastFullContainer(Inventory inv, Class containerType, AmountResource resource) {
+    private static Unit findLeastFullContainer(Inventory inv, Class containerType, 
+            AmountResource resource) {
         Unit result = null;
         double mostCapacity = 0D;
 
         Iterator<Unit> i = inv.findAllUnitsOfClass(containerType).iterator();
         while (i.hasNext()) {
             Unit container = i.next();
-            double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(resource, true);
+            double remainingCapacity = container.getInventory().getAmountResourceRemainingCapacity(
+                    resource, true, false);
             if (remainingCapacity > mostCapacity) {
                 result = container;
                 mostCapacity = remainingCapacity;
@@ -206,8 +208,10 @@ public class CollectResources extends EVAOperation implements Serializable {
             return time;
         }
 
-        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(resourceType, true);
-        double currentSamplesCollected = rover.getInventory().getAmountResourceStored(resourceType) - startingCargo; 
+        double remainingPersonCapacity = person.getInventory().getAmountResourceRemainingCapacity(
+                resourceType, true, false);
+        double currentSamplesCollected = rover.getInventory().getAmountResourceStored(
+                resourceType, false) - startingCargo; 
         double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
         double sampleLimit = remainingPersonCapacity;
         if (remainingSamplesNeeded < remainingPersonCapacity) sampleLimit = remainingSamplesNeeded;
@@ -312,9 +316,9 @@ public class CollectResources extends EVAOperation implements Serializable {
         if (suit != null) {
             carryMass += suit.getMass();
             AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(oxygenResource, false, false);
             AmountResource waterResource = AmountResource.findAmountResource("water");
-            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false);
+            carryMass += suit.getInventory().getAmountResourceRemainingCapacity(waterResource, false, false);
         }
         double carryCapacity = person.getInventory().getGeneralCapacity();
         boolean canCarryEquipment = (carryCapacity >= carryMass);

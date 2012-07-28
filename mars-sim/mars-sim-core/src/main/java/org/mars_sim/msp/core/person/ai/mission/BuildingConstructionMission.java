@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.03 2012-06-28
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -494,7 +494,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             while (i.hasNext()) {
                 AmountResource resource = i.next();
                 double amount = constructionStage.getInfo().getResources().get(resource);
-                if (inv.getAmountResourceStored(resource) >= amount)
+                if (inv.getAmountResourceStored(resource, false) >= amount)
                     inv.retrieveAmountResource(resource, amount);
             }
 
@@ -671,22 +671,26 @@ public class BuildingConstructionMission extends Mission implements Serializable
      * @return true if construction materials are available.
      * @throws Exception if error checking construction materials.
      */
-    private static boolean hasStageConstructionMaterials(ConstructionStageInfo stage, Settlement settlement) 
-{
+    private static boolean hasStageConstructionMaterials(ConstructionStageInfo stage, 
+            Settlement settlement) {
         boolean result = true;
         
         Iterator<AmountResource> i = stage.getResources().keySet().iterator();
         while (i.hasNext()) {
             AmountResource resource = i.next();
             double amount = stage.getResources().get(resource);
-            if (settlement.getInventory().getAmountResourceStored(resource) < amount) result = false;
+            if (settlement.getInventory().getAmountResourceStored(resource, false) < amount) {
+                result = false;
+            }
         }
         
         Iterator<Part> j = stage.getParts().keySet().iterator();
         while (j.hasNext()) {
             Part part = j.next();
             int number = stage.getParts().get(part);
-            if (settlement.getInventory().getItemResourceNum(part) < number) result = false;
+            if (settlement.getInventory().getItemResourceNum(part) < number) {
+                result = false;
+            }
         }
         
         return result;

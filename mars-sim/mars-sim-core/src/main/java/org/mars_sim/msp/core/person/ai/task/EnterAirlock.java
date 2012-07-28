@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -250,8 +250,8 @@ public class EnterAirlock extends Task implements Serializable {
 
             // Unload oxygen from suit.
             AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            double oxygenAmount = suitInv.getAmountResourceStored(oxygen);
-            double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true);
+            double oxygenAmount = suitInv.getAmountResourceStored(oxygen, false);
+            double oxygenCapacity = entityInv.getAmountResourceRemainingCapacity(oxygen, true, false);
             if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
             try {
                 suitInv.retrieveAmountResource(oxygen, oxygenAmount);
@@ -261,8 +261,8 @@ public class EnterAirlock extends Task implements Serializable {
 
             // Unload water from suit.
             AmountResource water = AmountResource.findAmountResource("water");
-            double waterAmount = suitInv.getAmountResourceStored(water);
-            double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true);
+            double waterAmount = suitInv.getAmountResourceStored(water, false);
+            double waterCapacity = entityInv.getAmountResourceRemainingCapacity(water, true, false);
             if (waterAmount > waterCapacity) waterAmount = waterCapacity;
             try {
                 suitInv.retrieveAmountResource(water, waterAmount);

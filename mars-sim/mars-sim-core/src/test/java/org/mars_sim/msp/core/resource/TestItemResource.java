@@ -3,7 +3,6 @@ package org.mars_sim.msp.core.resource;
 import java.util.Set;
 
 import junit.framework.TestCase;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestItemResource extends TestCase {
@@ -20,7 +19,7 @@ public class TestItemResource extends TestCase {
     @Override
     public void setUp() throws Exception {
         SimulationConfig.loadConfig();
-        Simulation.createNewSimulation();
+        
         hammer = ItemResource.createItemResource("hammer", 1.4D);
         socketWrench = ItemResource.createItemResource("socket wrench", .5D);
         pipeWrench = ItemResource.createItemResource("pipe wrench", 2.5D);

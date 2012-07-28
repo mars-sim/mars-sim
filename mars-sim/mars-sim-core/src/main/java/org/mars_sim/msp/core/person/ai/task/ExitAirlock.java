@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -237,16 +237,16 @@ public class ExitAirlock extends Task implements Serializable {
 
         // Check if enough oxygen.
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygen);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
         // Make sure there is enough extra oxygen for everyone else.
         availableOxygen -= (neededOxygen * otherPeopleNum);
         boolean hasEnoughOxygen = (availableOxygen >= neededOxygen);
 
         // Check if enough water.
         AmountResource water = AmountResource.findAmountResource("water");
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true);
-        double availableWater = entityInv.getAmountResourceStored(water);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
+        double availableWater = entityInv.getAmountResourceStored(water, false);
         // Make sure there is enough extra water for everyone else.
         availableWater -= (neededWater * otherPeopleNum);
         boolean hasEnoughWater = (availableWater >= neededWater);
@@ -266,8 +266,8 @@ public class ExitAirlock extends Task implements Serializable {
 
         // Fill oxygen in suit from entity's inventory. 
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true);
-        double availableOxygen = entityInv.getAmountResourceStored(oxygen);
+        double neededOxygen = suitInv.getAmountResourceRemainingCapacity(oxygen, true, false);
+        double availableOxygen = entityInv.getAmountResourceStored(oxygen, false);
         double takenOxygen = neededOxygen;
         if (takenOxygen > availableOxygen) takenOxygen = availableOxygen;
         try {
@@ -278,8 +278,8 @@ public class ExitAirlock extends Task implements Serializable {
 
         // Fill water in suit from entity's inventory.
         AmountResource water = AmountResource.findAmountResource("water");
-        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true);
-        double availableWater = entityInv.getAmountResourceStored(water);
+        double neededWater = suitInv.getAmountResourceRemainingCapacity(water, true, false);
+        double availableWater = entityInv.getAmountResourceStored(water, false);
         double takenWater = neededWater;
         if (takenWater > availableWater) takenWater = availableWater;
         try {

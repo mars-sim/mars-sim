@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.03 2012-07-08
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -261,7 +261,7 @@ public class GoodsManager implements Serializable {
             demand += determineTradeDemand(resourceGood, useCache);
 
             // Limit demand by storage capacity.
-            double capacity = settlement.getInventory().getAmountResourceCapacity(resource);
+            double capacity = settlement.getInventory().getAmountResourceCapacity(resource, false);
             if (demand > capacity) demand = capacity;
 
             goodsDemandCache.put(resourceGood, demand);
@@ -329,7 +329,7 @@ public class GoodsManager implements Serializable {
         if (resource.isLifeSupport() || resource.equals(methane)) {
             Iterator<Vehicle> i = getAssociatedVehicles().iterator();
             while (i.hasNext()) {
-                double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource);
+                double fuelDemand = i.next().getInventory().getAmountResourceCapacity(resource, false);
                 demand += fuelDemand * VEHICLE_FUEL_FACTOR;
             }
         }
@@ -750,7 +750,7 @@ public class GoodsManager implements Serializable {
         double amount = 0D;
 
         // Get amount of resource in settlement storage.
-        amount += settlement.getInventory().getAmountResourceStored(resource);
+        amount += settlement.getInventory().getAmountResourceStored(resource, false);
 
         // Get amount of resource out on mission vehicles.
         Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
@@ -759,7 +759,7 @@ public class GoodsManager implements Serializable {
             if (mission instanceof VehicleMission) {
                 Vehicle vehicle = ((VehicleMission) mission).getVehicle();
                 if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
-                    amount += vehicle.getInventory().getAmountResourceStored(resource);
+                    amount += vehicle.getInventory().getAmountResourceStored(resource, false);
             }
         }
 
@@ -768,7 +768,7 @@ public class GoodsManager implements Serializable {
         while (j.hasNext()) {
             Person person = j.next();
             if (person.getLocationSituation().equals(Person.OUTSIDE)) 
-                amount += person.getInventory().getAmountResourceStored(resource);
+                amount += person.getInventory().getAmountResourceStored(resource, false);
         }
 
         return amount;
@@ -1234,7 +1234,7 @@ public class GoodsManager implements Serializable {
 
         Iterator<Unit> k = equipmentList.iterator();
         while (k.hasNext()) {
-            if (k.next().getInventory().getAllAmountResourcesStored().size() > 0D) result++;
+            if (k.next().getInventory().getAllAmountResourcesStored(false).size() > 0D) result++;
         }
 
         return result;

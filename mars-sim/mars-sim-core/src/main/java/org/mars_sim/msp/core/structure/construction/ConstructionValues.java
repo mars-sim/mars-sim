@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 3.03 2012-06-27
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -388,7 +388,7 @@ public class ConstructionValues implements Serializable {
         while (j.hasNext()) {
             AmountResource resource = j.next();
             double amount = resources.get(resource);
-            double stored = settlement.getInventory().getAmountResourceStored(resource);
+            double stored = settlement.getInventory().getAmountResourceStored(resource, false);
             if (stored < amount) {
                 result = false;
                 break;

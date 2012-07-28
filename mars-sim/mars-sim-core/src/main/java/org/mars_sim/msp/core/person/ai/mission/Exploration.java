@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.03 2012-06-18
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -214,7 +214,7 @@ public class Exploration extends RoverMission implements Serializable {
             // Check if there are enough specimen containers at the settlement for collecting rock samples.
             boolean enoughContainers = false;
             int numContainers = settlement.getInventory()
-                    .findNumEmptyUnitsOfClass(SpecimenContainer.class);
+                    .findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
             enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
 
             // Check for embarking missions.
@@ -673,7 +673,7 @@ public class Exploration extends RoverMission implements Serializable {
         // Check food capacity as time limit.
         AmountResource food = AmountResource.findAmountResource("food");
         double foodConsumptionRate = config.getFoodConsumptionRate();
-        double foodCapacity = vInv.getAmountResourceCapacity(food);
+        double foodCapacity = vInv.getAmountResourceCapacity(food, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
         if (foodTimeLimit < timeLimit)
             timeLimit = foodTimeLimit;
@@ -681,7 +681,7 @@ public class Exploration extends RoverMission implements Serializable {
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource("water");
         double waterConsumptionRate = config.getWaterConsumptionRate();
-        double waterCapacity = vInv.getAmountResourceCapacity(water);
+        double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
         if (waterTimeLimit < timeLimit)
@@ -690,7 +690,7 @@ public class Exploration extends RoverMission implements Serializable {
         // Check oxygen capacity as time limit.
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
         double oxygenConsumptionRate = config.getOxygenConsumptionRate();
-        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen);
+        double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
         if (oxygenTimeLimit < timeLimit)

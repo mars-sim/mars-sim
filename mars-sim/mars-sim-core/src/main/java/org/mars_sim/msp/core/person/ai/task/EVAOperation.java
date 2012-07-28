@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -151,8 +151,8 @@ public abstract class EVAOperation extends Task implements Serializable {
         try {
         	// Check if EVA suit is at 15% of its oxygen capacity.
         	AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
-        	double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource);
-        	double oxygen = suitInv.getAmountResourceStored(oxygenResource);
+        	double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
+        	double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
         	if (oxygen <= (oxygenCap * .15D)) {
         		logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
         		result = true;
@@ -160,8 +160,8 @@ public abstract class EVAOperation extends Task implements Serializable {
 
         	// Check if EVA suit is at 15% of its water capacity.
         	AmountResource waterResource = AmountResource.findAmountResource("water");
-        	double waterCap = suitInv.getAmountResourceCapacity(waterResource);
-        	double water = suitInv.getAmountResourceStored(waterResource);
+        	double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
+        	double water = suitInv.getAmountResourceStored(waterResource, false);
         	if (water <= (waterCap * .15D)) {
         		logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");	
         		result = true;

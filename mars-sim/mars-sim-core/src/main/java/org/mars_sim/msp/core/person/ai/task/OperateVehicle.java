@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.02 2011-11-27
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -187,7 +187,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
         double fuelConsumed = distanceTraveled / vehicle.getFuelEfficiency();
         Inventory vInv = vehicle.getInventory();
         AmountResource fuelType = vehicle.getFuelType();
-        double remainingFuel = vInv.getAmountResourceStored(fuelType);
+        double remainingFuel = vInv.getAmountResourceStored(fuelType, false);
         if (fuelConsumed > remainingFuel) {
         	fuelConsumed = remainingFuel;
         }

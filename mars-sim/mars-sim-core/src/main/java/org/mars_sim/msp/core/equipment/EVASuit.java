@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -86,12 +86,12 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         boolean result = true;
 
         if (getInventory().getAmountResourceStored(
-                AmountResource.findAmountResource("oxygen")) <= 0D) {
+                AmountResource.findAmountResource("oxygen"), false) <= 0D) {
             logger.info("bad oxygen");
             result = false;
         }
         if (getInventory().getAmountResourceStored(
-                AmountResource.findAmountResource("water")) <= 0D) {
+                AmountResource.findAmountResource("water"), false) <= 0D) {
             logger.info("bad water");
             result = false;
         }
@@ -132,7 +132,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public double provideOxygen(double amountRequested) {
         double oxygenTaken = amountRequested;
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
+        double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft) {
             oxygenTaken = oxygenLeft;
         }
@@ -151,7 +151,7 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
     public double provideWater(double amountRequested)  {
         double waterTaken = amountRequested;
         AmountResource water = AmountResource.findAmountResource("water");
-        double waterLeft = getInventory().getAmountResourceStored(water);
+        double waterLeft = getInventory().getAmountResourceStored(water, false);
         if (waterTaken > waterLeft) {
             waterTaken = waterLeft;
         }
@@ -200,13 +200,13 @@ public class EVASuit extends Equipment implements LifeSupport, Serializable, Mal
         boolean result = true;
 
         AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
-        double oxygen = getInventory().getAmountResourceStored(oxygenResource);
+        double oxygen = getInventory().getAmountResourceStored(oxygenResource, false);
         if (oxygen != OXYGEN_CAPACITY) {
             result = false;
         }
 
         AmountResource waterResource = AmountResource.findAmountResource("water");
-        double water = getInventory().getAmountResourceStored(waterResource);
+        double water = getInventory().getAmountResourceStored(waterResource, false);
         if (water != WATER_CAPACITY) {
             result = false;
         }

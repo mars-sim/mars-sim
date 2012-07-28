@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.03 2012-06-22
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 
@@ -194,10 +194,10 @@ public class Settlement extends Structure implements Malfunctionable,
         boolean result = true;
 
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-        if (getInventory().getAmountResourceStored(oxygen) <= 0D)
+        if (getInventory().getAmountResourceStored(oxygen, false) <= 0D)
             result = false;
         AmountResource water = AmountResource.findAmountResource("water");
-        if (getInventory().getAmountResourceStored(water) <= 0D)
+        if (getInventory().getAmountResourceStored(water, false) <= 0D)
             result = false;
         if (getOxygenFlowModifier() < 100D)
             result = false;
@@ -228,14 +228,14 @@ public class Settlement extends Structure implements Malfunctionable,
     public double provideOxygen(double amountRequested) {
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
         double oxygenTaken = amountRequested;
-        double oxygenLeft = getInventory().getAmountResourceStored(oxygen);
+        double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
         if (oxygenTaken > oxygenLeft)
             oxygenTaken = oxygenLeft;
         AmountResource carbonDioxide = AmountResource
                 .findAmountResource("carbon dioxide");
         double carbonDioxideProvided = oxygenTaken;
         double carbonDioxideCapacity = getInventory()
-                .getAmountResourceRemainingCapacity(carbonDioxide, true);
+                .getAmountResourceRemainingCapacity(carbonDioxide, true, false);
         if (carbonDioxideProvided > carbonDioxideCapacity)
             carbonDioxideProvided = carbonDioxideCapacity;
 
@@ -264,7 +264,7 @@ public class Settlement extends Structure implements Malfunctionable,
     public double provideWater(double amountRequested) {
         AmountResource water = AmountResource.findAmountResource("water");
         double waterTaken = amountRequested;
-        double waterLeft = getInventory().getAmountResourceStored(water);
+        double waterLeft = getInventory().getAmountResourceStored(water, false);
         if (waterTaken > waterLeft)
             waterTaken = waterLeft;
         getInventory().retrieveAmountResource(water, waterTaken);

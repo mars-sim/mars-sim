@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -199,19 +199,19 @@ class StartingSettlementPanel extends WizardPanel {
             			result = inv.findNumUnitsOfClass(Rover.class);
             		if (column == 3) {
             			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            			result = (int) inv.getAmountResourceStored(oxygen);
+            			result = (int) inv.getAmountResourceStored(oxygen, false);
             		}
             		else if (column == 4) {
             			AmountResource water = AmountResource.findAmountResource("water");
-            			result = (int) inv.getAmountResourceStored(water);
+            			result = (int) inv.getAmountResourceStored(water, false);
             		}
             		else if (column == 5) {
             			AmountResource food = AmountResource.findAmountResource("food");
-            			result = (int) inv.getAmountResourceStored(food);
+            			result = (int) inv.getAmountResourceStored(food, false);
             		}
             		else if (column == 6) {
             			AmountResource methane = AmountResource.findAmountResource("methane");
-            			result = (int) inv.getAmountResourceStored(methane);
+            			result = (int) inv.getAmountResourceStored(methane, false);
             		}
             		else if (column == 7) 
             			result = inv.findNumUnitsOfClass(EVASuit.class);
@@ -220,16 +220,16 @@ class StartingSettlementPanel extends WizardPanel {
             		
             		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
             			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class);
+            				result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true);
             		}
             		else if (type.equals(MissionDataBean.ICE_MISSION) || 
             						type.equals(MissionDataBean.REGOLITH_MISSION)) {
             			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(Bag.class);
+            				result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
             		}
             		else if (type.equals(MissionDataBean.MINING_MISSION)) {
             			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(Bag.class);
+            				result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
             			else if (column == 9)
             				result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
             			else if (column == 10) {
@@ -293,19 +293,19 @@ class StartingSettlementPanel extends WizardPanel {
     			}
     			else if (column == 3) {
     				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-    				if (inv.getAmountResourceStored(oxygen) < 100D) result = true;
+    				if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
     			}
     			else if (column == 4) {
     				AmountResource water = AmountResource.findAmountResource("water");
-    				if (inv.getAmountResourceStored(water) < 100D) result = true;
+    				if (inv.getAmountResourceStored(water, false) < 100D) result = true;
     			}
     			else if (column == 5) {
     				AmountResource food = AmountResource.findAmountResource("food");
-    				if (inv.getAmountResourceStored(food) < 100D) result = true;
+    				if (inv.getAmountResourceStored(food, false) < 100D) result = true;
     			}
     			else if (column == 6) {
     				AmountResource methane = AmountResource.findAmountResource("methane");
-    				if (inv.getAmountResourceStored(methane) < 100D) result = true;
+    				if (inv.getAmountResourceStored(methane, false) < 100D) result = true;
     			}
     			else if (column == 7) {
     				if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
@@ -314,20 +314,20 @@ class StartingSettlementPanel extends WizardPanel {
     			String type = getWizard().getMissionData().getType();
     			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
     				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class) < 
+    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) < 
     							Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
     				}
     			}
     			else if (type.equals(MissionDataBean.ICE_MISSION) || 
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
     				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < 
+    					if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
     							CollectIce.REQUIRED_BAGS) result = true;
     				}
     			}
     			else if (type.equals(MissionDataBean.MINING_MISSION)) {
     				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(Bag.class) < 
+    					if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
     							CollectIce.REQUIRED_BAGS) result = true;
     				}
     				if (column == 9) {

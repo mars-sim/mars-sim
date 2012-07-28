@@ -11,11 +11,10 @@ public class TestAmountResourceTypeStorage extends TestCase {
 	private static final String CARBON_DIOXIDE = "carbon dioxide";
 	private static final String OXYGEN = "oxygen";
 	
-	public TestAmountResourceTypeStorage() {
-		super();
-		
-		SimulationConfig.loadConfig();
-	}
+    @Override
+    public void setUp() throws Exception {
+        SimulationConfig.loadConfig();
+    }
 	
 	public void testInventoryAmountResourceTypeCapacityGood() throws Exception {
 		AmountResourceTypeStorage storage = new AmountResourceTypeStorage();
@@ -151,7 +150,7 @@ public class TestAmountResourceTypeStorage extends TestCase {
 		storage.addAmountResourceTypeCapacity(oxygen, 100D);
 		storage.storeAmountResourceType(carbonDioxide, 10D);
 		storage.storeAmountResourceType(oxygen, 20D);
-		double totalStored = storage.getTotalAmountResourceTypesStored();
+		double totalStored = storage.getTotalAmountResourceTypesStored(false);
 		assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
 	}
 	

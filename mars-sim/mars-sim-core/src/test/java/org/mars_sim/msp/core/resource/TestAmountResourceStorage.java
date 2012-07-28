@@ -9,10 +9,6 @@ public class TestAmountResourceStorage extends TestCase {
 	private static final String CARBON_DIOXIDE = "carbon dioxide";
 	private static final String HYDROGEN = "hydrogen";
 	private static final String WATER = "water";
-	
-	public TestAmountResourceStorage() {
-		super();
-	}
 
     @Override
     public void setUp() throws Exception {
@@ -203,7 +199,7 @@ public class TestAmountResourceStorage extends TestCase {
 		storage.addAmountResourcePhaseCapacity(Phase.LIQUID, 100D);
 		storage.storeAmountResource(carbonDioxide, 10D);
 		storage.storeAmountResource(water, 20D);
-		double totalStored = storage.getTotalAmountResourcesStored();
+		double totalStored = storage.getTotalAmountResourcesStored(false);
 		assertEquals("Amount total stored is correct.", 30D, totalStored, 0D);
 	}
 	
@@ -215,7 +211,7 @@ public class TestAmountResourceStorage extends TestCase {
 		storage.addAmountResourcePhaseCapacity(Phase.LIQUID, 100D);
 		storage.storeAmountResource(carbonDioxide, 10D);
 		storage.storeAmountResource(water, 20D);
-		Set allResources = storage.getAllAmountResourcesStored();
+		Set<AmountResource> allResources = storage.getAllAmountResourcesStored(false);
 		assertTrue("All resources contains carbon dioxide.", allResources.contains(carbonDioxide));
 		assertTrue("All resources contains oxygen.", allResources.contains(water));
 	}

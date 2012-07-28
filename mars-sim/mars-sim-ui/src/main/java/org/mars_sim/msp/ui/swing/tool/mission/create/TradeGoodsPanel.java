@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * TradeGoodsPanel.java
+ * @version 3.03 2012-07-19
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -265,7 +272,7 @@ class TradeGoodsPanel extends WizardPanel {
 				Class containerType = getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
 				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
-				double capacity = container.getInventory().getAmountResourceCapacity(resource);
+				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
 				double totalCapacity = containerNum * capacity;
 				double resourceAmount = tradeGoods.get(good);
 				if (resourceAmount > totalCapacity) {

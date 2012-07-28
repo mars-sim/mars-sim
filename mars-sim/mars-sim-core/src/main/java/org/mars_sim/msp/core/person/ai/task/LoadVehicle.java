@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.02 2012-01-14
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -299,18 +299,18 @@ public class LoadVehicle extends Task implements Serializable {
         Inventory sInv = settlement.getInventory();
         
     	double amountNeededTotal = (Double) resources.get(resource);
-		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource);
+		double amountAlreadyLoaded = vInv.getAmountResourceStored(resource, false);
 		if (amountAlreadyLoaded < amountNeededTotal) {
 			double amountNeeded = amountNeededTotal - amountAlreadyLoaded;
-			if (sInv.getAmountResourceStored(resource) >= amountNeeded) {
-				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true);
+			if (sInv.getAmountResourceStored(resource, false) >= amountNeeded) {
+				double remainingCapacity = vInv.getAmountResourceRemainingCapacity(resource, true, false);
 				if (remainingCapacity < amountNeeded) {
                     // Deal with miniscule errors.
                     if ((amountNeeded - remainingCapacity) < .00001D) amountNeeded = remainingCapacity;
                     else {
                         endTask();
-                        throw new IllegalStateException("Not enough capacity in vehicle for loading resource " + resource +
-                                ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
+                        throw new IllegalStateException("Not enough capacity in vehicle for loading resource " + 
+                                resource + ": " + amountNeeded + ", remaining capacity: " + remainingCapacity);
                     }
                 }
 				double resourceAmount = amountNeeded;
@@ -365,7 +365,7 @@ public class LoadVehicle extends Task implements Serializable {
 		if (numAlreadyLoaded < numNeededTotal) {
 			int numNeeded = numNeededTotal - numAlreadyLoaded;
 			if ((sInv.getItemResourceNum(itemResource) >= numNeeded) && 
-					(vInv.getRemainingGeneralCapacity() >= (numNeeded * itemResource.getMassPerItem()))) {
+					(vInv.getRemainingGeneralCapacity(false) >= (numNeeded * itemResource.getMassPerItem()))) {
 				int resourceNum = (int) (amountLoading / itemResource.getMassPerItem());
 				if (resourceNum < 1) resourceNum = 1;
 				if (resourceNum > numNeeded) resourceNum = numNeeded;
@@ -426,10 +426,10 @@ public class LoadVehicle extends Task implements Serializable {
         				
         				boolean isEmpty = true;
         				Inventory eInv = eq.getInventory();
-        				if (eInv != null) isEmpty = eq.getInventory().isEmpty();
+        				if (eInv != null) isEmpty = eq.getInventory().isEmpty(false);
         				
         				if (isEmpty) {
-        					if (vInv.canStoreUnit(eq)) {
+        					if (vInv.canStoreUnit(eq, false)) {
         						sInv.retrieveUnit(eq);
         						vInv.storeUnit(eq);
         						amountLoading -= eq.getMass();
@@ -508,11 +508,12 @@ public class LoadVehicle extends Task implements Serializable {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		double amountNeeded = (Double) resources.get(resource);
-        		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, (AmountResource) resource, tripTime);
-        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource);
+        		double remainingSettlementAmount = getRemainingSettlementAmount(settlement, vehicleCrewNum, 
+        		        (AmountResource) resource, tripTime);
+        		double amountLoaded = vInv.getAmountResourceStored((AmountResource) resource, false);
         		double totalNeeded = amountNeeded + remainingSettlementAmount - amountLoaded;
-        		if (inv.getAmountResourceStored((AmountResource) resource) < totalNeeded) {
-        			double stored = inv.getAmountResourceStored((AmountResource) resource);
+        		if (inv.getAmountResourceStored((AmountResource) resource, false) < totalNeeded) {
+        			double stored = inv.getAmountResourceStored((AmountResource) resource, false);
         			if (logger.isLoggable(Level.INFO)) 
         				logger.info(resource.getName() + " needed: " + totalNeeded + " stored: " + stored);
         			enoughSupplies = false;
@@ -520,7 +521,8 @@ public class LoadVehicle extends Task implements Serializable {
         	}
         	else if (resource instanceof ItemResource) {
         		int numNeeded = (Integer) resources.get(resource);
-        		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, (ItemResource) resource);
+        		int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, 
+        		        (ItemResource) resource);
         		int numLoaded = vInv.getItemResourceNum((ItemResource) resource);
         		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
         		if (inv.getItemResourceNum((ItemResource) resource) < totalNeeded) {
@@ -541,8 +543,8 @@ public class LoadVehicle extends Task implements Serializable {
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
         	int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
     		int totalNeeded = numNeeded + remainingSettlementNum - numLoaded;
-        	if (inv.findNumEmptyUnitsOfClass(equipmentType) < totalNeeded) {
-        		int stored = inv.findNumEmptyUnitsOfClass(equipmentType);
+        	if (inv.findNumEmptyUnitsOfClass(equipmentType, false) < totalNeeded) {
+        		int stored = inv.findNumEmptyUnitsOfClass(equipmentType, false);
     			if (logger.isLoggable(Level.INFO)) 
     				logger.info(equipmentType + " needed: " + totalNeeded + " stored: " + stored);
         		enoughSupplies = false;
@@ -602,8 +604,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return remaining number.
      * @throws Exception if error getting the remaining number.
      */
-    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, Class equipmentType)
-    		{
+    private static int getRemainingSettlementNum(Settlement settlement, int vehicleCrewNum, 
+            Class equipmentType) {
     	int remainingPeopleNum = settlement.getCurrentPopulationNum() - vehicleCrewNum;
     	// Leave one EVA suit for every four remaining people at settlement (min 1).
     	if (equipmentType == EVASuit.class) {
@@ -623,8 +625,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle can carry supplies.
      * @throws Exception if error
      */
-    public static boolean enoughCapacityForSupplies(Map<Resource, Number> resources, Map<Class, Integer> equipment, 
-    		Vehicle vehicle, Settlement settlement) {
+    public static boolean enoughCapacityForSupplies(Map<Resource, Number> resources, 
+            Map<Class, Integer> equipment, Vehicle vehicle, Settlement settlement) {
     	
     	boolean sufficientCapacity = true;
     	
@@ -703,7 +705,9 @@ public class LoadVehicle extends Task implements Serializable {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		double amount = (Double) resources.get(resource);
-        		if (inv.getAmountResourceStored((AmountResource) resource) < amount) sufficientSupplies = false;
+        		if (inv.getAmountResourceStored((AmountResource) resource, false) < amount) {
+        		    sufficientSupplies = false;
+        		}
         	}
         	else if (resource instanceof ItemResource) {
         		int num = (Integer) resources.get(resource);
@@ -722,8 +726,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is full loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle)
-    		{
+    private static boolean isFullyLoadedWithEquipment(Map<Class, Integer> equipment, Vehicle vehicle) {
     	
     	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	

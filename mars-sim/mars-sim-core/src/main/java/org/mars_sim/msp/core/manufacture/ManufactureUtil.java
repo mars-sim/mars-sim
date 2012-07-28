@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-07-26
  * @author Scott Davis
  */
 
@@ -333,7 +333,7 @@ public final class ManufactureUtil {
 			ManufactureProcessItem item = i.next();
 			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
 				AmountResource resource = AmountResource.findAmountResource(item.getName());
-				if (inv.getAmountResourceStored(resource) < item.getAmount()) result = false;
+				if (inv.getAmountResourceStored(resource, false) < item.getAmount()) result = false;
 			}
 			else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
 				Part part = (Part) ItemResource.findItemResource(item.getName());
@@ -529,7 +529,7 @@ public final class ManufactureUtil {
         // Make sure unit's inventory is empty.
         Iterator<Unit> j = salvagableUnits.iterator();
         while (j.hasNext()) {
-            if (!j.next().getInventory().isEmpty()) j.remove();
+            if (!j.next().getInventory().isEmpty(false)) j.remove();
         }
         
         // If malfunctionable, find most worn unit.

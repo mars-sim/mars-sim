@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-07-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -37,34 +37,29 @@ public class Storage extends Function implements Serializable {
 		// Use Function constructor.
 		super(NAME, building);
 		
-//		try {
-			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			Inventory inventory = building.getInventory();	
-			
-			// Get building resource capacity.
-			storageCapacity = config.getStorageCapacities(building.getName());
-			Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
-			while (i1.hasNext()) {
-                AmountResource resource = i1.next();
-				double currentCapacity = inventory.getAmountResourceCapacity(resource);
-				double buildingCapacity = (Double) storageCapacity.get(resource);
-				inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
-			}
-		
-			// Get initial resources in building.
-			Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getName());
-			Iterator<AmountResource> i2 = initialResources.keySet().iterator();
-			while (i2.hasNext()) {
-                AmountResource resource = i2.next();
-				double initialResource = (Double) initialResources.get(resource);
-				double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource, true);
-				if (initialResource > resourceCapacity) initialResource = resourceCapacity;
-				inventory.storeAmountResource(resource, initialResource, true);
-			}
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Storage.constructor: " + e.getMessage());
-//		}
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		Inventory inventory = building.getInventory();	
+
+		// Get building resource capacity.
+		storageCapacity = config.getStorageCapacities(building.getName());
+		Iterator<AmountResource> i1 = storageCapacity.keySet().iterator();
+		while (i1.hasNext()) {
+		    AmountResource resource = i1.next();
+		    double currentCapacity = inventory.getAmountResourceCapacity(resource, false);
+		    double buildingCapacity = (Double) storageCapacity.get(resource);
+		    inventory.addAmountResourceTypeCapacity(resource, currentCapacity + buildingCapacity);
+		}
+
+		// Get initial resources in building.
+		Map<AmountResource, Double> initialResources = config.getInitialStorage(building.getName());
+		Iterator<AmountResource> i2 = initialResources.keySet().iterator();
+		while (i2.hasNext()) {
+		    AmountResource resource = i2.next();
+		    double initialResource = (Double) initialResources.get(resource);
+		    double resourceCapacity = inventory.getAmountResourceRemainingCapacity(resource, true, false);
+		    if (initialResource > resourceCapacity) initialResource = resourceCapacity;
+		    inventory.storeAmountResource(resource, initialResource, true);
+		}
 	}
     
     /**
@@ -92,7 +87,8 @@ public class Storage extends Function implements Serializable {
             while (j.hasNext()) {
                 Building building = j.next();
                 Storage storageFunction = (Storage) building.getFunction(NAME);
-                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * 
+                        .75D + .25D;
                 if (storageFunction.storageCapacity.containsKey(resource))
                     existingStorage += storageFunction.storageCapacity.get(resource) * wearModifier;
             }
@@ -106,7 +102,7 @@ public class Storage extends Function implements Serializable {
             
             Good resourceGood = GoodsUtil.getResourceGood(resource);
             double resourceValue = settlement.getGoodsManager().getGoodValuePerItem(resourceGood);
-            double resourceStored = settlement.getInventory().getAmountResourceStored(resource);
+            double resourceStored = settlement.getInventory().getAmountResourceStored(resource, false);
             double resourceDemand = resourceValue * (resourceStored + 1D);
             
             double currentStorageDemand = resourceDemand - existingStorage;
