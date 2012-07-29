@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.03 2012-07-27
+ * @version 3.03 2012-07-28
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -426,8 +426,9 @@ public class Inventory implements Serializable {
 
         double result = generalCapacity - getGeneralStoredMass(allowDirty);
         
-        if (result > getContainerUnitGeneralCapacityLimit(allowDirty)) {
-            result = getContainerUnitGeneralCapacityLimit(allowDirty);
+        double containerUnitGeneralCapacityLimit = getContainerUnitGeneralCapacityLimit(allowDirty);
+        if (result > containerUnitGeneralCapacityLimit) {
+            result = containerUnitGeneralCapacityLimit;
         }
         
         return result;
@@ -470,14 +471,6 @@ public class Inventory implements Serializable {
 
         if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
             result += containedItemResources.get(resource);
-        }
-
-        if (containedUnits != null) {
-            for (Unit u : containedUnits) {
-                if (u instanceof Container) {
-                    result += u.getInventory().getItemResourceNum(resource);
-                }
-            }
         }
 
         return result;
@@ -585,23 +578,6 @@ public class Inventory implements Serializable {
                         containedItemResources.remove(resource);
                     }
                     remainingNum -= retrieveNum;
-                }
-
-                // Retrieve resources from contained units.
-                if ((remainingNum > 0) && (containedUnits != null)) {
-                    Iterator<Unit> i = containedUnits.iterator();
-                    while (i.hasNext()) {
-                        Inventory unitInventory = i.next().getInventory();
-                        if (unitInventory.hasItemResource(resource)) {
-                            int storedUnit = unitInventory.getItemResourceNum(resource);
-                            int retrieveNum = remainingNum;
-                            if (retrieveNum > storedUnit) {
-                                retrieveNum = storedUnit;
-                            }
-                            unitInventory.retrieveItemResources(resource, retrieveNum);
-                            remainingNum -= retrieveNum;
-                        }
-                    }
                 }
 
                 // Fire inventory event.

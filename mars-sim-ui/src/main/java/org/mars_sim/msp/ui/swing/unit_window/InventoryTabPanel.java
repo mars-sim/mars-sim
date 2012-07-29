@@ -128,7 +128,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
             
-            keys.addAll(inventory.getAllAmountResourcesStored(true));
+            keys.addAll(inventory.getAllAmountResourcesStored(false));
             Iterator<Resource> iAmount = keys.iterator();
             while (iAmount.hasNext()) {
                 AmountResource resource = (AmountResource) iAmount.next();
