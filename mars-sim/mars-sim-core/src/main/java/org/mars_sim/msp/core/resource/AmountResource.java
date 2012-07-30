@@ -24,6 +24,7 @@ public final class AmountResource implements Resource, Serializable {
 	private String name;
 	private Phase phase;
 	private boolean lifeSupport;
+	private int hashcode = -1;
 	
 	/**
 	 * Default private constructor
@@ -119,7 +120,10 @@ public final class AmountResource implements Resource, Serializable {
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		return (name.hashCode() * phase.hashCode());
+	    if (hashcode == -1) {
+	        hashcode = name.hashCode() * phase.hashCode();
+	    }
+		return hashcode;
 	}
     
     /**
