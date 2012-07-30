@@ -28,6 +28,7 @@ public final class Phase implements Serializable {
 	
 	// The name of the phase.
 	private String name;
+	private int hashcode = -1;
 
 	/**
 	 * Private constructor
@@ -87,7 +88,10 @@ public final class Phase implements Serializable {
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		return name.hashCode();
+	    if (hashcode == -1) {
+	        hashcode = name.hashCode();
+	    }
+		return hashcode;
 	}
 	
 	/**

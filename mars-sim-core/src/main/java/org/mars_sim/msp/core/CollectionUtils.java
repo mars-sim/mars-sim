@@ -80,7 +80,7 @@ public class CollectionUtils {
                 units.add(vehicleUnit);
         }
     }
-
+    
     public synchronized static Collection<Person> getPerson(
             Collection<Unit> units) {
 
@@ -95,7 +95,7 @@ public class CollectionUtils {
         }
         return persons;
     }
-
+    
     public synchronized static void mergePersons(Collection<Unit> units, 
             Collection<Person> persons) {
 
