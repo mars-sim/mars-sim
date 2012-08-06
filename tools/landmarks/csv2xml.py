@@ -8,8 +8,6 @@
 # Usage : 'python csv2xml.py'
 #
 # TODO: Insert the doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd">
-# TODO: Insert the artifacts list (artifacts.txt)
-# TODO: (optional) write only positive coordinates (e.g. -5.3 N => 5.3 S )
 
 from xml.dom.minidom import Document
 
@@ -30,6 +28,10 @@ xmldoc.appendChild(introcomment3)
  
 # Create the base XML element
 landmarks = xmldoc.createElement("landmark-list")
+landmarks.setAttribute("xmlns", "http://mars-sim.sourceforge.net/landmarks")
+landmarks.setAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance")
+landmarks.setAttribute("xsi:schemaLocation", "http://mars-sim.sourceforge.net/landmarks schema/landmarks.xsd")
+
 xmldoc.appendChild(landmarks)
 
 # Open and parse the search results file (CSV), get the data key and data
@@ -47,11 +49,8 @@ for csvline in csvlinelist:
 		print "Found key line, parsing..." # first line of CSV, names of keys
 		paramlist = csvline.split(",") # explode into a list of keys
 		index_feature = paramlist.index('Feature_Name')
-		print index_feature
 		index_lat = paramlist.index('Center_Latitude')
-		print index_lat
 		index_long = paramlist.index('Center_Longitude')
-		print index_long
 	else:
 		print "Data line, parsing..." #move data into XML DOM
 		valuelist = csvline.split(",") # make into a list of values
@@ -65,6 +64,82 @@ for csvline in csvlinelist:
 		landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
 		landmarks.appendChild(landmark)
 
+# Add the rovers and other craft
+rovercomment = xmldoc.createComment("Martian Landers and Rovers")
+landmarks.appendChild(rovercomment)
+
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Beagle 2 Lander") 
+landmark.setAttribute("longitude", "90.0 E") 
+landmark.setAttribute("latitude", "10.6 N") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars 2 Lander") 
+landmark.setAttribute("longitude", "47.0 E") 
+landmark.setAttribute("latitude", "45.0 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars 3 Lander") 
+landmark.setAttribute("longitude", "158.0 W") 
+landmark.setAttribute("latitude", "45.0 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars 6 Lander") 
+landmark.setAttribute("longitude", "19.5 W") 
+landmark.setAttribute("latitude", "23.9 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars Pathfinder Rover") 
+landmark.setAttribute("longitude", "33.3 W") 
+landmark.setAttribute("latitude", "19.3 N") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars Polar Lander") 
+landmark.setAttribute("longitude", "164.7 E") 
+landmark.setAttribute("latitude", "76.7 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Mars Science Laboratory") 
+landmark.setAttribute("longitude", "137.44 E") 
+landmark.setAttribute("latitude", "4.59 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "MER Spirit Rover") 
+landmark.setAttribute("longitude", "175.5 E") 
+landmark.setAttribute("latitude", "14.6 S") 
+landmarks.appendChild(landmark)
+	
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "MER Opportunity Rover") 
+landmark.setAttribute("longitude", "5.5 W") 
+landmark.setAttribute("latitude", "2.0 S") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Phoenix Mars Lander") 
+landmark.setAttribute("longitude", "123.0 W") 
+landmark.setAttribute("latitude", "68.0 N") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Viking Lander 1") 
+landmark.setAttribute("longitude", "48.0 W") 
+landmark.setAttribute("latitude", "22.5 N") 
+landmarks.appendChild(landmark)
+
+landmark = xmldoc.createElement("landmark")
+landmark.setAttribute("name", "Viking Lander 2") 
+landmark.setAttribute("longitude", "133.7 E") 
+landmark.setAttribute("latitude", "47.9 N") 
+landmarks.appendChild(landmark)
 
 f.close() # close our CSV file stream nicely
  
