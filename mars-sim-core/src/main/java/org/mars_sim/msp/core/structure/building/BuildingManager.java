@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.03 2012-06-27
+ * @version 3.03 2012-08-08
  * @author Scott Davis
  */
  
@@ -36,11 +36,8 @@ import java.util.logging.Logger;
  * The BuildingManager manages the settlement's buildings.
  */
 public class BuildingManager implements Serializable {
-    
-    private static String CLASS_NAME = 
-	"org.mars_sim.msp.simulation.structure.building.BuildingManager";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
     
 	// Unit update events.
 	public static final String ADD_BUILDING_EVENT = "add building";
@@ -448,6 +445,9 @@ public class BuildingManager implements Serializable {
      */
     public double getBuildingValue(String buildingName, boolean newBuilding) {
         
+        // Make sure building name is lower case.
+        buildingName = buildingName.toLowerCase().trim();
+        
         // Update building values cache once per Sol.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         if ((lastBuildingValuesUpdateTime == null) || 
@@ -457,10 +457,12 @@ public class BuildingManager implements Serializable {
             lastBuildingValuesUpdateTime = (MarsClock) currentTime.clone();
         }
         
-        if (newBuilding && buildingValuesNewCache.containsKey(buildingName)) 
+        if (newBuilding && buildingValuesNewCache.containsKey(buildingName)) {
             return buildingValuesNewCache.get(buildingName);
-        else if (!newBuilding && buildingValuesOldCache.containsKey(buildingName))
+        }
+        else if (!newBuilding && buildingValuesOldCache.containsKey(buildingName)) {
             return buildingValuesOldCache.get(buildingName);
+        }
         else {
             double result = 0D;
             
@@ -536,6 +538,8 @@ public class BuildingManager implements Serializable {
                     }
                 }
             }
+            
+            //System.out.println("Building " + buildingName + " value: " + (int) result);
             
             if (newBuilding) buildingValuesNewCache.put(buildingName, result);
             else buildingValuesOldCache.put(buildingName, result);
