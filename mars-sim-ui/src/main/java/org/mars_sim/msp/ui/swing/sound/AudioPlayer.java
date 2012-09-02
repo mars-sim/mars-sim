@@ -284,20 +284,20 @@ public class AudioPlayer implements LineListener, MetaEventListener {
 
         looping = false;
 
-        if (currentClip != null) {
+        if ((currentClip != null) && currentClip.isOpen()) {
             currentClip.stop();
             currentClip.removeLineListener(this);
             currentClip = null;
         }
 
-        if (currentLine != null) {
+        if ((currentLine != null) && currentLine.isOpen()) {
             currentLine.drain();
             currentLine.close();
             currentLine.removeLineListener(this);
             currentLine = null;
         }
 
-        if (sequencer != null) {
+        if ((sequencer != null) && sequencer.isOpen()) {
             sequencer.stop();
             sequencer.close();
             sequencer.removeMetaEventListener(this);

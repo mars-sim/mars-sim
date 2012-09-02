@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.01 2011-07-07
+ * @version 3.03 2012-09-01
  * @author Scott Davis
  */
 
@@ -31,11 +31,10 @@ import java.util.logging.Logger;
  */
 public class MainWindow {
 
-    public static final String WINDOW_TITLE = "Mars Simulation Project (version " + Simulation.VERSION + ")";
+    public static final String WINDOW_TITLE = "Mars Simulation Project (version " + 
+            Simulation.VERSION + ")";
 
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.swing.MainWindow";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(MainWindow.class.getName());
 
     // Data members
     private JFrame frame;
@@ -256,7 +255,14 @@ public class MainWindow {
             // Break up the creation of the new simulation, to allow interfering with the single steps.
             Simulation.stopSimulation();
             
-            desktop.clearDesktop();
+            try {
+                desktop.clearDesktop();
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
             
             SimulationConfig.loadConfig();
             
@@ -270,7 +276,14 @@ public class MainWindow {
             // Start the simulation.
             Simulation.instance().start();
             
-            desktop.resetDesktop();
+            try {
+                desktop.resetDesktop();
+            }
+            catch (Exception e) {
+                // New simulation process should continue even if there's an exception in the UI.
+                logger.severe(e.getMessage());
+                e.printStackTrace(System.err);
+            }
             
             desktop.disposeAnnouncementWindow();
             
