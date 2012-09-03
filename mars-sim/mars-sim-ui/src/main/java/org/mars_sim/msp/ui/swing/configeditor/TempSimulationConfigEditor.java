@@ -226,7 +226,6 @@ public class TempSimulationConfigEditor extends JDialog {
      * Close and dispose dialog window.
      */
     private void closeWindow() {
-        setVisible(false);
         dispose();
     }
     
