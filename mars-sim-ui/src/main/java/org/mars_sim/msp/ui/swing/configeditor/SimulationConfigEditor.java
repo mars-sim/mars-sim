@@ -51,7 +51,6 @@ public class SimulationConfigEditor extends JDialog {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				Window window = e.getWindow();
-				window.setVisible(false);
 				window.dispose();
 			}
 		});
