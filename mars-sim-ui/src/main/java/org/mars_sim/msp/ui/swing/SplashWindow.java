@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SplashWindow.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-09-18
  * @author Scott Davis
  */
 
@@ -22,7 +22,7 @@ public class SplashWindow {
     private JFrame window;
 
     // Constant data member
-    private static String[] IMAGE_NAMES = {"SplashImage.jpg", "SplashImage2.jpg", "SplashImage3.jpg"};
+    private static String[] IMAGE_NAMES = {"SplashImage.png", "SplashImage2.jpg", "SplashImage3.jpg"};
 
     private Image splashImage;
     private int width;
