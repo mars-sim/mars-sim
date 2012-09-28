@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-09-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -39,13 +39,14 @@ import java.util.logging.Logger;
  */
 public class UnitManager implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.UnitManager";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(UnitManager.class.getName());
+    
     // Static Data Members
     public static final String SETTLEMENT = "settlement";
     public static final String PERSON = "person";
     public static final String VEHICLE = "vehicle";
     public static final String EQUIPMENT = "equipment";
+    
     // Data members
     private Collection<Unit> units; // Collection of all units
     private List<String> settlementNames; // List of possible settlement names
@@ -388,7 +389,7 @@ public class UnitManager implements Serializable {
                     double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
                     if (amount > capacity) {
                         amount = capacity;
-                    }
+                    }                        
                     inv.storeAmountResource(resource, amount, true);
                 }
             }
