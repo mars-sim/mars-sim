@@ -1,0 +1,9 @@
+Package: [[name]]
+Version: [[version]]
+Section: misc
+Priority: optional
+Architecture: all
+Depends: default-jre (>= 1.6)
+Maintainer: Scott Davis <scud1@users.sourceforge.net>
+Description: Mars Simulation Project
+Distribution: development
