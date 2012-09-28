@@ -175,6 +175,8 @@
 			<building type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0" />
 			<building type="Storage Shed" x-location="7.5" y-location="2.5" facing="90.0" />
 			<building type="Storage Shed" x-location="7.5" y-location="-2.5" facing="90.0" />
+			<building type="Storage Shed" x-location="12.5" y-location="2.5" facing="90.0" />
+            <building type="Storage Shed" x-location="12.5" y-location="-2.5" facing="90.0" />
 			<building type="Loading Dock Garage" x-location="0.0" y-location="-14.0" facing="180.0" />
 			<building type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
 			<building type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
@@ -216,6 +218,8 @@
 			<building type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0" />
 			<building type="Mining Lab" x-location="7.5" y-location="2.5" facing="90.0" />
 			<building type="Storage Shed" x-location="7.5" y-location="-2.5" facing="90.0" />
+			<building type="Storage Shed" x-location="12.5" y-location="-2.5" facing="90.0" />
+			<building type="Storage Shed" x-location="17.5" y-location="-2.5" facing="90.0" />
 			<building type="Manufacturing Shed" x-location="12.5" y-location="2.5" facing="90.0" />
 			<building type="Loading Dock Garage" x-location="0.0" y-location="-14.0" facing="180.0" />
 			<building type="Regolith Storage Bin" x-location="9.5" y-location="-12.5" facing="270.0" />
