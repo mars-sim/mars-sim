@@ -112,7 +112,12 @@ public class BuildingManager implements Serializable {
      */
     public void removeBuilding(Building oldBuilding) {
         if (buildings.contains(oldBuilding)) {
+            
+            // Remove the building's functions from the settlement.
+            oldBuilding.removeFunctionsFromSettlement();
+            
             buildings.remove(oldBuilding);
+            
             settlement.fireUnitUpdate(REMOVE_BUILDING_EVENT, oldBuilding);
         }
     }

@@ -215,7 +215,7 @@ public class Building implements Malfunctionable, Serializable {
      * @return function.
      * @throws BuildingException if building doesn't have the function.
      */
-    public Function getFunction(String functionName)  {
+    public Function getFunction(String functionName) {
     	Function result = null;
     	Iterator<Function> i = functions.iterator();
     	while (i.hasNext()) {
@@ -224,6 +224,17 @@ public class Building implements Malfunctionable, Serializable {
     	}
     	if (result != null) return result;
     	else throw new IllegalStateException(name + " does not have " + functionName);
+    }
+    
+    /**
+     * Remove the building's functions from the settlement.
+     */
+    public void removeFunctionsFromSettlement() {
+        
+        Iterator<Function> i = functions.iterator();
+        while (i.hasNext()) {
+            i.next().removeFromSettlement();
+        }
     }
     
     /**

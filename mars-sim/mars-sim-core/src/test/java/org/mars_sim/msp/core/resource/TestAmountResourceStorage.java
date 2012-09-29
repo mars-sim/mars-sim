@@ -33,6 +33,39 @@ public class TestAmountResourceStorage extends TestCase {
 		catch (Exception e) {}
 	}
 	
+	/**
+	 * Test the removeAmountResourceTypeCapacity method.
+	 */
+	public void testRemoveAmountResourceTypeCapacity() {
+	    AmountResourceStorage storage = new AmountResourceStorage();
+	    AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
+	    
+	    storage.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+        double amountCarbonDioxide1 = storage.getAmountResourceCapacity(carbonDioxide);
+        assertEquals(100D, amountCarbonDioxide1);
+        
+        // Test removing 50 kg of CO2 capacity.
+        storage.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide2 = storage.getAmountResourceCapacity(carbonDioxide);
+        assertEquals(50D, amountCarbonDioxide2);
+        
+        // Test removing another 50 kg of CO2 capacity.
+        storage.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide3 = storage.getAmountResourceCapacity(carbonDioxide);
+        assertEquals(0D, amountCarbonDioxide3);
+        
+        // Test removing another 50 kg of CO2 capacity (should throw IllegalStateException).
+        try {
+            storage.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+            fail("Should have thrown an IllegalStateException, no capacity left.");
+        }
+        catch (IllegalStateException e) {
+            // Expected.
+        }
+        double amountCarbonDioxide4 = storage.getAmountResourceCapacity(carbonDioxide);
+        assertEquals(0D, amountCarbonDioxide4);
+	}
+	
 	public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
 		AmountResourceStorage storage = new AmountResourceStorage();
 		storage.addAmountResourcePhaseCapacity(Phase.GAS, 100D);
