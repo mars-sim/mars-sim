@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceStorage.java
- * @version 3.03 2012-07-24
+ * @version 3.03 2012-09-29
  * @author Scott Davis 
  */
 
@@ -32,7 +32,6 @@ public class AmountResourceStorage implements Serializable {
      * Adds capacity for a resource type.
      * @param resource the resource.
      * @param capacity the capacity amount (kg).
-     * @throws ResourceException if error setting capacity.
      */
     public void addAmountResourceTypeCapacity(AmountResource resource, double capacity) {
 
@@ -41,6 +40,20 @@ public class AmountResourceStorage implements Serializable {
         }
 
         typeStorage.addAmountResourceTypeCapacity(resource, capacity);
+    }
+    
+    /**
+     * Removes capacity for a resource type.
+     * @param resource the resource
+     * @param capacity capacity the capacity amount (kg).
+     */
+    public void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
+        
+        if (typeStorage == null) {
+            typeStorage = new AmountResourceTypeStorage();
+        }
+
+        typeStorage.removeAmountResourceTypeCapacity(resource, capacity);
     }
 
     /**

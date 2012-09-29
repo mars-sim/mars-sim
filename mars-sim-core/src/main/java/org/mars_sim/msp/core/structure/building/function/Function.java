@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Function.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-09-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -55,7 +55,6 @@ public abstract class Function implements Serializable {
 	/**
 	 * Time passing for the building.
 	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
 	 */
 	public abstract void timePassing(double time) ;
 	
@@ -71,6 +70,14 @@ public abstract class Function implements Serializable {
 	 */
 	public abstract double getPowerDownPowerRequired();
 
+	/**
+	 * Perform any actions needed when removing this building function from
+	 * the settlement.
+	 */
+	public void removeFromSettlement() {
+	    // Override as needed.
+	}
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

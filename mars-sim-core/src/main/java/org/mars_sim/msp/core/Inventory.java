@@ -86,6 +86,25 @@ public class Inventory implements Serializable {
         
         resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
     }
+    
+    /**
+     * Removes capacity for a resource type.
+     * @param resource the resource
+     * @param capacity the capacity amount (kg).
+     */
+    public void removeAmountResourceTypeCapacity(AmountResource resource,
+            double capacity) {
+        
+        // Set capacity cache to dirty because capacity values are changing.
+        setAmountResourceCapacityCacheDirty(resource);
+        
+        // Initialize resource storage if necessary.
+        if (resourceStorage == null) {
+            resourceStorage = new AmountResourceStorage();
+        }
+        
+        resourceStorage.removeAmountResourceTypeCapacity(resource, capacity);
+    }
 
     /**
      * Adds capacity for a resource phase.

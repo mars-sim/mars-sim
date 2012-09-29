@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 3.03 2012-07-24
+ * @version 3.03 2012-09-29
  * @author Scott Davis 
  */
 
@@ -31,7 +31,6 @@ class AmountResourceTypeStorage implements Serializable {
      * Adds capacity for a resource type.
      * @param resource the resource.
      * @param capacity the capacity amount (kg).
-     * @throws ResourceException if error setting capacity.
      */
     void addAmountResourceTypeCapacity(AmountResource resource, double capacity)  {
 
@@ -49,6 +48,41 @@ class AmountResourceTypeStorage implements Serializable {
         }
         else {
             amountResourceTypeCapacities.put(resource, new ResourceAmount(capacity));
+        }
+    }
+    
+    /**
+     * Removes capacity for a resource type.
+     * @param resource the resource.
+     * @param capacity the capacity amount (kg).
+     */
+    void removeAmountResourceTypeCapacity(AmountResource resource, double capacity) {
+        
+        if (capacity < 0D) {
+            throw new IllegalStateException("Cannot remove negative type capacity: " + capacity);
+        }
+        
+        if (amountResourceTypeCapacities == null) {
+            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
+        }
+        
+        double existingCapacity = getAmountResourceTypeCapacity(resource);
+        double newCapacity = existingCapacity - capacity;
+        if (newCapacity > 0D) {
+            if (hasAmountResourceTypeCapacity(resource)) {
+                ResourceAmount existingCapacityAmount = amountResourceTypeCapacities.get(resource);
+                existingCapacityAmount.setAmount(newCapacity);
+            }
+            else {
+                amountResourceTypeCapacities.put(resource, new ResourceAmount(newCapacity));
+            }
+        }
+        else if (newCapacity == 0D) {
+            amountResourceTypeCapacities.remove(resource);
+        }
+        else {
+            throw new IllegalStateException("Insufficient existing resource type capacity to remove - existing: " + 
+                    existingCapacity + ", removed: " + capacity);
         }
     }
 
@@ -196,7 +230,6 @@ class AmountResourceTypeStorage implements Serializable {
      * Store an amount of a resource type.
      * @param resource the resource.
      * @param amount the amount (kg).
-     * @throws ResourceException if error storing resource.
      */
     void storeAmountResourceType(AmountResource resource, double amount) {
 
@@ -230,7 +263,6 @@ class AmountResourceTypeStorage implements Serializable {
      * Retrieves an amount of a resource type from storage.
      * @param resource the resource.
      * @param amount the amount (kg).
-     * @throws ResourceException if error retrieving resource.
      */
     void retrieveAmountResourceType(AmountResource resource, double amount) {
 

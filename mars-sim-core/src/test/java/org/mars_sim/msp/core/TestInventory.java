@@ -39,6 +39,39 @@ public class TestInventory extends TestCase {
             //expected
         }
     }
+    
+    /**
+     * Test the removeAmountResourceTypeCapacity method.
+     */
+    public void testRemoveAmountResourceTypeCapacity() {
+        Inventory inventory = new MockUnit1().getInventory();
+        AmountResource carbonDioxide = AmountResource.findAmountResource(CARBON_DIOXIDE);
+        
+        inventory.addAmountResourceTypeCapacity(carbonDioxide, 100D);
+        double amountCarbonDioxide1 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(100D, amountCarbonDioxide1);
+        
+        // Test removing 50 kg of CO2 capacity.
+        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide2 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(50D, amountCarbonDioxide2);
+        
+        // Test removing another 50 kg of CO2 capacity.
+        inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+        double amountCarbonDioxide3 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(0D, amountCarbonDioxide3);
+        
+        // Test removing another 50 kg of CO2 capacity (should throw IllegalStateException).
+        try {
+            inventory.removeAmountResourceTypeCapacity(carbonDioxide, 50D);
+            fail("Should have thrown an IllegalStateException, no capacity left.");
+        }
+        catch (IllegalStateException e) {
+            // Expected.
+        }
+        double amountCarbonDioxide4 = inventory.getAmountResourceCapacity(carbonDioxide, false);
+        assertEquals(0D, amountCarbonDioxide4);
+    }
 
     public void testInventoryAmountResourcePhaseCapacityGood() throws Exception {
         Inventory inventory = new MockUnit1().getInventory();
