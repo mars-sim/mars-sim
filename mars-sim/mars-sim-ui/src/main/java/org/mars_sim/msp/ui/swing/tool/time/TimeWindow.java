@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TimeWindow.java
- * @version 3.02 2011-10-08
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -21,8 +21,9 @@ import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.MouseInputAdapter;
-import javax.swing.event.MouseInputListener;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
@@ -33,10 +34,8 @@ import java.util.logging.Logger;
  * Martian and Earth time 
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.time.TimeWindow";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
 
 	// Tool name
 	public static final String NAME = "Time Tool";		
@@ -82,6 +81,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     private JLabel pulsespersecondLabel;      // JLabel for pulses per second label 
     private JSlider pulseSlider;     // JSlider for pulse
     private int sliderpos = 50;
+    private JButton pauseButton;
     
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
@@ -187,31 +187,13 @@ public class TimeWindow extends ToolWindow implements ClockListener {
         JPanel pausePane = new JPanel( new BorderLayout());
         southPane.add(pausePane, "North");
         
-        final JButton pauseButton = new JButton("Pause");
-        
-        pauseButton.addMouseListener(new MouseInputListener() {
-			@Override
-			public void mouseMoved(MouseEvent e) {			}
-			@Override
-			public void mouseDragged(MouseEvent e) {		}
-			@Override
-			public void mouseReleased(MouseEvent e) { 
-				if (e.getButton() == MouseEvent.BUTTON1) {
-					master.setPaused(!master.isPaused());
-					
-					if (master.isPaused()) {pauseButton.setText("Resume");}
-					else {pauseButton.setText("Pause");}
-				}
-			}
-			@Override
-			public void mousePressed(MouseEvent e) {		}
-			@Override
-			public void mouseExited(MouseEvent e) {	}
-			@Override
-			public void mouseEntered(MouseEvent e) {	}
-			@Override
-			public void mouseClicked(MouseEvent e) {	}
-		});
+        pauseButton = new JButton("Pause");
+        pauseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                master.setPaused(!master.isPaused());
+            }
+        });
         
         // Create uptime header label
         JLabel uptimeHeaderLabel = new JLabel("Simulation Uptime", JLabel.CENTER);
@@ -344,10 +326,8 @@ public class TimeWindow extends ToolWindow implements ClockListener {
     	if (r>=pulseSlider.getMinimum() && r <= pulseSlider.getMaximum()) 
     		{pulseSlider.setValue(r);}
     }
-	/**
-	 * Change in time.
-	 * param time the amount of time changed. (millisols)
-	 */
+
+    @Override
 	public void clockPulse(double time) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -379,6 +359,17 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 			}
 		});
 	}
+	
+    @Override
+    public void pauseChange(boolean isPaused) {
+        // Update pause/resume button text based on master clock pause state.
+        if (isPaused) {
+            pauseButton.setText("Resume");
+        }
+        else {
+            pauseButton.setText("Pause");
+        }
+    }
     
     /**
      * Prepare tool window for deletion.

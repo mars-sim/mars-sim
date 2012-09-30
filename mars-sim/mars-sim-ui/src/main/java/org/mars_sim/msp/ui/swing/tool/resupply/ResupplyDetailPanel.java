@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.02 2012-04-26
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -625,5 +625,10 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 });
             }
         }
+    }
+    
+    @Override
+    public void pauseChange(boolean isPaused) {
+        // Do nothing
     }
 }

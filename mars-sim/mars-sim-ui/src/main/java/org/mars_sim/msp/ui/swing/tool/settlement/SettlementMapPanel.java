@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.02 2012-01-31
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -252,5 +252,10 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     public void clockPulse(double time) {
         // Repaint map panel with each clock pulse.
         repaint();
+    }
+    
+    @Override
+    public void pauseChange(boolean isPaused) {
+        // Do nothing
     }
 }
