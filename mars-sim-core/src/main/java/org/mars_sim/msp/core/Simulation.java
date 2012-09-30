@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Simulation.java
- * @version 3.03 2012-06-11
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -343,6 +343,11 @@ public class Simulation implements ClockListener, Serializable {
                     + " Master clock sending pulse to object: resupplyManager " + resupplyManager);
         }
         resupplyManager.timePassing(time);
+    }
+    
+    @Override
+    public void pauseChange(boolean isPaused) {
+        // Do nothing
     }
 
     /**

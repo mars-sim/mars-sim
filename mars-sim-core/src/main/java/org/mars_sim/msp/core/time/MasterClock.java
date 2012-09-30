@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.02 2011-11-26
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -276,18 +276,8 @@ public class MasterClock implements Runnable, Serializable {
                 earthTime.addTime(earthTimeDiff);
                 marsTime.addTime(timePulse);
 
-                synchronized (listeners) {
-                    // Send clock pulse to listeners.
-                    Iterator<ClockListener> i = listeners.iterator();
-                    while (i.hasNext()) {
-                        ClockListener cl = i.next();
-                        try {
-                            cl.clockPulse(timePulse);
-                        } catch (Exception e) {
-                            throw new IllegalStateException("Error while looping master clock",e);
-                        }
-                    }
-                }
+                // Fire clock pulse to all clock listeners.
+                fireClockPulse(timePulse);
                 
                 // Pause simulation to allow other threads to complete.
                 try {
@@ -339,6 +329,25 @@ public class MasterClock implements Runnable, Serializable {
             }
         }
     }
+    
+    /**
+     * Send a clock pulse to all clock listeners.
+     * @param time the amount of time (millisols) in the pulse.
+     */
+    public void fireClockPulse(double time) {
+        
+        synchronized (listeners) {
+            Iterator<ClockListener> i = listeners.iterator();
+            while (i.hasNext()) {
+                ClockListener cl = i.next();
+                try {
+                    cl.clockPulse(time);
+                } catch (Exception e) {
+                    throw new IllegalStateException("Error while firing clock pulse", e);
+                }
+            }
+        }
+    }
 
     /**
      * Stop the clock
@@ -355,6 +364,9 @@ public class MasterClock implements Runnable, Serializable {
     public void setPaused(boolean isPaused) {
         uptimer.setPaused(isPaused);
         this.isPaused = isPaused;
+        
+        // Fire pause change to all clock listeners.
+        firePauseChange();
     }
 
     /**
@@ -364,6 +376,24 @@ public class MasterClock implements Runnable, Serializable {
      */
     public boolean isPaused() {
         return isPaused;
+    }
+    
+    /**
+     * Send a pulse change event to all clock listeners.
+     */
+    public void firePauseChange() {
+        
+        synchronized (listeners) {
+            Iterator<ClockListener> i = listeners.iterator();
+            while (i.hasNext()) {
+                ClockListener cl = i.next();
+                try {
+                    cl.pauseChange(isPaused);
+                } catch (Exception e) {
+                    throw new IllegalStateException("Error while firing pase change", e);
+                }
+            }
+        }
     }
 
 
@@ -392,10 +422,6 @@ public class MasterClock implements Runnable, Serializable {
      */
     public String getTimeString(double seconds) {
 
-//        long years, days, hours, minutes;
-//        double secs;
-//        String YY = "", DD = "", HH = "", MM = "", SS = "";
-
         long years = (int) Math.floor(seconds / secsperyear);
         long days = (int) ((seconds % secsperyear) / secspday);
         long hours = (int) ((seconds % secspday) / secsphour);
@@ -409,42 +435,25 @@ public class MasterClock implements Runnable, Serializable {
             b.append(":");
         }
 
-
-//        if (years > 0) {
-//            YY = "" + years + ":";
-//        } else {
-//            YY = "";
-//        }
-//        ;
-
         if (days > 0) {
             b.append(String.format("%03d", days)).append(":");
-//            DD = String.format("%03d", days) + ":";
         } else {
             b.append("0:");
-//            DD = "0:";
         }
 
         if (hours > 0) {
             b.append(String.format("%02d", hours)).append(":");
-//            HH = String.format("%02d", hours) + ":";
         } else {
             b.append("00:");
-//            HH = "00:";
         }
 
         if (minutes > 0) {
             b.append(String.format("%02d", minutes)).append(":");
-//            MM = String.format("%02d", minutes) + ":";
         } else {
             b.append("00:");
-//            MM = "00:";
         }
 
         b.append(String.format("%5.3f", secs));
-//        SS = String.format("%5.3f", secs);
-        //******* change here for more complete string *****
-//        return /*YY+*/DD + HH + MM + SS;
 
         return b.toString();
     }
