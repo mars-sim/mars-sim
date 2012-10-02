@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.03 2012-07-26
+ * @version 3.03 2012-10-01
  * @author Scott Davis
  */
 
@@ -251,7 +251,12 @@ public class LoadVehicle extends Task implements Serializable {
         if (amountLoading > 0D) amountLoading = loadEquipment(amountLoading);
         
         // Load resources
-        amountLoading = loadResources(amountLoading);
+        try {
+            amountLoading = loadResources(amountLoading);
+        }
+        catch (Exception e) {
+            logger.severe(e.getMessage());
+        }
 
         // Put rover back into settlement.
         if (roverInSettlement) sInv.storeUnit(vehicle);
