@@ -248,9 +248,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
         // Reserve construction vehicles.
         constructionVehicles = vehicles;
         Iterator<GroundVehicle> j = vehicles.iterator();
-        while (j.hasNext())
+        while (j.hasNext()) {
             j.next().setReservedForMission(true);
-
+        }
+            
         // Retrieve construction LUV attachment parts.
         retrieveConstructionLUVParts();
 

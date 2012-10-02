@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.03 2012-06-23
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -283,6 +283,10 @@ public class MissionManager implements Serializable {
                 else if (mission instanceof BuildingConstructionMission) {
                     BuildingConstructionMission construction = (BuildingConstructionMission) mission;
                     if (construction.getConstructionVehicles().contains(vehicle)) result = mission;
+                }
+                else if (mission instanceof BuildingSalvageMission) {
+                    BuildingSalvageMission salvage = (BuildingSalvageMission) mission;
+                    if (salvage.getConstructionVehicles().contains(vehicle)) result = mission;
                 }
     		}
     	}

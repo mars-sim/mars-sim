@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageVehiclePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-09-30
  * @author Scott Davis
  */
 
@@ -145,8 +145,7 @@ public class SalvageVehiclePanel extends WizardPanel {
     boolean commitChanges() {
         List<GroundVehicle> salvageVehicles = new ArrayList<GroundVehicle>();
         int[] selectedIndexs = vehicleTable.getSelectedRows();
-        int requiredVehicles = getRequiredVehiclesNum();
-        for (int x = 0; x < selectedIndexs.length && x < requiredVehicles; x++) {
+        for (int x = 0; x < selectedIndexs.length; x++) {
             LightUtilityVehicle selectedVehicle = 
                 (LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndexs[x]);
             

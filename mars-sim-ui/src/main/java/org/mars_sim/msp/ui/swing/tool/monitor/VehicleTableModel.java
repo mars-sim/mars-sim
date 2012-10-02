@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTableModel.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-09-30
  * @author Barry Evans
  */
 
@@ -216,11 +216,12 @@ public class VehicleTableModel extends UnitTableModel {
 
             		case DESTINATION : {
             			result = null;
-            			VehicleMission mission = (VehicleMission) 
+            			Mission mission = 
             				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            			if (mission != null) {
-            				if (mission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
-            					NavPoint destination = mission.getNextNavpoint();
+            			if ((mission != null) && (mission instanceof VehicleMission)) {
+                            VehicleMission vehicleMission = (VehicleMission) mission;
+            				if (vehicleMission.getTravelStatus().equals(TravelMission.TRAVEL_TO_NAVPOINT)) {
+            					NavPoint destination = vehicleMission.getNextNavpoint();
             					if (destination.isSettlementAtNavpoint()) result = destination.getSettlement().getName();
             					else result = destination.getLocation().getFormattedString();
             				}
@@ -228,11 +229,12 @@ public class VehicleTableModel extends UnitTableModel {
             		} break;
 
             		case DESTDIST : {
-            			VehicleMission mission = (VehicleMission) 
+            			Mission mission = 
             				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
-            			if (mission != null) {
+            			if ((mission != null) && (mission instanceof VehicleMission)) {
+            			    VehicleMission vehicleMission = (VehicleMission) mission;
             				try {
-            					result = new Float(mission.getCurrentLegRemainingDistance()).intValue();
+            					result = new Float(vehicleMission.getCurrentLegRemainingDistance()).intValue();
             				}
             				catch (Exception e) {
             					logger.log(Level.SEVERE,"Error getting current leg remaining distance.");
@@ -243,7 +245,7 @@ public class VehicleTableModel extends UnitTableModel {
             		} break;
             
             		case MISSION : {
-            			VehicleMission mission = (VehicleMission) 
+            			Mission mission = 
             				Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
             			if (mission != null) {
             				result = mission.getName();
@@ -258,6 +260,7 @@ public class VehicleTableModel extends UnitTableModel {
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE, "", e);
+        		e.printStackTrace(System.err);
         	}
         }
 
@@ -466,13 +469,16 @@ public class VehicleTableModel extends UnitTableModel {
     	}
     	
     	private void updateVehicleMissionCell(Mission mission) {
-    		if (mission instanceof VehicleMission) {
-    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-    			if (vehicle != null) {
-    				int unitIndex = getUnitIndex(vehicle);
-    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
-    			}
-    		}
+//    		if (mission instanceof VehicleMission) {
+//    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+//    			if (vehicle != null) {
+//    				int unitIndex = getUnitIndex(vehicle);
+//    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, MISSION));
+//    			}
+//    		}
+    	    
+    	    // Update all table cells because construction/salvage mission may affect more than one vehicle.
+    	    fireTableDataChanged();
     	}
     	
     	/**
@@ -523,11 +529,13 @@ public class VehicleTableModel extends UnitTableModel {
     		else if (eventType.equals(VehicleMission.VEHICLE_EVENT)) columnNum = MISSION;
     		
     		if (columnNum > -1) {
-    			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
-    			if (vehicle != null) {
-    				int unitIndex = getUnitIndex(vehicle);
-    				SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
-    			}
+    		    if (mission instanceof VehicleMission) {
+    		        Vehicle vehicle = ((VehicleMission) mission).getVehicle();
+    		        if (vehicle != null) {
+    		            int unitIndex = getUnitIndex(vehicle);
+    		            SwingUtilities.invokeLater(new VehicleTableCellUpdater(unitIndex, columnNum));
+    		        }
+    		    }
     		}
     	}
     }

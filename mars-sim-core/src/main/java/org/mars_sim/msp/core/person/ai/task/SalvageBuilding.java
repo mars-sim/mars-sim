@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.03 2012-07-26
+ * @version 3.03 2012-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -306,21 +306,23 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     private void loadAttachmentParts() {
         if (luv != null) {
             int index = vehicles.indexOf(luv);
-            ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
-            Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
-            while (i.hasNext()) {
-                // Assume part has already be retrieved from settlement at 
-                // salvage building mission start.
-                Part attachmentPart = i.next();
-                double mass = attachmentPart.getMassPerItem();
-                Inventory inv = luv.getInventory();
-                if (inv.getRemainingGeneralCapacity(false) >= mass) {
-                    luv.getInventory().storeItemResources(attachmentPart, 1);
-                }
-                else {
-                    logger.log(Level.SEVERE, person.getName() + " unable to load attachment part " + 
-                            attachmentPart + " on " + luv.getName() + " due to lack of mass carrying capacity: " + 
-                            inv.getRemainingGeneralCapacity(false) + " kg.");
+            if (index < stage.getInfo().getVehicles().size()) {
+                ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
+                Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
+                while (i.hasNext()) {
+                    // Assume part has already be retrieved from settlement at 
+                    // salvage building mission start.
+                    Part attachmentPart = i.next();
+                    double mass = attachmentPart.getMassPerItem();
+                    Inventory inv = luv.getInventory();
+                    if (inv.getRemainingGeneralCapacity(false) >= mass) {
+                        luv.getInventory().storeItemResources(attachmentPart, 1);
+                    }
+                    else {
+                        logger.log(Level.SEVERE, person.getName() + " unable to load attachment part " + 
+                                attachmentPart + " on " + luv.getName() + " due to lack of mass carrying capacity: " + 
+                                inv.getRemainingGeneralCapacity(false) + " kg.");
+                    }
                 }
             }
         }
@@ -347,19 +349,21 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     private void unloadAttachmentParts() {
         if (luv != null) {
             int index = vehicles.indexOf(luv);
-            ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
-            Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
-            while (i.hasNext()) {
-                // Assume part will be stored in the settlement when 
-                // construction mission ends.
-                Part attachmentPart = i.next();
-                Inventory inv = luv.getInventory();
-                if (inv.hasItemResource(attachmentPart)) {
-                    luv.getInventory().retrieveItemResources(attachmentPart, 1);
-                }
-                else {
-                    logger.log(Level.SEVERE, person.getName() + " unable to remove attachment part " + 
-                            attachmentPart + " from " + luv.getName() + " because it's not in inventory.");
+            if (index < stage.getInfo().getVehicles().size()) {
+                ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
+                Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
+                while (i.hasNext()) {
+                    // Assume part will be stored in the settlement when 
+                    // construction mission ends.
+                    Part attachmentPart = i.next();
+                    Inventory inv = luv.getInventory();
+                    if (inv.hasItemResource(attachmentPart)) {
+                        luv.getInventory().retrieveItemResources(attachmentPart, 1);
+                    }
+                    else {
+                        logger.log(Level.SEVERE, person.getName() + " unable to remove attachment part " + 
+                                attachmentPart + " from " + luv.getName() + " because it's not in inventory.");
+                    }
                 }
             }
         }

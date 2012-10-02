@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionVehiclePanel.java
- * @version 3.00 2010-08-10
+ * @version 3.03 2012-10-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
@@ -143,7 +143,7 @@ class ConstructionVehiclePanel extends WizardPanel {
         int[] selectedIndexs = vehicleTable.getSelectedRows();
         int requiredVehicles = getWizard().getMissionData().
                 getConstructionStageInfo().getVehicles().size();
-        for (int x = 0; x < selectedIndexs.length && x < requiredVehicles; x++) {
+        for (int x = 0; x < selectedIndexs.length; x++) {
             LightUtilityVehicle selectedVehicle = 
                 (LightUtilityVehicle) vehicleTableModel.getUnit(selectedIndexs[x]);
             constructionVehicles.add(selectedVehicle);
