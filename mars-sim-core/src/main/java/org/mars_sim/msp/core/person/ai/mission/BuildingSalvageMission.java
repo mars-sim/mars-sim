@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.03 2012-06-28
+ * @version 3.03 2012-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
+import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -245,11 +246,22 @@ public class BuildingSalvageMission extends Mission implements Serializable {
         while (i.hasNext())
             i.next().getMind().setMission(this);
 
-        // Reserve construction vehicles.
+        // Reserve construction vehicles and retrieve from inventory.
         constructionVehicles = vehicles;
         Iterator<GroundVehicle> j = vehicles.iterator();
         while (j.hasNext()) {
-            j.next().setReservedForMission(true);
+            GroundVehicle vehicle = j.next();
+            vehicle.setReservedForMission(true);
+            if (settlement.getInventory().containsUnit(vehicle)) {
+                settlement.getInventory().retrieveUnit(vehicle);
+            }
+            else {
+                logger.severe("Unable to retrieve " + vehicle.getName() + 
+                        " cannot be retrieved from " + settlement.getName() + 
+                        " inventory.");
+                endMission("Construction vehicle " + vehicle.getName() + 
+                        " could not be retrieved from settlement inventory.");
+            }
         }
             
         // Retrieve construction LUV attachment parts.
@@ -521,20 +533,6 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
         // Unreserve all mission construction vehicles.
         unreserveConstructionVehicles();
-
-        // Store all LUV attachment parts in settlement.
-        Iterator<Part> i = luvAttachmentParts.iterator();
-        while (i.hasNext()) {
-            Part part = i.next();
-            try {
-                settlement.getInventory().storeItemResources(part, 1);
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error storing attachment part "
-                        + part.getName());
-                endMission("Construction attachment part " + part.getName()
-                        + " could not be stored.");
-            }
-        }
     }
 
     @Override
@@ -634,15 +632,24 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     private void retrieveConstructionLUVParts() {
         if (constructionStage != null) {
             luvAttachmentParts = new ArrayList<Part>();
+            int vehicleIndex = 0;
             Iterator<ConstructionVehicleType> k = constructionStage.getInfo()
                     .getVehicles().iterator();
             while (k.hasNext()) {
+                Vehicle vehicle = null;
+                if (constructionVehicles.size() > vehicleIndex) {
+                    vehicle = constructionVehicles.get(vehicleIndex);
+                }
+                
                 Iterator<Part> l = k.next().getAttachmentParts().iterator();
                 while (l.hasNext()) {
                     Part part = l.next();
                     try {
                         settlement.getInventory()
                                 .retrieveItemResources(part, 1);
+                        if (vehicle != null) {
+                            vehicle.getInventory().storeItemResources(part, 1);
+                        }
                         luvAttachmentParts.add(part);
                     } catch (Exception e) {
                         logger.log(Level.SEVERE,
@@ -652,6 +659,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                                 + part.getName() + " could not be retrieved.");
                     }
                 }
+                vehicleIndex++;
             }
         }
     }
@@ -673,6 +681,16 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                         && !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0)) {
                     result = luvTemp;
                     luvTemp.setReservedForMission(true);
+                    if (settlement.getInventory().containsUnit(luvTemp)) {
+                        settlement.getInventory().retrieveUnit(luvTemp);
+                    }
+                    else {
+                        logger.severe("Unable to retrieve " + luvTemp.getName() + 
+                                " cannot be retrieved from " + settlement.getName() + 
+                                " inventory.");
+                        endMission("Construction vehicle " + luvTemp.getName() + 
+                                " could not be retrieved from settlement inventory.");
+                    }
                 }
             }
         }
@@ -686,8 +704,25 @@ public class BuildingSalvageMission extends Mission implements Serializable {
     private void unreserveConstructionVehicles() {
         if (constructionVehicles != null) {
             Iterator<GroundVehicle> i = constructionVehicles.iterator();
-            while (i.hasNext())
-                i.next().setReservedForMission(false);
+            while (i.hasNext()) {
+                GroundVehicle vehicle = i.next();
+                vehicle.setReservedForMission(false);
+
+                Inventory vInv = vehicle.getInventory();
+                Inventory sInv = settlement.getInventory();
+                
+                // Store construction vehicle in settlement.
+                sInv.storeUnit(vehicle);
+                
+                // Store all construction vehicle attachments in settlement.
+                Iterator<ItemResource> j = vInv.getAllItemResourcesStored().iterator();
+                while (j.hasNext()) {
+                    ItemResource attachmentPart = j.next();
+                    int num = vInv.getItemResourceNum(attachmentPart);
+                    vInv.retrieveItemResources(attachmentPart, num);
+                    sInv.storeItemResources(attachmentPart, num);
+                }
+            }
         }
     }
 

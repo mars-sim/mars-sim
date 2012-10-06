@@ -55,7 +55,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
 
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[36];
+        availableTasks = (Class<? extends Task>[]) new Class[37];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -92,6 +92,7 @@ public class TaskManager implements Serializable {
         availableTasks[33] = AssistScientificStudyResearcher.class;
         availableTasks[34] = SalvageGood.class;
         availableTasks[35] = ManufactureConstructionMaterials.class;
+        availableTasks[36] = ReturnLightUtilityVehicle.class;
 
         // Initialize cache values.
         timeCache = null;
