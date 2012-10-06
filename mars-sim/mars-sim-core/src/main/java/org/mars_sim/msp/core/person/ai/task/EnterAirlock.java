@@ -49,7 +49,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public EnterAirlock(Person person, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, true, 10D);
 
         // Initialize data members
         setDescription("Entering " + airlock.getEntityName() + " from EVA");
@@ -99,7 +99,7 @@ public class EnterAirlock extends Task implements Serializable {
             }
         }
 
-        // If not look for any airlockable vehicles at person's location.
+        // If not look for any vehicles with airlocks at person's location.
         if (airlock == null) {
             Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
             while (i.hasNext() && (airlock == null)) {

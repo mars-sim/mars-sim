@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.03 2012-10-01
+ * @version 3.03 2012-10-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -15,10 +14,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
@@ -26,7 +22,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -44,7 +39,6 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
     
     // Data members.
-    private Settlement settlement;
     private ConstructionStage stage;
     private List<GroundVehicle> vehicles;
     private Airlock airlock;
@@ -66,7 +60,6 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         // Initialize data members.
         this.stage = stage;
         this.vehicles = vehicles;
-        settlement = person.getSettlement();
         
         // Get an available airlock.
         airlock = getAvailableAirlock(person);
@@ -285,44 +278,10 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
             if (vehicle instanceof LightUtilityVehicle) {
                 LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
                 if (tempLuv.getOperator() == null) {
-                    if (settlement.getInventory().containsUnit(tempLuv))
-                        settlement.getInventory().retrieveUnit(tempLuv);
                     tempLuv.getInventory().storeUnit(person);
                     tempLuv.setOperator(person);
                     luv = tempLuv;
                     operatingLUV = true;
-                    
-                    // Load attachment parts on vehicle.
-                    loadAttachmentParts();
-                }
-            }
-        }
-    }
-    
-    /**
-     * Loads any needed attachment parts on the construction vehicle.
-     * @throws Exception if error loading the parts.
-     */
-    private void loadAttachmentParts() {
-        if (luv != null) {
-            int index = vehicles.indexOf(luv);
-            if (index < stage.getInfo().getVehicles().size()) {
-                ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
-                Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
-                while (i.hasNext()) {
-                    // Assume part has already be retrieved from settlement at 
-                    // salvage building mission start.
-                    Part attachmentPart = i.next();
-                    double mass = attachmentPart.getMassPerItem();
-                    Inventory inv = luv.getInventory();
-                    if (inv.getRemainingGeneralCapacity(false) >= mass) {
-                        luv.getInventory().storeItemResources(attachmentPart, 1);
-                    }
-                    else {
-                        logger.log(Level.SEVERE, person.getName() + " unable to load attachment part " + 
-                                attachmentPart + " on " + luv.getName() + " due to lack of mass carrying capacity: " + 
-                                inv.getRemainingGeneralCapacity(false) + " kg.");
-                    }
                 }
             }
         }
@@ -336,37 +295,6 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         luv.getInventory().retrieveUnit(person);
         luv.setOperator(null);
         operatingLUV = false;
-        settlement.getInventory().storeUnit(luv);
-        
-        // Unload attachment parts from vehicle.
-        unloadAttachmentParts();
-    }
-    
-    /**
-     * Unloads attachment parts from the construction vehicle.
-     * @throws Exception if error unloading parts.
-     */
-    private void unloadAttachmentParts() {
-        if (luv != null) {
-            int index = vehicles.indexOf(luv);
-            if (index < stage.getInfo().getVehicles().size()) {
-                ConstructionVehicleType vehicleType = stage.getInfo().getVehicles().get(index);
-                Iterator<Part> i = vehicleType.getAttachmentParts().iterator();
-                while (i.hasNext()) {
-                    // Assume part will be stored in the settlement when 
-                    // construction mission ends.
-                    Part attachmentPart = i.next();
-                    Inventory inv = luv.getInventory();
-                    if (inv.hasItemResource(attachmentPart)) {
-                        luv.getInventory().retrieveItemResources(attachmentPart, 1);
-                    }
-                    else {
-                        logger.log(Level.SEVERE, person.getName() + " unable to remove attachment part " + 
-                                attachmentPart + " from " + luv.getName() + " because it's not in inventory.");
-                    }
-                }
-            }
-        }
     }
     
     /**
@@ -381,7 +309,6 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     public void destroy() {
         super.destroy();
         
-        settlement = null;
         stage = null;
         if (vehicles != null) vehicles.clear();
         vehicles = null;
