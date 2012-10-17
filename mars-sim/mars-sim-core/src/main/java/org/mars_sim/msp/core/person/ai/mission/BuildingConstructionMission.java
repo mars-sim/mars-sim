@@ -67,7 +67,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
     private ConstructionSite constructionSite;
     private ConstructionStage constructionStage;
     private List<GroundVehicle> constructionVehicles;
-    private boolean constructionSuppliesAdded;
     private MarsClock sitePreparationStartTime;
     private boolean finishingExistingStage;
     private boolean constructionSuppliesLoaded;
@@ -231,6 +230,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         if (constructionSite.hasUnfinishedStage()) {
             constructionStage = constructionSite.getCurrentConstructionStage();
+            finishingExistingStage = true;
             logger.log(Level.INFO, "Using existing construction stage: " + constructionStage);
         }
         else {
@@ -616,7 +616,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         Map<Resource, Number> resources = new HashMap<Resource, Number>();
         
-        if (!constructionSuppliesAdded) {
+        if (!constructionSuppliesLoaded) {
             // Add construction amount resources.
             resources.putAll(constructionStage.getInfo().getResources());
             
