@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionProjectPanel.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-17
  * @author Scott Davis
  */
 
@@ -118,22 +118,29 @@ class ConstructionProjectPanel extends WizardPanel {
         projectList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent arg0) {
                 materialsTableModel.update();
+                String selectedSite = (String) siteList.getSelectedValue();
                 ConstructionStageInfo stageInfo = (ConstructionStageInfo) projectList.getSelectedValue();
                 projectList.setToolTipText(getToolTipText(stageInfo));
                 if (stageInfo != null) {
-                    try {
-                        if (hasEnoughConstructionMaterials(stageInfo)) {
-                            getWizard().setButtons(true);
-                            errorMessageLabel.setText(" ");
-                        }
-                        else {
-                            getWizard().setButtons(false);
-                            errorMessageLabel.setText("Not enough materials at settlement " +
-                                    "for construction project.");
-                        }
+                    if (selectedSite.indexOf(" unfinished") >= 0) {
+                        getWizard().setButtons(true);
+                        errorMessageLabel.setText(" ");
                     }
-                    catch (Exception e) {
-                        e.printStackTrace();
+                    else {
+                        try {
+                            if (hasEnoughConstructionMaterials(stageInfo)) {
+                                getWizard().setButtons(true);
+                                errorMessageLabel.setText(" ");
+                            }
+                            else {
+                                getWizard().setButtons(false);
+                                errorMessageLabel.setText("Not enough materials at settlement " +
+                                        "for construction project.");
+                            }
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
                 else errorMessageLabel.setText(" ");
@@ -480,13 +487,13 @@ class ConstructionProjectPanel extends WizardPanel {
         }
         
         /**
-         * Populate the list of contruction materials.
+         * Populate the list of construction materials.
          */
         private void populateMaterialsList() {
             
             Inventory inv = getConstructionSettlement().getInventory();
-            
-            if (info != null) {
+            String selectedSite = (String) siteList.getSelectedValue();
+            if ((info != null) && (selectedSite.indexOf(" unfinished") == -1)) {
                 try {
                     // Add resources.
                     Iterator<AmountResource> i = info.getResources().keySet().iterator();
