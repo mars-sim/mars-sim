@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.03 2012-10-05
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -275,13 +275,16 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         Iterator<GroundVehicle> i = vehicles.iterator();
         while (i.hasNext() && (luv == null)) {
             GroundVehicle vehicle = i.next();
-            if (vehicle instanceof LightUtilityVehicle) {
-                LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
-                if (tempLuv.getOperator() == null) {
-                    tempLuv.getInventory().storeUnit(person);
-                    tempLuv.setOperator(person);
-                    luv = tempLuv;
-                    operatingLUV = true;
+            if (!vehicle.getMalfunctionManager().hasMalfunction()) {
+                if (vehicle instanceof LightUtilityVehicle) {
+                    LightUtilityVehicle tempLuv = (LightUtilityVehicle) vehicle;
+                    if (tempLuv.getOperator() == null) {
+                        tempLuv.getInventory().storeUnit(person);
+                        tempLuv.setOperator(person);
+                        luv = tempLuv;
+                        operatingLUV = true;
+                        break;
+                    }
                 }
             }
         }
