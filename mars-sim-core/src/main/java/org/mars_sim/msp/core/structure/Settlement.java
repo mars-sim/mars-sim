@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
 
@@ -433,10 +433,11 @@ public class Settlement extends Structure implements Malfunctionable,
 
         BuildingManager manager = buildingManager;
         List<Building> evaBuildings = manager.getBuildings(EVA.NAME);
-        evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
+        // Note - I don't think least crowded is useful for picking EVA building. - Scott.
+        //evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
 
         if (evaBuildings.size() > 0) {
-            // Pick random dining building from list.
+            // Pick random EVA building from list.
             int rand = RandomUtil.getRandomInt(evaBuildings.size() - 1);
             Building building = evaBuildings.get(rand);
             EVA eva = (EVA) building.getFunction(EVA.NAME);

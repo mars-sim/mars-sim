@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
 
@@ -49,7 +49,7 @@ public class EnterAirlock extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public EnterAirlock(Person person, Airlock airlock) {
-        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, true, 10D);
+        super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
         setDescription("Entering " + airlock.getEntityName() + " from EVA");
@@ -136,7 +136,7 @@ public class EnterAirlock extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             result = 500D;
-            //System.out.println(person.getName() + " is outside!");
+            System.out.println(person.getName() + " is outside!");
         }
 
         return result;
@@ -289,6 +289,18 @@ public class EnterAirlock extends Task implements Serializable {
      */
     public static boolean canEnterAirlock(Person person, Airlock airlock) {
         return true;
+    }
+    
+    @Override
+    public void endTask() {
+        super.endTask();
+        
+        // Clear the person as the airlock operator if task ended prematurely.
+        if ((airlock != null) && person.equals(airlock.getOperator())) {
+            logger.severe(person + " ending entering airlock task prematurely, " +
+                    "clearing as airlock operator for " + airlock.getEntityName());
+            airlock.clearOperator();
+        }
     }
 
     /**

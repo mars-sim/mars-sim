@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.02 2012-05-30
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
 
@@ -271,6 +271,10 @@ public abstract class Airlock implements Serializable {
         return state;
     }
     
+    /**
+     * Sets the state of the airlock.
+     * @param state the airlock state.
+     */
     private void setState(String state) {
         this.state = state;
         logger.fine(getEntityName() + " airlock is " + state);
@@ -282,6 +286,13 @@ public abstract class Airlock implements Serializable {
      */
     public Person getOperator() {
         return operator;
+    }
+    
+    /**
+     * Clears the airlock operator.
+     */
+    public void clearOperator() {
+        operator = null;
     }
 
     /**
@@ -330,13 +341,13 @@ public abstract class Airlock implements Serializable {
                 	String operatorName = operator.getName();
                     deactivateAirlock();
                     logger.severe("Airlock operator " + operatorName +
-                    " is dead.  Deactivating airlock.");
+                    " is dead.  Deactivating airlock of " + getEntityName());
                 }
             }
             else {
                 // If not operator, deactivate airlock.
                 deactivateAirlock();
-                logger.severe("Airlock has no operator.  Deactivating airlock.");
+                logger.severe("Airlock has no operator.  Deactivating airlock of " + getEntityName());
             }
         }
     }

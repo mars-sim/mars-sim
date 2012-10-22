@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
 
@@ -82,6 +82,11 @@ public class ExitAirlock extends Task implements Serializable {
 
         double remainingTime = time;
 
+        // Check if person already has EVA suit.
+        if (!hasSuit && alreadyHasEVASuit()) {
+            hasSuit = true;
+        }
+        
         // Get an EVA suit from entity inventory.
         if (!hasSuit) {
             Inventory inv = airlock.getEntityInventory();
@@ -189,6 +194,20 @@ public class ExitAirlock extends Task implements Serializable {
     }
 
     /**
+     * Checks if the person already has an EVA suit in their inventory.
+     * @return true if person already has an EVA suit.
+     */
+    private boolean alreadyHasEVASuit() {
+        boolean result = false;
+        EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
+        if (suit != null) {
+            result = true;
+            logger.severe(person.getName() + " already has an EVA suit in inventory!");
+        }
+        return result;
+    }
+    
+    /**
      * Checks if a good EVA suit is in entity inventory.
      * @param inv the inventory to check.
      * @return true if good EVA suit is in inventory
@@ -289,6 +308,18 @@ public class ExitAirlock extends Task implements Serializable {
         catch (Exception e) {}
     }
 
+    @Override
+    public void endTask() {
+        super.endTask();
+        
+        // Clear the person as the airlock operator if task ended prematurely.
+        if ((airlock != null) && person.equals(airlock.getOperator())) {
+            logger.severe(person + " ending exiting airlock task prematurely, " +
+                    "clearing as airlock operator for " + airlock.getEntityName());
+            airlock.clearOperator();
+        }
+    }
+    
     /**
      * Gets the effective skill level a person has at this task.
      * @return effective skill level
