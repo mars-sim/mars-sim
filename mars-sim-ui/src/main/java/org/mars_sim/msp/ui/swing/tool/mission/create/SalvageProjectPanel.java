@@ -22,6 +22,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import java.awt.*;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -178,7 +179,9 @@ public class SalvageProjectPanel extends WizardPanel {
         if (salvageSettlement != null) {
             
             // Add settlement buildings to list.
-            Iterator<Building> i = salvageSettlement.getBuildingManager().getBuildings().iterator();
+            java.util.List<Building> buildingList = salvageSettlement.getBuildingManager().getBuildings();
+            Collections.sort(buildingList);
+            Iterator<Building> i = buildingList.iterator();
             while (i.hasNext()) projectListModel.addElement(i.next());
             
             // Add construction sites.
