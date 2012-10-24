@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourcePhaseStorage.java
- * @version 3.03 2012-07-24
+ * @version 3.03 2012-20-23
  * @author Scott Davis 
  */
 
@@ -18,6 +18,9 @@ import java.util.Map;
  */
 class AmountResourcePhaseStorage implements Serializable {
 
+    // Comparison to indicate a small but non-zero amount.
+    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+    
     // Data members
 
     // Capacity for each phase of amount resource.
@@ -200,7 +203,7 @@ class AmountResourcePhaseStorage implements Serializable {
             throw new IllegalStateException("Cannot store negative amount of phase: " + amount);
         }
 
-        if (amount > 0D) {
+        if (amount > SMALL_AMOUNT_COMPARISON) {
 
             Phase resourcePhase = resource.getPhase();
             boolean storable = false;
@@ -262,7 +265,7 @@ class AmountResourcePhaseStorage implements Serializable {
 
                     retrievable = true;
 
-                    if (stored.amount <= 0D) {
+                    if (stored.amount <= SMALL_AMOUNT_COMPARISON) {
                         amountResourcePhaseStored.remove(phase);
                     }
                 }
