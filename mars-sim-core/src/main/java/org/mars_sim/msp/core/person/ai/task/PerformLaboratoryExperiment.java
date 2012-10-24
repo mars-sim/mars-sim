@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.03 2012-07-10
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -233,9 +233,15 @@ public class PerformLaboratoryExperiment extends Task implements
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
                     !primaryStudy.isPrimaryResearchCompleted()) {
                 if (experimentalSciences.contains(primaryStudy.getScience())) {
-                    // Primary study added twice to double chance of random selection.
-                    possibleStudies.add(primaryStudy);
-                    possibleStudies.add(primaryStudy);
+                    
+                    // Check that local lab is available for primary study science.
+                    Lab lab = getLocalLab(person, primaryStudy.getScience());
+                    if (lab != null) {
+                        
+                        // Primary study added twice to double chance of random selection.
+                        possibleStudies.add(primaryStudy);
+                        possibleStudies.add(primaryStudy);
+                    }
                 }
             }
         }
@@ -248,7 +254,12 @@ public class PerformLaboratoryExperiment extends Task implements
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
                 if (experimentalSciences.contains(collabScience)) {
-                    possibleStudies.add(collabStudy);
+                    // Check that local lab is available for collaboration study science.
+                    Lab lab = getLocalLab(person, collabScience);
+                    if (lab != null) {
+                        
+                        possibleStudies.add(collabStudy);
+                    }
                 }
             }
         }
