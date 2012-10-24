@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 
@@ -53,7 +53,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public final static String TOWED = "Towed";
     
     // The error margin for determining vehicle range. (actual distance / safe distance)
-    public final static double RANGE_ERROR_MARGIN = 1.6D;
+    public final static double RANGE_ERROR_MARGIN = 1.7D;
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
