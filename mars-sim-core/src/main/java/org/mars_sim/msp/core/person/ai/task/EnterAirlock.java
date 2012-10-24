@@ -136,7 +136,6 @@ public class EnterAirlock extends Task implements Serializable {
 
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             result = 500D;
-            System.out.println(person.getName() + " is outside!");
         }
 
         return result;
