@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.03 2012-07-19
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -225,29 +225,28 @@ public class Cooking extends Function implements Serializable {
 	public void addWork(double workTime) {
 		cookingWorkTime += workTime;
 		while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
-			int mealQuality = getBestCookSkill();
-			MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
-			
-//			try {
-				PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-				double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-				AmountResource food = AmountResource.findAmountResource("food");
-				getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
-//			}
-//			catch (InventoryException e) {
-//				throw new BuildingException("Not enough food in settlement to cook.");
-//			}
-//			catch (Exception e) {
-//				throw new BuildingException("Error getting configuration data.");
-//			}
-			
-			meals.add(new CookedMeal(mealQuality, time));
-			cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-			
-			if(logger.isLoggable(Level.FINEST)) {
-			logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-				" has " + meals.size() + " hot meals, quality=" + mealQuality);
-			}
+		    int mealQuality = getBestCookSkill();
+		    MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+
+		    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+		    double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
+		    AmountResource food = AmountResource.findAmountResource("food");
+		    double foodAvailable = getBuilding().getInventory().getAmountResourceStored(food, false);
+		    if (foodAmount <= foodAvailable) {
+		        getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
+
+		        meals.add(new CookedMeal(mealQuality, time));
+		        if (logger.isLoggable(Level.FINEST)) {
+		            logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+		                    " has " + meals.size() + " hot meals, quality=" + mealQuality);
+		        }
+		    }
+		    else {
+		        Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+		        logger.info("Not enough food to cook meal at " + settlement.getName() + " - food available: " + foodAvailable);
+		    }
+
+		    cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
 		}
 	}
 	
