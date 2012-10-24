@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryResearch.java
- * @version 3.03 2012-07-10
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -208,9 +208,15 @@ public class PerformLaboratoryResearch extends Task implements
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
                     !primaryStudy.isPrimaryResearchCompleted()) {
-                // Primary study added twice to double chance of random selection.
-                possibleStudies.add(primaryStudy);
-                possibleStudies.add(primaryStudy);
+                
+                // Check that a lab is available for primary study science.
+                Lab lab = getLocalLab(person, primaryStudy.getScience());
+                if (lab != null) {
+                
+                    // Primary study added twice to double chance of random selection.
+                    possibleStudies.add(primaryStudy);
+                    possibleStudies.add(primaryStudy);
+                }
             }
         }
         
@@ -219,8 +225,17 @@ public class PerformLaboratoryResearch extends Task implements
         while (i.hasNext()) {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
-                    !collabStudy.isCollaborativeResearchCompleted(person)) 
-                possibleStudies.add(collabStudy);
+                    !collabStudy.isCollaborativeResearchCompleted(person)) {
+                
+                // Check that a lab is available for collaborative study science.
+                Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                
+                Lab lab = getLocalLab(person, collabScience);
+                if (lab != null) {
+                
+                    possibleStudies.add(collabStudy);
+                }
+            }
         }
         
         // Randomly select study.
