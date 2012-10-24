@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.03 2012-07-26
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 
@@ -811,6 +811,14 @@ public class Exploration extends RoverMission implements Serializable {
                         .getDirectionToPoint(result);
                 result = startingLocation.getNewLocation(direction2, range);
             }
+        }
+        else {
+            // Use random direction and distance for first location 
+            // if no minerals found within range.
+            Direction direction = new Direction(RandomUtil
+                    .getRandomDouble(2D * Math.PI));
+            double distance = RandomUtil.getRandomDouble(range);
+            result = startingLocation.getNewLocation(direction, distance);
         }
 
         return result;
