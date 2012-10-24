@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.03 2012-06-25
+ * @version 3.03 2012-10-22
  * @author Scott Davis
  */
  
@@ -28,7 +28,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * The Building class is a settlement's building.
  */
-public class Building implements Malfunctionable, Serializable {
+public class Building implements Malfunctionable, Serializable, Comparable<Building> {
     
     // Power Modes
     public static final String FULL_POWER = "Full Power";
@@ -432,6 +432,16 @@ public class Building implements Malfunctionable, Serializable {
         return name;
     }
 
+    /**
+     * Compares this object with the specified object for order.
+     * @param o the Object to be compared.
+     * @return a negative integer, zero, or a positive integer as this object is less than, 
+     * equal to, or greater than the specified object.
+     */
+    public int compareTo(Building o) {
+        return name.compareToIgnoreCase(o.name);
+    }
+    
     /**
      * Prepare object for garbage collection.
      */
