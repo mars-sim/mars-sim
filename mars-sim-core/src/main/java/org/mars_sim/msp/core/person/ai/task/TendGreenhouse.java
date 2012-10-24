@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.03 2012-07-10
+ * @version 3.03 2012-10-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,7 +81,7 @@ public class TendGreenhouse extends Task implements Serializable {
         		// See if there is an available greenhouse.
         		Building farmingBuilding = getAvailableGreenhouse(person);
         		if (farmingBuilding != null) {
-        			result = 50D;
+        			result = 100D;
         		
         			// Crowding modifier.
         			result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
