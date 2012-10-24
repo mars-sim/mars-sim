@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.03 2012-10-01
+ * @version 3.03 2012-10-23
  * @author Scott Davis
  */
 
@@ -40,6 +40,9 @@ import java.util.logging.Logger;
 public class LoadVehicle extends Task implements Serializable {
     
 	private static Logger logger = Logger.getLogger(LoadVehicle.class.getName());
+	
+    // Comparison to indicate a small but non-zero amount.
+    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 	
 	// Task phase
 	private static final String LOADING = "Loading";
@@ -697,8 +700,8 @@ public class LoadVehicle extends Task implements Serializable {
      * @return true if vehicle is loaded.
      * @throws Exception if error checking vehicle.
      */
-    private static boolean isFullyLoadedWithResources(Map<Resource, Number> resources, Vehicle vehicle)
-    		{
+    private static boolean isFullyLoadedWithResources(Map<Resource, Number> resources, 
+            Vehicle vehicle) {
     	
     	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
     	
@@ -710,7 +713,8 @@ public class LoadVehicle extends Task implements Serializable {
         	Resource resource = iR.next();
         	if (resource instanceof AmountResource) {
         		double amount = (Double) resources.get(resource);
-        		if (inv.getAmountResourceStored((AmountResource) resource, false) < amount) {
+        		double storedAmount = inv.getAmountResourceStored((AmountResource) resource, false);
+        		if (storedAmount < (amount - SMALL_AMOUNT_COMPARISON)) {
         		    sufficientSupplies = false;
         		}
         	}
