@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2012-11-11
  * @author Scott Davis
  */
 
@@ -72,9 +72,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         fileMenu.add(newItem);
 
         // Create load menu item
-        loadItem = new JMenuItem("Load");
+        loadItem = new JMenuItem("Open...");
         loadItem.addActionListener(this);
-        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_DOWN_MASK, false));
+        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
         fileMenu.add(loadItem);
 
         fileMenu.add(new JSeparator());
