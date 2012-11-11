@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToolToolBar.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2012-11-11
  * @author Scott Davis
  */
 
@@ -75,7 +75,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(newButton);
 
-		ToolButton openButton = new ToolButton("Open", "Open");
+		ToolButton openButton = new ToolButton("Open...", "Open");
 		openButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.loadSimulation();
@@ -91,7 +91,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(saveButton);
 
-		ToolButton saveAsButton = new ToolButton("Save As", "SaveAs");
+		ToolButton saveAsButton = new ToolButton("Save As...", "SaveAs");
 		saveAsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.saveSimulation(false);
