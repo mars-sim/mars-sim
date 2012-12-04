@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.03 2012-10-23
+ * @version 3.04 2012-12-04
  * @author Scott Davis
  */
 
@@ -77,6 +77,11 @@ public abstract class Vehicle extends Unit implements Serializable,
     private String status; // The vehicle's status.
     private boolean isSalvaged; // True if vehicle is salvaged.
     private SalvageInfo salvageInfo; // The vehicle's salvage info.
+    private double width; // Width of vehicle (meters).
+    private double length; // Length of vehicle (meters).
+    private double xLocParked; // Parked X location (meters) from center of settlement.
+    private double yLocParked; // Parked Y location (meters) from center of settlement.
+    private double facingParked; // Parked facing (degrees clockwise from North).
 
     /**
      * Constructor to be used for testing.
@@ -106,6 +111,11 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    status = PARKED;
 	    isSalvaged = false;
 	    salvageInfo = null;
+	    width = 0D;
+	    length = 0D;
+	    xLocParked = 0D;
+	    yLocParked = 0D;
+	    facingParked = 0D;
 	    
 	    // Initialize malfunction manager.
 	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -139,7 +149,11 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    // Get vehicle configuration.
 	    VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		
-	    // Set base speed to 30kph.
+	    // Set width and length of vehicle.
+	    width = config.getWidth(description);
+	    length = config.getLength(description);
+	    
+	    // Set base speed.
 	    setBaseSpeed(config.getBaseSpeed(description));
 
 	    // Set the empty mass of the rover.
@@ -147,8 +161,75 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    
 	    // Set the fuel efficiency of the rover.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
+	    
+	    // Set initial parked location and facing at settlement.
+	    determinedSettlementParkedLocationAndFacing();
     }
-
+    
+    /**
+     * Gets the vehicle's width.
+     * @return width (meters).
+     */
+    public double getWidth() {
+        return width;
+    }
+    
+    /**
+     * Gets the vehicle's length.
+     * @return length (meters).
+     */
+    public double getLength() {
+        return length;
+    }
+    
+    /**
+     * Gets the x location of the vehicle when parked at a settlement.
+     * @return x location (meters from settlement center - West: positive, East: negative).
+     */
+    public double getXLocation() {
+        return xLocParked;
+    }
+    
+    /**
+     * Sets the x location of the vehicle when parked at a settlement.
+     * @param xLocation the x location (meters from settlement center - West: positive, East: negative).
+     */
+    public void setXLocation(double xLocation) {
+    	xLocParked = xLocation;
+    }
+    
+    /**
+     * Gets the y location of the vehicle when parked at a settlement.
+     * @return y location (meters from settlement center - North: positive, South: negative).
+     */
+    public double getYLocation() {
+        return yLocParked;
+    }
+    
+    /**
+     * Sets the y location of the vehicle when parked at a settlement.
+     * @param yLocation the y location (meters from settlement center - North: positive, South: negative).
+     */
+    public void setYLocation(double yLocation) {
+    	yLocParked = yLocation;
+    }
+    
+    /**
+     * Gets the facing of the vehicle when parked at a settlement.
+     * @return facing (degrees from North clockwise).
+     */
+    public double getFacing() {
+        return facingParked;
+    }
+    
+    /**
+     * Sets the facing of the vehicle when parked at a settlement.
+     * @param facing (degrees from North clockwise).
+     */
+    public void setFacing(double facing) {
+    	facingParked = facing;
+    }
+    
     /** Returns vehicle's current status
      *  @return the vehicle's current status
      */
@@ -552,6 +633,11 @@ public abstract class Vehicle extends Unit implements Serializable,
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
     }
+    
+    /**
+     * Set initial parked location and facing at settlement.
+     */
+    public abstract void determinedSettlementParkedLocationAndFacing();
     
     @Override
     public void destroy() {

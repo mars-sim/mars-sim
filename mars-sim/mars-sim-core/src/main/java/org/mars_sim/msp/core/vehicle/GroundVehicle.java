@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2012-12-04
  * @author Scott Davis
  */
 
@@ -136,5 +136,13 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      */
     public void setDriver(VehicleOperator operator) {
     	setOperator(operator);
+    }
+    
+    @Override
+    public void determinedSettlementParkedLocationAndFacing() {
+    	setXLocation(0D);
+    	setYLocation(0D);
+    	setFacing(0D);
+    	// TODO Determine better locations and facing at settlement.
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2012-12-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -23,6 +23,8 @@ public class VehicleConfig implements Serializable {
 	// Element names
 	private static final String VEHICLE = "vehicle";
 	private static final String TYPE = "type";
+	private static final String WIDTH = "width";
+	private static final String LENGTH = "length";
 	private static final String FUEL_EFFICIENCY = "fuel-efficiency";
 	private static final String BASE_SPEED = "base-speed";
 	private static final String EMPTY_MASS = "empty-mass";
@@ -95,6 +97,30 @@ public class VehicleConfig implements Serializable {
 		
 		return result;
 	}
+    
+    /**
+     * Gets the vehicle's width.
+     * @param vehicleType the vehicle type.
+     * @return width (meters).
+     */
+    public double getWidth(String vehicleType) {
+    	Element vehicleElement = getVehicleElement(vehicleType);
+    	String widthString = vehicleElement.getAttributeValue(WIDTH);
+    	double result = Double.parseDouble(widthString);
+    	return result;
+    }
+    
+    /**
+     * Gets the vehicle's length.
+     * @param vehicleType the vehicle type.
+     * @return length (meters).
+     */
+    public double getLength(String vehicleType) {
+    	Element vehicleElement = getVehicleElement(vehicleType);
+    	String lengthString = vehicleElement.getAttributeValue(LENGTH);
+    	double result = Double.parseDouble(lengthString);
+    	return result;
+    }
 	
 	/**
 	 * Gets the vehicle's fuel efficiency.

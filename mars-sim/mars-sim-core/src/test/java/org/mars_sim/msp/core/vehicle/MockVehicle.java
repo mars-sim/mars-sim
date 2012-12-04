@@ -19,4 +19,9 @@ public class MockVehicle extends Vehicle {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+    @Override
+    public void determinedSettlementParkedLocationAndFacing() {
+    	// Do nothing
+    }
 }
