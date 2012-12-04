@@ -1,7 +1,9 @@
 <!ELEMENT vehicle-configuration (vehicle*, rover-name-list)>
-<!ELEMENT vehicle (fuel-efficiency, base-speed, empty-mass, 
-crew-size?, cargo?, part-attachment?, sickbay?, lab?)>
+<!ELEMENT vehicle (fuel-efficiency, base-speed, 
+empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?)>
 <!ATTLIST vehicle type CDATA #REQUIRED>
+<!ATTLIST vehicle width CDATA #REQUIRED>
+<!ATTLIST vehicle length CDATA #REQUIRED>
 <!ELEMENT fuel-efficiency EMPTY>
 <!ATTLIST fuel-efficiency value CDATA #REQUIRED>
 <!ELEMENT base-speed EMPTY>
