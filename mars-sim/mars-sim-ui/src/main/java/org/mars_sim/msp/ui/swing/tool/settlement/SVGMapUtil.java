@@ -22,6 +22,7 @@ public final class SVGMapUtil {
     // Static members.
     private static Map<String, String> buildingSVGMap;
     private static Map<String, String> constructionSiteSVGMap;
+    private static Map<String, String> vehicleSVGMap;
     
     /**
      * Private constructor for utility class.
@@ -163,6 +164,16 @@ public final class SVGMapUtil {
     }
     
     /**
+     * Initializes the vehicle SVG map.
+     */
+    private static void initializeVehicleSVGMap() {
+        vehicleSVGMap = new HashMap<String, String>();
+        
+        // Add mapped vehicle entries (do not include .svg suffix).
+        // TODO: Add vehicle map entries.
+    }
+    
+    /**
      * Gets a SVG node for a building.
      * @param buildingName the building's name.
      * @return SVG node or null if none found.
@@ -189,6 +200,22 @@ public final class SVGMapUtil {
         GraphicsNode result = null;
         
         String svgFileName = constructionSiteSVGMap.get(constructionSiteStageName);
+        if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
+        
+        return result;
+    }
+    
+    /**
+     * Gets a SVG node for a vehicle.
+     * @param vehicleType the vehicle type.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getVehicleSVG(String vehicleType) {
+        if (vehicleSVGMap == null) initializeVehicleSVGMap();
+        
+        GraphicsNode result = null;
+        
+        String svgFileName = vehicleSVGMap.get(vehicleType);
         if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
         
         return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyManager.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2012-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -26,7 +26,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -250,9 +252,15 @@ public class ResupplyManager implements Serializable {
         Iterator<String> vehicleI = resupply.getNewVehicles().iterator();
         while (vehicleI.hasNext()) {
             String vehicleType = vehicleI.next();
-            String vehicleName = unitManager.getNewName(UnitManager.VEHICLE, null, null);
-            Rover rover = new Rover(vehicleName, vehicleType, settlement);
-            unitManager.addUnit(rover);
+            Vehicle vehicle = null;
+            if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
+                vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
+            } else {
+                String name = unitManager.getNewName(UnitManager.VEHICLE, null, null);
+                vehicle = new Rover(name, vehicleType, settlement);
+            }
+            unitManager.addUnit(vehicle);
         }
         
         Inventory inv = settlement.getInventory();

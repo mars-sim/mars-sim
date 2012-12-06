@@ -312,8 +312,10 @@ public class UnloadVehicle extends Task implements Serializable {
             if (towedVehicle != null) {
                 towingVehicle.setTowedVehicle(null);
                 towedVehicle.setTowingVehicle(null);
-                if (!settlementInv.containsUnit(towedVehicle)) 
+                if (!settlementInv.containsUnit(towedVehicle)) {
                     settlementInv.storeUnit(towedVehicle);
+                    towedVehicle.determinedSettlementParkedLocationAndFacing();
+                }
             }
         }
 		
