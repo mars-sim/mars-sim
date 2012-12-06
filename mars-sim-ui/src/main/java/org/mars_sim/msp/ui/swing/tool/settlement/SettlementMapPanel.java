@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.03 2012-09-30
+ * @version 3.04 2012-12-04
  * @author Scott Davis
  */
 
@@ -42,6 +42,7 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     private boolean showBuildingLabels;
     private boolean showConstructionLabels;
     private boolean showPersonLabels;
+    private boolean showVehicleLabels;
     private List<SettlementMapLayer> mapLayers;
     
     /**
@@ -60,11 +61,13 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
         showBuildingLabels = true;
         showConstructionLabels = true;
         showPersonLabels = true;
+        showVehicleLabels = true;
         
         // Create map layers.
         mapLayers = new ArrayList<SettlementMapLayer>(3);
         mapLayers.add(new BackgroundTileMapLayer(this));
         mapLayers.add(new StructureMapLayer(this));
+        mapLayers.add(new VehicleMapLayer(this));
         mapLayers.add(new LabelMapLayer(this));
         mapLayers.add(new PersonMapLayer(this));
         
@@ -208,6 +211,23 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     public void setShowPersonLabels(boolean showLabels) {
         this.showPersonLabels = showLabels;
         repaint();
+    }
+    
+    /**
+     * Checks if vehicle labels should be displayed.
+     * @return true if vehicle labels should be displayed.
+     */
+    public boolean isShowVehicleLabels() {
+    	return showVehicleLabels;
+    }
+    
+    /**
+     * Sets if vehicle labels should be displayed.
+     * @param showLabels true if vehicle labels should be displayed.
+     */
+    public void setShowVehicleLabels(boolean showLabels) {
+    	this.showVehicleLabels = showLabels;
+    	repaint();
     }
     
     @Override

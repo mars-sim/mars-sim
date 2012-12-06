@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.01 2011-06-03
+ * @version 3.03 2012-12-04
  * @author Lars Naesbye Christensen
  */
 
@@ -248,6 +248,16 @@ public class SettlementWindow extends ToolWindow {
 	   constructionLabelMenuItem.addActionListener(new ActionListener() {
 	       public void actionPerformed(ActionEvent arg0) {
 	            getMapPanel().setShowConstructionLabels(!getMapPanel().isShowConstructionLabels());
+	        }
+	   });
+	   result.add(constructionLabelMenuItem);
+	   
+	   // Create vehicle label menu item.
+	   JCheckBoxMenuItem vehicleLabelMenuItem = new JCheckBoxMenuItem(
+	           "Vehicles", getMapPanel().isShowVehicleLabels());
+	   vehicleLabelMenuItem.addActionListener(new ActionListener() {
+	       public void actionPerformed(ActionEvent arg0) {
+	            getMapPanel().setShowVehicleLabels(!getMapPanel().isShowVehicleLabels());
 	        }
 	   });
 	   result.add(constructionLabelMenuItem);

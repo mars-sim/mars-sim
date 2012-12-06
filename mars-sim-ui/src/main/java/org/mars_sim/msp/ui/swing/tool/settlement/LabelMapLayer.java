@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.01 2012-01-31
+ * @version 3.04 2012-12-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -26,15 +26,20 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
- * A settlement map layer for displaying labels for buildings and construction sites.
+ * A settlement map layer for displaying labels for map objects.
  */
 public class LabelMapLayer implements SettlementMapLayer {
 
     // Static members
-    private static final Color LABEL_COLOR = new Color(0, 0, 255);
-    private static final Color LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255);
+    private static final Color BUILDING_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(0, 0, 255);
+    private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127);
+    private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -78,6 +83,11 @@ public class LabelMapLayer implements SettlementMapLayer {
         if (mapPanel.isShowConstructionLabels()) {
             drawConstructionSiteLabels(g2d, settlement);
         }
+        
+        // Draw all vehicle labels.
+        if (mapPanel.isShowVehicleLabels()) {
+        	drawVehicleLabels(g2d, settlement);
+        }
             
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
@@ -93,7 +103,8 @@ public class LabelMapLayer implements SettlementMapLayer {
             Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                drawLabel(g2d, building.getName(), building.getXLocation(), building.getYLocation());
+                drawLabel(g2d, building.getName(), building.getXLocation(), building.getYLocation(), 
+                		BUILDING_LABEL_COLOR, BUILDING_LABEL_OUTLINE_COLOR);
             }
         }
     }
@@ -110,7 +121,8 @@ public class LabelMapLayer implements SettlementMapLayer {
             while (i.hasNext()) {
                 ConstructionSite site = i.next();
                 String siteLabel = getConstructionLabel(site);
-                drawLabel(g2d, siteLabel, site.getXLocation(), site.getYLocation());
+                drawLabel(g2d, siteLabel, site.getXLocation(), site.getYLocation(), 
+                		CONSTRUCTION_SITE_LABEL_COLOR, CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR);
             }
         }
     }
@@ -150,18 +162,36 @@ public class LabelMapLayer implements SettlementMapLayer {
     }
     
     /**
+     * Draw labels for all of the vehicles parked at the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawVehicleLabels(Graphics2D g2d, Settlement settlement) {
+        if (settlement != null) {
+            Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+            while (i.hasNext()) {
+                Vehicle vehicle = i.next();
+                drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
+                		VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
+            }
+        }
+    }
+    
+    /**
      * Draws a building or construction site label.
      * @param g2d the graphics 2D context.
      * @param label the label string.
      * @param xLoc the X location from center of settlement (meters).
      * @param yLoc the y Location from center of settlement (meters).
+     * @param labelColor the color of the label.
+     * @param labelOutlineColor the color of the outline of the label.
      */
-    private void drawLabel(Graphics2D g2d, String label, double xLoc, double yLoc) {
+    private void drawLabel(Graphics2D g2d, String label, double xLoc, double yLoc, Color labelColor, Color labelOutlineColor) {
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
         
         // Get the label image.
-        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext());
+        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), labelColor, labelOutlineColor);
         
         // Determine transform information.
         double centerX = labelImage.getWidth() / 2D;
@@ -187,16 +217,19 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param label the label string.
      * @param font the font to use.
      * @param fontRenderContext the font render context to use.
+     * @param labelColor the color of the label.
+     * @param labelOutlineColor the color of the outline of the label.
      * @return buffered image of label.
      */
-    private BufferedImage getLabelImage(String label, Font font, FontRenderContext fontRenderContext) {
+    private BufferedImage getLabelImage(String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
+    		Color labelOutlineColor) {
         
         BufferedImage labelImage = null;
         if (labelImageCache.containsKey(label)) {
             labelImage = labelImageCache.get(label);
         }
         else {
-            labelImage = createLabelImage(label, font, fontRenderContext);
+            labelImage = createLabelImage(label, font, fontRenderContext, labelColor, labelOutlineColor);
             labelImageCache.put(label, labelImage);
         }
         
@@ -208,9 +241,12 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param label the label string.
      * @param font the font to use.
      * @param fontRenderContext the font render context to use.
+     * @param labelColor the color of the label.
+     * @param labelOutlineColor the color of the outline of the label.
      * @return buffered image of label.
      */
-    private BufferedImage createLabelImage(String label, Font font, FontRenderContext fontRenderContext) {
+    private BufferedImage createLabelImage(String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
+    		Color labelOutlineColor) {
         
         // Determine bounds.
         TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
@@ -231,13 +267,13 @@ public class LabelMapLayer implements SettlementMapLayer {
         
         // Draw label outline.
         Stroke saveStroke = g2d.getStroke();
-        g2d.setColor(LABEL_OUTLINE_COLOR);
+        g2d.setColor(labelOutlineColor);
         g2d.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g2d.draw(labelShape);
         g2d.setStroke(saveStroke);
         
         // Fill label
-        g2d.setColor(LABEL_COLOR);
+        g2d.setColor(labelColor);
         g2d.fill(labelShape);
         
         // Dispose of image graphics context.

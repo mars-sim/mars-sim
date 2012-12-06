@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2012-12-05
  * @author Scott Davis
  */
 
@@ -380,6 +380,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     		// Store towed vehicle in settlement.
     		Inventory inv = disembarkSettlement.getInventory();
     		inv.storeUnit(towedVehicle);
+    		towedVehicle.determinedSettlementParkedLocationAndFacing();
     		logger.info(towedVehicle + " salvaged at " + disembarkSettlement.getName());
     		HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.SALVAGE_VEHICLE);
 			Simulation.instance().getEventManager().registerNewEvent(salvageEvent);

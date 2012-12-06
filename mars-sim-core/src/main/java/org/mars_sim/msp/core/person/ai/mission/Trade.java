@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * TravelToSettlement.java
- * @version 3.02 2012-06-05
+ * Trade.java
+ * @version 3.04 2012-12-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -410,6 +410,7 @@ public class Trade extends RoverMission implements Serializable {
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
             
             tradingSettlement.getInventory().storeUnit(getVehicle());
+            getVehicle().determinedSettlementParkedLocationAndFacing();
 
             // Add vehicle to a garage if available.
             BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(), tradingSettlement);
@@ -546,6 +547,7 @@ public class Trade extends RoverMission implements Serializable {
             getRover().setTowedVehicle(null);
             towed.setTowingVehicle(null);
             tradingSettlement.getInventory().storeUnit(towed);
+            towed.determinedSettlementParkedLocationAndFacing();
         }
     }
 
@@ -639,6 +641,7 @@ public class Trade extends RoverMission implements Serializable {
             getRover().setTowedVehicle(null);
             towed.setTowingVehicle(null);
             getStartingSettlement().getInventory().storeUnit(towed);
+            towed.determinedSettlementParkedLocationAndFacing();
         }
 
         super.performDisembarkToSettlementPhase(person, disembarkSettlement);

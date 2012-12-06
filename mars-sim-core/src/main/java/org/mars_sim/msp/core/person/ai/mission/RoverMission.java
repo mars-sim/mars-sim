@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2012-12-05
  * @author Scott Davis
  */
 
@@ -316,6 +316,7 @@ public abstract class RoverMission extends VehicleMission {
         // If rover is not parked at settlement, park it.
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
             disembarkSettlement.getInventory().storeUnit(getVehicle());
+            getVehicle().determinedSettlementParkedLocationAndFacing();
 
             // Add vehicle to a garage if available.
             BuildingManager.addToRandomBuilding((GroundVehicle) getVehicle(),
