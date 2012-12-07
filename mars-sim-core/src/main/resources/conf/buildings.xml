@@ -403,7 +403,10 @@
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="8" />
-			<ground-vehicle-maintenance vehicle-capacity="2" />
+			<ground-vehicle-maintenance vehicle-capacity="2" >
+		        <parking-location xloc="2.60" yloc="2.0" />
+		        <parking-location xloc="-2.60" yloc="2.0" />
+			</ground-vehicle-maintenance>
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
 				<resource-storage resource="Methane" capacity="1000.0" />
@@ -776,7 +779,10 @@
 		<power-required base-power="8.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="8" />
-			<ground-vehicle-maintenance vehicle-capacity="2" />
+			<ground-vehicle-maintenance vehicle-capacity="2" >
+                <parking-location xloc="4.5" yloc="-3.2" />
+                <parking-location xloc="-4.5" yloc="-3.2" />
+			</ground-vehicle-maintenance>
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
 				<resource-storage resource="Methane" capacity="2000.0" />

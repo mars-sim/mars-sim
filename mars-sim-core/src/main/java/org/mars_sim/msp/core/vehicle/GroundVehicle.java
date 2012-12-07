@@ -176,7 +176,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     	boolean foundGoodLocation = false;
     	
     	// Try iteratively outward from 10m to 500m distance range.
-    	for (int x = 10; (x < 500) && !foundGoodLocation; x+= 10) {
+    	for (int x = 15; (x < 500) && !foundGoodLocation; x+= 10) {
     		// Try ten random locations at each distance range.
     		for (int y = 0; (y < 10) && !foundGoodLocation; y++) {
     			double distance = RandomUtil.getRandomDouble(10D) + x;

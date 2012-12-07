@@ -30,8 +30,11 @@ power-storage?, recreation?, research?, resource-processing?, storage? )>
 <!ATTLIST farming power-growing-crop CDATA #REQUIRED>
 <!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
 <!ATTLIST farming growing-area CDATA #REQUIRED>
-<!ELEMENT ground-vehicle-maintenance EMPTY>
+<!ELEMENT ground-vehicle-maintenance (parking-location+)>
 <!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
+<!ELEMENT parking-location EMPTY>
+<!ATTLIST parking-location xloc CDATA #REQUIRED>
+<!ATTLIST parking-location yloc CDATA #REQUIRED>
 <!ELEMENT life-support EMPTY>
 <!ATTLIST life-support capacity CDATA #REQUIRED>
 <!ATTLIST life-support power-required CDATA #REQUIRED>
