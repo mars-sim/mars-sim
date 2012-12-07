@@ -18,7 +18,6 @@ import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**

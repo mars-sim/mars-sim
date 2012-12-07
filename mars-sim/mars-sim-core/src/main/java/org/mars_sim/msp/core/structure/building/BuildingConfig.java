@@ -1,16 +1,18 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.03 2012-06-25
+ * @version 3.04 2012-12-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
 
+import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.function.*;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,6 +73,9 @@ public class BuildingConfig implements Serializable {
 	private static final String GROWING_AREA = "growing-area";
 	private static final String EXERCISE = "exercise";
 	private static final String GROUND_VEHICLE_MAINTENANCE = "ground-vehicle-maintenance";
+	private static final String PARKING_LOCATION = "parking-location";
+	private static final String X_LOCATION = "xloc";
+	private static final String Y_LOCATION = "yloc";
 	private static final String VEHICLE_CAPACITY = "vehicle-capacity";
 	private static final String COOKING = "cooking";
 	private static final String DEFAULT = "default";
@@ -674,6 +679,47 @@ public class BuildingConfig implements Serializable {
 	 */
 	public int getVehicleCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,GROUND_VEHICLE_MAINTENANCE,VEHICLE_CAPACITY);
+	}
+	
+	/**
+	 * Gets the number of parking locations in the building.
+	 * @param buildingName the name of the building.
+	 * @return number of parking locations.
+	 */
+	public int getParkingLocationNumber(String buildingName) {
+	    Element buildingElement = getBuildingElement(buildingName);
+	    Element functionsElement = buildingElement.getChild(FUNCTIONS);
+        Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
+        return groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION).size();
+	}
+	
+	/**
+	 * Gets the relative location in the building of a parking location.
+	 * @param buildingName the name of the building.
+	 * @param parkingIndex the parking location index.
+	 * @return Point object containing the relative X & Y position from the building center.
+	 */
+	public Point2D.Double getParkingLocation(String buildingName, int parkingIndex) {
+	    Element buildingElement = getBuildingElement(buildingName);
+        Element functionsElement = buildingElement.getChild(FUNCTIONS);
+        Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
+        List parkingLocations = groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION);
+        if ((parkingIndex >= 0) && (parkingIndex < parkingLocations.size())) {
+            Element parkingLocation = (Element) parkingLocations.get(parkingIndex);
+            try {
+                Point2D.Double point = new Point2D.Double();
+                double xLocation = parkingLocation.getAttribute(X_LOCATION).getDoubleValue();
+                double yLocation = parkingLocation.getAttribute(Y_LOCATION).getDoubleValue();
+                point.setLocation(xLocation, yLocation);
+                return point;
+            }
+            catch (DataConversionException e) {
+                throw new IllegalStateException(e);
+            }
+        }
+        else {
+            return null;
+        }
 	}
 	
 	/**

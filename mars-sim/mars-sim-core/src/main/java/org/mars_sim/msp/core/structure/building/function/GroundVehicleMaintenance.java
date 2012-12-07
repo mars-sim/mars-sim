@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 3.00 2011-03-03
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Iterator;
  
@@ -21,24 +22,25 @@ import java.util.Iterator;
 public class GroundVehicleMaintenance extends VehicleMaintenance implements Serializable {
     
     public static final String NAME = "Ground Vehicle Maintenance";
-    
+
     /**
      * Constructor
      * @param building the building the function is for.
      * @throws BuildingException if error in construction.
      */
     public GroundVehicleMaintenance(Building building) {
-    	// Call VehicleMaintenance constructor.
-    	super(NAME, building);
-    	
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		
-//		try {
-			vehicleCapacity = config.getVehicleCapacity(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("GroundVehicleMaintenance.constructor: " + e.getMessage());
-//		}
+        // Call VehicleMaintenance constructor.
+        super(NAME, building);
+
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
+        vehicleCapacity = config.getVehicleCapacity(building.getName());
+        
+        int parkingLocationNum = config.getParkingLocationNumber(building.getName());
+        for (int x = 0; x < parkingLocationNum; x++) {
+            Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getName(), x);
+            addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
+        }
     }
     
     /**

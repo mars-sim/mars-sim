@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.03 2012-10-22
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
  
@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.*;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -75,39 +76,34 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      */
     public Building(String name, double xLoc, double yLoc, double facing, 
             BuildingManager manager) {
-        
+
         this.name = name;
         this.manager = manager;
         powerMode = FULL_POWER;
         this.xLoc = xLoc;
         this.yLoc = yLoc;
         this.facing = facing;
-        
-//        try {
-        	// Get the building's functions
-        	functions = determineFunctions();
-        	
-        	// Get base power requirements.
-			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			
-			basePowerRequirement = config.getBasePowerRequirement(name);
-			basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
-			
-			// Get building's dimensions.
-			width = config.getWidth(name);
-			length = config.getLength(name);
-//        }
-//        catch (Exception e) {
-//        	throw new BuildingException("Building " + name + " cannot be constructed: " + e.getMessage());
-//        }
-        
-		// Set up malfunction manager.
-		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
-		malfunctionManager.addScopeString("Building");
-		
-		// Add each function to the malfunction scope.
-		Iterator<Function> i = functions.iterator();
-		while (i.hasNext()) {
+
+        // Get the building's functions
+        functions = determineFunctions();
+
+        // Get base power requirements.
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
+        basePowerRequirement = config.getBasePowerRequirement(name);
+        basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
+
+        // Get building's dimensions.
+        width = config.getWidth(name);
+        length = config.getLength(name);
+
+        // Set up malfunction manager.
+        malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+        malfunctionManager.addScopeString("Building");
+
+        // Add each function to the malfunction scope.
+        Iterator<Function> i = functions.iterator();
+        while (i.hasNext()) {
             Function function = i.next();
             for (int x = 0; x < function.getMalfunctionScopeStrings().length; x++) {
                 malfunctionManager.addScopeString(function.getMalfunctionScopeStrings()[x]);
@@ -301,24 +297,19 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      * @throws BuildingException if error occurs.
      */
     public void timePassing(double time) {
-        
+
         // Check for valid argument.
         if (time < 0D) throw new IllegalArgumentException("Time must be > 0D");
-        
-//        try {
-        	// Send time to each building function.
-        	Iterator<Function> i = functions.iterator();
-        	while (i.hasNext()) i.next().timePassing(time);
-        	
-        	// Update malfunction manager.
-        	malfunctionManager.timePassing(time);
-        	
-        	// If powered up, active time passing.
-        	if (powerMode.equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
-//        }
-//        catch (Exception e) {
-//        	throw new BuildingException("Building " + getName() + " timePassing(): " + e.getMessage());
-//        }
+
+        // Send time to each building function.
+        Iterator<Function> i = functions.iterator();
+        while (i.hasNext()) i.next().timePassing(time);
+
+        // Update malfunction manager.
+        malfunctionManager.timePassing(time);
+
+        // If powered up, active time passing.
+        if (powerMode.equals(FULL_POWER)) malfunctionManager.activeTimePassing(time);
     }   
     
     /**
@@ -379,18 +370,15 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
     public Collection<Person> getAffectedPeople() {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
-		// If building has life support, add all occupants of the building.
-		if (hasFunction(LifeSupport.NAME)) {
-//			try {
-				LifeSupport lifeSupport = (LifeSupport) getFunction(LifeSupport.NAME);
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Person occupant = i.next();
-					if (!people.contains(occupant)) people.add(occupant);
-				}
-//			}
-//			catch (BuildingException e) {}
-		}
+        // If building has life support, add all occupants of the building.
+        if (hasFunction(LifeSupport.NAME)) {
+            LifeSupport lifeSupport = (LifeSupport) getFunction(LifeSupport.NAME);
+            Iterator<Person> i = lifeSupport.getOccupants().iterator();
+            while (i.hasNext()) {
+                Person occupant = i.next();
+                if (!people.contains(occupant)) people.add(occupant);
+            }
+        }
 
         // Check all people in settlement.
         Iterator<Person> i = manager.getSettlement().getInhabitants().iterator();
@@ -422,6 +410,27 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      */
     public Inventory getInventory() {
         return manager.getSettlement().getInventory();
+    }
+    
+    /**
+     * Gets a settlement relative location from a location relative to this building.
+     * @param xLoc the X location relative to this building.
+     * @param yLoc the Y location relative to this building.
+     * @return Point containing the X and Y locations relative to the settlement.
+     */
+    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
+        Point2D.Double result = new Point2D.Double();
+        
+        double radianRotation = (getFacing() * (Math.PI / 180D));
+        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
+        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
+        
+        double translateX = rotateX + getXLocation();
+        double translateY = rotateY + getYLocation();
+        
+        result.setLocation(translateX, translateY);
+        
+        return result;
     }
     
     /**
