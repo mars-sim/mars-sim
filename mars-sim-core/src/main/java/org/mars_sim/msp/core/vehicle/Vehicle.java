@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -191,27 +192,11 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
     
     /**
-     * Sets the x location of the vehicle when parked at a settlement.
-     * @param xLocation the x location (meters from settlement center - West: positive, East: negative).
-     */
-    public void setXLocation(double xLocation) {
-    	xLocParked = xLocation;
-    }
-    
-    /**
      * Gets the y location of the vehicle when parked at a settlement.
      * @return y location (meters from settlement center - North: positive, South: negative).
      */
     public double getYLocation() {
         return yLocParked;
-    }
-    
-    /**
-     * Sets the y location of the vehicle when parked at a settlement.
-     * @param yLocation the y location (meters from settlement center - North: positive, South: negative).
-     */
-    public void setYLocation(double yLocation) {
-    	yLocParked = yLocation;
     }
     
     /**
@@ -223,11 +208,15 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
     
     /**
-     * Sets the facing of the vehicle when parked at a settlement.
+     * Sets the location and facing of the vehicle when parked at a settlement.
+     * @param xLocation the x location (meters from settlement center - West: positive, East: negative).
+     * @param yLocation the y location (meters from settlement center - North: positive, South: negative).
      * @param facing (degrees from North clockwise).
      */
-    public void setFacing(double facing) {
-    	facingParked = facing;
+    public void setParkedLocation(double xLocation, double yLocation, double facing) {
+        this.xLocParked = xLocation;
+        this.yLocParked = yLocation;
+        this.facingParked = facing;
     }
     
     /** Returns vehicle's current status
@@ -632,6 +621,27 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
+    }
+    
+    /**
+     * Gets a settlement relative location from a location relative to this building.
+     * @param xLoc the X location relative to this building.
+     * @param yLoc the Y location relative to this building.
+     * @return Point containing the X and Y locations relative to the settlement.
+     */
+    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
+        Point2D.Double result = new Point2D.Double();
+        
+        double radianRotation = (getFacing() * (Math.PI / 180D));
+        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
+        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
+        
+        double translateX = rotateX + getXLocation();
+        double translateY = rotateY + getYLocation();
+        
+        result.setLocation(translateX, translateY);
+        
+        return result;
     }
     
     /**

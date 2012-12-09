@@ -1,17 +1,19 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.00 2011-01-20
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -361,6 +363,39 @@ public class ConstructionSite implements Serializable {
         if ((foundationStage != null) && foundationStage.getInfo().equals(stage)) result = true;
         else if ((frameStage != null) && frameStage.getInfo().equals(stage)) result = true;
         else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
+        
+        return result;
+    }
+    
+    /**
+     * Gets a random location within the construction site.
+     * @return Point containing the X and Y locations relative to the construction site.
+     */
+    public Point2D.Double getRandomLocationInsideSite() {
+        
+        double xLoc = RandomUtil.getRandomDouble(getWidth()) - (getWidth() / 2D);
+        double yLoc = RandomUtil.getRandomDouble(getLength()) - (getLength() / 2D);
+        
+        return new Point2D.Double(xLoc, yLoc);
+    }
+    
+    /**
+     * Gets a settlement relative location from a location relative to this building.
+     * @param xLoc the X location relative to this building.
+     * @param yLoc the Y location relative to this building.
+     * @return Point containing the X and Y locations relative to the settlement.
+     */
+    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
+        Point2D.Double result = new Point2D.Double();
+        
+        double radianRotation = (getFacing() * (Math.PI / 180D));
+        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
+        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
+        
+        double translateX = rotateX + getXLocation();
+        double translateY = rotateY + getYLocation();
+        
+        result.setLocation(translateX, translateY);
         
         return result;
     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.03 2012-10-22
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,10 +14,12 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -40,6 +42,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
     
     // Data members.
     private ConstructionStage stage;
+    private ConstructionSite site;
     private List<GroundVehicle> vehicles;
     private Airlock airlock;
     private LightUtilityVehicle luv;
@@ -53,12 +56,13 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @throws Exception if error constructing task.
      */
     public ConstructBuilding(Person person, ConstructionStage stage, 
-            List<GroundVehicle> vehicles) {
+            ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
         super("Construct Building", person);
         
         // Initialize data members.
         this.stage = stage;
+        this.site = site;
         this.vehicles = vehicles;
         
         // Get an available airlock.
@@ -200,6 +204,13 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
                         tempLuv.setOperator(person);
                         luv = tempLuv;
                         operatingLUV = true;
+                        
+                        // Place light utility vehicles at random location in construction site.
+                        Point2D.Double relativeLocSite = site.getRandomLocationInsideSite();
+                        Point2D.Double settlementLocSite = site.getSettlementRelativeLocation(
+                                relativeLocSite.getX(), relativeLocSite.getY());
+                        luv.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), RandomUtil.getRandomDouble(360D));
+                        
                         break;
                     }
                 }

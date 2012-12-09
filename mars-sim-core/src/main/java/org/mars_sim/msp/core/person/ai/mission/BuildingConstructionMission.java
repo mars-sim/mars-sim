@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -560,7 +561,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 // Assign construction task to person.
                 if (ConstructBuilding.canConstruct(person)) {
                     assignTask(person, new ConstructBuilding(person, constructionStage, 
-                            constructionVehicles));
+                            constructionSite, constructionVehicles));
                 }
             }
         }
@@ -663,6 +664,14 @@ public class BuildingConstructionMission extends Mission implements Serializable
                         && (luvTemp.getCrewNum() == 0)) {
                     result = luvTemp;
                     luvTemp.setReservedForMission(true);
+                    
+                    // Place light utility vehicles at random location in construction site.
+                    Point2D.Double relativeLocSite = constructionSite.getRandomLocationInsideSite();
+                    Point2D.Double settlementLocSite = constructionSite.getSettlementRelativeLocation(
+                            relativeLocSite.getX(), relativeLocSite.getY());
+                    luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), 
+                            RandomUtil.getRandomDouble(360D));
+                    
                     if (settlement.getInventory().containsUnit(luvTemp)) {
                         settlement.getInventory().retrieveUnit(luvTemp);
                     }
