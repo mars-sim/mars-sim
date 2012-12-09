@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -489,7 +490,8 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                 // Assign salvage building task to person.
                 if (SalvageBuilding.canSalvage(person)) {
                     assignTask(person, new SalvageBuilding(person,
-                            constructionStage, constructionVehicles));
+                            constructionStage, constructionSite, 
+                            constructionVehicles));
                 }
             }
         }
@@ -681,6 +683,14 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                         && !luvTemp.isReserved() && (luvTemp.getCrewNum() == 0)) {
                     result = luvTemp;
                     luvTemp.setReservedForMission(true);
+                    
+                    // Place light utility vehicles at random location in construction site.
+                    Point2D.Double relativeLocSite = constructionSite.getRandomLocationInsideSite();
+                    Point2D.Double settlementLocSite = constructionSite.getSettlementRelativeLocation(
+                            relativeLocSite.getX(), relativeLocSite.getY());
+                    luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), 
+                            RandomUtil.getRandomDouble(360D));
+                    
                     if (settlement.getInventory().containsUnit(luvTemp)) {
                         settlement.getInventory().retrieveUnit(luvTemp);
                     }

@@ -17,7 +17,14 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -83,10 +90,38 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawVehicles(Graphics2D g2d, Settlement settlement) {
 		
 		if (settlement != null) {
+		    // Draw all vehicles parked at the settlement.
 			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
 			while (i.hasNext()) {
-				Vehicle vehicle = i.next();
+			    Vehicle vehicle = i.next();
 				drawVehicle(vehicle, g2d);
+				
+                // Draw any towed vehicles.
+                if (vehicle instanceof Rover) {
+                    Rover rover = (Rover) vehicle;
+                    Vehicle towedVehicle = rover.getTowedVehicle();
+                    if (towedVehicle != null) {
+                        drawVehicle(towedVehicle, g2d);
+                    }
+                }
+			}
+			
+			// Draw all vehicles used in construction sites at the settlement.
+			Iterator<Mission> j = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+			while (j.hasNext()) {
+			    Mission mission = j.next();
+			    if (mission instanceof BuildingConstructionMission) {
+			        Iterator<GroundVehicle> k = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();
+			        while (k.hasNext()) {
+			            drawVehicle(k.next(), g2d);
+			        }
+			    }
+			    else if (mission instanceof BuildingSalvageMission) {
+			        Iterator<GroundVehicle> k = ((BuildingSalvageMission) mission).getConstructionVehicles().iterator();
+                    while (k.hasNext()) {
+                        drawVehicle(k.next(), g2d);
+                    }
+			    }
 			}
 		}
 	}

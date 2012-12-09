@@ -190,9 +190,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     		}
     	}
     	
-    	setXLocation(newXLoc);
-    	setYLocation(newYLoc);
-    	setFacing(newFacing);
+    	setParkedLocation(newXLoc, newYLoc, newFacing);
     }
     
     /**

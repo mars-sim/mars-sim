@@ -22,10 +22,16 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -168,11 +174,45 @@ public class LabelMapLayer implements SettlementMapLayer {
      */
     private void drawVehicleLabels(Graphics2D g2d, Settlement settlement) {
         if (settlement != null) {
+            
+            // Draw all parked vehicles.
             Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
             while (i.hasNext()) {
                 Vehicle vehicle = i.next();
                 drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
                 		VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
+                
+                // Draw any towed vehicles.
+                if (vehicle instanceof Rover) {
+                    Rover rover = (Rover) vehicle;
+                    Vehicle towedVehicle = rover.getTowedVehicle();
+                    if (towedVehicle != null) {
+                        drawLabel(g2d, towedVehicle.getName(), towedVehicle.getXLocation(), towedVehicle.getYLocation(), 
+                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
+                    }
+                }
+            }
+            
+            // Draw all vehicles used in construction sites at the settlement.
+            Iterator<Mission> j = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
+            while (j.hasNext()) {
+                Mission mission = j.next();
+                if (mission instanceof BuildingConstructionMission) {
+                    Iterator<GroundVehicle> k = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();
+                    while (k.hasNext()) {
+                        Vehicle vehicle = k.next();
+                        drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
+                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
+                    }
+                }
+                else if (mission instanceof BuildingSalvageMission) {
+                    Iterator<GroundVehicle> k = ((BuildingSalvageMission) mission).getConstructionVehicles().iterator();
+                    while (k.hasNext()) {
+                        Vehicle vehicle = k.next();
+                        drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
+                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
+                    }
+                }
             }
         }
     }

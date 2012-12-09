@@ -88,19 +88,22 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         
         // Put vehicle in assigned parking location within building.
         ParkingLocation location = getEmptyParkingLocation();
+        double newXLoc = 0D;
+        double newYLoc = 0D;
         if (location != null) {
             Point2D.Double settlementLoc = getBuilding().getSettlementRelativeLocation(location.getXLocation(), 
                     location.getYLocation());
-            vehicle.setXLocation(settlementLoc.getX());
-            vehicle.setYLocation(settlementLoc.getY());
+            newXLoc = settlementLoc.getX();
+            newYLoc = settlementLoc.getY();
         }
         else {
             // Park vehicle in center point of building.
-            vehicle.setXLocation(getBuilding().getXLocation());
-            vehicle.setYLocation(getBuilding().getYLocation());
+            newXLoc = getBuilding().getXLocation();
+            newYLoc = getBuilding().getYLocation();
         }
         
-        vehicle.setFacing(getBuilding().getFacing());
+        double newFacing = getBuilding().getFacing();
+        vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
         
         logger.info("Adding " + vehicle.getName());
     }

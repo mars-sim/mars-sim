@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2012-12-07
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -102,6 +103,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public void setTowedVehicle(Vehicle towedVehicle) {
     	if (this == towedVehicle) throw new IllegalArgumentException("Rover cannot tow itself.");
     	this.towedVehicle = towedVehicle;
+    	updatedTowedVehicleSettlementLocation();
     }
     
     /**
@@ -182,10 +184,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	double oxygenTaken = amountRequested;
     	double oxygenLeft = getInventory().getAmountResourceStored(oxygen, false);
     	if (oxygenTaken > oxygenLeft) oxygenTaken = oxygenLeft;
-//    	try {
-    		getInventory().retrieveAmountResource(oxygen, oxygenTaken);
-//    	}
-//    	catch (InventoryException e) {};
+    	getInventory().retrieveAmountResource(oxygen, oxygenTaken);
+
         return oxygenTaken * (malfunctionManager.getOxygenFlowModifier() / 100D);
     }
 
@@ -199,10 +199,8 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	double waterTaken = amountRequested;
     	double waterLeft = getInventory().getAmountResourceStored(water, false);
     	if (waterTaken > waterLeft) waterTaken = waterLeft;
-//    	try {
-    		getInventory().retrieveAmountResource(water, waterTaken);
-//    	}
-//    	catch (InventoryException e) {};
+    	getInventory().retrieveAmountResource(water, waterTaken);
+
         return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
     }
 
@@ -244,12 +242,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     public void timePassing(double time) {
         super.timePassing(time);
         
-//        try {
-        	airlock.timePassing(time);
-//        }
-//        catch (Exception e) {
-//        	throw new Exception("Rover " + getName() + " timePassing(): " + e.getMessage());
-//        }
+        airlock.timePassing(time);
     }
 
     /**
@@ -371,6 +364,45 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
     	if (oxygenRange < range) range = oxygenRange;
     	
     	return range;
+    }
+    
+    @Override
+    public void setParkedLocation(double xLocation, double yLocation, double facing) {
+        super.setParkedLocation(xLocation, yLocation, facing);
+        
+        // Update towed vehicle locations.
+        updatedTowedVehicleSettlementLocation();
+    }
+    
+    /**
+     * Updates the settlement location of any towed vehicles.
+     */
+    private void updatedTowedVehicleSettlementLocation() {
+        
+        Vehicle towedVehicle = getTowedVehicle();
+        if (towedVehicle != null) {
+            if (towedVehicle instanceof Rover) {
+                // Towed rovers should be located behind this rover with same facing.
+                double distance = (getLength() + towedVehicle.getLength()) / 2D;
+                double angle = getFacing() + 180D;
+                double radAngle = angle * (Math.PI / 180D);
+                double towedX = 0D - (distance * Math.sin(radAngle));
+                double towedY = distance * Math.cos(radAngle);
+                Point2D.Double towedLoc = getSettlementRelativeLocation(towedX, towedY);
+                towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing());
+            }
+            else if (towedVehicle instanceof LightUtilityVehicle) {
+                // Towed light utility vehicles should be attached to back of the rover
+                // sideways and facing to the right.
+                double distance = (getLength() + towedVehicle.getWidth()) / 2D;
+                double angle = getFacing() + 180D;
+                double radAngle = angle * (Math.PI / 180D);
+                double towedX = 0D - (distance * Math.sin(radAngle));
+                double towedY = distance * Math.cos(radAngle);
+                Point2D.Double towedLoc = getSettlementRelativeLocation(towedX, towedY);
+                towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing() + 90D);
+            }
+        }
     }
     
     @Override
