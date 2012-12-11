@@ -170,7 +170,7 @@ public final class SVGMapUtil {
         vehicleSVGMap = new HashMap<String, String>();
         
         // Add mapped vehicle entries (do not include .svg suffix).
-        // TODO: Add vehicle map entries.
+        vehicleSVGMap.put("explorer rover", "explorer_rover");
     }
     
     /**
