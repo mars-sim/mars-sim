@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.01 2011-06-17
+ * @version 3.04 2012-12-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -224,11 +224,9 @@ public class StructureMapLayer implements SettlementMapLayer {
         
         if (isSVG) {
             // Draw SVG image.
-            /*
-            newTransform.scale(scalingWidth, scalingLength);
-            svg.setTransform(newTransform);
-            svg.paint(g2d);
-            */
+//            newTransform.scale(scalingWidth, scalingLength);
+//            svg.setTransform(newTransform);
+//            svg.paint(g2d);
             
             // Draw buffered image of structure.
             BufferedImage image = getBufferedImage(svg, width, length);
@@ -272,7 +270,7 @@ public class StructureMapLayer implements SettlementMapLayer {
         BufferedImage image = null;
         if (imageCache.containsKey(svg)) image = imageCache.get(svg);
         else {
-            image = createBufferedImage(svg, (int) width, (int) length);
+            image = createBufferedImage(svg, width, length);
             imageCache.put(svg, image);
         }
         
@@ -286,7 +284,7 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param length the length of the produced image.
      * @return the created buffered image.
      */
-    private BufferedImage createBufferedImage(GraphicsNode svg, int width, int length) {
+    private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length) {
         
         BufferedImage bufferedImage = new BufferedImage((int) (width * scale), (int) (length * scale), 
                 BufferedImage.TYPE_INT_ARGB);
