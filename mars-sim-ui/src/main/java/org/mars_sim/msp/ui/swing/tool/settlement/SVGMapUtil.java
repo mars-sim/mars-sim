@@ -171,6 +171,7 @@ public final class SVGMapUtil {
         
         // Add mapped vehicle entries (do not include .svg suffix).
         vehicleSVGMap.put("explorer rover", "explorer_rover");
+        vehicleSVGMap.put("cargo rover", "cargo_rover");
     }
     
     /**
