@@ -95,7 +95,7 @@
 	
 	<!-- Cargo rover -->
 	<!-- A rover for transporting cargo from one settlement to another. -->
-	<vehicle type="Cargo Rover" width="3.5" length="8.0">
+	<vehicle type="Cargo Rover" width="4.0" length="8.0">
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
