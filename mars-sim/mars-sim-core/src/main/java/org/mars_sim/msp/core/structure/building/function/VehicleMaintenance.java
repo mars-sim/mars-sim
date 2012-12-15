@@ -211,7 +211,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         ParkingLocation result = null;
         
         // Get list of empty parking locations.
-        List<ParkingLocation> emptyLocations = new ArrayList<ParkingLocation>(parkingLocations);
+        List<ParkingLocation> emptyLocations = new ArrayList<ParkingLocation>(parkingLocations.size());
         Iterator<ParkingLocation> i = parkingLocations.iterator();
         while (i.hasNext()) {
             ParkingLocation parkingLocation = i.next();
