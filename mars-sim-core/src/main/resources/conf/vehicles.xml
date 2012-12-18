@@ -79,7 +79,7 @@
 
 	<!-- Transport rover -->
 	<!-- A rover for transporting people from one settlement to another. -->
-	<vehicle type="Transport Rover" width="3.5" length="8.0">
+	<vehicle type="Transport Rover" width="3.5" length="9.5">
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
