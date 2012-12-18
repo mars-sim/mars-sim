@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.01 2011-08-20
+ * @version 3.04 2012-12-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -172,6 +172,7 @@ public final class SVGMapUtil {
         // Add mapped vehicle entries (do not include .svg suffix).
         vehicleSVGMap.put("explorer rover", "explorer_rover");
         vehicleSVGMap.put("cargo rover", "cargo_rover");
+        vehicleSVGMap.put("transport rover", "transport_rover");
     }
     
     /**
