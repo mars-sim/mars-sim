@@ -173,6 +173,7 @@ public final class SVGMapUtil {
         vehicleSVGMap.put("explorer rover", "explorer_rover");
         vehicleSVGMap.put("cargo rover", "cargo_rover");
         vehicleSVGMap.put("transport rover", "transport_rover");
+        vehicleSVGMap.put("light utility vehicle", "light_utility_vehicle");
     }
     
     /**
