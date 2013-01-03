@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NewModifyResupplyDialog.java
- * @version 3.02 2012-05-10
+ * @version 3.04 2013-01-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -502,10 +502,10 @@ public class NewModifyResupplyDialog extends JDialog {
         Iterator<SupplyItem> i = supplyItems.iterator();
         while (i.hasNext()) {
             SupplyItem item = i.next();
-            if (SupplyTableModel.BUILDING.equals(item.category)) {
+            if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
                 int num = item.number.intValue();
                 for (int x = 0; x < num; x++) {
-                    newBuildings.add(item.type);
+                    newBuildings.add(item.type.trim());
                 }
             }
         }
@@ -516,10 +516,10 @@ public class NewModifyResupplyDialog extends JDialog {
         Iterator<SupplyItem> j = supplyItems.iterator();
         while (j.hasNext()) {
             SupplyItem item = j.next();
-            if (SupplyTableModel.VEHICLE.equals(item.category)) {
+            if (SupplyTableModel.VEHICLE.equals(item.category.trim())) {
                 int num = item.number.intValue();
                 for (int x = 0; x < num; x++) {
-                    newVehicles.add(item.type);
+                    newVehicles.add(item.type.trim());
                 }
             }
         }
@@ -530,8 +530,8 @@ public class NewModifyResupplyDialog extends JDialog {
         Iterator<SupplyItem> k = supplyItems.iterator();
         while (k.hasNext()) {
             SupplyItem item = k.next();
-            if (SupplyTableModel.EQUIPMENT.equals(item.category)) {
-                String type = item.type;
+            if (SupplyTableModel.EQUIPMENT.equals(item.category.trim())) {
+                String type = item.type.trim();
                 int num = item.number.intValue();
                 if (newEquipment.containsKey(type)) {
                     num += newEquipment.get(type);
@@ -546,8 +546,8 @@ public class NewModifyResupplyDialog extends JDialog {
         Iterator<SupplyItem> l = supplyItems.iterator();
         while (l.hasNext()) {
             SupplyItem item = l.next();
-            if (SupplyTableModel.RESOURCE.equals(item.category)) {
-                String type = item.type;
+            if (SupplyTableModel.RESOURCE.equals(item.category.trim())) {
+                String type = item.type.trim();
                 AmountResource resource = AmountResource.findAmountResource(type);
                 double amount = item.number.doubleValue();
                 if (newResources.containsKey(resource)) {
@@ -563,8 +563,8 @@ public class NewModifyResupplyDialog extends JDialog {
         Iterator<SupplyItem> m = supplyItems.iterator();
         while (m.hasNext()) {
             SupplyItem item = m.next();
-            if (SupplyTableModel.PART.equals(item.category)) {
-                String type = item.type;
+            if (SupplyTableModel.PART.equals(item.category.trim())) {
+                String type = item.type.trim();
                 Part part = (Part) Part.findItemResource(type);
                 int num = item.number.intValue();
                 if (newParts.containsKey(part)) {
