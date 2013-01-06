@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.04 2012-12-18
+ * @version 3.04 2012-12-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -20,9 +20,10 @@ import org.mars_sim.msp.ui.swing.SVGLoader;
 public final class SVGMapUtil {
 
     // Static members.
-    private static Map<String, String> buildingSVGMap;
-    private static Map<String, String> constructionSiteSVGMap;
-    private static Map<String, String> vehicleSVGMap;
+    private static Map<String, String> BUILDING_SVG_MAP;
+    private static Map<String, String> CONSTRUCTION_SITE_MAP;
+    private static Map<String, String> VEHICLE_SVG_MAP;
+    private static Map<String, String> ATTACHMENT_PART_SVG_MAP;
     
     /**
      * Private constructor for utility class.
@@ -33,147 +34,155 @@ public final class SVGMapUtil {
      * Initializes the building SVG map.
      */
     private static void initializeBuildingSVGMap() {
-        buildingSVGMap = new HashMap<String, String>();
+        BUILDING_SVG_MAP = new HashMap<String, String>();
         
         // Add mapped building entries (do not include .svg suffix).
-        buildingSVGMap.put("lander hab", "lander_hab");
-        buildingSVGMap.put("inflatable greenhouse", "inflatable_greenhouse");
-        buildingSVGMap.put("md1 nuclear reactor", "md1_nuclear_reactor");
-        buildingSVGMap.put("starting erv base", "erv_base");
-        buildingSVGMap.put("erv base", "erv_base");
-        buildingSVGMap.put("regolith storage bin", "regolith_storage_bin");
-        buildingSVGMap.put("wind turbine", "wind_turbine");
-        buildingSVGMap.put("sand storage bin", "sand_storage_bin");
-        buildingSVGMap.put("lime storage bin", "lime_storage_bin");
-        buildingSVGMap.put("carbon storage bin", "carbon_storage_bin");
-        buildingSVGMap.put("cement storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("mortar storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("concrete storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
-        buildingSVGMap.put("atmospheric processor", "atmospheric_processor");
-        buildingSVGMap.put("residential quarters", "residential_quarters");
-        buildingSVGMap.put("lounge", "lounge");
-        buildingSVGMap.put("command and control", "command_and_control");
-        buildingSVGMap.put("infirmary", "infirmary");
-        buildingSVGMap.put("laboratory", "laboratory");
-        buildingSVGMap.put("workshop", "workshop");
-        buildingSVGMap.put("garage", "garage");
-        buildingSVGMap.put("large greenhouse", "large_greenhouse");
-        buildingSVGMap.put("astronomy observatory", "astronomy_observatory");
-        buildingSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor");
-        buildingSVGMap.put("storage hab", "storage_hab");
-        buildingSVGMap.put("residential hab", "residential_hab");
-        buildingSVGMap.put("medical hab", "medical_hab");
-        buildingSVGMap.put("research hab", "research_hab");
-        buildingSVGMap.put("machinery hab", "machinery_hab");
-        buildingSVGMap.put("solar photovoltaic array", "solar_photovoltaic_array");
-        buildingSVGMap.put("solar thermal array", "solar_thermal_array");
-        buildingSVGMap.put("small battery array", "small_battery_array");
-        buildingSVGMap.put("methane power generator", "methane_power_generator");
-        buildingSVGMap.put("small sabatier processor", "small_sabatier_processor");
-        buildingSVGMap.put("bunkhouse", "bunkhouse");
-        buildingSVGMap.put("manufacturing shed", "manufacturing_shed");
-        buildingSVGMap.put("small areothermal well", "small_areothermal_well");
-        buildingSVGMap.put("large areothermal well", "large_areothermal_well");
-        buildingSVGMap.put("storage shed", "storage_shed");
-        buildingSVGMap.put("outpost hub", "outpost_hub");
-        buildingSVGMap.put("loading dock garage", "loading_dock_garage");
-        buildingSVGMap.put("mining lab", "mining_lab");
-        buildingSVGMap.put("inground greenhouse", "inground_greenhouse");
+        BUILDING_SVG_MAP.put("lander hab", "lander_hab");
+        BUILDING_SVG_MAP.put("inflatable greenhouse", "inflatable_greenhouse");
+        BUILDING_SVG_MAP.put("md1 nuclear reactor", "md1_nuclear_reactor");
+        BUILDING_SVG_MAP.put("starting erv base", "erv_base");
+        BUILDING_SVG_MAP.put("erv base", "erv_base");
+        BUILDING_SVG_MAP.put("regolith storage bin", "regolith_storage_bin");
+        BUILDING_SVG_MAP.put("wind turbine", "wind_turbine");
+        BUILDING_SVG_MAP.put("sand storage bin", "sand_storage_bin");
+        BUILDING_SVG_MAP.put("lime storage bin", "lime_storage_bin");
+        BUILDING_SVG_MAP.put("carbon storage bin", "carbon_storage_bin");
+        BUILDING_SVG_MAP.put("cement storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        BUILDING_SVG_MAP.put("mortar storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        BUILDING_SVG_MAP.put("concrete storage bin", "cement_storage_bin"); // same image for concrete, cement and mortar
+        BUILDING_SVG_MAP.put("atmospheric processor", "atmospheric_processor");
+        BUILDING_SVG_MAP.put("residential quarters", "residential_quarters");
+        BUILDING_SVG_MAP.put("lounge", "lounge");
+        BUILDING_SVG_MAP.put("command and control", "command_and_control");
+        BUILDING_SVG_MAP.put("infirmary", "infirmary");
+        BUILDING_SVG_MAP.put("laboratory", "laboratory");
+        BUILDING_SVG_MAP.put("workshop", "workshop");
+        BUILDING_SVG_MAP.put("garage", "garage");
+        BUILDING_SVG_MAP.put("large greenhouse", "large_greenhouse");
+        BUILDING_SVG_MAP.put("astronomy observatory", "astronomy_observatory");
+        BUILDING_SVG_MAP.put("md4 nuclear reactor", "md4_nuclear_reactor");
+        BUILDING_SVG_MAP.put("storage hab", "storage_hab");
+        BUILDING_SVG_MAP.put("residential hab", "residential_hab");
+        BUILDING_SVG_MAP.put("medical hab", "medical_hab");
+        BUILDING_SVG_MAP.put("research hab", "research_hab");
+        BUILDING_SVG_MAP.put("machinery hab", "machinery_hab");
+        BUILDING_SVG_MAP.put("solar photovoltaic array", "solar_photovoltaic_array");
+        BUILDING_SVG_MAP.put("solar thermal array", "solar_thermal_array");
+        BUILDING_SVG_MAP.put("small battery array", "small_battery_array");
+        BUILDING_SVG_MAP.put("methane power generator", "methane_power_generator");
+        BUILDING_SVG_MAP.put("small sabatier processor", "small_sabatier_processor");
+        BUILDING_SVG_MAP.put("bunkhouse", "bunkhouse");
+        BUILDING_SVG_MAP.put("manufacturing shed", "manufacturing_shed");
+        BUILDING_SVG_MAP.put("small areothermal well", "small_areothermal_well");
+        BUILDING_SVG_MAP.put("large areothermal well", "large_areothermal_well");
+        BUILDING_SVG_MAP.put("storage shed", "storage_shed");
+        BUILDING_SVG_MAP.put("outpost hub", "outpost_hub");
+        BUILDING_SVG_MAP.put("loading dock garage", "loading_dock_garage");
+        BUILDING_SVG_MAP.put("mining lab", "mining_lab");
+        BUILDING_SVG_MAP.put("inground greenhouse", "inground_greenhouse");
     }
     
     /**
      * Initializes the construction site SVG map.
      */
     private static void initializeConstructionSiteSVGMap() {
-        constructionSiteSVGMap = new HashMap<String, String>();
+        CONSTRUCTION_SITE_MAP = new HashMap<String, String>();
         
         // Add mapped construction site entries (do not include .svg suffix).
-        constructionSiteSVGMap.put("residential quarters", "large_habitation_building_const");
-        constructionSiteSVGMap.put("lounge", "large_habitation_building_const");
-        constructionSiteSVGMap.put("command and control", "large_habitation_building_const");
-        constructionSiteSVGMap.put("infirmary", "large_habitation_building_const");
-        constructionSiteSVGMap.put("laboratory", "large_habitation_building_const");
-        constructionSiteSVGMap.put("workshop", "large_habitation_building_const");
-        constructionSiteSVGMap.put("large habitation frame", "large_habitation_frame_const");
-        constructionSiteSVGMap.put("unprepared surface foundation", "unprepared_surface_foundation_const");
-        constructionSiteSVGMap.put("garage", "garage_const");
-        constructionSiteSVGMap.put("garage frame", "garage_frame_const");
-        constructionSiteSVGMap.put("large greenhouse", "large_greenhouse_const");
-        constructionSiteSVGMap.put("large greenhouse frame", "large_greenhouse_frame_const");
-        constructionSiteSVGMap.put("astronomy observatory", "astronomy_observatory_const");
-        constructionSiteSVGMap.put("astronomy observatory frame", "astronomy_observatory_frame_const");
-        constructionSiteSVGMap.put("md4 nuclear reactor", "md4_nuclear_reactor_const");
-        constructionSiteSVGMap.put("md4 nuclear reactor frame", "md4_nuclear_reactor_frame_const");
-        constructionSiteSVGMap.put("md1 nuclear reactor", "md1_nuclear_reactor_const");
-        constructionSiteSVGMap.put("md1 nuclear reactor frame", "md1_nuclear_reactor_frame_const");
-        constructionSiteSVGMap.put("atmospheric processor", "atmospheric_processor_const");
-        constructionSiteSVGMap.put("atmospheric processor frame", "atmospheric_processor_frame_const");
-        constructionSiteSVGMap.put("erv base", "erv_base_const");
-        constructionSiteSVGMap.put("starting erv base", "erv_base_const");
-        constructionSiteSVGMap.put("erv base frame", "erv_base_frame_const");
-        constructionSiteSVGMap.put("inflatable greenhouse", "inflatable_greenhouse_const");
-        constructionSiteSVGMap.put("inflatable greenhouse frame", "inflatable_greenhouse_frame_const");
-        constructionSiteSVGMap.put("lander hab", "hab_const");
-        constructionSiteSVGMap.put("storage hab", "hab_const");
-        constructionSiteSVGMap.put("research hab", "hab_const");
-        constructionSiteSVGMap.put("residential hab", "hab_const");
-        constructionSiteSVGMap.put("medical hab", "hab_const");
-        constructionSiteSVGMap.put("machinery hab", "hab_const");
-        constructionSiteSVGMap.put("lander hab frame", "hab_frame_const");
-        constructionSiteSVGMap.put("solar photovoltaic array", "solar_photovoltaic_array_const");
-        constructionSiteSVGMap.put("array frame", "array_frame_const");
-        constructionSiteSVGMap.put("surface foundation 10m x 5m", "surface_foundation_10x5_const");
-        constructionSiteSVGMap.put("solar thermal array", "solar_thermal_array_const");
-        constructionSiteSVGMap.put("small battery array", "small_battery_array_const");
-        constructionSiteSVGMap.put("methane power generator", "methane_power_generator_const");
-        constructionSiteSVGMap.put("small steel frame", "small_steel_frame_const");
-        constructionSiteSVGMap.put("surface foundation 5m x 5m", "surface_foundation_5x5_const");
-        constructionSiteSVGMap.put("small sabatier processor", "small_sabatier_processor_const");
-        constructionSiteSVGMap.put("wind turbine", "wind_turbine_const");
-        constructionSiteSVGMap.put("steel frame tower", "steel_frame_tower_const");
-        constructionSiteSVGMap.put("carbon storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("cement storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("sand storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("lime storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("mortar storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("concrete storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("regolith storage bin", "storage_bin_const");
-        constructionSiteSVGMap.put("brick bin frame", "brick_bin_frame_const");
-        constructionSiteSVGMap.put("surface foundation 3m x 2m", "surface_foundation_3x2_const");
-        constructionSiteSVGMap.put("bunkhouse", "bunkhouse_const");
-        constructionSiteSVGMap.put("manufacturing shed", "manufacturing_shed_const");
-        constructionSiteSVGMap.put("small brick shed frame", "small_brick_shed_frame_const");
-        constructionSiteSVGMap.put("subsurface foundation 5m x 5m x 3m", "subsurface_foundation_5x5x3_const");
-        constructionSiteSVGMap.put("small areothermal well", "small_areothermal_well_const");
-        constructionSiteSVGMap.put("small areothermal well frame", "small_areothermal_well_frame_const");
-        constructionSiteSVGMap.put("shallow borehole drilling site", "shallow_borehole_drilling_site_const");
-        constructionSiteSVGMap.put("large areothermal well", "large_areothermal_well_const");
-        constructionSiteSVGMap.put("large areothermal well frame", "large_areothermal_well_frame_const");
-        constructionSiteSVGMap.put("deep borehole drilling site", "deep_borehole_drilling_site_const");
-        constructionSiteSVGMap.put("storage shed", "storage_shed_const");
-        constructionSiteSVGMap.put("outpost hub", "outpost_hub_const");
-        constructionSiteSVGMap.put("small vaulted brick frame", "small_vaulted_brick_frame_const");
-        constructionSiteSVGMap.put("subsurface foundation 10m x 10m x 3m", "subsurface_foundation_10x10x3_const");
-        constructionSiteSVGMap.put("loading dock garage", "loading_dock_garage_const");
-        constructionSiteSVGMap.put("garage_brick_frame", "garage_brick_frame_const");
-        constructionSiteSVGMap.put("ramped subsurface foundation 15m x 18m x 5m", "ramped_subsurface_foundation_15x18x5_const");
-        constructionSiteSVGMap.put("mining log", "mining_lab_const");
-        constructionSiteSVGMap.put("inground greenhouse", "inground_greenhouse_const");
-        constructionSiteSVGMap.put("vaulted glass brick frame", "vaulted_glass_brick_frame_const");
-        constructionSiteSVGMap.put("subsurface foundation 5m x 10m x 3m", "subsurface_foundation_5x10x3_const");
+        CONSTRUCTION_SITE_MAP.put("residential quarters", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("lounge", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("command and control", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("infirmary", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("laboratory", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("workshop", "large_habitation_building_const");
+        CONSTRUCTION_SITE_MAP.put("large habitation frame", "large_habitation_frame_const");
+        CONSTRUCTION_SITE_MAP.put("unprepared surface foundation", "unprepared_surface_foundation_const");
+        CONSTRUCTION_SITE_MAP.put("garage", "garage_const");
+        CONSTRUCTION_SITE_MAP.put("garage frame", "garage_frame_const");
+        CONSTRUCTION_SITE_MAP.put("large greenhouse", "large_greenhouse_const");
+        CONSTRUCTION_SITE_MAP.put("large greenhouse frame", "large_greenhouse_frame_const");
+        CONSTRUCTION_SITE_MAP.put("astronomy observatory", "astronomy_observatory_const");
+        CONSTRUCTION_SITE_MAP.put("astronomy observatory frame", "astronomy_observatory_frame_const");
+        CONSTRUCTION_SITE_MAP.put("md4 nuclear reactor", "md4_nuclear_reactor_const");
+        CONSTRUCTION_SITE_MAP.put("md4 nuclear reactor frame", "md4_nuclear_reactor_frame_const");
+        CONSTRUCTION_SITE_MAP.put("md1 nuclear reactor", "md1_nuclear_reactor_const");
+        CONSTRUCTION_SITE_MAP.put("md1 nuclear reactor frame", "md1_nuclear_reactor_frame_const");
+        CONSTRUCTION_SITE_MAP.put("atmospheric processor", "atmospheric_processor_const");
+        CONSTRUCTION_SITE_MAP.put("atmospheric processor frame", "atmospheric_processor_frame_const");
+        CONSTRUCTION_SITE_MAP.put("erv base", "erv_base_const");
+        CONSTRUCTION_SITE_MAP.put("starting erv base", "erv_base_const");
+        CONSTRUCTION_SITE_MAP.put("erv base frame", "erv_base_frame_const");
+        CONSTRUCTION_SITE_MAP.put("inflatable greenhouse", "inflatable_greenhouse_const");
+        CONSTRUCTION_SITE_MAP.put("inflatable greenhouse frame", "inflatable_greenhouse_frame_const");
+        CONSTRUCTION_SITE_MAP.put("lander hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("storage hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("research hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("residential hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("medical hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("machinery hab", "hab_const");
+        CONSTRUCTION_SITE_MAP.put("lander hab frame", "hab_frame_const");
+        CONSTRUCTION_SITE_MAP.put("solar photovoltaic array", "solar_photovoltaic_array_const");
+        CONSTRUCTION_SITE_MAP.put("array frame", "array_frame_const");
+        CONSTRUCTION_SITE_MAP.put("surface foundation 10m x 5m", "surface_foundation_10x5_const");
+        CONSTRUCTION_SITE_MAP.put("solar thermal array", "solar_thermal_array_const");
+        CONSTRUCTION_SITE_MAP.put("small battery array", "small_battery_array_const");
+        CONSTRUCTION_SITE_MAP.put("methane power generator", "methane_power_generator_const");
+        CONSTRUCTION_SITE_MAP.put("small steel frame", "small_steel_frame_const");
+        CONSTRUCTION_SITE_MAP.put("surface foundation 5m x 5m", "surface_foundation_5x5_const");
+        CONSTRUCTION_SITE_MAP.put("small sabatier processor", "small_sabatier_processor_const");
+        CONSTRUCTION_SITE_MAP.put("wind turbine", "wind_turbine_const");
+        CONSTRUCTION_SITE_MAP.put("steel frame tower", "steel_frame_tower_const");
+        CONSTRUCTION_SITE_MAP.put("carbon storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("cement storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("sand storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("lime storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("mortar storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("concrete storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("regolith storage bin", "storage_bin_const");
+        CONSTRUCTION_SITE_MAP.put("brick bin frame", "brick_bin_frame_const");
+        CONSTRUCTION_SITE_MAP.put("surface foundation 3m x 2m", "surface_foundation_3x2_const");
+        CONSTRUCTION_SITE_MAP.put("bunkhouse", "bunkhouse_const");
+        CONSTRUCTION_SITE_MAP.put("manufacturing shed", "manufacturing_shed_const");
+        CONSTRUCTION_SITE_MAP.put("small brick shed frame", "small_brick_shed_frame_const");
+        CONSTRUCTION_SITE_MAP.put("subsurface foundation 5m x 5m x 3m", "subsurface_foundation_5x5x3_const");
+        CONSTRUCTION_SITE_MAP.put("small areothermal well", "small_areothermal_well_const");
+        CONSTRUCTION_SITE_MAP.put("small areothermal well frame", "small_areothermal_well_frame_const");
+        CONSTRUCTION_SITE_MAP.put("shallow borehole drilling site", "shallow_borehole_drilling_site_const");
+        CONSTRUCTION_SITE_MAP.put("large areothermal well", "large_areothermal_well_const");
+        CONSTRUCTION_SITE_MAP.put("large areothermal well frame", "large_areothermal_well_frame_const");
+        CONSTRUCTION_SITE_MAP.put("deep borehole drilling site", "deep_borehole_drilling_site_const");
+        CONSTRUCTION_SITE_MAP.put("storage shed", "storage_shed_const");
+        CONSTRUCTION_SITE_MAP.put("outpost hub", "outpost_hub_const");
+        CONSTRUCTION_SITE_MAP.put("small vaulted brick frame", "small_vaulted_brick_frame_const");
+        CONSTRUCTION_SITE_MAP.put("subsurface foundation 10m x 10m x 3m", "subsurface_foundation_10x10x3_const");
+        CONSTRUCTION_SITE_MAP.put("loading dock garage", "loading_dock_garage_const");
+        CONSTRUCTION_SITE_MAP.put("garage_brick_frame", "garage_brick_frame_const");
+        CONSTRUCTION_SITE_MAP.put("ramped subsurface foundation 15m x 18m x 5m", "ramped_subsurface_foundation_15x18x5_const");
+        CONSTRUCTION_SITE_MAP.put("mining log", "mining_lab_const");
+        CONSTRUCTION_SITE_MAP.put("inground greenhouse", "inground_greenhouse_const");
+        CONSTRUCTION_SITE_MAP.put("vaulted glass brick frame", "vaulted_glass_brick_frame_const");
+        CONSTRUCTION_SITE_MAP.put("subsurface foundation 5m x 10m x 3m", "subsurface_foundation_5x10x3_const");
     }
     
     /**
      * Initializes the vehicle SVG map.
      */
     private static void initializeVehicleSVGMap() {
-        vehicleSVGMap = new HashMap<String, String>();
+        VEHICLE_SVG_MAP = new HashMap<String, String>();
         
         // Add mapped vehicle entries (do not include .svg suffix).
-        vehicleSVGMap.put("explorer rover", "explorer_rover");
-        vehicleSVGMap.put("cargo rover", "cargo_rover");
-        vehicleSVGMap.put("transport rover", "transport_rover");
-        vehicleSVGMap.put("light utility vehicle", "light_utility_vehicle");
+        VEHICLE_SVG_MAP.put("explorer rover", "explorer_rover");
+        VEHICLE_SVG_MAP.put("cargo rover", "cargo_rover");
+        VEHICLE_SVG_MAP.put("transport rover", "transport_rover");
+        VEHICLE_SVG_MAP.put("light utility vehicle", "light_utility_vehicle");
+    }
+    
+    private static void initializeAttachmentPartSVGMap() {
+        ATTACHMENT_PART_SVG_MAP = new HashMap<String, String>();
+        
+        // Add mapped attachment part entries (do not include .svg suffix).
+        ATTACHMENT_PART_SVG_MAP.put("bulldozer blade", "bulldozer_blade");
+        ATTACHMENT_PART_SVG_MAP.put("backhoe", "backhoe");
     }
     
     /**
@@ -182,11 +191,11 @@ public final class SVGMapUtil {
      * @return SVG node or null if none found.
      */
     public static GraphicsNode getBuildingSVG(String buildingName) {
-        if (buildingSVGMap == null) initializeBuildingSVGMap();
+        if (BUILDING_SVG_MAP == null) initializeBuildingSVGMap();
         
         GraphicsNode result = null;
         
-        String svgFileName = buildingSVGMap.get(buildingName);
+        String svgFileName = BUILDING_SVG_MAP.get(buildingName);
         if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
         
         return result;
@@ -198,11 +207,11 @@ public final class SVGMapUtil {
      * @return SVG node or null if none found.
      */
     public static GraphicsNode getConstructionSiteSVG(String constructionSiteStageName) {
-        if (constructionSiteSVGMap == null) initializeConstructionSiteSVGMap();
+        if (CONSTRUCTION_SITE_MAP == null) initializeConstructionSiteSVGMap();
         
         GraphicsNode result = null;
         
-        String svgFileName = constructionSiteSVGMap.get(constructionSiteStageName);
+        String svgFileName = CONSTRUCTION_SITE_MAP.get(constructionSiteStageName);
         if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
         
         return result;
@@ -214,11 +223,29 @@ public final class SVGMapUtil {
      * @return SVG node or null if none found.
      */
     public static GraphicsNode getVehicleSVG(String vehicleType) {
-        if (vehicleSVGMap == null) initializeVehicleSVGMap();
+        if (VEHICLE_SVG_MAP == null) initializeVehicleSVGMap();
         
         GraphicsNode result = null;
         
-        String svgFileName = vehicleSVGMap.get(vehicleType);
+        String svgFileName = VEHICLE_SVG_MAP.get(vehicleType);
+        if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
+        
+        return result;
+    }
+    
+    /**
+     * Gets a SVG node for an attachment part.
+     * @param partType the part type.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getAttachmentPartSVG(String partType) {
+        if (ATTACHMENT_PART_SVG_MAP == null) {
+            initializeAttachmentPartSVGMap();
+        }
+        
+        GraphicsNode result = null;
+        
+        String svgFileName = ATTACHMENT_PART_SVG_MAP.get(partType);
         if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
         
         return result;

@@ -21,8 +21,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -137,6 +139,10 @@ public class VehicleMapLayer implements SettlementMapLayer {
         if (svg != null) {
             drawSVGVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
             		vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), svg);
+            
+            if (vehicle instanceof LightUtilityVehicle) {
+                drawSVGPartAttachments(g2d, (LightUtilityVehicle) vehicle);
+            }
         }
         else {
             // Otherwise draw colored rectangle for vehicle.
@@ -179,7 +185,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
     }
     
     /**
-     * Draws a structure on the map.
+     * Draws a vehicle on the map.
      * @param isSVG true if using a SVG image.
      * @param g2d the graphics2D context.
      * @param xLoc the X location from center of settlement (meters).
@@ -237,6 +243,80 @@ public class VehicleMapLayer implements SettlementMapLayer {
             g2d.transform(newTransform);
             g2d.setColor(color);
             g2d.fill(bounds);
+        }
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Draws the parts attached to a light utility vehicle.
+     * @param g2d the graphics context
+     * @param vehicle the light utility vehicle.
+     */
+    private void drawSVGPartAttachments(Graphics2D g2d, LightUtilityVehicle vehicle) {
+        Iterator<Part> i = vehicle.getPossibleAttachmentParts().iterator();
+        while (i.hasNext()) {
+            Part part = i.next();
+            if (vehicle.getInventory().getItemResourceNum(part) > 0) {
+                // Use SVG image for part if available.
+                GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
+                GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
+                if ((partSvg != null) && (vehicleSvg != null)) {
+                    drawPartAttachment(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
+                            vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, partSvg);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Draws a vehicle part attachment on the map.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the vehicle width (meters).
+     * @param length the vehicle length (meters).
+     * @param facing the vehicle facing (degrees from North clockwise).
+     * @param vehicleSvg the vehicle SVG graphics node.
+     * @param partSvg the part SVG graphics node.
+     */
+    private void drawPartAttachment(Graphics2D g2d, double xLoc, double yLoc,
+            double vehicleWidth, double vehicleLength, double facing, GraphicsNode vehicleSvg, 
+            GraphicsNode partSvg) {
+        
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        // Determine bounds.
+        Rectangle2D partBounds = partSvg.getBounds();
+        Rectangle2D vehicleBounds = vehicleSvg.getBounds();
+        
+        // Determine part width and length.
+        double partWidth = (partBounds.getWidth() / vehicleBounds.getWidth()) * vehicleWidth;
+        double partLength = (partBounds.getHeight() / vehicleBounds.getHeight()) * vehicleLength;
+        
+        // Determine transform information.
+        double scalingWidth = partWidth / partBounds.getWidth() * scale;
+        double scalingLength = partLength / partBounds.getHeight() * scale;
+        double boundsPosX = partBounds.getX() * scalingWidth;
+        double boundsPosY = partBounds.getY() * scalingLength;
+        double centerX = partWidth * scale / 2D;
+        double centerY = partLength * scale / 2D;
+        double translationX = (-1D * xLoc * scale) - centerX - boundsPosX;
+        double translationY = (-1D * yLoc * scale) - centerY - boundsPosY;
+        double facingRadian = facing / 180D * Math.PI;
+        
+        // Apply graphic transforms for vehicle part.
+        AffineTransform newTransform = new AffineTransform();
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);        
+        
+        // Draw buffered image of vehicle.
+        BufferedImage image = getBufferedImage(partSvg, partWidth, partLength);
+        if (image != null) {
+            g2d.transform(newTransform);
+            g2d.drawImage(image, 0, 0, mapPanel);
         }
         
         // Restore original graphic transforms.
