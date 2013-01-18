@@ -182,7 +182,11 @@ public final class SVGMapUtil {
         
         // Add mapped attachment part entries (do not include .svg suffix).
         ATTACHMENT_PART_SVG_MAP.put("bulldozer blade", "bulldozer_blade");
+        ATTACHMENT_PART_SVG_MAP.put("soil compactor", "soil_compactor");
         ATTACHMENT_PART_SVG_MAP.put("backhoe", "backhoe");
+        ATTACHMENT_PART_SVG_MAP.put("pneumatic drill", "pneumatic_drill");
+        ATTACHMENT_PART_SVG_MAP.put("drilling rig", "drilling_rig");
+        ATTACHMENT_PART_SVG_MAP.put("crane boom", "crane_boom");
     }
     
     /**

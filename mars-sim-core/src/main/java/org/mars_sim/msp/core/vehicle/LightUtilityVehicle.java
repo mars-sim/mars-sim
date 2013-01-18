@@ -21,46 +21,45 @@ import java.util.Collection;
  * A light utility vehicle that can be used for construction, loading and mining.
  */
 public class LightUtilityVehicle extends GroundVehicle implements Crewable {
-    
-	// Vehicle name.
-	public static final String NAME = "Light Utility Vehicle";
-	
-	// Data members.
+
+    // Vehicle name.
+    public static final String NAME = "Light Utility Vehicle";
+
+    // Data members.
     private int crewCapacity = 0; // The LightUtilityVehicle's capacity for crewmembers.
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
-    
-    public LightUtilityVehicle(String name, String description, Settlement settlement)
-    		{
-    	// Use GroundVehicle constructor.
-    	super(name, description, settlement);
-	
-    	// Get vehicle configuration.
-    	VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-	
-    	// Add scope to malfunction manager.
-    	malfunctionManager.addScopeString("Crewable");
-    	malfunctionManager.addScopeString(description);
-    	if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
-    	if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
-	
-    	if (config.hasPartAttachments(description)) {
-    		attachments = config.getAttachableParts(description);
-    		slotNumber = config.getPartAttachmentSlotNumber(description);
-    	}
-	
-    	crewCapacity = config.getCrewSize(description);
-	
-    	Inventory inv = getInventory();
-    	inv.addGeneralCapacity(config.getTotalCapacity(description));
-	
-    	// Set rover terrain modifier
-    	setTerrainHandlingCapability(0D);
-	}
+
+    public LightUtilityVehicle(String name, String description, Settlement settlement) {
+        // Use GroundVehicle constructor.
+        super(name, description, settlement);
+
+        // Get vehicle configuration.
+        VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+
+        // Add scope to malfunction manager.
+        malfunctionManager.addScopeString("Crewable");
+        malfunctionManager.addScopeString(description);
+        if (config.hasLab(description)) malfunctionManager.addScopeString("Laboratory");
+        if (config.hasSickbay(description)) malfunctionManager.addScopeString("Sickbay");
+
+        if (config.hasPartAttachments(description)) {
+            attachments = config.getAttachableParts(description);
+            slotNumber = config.getPartAttachmentSlotNumber(description);
+        }
+
+        crewCapacity = config.getCrewSize(description);
+
+        Inventory inv = getInventory();
+        inv.addGeneralCapacity(config.getTotalCapacity(description));
+
+        // Set rover terrain modifier
+        setTerrainHandlingCapability(0D);
+    }
 
     @Override
     public AmountResource getFuelType() {
-    	return null;
+        return null;
     }
 
     @Override
@@ -73,7 +72,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
      * @return crewmembers as Collection
      */
     public Collection<Person> getCrew() {
-    	return CollectionUtils.getPerson(getInventory().getContainedUnits());
+        return CollectionUtils.getPerson(getInventory().getContainedUnits());
     }
 
     /**
@@ -81,7 +80,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
      * @return capacity
      */
     public int getCrewCapacity() {
-    	return crewCapacity;
+        return crewCapacity;
     }
 
     /**
@@ -89,7 +88,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
      * @return number of crewmembers
      */
     public int getCrewNum() {
-    	return getCrew().size();
+        return getCrew().size();
     }
 
     /**
@@ -98,7 +97,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
      * @return true if person is a crewmember
      */
     public boolean isCrewmember(Person person) {
-    	return getInventory().containsUnit(person);
+        return getInventory().containsUnit(person);
     }
 
     /**
@@ -116,19 +115,19 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
     public int getAtachmentSlotNumber() {
         return slotNumber;
     }
-    
+
     @Override
     public void timePassing(double time) {
-    	super.timePassing(time);
-    	
-    	// Add active time if crewed.
-    	if (getCrewNum() > 0) malfunctionManager.activeTimePassing(time);
+        super.timePassing(time);
+
+        // Add active time if crewed.
+        if (getCrewNum() > 0) malfunctionManager.activeTimePassing(time);
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         attachments.clear();
         attachments = null;
     }

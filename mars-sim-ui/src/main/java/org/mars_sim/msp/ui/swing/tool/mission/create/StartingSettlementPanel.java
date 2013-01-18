@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StartingSettlementPanel.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2013-01-08
  * @author Scott Davis
  */
 
@@ -240,10 +240,6 @@ class StartingSettlementPanel extends WizardPanel {
             				Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
             				result = inv.getItemResourceNum(backhoe);
             			}
-            			else if (column == 12) {
-            				Part bulldozerBlade = (Part) Part.findItemResource(Mining.BULLDOZER_BLADE);
-            				result = inv.getItemResourceNum(bulldozerBlade);
-            			}
             		}
             	}
             	catch (Exception e) {}
@@ -268,7 +264,6 @@ class StartingSettlementPanel extends WizardPanel {
     			columns.add("Light Utility Vehicles");
     			columns.add("Pneumatic Drills");
     			columns.add("Backhoes");
-    			columns.add("Bulldozer Blades");
     		}
     		fireTableStructureChanged();
     	}
@@ -340,10 +335,6 @@ class StartingSettlementPanel extends WizardPanel {
     				else if (column == 11) {
     					Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
         				if (inv.getItemResourceNum(backhoe) == 0) result = true;
-    				}
-    				else if (column == 12) {
-    					Part bulldozerBlade = (Part) Part.findItemResource(Mining.BULLDOZER_BLADE);
-        				if (inv.getItemResourceNum(bulldozerBlade) == 0) result = true;
     				}
     			}
     		}

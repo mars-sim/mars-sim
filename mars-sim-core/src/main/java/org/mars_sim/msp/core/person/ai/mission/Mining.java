@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2013-01-08
  * @author Scott Davis
  */
 
@@ -70,7 +70,6 @@ public class Mining extends RoverMission {
     // Light utility vehicle attachment parts for mining.
     public static final String PNEUMATIC_DRILL = "pneumatic drill";
     public static final String BACKHOE = "backhoe";
-    public static final String BULLDOZER_BLADE = "bulldozer blade";
 
     // Data members
     private ExploredLocation miningSite;
@@ -344,9 +343,6 @@ public class Mining extends RoverMission {
             Part backhoe = (Part) Part.findItemResource(BACKHOE);
             if (!inv.hasItemResource(backhoe))
                 result = false;
-            Part bulldozerBlade = (Part) Part.findItemResource(BULLDOZER_BLADE);
-            if (!inv.hasItemResource(bulldozerBlade))
-                result = false;
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in getting parts.");
         }
@@ -410,15 +406,9 @@ public class Mining extends RoverMission {
                 Part backhoe = (Part) Part.findItemResource(BACKHOE);
                 settlementInv.retrieveItemResources(backhoe, 1);
                 luvInv.storeItemResources(backhoe, 1);
-
-                Part bulldozerBlade = (Part) Part
-                        .findItemResource(BULLDOZER_BLADE);
-                settlementInv.retrieveItemResources(bulldozerBlade, 1);
-                luvInv.storeItemResources(bulldozerBlade, 1);
             } catch (Exception e) {
-                logger
-                        .log(Level.SEVERE,
-                                "Error loading light utility vehicle and attachment parts.");
+                logger.log(Level.SEVERE,
+                        "Error loading light utility vehicle and attachment parts.");
                 endMission("Light utility vehicle and attachment parts could not be loaded.");
             }
         }
@@ -448,15 +438,9 @@ public class Mining extends RoverMission {
                 Part backhoe = (Part) Part.findItemResource(BACKHOE);
                 luvInv.retrieveItemResources(backhoe, 1);
                 settlementInv.storeItemResources(backhoe, 1);
-
-                Part bulldozerBlade = (Part) Part
-                        .findItemResource(BULLDOZER_BLADE);
-                luvInv.retrieveItemResources(bulldozerBlade, 1);
-                settlementInv.storeItemResources(bulldozerBlade, 1);
             } catch (Exception e) {
-                logger
-                        .log(Level.SEVERE,
-                                "Error unloading light utility vehicle and attachment parts.");
+                logger.log(Level.SEVERE,
+                        "Error unloading light utility vehicle and attachment parts.");
                 endMission("Light utility vehicle and attachment parts could not be unloaded.");
             }
         }
