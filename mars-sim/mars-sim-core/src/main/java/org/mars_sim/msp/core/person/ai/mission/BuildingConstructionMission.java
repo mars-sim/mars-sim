@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.04 2012-12-07
+ * @version 3.04 2013-01-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -53,12 +53,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
     // Number of mission members.
     private static final int MIN_PEOPLE = 3;
     private static final int MAX_PEOPLE = 10;
-    
-    // Light utility vehicle attachment parts for construction.
-    public static final String SOIL_COMPACTOR = "soil compactor";
-    public static final String BACKHOE = "backhoe";
-    public static final String BULLDOZER_BLADE = "bulldozer blade";
-    public static final String CRANE_BOOM = "crane boom";
     
     // Time (millisols) required to prepare construction site for stage.
     private static final double SITE_PREPARE_TIME = 500D;
@@ -306,9 +300,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Check if available light utility vehicles.
             boolean reservableLUV = isLUVAvailable(settlement);
             
-            // Check if LUV attachment parts available.
-            boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
-            
             // Check if enough available people at settlement for mission.
             int availablePeopleNum = 0;
             Iterator<Person> i = settlement.getInhabitants().iterator();
@@ -323,7 +314,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             // Check if settlement has construction override flag set.
             boolean constructionOverride = settlement.getConstructionOverride();
             
-            if (reservableLUV && availableAttachmentParts && enoughPeople && !constructionOverride) {
+            if (reservableLUV && enoughPeople && !constructionOverride) {
                 
                 try {
                     int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
@@ -451,33 +442,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 if (((Crewable) vehicle).getCrewNum() > 0) usable = false;
                 if (usable) result = true;
             }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Checks if the required attachment parts are available.
-     * @param settlement the settlement to check.
-     * @return true if available attachment parts.
-     */
-    private static boolean areAvailableAttachmentParts(Settlement settlement) {
-        boolean result = true;
-        
-        Inventory inv = settlement.getInventory();
-        
-        try {
-            Part soilCompactor = (Part) Part.findItemResource(SOIL_COMPACTOR);
-            if (!inv.hasItemResource(soilCompactor)) result = false;
-            Part backhoe = (Part) Part.findItemResource(BACKHOE);
-            if (!inv.hasItemResource(backhoe)) result = false;
-            Part bulldozerBlade = (Part) Part.findItemResource(BULLDOZER_BLADE);
-            if (!inv.hasItemResource(bulldozerBlade)) result = false;
-            Part craneBoom = (Part) Part.findItemResource(CRANE_BOOM);
-            if (!inv.hasItemResource(craneBoom)) result = false;
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in getting parts.");
         }
         
         return result;
