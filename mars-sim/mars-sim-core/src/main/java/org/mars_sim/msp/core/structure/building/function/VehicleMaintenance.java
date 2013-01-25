@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.04 2012-12-06
+ * @version 3.04 2013-01-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -95,6 +95,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
                     location.getYLocation());
             newXLoc = settlementLoc.getX();
             newYLoc = settlementLoc.getY();
+            location.parkVehicle(vehicle);
         }
         else {
             // Park vehicle in center point of building.
