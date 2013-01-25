@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.04 2012-12-24
+ * @version 3.04 2013-01-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -23,6 +23,8 @@ public final class SVGMapUtil {
     private static Map<String, String> BUILDING_SVG_MAP;
     private static Map<String, String> CONSTRUCTION_SITE_MAP;
     private static Map<String, String> VEHICLE_SVG_MAP;
+    private static Map<String, String> VEHICLE_MAINT_OVERLAY_SVG_MAP;
+    private static Map<String, String> VEHICLE_LOADING_OVERLAY_SVG_MAP;
     private static Map<String, String> ATTACHMENT_PART_SVG_MAP;
     
     /**
@@ -177,6 +179,36 @@ public final class SVGMapUtil {
         VEHICLE_SVG_MAP.put("light utility vehicle", "light_utility_vehicle");
     }
     
+    /**
+     * Initializes the vehicle maintenance/repair overlay SVG map.
+     */
+    private static void initializeVehicleMaintOverlaySVGMap() {
+        VEHICLE_MAINT_OVERLAY_SVG_MAP = new HashMap<String, String>();
+        
+        // Add mapped vehicle entries (do not include .svg suffix).
+        VEHICLE_MAINT_OVERLAY_SVG_MAP.put("explorer rover", "explorer_rover_maint");
+        VEHICLE_MAINT_OVERLAY_SVG_MAP.put("cargo rover", "cargo_rover_maint");
+        VEHICLE_MAINT_OVERLAY_SVG_MAP.put("transport rover", "transport_rover_maint");
+        VEHICLE_MAINT_OVERLAY_SVG_MAP.put("light utility vehicle", "light_utility_vehicle_maint");
+    }
+    
+    /**
+     * Initializes the vehicle loading/unloading overlay SVG map.
+     */
+    private static void initializeVehicleLoadingOverlaySVGMap() {
+        VEHICLE_LOADING_OVERLAY_SVG_MAP = new HashMap<String, String>();
+        
+        // Add mapped vehicle entries (do not include .svg suffix).
+        VEHICLE_LOADING_OVERLAY_SVG_MAP.put("explorer rover", "explorer_rover_load");
+        VEHICLE_LOADING_OVERLAY_SVG_MAP.put("cargo rover", "cargo_rover_load");
+        VEHICLE_LOADING_OVERLAY_SVG_MAP.put("transport rover", "transport_rover_load");
+        // Note: not including a loading/unloading overlay for the light utility vehicle yet.  
+        // May add it in the future.
+    }
+    
+    /**
+     * Initializes the attachment part SVG map.
+     */
     private static void initializeAttachmentPartSVGMap() {
         ATTACHMENT_PART_SVG_MAP = new HashMap<String, String>();
         
@@ -232,6 +264,38 @@ public final class SVGMapUtil {
         GraphicsNode result = null;
         
         String svgFileName = VEHICLE_SVG_MAP.get(vehicleType);
+        if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
+        
+        return result;
+    }
+    
+    /**
+     * Gets a SVG node for a vehicle maintenance/repair overlay.
+     * @param vehicleType the vehicle type.
+     * @return SVG node of null if none found.
+     */
+    public static GraphicsNode getMaintenanceOverlaySVG(String vehicleType) {
+        if (VEHICLE_MAINT_OVERLAY_SVG_MAP == null) initializeVehicleMaintOverlaySVGMap();
+        
+        GraphicsNode result = null;
+        
+        String svgFileName = VEHICLE_MAINT_OVERLAY_SVG_MAP.get(vehicleType);
+        if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
+        
+        return result;
+    }
+    
+    /**
+     * Gets a SVG node for a vehicle loading/unloading overlay.
+     * @param vehicleType the vehicle type.
+     * @return SVG node of null if none found.
+     */
+    public static GraphicsNode getLoadingOverlaySVG(String vehicleType) {
+        if (VEHICLE_LOADING_OVERLAY_SVG_MAP == null) initializeVehicleLoadingOverlaySVGMap();
+        
+        GraphicsNode result = null;
+        
+        String svgFileName = VEHICLE_LOADING_OVERLAY_SVG_MAP.get(vehicleType);
         if (svgFileName != null) result = SVGLoader.getSVGImage(svgFileName);
         
         return result;
