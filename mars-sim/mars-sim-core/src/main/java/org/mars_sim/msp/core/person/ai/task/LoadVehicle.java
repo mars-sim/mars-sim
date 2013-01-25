@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicle.java
- * @version 3.03 2012-10-23
+ * @version 3.04 2013-01-23
  * @author Scott Davis
  */
 
@@ -206,6 +206,14 @@ public class LoadVehicle extends Task implements Serializable {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Gets the vehicle being loaded.
+     * @return vehicle
+     */
+    public Vehicle getVehicle() {
+        return vehicle;
     }
     
     /**

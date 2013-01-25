@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicle.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2013-01-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -217,6 +217,14 @@ public class UnloadVehicle extends Task implements Serializable {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Gets the vehicle being unloaded.
+     * @return vehicle
+     */
+    public Vehicle getVehicle() {
+        return vehicle;
     }
     
     /**
