@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMapLayer.java
- * @version 3.04 2012-12-10
+ * @version 3.04 2013-01-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -18,9 +18,16 @@ import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicle;
+import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicle;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -137,9 +144,21 @@ public class VehicleMapLayer implements SettlementMapLayer {
         // Use SVG image for vehicle if available.
         GraphicsNode svg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
         if (svg != null) {
+            // Draw base SVG image for vehicle.
             drawSVGVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
             		vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), svg);
             
+            // Draw overlay if the vehicle is being maintained or repaired.
+            if (isVehicleRepairOrMaintenance(vehicle)) {
+                drawSVGRepairMaint(g2d, vehicle);
+            }
+            
+            // Draw overlay if the vehicle is being loaded or unloaded.
+            if (isVehicleLoading(vehicle)) {
+                drawSVGLoading(g2d, vehicle);
+            }
+            
+            // Draw attachment parts for light utility vehicle.
             if (vehicle instanceof LightUtilityVehicle) {
                 drawSVGPartAttachments(g2d, (LightUtilityVehicle) vehicle);
             }
@@ -149,6 +168,110 @@ public class VehicleMapLayer implements SettlementMapLayer {
             drawRectangleVehicle(g2d, vehicle.getXLocation(), vehicle.getYLocation(), 
             		vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), 
                     VEHICLE_COLOR);
+        }
+    }
+    
+    /**
+     * Checks if the vehicle is currently being repaired or maintained.
+     * @param vehicle the vehicle
+     * @return true if vehicle is being repaired or maintained.
+     */
+    private boolean isVehicleRepairOrMaintenance(Vehicle vehicle) {
+        boolean result = false;
+        
+        // Check if vehicle is reserved for maintenance.
+        if (vehicle.isReservedForMaintenance()) {
+            result = true;
+        }
+        
+        // Check if vehicle has malfunction.
+        if (vehicle.getMalfunctionManager().hasMalfunction()) {
+            result = true;;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Draw the SVG repair/maint overlay on the vehicle.
+     * @param g2d the graphics context.
+     * @param vehicle the vehicle.
+     */
+    private void drawSVGRepairMaint(Graphics2D g2d, Vehicle vehicle) {
+        
+        // Use SVG image for vehicle maintenance overlay if available.
+        GraphicsNode maintOverlaySvg = SVGMapUtil.getMaintenanceOverlaySVG(vehicle.getDescription().toLowerCase());
+        GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
+        if ((maintOverlaySvg != null) && (vehicleSvg != null)) {
+            drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
+                    vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, maintOverlaySvg);
+        }
+    }
+    
+    /**
+     * Checks if the vehicle is currently being loaded or unloaded.
+     * @param vehicle the vehicle
+     * @return true if vehicle is being loaded or unloaded.
+     */
+    private boolean isVehicleLoading(Vehicle vehicle) {
+        boolean result = false;
+                
+        // For vehicle missions, check if vehicle is loading or unloading for the mission.
+        Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
+        if ((mission != null) && (mission instanceof VehicleMission)) {
+            VehicleMission vehicleMission = (VehicleMission) mission;
+            String missionPhase = vehicleMission.getPhase();
+            if (RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) {
+                if (!vehicleMission.isVehicleLoaded()) {
+                    result = true;
+                }
+            }
+            else if (RoverMission.DISEMBARKING.equals(missionPhase) || Trade.UNLOAD_GOODS.equals(missionPhase)) {
+                if (vehicle.getInventory().isEmpty(true)) {
+                    result = true;
+                }
+            }
+        }
+        
+        // Otherwise, check if someone is actively loading or unloading the vehicle at a settlement.
+        if (!result) {
+            Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+            while (i.hasNext()) {
+                Person person = i.next();
+                if (!person.getPhysicalCondition().isDead()) {
+                    Task task = person.getMind().getTaskManager().getTask();
+                    if (task != null) {
+                        if (task instanceof LoadVehicle) {
+                            if (vehicle.equals(((LoadVehicle) task).getVehicle())) {
+                                result = true;
+                            }
+                        }
+                        else if (task instanceof UnloadVehicle) {
+                            if (vehicle.equals(((UnloadVehicle) task).getVehicle())) {
+                                result = true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Draw the SVG loading/unloading overlay on the vehicle.
+     * @param g2d the graphics context.
+     * @param vehicle the vehicle.
+     */
+    private void drawSVGLoading(Graphics2D g2d, Vehicle vehicle) {
+        
+        // Use SVG image for vehicle loading overlay if available.
+        GraphicsNode loadOverlaySvg = SVGMapUtil.getLoadingOverlaySVG(vehicle.getDescription().toLowerCase());
+        GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
+        if ((loadOverlaySvg != null) && (vehicleSvg != null)) {
+            drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
+                    vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, loadOverlaySvg);
         }
     }
 	
@@ -263,7 +386,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
                 GraphicsNode partSvg = SVGMapUtil.getAttachmentPartSVG(part.getName().toLowerCase());
                 GraphicsNode vehicleSvg = SVGMapUtil.getVehicleSVG(vehicle.getDescription().toLowerCase());
                 if ((partSvg != null) && (vehicleSvg != null)) {
-                    drawPartAttachment(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
+                    drawVehicleOverlay(g2d, vehicle.getXLocation(), vehicle.getYLocation(),
                             vehicle.getWidth(), vehicle.getLength(), vehicle.getFacing(), vehicleSvg, partSvg);
                 }
             }
@@ -271,7 +394,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
     }
     
     /**
-     * Draws a vehicle part attachment on the map.
+     * Draws an overlay for a vehicle on the map.
      * @param g2d the graphics2D context.
      * @param xLoc the X location from center of settlement (meters).
      * @param yLoc the y Location from center of settlement (meters).
@@ -279,17 +402,17 @@ public class VehicleMapLayer implements SettlementMapLayer {
      * @param length the vehicle length (meters).
      * @param facing the vehicle facing (degrees from North clockwise).
      * @param vehicleSvg the vehicle SVG graphics node.
-     * @param partSvg the part SVG graphics node.
+     * @param overlaySvg the overlay SVG graphics node.
      */
-    private void drawPartAttachment(Graphics2D g2d, double xLoc, double yLoc,
+    private void drawVehicleOverlay(Graphics2D g2d, double xLoc, double yLoc,
             double vehicleWidth, double vehicleLength, double facing, GraphicsNode vehicleSvg, 
-            GraphicsNode partSvg) {
+            GraphicsNode overlaySvg) {
         
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
         
         // Determine bounds.
-        Rectangle2D partBounds = partSvg.getBounds();
+        Rectangle2D partBounds = overlaySvg.getBounds();
         Rectangle2D vehicleBounds = vehicleSvg.getBounds();
         
         // Determine part width and length.
@@ -313,7 +436,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
         newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);        
         
         // Draw buffered image of vehicle.
-        BufferedImage image = getBufferedImage(partSvg, partWidth, partLength);
+        BufferedImage image = getBufferedImage(overlaySvg, partWidth, partLength);
         if (image != null) {
             g2d.transform(newTransform);
             g2d.drawImage(image, 0, 0, mapPanel);
