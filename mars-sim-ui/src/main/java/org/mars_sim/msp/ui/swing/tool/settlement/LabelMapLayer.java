@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.04 2012-12-04
+ * @version 3.04 2013-01-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -46,6 +48,8 @@ public class LabelMapLayer implements SettlementMapLayer {
     private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
     private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127);
     private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color PERSON_LABEL_COLOR = new Color(0, 255, 255);
+    private static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 127);
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -93,6 +97,11 @@ public class LabelMapLayer implements SettlementMapLayer {
         // Draw all vehicle labels.
         if (mapPanel.isShowVehicleLabels()) {
         	drawVehicleLabels(g2d, settlement);
+        }
+        
+        // Draw all people labels.
+        if (mapPanel.isShowPersonLabels()) {
+            drawPersonLabels(g2d, settlement);
         }
             
         // Restore original graphic transforms.
@@ -218,7 +227,37 @@ public class LabelMapLayer implements SettlementMapLayer {
     }
     
     /**
-     * Draws a building or construction site label.
+     * Draw labels for all people at the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawPersonLabels(Graphics2D g2d, Settlement settlement) {
+        
+        if (settlement != null) {
+            
+            // Draw all people that are at the settlement or outside near by.
+            Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
+            while (i.hasNext()) {
+                Person person = i.next();
+                
+                // Only draw living people.
+                if (!person.getPhysicalCondition().isDead()) {
+
+                    // Draw people that at settlement location.
+                    Coordinates settlementLoc = settlement.getCoordinates();
+                    Coordinates personLoc = person.getCoordinates();
+                    if (personLoc.equals(settlementLoc)) {
+                        int offset = 8;
+                        drawLabelRight(g2d, person.getName(), person.getXLocation(), person.getYLocation(), 
+                                PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Draws a label centered at the X, Y location.
      * @param g2d the graphics 2D context.
      * @param label the label string.
      * @param xLoc the X location from center of settlement (meters).
@@ -226,12 +265,14 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param labelColor the color of the label.
      * @param labelOutlineColor the color of the outline of the label.
      */
-    private void drawLabel(Graphics2D g2d, String label, double xLoc, double yLoc, Color labelColor, Color labelOutlineColor) {
+    private void drawLabel(Graphics2D g2d, String label, double xLoc, double yLoc, 
+            Color labelColor, Color labelOutlineColor) {
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
         
         // Get the label image.
-        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), labelColor, labelOutlineColor);
+        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), 
+                labelColor, labelOutlineColor);
         
         // Determine transform information.
         double centerX = labelImage.getWidth() / 2D;
@@ -247,6 +288,46 @@ public class LabelMapLayer implements SettlementMapLayer {
         
         // Draw image label.
         g2d.drawImage(labelImage, 0, 0, mapPanel);
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Draws a label to the right of an X, Y location.
+     * @param g2d the graphics 2D context.
+     * @param label the label string.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param labelColor the color of the label.
+     * @param labelOutlineColor the color of the outline of the label.
+     * @param offset the X pixel offset from the center point.
+     */
+    private void drawLabelRight(Graphics2D g2d, String label, double xLoc, double yLoc, 
+            Color labelColor, Color labelOutlineColor, int offset) {
+        
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        // Get the label image.
+        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), 
+                labelColor, labelOutlineColor);
+        
+        // Determine transform information.
+        double centerX = labelImage.getWidth() / 2D;
+        double centerY = labelImage.getHeight() / 2D;
+        double translationX = (-1D * xLoc * mapPanel.getScale()) - centerX;
+        double translationY = (-1D * yLoc * mapPanel.getScale()) - centerY;
+        
+        // Apply graphic transforms for label.
+        AffineTransform newTransform = new AffineTransform(saveTransform);
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(mapPanel.getRotation() * -1D, centerX, centerY);
+        g2d.setTransform(newTransform);
+        
+        // Draw image label.
+        int totalRightOffset = (labelImage.getWidth() / 2) + offset;
+        g2d.drawImage(labelImage, totalRightOffset, 0, mapPanel);
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
