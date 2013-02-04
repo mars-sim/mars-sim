@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.04 2012-12-07
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -204,6 +205,9 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         
             // Add experience points
             addExperience(time);
+            
+            // Move person to location at construction site.
+            moveToConstructionSiteLocation();
         }
         catch (Exception e) {
             // Person unable to exit airlock.
@@ -272,6 +276,18 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     }
     
     /**
+     * Moves the person to a location at the construction site.
+     */
+    private void moveToConstructionSiteLocation() {
+        
+        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
+        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+                relativeLocSite.getY(), site);
+        person.setXLocation(settlementLocSite.getX());
+        person.setYLocation(settlementLocSite.getY());
+    }
+    
+    /**
      * Obtains a construction vehicle from the settlement if possible.
      * @throws Exception if error obtaining construction vehicle.
      */
@@ -289,9 +305,9 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
                         operatingLUV = true;
                         
                         // Place light utility vehicles at random location in construction site.
-                        Point2D.Double relativeLocSite = site.getRandomLocationInsideSite();
-                        Point2D.Double settlementLocSite = site.getSettlementRelativeLocation(
-                                relativeLocSite.getX(), relativeLocSite.getY());
+                        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
+                        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+                                relativeLocSite.getY(), site);
                         luv.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), 
                                 RandomUtil.getRandomDouble(360D));
                         

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-02-03
  * @author Scott Davis
  */
 
@@ -31,11 +31,8 @@ import java.util.logging.Logger;
  * A Mission may have one or more people associated with it.
  */
 public abstract class Mission implements Serializable {
-	private static String CLASS_NAME = 
-		"org.mars_sim.msp.simulation.person.ai.mission.Mission";
     	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
-    
+	private static Logger logger = Logger.getLogger(Mission.class.getName());
     	
 	// Mission event types
 	public static final String NAME_EVENT = "name";
@@ -582,7 +579,7 @@ public abstract class Mission implements Serializable {
 	 * Checks if the current phase has ended or not.
 	 * @return true if phase has ended
 	 */
-	protected final boolean getPhaseEnded() {
+	public final boolean getPhaseEnded() {
 		return phaseEnded;
 	}
 	

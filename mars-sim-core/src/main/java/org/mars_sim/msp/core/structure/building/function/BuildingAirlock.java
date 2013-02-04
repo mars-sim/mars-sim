@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.02 2012-05-30
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 
@@ -73,16 +73,15 @@ public class BuildingAirlock extends Airlock {
         Inventory inv = building.getInventory();
 
         if (inAirlock(person)) {
-            LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 
             if (PRESSURIZED.equals(getState())) {
                 // Exit person to inside building.
-                lifeSupport.addPerson(person);
+                BuildingManager.addPersonToBuilding(person, building);
                 inv.storeUnit(person);
             }
             else if (DEPRESSURIZED.equals(getState())) {
                 // Exit person to outside building.
-                if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
+                BuildingManager.removePersonFromBuilding(person, building);
                 inv.retrieveUnit(person);
             }
             else {

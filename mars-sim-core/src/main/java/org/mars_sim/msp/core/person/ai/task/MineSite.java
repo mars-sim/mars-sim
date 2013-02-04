@@ -8,6 +8,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -20,6 +21,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -178,9 +180,18 @@ public class MineSite extends EVAOperation implements Serializable {
 		if (!luv.getMalfunctionManager().hasMalfunction() && (luv.getCrewNum() == 0)) {
 		    if (luv.getInventory().canStoreUnit(person, false)) {
 		        luv.getInventory().storeUnit(person);
-		        luv.setOperator(person);
+		        
+		        Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(luv);
+	            Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+	                    vehicleLoc.getY(), luv);
+	            person.setXLocation(settlementLoc.getX());
+	            person.setYLocation(settlementLoc.getY());
+		        
+	            luv.setOperator(person);
 		        operatingLUV = true;
 		        setDescription("Excavating site with " + luv.getName());
+		        
+		        // TODO: Determine random excavation location surrounding rover.
 		    }
 		    else {
 		        logger.info(person.getName() + " could not operate " + luv.getName());

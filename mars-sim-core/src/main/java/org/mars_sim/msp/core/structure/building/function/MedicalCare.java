@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -192,10 +193,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		
 		// Add person to building if possible.
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-			LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-			if (!lifeSupport.containsPerson(problem.getSufferer())) {
-			    lifeSupport.addPerson(problem.getSufferer());
-			}
+			BuildingManager.addPersonToBuilding(problem.getSufferer(), getBuilding());
 		}
 	}
 	
@@ -211,10 +209,7 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
         
 		// Add person to building if possible.
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-			LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
-			if (!lifeSupport.containsPerson(problem.getSufferer())) {
-			    lifeSupport.addPerson(problem.getSufferer());
-			}
+		    BuildingManager.addPersonToBuilding(problem.getSufferer(), getBuilding());
 		}
 	}
 	

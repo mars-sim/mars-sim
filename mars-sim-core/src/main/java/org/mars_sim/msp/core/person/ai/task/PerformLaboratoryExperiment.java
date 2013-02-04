@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.03 2012-10-23
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

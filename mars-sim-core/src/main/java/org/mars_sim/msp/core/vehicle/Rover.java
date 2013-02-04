@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.04 2012-12-07
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 
@@ -388,7 +388,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
                 double radAngle = angle * (Math.PI / 180D);
                 double towedX = 0D - (distance * Math.sin(radAngle));
                 double towedY = distance * Math.cos(radAngle);
-                Point2D.Double towedLoc = getSettlementRelativeLocation(towedX, towedY);
+                Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
                 towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing());
             }
             else if (towedVehicle instanceof LightUtilityVehicle) {
@@ -399,7 +399,7 @@ public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlo
                 double radAngle = angle * (Math.PI / 180D);
                 double towedX = 0D - (distance * Math.sin(radAngle));
                 double towedY = distance * Math.cos(radAngle);
-                Point2D.Double towedLoc = getSettlementRelativeLocation(towedX, towedY);
+                Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
                 towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing() + 90D);
             }
         }

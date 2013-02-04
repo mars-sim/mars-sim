@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -13,6 +13,7 @@ import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
@@ -27,10 +28,7 @@ import java.util.logging.Logger;
  */
 public class LifeSupport extends Function implements Serializable {
     
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.structure.building.function.LifeSupport";
-	
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
 	public static final String NAME = "Life Support";
 	
@@ -52,16 +50,11 @@ public class LifeSupport extends Function implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-//		try {
-			// Set occupant capacity.
-			occupantCapacity = config.getLifeSupportCapacity(building.getName());
-		
-			// Set life support power required.
-			powerRequired = config.getLifeSupportPowerRequirement(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("LifeSupport.constructor: " + e.getMessage());
-//		}
+		// Set occupant capacity.
+		occupantCapacity = config.getLifeSupportCapacity(building.getName());
+
+		// Set life support power required.
+		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
 	}
 	
 	/**
@@ -185,8 +178,7 @@ public class LifeSupport extends Function implements Serializable {
 			while (i.hasNext()) {
 				Building building = i.next();
 				if (building.hasFunction(NAME)) {
-					LifeSupport lifeSupport = (LifeSupport) building.getFunction(NAME);
-					if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person);
+				    BuildingManager.removePersonFromBuilding(person, building);
 				}
 			}
 

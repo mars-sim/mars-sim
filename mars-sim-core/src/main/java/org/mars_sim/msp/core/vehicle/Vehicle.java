@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.04 2012-12-04
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 
@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  *  subclassed to represent a specific type of vehicle.
  */
 public abstract class Vehicle extends Unit implements Serializable, 
-        Malfunctionable, Salvagable {
+        Malfunctionable, Salvagable, LocalBoundedObject {
 
     private static Logger logger = Logger.getLogger(Vehicle.class.getName());
     
@@ -167,42 +167,27 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    determinedSettlementParkedLocationAndFacing();
     }
     
-    /**
-     * Gets the vehicle's width.
-     * @return width (meters).
-     */
+    @Override
     public double getWidth() {
         return width;
     }
     
-    /**
-     * Gets the vehicle's length.
-     * @return length (meters).
-     */
+    @Override
     public double getLength() {
         return length;
     }
     
-    /**
-     * Gets the x location of the vehicle when parked at a settlement.
-     * @return x location (meters from settlement center - West: positive, East: negative).
-     */
+    @Override
     public double getXLocation() {
         return xLocParked;
     }
     
-    /**
-     * Gets the y location of the vehicle when parked at a settlement.
-     * @return y location (meters from settlement center - North: positive, South: negative).
-     */
+    @Override
     public double getYLocation() {
         return yLocParked;
     }
     
-    /**
-     * Gets the facing of the vehicle when parked at a settlement.
-     * @return facing (degrees from North clockwise).
-     */
+    @Override
     public double getFacing() {
         return facingParked;
     }
@@ -217,6 +202,31 @@ public abstract class Vehicle extends Unit implements Serializable,
         this.xLocParked = xLocation;
         this.yLocParked = yLocation;
         this.facingParked = facing;
+        
+        // Set the crew members' (if any) location to vehicle's new parked location.
+        setCrewLocation();
+    }
+    
+    /**
+     * Sets the location of all crew members (if any) to the vehicle's location.
+     */
+    private void setCrewLocation() {
+        
+        // Only move crew if vehicle is Crewable.
+        if (this instanceof Crewable) {
+            Iterator<Person> i = ((Crewable) this).getCrew().iterator();
+            while (i.hasNext()) {
+                Person crewmember = i.next();
+                
+                // TODO: Deal with crew members at particular action spots within vehicle.
+                
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(this);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), this);
+                crewmember.setXLocation(settlementLoc.getX());
+                crewmember.setYLocation(settlementLoc.getY());
+            }
+        }
     }
     
     /** Returns vehicle's current status
@@ -463,45 +473,41 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @throws Exception if error during time.
      */
     public void timePassing(double time) {
-//    	try  {
-    		// Update status if necessary.
-    		updateStatus();
-    		
-        	if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
-	    	malfunctionManager.timePassing(time);
-	    	addToTrail(getCoordinates());
-        
-        	// Make sure reservedForMaintenance is false if vehicle needs no maintenance.
-        	if (getStatus().equals(MAINTENANCE)) {
-            	if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
-        	}
-        	
-        	if (isReservedMission) {
-        	    // Set reserved for mission to false if the vehicle is not associated with a mission.
-        	    if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
-        	        logger.log(Level.SEVERE, getName() + " is mission reserved but has no mission.");
-        	        setReservedForMission(false);
-        	    }
-        	}
-        	else {
-        	    if (Simulation.instance().getMissionManager().getMissionForVehicle(this) != null) {
-        	        logger.log(Level.SEVERE, getName() + " is not mission reserved but is on a mission.");
-                }
-        	}
-        	
-        	// If operator is dead, remove operator and stop vehicle.
-        	VehicleOperator operator = vehicleOperator;
-        	if ((operator != null) && (operator instanceof Person)) {
-        		Person personOperator = (Person) operator;
-        		if (personOperator.getPhysicalCondition().isDead()) {
-        			setOperator(null);
-        			setSpeed(0);
-        		}
-        	}
-//    	}
-//    	catch (Exception e) {
-//    		throw new Exception("Vehicle " + getName() + " timePassing(): " + e.getMessage());
-//    	}
+
+        // Update status if necessary.
+        updateStatus();
+
+        if (getStatus().equals(MOVING)) malfunctionManager.activeTimePassing(time);
+        malfunctionManager.timePassing(time);
+        addToTrail(getCoordinates());
+
+        // Make sure reservedForMaintenance is false if vehicle needs no maintenance.
+        if (getStatus().equals(MAINTENANCE)) {
+            if (malfunctionManager.getEffectiveTimeSinceLastMaintenance() <= 0D) setReservedForMaintenance(false);
+        }
+
+        if (isReservedMission) {
+            // Set reserved for mission to false if the vehicle is not associated with a mission.
+            if (Simulation.instance().getMissionManager().getMissionForVehicle(this) == null) {
+                logger.log(Level.SEVERE, getName() + " is mission reserved but has no mission.");
+                setReservedForMission(false);
+            }
+        }
+        else {
+            if (Simulation.instance().getMissionManager().getMissionForVehicle(this) != null) {
+                logger.log(Level.SEVERE, getName() + " is not mission reserved but is on a mission.");
+            }
+        }
+
+        // If operator is dead, remove operator and stop vehicle.
+        VehicleOperator operator = vehicleOperator;
+        if ((operator != null) && (operator instanceof Person)) {
+            Person personOperator = (Person) operator;
+            if (personOperator.getPhysicalCondition().isDead()) {
+                setOperator(null);
+                setSpeed(0);
+            }
+        }
     }
 
     /**
@@ -621,27 +627,6 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public SalvageInfo getSalvageInfo() {
         return salvageInfo;
-    }
-    
-    /**
-     * Gets a settlement relative location from a location relative to this building.
-     * @param xLoc the X location relative to this building.
-     * @param yLoc the Y location relative to this building.
-     * @return Point containing the X and Y locations relative to the settlement.
-     */
-    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
-        Point2D.Double result = new Point2D.Double();
-        
-        double radianRotation = (getFacing() * (Math.PI / 180D));
-        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
-        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
-        
-        double translateX = rotateX + getXLocation();
-        double translateY = rotateY + getYLocation();
-        
-        result.setLocation(translateX, translateY);
-        
-        return result;
     }
     
     /**

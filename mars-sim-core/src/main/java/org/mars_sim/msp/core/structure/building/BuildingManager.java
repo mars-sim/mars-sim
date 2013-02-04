@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.03 2012-08-08
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.core.structure.building;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.*;
@@ -287,12 +289,16 @@ public class BuildingManager implements Serializable {
         
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+                    GroundVehicleMaintenance.NAME).iterator();
             while (i.hasNext()) {
                 Building garageBuilding = i.next();
                 try {
-                	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
-                	if (garage.containsVehicle(vehicle)) result = garageBuilding;
+                	VehicleMaintenance garage = (VehicleMaintenance) garageBuilding.getFunction(
+                	        GroundVehicleMaintenance.NAME);
+                	if (garage.containsVehicle(vehicle)) {
+                	    result = garageBuilding;
+                	}
                 }
                 catch (Exception e) {
                 	logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
@@ -309,8 +315,7 @@ public class BuildingManager implements Serializable {
      * @return list of buildings that are not at or above maximum occupant capacity.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List<Building> getUncrowdedBuildings(List<Building> buildingList) 
-            {
+    public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
     	
     	try {
@@ -318,7 +323,9 @@ public class BuildingManager implements Serializable {
     		while (i.hasNext()) {
     			Building building = i.next();
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				if (lifeSupport.getAvailableOccupancy() > 0) result.add(building);
+				if (lifeSupport.getAvailableOccupancy() > 0) {
+				    result.add(building);
+				}
     		}
     	}
     	catch (ClassCastException e) {
@@ -335,8 +342,7 @@ public class BuildingManager implements Serializable {
      * @return list of least crowded buildings.
      * @throws BuildingException if building in list does not have the life support function.
      */
-    public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) 
-             {
+    public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
     	
     	// Find least crowded population.
@@ -426,13 +432,20 @@ public class BuildingManager implements Serializable {
      * Adds the person to the building if possible.
      * @param person the person to add.
      * @param building the building to add the person to.
-     * @throws BuildingException if person could not be added to the building.
      */
     public static void addPersonToBuilding(Person person, Building building)  {
 		if (building != null) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
 				if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person); 
+				
+				// Add person to random location within building.
+				// TODO: Modify this when implementing active locations in buildings.
+				Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
+				Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+				        buildingLoc.getY(), building);
+				person.setXLocation(settlementLoc.getX());
+				person.setYLocation(settlementLoc.getY());
 			}
 			catch (Exception e) {
 				throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
@@ -442,11 +455,28 @@ public class BuildingManager implements Serializable {
     }
     
     /**
+     * Removes the person from a building if possible.
+     * @param person the person to remove.
+     * @param building the building to remove the person from.
+     */
+    public static void removePersonFromBuilding(Person person, Building building) {
+        if (building != null) {
+            try {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person); 
+            }
+            catch (Exception e) {
+                throw new IllegalStateException("BuildingManager.removePersonFromBuilding(): " + e.getMessage());
+            }
+        }
+        else throw new IllegalStateException("Building is null");
+    }
+    
+    /**
      * Gets the value of a named building at the settlement.
      * @param buildingName the building name.
      * @param newBuilding true if adding a new building.
      * @return building value (VP).
-     * @throws Exception if error getting building value.
      */
     public double getBuildingValue(String buildingName, boolean newBuilding) {
         

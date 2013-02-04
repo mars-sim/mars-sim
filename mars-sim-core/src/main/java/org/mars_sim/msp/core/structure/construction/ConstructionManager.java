@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionManager.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 
@@ -179,7 +179,7 @@ public class ConstructionManager implements Serializable {
             Iterator<Person> i = lifeSupport.getOccupants().iterator();
             while (i.hasNext()) {
                 Person occupant = i.next();
-                lifeSupport.removePerson(occupant);
+                BuildingManager.removePersonFromBuilding(occupant, salvagedBuilding);
                 BuildingManager.addToRandomBuilding(occupant, buildingManager.getSettlement());
             }
         }

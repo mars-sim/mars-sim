@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.04 2013-01-23
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -91,8 +92,8 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         double newXLoc = 0D;
         double newYLoc = 0D;
         if (location != null) {
-            Point2D.Double settlementLoc = getBuilding().getSettlementRelativeLocation(location.getXLocation(), 
-                    location.getYLocation());
+            Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(location.getXLocation(), 
+                    location.getYLocation(), getBuilding());
             newXLoc = settlementLoc.getX();
             newYLoc = settlementLoc.getY();
             location.parkVehicle(vehicle);

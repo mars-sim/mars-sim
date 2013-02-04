@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.04 2012-12-07
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
  
 package org.mars_sim.msp.core.structure.building;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -18,7 +19,6 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.function.*;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -29,7 +29,8 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * The Building class is a settlement's building.
  */
-public class Building implements Malfunctionable, Serializable, Comparable<Building> {
+public class Building implements Malfunctionable, Serializable, Comparable<Building>, 
+        LocalBoundedObject {
     
     // Power Modes
     public static final String FULL_POWER = "Full Power";
@@ -251,42 +252,27 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
         return name;
     }
     
-    /**
-     * Gets the building's width.
-     * @return width (meters).
-     */
+    @Override
     public double getWidth() {
         return width;
     }
     
-    /**
-     * Gets the building's length.
-     * @return length (meters).
-     */
+    @Override
     public double getLength() {
         return length;
     }
     
-    /**
-     * Gets the x location of the building in the settlement.
-     * @return x location (meters from settlement center - West: positive, East: negative).
-     */
+    @Override
     public double getXLocation() {
         return xLoc;
     }
     
-    /**
-     * Gets the y location of the building in the settlement.
-     * @return y location (meters from settlement center - North: positive, South: negative).
-     */
+    @Override
     public double getYLocation() {
         return yLoc;
     }
     
-    /**
-     * Gets the facing of the building.
-     * @return facing (degrees from North clockwise).
-     */
+    @Override
     public double getFacing() {
         return facing;
     }
@@ -410,27 +396,6 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      */
     public Inventory getInventory() {
         return manager.getSettlement().getInventory();
-    }
-    
-    /**
-     * Gets a settlement relative location from a location relative to this building.
-     * @param xLoc the X location relative to this building.
-     * @param yLoc the Y location relative to this building.
-     * @return Point containing the X and Y locations relative to the settlement.
-     */
-    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
-        Point2D.Double result = new Point2D.Double();
-        
-        double radianRotation = (getFacing() * (Math.PI / 180D));
-        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
-        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
-        
-        double translateX = rotateX + getXLocation();
-        double translateY = rotateY + getYLocation();
-        
-        result.setLocation(translateX, translateY);
-        
-        return result;
     }
     
     /**

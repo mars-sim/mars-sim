@@ -7,11 +7,14 @@
 
 package org.mars_sim.msp.core.vehicle;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
@@ -20,6 +23,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.Collections;
