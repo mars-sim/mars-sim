@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.00 2011-03-18
+ * @version 3.04 2013-02-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -47,10 +47,7 @@ import org.mars_sim.msp.core.structure.SettlementTemplate;
  */
 public class TempSimulationConfigEditor extends JDialog {
 
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(TempSimulationConfigEditor.class.getName());
     
     // Data members.
     private SimulationConfig config;
