@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonMapLayer.java
- * @version 3.04 2013-01-27
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -23,7 +23,7 @@ public class PersonMapLayer implements SettlementMapLayer {
 
     // Static members
     private static final Color PERSON_COLOR = new Color(0, 255, 255);
-    private static final Color PERSON_OUTLINE_COLOR = new Color(0, 0, 0, 127);
+    private static final Color PERSON_OUTLINE_COLOR = new Color(0, 0, 0, 190);
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -42,28 +42,25 @@ public class PersonMapLayer implements SettlementMapLayer {
     public void displayLayer(Graphics2D g2d, Settlement settlement,
             double xPos, double yPos, int mapWidth, int mapHeight,
             double rotation, double scale) {
-        
-        if (mapPanel.isShowPersonLabels()) {
             
-            // Save original graphics transforms.
-            AffineTransform saveTransform = g2d.getTransform();
-            
-            // Get the map center point.
-            double mapCenterX = mapWidth / 2D;
-            double mapCenterY = mapHeight / 2D;
-            
-            // Translate map from settlement center point.
-            g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
-            
-            // Rotate map from North.
-            g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
-            
-            // Draw all people.
-            drawPeople(g2d, settlement);
-            
-            // Restore original graphic transforms.
-            g2d.setTransform(saveTransform);
-        }
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+
+        // Get the map center point.
+        double mapCenterX = mapWidth / 2D;
+        double mapCenterY = mapHeight / 2D;
+
+        // Translate map from settlement center point.
+        g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
+
+        // Rotate map from North.
+        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+
+        // Draw all people.
+        drawPeople(g2d, settlement);
+
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
     }
     
     /**
@@ -83,11 +80,11 @@ public class PersonMapLayer implements SettlementMapLayer {
                 // Only draw living people.
                 if (!person.getPhysicalCondition().isDead()) {
 
-                    // Draw people that at settlement location.
+                    // Draw people that are at the settlement location.
                     Coordinates settlementLoc = settlement.getCoordinates();
                     Coordinates personLoc = person.getCoordinates();
                     if (personLoc.equals(settlementLoc)) {
-                        drawPerson(g2d, settlement, person);
+                        drawPerson(g2d, person);
                     }
                 }
             }
@@ -97,12 +94,11 @@ public class PersonMapLayer implements SettlementMapLayer {
     /**
      * Draw a person at a settlement.
      * @param g2d the graphics context.
-     * @param settlement the settlement.
      * @param person the person to draw.
      */
-    private void drawPerson(Graphics2D g2d, Settlement settlement, Person person) {
+    private void drawPerson(Graphics2D g2d, Person person) {
         
-        if ((settlement != null) && (person != null)) {
+        if (person != null) {
             
             // Save original graphics transforms.
             AffineTransform saveTransform = g2d.getTransform();
