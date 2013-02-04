@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Coordinates.java
- * @version 3.00 2011-03-15
+ * @version 3.04 2013-02-03
  * @author Scott Davis
  */
 
@@ -548,6 +548,8 @@ public class Coordinates implements Serializable {
 		try {
 			String numberString = cleanLatitude.substring(0, cleanLatitude.length() - 1).trim();
 			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
+			// Replace comma with period from internationalization.
+			numberString = numberString.replace(',', '.');
 			latValue = Double.parseDouble(numberString);
 		}
 		catch(NumberFormatException e) { 
@@ -561,7 +563,7 @@ public class Coordinates implements Serializable {
 		else if (direction == 'S') latValue += 90D;
 		else throw new IllegalStateException("Latitude direction wrong: " + direction);
 
-		double phi = Math.PI * ((latValue%180) / 180D);
+		double phi = Math.PI * (latValue / 180D);
 		return phi;
 	}
 	
@@ -582,6 +584,8 @@ public class Coordinates implements Serializable {
 		try {
 			String numberString = cleanLongitude.substring(0, cleanLongitude.length() - 1).trim();
 			if (numberString.endsWith("\u00BA")) numberString = numberString.substring(0, numberString.length() - 1);
+			// Replace comma with period from internationalization.
+            numberString = numberString.replace(',', '.');
 			longValue = Double.parseDouble(numberString);
 		}
 		catch(NumberFormatException e) { 
