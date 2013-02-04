@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
@@ -303,6 +304,7 @@ public class Mind implements Serializable {
                     // Move person from vehicle to settlement.
                     vehicle.getInventory().retrieveUnit(person);
                     settlement.getInventory().storeUnit(person);
+                    BuildingManager.addToRandomBuilding(person, settlement);
                 }
             }
         }

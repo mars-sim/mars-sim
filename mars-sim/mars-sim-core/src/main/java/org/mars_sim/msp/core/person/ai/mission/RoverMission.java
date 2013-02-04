@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -280,6 +282,11 @@ public abstract class RoverMission extends VehicleMission {
                     settlement.getInventory().retrieveUnit(person);
                 }
                 getVehicle().getInventory().storeUnit(person);
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), getVehicle());
+                person.setXLocation(settlementLoc.getX());
+                person.setYLocation(settlementLoc.getY());
             }
 
             // If rover is loaded and everyone is aboard, embark from settlement.
@@ -339,12 +346,12 @@ public abstract class RoverMission extends VehicleMission {
                 garageBuilding = BuildingManager.getBuilding(getVehicle());
                 if (isRoverInAGarage()
                         && garageBuilding.hasFunction(LifeSupport.NAME)) {
-                    LifeSupport lifeSupport = (LifeSupport) garageBuilding
-                            .getFunction(LifeSupport.NAME);
-                    lifeSupport.addPerson(person);
-                } else
+                    BuildingManager.addPersonToBuilding(person, garageBuilding);
+                } 
+                else {
                     BuildingManager.addToRandomBuilding(person,
                             disembarkSettlement);
+                }
             }
         }
 

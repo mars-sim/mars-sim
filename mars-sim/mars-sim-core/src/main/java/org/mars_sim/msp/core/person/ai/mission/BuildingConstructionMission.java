@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.04 2013-01-13
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -630,9 +631,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     luvTemp.setReservedForMission(true);
                     
                     // Place light utility vehicles at random location in construction site.
-                    Point2D.Double relativeLocSite = constructionSite.getRandomLocationInsideSite();
-                    Point2D.Double settlementLocSite = constructionSite.getSettlementRelativeLocation(
-                            relativeLocSite.getX(), relativeLocSite.getY());
+                    Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(constructionSite);
+                    Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+                            relativeLocSite.getY(), constructionSite);
                     luvTemp.setParkedLocation(settlementLocSite.getX(), settlementLocSite.getY(), 
                             RandomUtil.getRandomDouble(360D));
                     

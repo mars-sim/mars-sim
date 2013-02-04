@@ -7,11 +7,13 @@
 
 package org.mars_sim.msp.core.vehicle;
 
+import java.awt.geom.Point2D;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.Person;
 
 /** 
@@ -54,6 +56,12 @@ public class VehicleAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
                 // Exit person to inside vehicle.
                 vehicle.getInventory().storeUnit(person);
+                
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(vehicle);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), vehicle);
+                person.setXLocation(settlementLoc.getX());
+                person.setYLocation(settlementLoc.getY());
             }
             else if (DEPRESSURIZED.equals(getState())){
                 // Exit person outside vehicle.  

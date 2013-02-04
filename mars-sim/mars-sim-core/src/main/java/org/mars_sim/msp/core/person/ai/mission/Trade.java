@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2013-01-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -31,6 +32,7 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -426,8 +428,7 @@ public class Trade extends RoverMission implements Serializable {
             // Otherwise add person to another building in the settlement.
             garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
-                LifeSupport lifeSupport = (LifeSupport) garageBuilding.getFunction(LifeSupport.NAME);
-                lifeSupport.addPerson(person);
+                BuildingManager.addPersonToBuilding(person, garageBuilding);
             } else {
                 BuildingManager.addToRandomBuilding(person, tradingSettlement);
             }
@@ -584,6 +585,11 @@ public class Trade extends RoverMission implements Serializable {
                 tradingSettlement.getInventory().retrieveUnit(person);
             }
             getVehicle().getInventory().storeUnit(person);
+            Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+            Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                    vehicleLoc.getY(), getVehicle());
+            person.setXLocation(settlementLoc.getX());
+            person.setYLocation(settlementLoc.getY());
         }
 
         // If rover is loaded and everyone is aboard, embark from settlement.

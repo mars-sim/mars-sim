@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.04 2012-12-07
+ * @version 3.04 2013-02-04
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure.construction;
 
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -23,7 +24,7 @@ import java.util.List;
 /**
  * A building construction site.
  */
-public class ConstructionSite implements Serializable {
+public class ConstructionSite implements Serializable, LocalBoundedObject {
     
     // Construction site events.
     public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
@@ -65,10 +66,7 @@ public class ConstructionSite implements Serializable {
         listeners = Collections.synchronizedList(new ArrayList<ConstructionListener>());
     }
     
-    /**
-     * Gets the width of the construction site.
-     * @return width (meters).
-     */
+    @Override
     public double getWidth() {
         return width;
     }
@@ -81,10 +79,7 @@ public class ConstructionSite implements Serializable {
         this.width = width;
     }
     
-    /**
-     * Gets the length of the construction site.
-     * @return length (meters).
-     */
+    @Override
     public double getLength() {
         return length;
     }
@@ -97,10 +92,7 @@ public class ConstructionSite implements Serializable {
         this.length = length;
     }
     
-    /**
-     * Gets the X location of the construction site.
-     * @return x location in meters from center of settlement (West: positive, East: negative).
-     */
+    @Override
     public double getXLocation() {
         return xLocation;
     }
@@ -113,10 +105,7 @@ public class ConstructionSite implements Serializable {
         this.xLocation = xLocation;
     }
     
-    /**
-     * Gets the Y location of the construction site.
-     * @return y location in meters from center of settlement (North: positive, South: negative).
-     */
+    @Override
     public double getYLocation() {
         return yLocation;
     }
@@ -129,10 +118,7 @@ public class ConstructionSite implements Serializable {
         this.yLocation = yLocation;
     }
     
-    /**
-     * Gets the facing of the construction site.
-     * @return facing in degrees clockwise from North.
-     */
+    @Override
     public double getFacing() {
         return facing;
     }
@@ -363,39 +349,6 @@ public class ConstructionSite implements Serializable {
         if ((foundationStage != null) && foundationStage.getInfo().equals(stage)) result = true;
         else if ((frameStage != null) && frameStage.getInfo().equals(stage)) result = true;
         else if ((buildingStage != null) && buildingStage.getInfo().equals(stage)) result = true;
-        
-        return result;
-    }
-    
-    /**
-     * Gets a random location within the construction site.
-     * @return Point containing the X and Y locations relative to the construction site.
-     */
-    public Point2D.Double getRandomLocationInsideSite() {
-        
-        double xLoc = RandomUtil.getRandomDouble(getWidth()) - (getWidth() / 2D);
-        double yLoc = RandomUtil.getRandomDouble(getLength()) - (getLength() / 2D);
-        
-        return new Point2D.Double(xLoc, yLoc);
-    }
-    
-    /**
-     * Gets a settlement relative location from a location relative to this building.
-     * @param xLoc the X location relative to this building.
-     * @param yLoc the Y location relative to this building.
-     * @return Point containing the X and Y locations relative to the settlement.
-     */
-    public Point2D.Double getSettlementRelativeLocation(double xLoc, double yLoc) {
-        Point2D.Double result = new Point2D.Double();
-        
-        double radianRotation = (getFacing() * (Math.PI / 180D));
-        double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
-        double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
-        
-        double translateX = rotateX + getXLocation();
-        double translateY = rotateY + getYLocation();
-        
-        result.setLocation(translateX, translateY);
         
         return result;
     }
