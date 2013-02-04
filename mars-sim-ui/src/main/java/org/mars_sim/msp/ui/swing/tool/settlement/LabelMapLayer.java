@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.04 2013-01-27
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -25,15 +25,10 @@ import java.util.Map;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -43,13 +38,13 @@ public class LabelMapLayer implements SettlementMapLayer {
 
     // Static members
     private static final Color BUILDING_LABEL_COLOR = new Color(0, 0, 255);
-    private static final Color BUILDING_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color BUILDING_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
     private static final Color CONSTRUCTION_SITE_LABEL_COLOR = new Color(0, 0, 255);
-    private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color CONSTRUCTION_SITE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
     private static final Color VEHICLE_LABEL_COLOR = new Color(127, 0, 127);
-    private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 127);
+    private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
     private static final Color PERSON_LABEL_COLOR = new Color(0, 255, 255);
-    private static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 127);
+    private static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -182,45 +177,20 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param settlement the settlement.
      */
     private void drawVehicleLabels(Graphics2D g2d, Settlement settlement) {
+        
         if (settlement != null) {
             
-            // Draw all parked vehicles.
-            Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+            // Draw all vehicles that are at the settlement location.
+            Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
             while (i.hasNext()) {
                 Vehicle vehicle = i.next();
-                drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
-                		VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
-                
-                // Draw any towed vehicles.
-                if (vehicle instanceof Rover) {
-                    Rover rover = (Rover) vehicle;
-                    Vehicle towedVehicle = rover.getTowedVehicle();
-                    if (towedVehicle != null) {
-                        drawLabel(g2d, towedVehicle.getName(), towedVehicle.getXLocation(), towedVehicle.getYLocation(), 
-                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
-                    }
-                }
-            }
-            
-            // Draw all vehicles used in construction sites at the settlement.
-            Iterator<Mission> j = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
-            while (j.hasNext()) {
-                Mission mission = j.next();
-                if (mission instanceof BuildingConstructionMission) {
-                    Iterator<GroundVehicle> k = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();
-                    while (k.hasNext()) {
-                        Vehicle vehicle = k.next();
-                        drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
-                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
-                    }
-                }
-                else if (mission instanceof BuildingSalvageMission) {
-                    Iterator<GroundVehicle> k = ((BuildingSalvageMission) mission).getConstructionVehicles().iterator();
-                    while (k.hasNext()) {
-                        Vehicle vehicle = k.next();
-                        drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
-                                VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
-                    }
+             
+                // Draw vehicles that are at the settlement location.
+                Coordinates settlementLoc = settlement.getCoordinates();
+                Coordinates vehicleLoc = vehicle.getCoordinates();
+                if (vehicleLoc.equals(settlementLoc)) {
+                    drawLabel(g2d, vehicle.getName(), vehicle.getXLocation(), vehicle.getYLocation(), 
+                            VEHICLE_LABEL_COLOR, VEHICLE_LABEL_OUTLINE_COLOR);
                 }
             }
         }
