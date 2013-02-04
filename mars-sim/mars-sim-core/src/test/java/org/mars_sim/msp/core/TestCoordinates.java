@@ -278,4 +278,68 @@ public class TestCoordinates extends TestCase {
         assertTrue(phiError8 < ERROR_MARGIN_RAD);
         assertTrue(thetaError8 < ERROR_MARGIN_RAD);
     }
+    
+    /**
+     * Test the parseLongitude method.
+     */
+    public void testParseLongitude() {
+        
+        String lonString1 = "0.0\u00BA E";
+        double lon1 = Coordinates.parseLongitude(lonString1);
+        assertEquals(0D, lon1);
+        
+        String lonString2 = "90.0\u00BA W";
+        double lon2 = Coordinates.parseLongitude(lonString2);
+        assertEquals(3D * Math.PI / 2D, lon2);
+        
+        String lonString3 = "90.0 W";
+        double lon3 = Coordinates.parseLongitude(lonString3);
+        assertEquals(3D * Math.PI / 2D, lon3);
+        
+        String lonString4 = "90,0 W";
+        double lon4 = Coordinates.parseLongitude(lonString4);
+        assertEquals(3D * Math.PI / 2D, lon4);
+    }
+    
+    /**
+     * Test the parseLatitude method.
+     */
+    public void testParseLatitude() {
+        
+        String latString1 = "0.0\u00BA N";
+        double lat1 = Coordinates.parseLatitude(latString1);
+        assertEquals(Math.PI / 2D, lat1);
+        
+        String latString2 = "90.0\u00BA S";
+        double lat2 = Coordinates.parseLatitude(latString2);
+        assertEquals(Math.PI, lat2);
+        
+        String latString3 = "90.0 N";
+        double lat3 = Coordinates.parseLatitude(latString3);
+        assertEquals(0D, lat3);
+        
+        String latString4 = "90,0 N";
+        double lat4 = Coordinates.parseLatitude(latString4);
+        assertEquals(0D, lat4);
+    }
+    
+    /**
+     * Test the getFormattedLongitudeString method.
+     */
+    public void testGetFormattedLongitudeString() {
+        
+        Coordinates loc1 = new Coordinates (0D, 0D);
+        String lonString1 = loc1.getFormattedLongitudeString();
+        assertEquals("0.0\u00BA E", lonString1);
+    }
+    
+    /**
+     * Test the getFormattedLatitudeString method.
+     */
+    public void testGetFormattedLatitudeString() {
+        
+        Coordinates loc1 = new Coordinates (0D, 0D);
+        String latString1 = loc1.getFormattedLatitudeString();
+        assertEquals("90.0\u00BA N", latString1);
+    }
 }
