@@ -73,7 +73,6 @@ public class JUnitTests extends TestCase {
         int slots = vehicle.getAtachmentSlotNumber();
 
         assertEquals("Wrong crew capacity", 1, crewCapacity);
-        assertEquals("Wrong slot number", 3, slots);
-
+        assertEquals("Wrong slot number", 2, slots);
     }
 }
