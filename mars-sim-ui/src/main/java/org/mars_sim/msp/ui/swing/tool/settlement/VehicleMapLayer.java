@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMapLayer.java
- * @version 3.04 2013-01-23
+ * @version 3.04 2013-02-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -17,10 +17,9 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
+import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
-import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
@@ -30,9 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicle;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
@@ -98,39 +95,19 @@ public class VehicleMapLayer implements SettlementMapLayer {
 	private void drawVehicles(Graphics2D g2d, Settlement settlement) {
 		
 		if (settlement != null) {
-		    // Draw all vehicles parked at the settlement.
-			Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-			while (i.hasNext()) {
-			    Vehicle vehicle = i.next();
-				drawVehicle(vehicle, g2d);
-				
-                // Draw any towed vehicles.
-                if (vehicle instanceof Rover) {
-                    Rover rover = (Rover) vehicle;
-                    Vehicle towedVehicle = rover.getTowedVehicle();
-                    if (towedVehicle != null) {
-                        drawVehicle(towedVehicle, g2d);
-                    }
+		    
+		    // Draw all vehicles that are at the settlement location.
+		    Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
+		    while (i.hasNext()) {
+		        Vehicle vehicle = i.next();
+		     
+		        // Draw vehicles that are at the settlement location.
+                Coordinates settlementLoc = settlement.getCoordinates();
+                Coordinates vehicleLoc = vehicle.getCoordinates();
+                if (vehicleLoc.equals(settlementLoc)) {
+                    drawVehicle(vehicle, g2d);
                 }
-			}
-			
-			// Draw all vehicles used in construction sites at the settlement.
-			Iterator<Mission> j = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
-			while (j.hasNext()) {
-			    Mission mission = j.next();
-			    if (mission instanceof BuildingConstructionMission) {
-			        Iterator<GroundVehicle> k = ((BuildingConstructionMission) mission).getConstructionVehicles().iterator();
-			        while (k.hasNext()) {
-			            drawVehicle(k.next(), g2d);
-			        }
-			    }
-			    else if (mission instanceof BuildingSalvageMission) {
-			        Iterator<GroundVehicle> k = ((BuildingSalvageMission) mission).getConstructionVehicles().iterator();
-                    while (k.hasNext()) {
-                        drawVehicle(k.next(), g2d);
-                    }
-			    }
-			}
+		    }
 		}
 	}
 	
@@ -221,13 +198,14 @@ public class VehicleMapLayer implements SettlementMapLayer {
         if ((mission != null) && (mission instanceof VehicleMission)) {
             VehicleMission vehicleMission = (VehicleMission) mission;
             String missionPhase = vehicleMission.getPhase();
-            if (RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) {
+            if ((RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) && 
+                    !mission.getPhaseEnded()) {
                 if (!vehicleMission.isVehicleLoaded()) {
                     result = true;
                 }
             }
             else if (RoverMission.DISEMBARKING.equals(missionPhase) || Trade.UNLOAD_GOODS.equals(missionPhase)) {
-                if (vehicle.getInventory().isEmpty(true)) {
+                if (!vehicle.getInventory().isEmpty(false)) {
                     result = true;
                 }
             }
