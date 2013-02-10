@@ -56,7 +56,7 @@ public class UnloadVehicleTest extends TestCase {
 		Person person = new Person("test person", Person.MALE, settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		
-		UnloadVehicle unloadVehicle = new UnloadVehicle(person, vehicle);
+		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);
 		unloadVehicle.unloadingPhase(11D);
 		unloadVehicle.unloadingPhase(12D);
 		unloadVehicle.unloadingPhase(13D);
