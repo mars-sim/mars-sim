@@ -86,7 +86,7 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
-		LoadVehicle loadVehicle = new LoadVehicle(person, vehicle, resourcesMap, equipmentMap);
+		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, resourcesMap, equipmentMap);
 		loadVehicle.loadingPhase(10D);
 		
 		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenContainer.class));
@@ -135,7 +135,7 @@ public class LoadVehicleTest extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		
 		assertTrue("Enough supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoAmountResources() throws Exception {
@@ -169,7 +169,7 @@ public class LoadVehicleTest extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		
 		assertFalse("Not enough amount resource supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoItemResources() throws Exception {
@@ -210,7 +210,7 @@ public class LoadVehicleTest extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		
 		assertFalse("Not enough item resource supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 	
 	public void testHasEnoughSuppliesNoEquipment() throws Exception {
@@ -249,7 +249,7 @@ public class LoadVehicleTest extends TestCase {
 		Vehicle vehicle = new MockVehicle(settlement);
 		
 		assertFalse("Not enough equipment supplies at settlement for trip.", 
-				LoadVehicle.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
+				LoadVehicleGarage.hasEnoughSupplies(settlement, vehicle, resourcesMap, equipmentMap, 0, 0D));
 	}
 
 	/*
@@ -293,7 +293,7 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
-		assertTrue("Vehicle is fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
 	
 	/*
@@ -329,7 +329,7 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
 	
 	/*
@@ -372,7 +372,7 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
 	
 	/*
@@ -412,6 +412,6 @@ public class LoadVehicleTest extends TestCase {
 		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
 		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicle.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
 	}
 }
