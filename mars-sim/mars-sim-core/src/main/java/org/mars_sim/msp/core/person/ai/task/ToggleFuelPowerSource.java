@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -214,8 +216,8 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return the value diff (value points)
      * @throws Exception if error getting value diff.
      */
-    private static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) 
-{
+    private static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) {
+        
         double inputValue = getInputResourcesValue(settlement, fuelSource);
         double outputValue = getPowerOutputValue(settlement, fuelSource);
         double diff = outputValue - inputValue;
@@ -236,8 +238,8 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      * @return the total value for the input resources per Sol.
      * @throws Exception if problem determining resources value.
      */
-    private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) 
-{
+    private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
+        
         AmountResource resource = fuelSource.getFuelResource();
         double massPerSol = fuelSource.getFuelConsumptionRate();
         double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
@@ -370,8 +372,32 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
             endTask();
         }
         
-        if (exitedAirlock) setPhase(TOGGLE_POWER_SOURCE);
+        if (exitedAirlock) {
+            setPhase(TOGGLE_POWER_SOURCE);
+            
+            // Move person outside next to building.
+            moveToFuelPowerSourceLocation();
+        }
         return time;
+    }
+    
+    /**
+     * Move person next to power source location.
+     */
+    public void moveToFuelPowerSourceLocation() {
+        
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 20) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), building);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getAssociatedSettlement());
+        }
+        
+        person.setXLocation(newLocation.getX());
+        person.setYLocation(newLocation.getY());
     }
     
     /**
@@ -398,7 +424,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
      */
     private double togglePowerSourcePhase(double time) {
         
-        // If person is incompacitated, end task.
+        // If person is incapacitated, end task.
         if (person.getPerformanceRating() == 0D) {
             if (isEVA) setPhase(ENTER_AIRLOCK);
             else endTask();

@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -239,8 +241,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 	 * @return the total value for the input or output.
      * @throws Exception if problem determining resource value.
 	 */
-	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) 
-{
+	private static double getResourcesValue(Settlement settlement, ResourceProcess process, boolean input) {
+	    
 		double result = 0D;
 		
 		Iterator<AmountResource> i = null;
@@ -378,9 +380,33 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 			endTask();
 		}
         
-		if (exitedAirlock) setPhase(TOGGLE_PROCESS);
+		if (exitedAirlock) {
+		    setPhase(TOGGLE_PROCESS);
+		    
+            // Move person outside next to building.
+            moveToResourceProcessLocation();
+		}
 		return time;
 	}
+	
+    /**
+     * Move person next to resource process location.
+     */
+    public void moveToResourceProcessLocation() {
+        
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 20) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), building);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getAssociatedSettlement());
+        }
+        
+        person.setXLocation(newLocation.getX());
+        person.setYLocation(newLocation.getY());
+    }
 	
 	/**
 	 * Perform the enter airlock phase of the task.
@@ -406,7 +432,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      */
     private double toggleProcessPhase(double time) {
     	
-        // If person is incompacitated, enter airlock.
+        // If person is incapacitated, enter airlock.
         if (person.getPerformanceRating() == 0D) {
             if (isEVA) setPhase(ENTER_AIRLOCK);
             else endTask();

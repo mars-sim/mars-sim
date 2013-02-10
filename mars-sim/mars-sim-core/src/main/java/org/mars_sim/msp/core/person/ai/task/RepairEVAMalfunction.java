@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.02 2011-11-27
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -22,7 +25,10 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 
@@ -56,7 +62,6 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 
         // Initialize phase
         addPhase(REPAIR_MALFUNCTION);
-        setPhase(EXIT_AIRLOCK);
 
         // logger.info(person.getName() + " has started the RepairEVAMalfunction task.");
     }
@@ -67,8 +72,8 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * @return true if malfunction, false if none.
      * @throws Exception if error checking for EVA malfunction.
      */
-    private static boolean hasEVAMalfunction(Person person, Unit containerUnit, Malfunctionable entity) 
-    		{
+    private static boolean hasEVAMalfunction(Person person, Unit containerUnit, 
+            Malfunctionable entity) {
    
         boolean result = false;
 
@@ -234,8 +239,48 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
 			endTask();
 		}
         
-        if (exitedAirlock) setPhase(REPAIR_MALFUNCTION);
+        if (exitedAirlock) {
+            setPhase(REPAIR_MALFUNCTION);
+            
+            // Move person outside next to malfunctionable entity.
+            moveToRepairLocation();
+        }
         return time;
+    }
+    
+    /**
+     * Move person outside next to malfunctionable entity.
+     */
+    private void moveToRepairLocation() {
+        
+        LocalBoundedObject boundedObject = null;
+        if (entity instanceof LocalBoundedObject) {
+            boundedObject = (LocalBoundedObject) entity;
+        }
+        else if (entity instanceof Settlement) {
+            Settlement settlement = (Settlement) entity;
+            List<Building> allBuildings = settlement.getBuildingManager().getBuildings();
+            if (allBuildings.size() > 0) {
+                int index = RandomUtil.getRandomInt(allBuildings.size() - 1);
+                boundedObject = allBuildings.get(index);
+            }
+        }
+         
+        if (boundedObject != null) {
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(boundedObject, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), boundedObject);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getAssociatedSettlement());
+            }
+            
+            person.setXLocation(newLocation.getX());
+            person.setYLocation(newLocation.getY());
+        }
+        
     }
 
     /**

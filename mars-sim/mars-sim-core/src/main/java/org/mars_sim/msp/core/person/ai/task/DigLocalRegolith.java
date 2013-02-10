@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -9,6 +9,9 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -24,6 +27,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -220,13 +224,48 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 }
             }
             
-            if (bag != null) setPhase(COLLECT_REGOLITH);
+            if (bag != null) {
+                setPhase(COLLECT_REGOLITH);
+                
+                // Move person to digging location.
+                moveToDiggingLocation();
+            }
             else {
                 logger.log(Level.SEVERE, "Unable to find empty bag in settlement inventory");
                 setPhase(ENTER_AIRLOCK);
             }
         }
         return time;
+    }
+    
+    /**
+     * Move person to a location for digging regolith.
+     */
+    private void moveToDiggingLocation() {
+        
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 5) && !goodLocation; x++) {
+            for (int y = 0; (y < 10) && !goodLocation; y++) {
+                if (airlock.getEntity() instanceof LocalBoundedObject) {
+                    LocalBoundedObject boundedObject = (LocalBoundedObject) airlock.getEntity();
+                    
+                    double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
+                    double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+                    double newXLoc = boundedObject.getXLocation() - (distance * Math.sin(radianDirection));
+                    double newYLoc = boundedObject.getYLocation() + (distance * Math.cos(radianDirection));
+                    Point2D.Double boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+                    
+                    newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                            boundedLocalPoint.getY(), boundedObject);
+                    goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                            person.getAssociatedSettlement());
+                }
+            }
+        }
+        
+        person.setXLocation(newLocation.getX());
+        person.setYLocation(newLocation.getY());
     }
     
     /**
