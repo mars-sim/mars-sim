@@ -34,8 +34,10 @@ public class Driver extends Job implements Serializable {
 		jobTasks.add(MaintainGroundVehicleEVA.class);
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
-		jobTasks.add(LoadVehicle.class);
-		jobTasks.add(UnloadVehicle.class);
+		jobTasks.add(LoadVehicleGarage.class);
+		jobTasks.add(UnloadVehicleGarage.class);
+		jobTasks.add(LoadVehicleEVA.class);
+        jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(EnterAirlock.class);
 		jobTasks.add(ExitAirlock.class);
 		
