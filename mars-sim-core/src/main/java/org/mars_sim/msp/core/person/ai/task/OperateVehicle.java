@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2013-02-07
  * @author Scott Davis
  */
 
@@ -14,11 +14,13 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 
 /**
@@ -205,6 +207,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
             vehicle.setSpeed(0D);
             vehicle.setOperator(null);
             updateVehicleElevationAltitude();
+            if (isSettlementDestination()) {
+                determineInitialSettlementParkedLocation();
+            }
+            else {
+                double radDir = vehicle.getDirection().getDirection();
+                double degDir = radDir * 180D / Math.PI;
+                vehicle.setParkedLocation(0D, 0D, degDir);
+            }
             endTask();
             result = time - MarsClock.convertSecondsToMillisols(distanceTraveled / vehicle.getSpeed() * 60D * 60D);
         }
@@ -218,6 +228,39 @@ public abstract class OperateVehicle extends Task implements Serializable {
         vehicle.addDistanceLastMaintenance(distanceTraveled);
 
         return result;
+	}
+	
+	/**
+	 * Checks if the destination is at the location of a settlement.
+	 * @return true if destination is at a settlement location.
+	 */
+	private boolean isSettlementDestination() {
+	    
+	    boolean result = false;
+	    
+	    Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
+	    while (i.hasNext()) {
+	        Settlement settlement = i.next();
+	        if (settlement.getCoordinates().equals(destination)) {
+	            result = true;
+	        }
+	    }
+	    
+	    return result;
+	}
+	
+	/**
+	 * Determine the vehicle's initial parked location while traveling to settlement.
+	 */
+	private void determineInitialSettlementParkedLocation() {
+	    
+	    Direction oppDir = new Direction(vehicle.getDirection().getDirection() + Math.PI);
+	    double distance = 200D;
+	    double xLoc = 0D - (distance * oppDir.getSinDirection());
+        double yLoc = distance * oppDir.getCosDirection();
+        double degDir = vehicle.getDirection().getDirection() * 180D / Math.PI;
+	    
+        vehicle.setParkedLocation(xLoc, yLoc, degDir);
 	}
 	
 	/**
