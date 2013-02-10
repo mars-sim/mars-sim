@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * AmountResourcePhaseStorage.java
- * @version 3.03 2012-20-23
+ * @version 3.04 2013-02-08
  * @author Scott Davis 
  */
 
 package org.mars_sim.msp.core.resource;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -298,5 +300,19 @@ class AmountResourcePhaseStorage implements Serializable {
         amountResourcePhaseCapacities = null;
         if (amountResourcePhaseStored != null) amountResourcePhaseStored.clear();
         amountResourcePhaseStored = null;
+    }
+    
+    /**
+     * Implementing readObject method for serialization.
+     * @param in the input stream.
+     * @throws IOException if error reading from input stream.
+     * @throws ClassNotFoundException if error creating class.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        
+        in.defaultReadObject();
+
+        // Initialize transient variables that need it.
+        totalStoredCacheDirty = true;
     }
 }

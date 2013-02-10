@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.03 2012-07-28
+ * @version 3.04 2013-02-08
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -12,6 +12,8 @@ import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Phase;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
@@ -1566,5 +1568,23 @@ public class Inventory implements Serializable {
         amountResourceStoredCache = null;
         if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
         allStoredAmountResourcesCache = null;
+    }
+    
+    /**
+     * Implementing readObject method for serialization.
+     * @param in the input stream.
+     * @throws IOException if error reading from input stream.
+     * @throws ClassNotFoundException if error creating class.
+     */
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        
+        in.defaultReadObject();
+
+        // Initialize transient variables that need it.
+        allStoredAmountResourcesCacheDirty = true;
+        totalAmountResourcesStoredCacheDirty = true;
+        itemResourceTotalMassCacheDirty = true;
+        unitTotalMassCacheDirty = true;
+        totalInventoryMassCacheDirty = true;
     }
 }
