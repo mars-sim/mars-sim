@@ -122,6 +122,7 @@ public class Mind implements Serializable {
                     getNewAction(true, (!activeMission && !overrideMission));
                 } catch (Exception e) {
                     logger.log(Level.WARNING, "Could not get new action", e);
+                    e.printStackTrace(System.err);
                 }
             }
             if (taskManager.hasActiveTask() || hasActiveMission())
