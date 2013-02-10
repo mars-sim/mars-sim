@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.03 2012-10-22
+ * @version 3.04 2013-02-09
  * @author Scott Davis
  */
 
@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -17,6 +19,7 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -24,7 +27,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /** 
- * The ExitAirlock class is a task for exiting a airlock from an EVA operation.
+ * The ExitAirlock class is a task for exiting an airlock for an EVA operation.
  */
 public class ExitAirlock extends Task implements Serializable {
 
@@ -56,8 +59,39 @@ public class ExitAirlock extends Task implements Serializable {
         // Initialize task phase
         addPhase(EXITING_AIRLOCK);
         setPhase(EXITING_AIRLOCK);
+        
+        // Move the person to the inside of the airlock.
+        movePersonInsideAirlock();
 
         logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
+    }
+    
+    /**
+     * Move the person to the outside of the airlock.
+     */
+    private void movePersonOutsideAirlock() {
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double loc = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+            person.setXLocation(loc.getX());
+            person.setYLocation(loc.getY());
+        }
+    }
+    
+    /**
+     * Move the person to the inside of the airlock.
+     */
+    private void movePersonInsideAirlock() {
+        
+        // Move the person to a random location inside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double loc = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
+            person.setXLocation(loc.getX());
+            person.setYLocation(loc.getY());
+        }
     }
 
     /**
@@ -153,6 +187,10 @@ public class ExitAirlock extends Task implements Serializable {
         // If person is outside, end task.
         if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             logger.fine(person.getName() + " successfully exited airlock of " + airlock.getEntityName());
+            
+            // Move person to the outside of the airlock.
+            movePersonOutsideAirlock();
+            
             endTask();
         }
 

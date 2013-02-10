@@ -205,16 +205,18 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         
             // Add experience points
             addExperience(time);
-            
-            // Move person to location at construction site.
-            moveToConstructionSiteLocation();
         }
         catch (Exception e) {
             // Person unable to exit airlock.
             endTask();
         }
         
-        if (exitedAirlock) setPhase(SALVAGE);
+        if (exitedAirlock) {
+            setPhase(SALVAGE);
+            
+            // Move person to location at construction site.
+            moveToConstructionSiteLocation();
+        }
         return time;
     }
 

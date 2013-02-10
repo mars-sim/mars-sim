@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.04 2013-02-02
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -122,16 +122,18 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         
             // Add experience points
             addExperience(time);
-            
-            // Move person to location at construction site.
-            moveToConstructionSiteLocation();
         }
         catch (Exception e) {
             // Person unable to exit airlock.
             endTask();
         }
         
-        if (exitedAirlock) setPhase(CONSTRUCTION);
+        if (exitedAirlock) {
+            setPhase(CONSTRUCTION);
+            
+            // Move person to location at construction site.
+            moveToConstructionSiteLocation();
+        }
         return time;
     }
 

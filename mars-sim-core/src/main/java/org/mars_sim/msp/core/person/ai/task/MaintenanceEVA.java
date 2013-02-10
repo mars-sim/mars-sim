@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.03 2012-06-28
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -26,6 +28,7 @@ import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -62,15 +65,12 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			if (entity == null) endTask();
 		}
 		catch (Exception e) {
-		    	logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
+		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
 			endTask();
 		}
 		
 		// Initialize phase
 		addPhase(MAINTAIN);
-		
-		// Set initial phase.
-		setPhase(EXIT_AIRLOCK);
 		
 		// logger.info(person.getName() + " is starting " + getDescription());
 	}
@@ -196,8 +196,48 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			endTask();
 		}
         
-		if (exitedAirlock) setPhase(MAINTAIN);
+		if (exitedAirlock) {
+		    setPhase(MAINTAIN);
+		    
+		    // Move person outside next to malfunctionable entity.
+		    moveToMaintenanceLocation();
+		}
 		return time;
+	}
+	
+	/**
+	 * Move person outside next to malfunctionable entity.
+	 */
+	private void moveToMaintenanceLocation() {
+	    
+	    LocalBoundedObject boundedObject = null;
+	    if (entity instanceof LocalBoundedObject) {
+	        boundedObject = (LocalBoundedObject) entity;
+	    }
+	    else if (entity instanceof Settlement) {
+            Settlement settlement = (Settlement) entity;
+            List<Building> allBuildings = settlement.getBuildingManager().getBuildings();
+            if (allBuildings.size() > 0) {
+                int index = RandomUtil.getRandomInt(allBuildings.size() - 1);
+                boundedObject = allBuildings.get(index);
+            }
+        }
+	     
+	    if (boundedObject != null) {
+	        Point2D.Double newLocation = null;
+	        boolean goodLocation = false;
+	        for (int x = 0; (x < 20) && !goodLocation; x++) {
+	            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(boundedObject, 1D);
+	            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+	                    boundedLocalPoint.getY(), boundedObject);
+	            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+	                    person.getAssociatedSettlement());
+	        }
+	        
+	        person.setXLocation(newLocation.getX());
+	        person.setYLocation(newLocation.getY());
+	    }
+	    
 	}
 	
 	/**

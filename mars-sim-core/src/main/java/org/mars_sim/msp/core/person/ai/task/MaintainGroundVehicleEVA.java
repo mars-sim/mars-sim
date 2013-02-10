@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.03 2012-06-28
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -25,6 +26,7 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -180,8 +182,32 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			endTask();
 		}
     	
-        if (exitedAirlock) setPhase(MAINTAIN_VEHICLE);
+        if (exitedAirlock) {
+            setPhase(MAINTAIN_VEHICLE);
+            
+            // Move person outside next to malfunctionable entity.
+            moveToMaintenanceLocation();
+        }
         return time;
+    }
+    
+    /**
+     * Move person outside next to ground vehicle.
+     */
+    private void moveToMaintenanceLocation() {
+         
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 20) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), vehicle);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getAssociatedSettlement());
+        }
+
+        person.setXLocation(newLocation.getX());
+        person.setYLocation(newLocation.getY());
     }
     
     /**
