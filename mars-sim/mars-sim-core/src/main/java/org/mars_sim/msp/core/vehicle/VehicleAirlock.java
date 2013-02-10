@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.02 2012-05-30
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -66,6 +66,13 @@ public class VehicleAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())){
                 // Exit person outside vehicle.  
                 vehicle.getInventory().retrieveUnit(person);
+                
+                // Move person to a random location outside of vehicle.
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), vehicle);
+                person.setXLocation(settlementLoc.getX());
+                person.setYLocation(settlementLoc.getY());
             }
             else {
                 logger.severe("Vehicle airlock in incorrect state for exiting: " + getState());
@@ -90,5 +97,10 @@ public class VehicleAirlock extends Airlock {
      */
     public Inventory getEntityInventory() {
         return vehicle.getInventory();
+    }
+    
+    @Override
+    public Object getEntity() {
+        return vehicle;
     }
 }
