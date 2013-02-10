@@ -58,8 +58,8 @@
 	<!-- Base percent chance per millisol that a person at maximum stress will have an anxiety attack. -->
 	<!-- See medical complaint: "Anxiety Attack" in medical.xml. -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
-	<!-- Default: .1 -->
-	<stress-breakdown-chance value=".1" />
+	<!-- Default: .01 -->
+	<stress-breakdown-chance value=".01" />
 
 	<!-- The average percentage of males to total population in the simulation. -->
 	<!-- Default 50 (equal numbers of males and females) -->
