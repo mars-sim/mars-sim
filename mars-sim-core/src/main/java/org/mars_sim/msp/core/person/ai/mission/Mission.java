@@ -54,7 +54,7 @@ public abstract class Mission implements Serializable {
     private boolean done; // True if mission is completed
     private Collection<String> phases; // A collection of the mission's phases.
     private String phase; // The current phase of the mission
-    private String phaseDescription; // The discription of the current phase of operation.
+    private String phaseDescription; // The description of the current phase of operation.
     private boolean phaseEnded; // Has the current phase ended?
     private int missionCapacity; // The number of people that can be in the mission.
     private transient List<MissionListener> listeners; // Mission listeners.

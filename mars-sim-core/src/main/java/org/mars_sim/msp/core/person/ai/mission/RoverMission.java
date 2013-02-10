@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-01-31
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 
@@ -13,9 +13,11 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicle;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicle;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -267,10 +269,16 @@ public abstract class RoverMission extends VehicleMission {
                 if (isVehicleLoadable()) {
                     // Load rover
                     // Random chance of having person load (this allows person to do other things sometimes)
-                    if (RandomUtil.lessThanRandPercent(75))
-                        assignTask(person, new LoadVehicle(person,
-                                getVehicle(), getResourcesToLoad(),
-                                getEquipmentToLoad()));
+                    if (RandomUtil.lessThanRandPercent(75)) {
+                        if (BuildingManager.getBuilding(getVehicle()) != null) {
+                            assignTask(person, new LoadVehicleGarage(person, getVehicle(), getResourcesToLoad(),
+                                    getEquipmentToLoad()));
+                        }
+                        else {
+                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), getResourcesToLoad(),
+                                    getEquipmentToLoad()));
+                        }
+                    }
                 } else
                     endMission("Vehicle is not loadable (RoverMission).");
             }
@@ -370,11 +378,17 @@ public abstract class RoverMission extends VehicleMission {
             }
 
             // Unload rover if necessary.
-            boolean roverUnloaded = UnloadVehicle.isFullyUnloaded(rover);
+            boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
             if (!roverUnloaded) {
                 // Random chance of having person unload (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
-                    assignTask(person, new UnloadVehicle(person, rover));
+                    if (BuildingManager.getBuilding(rover) != null) {
+                        assignTask(person, new UnloadVehicleGarage(person, rover));
+                    }
+                    else {
+                        assignTask(person, new UnloadVehicleEVA(person, rover));
+                    }
+                    
                     return;
                 }
             }

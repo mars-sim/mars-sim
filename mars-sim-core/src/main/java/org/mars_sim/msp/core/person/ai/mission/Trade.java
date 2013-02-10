@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2013-01-31
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -13,9 +13,11 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicle;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicle;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
@@ -498,10 +500,17 @@ public class Trade extends RoverMission implements Serializable {
         // Unload towed vehicle (if necessary).
         unloadTowedVehicle();
 
-        if (!UnloadVehicle.isFullyUnloaded(getRover())) {
+        boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
+        if (!roverUnloaded) {
             // Random chance of having person unload (this allows person to do other things sometimes)
             if (RandomUtil.lessThanRandPercent(50)) {
-                assignTask(person, new UnloadVehicle(person, getRover()));
+                if (BuildingManager.getBuilding(getRover()) != null) {
+                    assignTask(person, new UnloadVehicleGarage(person, getRover()));
+                }
+                else {
+                    assignTask(person, new UnloadVehicleEVA(person, getRover()));
+                }
+                
                 return;
             }
         } else {
@@ -528,7 +537,14 @@ public class Trade extends RoverMission implements Serializable {
             if (isVehicleLoadable()) {
                 // Random chance of having person load (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
-                    assignTask(person, new LoadVehicle(person, getVehicle(), getResourcesToLoad(), getEquipmentToLoad()));
+                    if (BuildingManager.getBuilding(getVehicle()) != null) {
+                        assignTask(person, new LoadVehicleGarage(person, getVehicle(), getResourcesToLoad(),
+                                getEquipmentToLoad()));
+                    }
+                    else {
+                        assignTask(person, new LoadVehicleEVA(person, getVehicle(), getResourcesToLoad(),
+                                getEquipmentToLoad()));
+                    }
                 }
             } else {
                 endMission("Vehicle is not loadable (RoverMission).");

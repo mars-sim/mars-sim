@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * LoadVehicle.java
- * @version 3.04 2013-01-23
+ * LoadVehicleGarage.java
+ * @version 3.04 2013-02-06
  * @author Scott Davis
  */
 
@@ -35,11 +35,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
- * The LoadVehicle class is a task for loading a vehicle with fuel and supplies.
+ * The LoadVehicleGarage class is a task for loading a vehicle with fuel and supplies 
+ * in a vehicle maintenance garage.
  */
-public class LoadVehicle extends Task implements Serializable {
+public class LoadVehicleGarage extends Task implements Serializable {
     
-	private static Logger logger = Logger.getLogger(LoadVehicle.class.getName());
+	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
 	
     // Comparison to indicate a small but non-zero amount.
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -66,7 +67,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
-    public LoadVehicle(Person person) {
+    public LoadVehicleGarage(Person person) {
     	// Use Task constructor
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
@@ -80,10 +81,13 @@ public class LoadVehicle extends Task implements Serializable {
     		if (settlement == null) endTask();
     		
     		// If vehicle is in a garage, add person to garage.
-            Building garage = BuildingManager.getBuilding(vehicle);
-            if (garage != null) {
-                BuildingManager.addPersonToBuilding(person, garage);
+            Building garageBuilding = BuildingManager.getBuilding(vehicle);
+            if (garageBuilding != null) {
+                BuildingManager.addPersonToBuilding(person, garageBuilding);
             }
+            
+            // End task if vehicle or garage not available.
+            if ((vehicle == null) || (garageBuilding == null)) endTask();    
     		
     		// Initialize task phase
             addPhase(LOADING);
@@ -102,7 +106,7 @@ public class LoadVehicle extends Task implements Serializable {
      * @param equipment a map of equipment to be loaded.
      * @throws Exception if error creating task.
      */
-    public LoadVehicle(Person person, Vehicle vehicle, Map<Resource, Number> resources, 
+    public LoadVehicleGarage(Person person, Vehicle vehicle, Map<Resource, Number> resources, 
     		Map<Class, Integer> equipment) {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
@@ -112,8 +116,6 @@ public class LoadVehicle extends Task implements Serializable {
         
         if (resources != null) this.resources = new HashMap<Resource, Number>(resources);
         if (equipment != null) this.equipment = new HashMap<Class, Integer>(equipment);
-        
-        // tripProportion = tripDistance / vehicle.getRange();
         
         settlement = person.getSettlement();
         
@@ -154,13 +156,14 @@ public class LoadVehicle extends Task implements Serializable {
         
 		// Job modifier.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicle.class);        
+		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);        
 	
         return result;
     }
     
     /**
-     * Gets a list of all embarking vehicle missions at a settlement.
+     * Gets a list of all embarking vehicle missions at a settlement with vehicle 
+     * currently in a garage.
      * @param settlement the settlement.
      * @return list of vehicle missions.
      * @throws Exception if error finding missions.
@@ -179,7 +182,11 @@ public class LoadVehicle extends Task implements Serializable {
     				if (vehicleMission.hasVehicle()) {
     					Vehicle vehicle = vehicleMission.getVehicle();
     					if (settlement == vehicle.getSettlement()) {
-    						if (!vehicleMission.isVehicleLoaded()) result.add(vehicleMission);
+    						if (!vehicleMission.isVehicleLoaded()) {
+    					        if (BuildingManager.getBuilding(vehicle) != null) {
+    					            result.add(vehicleMission);
+    					        }
+    						}
     					}
     				}
     			}
@@ -245,10 +252,6 @@ public class LoadVehicle extends Task implements Serializable {
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time;
-        
-        // If vehicle is not in a garage, load rate is reduced.
-        Building garage = BuildingManager.getBuilding(vehicle);
-        if (garage == null) amountLoading /= 4D;
         
         // Temporarily remove rover from settlement so that inventory doesn't get mixed in.
         Inventory sInv = settlement.getInventory();

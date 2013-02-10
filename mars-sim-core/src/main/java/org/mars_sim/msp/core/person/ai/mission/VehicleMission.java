@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.*;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicle;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -290,7 +290,7 @@ public abstract class VehicleMission extends TravelMission implements
         if (vehicle == null)
             throw new IllegalStateException(getPhase() + " : vehicle is null");
         try {
-            return LoadVehicle.isFullyLoaded(getResourcesToLoad(),
+            return LoadVehicleGarage.isFullyLoaded(getResourcesToLoad(),
                     getEquipmentToLoad(), vehicle);
         } catch (Exception e) {
             throw new IllegalStateException(getPhase(), e);
@@ -310,9 +310,9 @@ public abstract class VehicleMission extends TravelMission implements
         Settlement settlement = vehicle.getSettlement();
         double tripTime = getEstimatedRemainingMissionTime(true);
 
-        boolean vehicleCapacity = LoadVehicle.enoughCapacityForSupplies(
+        boolean vehicleCapacity = LoadVehicleGarage.enoughCapacityForSupplies(
                 resources, equipment, vehicle, settlement);
-        boolean settlementSupplies = LoadVehicle.hasEnoughSupplies(settlement,
+        boolean settlementSupplies = LoadVehicleGarage.hasEnoughSupplies(settlement,
                 vehicle, resources, equipment, getPeopleNumber(), tripTime);
         if (!vehicleCapacity) {
             logger.info("Vehicle doesn't have capacity.");

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.03 2012-06-23
+ * @version 3.04 2013-02-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -55,7 +55,7 @@ public class TaskManager implements Serializable {
         currentTask = null;
 
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[37];
+        availableTasks = (Class<? extends Task>[]) new Class[39];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -72,8 +72,8 @@ public class TaskManager implements Serializable {
         availableTasks[13] = Teach.class;
         availableTasks[14] = CookMeal.class;
         availableTasks[15] = MaintenanceEVA.class;
-        availableTasks[16] = LoadVehicle.class;
-        availableTasks[17] = UnloadVehicle.class;
+        availableTasks[16] = LoadVehicleGarage.class;
+        availableTasks[17] = UnloadVehicleGarage.class;
         availableTasks[18] = ToggleResourceProcess.class;
         availableTasks[19] = ManufactureGood.class;
         availableTasks[20] = ToggleFuelPowerSource.class;
@@ -93,6 +93,8 @@ public class TaskManager implements Serializable {
         availableTasks[34] = SalvageGood.class;
         availableTasks[35] = ManufactureConstructionMaterials.class;
         availableTasks[36] = ReturnLightUtilityVehicle.class;
+        availableTasks[37] = LoadVehicleEVA.class;
+        availableTasks[38] = UnloadVehicleEVA.class;
 
         // Initialize cache values.
         timeCache = null;
