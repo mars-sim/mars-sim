@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.02 2011-11-27
+ * @version 3.04 2013-02-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -61,16 +61,10 @@ public class PrescribeMedication extends Task implements Serializable {
             
             // If in settlement, move doctor to building patient is in.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//                try {
-                    Building doctorBuilding = BuildingManager.getBuilding(person);
-                    Building patientBuilding = BuildingManager.getBuilding(patient);
-                    if (doctorBuilding != patientBuilding) 
-                        BuildingManager.addPersonToBuilding(person, patientBuilding);
-//                }
-//                catch (BuildingException e) {
-//                    logger.log(Level.SEVERE,"PrescribeMedication.constructor(): " + e.getMessage());
-//                    endTask();
-//                }
+                Building doctorBuilding = BuildingManager.getBuilding(person);
+                Building patientBuilding = BuildingManager.getBuilding(patient);
+                if (doctorBuilding != patientBuilding) 
+                    BuildingManager.addPersonToBuilding(person, patientBuilding);
             }
             
             logger.info(person.getName() + " prescribing " + medication.getName() + 
@@ -138,7 +132,7 @@ public class PrescribeMedication extends Task implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Person person = i.next();
                 PhysicalCondition condition = person.getPhysicalCondition();
-                if (condition.getStress() >= 100D) {
+                if (!condition.isDead() && (condition.getStress() >= 100D)) {
                     // Only prescribing anti-stress medication at the moment.
                     if (!condition.hasMedication(AntiStressMedication.NAME)) {
                         result = person;
