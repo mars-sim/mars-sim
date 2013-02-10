@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMapLayer.java
- * @version 3.04 2013-02-02
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -24,9 +24,11 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.LoadVehicle;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.UnloadVehicle;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
@@ -200,14 +202,10 @@ public class VehicleMapLayer implements SettlementMapLayer {
             String missionPhase = vehicleMission.getPhase();
             if ((RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) && 
                     !mission.getPhaseEnded()) {
-                if (!vehicleMission.isVehicleLoaded()) {
-                    result = true;
-                }
+                result = true;
             }
             else if (RoverMission.DISEMBARKING.equals(missionPhase) || Trade.UNLOAD_GOODS.equals(missionPhase)) {
-                if (!vehicle.getInventory().isEmpty(false)) {
-                    result = true;
-                }
+                result = true;
             }
         }
         
@@ -219,13 +217,23 @@ public class VehicleMapLayer implements SettlementMapLayer {
                 if (!person.getPhysicalCondition().isDead()) {
                     Task task = person.getMind().getTaskManager().getTask();
                     if (task != null) {
-                        if (task instanceof LoadVehicle) {
-                            if (vehicle.equals(((LoadVehicle) task).getVehicle())) {
+                        if (task instanceof LoadVehicleGarage) {
+                            if (vehicle.equals(((LoadVehicleGarage) task).getVehicle())) {
                                 result = true;
                             }
                         }
-                        else if (task instanceof UnloadVehicle) {
-                            if (vehicle.equals(((UnloadVehicle) task).getVehicle())) {
+                        else if (task instanceof LoadVehicleEVA) {
+                            if (vehicle.equals(((LoadVehicleEVA) task).getVehicle())) {
+                                result = true;
+                            }
+                        }
+                        else if (task instanceof UnloadVehicleGarage) {
+                            if (vehicle.equals(((UnloadVehicleGarage) task).getVehicle())) {
+                                result = true;
+                            }
+                        }
+                        else if (task instanceof UnloadVehicleEVA) {
+                            if (vehicle.equals(((UnloadVehicleEVA) task).getVehicle())) {
                                 result = true;
                             }
                         }

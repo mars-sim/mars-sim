@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * UnloadVehicle.java
- * @version 3.04 2013-01-23
+ * UnloadVehicleGarage.java
+ * @version 3.04 2013-02-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -33,11 +33,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
- * The UnloadVehicle class is a task for unloading a fuel and supplies from a vehicle.
+ * The UnloadVehicleGarage class is a task for unloading fuel and supplies from a vehicle 
+ * in a vehicle maintenance garage.
  */
-public class UnloadVehicle extends Task implements Serializable {
+public class UnloadVehicleGarage extends Task implements Serializable {
 	
-    private static Logger logger = Logger.getLogger(UnloadVehicle.class.getName());
+    private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
     
 	// Task phase
 	private static final String UNLOADING = "Unloading";
@@ -56,24 +57,34 @@ public class UnloadVehicle extends Task implements Serializable {
      * @param person the person to perform the task.
      * @throws Exception if error constructing task.
      */
-    public UnloadVehicle(Person person) {
+    public UnloadVehicleGarage(Person person) {
     	// Use Task constructor.
     	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
     	settlement = person.getSettlement();
     	
     	VehicleMission mission = getMissionNeedingUnloading();
-    	if (mission != null) vehicle = mission.getVehicle();
-    	else vehicle = getNonMissionVehicleNeedingUnloading(settlement);
+    	if (mission != null) {
+    	    vehicle = mission.getVehicle();
+    	}
+    	else {
+    	    List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
+    	    if (nonMissionVehicles.size() > 0) {
+    	        vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
+    	    }
+    	}
     	
     	if (vehicle != null) {
     		setDescription("Unloading " + vehicle.getName());
     		
     		// If vehicle is in a garage, add person to garage.
-            Building garage = BuildingManager.getBuilding(vehicle);
-            if (garage != null) {
-                BuildingManager.addPersonToBuilding(person, garage);
+            Building garageBuilding = BuildingManager.getBuilding(vehicle);
+            if (garageBuilding != null) {
+                BuildingManager.addPersonToBuilding(person, garageBuilding);
             }
+            
+            // End task if vehicle or garage not available.
+            if ((vehicle == null) || (garageBuilding == null)) endTask();    
     		
     		// Initialize task phase
             addPhase(UNLOADING);
@@ -88,7 +99,7 @@ public class UnloadVehicle extends Task implements Serializable {
      * @param vehicle the vehicle to be unloaded
      * @throws Exception if error constructing task.
      */
-    public UnloadVehicle(Person person, Vehicle vehicle) {
+    public UnloadVehicleGarage(Person person, Vehicle vehicle) {
     	// Use Task constructor.
         super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
@@ -125,7 +136,7 @@ public class UnloadVehicle extends Task implements Serializable {
         	try {
         		int numVehicles = 0;
         		numVehicles += getAllMissionsNeedingUnloading(person.getSettlement()).size();
-        		if (getNonMissionVehicleNeedingUnloading(person.getSettlement()) != null) numVehicles++;
+        		numVehicles += getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
         		result = 50D * numVehicles;
         	}
         	catch (Exception e) {
@@ -139,18 +150,18 @@ public class UnloadVehicle extends Task implements Serializable {
         
 		// Job modifier.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicle.class);        
+		if (job != null) result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
 	
         return result;
     }
     
     /**
-     * Gets a vehicle that needs unloading that isn't reserved for a mission.
+     * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.
-     * @return vehicle or null if none.
+     * @return list of vehicles.
      */
-    private static Vehicle getNonMissionVehicleNeedingUnloading(Settlement settlement) {
-    	Vehicle result = null;
+    private static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
+    	List<Vehicle> result = new ArrayList<Vehicle>();
     	
     	if (settlement != null) {
     		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -158,12 +169,20 @@ public class UnloadVehicle extends Task implements Serializable {
     			Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
     			if (!vehicle.isReserved()) {
-                    if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) needsUnloading = true;
-                    if (vehicle instanceof Towing) {
-                        if (((Towing) vehicle).getTowedVehicle() != null) needsUnloading = true;
-                    }
+    			    if (BuildingManager.getBuilding(vehicle) != null) {
+    			        if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+    			            needsUnloading = true;
+    			        }
+    			        if (vehicle instanceof Towing) {
+    			            if (((Towing) vehicle).getTowedVehicle() != null) {
+    			                needsUnloading = true;
+    			            }
+    			        }
+    			    }
                 }
-                if (needsUnloading) result = vehicle;
+                if (needsUnloading) {
+                    result.add(vehicle);
+                }
     		}
     	}
     	
@@ -174,7 +193,6 @@ public class UnloadVehicle extends Task implements Serializable {
      * Gets a list of all disembarking vehicle missions at a settlement.
      * @param settlement the settlement.
      * @return list of vehicle missions.
-     * @throws Exception if error finding missions.
      */
     private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
     	
@@ -190,7 +208,11 @@ public class UnloadVehicle extends Task implements Serializable {
     				if (vehicleMission.hasVehicle()) {
     					Vehicle vehicle = vehicleMission.getVehicle();
     					if (settlement == vehicle.getSettlement()) {
-    						if (!isFullyUnloaded(vehicle)) result.add(vehicleMission);
+    						if (!isFullyUnloaded(vehicle)) {
+    						    if (BuildingManager.getBuilding(vehicle) != null) {
+                                    result.add(vehicleMission);
+                                }
+    						}
     					}
     				}
     			}
@@ -251,10 +273,6 @@ public class UnloadVehicle extends Task implements Serializable {
 		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;
-
-        // If vehicle is not in a garage, unload rate is reduced.
-        Building garage = BuildingManager.getBuilding(vehicle);
-        if (garage == null) amountUnloading /= 4D;
         
         Inventory vehicleInv = vehicle.getInventory();
         if (settlement == null) {
@@ -332,6 +350,10 @@ public class UnloadVehicle extends Task implements Serializable {
         return 0D;
     }
     
+    /**
+     * Unload the inventory from a piece of equipment.
+     * @param equipment the equipment.
+     */
     private void unloadEquipmentInventory(Equipment equipment) {
     	Inventory eInv = equipment.getInventory();
     	Inventory sInv = settlement.getInventory();
