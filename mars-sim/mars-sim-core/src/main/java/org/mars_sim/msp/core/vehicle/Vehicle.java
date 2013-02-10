@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.04 2013-02-02
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -506,6 +506,7 @@ public abstract class Vehicle extends Unit implements Serializable,
             if (personOperator.getPhysicalCondition().isDead()) {
                 setOperator(null);
                 setSpeed(0);
+                setParkedLocation(0D, 0D, getDirection().getDirection());
             }
         }
     }

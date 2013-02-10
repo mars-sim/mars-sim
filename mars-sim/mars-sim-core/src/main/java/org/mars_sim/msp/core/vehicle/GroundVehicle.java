@@ -1,33 +1,24 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Path2D;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 /** The GroundVehicle class represents a ground-type vehicle.  It is
@@ -134,7 +125,10 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      */
     public void setStuck(boolean stuck) {
         isStuck = stuck;
-        if (isStuck) setSpeed(0D);
+        if (isStuck) {
+            setSpeed(0D);
+            setParkedLocation(0D, 0D, getDirection().getDirection());
+        }
     }
     
     /**
@@ -190,91 +184,11 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     		    newFacing = RandomUtil.getRandomDouble(360D);
     		    
     		    // Check if new vehicle location collides with anything.
-    		    foundGoodLocation = checkVehicleLocation(newXLoc, newYLoc, newFacing);
+    		    foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, 
+    		            newXLoc, newYLoc, newFacing, getSettlement());
     		}
     	}
     	
     	setParkedLocation(newXLoc, newYLoc, newFacing);
-    }
-    
-    /**
-     * Checks if vehicle location and facing rectangle collides with any existing vehicle, building, 
-     * or construction site.
-     * @param xLoc the vehicle X location.
-     * @param yLoc the vehicle Y location.
-     * @param facing the vehicle facing (degrees clockwise from North).
-     * @return true if vehicle location doesn't collide with anything.
-     */
-    private boolean checkVehicleLocation(double xLoc, double yLoc, double facing) {
-    	boolean result = true;
-    	
-        // Create path for proposed new vehicle position.
-        Rectangle2D newVehicleRect = new Rectangle2D.Double(xLoc - (getWidth() / 2D), 
-                yLoc - (getLength() / 2D), getWidth(), getLength());
-        Path2D newVehiclePath = getPathFromRectangleRotation(newVehicleRect, facing);
-    	
-    	// Check all other parked vehicles at settlement.
-    	Iterator<Vehicle> i = getSettlement().getParkedVehicles().iterator();
-    	while (i.hasNext() && result) {
-    		Vehicle vehicle = i.next();
-    		if (vehicle != this) {
-    	        Rectangle2D tempVehicleRect = new Rectangle2D.Double(vehicle.getXLocation() - 
-    	        		(vehicle.getWidth() / 2D), vehicle.getYLocation() - (vehicle.getLength() / 2D), 
-    	        		vehicle.getWidth(), vehicle.getLength());
-    	        Path2D tempVehiclePath = getPathFromRectangleRotation(tempVehicleRect, vehicle.getFacing());
-    	        Area area = new Area(newVehiclePath);
-                area.intersect(new Area(tempVehiclePath));
-                if (!area.isEmpty()) {
-                    result = false;
-                }
-    		}
-    	}
-    	
-    	// Check all buildings at settlement.
-        Iterator<Building> j = getSettlement().getBuildingManager().getBuildings().iterator();
-        while (j.hasNext() && result) {
-            Building building = j.next();
-            Rectangle2D buildingRect = new Rectangle2D.Double(building.getXLocation() - 
-                    (building.getWidth() / 2D), building.getYLocation() - 
-                    (building.getLength() / 2D), building.getWidth(), building.getLength());
-            Path2D buildingPath = getPathFromRectangleRotation(buildingRect, 
-                    building.getFacing());
-            Area area = new Area(newVehiclePath);
-            area.intersect(new Area(buildingPath));
-            if (!area.isEmpty()) {
-                result = false;
-            }
-        }
-    	
-    	// Check all construction sites at settlement.
-        Iterator<ConstructionSite> k = getSettlement().getConstructionManager().getConstructionSites().iterator();
-        while (k.hasNext() && result) {
-        	ConstructionSite site = k.next();
-        	Rectangle2D siteRect = new Rectangle2D.Double(site.getXLocation() - 
-        			(site.getWidth() / 2D), site.getYLocation() - 
-        			(site.getLength() / 2D), site.getWidth(), site.getLength());
-        	Path2D sitePath = getPathFromRectangleRotation(siteRect, 
-        			site.getFacing());
-        	Area area = new Area(newVehiclePath);
-        	area.intersect(new Area(sitePath));
-        	if (!area.isEmpty()) {
-        		result = false;
-        	}
-        }
-    	
-    	return result;
-    }
-    
-    /**
-     * Creates a Path2D object from a rectangle with a given rotation.
-     * @param rectangle the rectangle.
-     * @param rotation the rotation (degrees clockwise from North).
-     * @return path representing rotated rectangle.
-     */
-    private Path2D getPathFromRectangleRotation(Rectangle2D rectangle, double rotation) {
-        double radianRotation = rotation * (Math.PI / 180D);
-        AffineTransform at = AffineTransform.getRotateInstance(radianRotation, rectangle.getCenterX(), 
-                rectangle.getCenterY());
-        return new Path2D.Double(rectangle, at);
     }
 }
