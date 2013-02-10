@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.03 2012-10-22
+ * @version 3.04 2013-02-05
  * @author Scott Davis
  */
 
@@ -382,6 +382,12 @@ public abstract class Airlock implements Serializable {
      * @return inventory
      */
     public abstract Inventory getEntityInventory();
+    
+    /**
+     * Gets the entity this airlock is attached to.
+     * @return entity.
+     */
+    public abstract Object getEntity();
 
     /**
      * Prepare object for garbage collection.
