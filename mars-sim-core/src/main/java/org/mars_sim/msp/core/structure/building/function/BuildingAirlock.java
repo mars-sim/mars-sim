@@ -1,16 +1,18 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.04 2013-01-31
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.awt.geom.Point2D;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -83,6 +85,13 @@ public class BuildingAirlock extends Airlock {
                 // Exit person to outside building.
                 BuildingManager.removePersonFromBuilding(person, building);
                 inv.retrieveUnit(person);
+                
+                // Move person to a random exterior location to the building.
+                Point2D.Double buildingLoc = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                        buildingLoc.getY(), building);
+                person.setXLocation(settlementLoc.getX());
+                person.setYLocation(settlementLoc.getY());
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());
@@ -108,5 +117,10 @@ public class BuildingAirlock extends Airlock {
      */
     public Inventory getEntityInventory() {
         return building.getInventory();
+    }
+    
+    @Override
+    public Object getEntity() {
+        return building;
     }
 }
