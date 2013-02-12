@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.04 2013-02-05
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 
@@ -259,7 +259,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                     newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                             boundedLocalPoint.getY(), boundedObject);
                     goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                            person.getAssociatedSettlement());
+                            person.getCoordinates());
                 }
             }
         }

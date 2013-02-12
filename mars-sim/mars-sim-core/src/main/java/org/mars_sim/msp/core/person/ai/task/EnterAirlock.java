@@ -158,9 +158,18 @@ public class EnterAirlock extends Task implements Serializable {
         // Move the person to a random location outside the airlock entity.
         if (airlock.getEntity() instanceof LocalBoundedObject) {
             LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double loc = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
-            person.setXLocation(loc.getX());
-            person.setYLocation(loc.getY());
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            person.setXLocation(newLocation.getX());
+            person.setYLocation(newLocation.getY());
         }
     }
     
@@ -172,9 +181,18 @@ public class EnterAirlock extends Task implements Serializable {
         // Move the person to a random location inside the airlock entity.
         if (airlock.getEntity() instanceof LocalBoundedObject) {
             LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double loc = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
-            person.setXLocation(loc.getX());
-            person.setYLocation(loc.getY());
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            person.setXLocation(newLocation.getX());
+            person.setYLocation(newLocation.getY());
         }
     }
 

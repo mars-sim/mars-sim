@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.04 2013-02-05
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -401,7 +401,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                     boundedLocalPoint.getY(), building);
             goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getAssociatedSettlement());
+                    person.getCoordinates());
         }
         
         person.setXLocation(newLocation.getX());

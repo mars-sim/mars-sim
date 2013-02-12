@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.04 2013-02-09
+ * @version 3.04 2013-02-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -182,13 +183,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
                 if (!vehicle.isReserved()) {
-                    if (BuildingManager.getBuilding(vehicle) == null) {
-                        if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
-                            needsUnloading = true;
-                        }
-                        if (vehicle instanceof Towing) {
-                            if (((Towing) vehicle).getTowedVehicle() != null) {
+                    int peopleOnboard = CollectionUtils.getPerson(
+                            vehicle.getInventory().getContainedUnits()).size();
+                    if (peopleOnboard == 0) {
+                        if (BuildingManager.getBuilding(vehicle) == null) {
+                            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
                                 needsUnloading = true;
+                            }
+                            if (vehicle instanceof Towing) {
+                                if (((Towing) vehicle).getTowedVehicle() != null) {
+                                    needsUnloading = true;
+                                }
                             }
                         }
                     }
@@ -221,9 +226,13 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                     if (vehicleMission.hasVehicle()) {
                         Vehicle vehicle = vehicleMission.getVehicle();
                         if (settlement == vehicle.getSettlement()) {
-                            if (!isFullyUnloaded(vehicle)) {
-                                if (BuildingManager.getBuilding(vehicle) == null) {
-                                    result.add(vehicleMission);
+                            int peopleOnboard = CollectionUtils.getPerson(
+                                    vehicle.getInventory().getContainedUnits()).size();
+                            if (peopleOnboard == 0) {
+                                if (!isFullyUnloaded(vehicle)) {
+                                    if (BuildingManager.getBuilding(vehicle) == null) {
+                                        result.add(vehicleMission);
+                                    }
                                 }
                             }
                         }
@@ -310,7 +319,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                     boundedLocalPoint.getY(), vehicle);
             goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    settlement);
+                    person.getCoordinates());
         }
 
         person.setXLocation(newLocation.getX());
