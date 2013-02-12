@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.04 2013-02-09
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -289,7 +289,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                     boundedLocalPoint.getY(), vehicle);
             goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    settlement);
+                    person.getCoordinates());
         }
 
         person.setXLocation(newLocation.getX());

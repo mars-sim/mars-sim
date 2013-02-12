@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.04 2013-02-05
+ * @version 3.04 2013-02-10
  * @author Scott Davis
  */
 
@@ -203,7 +203,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
             newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
                     boundedLocalPoint.getY(), vehicle);
             goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getAssociatedSettlement());
+                    person.getCoordinates());
         }
 
         person.setXLocation(newLocation.getX());
