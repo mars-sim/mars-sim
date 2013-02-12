@@ -599,10 +599,6 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {
     		Map<Class, Integer> result = new HashMap<Class, Integer>();
-    		
-    		// Include two EVA suits.
-        	result.put(EVASuit.class, 2);
-    		
     		equipmentNeededCache = result;
     		return result;
     	}

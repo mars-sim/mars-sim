@@ -759,9 +759,6 @@ public class Mining extends RoverMission {
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
 
-            // Include one EVA suit per person on mission.
-            result.put(EVASuit.class, getPeopleNumber());
-
             // Include required number of bags.
             result.put(Bag.class, NUMBER_OF_BAGS);
 

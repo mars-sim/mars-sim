@@ -643,9 +643,6 @@ public class Exploration extends RoverMission implements Serializable {
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
 
-            // Include one EVA suit per person on mission.
-            result.put(EVASuit.class, getPeopleNumber());
-
             // Include required number of specimen containers.
             result.put(SpecimenContainer.class, REQUIRED_SPECIMEN_CONTAINERS);
 

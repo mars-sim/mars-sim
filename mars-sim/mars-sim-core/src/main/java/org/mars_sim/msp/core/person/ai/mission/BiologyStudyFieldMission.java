@@ -448,11 +448,7 @@ public class BiologyStudyFieldMission extends RoverMission
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
-        
-            // Include one EVA suit per person on mission.
-            result.put(EVASuit.class, getPeopleNumber());
-        
+            Map<Class, Integer> result = new HashMap<Class, Integer>();      
             equipmentNeededCache = result;
             return result;
         }

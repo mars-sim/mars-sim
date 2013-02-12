@@ -605,7 +605,7 @@ public abstract class Mission implements Serializable {
 	 * @throws MissionException if error determining needed resources.
 	 */
     public abstract Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts)  ;
+    		boolean parts);
     
     /**
      * Gets the number and types of equipment needed for the mission.

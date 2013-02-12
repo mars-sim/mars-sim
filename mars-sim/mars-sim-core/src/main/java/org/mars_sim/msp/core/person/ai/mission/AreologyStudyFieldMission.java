@@ -447,10 +447,6 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
-        
-            // Include one EVA suit per person on mission.
-            result.put(EVASuit.class, getPeopleNumber());
-        
             equipmentNeededCache = result;
             return result;
         }
