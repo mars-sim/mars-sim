@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-02-10
+ * @version 3.04 2013-02-12
  * @author Scott Davis
  */
 
@@ -10,9 +10,12 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -24,7 +27,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -279,22 +281,45 @@ public abstract class RoverMission extends VehicleMission {
                                     getEquipmentToLoad()));
                         }
                     }
-                } else
+                } else {
                     endMission("Vehicle is not loadable (RoverMission).");
+                }
             }
         } else {
             // If person is not aboard the rover, board rover.
             if (!person.getLocationSituation().equals(Person.INVEHICLE)
                     && !person.getLocationSituation().equals(Person.BURIED)) {
-                if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+
+                if (isRoverInAGarage()) {
                     settlement.getInventory().retrieveUnit(person);
+                    getVehicle().getInventory().storeUnit(person);
+                    
+                    // Store one EVA suit for person (if possible).
+                    if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
+                        EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
+                        settlement.getInventory().retrieveUnit(suit);
+                        getVehicle().getInventory().storeUnit(suit);
+                    }
+                    
+                    // Move person to random location within rover.
+                    Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+                    Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                            vehicleLoc.getY(), getVehicle());
+                    person.setXLocation(settlementLoc.getX());
+                    person.setYLocation(settlementLoc.getY());
                 }
-                getVehicle().getInventory().storeUnit(person);
-                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                        vehicleLoc.getY(), getVehicle());
-                person.setXLocation(settlementLoc.getX());
-                person.setYLocation(settlementLoc.getY());
+                else {
+                    if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+
+                        // Have person exit the settlement via an airlock.
+                        assignTask(person, new ExitAirlock(person, startingSettlement.getAvailableAirlock()));
+                    }
+                    else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+
+                        // Have person enter the rover airlock.
+                        assignTask(person, new EnterAirlock(person, getRover().getAirlock()));
+                    }
+                }
             }
 
             // If rover is loaded and everyone is aboard, embark from settlement.
@@ -344,28 +369,28 @@ public abstract class RoverMission extends VehicleMission {
 
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            if (getVehicle() != null)
-                getVehicle().getInventory().retrieveUnit(person);
-            disembarkSettlement.getInventory().storeUnit(person);
-
-            // Add the person to the rover's garage if it's in one.
-            // Otherwise add person to another building in the settlement.
-            if (getVehicle() != null) {
-                garageBuilding = BuildingManager.getBuilding(getVehicle());
-                if (isRoverInAGarage()
-                        && garageBuilding.hasFunction(LifeSupport.NAME)) {
+            if (isRoverInAGarage()) {
+                if (getVehicle() != null) {
+                    getVehicle().getInventory().retrieveUnit(person);
+                    disembarkSettlement.getInventory().storeUnit(person);
+                    garageBuilding = BuildingManager.getBuilding(getVehicle());
                     BuildingManager.addPersonToBuilding(person, garageBuilding);
-                } 
-                else {
-                    BuildingManager.addToRandomBuilding(person,
-                            disembarkSettlement);
                 }
             }
+            else {
+                // Have person exit the rover via its airlock.
+                assignTask(person, new ExitAirlock(person, getRover().getAirlock()));
+            }
+        }
+        else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            // Have person enter the settlement via an airlock.
+            assignTask(person, new EnterAirlock(person, startingSettlement.getAvailableAirlock()));
         }
 
-        // If any people are aboard the rover who aren't mission members, carry them into the settlement.
         Rover rover = (Rover) getVehicle();
         if (rover != null) {
+            
+            // If any people are aboard the rover who aren't mission members, carry them into the settlement.
             if (isNoOneInRover() && (rover.getCrewNum() > 0)) {
                 Iterator<Person> i = rover.getCrew().iterator();
                 while (i.hasNext()) {
@@ -377,38 +402,42 @@ public abstract class RoverMission extends VehicleMission {
                 }
             }
 
-            // Unload rover if necessary.
-            boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
-            if (!roverUnloaded) {
-                // Random chance of having person unload (this allows person to do other things sometimes)
-                if (RandomUtil.lessThanRandPercent(50)) {
-                    if (BuildingManager.getBuilding(rover) != null) {
-                        assignTask(person, new UnloadVehicleGarage(person, rover));
-                    }
-                    else {
-                        assignTask(person, new UnloadVehicleEVA(person, rover));
-                    }
-                    
-                    return;
-                }
-            }
-
-            // If everyone has left the rover, end the phase.
+            // If no one is in the rover, unload it and end phase.
             if (isNoOneInRover()) {
-
-                // If the rover is in a garage, put the rover outside.
-                if (isRoverInAGarage()) {
-                    garageBuilding = BuildingManager.getBuilding(getVehicle());
-                    garage = (VehicleMaintenance) garageBuilding
-                            .getFunction(GroundVehicleMaintenance.NAME);
-                    garage.removeVehicle(getVehicle());
+                
+                // Unload rover if necessary.
+                boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
+                if (!roverUnloaded) {
+                    // Random chance of having person unload (this allows person to do other things sometimes)
+                    if (RandomUtil.lessThanRandPercent(50)) {
+                        if (BuildingManager.getBuilding(rover) != null) {
+                            assignTask(person, new UnloadVehicleGarage(person, rover));
+                        }
+                        else {
+                            assignTask(person, new UnloadVehicleEVA(person, rover));
+                        }
+                    
+                        return;
+                    }
                 }
+                else {
+                    // End the phase.
+                    
+                    // If the rover is in a garage, put the rover outside.
+                    if (isRoverInAGarage()) {
+                        garageBuilding = BuildingManager.getBuilding(getVehicle());
+                        garage = (VehicleMaintenance) garageBuilding
+                                .getFunction(GroundVehicleMaintenance.NAME);
+                        garage.removeVehicle(getVehicle());
+                    }
 
-                // Leave the vehicle.
-                leaveVehicle();
-                setPhaseEnded(true);
+                    // Leave the vehicle.
+                    leaveVehicle();
+                    setPhaseEnded(true);
+                }
             }
-        } else {
+        } 
+        else {
             setPhaseEnded(true);
         }
     }
@@ -554,15 +583,6 @@ public abstract class RoverMission extends VehicleMission {
 
         return result;
     }
-
-    /**
-     * Gets the number and types of equipment needed for the mission.
-     * @param useBuffer use time buffers in estimation if true.
-     * @return map of equipment class and Integer number.
-     * @throws MissionException if error determining needed equipment.
-     */
-    public abstract Map<Class, Integer> getEquipmentNeededForRemainingMission(
-            boolean useBuffer);
 
     /**
      * Finalizes the mission

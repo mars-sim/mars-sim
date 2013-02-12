@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2013-02-10
+ * @version 3.04 2013-02-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -13,6 +13,8 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
+import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
@@ -25,7 +27,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -423,17 +424,21 @@ public class Trade extends RoverMission implements Serializable {
 
         // Have person exit rover if necessary.
         if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            getVehicle().getInventory().retrieveUnit(person);
-            tradingSettlement.getInventory().storeUnit(person);
-
-            // Add the person to the rover's garage if it's in one.
-            // Otherwise add person to another building in the settlement.
-            garageBuilding = BuildingManager.getBuilding(getVehicle());
-            if (isRoverInAGarage() && garageBuilding.hasFunction(LifeSupport.NAME)) {
+            // If rover is in a garage, exit to the garage.
+            if (isRoverInAGarage()) {
+                getVehicle().getInventory().retrieveUnit(person);
+                tradingSettlement.getInventory().storeUnit(person);
+                garageBuilding = BuildingManager.getBuilding(getVehicle());
                 BuildingManager.addPersonToBuilding(person, garageBuilding);
-            } else {
-                BuildingManager.addToRandomBuilding(person, tradingSettlement);
             }
+            else {
+                // Have person exit the rover via its airlock.
+                assignTask(person, new ExitAirlock(person, getRover().getAirlock()));
+            }
+        }
+        else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            // Have person enter the settlement via an airlock.
+            assignTask(person, new EnterAirlock(person, tradingSettlement.getAvailableAirlock()));
         }
 
         // End the phase when everyone is out of the rover.
@@ -504,7 +509,7 @@ public class Trade extends RoverMission implements Serializable {
         if (!roverUnloaded) {
             // Random chance of having person unload (this allows person to do other things sometimes)
             if (RandomUtil.lessThanRandPercent(50)) {
-                if (BuildingManager.getBuilding(getRover()) != null) {
+                if (isRoverInAGarage()) {
                     assignTask(person, new UnloadVehicleGarage(person, getRover()));
                 }
                 else {
@@ -537,7 +542,7 @@ public class Trade extends RoverMission implements Serializable {
             if (isVehicleLoadable()) {
                 // Random chance of having person load (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
-                    if (BuildingManager.getBuilding(getVehicle()) != null) {
+                    if (isRoverInAGarage()) {
                         assignTask(person, new LoadVehicleGarage(person, getVehicle(), getResourcesToLoad(),
                                 getEquipmentToLoad()));
                     }
@@ -597,15 +602,37 @@ public class Trade extends RoverMission implements Serializable {
 
         // If person is not aboard the rover, board rover.
         if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            
+            if (isRoverInAGarage()) {
                 tradingSettlement.getInventory().retrieveUnit(person);
+                getVehicle().getInventory().storeUnit(person);
+                
+                // Store one EVA suit for person (if possible).
+                if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
+                    EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
+                    tradingSettlement.getInventory().retrieveUnit(suit);
+                    getVehicle().getInventory().storeUnit(suit);
+                }
+                
+                // Move person to random location within rover.
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), getVehicle());
+                person.setXLocation(settlementLoc.getX());
+                person.setYLocation(settlementLoc.getY());
             }
-            getVehicle().getInventory().storeUnit(person);
-            Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-            Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                    vehicleLoc.getY(), getVehicle());
-            person.setXLocation(settlementLoc.getX());
-            person.setYLocation(settlementLoc.getY());
+            else {
+                if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+
+                    // Have person exit the settlement via an airlock.
+                    assignTask(person, new ExitAirlock(person, tradingSettlement.getAvailableAirlock()));
+                }
+                else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+
+                    // Have person enter the rover airlock.
+                    assignTask(person, new EnterAirlock(person, getRover().getAirlock()));
+                }
+            }
         }
 
         // If rover is loaded and everyone is aboard, embark from settlement.
@@ -750,9 +777,6 @@ public class Trade extends RoverMission implements Serializable {
             return equipmentNeededCache;
         } else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
-
-            // Include two EVA suits.
-            result.put(EVASuit.class, 2);
 
             // Add buy/sell load.
             Map<Good, Integer> load = null;
