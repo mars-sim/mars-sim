@@ -130,54 +130,65 @@ public class LocalAreaUtil {
      * or construction site.
      * @param xLoc the new X location.
      * @param yLoc the new Y location.
-     * @param settlement the settlement the bounded object is located at.
+     * @param coordinates the global coordinate location to check.
      * @return true if location doesn't collide with anything.
      */
-    public static boolean checkLocationCollision(double xLoc, double yLoc, Settlement settlement) {
+    public static boolean checkLocationCollision(double xLoc, double yLoc, Coordinates coordinates) {
         
         boolean result = true;
         
-        // Check all parked vehicles at settlement.
-        Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+        // Check all vehicles at location.
+        Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
         while (i.hasNext() && result) {
             Vehicle vehicle = i.next();
-            Rectangle2D vehicleRect = new Rectangle2D.Double(vehicle.getXLocation() - 
-                    (vehicle.getWidth() / 2D), vehicle.getYLocation() - (vehicle.getLength() / 2D), 
-                    vehicle.getWidth(), vehicle.getLength());
-            Path2D vehiclePath = getPathFromRectangleRotation(vehicleRect, vehicle.getFacing());
-            Area area = new Area(vehiclePath);
-            if (area.contains(xLoc, yLoc)) {
-                result = false;
+            if (vehicle.getCoordinates().equals(coordinates)) {
+                Rectangle2D vehicleRect = new Rectangle2D.Double(vehicle.getXLocation() - 
+                        (vehicle.getWidth() / 2D), vehicle.getYLocation() - (vehicle.getLength() / 2D), 
+                        vehicle.getWidth(), vehicle.getLength());
+                Path2D vehiclePath = getPathFromRectangleRotation(vehicleRect, vehicle.getFacing());
+                Area area = new Area(vehiclePath);
+                if (area.contains(xLoc, yLoc)) {
+                    result = false;
+                }
             }
         }
         
-        // Check all buildings at settlement.
-        Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
-        while (j.hasNext() && result) {
-            Building building = j.next();
-            Rectangle2D buildingRect = new Rectangle2D.Double(building.getXLocation() - 
-                    (building.getWidth() / 2D), building.getYLocation() - 
-                    (building.getLength() / 2D), building.getWidth(), building.getLength());
-            Path2D buildingPath = getPathFromRectangleRotation(buildingRect, 
-                    building.getFacing());
-            Area area = new Area(buildingPath);
-            if (area.contains(xLoc, yLoc)) {
-                result = false;
-            }
-        }
-        
-        // Check all construction sites at settlement.
-        Iterator<ConstructionSite> k = settlement.getConstructionManager().getConstructionSites().iterator();
-        while (k.hasNext() && result) {
-            ConstructionSite site = k.next();
-            Rectangle2D siteRect = new Rectangle2D.Double(site.getXLocation() - 
-                    (site.getWidth() / 2D), site.getYLocation() - 
-                    (site.getLength() / 2D), site.getWidth(), site.getLength());
-            Path2D sitePath = getPathFromRectangleRotation(siteRect, 
-                    site.getFacing());
-            Area area = new Area(sitePath);
-            if (area.contains(xLoc, yLoc)) {
-                result = false;
+        // Check all settlements at coordinates.
+        Iterator<Settlement> l = Simulation.instance().getUnitManager().getSettlements().iterator();
+        while (l.hasNext() && result) {
+            Settlement settlement = l.next();    
+            if (settlement.getCoordinates().equals(coordinates)) {
+                
+                // Check all buildings at settlement.
+                Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
+                while (j.hasNext() && result) {
+                    Building building = j.next();
+                    Rectangle2D buildingRect = new Rectangle2D.Double(building.getXLocation() - 
+                            (building.getWidth() / 2D), building.getYLocation() - 
+                            (building.getLength() / 2D), building.getWidth(), building.getLength());
+                    Path2D buildingPath = getPathFromRectangleRotation(buildingRect, 
+                            building.getFacing());
+                    Area area = new Area(buildingPath);
+                    if (area.contains(xLoc, yLoc)) {
+                        result = false;
+                    }
+                }
+
+                // Check all construction sites at settlement.
+                Iterator<ConstructionSite> k = settlement.getConstructionManager().
+                        getConstructionSites().iterator();
+                while (k.hasNext() && result) {
+                    ConstructionSite site = k.next();
+                    Rectangle2D siteRect = new Rectangle2D.Double(site.getXLocation() - 
+                            (site.getWidth() / 2D), site.getYLocation() - 
+                            (site.getLength() / 2D), site.getWidth(), site.getLength());
+                    Path2D sitePath = getPathFromRectangleRotation(siteRect, 
+                            site.getFacing());
+                    Area area = new Area(sitePath);
+                    if (area.contains(xLoc, yLoc)) {
+                        result = false;
+                    }
+                }
             }
         }
         
