@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DeathTabPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-02-12
  * @author Scott Davis
  */
 
@@ -21,7 +21,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 
 
 /** 
@@ -102,6 +101,10 @@ public class DeathTabPanel extends TabPanel implements ActionListener {
         		}
         	});
         	locationLabelPanel.add(topContainerButton);
+        }
+        else {
+            JLabel locationLabel2 = new JLabel(death.getPlaceOfDeath(), JLabel.CENTER);
+            locationLabelPanel.add(locationLabel2);
         }
         
         // Prepare location coordinates panel
