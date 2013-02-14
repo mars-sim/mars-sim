@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.04 2013-02-09
+ * @version 3.04 2013-02-13
  * @author Scott Davis
  */
 
@@ -187,10 +187,12 @@ public class ExitAirlock extends Task implements Serializable {
             if (person.equals(airlock.getOperator())) {
                 // If person is airlock operator, add cycle time to airlock.
                 double activationTime = remainingTime;
-                if (airlock.getRemainingCycleTime() < activationTime) {
-                    activationTime = airlock.getRemainingCycleTime();
+                if (airlock.getRemainingCycleTime() < remainingTime) {
+                    remainingTime -= airlock.getRemainingCycleTime();
                 }
-                remainingTime -= activationTime;
+                else {
+                    remainingTime = 0D;
+                }
                 boolean activationSuccessful = airlock.addCycleTime(activationTime);
                 if (!activationSuccessful) {
                     logger.severe("Problem with airlock activation: " + person.getName());
