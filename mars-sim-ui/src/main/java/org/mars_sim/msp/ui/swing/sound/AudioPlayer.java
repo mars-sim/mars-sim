@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-02-14
  * @author Dima Stepanchuk
  * @author Sebastien Venot
  */
@@ -12,6 +12,7 @@ import org.mars_sim.msp.ui.swing.UIConfig;
 
 import javax.sound.midi.*;
 import javax.sound.sampled.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -122,7 +123,10 @@ public class AudioPlayer implements LineListener, MetaEventListener {
                 //File soundFile = new File(filepath);
                 URL soundURL = getClass().getClassLoader().getResource(filepath);
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundURL);
-                currentClip = AudioSystem.getClip();
+                AudioFormat format = audioInputStream.getFormat();
+//                currentClip = AudioSystem.getClip();
+                DataLine.Info info = new DataLine.Info(Clip.class, format);
+                currentClip = (Clip) AudioSystem.getLine(info);
                 currentClip.open(audioInputStream);
                 audioCache.put(filepath, currentClip);
 
@@ -335,8 +339,13 @@ public class AudioPlayer implements LineListener, MetaEventListener {
             // float gainLog10 = (float) Math.log10(volume);
             float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
             float gain = gainLog10 * 20F;
-            FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(gain);
+            try {
+                if (currentClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                    FloatControl gainControl = (FloatControl) currentClip.getControl(FloatControl.Type.MASTER_GAIN);
+                    gainControl.setValue(gain);
+                }
+            }
+            catch (IllegalArgumentException e) {};
         }
 
         if (currentLine != null) {
@@ -347,8 +356,13 @@ public class AudioPlayer implements LineListener, MetaEventListener {
             // float gainLog10 = (float) Math.log10(volume);
             float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
             float gain = gainLog10 * 20F;
-            FloatControl gainControl = (FloatControl) currentLine.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(gain);
+            try {
+                if (currentClip.isControlSupported(FloatControl.Type.MASTER_GAIN)) {
+                    FloatControl gainControl = (FloatControl) currentLine.getControl(FloatControl.Type.MASTER_GAIN);
+                    gainControl.setValue(gain);
+                }
+            }
+            catch (IllegalArgumentException e) {};
         }
 
         if (sequencer != null) {
@@ -375,13 +389,17 @@ public class AudioPlayer implements LineListener, MetaEventListener {
         this.mute = mute;
 
         if (currentClip != null) {
-            BooleanControl muteControl = (BooleanControl) currentClip.getControl(BooleanControl.Type.MUTE);
-            muteControl.setValue(mute);
+            if (currentClip.isControlSupported(BooleanControl.Type.MUTE)) {
+                BooleanControl muteControl = (BooleanControl) currentClip.getControl(BooleanControl.Type.MUTE);
+                muteControl.setValue(mute);
+            }
         }
-
+        
         if (currentLine != null) {
-            BooleanControl muteControl = (BooleanControl) currentLine.getControl(BooleanControl.Type.MUTE);
-            muteControl.setValue(mute);
+            if (currentLine.isControlSupported(BooleanControl.Type.MUTE)) {
+                BooleanControl muteControl = (BooleanControl) currentLine.getControl(BooleanControl.Type.MUTE);
+                muteControl.setValue(mute);
+            }
         }
 
         if (sequencer != null) {
