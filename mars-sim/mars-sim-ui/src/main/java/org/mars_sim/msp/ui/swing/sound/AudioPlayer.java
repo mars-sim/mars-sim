@@ -25,9 +25,7 @@ import java.util.logging.Logger;
  */
 public class AudioPlayer implements LineListener, MetaEventListener {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.sound.AudioPlayer";
-
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(AudioPlayer.class.getName());
 
     // Data members
     /** The current compressed sound. */
@@ -120,13 +118,16 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     public void startPlayWavSound(String filepath, boolean loop) {
         try {
             if (!audioCache.containsKey(filepath)) {
-                //File soundFile = new File(filepath);
                 URL soundURL = getClass().getClassLoader().getResource(filepath);
                 AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(soundURL);
-                AudioFormat format = audioInputStream.getFormat();
-//                currentClip = AudioSystem.getClip();
-                DataLine.Info info = new DataLine.Info(Clip.class, format);
-                currentClip = (Clip) AudioSystem.getLine(info);
+                currentClip = AudioSystem.getClip();
+                
+                // This way of creating the currentClip works for OpenJDK on Linux,
+                // but hangs when closing the clip.
+                // AudioFormat format = audioInputStream.getFormat();
+                // DataLine.Info info = new DataLine.Info(Clip.class, format);
+                // currentClip = (Clip) AudioSystem.getLine(info);
+                
                 currentClip.open(audioInputStream);
                 audioCache.put(filepath, currentClip);
 
@@ -151,7 +152,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
                 currentClip.start();
             }
         } catch (Exception e) {
-            e.printStackTrace(System.err);
+//            e.printStackTrace(System.err);
             logger.log(Level.SEVERE, "Issues when playing WAV sound", e);
         }
 
