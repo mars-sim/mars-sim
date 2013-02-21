@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.04 2013-02-02
+ * @version 3.04 2013-02-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -239,9 +239,12 @@ public class LabelMapLayer implements SettlementMapLayer {
             Color labelColor, Color labelOutlineColor) {
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
+        Font saveFont = g2d.getFont();
         
         // Get the label image.
-        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), 
+        Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
+        g2d.setFont(font);
+        BufferedImage labelImage = getLabelImage(label, font, g2d.getFontRenderContext(), 
                 labelColor, labelOutlineColor);
         
         // Determine transform information.
@@ -261,6 +264,7 @@ public class LabelMapLayer implements SettlementMapLayer {
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
+        g2d.setFont(saveFont);
     }
     
     /**
@@ -278,9 +282,12 @@ public class LabelMapLayer implements SettlementMapLayer {
         
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
+        Font saveFont = g2d.getFont();
         
         // Get the label image.
-        BufferedImage labelImage = getLabelImage(label, g2d.getFont(), g2d.getFontRenderContext(), 
+        Font font = g2d.getFont().deriveFont(Font.BOLD, 12F);
+        g2d.setFont(font);
+        BufferedImage labelImage = getLabelImage(label, font, g2d.getFontRenderContext(), 
                 labelColor, labelOutlineColor);
         
         // Determine transform information.
@@ -301,6 +308,7 @@ public class LabelMapLayer implements SettlementMapLayer {
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
+        g2d.setFont(saveFont);
     }
     
     /**
@@ -314,7 +322,7 @@ public class LabelMapLayer implements SettlementMapLayer {
      */
     private BufferedImage getLabelImage(String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
     		Color labelOutlineColor) {
-        
+    	
         BufferedImage labelImage = null;
         if (labelImageCache.containsKey(label)) {
             labelImage = labelImageCache.get(label);
@@ -338,7 +346,7 @@ public class LabelMapLayer implements SettlementMapLayer {
      */
     private BufferedImage createLabelImage(String label, Font font, FontRenderContext fontRenderContext, Color labelColor, 
     		Color labelOutlineColor) {
-        
+    	
         // Determine bounds.
         TextLayout textLayout1 = new TextLayout(label, font, fontRenderContext);
         Rectangle2D bounds1 = textLayout1.getBounds();
