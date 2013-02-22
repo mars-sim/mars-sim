@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.04 2012-12-10
+ * @version 3.04 2013-02-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -286,7 +286,15 @@ public class StructureMapLayer implements SettlementMapLayer {
      */
     private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length) {
         
-        BufferedImage bufferedImage = new BufferedImage((int) (width * scale), (int) (length * scale), 
+    	int imageWidth = (int) (width * scale);
+    	if (imageWidth <= 0) {
+    		imageWidth = 1;
+    	}
+    	int imageLength = (int) (length * scale);
+    	if (imageLength <= 0) {
+    		imageLength = 1;
+    	}
+        BufferedImage bufferedImage = new BufferedImage(imageWidth, imageLength, 
                 BufferedImage.TYPE_INT_ARGB);
         
         // Determine bounds.

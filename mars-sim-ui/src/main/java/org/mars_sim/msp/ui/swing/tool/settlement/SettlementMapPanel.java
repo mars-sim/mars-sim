@@ -150,6 +150,7 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
      * @param yDiff the Y axis pixels.
      */
     public void moveCenter(double xDiff, double yDiff) {
+    	
         xDiff /= scale;
         yDiff /= scale;
         
