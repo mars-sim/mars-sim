@@ -11,12 +11,10 @@ public class MockVehicle extends Vehicle {
 	}
 	
 	public boolean isAppropriateOperator(VehicleOperator operator) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public AmountResource getFuelType() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 	
