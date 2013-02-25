@@ -7,6 +7,7 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
@@ -20,6 +21,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -91,6 +93,15 @@ public class SalvageGood extends Task implements Serializable {
             if (manufacturingBuilding != null) {
                 result = 1D;
 
+                // No salvaging goods until after the first month of the simulation.
+            	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+            	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+            	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+            	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+            	if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
+            		result = 0D;
+            	}
+                
                 // Crowding modifier.
                 result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
                 result *= Task.getRelationshipModifier(person, manufacturingBuilding);
