@@ -285,9 +285,10 @@ public class BuildingSalvageMission extends Mission implements Serializable {
         // Determine job modifier.
         Job job = person.getMind().getJob();
         double jobModifier = 0D;
-        if (job != null)
+        if (job != null) {
             jobModifier = job
                     .getStartMissionProbabilityModifier(BuildingSalvageMission.class);
+        }
 
         // Check if person is in a settlement.
         boolean inSettlement = person.getLocationSituation().equals(
@@ -307,15 +308,23 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                 boolean noMission = !member.getMind().hasActiveMission();
                 boolean isFit = !member.getPhysicalCondition()
                         .hasSeriousMedicalProblems();
-                if (noMission && isFit)
+                if (noMission && isFit) {
                     availablePeopleNum++;
+                }
             }
             boolean enoughPeople = (availablePeopleNum >= MIN_PEOPLE);
+            
+            // No salvaging goods until after the first month of the simulation.
+        	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+        	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+        	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+        	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+        	boolean firstMonth = (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG);
             
             // Check if settlement has construction override flag set.
             boolean constructionOverride = settlement.getConstructionOverride();
 
-            if (reservableLUV && enoughPeople && !constructionOverride) {
+            if (reservableLUV && enoughPeople && !constructionOverride && !firstMonth) {
                 try {
                     int constructionSkill = person.getMind().getSkillManager()
                             .getEffectiveSkillLevel(Skill.CONSTRUCTION);
@@ -334,8 +343,9 @@ public class BuildingSalvageMission extends Mission implements Serializable {
 
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < MIN_PEOPLE)
-                result = 0D;
+                    .getSettlement()) < MIN_PEOPLE) {
+            	result = 0D;
+            }
         }
 
         return result;
