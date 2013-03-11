@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.03 2012-12-10
+ * @version 3.04 2013-03-08
  * @author Lars Naesbye Christensen
  */
 
@@ -69,13 +69,19 @@ public class SettlementWindow extends ToolWindow {
 
 		// Create bottom (map) pane
 		mapPane = new SettlementMapPanel();
-		mapPane.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 		mapPane.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent evt) {
                 // Set initial mouse drag position.
                 xLast = evt.getX();
                 yLast = evt.getY();
+            }
+            
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+            	
+                // Select person if clicked on.
+                mapPane.selectPersonAt(evt.getX(), evt.getY());
             }
 		});
 		mapPane.addMouseMotionListener(new MouseMotionAdapter() {

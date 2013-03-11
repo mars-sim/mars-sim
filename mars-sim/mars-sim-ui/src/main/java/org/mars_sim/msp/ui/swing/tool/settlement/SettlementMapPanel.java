@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.04 2012-12-04
+ * @version 3.04 2012-03-10
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.ClockListener;
 
@@ -17,10 +18,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A panel for displaying the settlement map.
@@ -44,6 +48,7 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     private boolean showPersonLabels;
     private boolean showVehicleLabels;
     private List<SettlementMapLayer> mapLayers;
+    private Map<Settlement, Person> selectedPerson;
     
     /**
      * A panel for displaying a settlement map.
@@ -62,14 +67,15 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
         showConstructionLabels = true;
         showPersonLabels = true;
         showVehicleLabels = true;
+        selectedPerson = new HashMap<Settlement, Person>();
         
         // Create map layers.
-        mapLayers = new ArrayList<SettlementMapLayer>(3);
+        mapLayers = new ArrayList<SettlementMapLayer>(5);
         mapLayers.add(new BackgroundTileMapLayer(this));
         mapLayers.add(new StructureMapLayer(this));
         mapLayers.add(new VehicleMapLayer(this));
-        mapLayers.add(new LabelMapLayer(this));
         mapLayers.add(new PersonMapLayer(this));
+        mapLayers.add(new LabelMapLayer(this));
         
         // Set preferred size.
         setPreferredSize(new Dimension(400, 400));
@@ -161,6 +167,94 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
         xPos += realXDiff;
         yPos += realYDiff;
         repaint();
+    }
+    
+    /**
+     * Selects a person if any person is at the given x and y pixel position.
+     * @param xPixel the x pixel position on the displayed map.
+     * @param yPixel the y pixel position on the displayed map.
+     */
+    public void selectPersonAt(int xPixel, int yPixel) {
+    	
+    	Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
+    	double range = 5D / scale;
+    	Person selectedPerson = null;
+    	
+    	Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
+    	while (i.hasNext()) {
+    		Person person = i.next();
+    		double distanceX = person.getXLocation() - settlementPosition.getX();
+    		double distanceY = person.getYLocation() - settlementPosition.getY();
+    		double distance = Math.hypot(distanceX, distanceY);
+    		if (distance <= range) {
+    			selectedPerson = person;
+    		}
+    	}
+    	
+    	if (selectedPerson != null) {
+    		selectPerson(selectedPerson);
+    		repaint();
+    	}
+    }
+    
+    /**
+     * Selects a person on the map.
+     * @param person the selected person.
+     */
+    public void selectPerson(Person person) {
+    	
+    	if ((settlement != null) && (person != null)) {
+    		Person currentlySelected = selectedPerson.get(settlement);
+    		if (person.equals(currentlySelected)) {
+    			selectedPerson.put(settlement, null);
+    		}
+    		else {
+    			selectedPerson.put(settlement, person);
+    		}
+    	}
+    }
+    
+    /**
+     * Get the selected person for the current settlement.
+     * @return the selected person.
+     */
+    public Person getSelectedPerson() {
+    	
+    	Person result = null;
+    	
+    	if (settlement != null) {
+    		result = selectedPerson.get(settlement);
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * Convert a pixel X,Y position to a X,Y (meter) position local to the settlement in view.
+     * @param xPixel the pixel X position.
+     * @param yPixel the pixel Y position.
+     * @return the X,Y settlement position.
+     */
+    public Point.Double convertToSettlementLocation(int xPixel, int yPixel) {
+    	
+    	Point.Double result = new Point.Double(0D, 0D);
+    	
+    	double xDiff1 = (getWidth() / 2) - xPixel;
+    	double yDiff1 = (getHeight() / 2) - yPixel;
+    	
+    	double xDiff2 = xDiff1 / scale;
+    	double yDiff2 = yDiff1 / scale;
+    	
+        // Correct due to rotation of map.
+        double xDiff3 = (Math.cos(rotation) * xDiff2) + (Math.sin(rotation) * yDiff2);
+        double yDiff3 = (Math.cos(rotation) * yDiff2) - (Math.sin(rotation) * xDiff2);
+        
+        double newXPos = xPos + xDiff3;
+        double newYPos = yPos + yDiff3;
+        
+        result.setLocation(newXPos, newYPos);
+        
+    	return result;
     }
     
     /**
