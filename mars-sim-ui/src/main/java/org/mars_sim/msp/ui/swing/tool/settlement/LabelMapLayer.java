@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.04 2013-02-20
+ * @version 3.04 2013-03-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -20,11 +20,13 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -45,6 +47,8 @@ public class LabelMapLayer implements SettlementMapLayer {
     private static final Color VEHICLE_LABEL_OUTLINE_COLOR = new Color(255, 255, 255, 190);
     private static final Color PERSON_LABEL_COLOR = new Color(0, 255, 255);
     private static final Color PERSON_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
+    private static final Color SELECTED_LABEL_COLOR = new Color(255, 255, 255);
+    private static final Color SELECTED_LABEL_OUTLINE_COLOR = new Color(0, 0, 0, 190);
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -203,27 +207,43 @@ public class LabelMapLayer implements SettlementMapLayer {
      */
     private void drawPersonLabels(Graphics2D g2d, Settlement settlement) {
         
-        if (settlement != null) {
-            
-            // Draw all people that are at the settlement or outside near by.
-            Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
-            while (i.hasNext()) {
-                Person person = i.next();
-                
-                // Only draw living people.
-                if (!person.getPhysicalCondition().isDead()) {
-
-                    // Draw people that at settlement location.
-                    Coordinates settlementLoc = settlement.getCoordinates();
-                    Coordinates personLoc = person.getCoordinates();
-                    if (personLoc.equals(settlementLoc)) {
-                        int offset = 8;
-                        drawLabelRight(g2d, person.getName(), person.getXLocation(), person.getYLocation(), 
-                                PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset);
-                    }
-                }
-            }
-        }
+    	List<Person> people = PersonMapLayer.getPeopleToDisplay(settlement);
+    	Person selectedPerson = mapPanel.getSelectedPerson();
+    	int offset = 8;
+    	
+    	// Draw all people except selected person.
+    	Iterator<Person> i = people.iterator();
+    	while (i.hasNext()) {
+    		Person person = i.next();
+    		
+    		if (!person.equals(selectedPerson)) {
+    			drawLabelRight(g2d, person.getName(), person.getXLocation(), person.getYLocation(), 
+    					PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, 0);
+    		}
+    	}
+    	
+    	// Draw selected person.
+    	if (people.contains(selectedPerson)) {
+    		// Draw person name.
+    		drawLabelRight(g2d, selectedPerson.getName(), selectedPerson.getXLocation(), 
+    				selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR, 
+    				offset, 0);
+    		
+    		// Draw task.
+    		String taskString = "Activity: " + selectedPerson.getMind().getTaskManager().getTaskDescription();
+    		drawLabelRight(g2d, taskString, selectedPerson.getXLocation(), 
+    				selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR, 
+    				offset, 12);
+    		
+    		// Draw mission.
+    		Mission mission = selectedPerson.getMind().getMission();
+    		if (mission != null) {
+    			String missionString = "Mission: " + mission.getDescription() + " - " + mission.getPhaseDescription();
+    			drawLabelRight(g2d, missionString, selectedPerson.getXLocation(), 
+        				selectedPerson.getYLocation(), SELECTED_LABEL_COLOR, SELECTED_LABEL_OUTLINE_COLOR, 
+        				offset, 24);
+    		}
+    	}
     }
     
     /**
@@ -275,10 +295,11 @@ public class LabelMapLayer implements SettlementMapLayer {
      * @param yLoc the y Location from center of settlement (meters).
      * @param labelColor the color of the label.
      * @param labelOutlineColor the color of the outline of the label.
-     * @param offset the X pixel offset from the center point.
+     * @param xOffset the X pixel offset from the center point.
+     * @param yOffset the Y pixel offset from the center point.
      */
     private void drawLabelRight(Graphics2D g2d, String label, double xLoc, double yLoc, 
-            Color labelColor, Color labelOutlineColor, int offset) {
+            Color labelColor, Color labelOutlineColor, int xOffset, int yOffset) {
         
         // Save original graphics transforms.
         AffineTransform saveTransform = g2d.getTransform();
@@ -303,8 +324,8 @@ public class LabelMapLayer implements SettlementMapLayer {
         g2d.setTransform(newTransform);
         
         // Draw image label.
-        int totalRightOffset = (labelImage.getWidth() / 2) + offset;
-        g2d.drawImage(labelImage, totalRightOffset, 0, mapPanel);
+        int totalRightOffset = (labelImage.getWidth() / 2) + xOffset;
+        g2d.drawImage(labelImage, totalRightOffset, yOffset, mapPanel);
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
@@ -324,12 +345,13 @@ public class LabelMapLayer implements SettlementMapLayer {
     		Color labelOutlineColor) {
     	
         BufferedImage labelImage = null;
-        if (labelImageCache.containsKey(label)) {
-            labelImage = labelImageCache.get(label);
+        String labelId = label + font.toString() + labelColor.toString() + labelOutlineColor.toString();
+        if (labelImageCache.containsKey(labelId)) {
+            labelImage = labelImageCache.get(labelId);
         }
         else {
             labelImage = createLabelImage(label, font, fontRenderContext, labelColor, labelOutlineColor);
-            labelImageCache.put(label, labelImage);
+            labelImageCache.put(labelId, labelImage);
         }
         
         return labelImage;
