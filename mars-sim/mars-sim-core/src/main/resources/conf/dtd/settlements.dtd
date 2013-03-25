@@ -4,6 +4,7 @@ initial-settlement-list, settlement-name-list)>
 <!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, 
 part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
+<!ATTLIST template default-population CDATA #REQUIRED>
 <!ELEMENT building EMPTY>
 <!ATTLIST building type CDATA #REQUIRED>
 <!ATTLIST building x-location CDATA #REQUIRED>
@@ -29,12 +30,14 @@ part-package*, resupply?)>
 <!ATTLIST resupply-mission name CDATA #REQUIRED>
 <!ATTLIST resupply-mission arrival-time CDATA #REQUIRED>
 <!ELEMENT initial-settlement-list (settlement*)>
-<!ELEMENT settlement (location)>
+<!ELEMENT settlement (location, population)>
 <!ATTLIST settlement name CDATA #REQUIRED>
 <!ATTLIST settlement template CDATA #REQUIRED>
 <!ELEMENT location EMPTY>
 <!ATTLIST location longitude CDATA #REQUIRED>
 <!ATTLIST location latitude CDATA #REQUIRED>
+<!ELEMENT population EMPTY>
+<!ATTLIST population number CDATA #REQUIRED>
 <!ELEMENT settlement-name-list (settlement-name*)>
 <!ELEMENT settlement-name EMPTY>
 <!ATTLIST settlement-name value CDATA #REQUIRED>
