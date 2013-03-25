@@ -177,7 +177,7 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
     public void selectPersonAt(int xPixel, int yPixel) {
     	
     	Point.Double settlementPosition = convertToSettlementLocation(xPixel, yPixel);
-    	double range = 5D / scale;
+    	double range = 6D / scale;
     	Person selectedPerson = null;
     	
     	Iterator<Person> i = PersonMapLayer.getPeopleToDisplay(settlement).iterator();
