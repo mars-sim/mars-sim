@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -23,6 +23,7 @@ public class SettlementTemplate implements Serializable {
 
     // Data members.
     private String name;
+    private int defaultPopulation;
     private List<BuildingTemplate> buildings;
     private Map<String, Integer> vehicles;
     private Map<String, Integer> equipment;
@@ -33,8 +34,9 @@ public class SettlementTemplate implements Serializable {
     /**
      * Constructor
      */
-    public SettlementTemplate(String name) {
+    public SettlementTemplate(String name, int defaultPopulation) {
         this.name = name;
+        this.defaultPopulation = defaultPopulation;
         buildings = new ArrayList<BuildingTemplate>();
         vehicles = new HashMap<String, Integer>();
         equipment = new HashMap<String, Integer>();
@@ -49,6 +51,14 @@ public class SettlementTemplate implements Serializable {
      */
     public String getTemplateName() {
         return name;
+    }
+    
+    /**
+     * Gets the default population capacity of the template.
+     * @return population capacity.
+     */
+    public int getDefaultPopulation() {
+    	return defaultPopulation;
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -27,6 +27,7 @@ public class SettlementConfig implements Serializable {
 	private static final String SETTLEMENT_TEMPLATE_LIST = 	"settlement-template-list";
 	private static final String TEMPLATE = "template";
 	private static final String NAME = "name";
+	private static final String DEFAULT_POPULATION = "default-population";
 	private static final String BUILDING = "building";
 	private static final String TYPE = "type";
 	private static final String X_LOCATION = "x-location";
@@ -40,6 +41,7 @@ public class SettlementConfig implements Serializable {
 	private static final String LOCATION = "location";
 	private static final String LONGITUDE = "longitude";
 	private static final String LATITUDE = "latitude";
+	private static final String POPULATION = "population";
 	private static final String SETTLEMENT_NAME_LIST = "settlement-name-list";
 	private static final String SETTLEMENT_NAME = "settlement-name";
 	private static final String VALUE = "value";
@@ -91,7 +93,9 @@ public class SettlementConfig implements Serializable {
 		for (Element templateElement : templateNodes) {
 		    String name = templateElement.getAttributeValue(NAME);
 		    
-			SettlementTemplate template = new SettlementTemplate(name);
+		    int defaultPopulation = Integer.parseInt(templateElement.getAttributeValue(DEFAULT_POPULATION));
+		    
+			SettlementTemplate template = new SettlementTemplate(name, defaultPopulation);
 			settlementTemplates.add(template);
 			
 			// Load buildings
@@ -208,6 +212,14 @@ public class SettlementConfig implements Serializable {
 				initialSettlement.randomLatitude = true;
 			}
 			
+			Element populationElement = settlementElement.getChild(POPULATION);
+			String numberStr = populationElement.getAttributeValue(NUMBER);
+			int number = Integer.parseInt(numberStr);
+			if (number < 0) {
+				throw new IllegalStateException("populationNumber cannot be less than zero: " + number);
+			}
+			initialSettlement.populationNumber = number;
+			
 			initialSettlements.add(initialSettlement);
 		}
 	}
@@ -320,6 +332,19 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	/**
+	 * Gets the population number for an initial settlement.
+	 * @param index the index of the initial settlement.
+	 * @return population number of the settlement.
+	 */
+	public int getInitialSettlementPopulationNumber(int index) {
+		if ((index >= 0) && (index < initialSettlements.size())) {
+			InitialSettlement settlement = initialSettlements.get(index);
+			return settlement.populationNumber;
+		}
+		else throw new IllegalArgumentException("index: " + index + "is out of bounds");
+	}
+	
+	/**
 	 * Gets a list of possible settlement names.
 	 * @return list of settlement names as strings
 	 */
@@ -341,10 +366,12 @@ public class SettlementConfig implements Serializable {
 	 * @param latitude the settlement latitude (ex. "10.3 S").
 	 * @param longitude the settlement longitude (ex. "47.0 W").
 	 */
-	public void addInitialSettlement(String name, String template, String latitude, String longitude) {
+	public void addInitialSettlement(String name, String template, int populationNum, String latitude, 
+			String longitude) {
 	    InitialSettlement settlement = new InitialSettlement();
 	    settlement.name = name;
 	    settlement.template = template;
+	    settlement.populationNumber = populationNum;
 	    settlement.latitude = latitude;
 	    settlement.longitude = longitude;
 	    initialSettlements.add(settlement);
@@ -377,5 +404,6 @@ public class SettlementConfig implements Serializable {
 		private boolean randomLongitude = false;
 		private String latitude;
 		private boolean randomLatitude = false;
+		private int populationNumber;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-02-12
+ * @version 3.04 2013-03-13
  * @author Scott Davis
  */
 
@@ -291,7 +291,9 @@ public abstract class RoverMission extends VehicleMission {
                     && !person.getLocationSituation().equals(Person.BURIED)) {
 
                 if (isRoverInAGarage()) {
-                    settlement.getInventory().retrieveUnit(person);
+                	if (settlement.getInventory().containsUnit(person)) {
+                		settlement.getInventory().retrieveUnit(person);
+                	}
                     getVehicle().getInventory().storeUnit(person);
                     
                     // Store one EVA suit for person (if possible).

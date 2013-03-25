@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.03 2012-10-22
+ * @version 3.04 2013-03-23
  * @author Scott Davis
  */
 
@@ -63,6 +63,7 @@ public class Settlement extends Structure implements Malfunctionable,
     private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
     protected MalfunctionManager malfunctionManager;
     private double zeroPopulationTime;  // Amount of time (millisols) that the settlement has had zero population.
+    private int initialPopulation; // The initial population of the settlement.
 
     /**
      * Constructor for subclass extension.
@@ -79,9 +80,9 @@ public class Settlement extends Structure implements Malfunctionable,
      * @param name the settlement's name
      * @param template for the settlement
      * @param location the settlement's location
-     * @throws Exception if settlement cannot be constructed.
+     * @param populationNumber the settlement's initial population.
      */
-    public Settlement(String name, String template, Coordinates location) {
+    public Settlement(String name, String template, Coordinates location, int populationNumber) {
         // Use Structure constructor
         super(name, location);
 
@@ -109,6 +110,9 @@ public class Settlement extends Structure implements Malfunctionable,
 
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<Science, Double>(0);
+        
+        // Initialize the initial population.
+        initialPopulation = populationNumber;
     }
 
     /**
@@ -631,6 +635,14 @@ public class Settlement extends Structure implements Malfunctionable,
      */
     public MalfunctionManager getMalfunctionManager() {
         return malfunctionManager;
+    }
+    
+    /**
+     * Gets the initial population of the settlement.
+     * @return initial population number.
+     */
+    public int getInitialPopulation() {
+    	return initialPopulation;
     }
     
     @Override

@@ -9,7 +9,8 @@
 	
 		<!-- Settlement template for the Zubrin Mars Direct mission plan. -->
 		<!-- See http://www.nw.net/mars/ for more info. -->
-		<template name="Mars Direct Base (phase 1)">
+		<!-- default-population: the default population capacity for the template. -->
+		<template name="Mars Direct Base (phase 1)" default-population="4">
 		
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
@@ -66,7 +67,7 @@
 			</resupply>
 		</template>
 	
-		<template name="Mars Direct Base (phase 2)">
+		<template name="Mars Direct Base (phase 2)" default-population="8">
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
 			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
 			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
@@ -94,7 +95,7 @@
 			</resupply>
 		</template>
 		
-		<template name="Mars Direct Base (phase 3)">
+		<template name="Mars Direct Base (phase 3)" default-population="12">
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
 			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
 			<building type="Lander Hab" x-location="0.0" y-location="18.0" facing="0.0" />
@@ -127,7 +128,7 @@
 			</resupply>
 		</template>
 		
-		<template name="Alpha Base (MD phase 4)">
+		<template name="Alpha Base (MD phase 4)" default-population="24">
 			<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
 			<building type="Residential Quarters" x-location="-18.0" y-location="26.0" facing="270.0" />
 			<building type="Lounge" x-location="-9.0" y-location="26.0" facing="270.0" />
@@ -169,7 +170,7 @@
 			<part-package name="package 4" number="1" />
 		</template>
 		
-		<template name="Trading Outpost">
+		<template name="Trading Outpost" default-population="4">
 			<building type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0" />
 			<building type="Bunkhouse" x-location="-7.5" y-location="2.5" facing="270.0" />
 			<building type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0" />
@@ -212,7 +213,7 @@
 			<part-package name="package 1" number="1" />
 		</template>
 		
-		<template name="Mining Outpost">
+		<template name="Mining Outpost" default-population="4">
 			<building type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0" />
 			<building type="Bunkhouse" x-location="-7.5" y-location="2.5" facing="270.0" />
 			<building type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0" />
@@ -266,13 +267,18 @@
 		
 		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
 			<location longitude="0.0 W" latitude="0.0 N" />
+			<population number="24" />
 		</settlement>
 		
 		<settlement name="Schiaparelli Point" template="Mars Direct Base (phase 1)">
 			<location longitude="16.0 E" latitude="3.0 S" />
+			<population number="4" />
 		</settlement>
 		
 	</initial-settlement-list>
+	
+	<!--  List of settlements that will arrive on Mars at a later time -->
+	
 	
 	<!-- List of settlement names -->
 	<settlement-name-list>

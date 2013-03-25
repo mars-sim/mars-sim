@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.03 2012-09-28
+ * @version 3.04 2013-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -291,8 +291,10 @@ public class UnitManager implements Serializable {
                 }
 
                 Coordinates location = new Coordinates(latitude, longitude);
+                
+                int populationNumber = config.getInitialSettlementPopulationNumber(x);
 
-                addUnit(new Settlement(name, template, location));
+                addUnit(new Settlement(name, template, location, populationNumber));
             }
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -442,8 +444,8 @@ public class UnitManager implements Serializable {
             while (i.hasNext()) {
                 Settlement settlement = i.next();
 
-                while (settlement.getAvailablePopulationCapacity() > 0) {
-                    String gender = Person.FEMALE;
+                while (settlement.getCurrentPopulationNum() < settlement.getInitialPopulation()) {
+                	String gender = Person.FEMALE;
                     if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                         gender = Person.MALE;
                     }
@@ -468,94 +470,103 @@ public class UnitManager implements Serializable {
 
         // Create all configured people.
         for (int x = 0; x < personConfig.getNumberOfConfiguredPeople(); x++) {
-//            try {
-                // Get person's name (required)
-                String name = personConfig.getConfiguredPersonName(x);
-                if (name == null) {
-                    throw new IllegalStateException("Person name is null");
-                }
+        	// Get person's name (required)
+        	String name = personConfig.getConfiguredPersonName(x);
+        	if (name == null) {
+        		throw new IllegalStateException("Person name is null");
+        	}
 
-                // Get person's gender or randomly determine it if not configured.
-                String gender = personConfig.getConfiguredPersonGender(x);
-                if (gender == null) {
-                    gender = Person.FEMALE;
-                    if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-                        gender = Person.MALE;
-                    }
-                }
+        	// Get person's gender or randomly determine it if not configured.
+        	String gender = personConfig.getConfiguredPersonGender(x);
+        	if (gender == null) {
+        		gender = Person.FEMALE;
+        		if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
+        			gender = Person.MALE;
+        		}
+        	}
 
-                // Get person's settlement or randomly determine it if not configured.
-                String settlementName = personConfig.getConfiguredPersonSettlement(x);
-                Settlement settlement = null;
-                if (settlementName != null) {
-                    Collection<Settlement> col = CollectionUtils.getSettlement(units);
-                    settlement = CollectionUtils.getSettlement(col, settlementName);
-                    if (settlement == null) {
-                        // If settlement cannot be found that matches the settlement name,
-                        // put person in a randomly selected settlement.
-                        logger.log(Level.WARNING, "Person " + name + " could not be located" +
-                                " at " + settlementName + " because the settlement doesn't exist.");
-                        settlement = CollectionUtils.getRandomSettlement(col);
-                    }
-                } else {
-                    Collection<Settlement> col = CollectionUtils.getSettlement(units);
-                    settlement = CollectionUtils.getRandomSettlement(col);
-                }
+        	// Get person's settlement or randomly determine it if not configured.
+        	String settlementName = personConfig.getConfiguredPersonSettlement(x);
+        	Settlement settlement = null;
+        	if (settlementName != null) {
+        		Collection<Settlement> col = CollectionUtils.getSettlement(units);
+        		settlement = CollectionUtils.getSettlement(col, settlementName);
+        		if (settlement == null) {
+        			// If settlement cannot be found that matches the settlement name,
+        			// put person in a randomly selected settlement.
+        			logger.log(Level.WARNING, "Person " + name + " could not be located" +
+        					" at " + settlementName + " because the settlement doesn't exist.");
+        			settlement = CollectionUtils.getRandomSettlement(col);
+        		}
+        	} else {
+        		Collection<Settlement> col = CollectionUtils.getSettlement(units);
+        		settlement = CollectionUtils.getRandomSettlement(col);
+        	}
 
-                // If settlement is still null (no settlements available),
-                // Don't create person.
-                if (settlement == null) {
-                    return;
-                }
-                
-                // If settlement does not have population capacity, don't create person.
-                if (settlement.getAvailablePopulationCapacity() <= 0) {
-                    return;
-                }
-                
-                // Create person and add to the unit manager.
-                Person person = new Person(name, gender, settlement);
-                addUnit(person);
-                relationshipManager.addInitialSettler(person, settlement);
+        	// If settlement is still null (no settlements available),
+        	// Don't create person.
+        	if (settlement == null) {
+        		return;
+        	}
 
-                // Set person's configured personality type (if any).
-                String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
-                if (personalityType != null) {
-                    person.getMind().getPersonalityType().setTypeString(personalityType);
-                }
+        	// If settlement does not have initial population capacity, try another settlement.
+        	if (settlement.getInitialPopulation() <= settlement.getCurrentPopulationNum()) {
+        		Iterator<Settlement> i = getSettlements().iterator();
+        		Settlement newSettlement = null;
+        		while (i.hasNext() && (newSettlement == null)) {
+        			Settlement tempSettlement = i.next();
+        			if (tempSettlement.getInitialPopulation() > tempSettlement.getCurrentPopulationNum()) {
+        				newSettlement = tempSettlement;
+        			}
+        		}
+        		if (newSettlement != null) {
+        			settlement = newSettlement;
+        		}
+        		else {
+        			// If no settlement with room found, don't create person.
+        			return;
+        		}
+        	}
 
-                // Set person's job (if any).
-                String jobName = personConfig.getConfiguredPersonJob(x);
-                if (jobName != null) {
-                    Job job = JobManager.getJob(jobName);
-                    person.getMind().setJob(job, true);
-                }
+        	// Create person and add to the unit manager.
+        	Person person = new Person(name, gender, settlement);
+        	addUnit(person);
+        	relationshipManager.addInitialSettler(person, settlement);
 
-                // Set person's configured natural attributes (if any).
-                Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
-                if (naturalAttributeMap != null) {
-                    Iterator<String> i = naturalAttributeMap.keySet().iterator();
-                    while (i.hasNext()) {
-                        String attributeName = i.next();
-                        int value = (Integer) naturalAttributeMap.get(attributeName);
-                        person.getNaturalAttributeManager().setAttribute(attributeName, value);
-                    }
-                }
+        	// Set person's configured personality type (if any).
+        	String personalityType = personConfig.getConfiguredPersonPersonalityType(x);
+        	if (personalityType != null) {
+        		person.getMind().getPersonalityType().setTypeString(personalityType);
+        	}
 
-                // Set person's configured skills (if any).
-                Map<String, Integer> skillMap = personConfig.getSkillMap(x);
-                if (skillMap != null) {
-                    Iterator<String> i = skillMap.keySet().iterator();
-                    while (i.hasNext()) {
-                        String skillName = i.next();
-                        int level = (Integer) skillMap.get(skillName);
-                        person.getMind().getSkillManager().addNewSkill(new Skill(skillName, level));
-                    }
-                }
-//            } catch (Exception e) {
-//                e.printStackTrace(System.err);
-//                logger.log(Level.SEVERE, "Configured person could not be created: " + e.getMessage());
-//            }
+        	// Set person's job (if any).
+        	String jobName = personConfig.getConfiguredPersonJob(x);
+        	if (jobName != null) {
+        		Job job = JobManager.getJob(jobName);
+        		person.getMind().setJob(job, true);
+        	}
+
+        	// Set person's configured natural attributes (if any).
+        	Map<String, Integer> naturalAttributeMap = personConfig.getNaturalAttributeMap(x);
+        	if (naturalAttributeMap != null) {
+        		Iterator<String> i = naturalAttributeMap.keySet().iterator();
+        		while (i.hasNext()) {
+        			String attributeName = i.next();
+        			int value = (Integer) naturalAttributeMap.get(attributeName);
+        			person.getNaturalAttributeManager().setAttribute(attributeName, value);
+        		}
+        	}
+
+        	// Set person's configured skills (if any).
+        	Map<String, Integer> skillMap = personConfig.getSkillMap(x);
+        	if (skillMap != null) {
+        		Iterator<String> i = skillMap.keySet().iterator();
+        		while (i.hasNext()) {
+        			String skillName = i.next();
+        			int level = (Integer) skillMap.get(skillName);
+        			person.getMind().getSkillManager().addNewSkill(new Skill(skillName, level));
+        		}
+        	}
         }
 
         // Create all configured relationships.
