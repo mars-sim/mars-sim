@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.04 2013-02-03
+ * @version 3.04 2013-03-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -33,6 +33,7 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableColumn;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -81,7 +82,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create settlement scroll panel.
         JScrollPane settlementScrollPane = new JScrollPane();
-        settlementScrollPane.setPreferredSize(new Dimension(500, 200));
+        settlementScrollPane.setPreferredSize(new Dimension(585, 200));
         add(settlementScrollPane, BorderLayout.CENTER);
         
         // Create settlement table.
@@ -93,11 +94,12 @@ public class TempSimulationConfigEditor extends JDialog {
         settlementTable.getColumnModel().getColumn(1).setPreferredWidth(205);
         settlementTable.getColumnModel().getColumn(2).setPreferredWidth(85);
         settlementTable.getColumnModel().getColumn(3).setPreferredWidth(85);
+        settlementTable.getColumnModel().getColumn(4).setPreferredWidth(85);
         settlementScrollPane.setViewportView(settlementTable);
         
         // Create combo box for editing template column in settlement table.
         TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
-        JComboBox templateCB = new JComboBox();
+        JComboBox<String> templateCB = new JComboBox<String>();
         SettlementConfig settlementConfig = config.getSettlementConfiguration();
         Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
         while (i.hasNext()) {
@@ -165,8 +167,15 @@ public class TempSimulationConfigEditor extends JDialog {
         createButton.setToolTipText("Create a new simulation");
         createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                setConfiguration();
-                closeWindow();
+            	// Make sure any editing cell is completed, then check if error.
+            	TableCellEditor editor = settlementTable.getCellEditor();
+            	if (editor != null) {
+            		editor.stopCellEditing();
+            	}
+            	if (!hasError) {
+            		setConfiguration();
+            		closeWindow();
+            	}
             }
         });
         bottomButtonPanel.add(createButton);
@@ -213,9 +222,11 @@ public class TempSimulationConfigEditor extends JDialog {
         for (int x = 0; x < settlementTableModel.getRowCount(); x++) {
             String name = (String) settlementTableModel.getValueAt(x, 0);
             String template = (String) settlementTableModel.getValueAt(x, 1);
-            String latitude = (String) settlementTableModel.getValueAt(x, 2);
-            String longitude = (String) settlementTableModel.getValueAt(x, 3);
-            settlementConfig.addInitialSettlement(name, template, latitude, longitude);
+            String population = (String) settlementTableModel.getValueAt(x, 2);
+            int populationNum = Integer.parseInt(population);
+            String latitude = (String) settlementTableModel.getValueAt(x, 3);
+            String longitude = (String) settlementTableModel.getValueAt(x, 4);
+            settlementConfig.addInitialSettlement(name, template, populationNum, latitude, longitude);
         }
     }
     
@@ -256,6 +267,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         settlement.name = determineNewSettlementName();
         settlement.template = determineNewSettlementTemplate();
+        settlement.population = determineNewSettlementPopulation(settlement.template);
         settlement.latitude = determineNewSettlementLatitude();
         settlement.longitude = determineNewSettlementLongitude();
         
@@ -336,6 +348,29 @@ public class TempSimulationConfigEditor extends JDialog {
     }
     
     /**
+     * Determines the new settlement population.
+     * @param templateName the settlement template name.
+     * @return the new population number.
+     */
+    private String determineNewSettlementPopulation(String templateName) {
+    	
+    	String result = "0";
+    	
+    	if (templateName != null) {
+    		SettlementConfig settlementConfig = config.getSettlementConfiguration();
+    		Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
+    		while (i.hasNext()) {
+    			SettlementTemplate template = i.next();
+    			if (template.getTemplateName().equals(templateName)) {
+    				result = Integer.toString(template.getDefaultPopulation());
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
      * Determines a new settlement's latitude.
      * @return latitude string.
      */
@@ -365,6 +400,7 @@ public class TempSimulationConfigEditor extends JDialog {
     private class SettlementInfo {
         String name;
         String template;
+        String population;
         String latitude;
         String longitude;
     }
@@ -385,7 +421,7 @@ public class TempSimulationConfigEditor extends JDialog {
             super();
             
             // Add table columns.
-            columns = new String[] { "Name", "Template", "Latitude", "Longitude" };
+            columns = new String[] { "Name", "Template", "Population", "Latitude", "Longitude" };
             
             // Load default settlements.
             settlements = new ArrayList<SettlementInfo>();
@@ -402,6 +438,7 @@ public class TempSimulationConfigEditor extends JDialog {
                 SettlementInfo info = new SettlementInfo();
                 info.name = settlementConfig.getInitialSettlementName(x);
                 info.template = settlementConfig.getInitialSettlementTemplate(x);
+                info.population = Integer.toString(settlementConfig.getInitialSettlementPopulationNumber(x));
                 info.latitude = settlementConfig.getInitialSettlementLatitude(x);
                 info.longitude = settlementConfig.getInitialSettlementLongitude(x);
                 settlements.add(info);
@@ -449,9 +486,12 @@ public class TempSimulationConfigEditor extends JDialog {
                             result = info.template;
                             break;
                         case 2:
+                        	result = info.population;
+                        	break;
+                        case 3:
                             result = info.latitude;
                             break;
-                        case 3:
+                        case 4:
                             result = info.longitude;
                     }
                 }
@@ -477,11 +517,15 @@ public class TempSimulationConfigEditor extends JDialog {
                             break;
                         case 1:
                             info.template = (String) aValue;
+//                            info.population = determineNewSettlementPopulation(info.template);
                             break;
                         case 2:
+                        	info.population = (String) aValue;
+                        	break;
+                        case 3:
                             info.latitude = (String) aValue;
                             break;
-                        case 3:
+                        case 4:
                             info.longitude = (String) aValue;
                     }
                 }
@@ -533,6 +577,22 @@ public class TempSimulationConfigEditor extends JDialog {
                 // Check that settlement name is valid.
                 if ((settlement.name == null) || (settlement.name.isEmpty())) {
                     setError("Settlement name cannot be blank");
+                }
+                
+                // Check if population is valid.
+                if ((settlement.population == null) || (settlement.population.isEmpty())) {
+                	setError("Settlement population cannot be blank");
+                }
+                else {
+                	try {
+                		int popInt = Integer.parseInt(settlement.population);
+                		if (popInt < 0) {
+                			setError("Settlement population must be 0 or larger");
+                		}
+                	}
+                	catch (NumberFormatException e) {
+                		setError("Settlement population must be a valid integer number");
+                	}
                 }
                 
                 // Check that settlement latitude is valid.
