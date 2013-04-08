@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-04-05
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -59,7 +59,7 @@ public class EventTableModel extends AbstractTableModel
     private boolean displayMedical = true;
     private boolean displayMission = false;
     private boolean displayTask = false;
-    private boolean displaySupply = false;
+    private boolean displayTransport = false;
 
     /**
      * Create a new Event model based on the specified event manager.
@@ -97,7 +97,7 @@ public class EventTableModel extends AbstractTableModel
 			if (category.equals(HistoricalEventManager.TASK) && displayTask)
 				cachedEvents.add(event);
 				
-			if (category.equals(HistoricalEventManager.SUPPLY) && displaySupply)
+			if (category.equals(HistoricalEventManager.TRANSPORT) && displayTransport)
 				cachedEvents.add(event);
 		}
 		
@@ -321,19 +321,19 @@ public class EventTableModel extends AbstractTableModel
     }
     
     /**
-     * Checks if supply events are to be displayed.
+     * Checks if transport events are to be displayed.
      * @return true if displayed
      */
-    public boolean getDisplaySupply() {
-    	return displaySupply;
+    public boolean getDisplayTransport() {
+    	return displayTransport;
     }
     
     /**
-     * Sets if supply events are to be displayed.
+     * Sets if transport events are to be displayed.
      * @param display true if displayed
      */
-    public void setDisplaySupply(boolean display) {
-    	displaySupply = display;
+    public void setDisplayTransport(boolean display) {
+    	displayTransport = display;
     	updateCachedEvents();
     }
     

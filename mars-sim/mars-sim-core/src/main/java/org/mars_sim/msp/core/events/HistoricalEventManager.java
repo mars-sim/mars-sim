@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-04-01
  * @author Barry Evans
  */
 
@@ -38,7 +38,7 @@ public class HistoricalEventManager {
 	public final static String MALFUNCTION = "Malfunction";
 	public final static String MISSION = "Mission";
 	public final static String TASK = "Task";
-	public final static String SUPPLY = "Supply";
+	public final static String TRANSPORT = "Transport";
 
     private List<HistoricalEventListener> listeners = new ArrayList<HistoricalEventListener>();
     private List<HistoricalEvent> events = new LinkedList<HistoricalEvent>();

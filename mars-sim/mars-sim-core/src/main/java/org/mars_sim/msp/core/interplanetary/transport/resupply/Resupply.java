@@ -1,34 +1,53 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.02 2012-04-18
+ * @version 3.04 2013-04-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 /**
  * Resupply mission from Earth for a settlement.
  */
-public class Resupply implements Serializable, Comparable<Resupply> {
+public class Resupply implements Serializable, Transportable {
 
-    // Static data members.
-    // Delivery states.
-    public final static String PLANNED = "planned";
-    public final static String IN_TRANSIT = "in transit";
-    public final static String DELIVERED = "delivered";
-    public final static String CANCELED = "canceled";
-    
+	private static Logger logger = Logger.getLogger(Resupply.class.getName());
+	
 	// Data members
 	private Settlement settlement;
 	private String state;
@@ -53,10 +72,7 @@ public class Resupply implements Serializable, Comparable<Resupply> {
 		this.settlement = settlement;
 	}
 	
-	/**
-	 * Gets the launch date of the resupply mission.
-	 * @return launch date as MarsClock instance.
-	 */
+	@Override
 	public MarsClock getLaunchDate() {
 	    return (MarsClock) launchDate.clone();
 	}
@@ -68,22 +84,6 @@ public class Resupply implements Serializable, Comparable<Resupply> {
 	public void setLaunchDate(MarsClock launchDate) {
 	    this.launchDate = (MarsClock) launchDate.clone();
 	}
-	
-	/**
-	 * Gets the current state of the resupply mission.
-	 * @return current state string.
-	 */
-	public String getState() {
-        return state;
-    }
-
-	/**
-	 * Sets the current state of the resupply mission.
-	 * @param state the current state string.
-	 */
-    public void setState(String state) {
-        this.state = state;
-    }
 
     /**
      * Gets a list of the resupply buildings.
@@ -181,10 +181,7 @@ public class Resupply implements Serializable, Comparable<Resupply> {
         this.newParts = newParts;
     }
 
-    /**
-	 * Gets the arrival date of the resupply mission.
-	 * @return arrival date as MarsClock instance.
-	 */
+    @Override
 	public MarsClock getArrivalDate() {
 		return (MarsClock) arrivalDate.clone();
 	}
@@ -217,14 +214,12 @@ public class Resupply implements Serializable, Comparable<Resupply> {
      * Commits a set of modifications for the resupply mission.
      */
     public void commitModification() {
-        HistoricalEvent newEvent = new ResupplyEvent(this, ResupplyEvent.RESUPPLY_MODIFIED, 
+        HistoricalEvent newEvent = new TransportEvent(this, TransportEvent.TRANSPORT_ITEM_MODIFIED, 
                 "Resupply mission modified");
         Simulation.instance().getEventManager().registerNewEvent(newEvent);  
     }
 
-    /**
-     * Prepare object for garbage collection.
-     */
+    @Override
     public void destroy() {
         settlement = null;
         launchDate = null;
@@ -251,7 +246,7 @@ public class Resupply implements Serializable, Comparable<Resupply> {
     }
     
     @Override
-    public int compareTo(Resupply o) {
+    public int compareTo(Transportable o) {
         int result = 0;
         
         double arrivalTimeDiff = MarsClock.getTimeDiff(arrivalDate, o.getArrivalDate());
@@ -262,10 +257,236 @@ public class Resupply implements Serializable, Comparable<Resupply> {
             result = 1;
         }
         else {
-            // If arrival time is the same, compare by settlement name alphabetically.
-            result = settlement.compareTo(o.getSettlement());
+            // If arrival time is the same, compare by name alphabetically.
+            result = getName().compareTo(o.getName());
         }
         
         return result;
+    }
+
+	@Override
+	public String getName() {
+		return getSettlement().getName();
+	}
+
+	@Override
+	public String getTransitState() {
+		return state;
+	}
+
+	@Override
+	public void setTransitState(String transitState) {
+		this.state = transitState;
+	}
+
+	@Override
+	public void performArrival() {
+		// Deliver supplies to the destination settlement.
+		deliverSupplies();
+	}
+	
+	/**
+     * Delivers supplies to the destination settlement.
+     */
+    private void deliverSupplies() {
+        
+        // Deliver buildings.
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        Iterator<String> buildingI = getNewBuildings().iterator();
+        while (buildingI.hasNext()) {
+            String type = buildingI.next();
+                
+            // Determine location and facing for the new building.
+            BuildingTemplate positionedTemplate = positionNewResupplyBuilding(type);
+            buildingManager.addBuilding(positionedTemplate);
+        }
+        
+        // Deliver vehicles.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<String> vehicleI = getNewVehicles().iterator();
+        while (vehicleI.hasNext()) {
+            String vehicleType = vehicleI.next();
+            Vehicle vehicle = null;
+            if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
+                vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
+            } else {
+                String name = unitManager.getNewName(UnitManager.VEHICLE, null, null);
+                vehicle = new Rover(name, vehicleType, settlement);
+            }
+            unitManager.addUnit(vehicle);
+        }
+        
+        Inventory inv = settlement.getInventory();
+        
+        // Deliver equipment.
+        Iterator<String> equipmentI = getNewEquipment().keySet().iterator();
+        while (equipmentI.hasNext()) {
+            String equipmentType = equipmentI.next();
+            int number = getNewEquipment().get(equipmentType);
+            for (int x=0; x < number; x++) {
+                Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
+                        settlement.getCoordinates(), false);
+                equipment.setName(unitManager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
+                inv.storeUnit(equipment);
+            }
+        }
+        
+        // Deliver resources.
+        Iterator<AmountResource> resourcesI = getNewResources().keySet().iterator();
+        while (resourcesI.hasNext()) {
+            AmountResource resource = resourcesI.next();
+            double amount = getNewResources().get(resource);
+            double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+            if (amount > capacity) amount = capacity;
+            inv.storeAmountResource(resource, amount, true);
+        }
+        
+        // Deliver parts.
+        Iterator<Part> partsI = getNewParts().keySet().iterator();
+        while (partsI.hasNext()) {
+            Part part = partsI.next();
+            int number = getNewParts().get(part);
+            inv.storeItemResources(part, number);
+        }
+        
+        // Deliver immigrants.
+        Collection<Person> immigrants = new ConcurrentLinkedQueue<Person>();
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+        for (int x = 0; x < getNewImmigrantNum(); x++) {
+            PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
+            String gender = Person.FEMALE;
+            if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+            String immigrantName = unitManager.getNewName(UnitManager.PERSON, null, gender);
+            Person immigrant = new Person(immigrantName, gender, settlement);
+            unitManager.addUnit(immigrant);
+            relationshipManager.addNewImmigrant(immigrant, immigrants);
+            immigrants.add(immigrant);
+            logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
+        }
+    }
+    
+    /**
+     * Determines and sets the position of a new resupply building.
+     * @param building type the new building type.
+     * @return the repositioned building template.
+     */
+    private BuildingTemplate positionNewResupplyBuilding(String buildingType) {
+        
+        BuildingTemplate newPosition = null;
+        
+        boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().
+                hasLifeSupport(buildingType);
+        if (hasLifeSupport) {
+            // Try to put building next to another inhabitable building.
+            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+            Collections.shuffle(inhabitableBuildings);
+            Iterator<Building> i = inhabitableBuildings.iterator();
+            while (i.hasNext()) {
+                Building building = i.next();
+                newPosition = positionNextToBuilding(buildingType, building, 0D);
+                if (newPosition != null) break;
+            }
+        }
+        else {
+            // Try to put building next to the same building type.
+            List<Building> sameBuildings = settlement.getBuildingManager().getBuildingsOfName(buildingType);
+            Collections.shuffle(sameBuildings);
+            Iterator<Building> j = sameBuildings.iterator();
+            while (j.hasNext()) {
+                Building building = j.next();
+                newPosition = positionNextToBuilding(buildingType, building, 0D);
+                if (newPosition != null) break;
+            }
+        }
+        
+        if (newPosition == null) {
+            // Try to put building next to another building.
+            // If not successful, try again 10m from each building and continue out at 10m increments 
+            // until a location is found.
+            BuildingManager buildingManager = settlement.getBuildingManager();
+            if (buildingManager.getBuildingNum() > 0) {
+                for (int x = 10; newPosition == null; x+= 10) {
+                    List<Building> allBuildings = buildingManager.getBuildings();
+                    Collections.shuffle(allBuildings);
+                    Iterator<Building> i = allBuildings.iterator();
+                    while (i.hasNext()) {
+                        Building building = i.next();
+                        newPosition = positionNextToBuilding(buildingType, building, (double) x);
+                        if (newPosition != null) break;
+                    }
+                }
+            }
+            else {
+                // If no buildings at settlement, position new building at 0,0 with random facing.
+                newPosition = new BuildingTemplate(buildingType, 0D, 0D, RandomUtil.getRandomDouble(360D));
+            }
+        }
+        
+        return newPosition;
+    }
+    
+    /**
+     * Positions a new building near an existing building.
+     * @param newBuildingType the new building type.
+     * @param building the existing building.
+     * @param separationDistance the separation distance (meters) from the building.
+     * @return new building template with determined position, or null if none found.
+     */
+    private BuildingTemplate positionNextToBuilding(String newBuildingType, Building building, 
+            double separationDistance) {
+        BuildingTemplate newPosition = null;
+        
+        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
+        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(newBuildingType);
+        
+        final int front = 0;
+        final int back = 1;
+        final int right = 2;
+        final int left = 3;
+        
+        List<Integer> directions = new ArrayList<Integer>(4);
+        directions.add(front);
+        directions.add(back);
+        directions.add(right);
+        directions.add(left);
+        Collections.shuffle(directions);
+        
+        double direction = 0D;
+        double structureDistance = 0D;
+        
+        for (int x = 0; x < directions.size(); x++) {
+            switch (directions.get(x)) {
+                case front: direction = building.getFacing();
+                            structureDistance = (building.getLength() / 2D) + (length / 2D);
+                            break;
+                case back: direction = building.getFacing() + 180D;
+                            structureDistance = (building.getLength() / 2D) + (length / 2D);
+                            break;
+                case right:  direction = building.getFacing() + 90D;
+                            structureDistance = (building.getWidth() / 2D) + (width / 2D);
+                            break;
+                case left:  direction = building.getFacing() + 270D;
+                            structureDistance = (building.getWidth() / 2D) + (width / 2D);
+            }
+            
+            double distance = structureDistance + separationDistance;
+            double radianDirection = Math.PI * direction / 180D;
+            double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
+            double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
+            double rectRotation = building.getFacing();
+            
+            // Check to see if proposed new building position intersects with any existing buildings 
+            // or construction sites.
+            if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
+                    rectCenterY, width, length, rectRotation)) {
+                // Set the new building here.
+                newPosition = new BuildingTemplate(newBuildingType, rectCenterX, rectCenterY, 
+                        building.getFacing());
+                break;
+            }
+        }
+        
+        return newPosition;
     }
 }

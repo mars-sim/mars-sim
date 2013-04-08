@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NewModifyResupplyDialog.java
- * @version 3.04 2013-01-03
+ * @version 3.04 2013-04-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -42,8 +42,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyManager;
+import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -76,7 +77,7 @@ public class NewModifyResupplyDialog extends JDialog {
     private SupplyTableModel supplyTableModel;
     private JTable supplyTable;
     private JButton removeSupplyButton;
-    
+
     /**
      * Constructor for creating new resupply mission.
      * @param owner the JFrame owner of the dialog.
@@ -84,7 +85,7 @@ public class NewModifyResupplyDialog extends JDialog {
     public NewModifyResupplyDialog(JFrame owner) {
         this(owner, "Create New Resupply Mission", null);
     }
-    
+
     /**
      * Constructor for modifying a resupply mission.
      * @param owner the JFrame owner of the dialog.
@@ -93,7 +94,7 @@ public class NewModifyResupplyDialog extends JDialog {
     public NewModifyResupplyDialog(JFrame owner, Resupply resupply) {
         this(owner, "Modify Resupply Mission", resupply);
     }
-    
+
     /**
      * Constructor
      * @param owner the JFrame owner of the dialog.
@@ -101,36 +102,36 @@ public class NewModifyResupplyDialog extends JDialog {
      * @param resupply the resupply mission to modify or null if new resupply.
      */
     private NewModifyResupplyDialog(JFrame owner, String title, Resupply resupply) {
-        
+
         // Use JDialog constructor
         super(owner, title, true);
-        
+
         // Initialize data members.
         this.resupply = resupply;
-        
+
         // Set the layout.
         setLayout(new BorderLayout(0, 0));
-        
+
         // Set the border.
         ((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
-        
+
         // Create the edit pane.
         JPanel editPane = new JPanel(new BorderLayout(0, 0));
         editPane.setBorder(new MarsPanelBorder());
         getContentPane().add(editPane, BorderLayout.CENTER);
-        
+
         // Create top edit pane.
         JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
         editPane.add(topEditPane, BorderLayout.NORTH);
-        
+
         // Create destination pane.
         JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         topEditPane.add(destinationPane, BorderLayout.NORTH);
-        
+
         // Create destination title label.
         JLabel destinationTitleLabel = new JLabel("Destination: ");
         destinationPane.add(destinationTitleLabel);
-        
+
         // Create destination combo box.
         Vector<Settlement> settlements = new Vector<Settlement>(
                 Simulation.instance().getUnitManager().getSettlements());
@@ -140,19 +141,19 @@ public class NewModifyResupplyDialog extends JDialog {
             destinationCB.setSelectedItem(resupply.getSettlement());
         }
         destinationPane.add(destinationCB);
-        
+
         // Create arrival date pane.
         JPanel arrivalDatePane = new JPanel(new GridLayout(2, 1, 10, 10));
         arrivalDatePane.setBorder(new TitledBorder("Arrival Date"));
         topEditPane.add(arrivalDatePane, BorderLayout.CENTER);
-        
+
         // Create data type radio button group.
         ButtonGroup dateTypeRBGroup = new ButtonGroup();
-        
+
         // Create arrival date selection pane.
         JPanel arrivalDateSelectionPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         arrivalDatePane.add(arrivalDateSelectionPane);
-        
+
         // Create arrival date radio button.
         arrivalDateRB = new JRadioButton();
         dateTypeRBGroup.add(arrivalDateRB);
@@ -165,31 +166,31 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         });
         arrivalDateSelectionPane.add(arrivalDateRB);
-        
+
         // Create arrival date title label.
         arrivalDateTitleLabel = new JLabel("Arrival Date:");
         arrivalDateSelectionPane.add(arrivalDateTitleLabel);
-        
+
         // Get default resupply Martian time.
         MarsClock resupplyTime = Simulation.instance().getMasterClock().getMarsClock();
         if (resupply != null) {
             resupplyTime = resupply.getArrivalDate();
         }
-        
+
         // Create sol label.
         solLabel = new JLabel("Sol");
         arrivalDateSelectionPane.add(solLabel);
-        
+
         // Create sol combo box.
         martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
         solCB = new JComboBox(martianSolCBModel);
         solCB.setSelectedItem(resupplyTime.getSolOfMonth());
         arrivalDateSelectionPane.add(solCB);
-        
+
         // Create month label.
         monthLabel = new JLabel("Month");
         arrivalDateSelectionPane.add(monthLabel);
-        
+
         // Create month combo box.
         monthCB = new JComboBox(MarsClock.getMonthNames());
         monthCB.setSelectedItem(resupplyTime.getMonthName());
@@ -201,11 +202,11 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         });
         arrivalDateSelectionPane.add(monthCB);
-        
+
         // Create orbit label.
         orbitLabel = new JLabel("Orbit");
         arrivalDateSelectionPane.add(orbitLabel);
-        
+
         // Create orbit combo box.
         NumberFormat formatter = NumberFormat.getInstance();
         formatter.setMinimumIntegerDigits(2);
@@ -224,11 +225,11 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         });
         arrivalDateSelectionPane.add(orbitCB);
-        
+
         // Create time until arrival pane.
         JPanel timeUntilArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         arrivalDatePane.add(timeUntilArrivalPane);
-        
+
         // Create time until arrival radio button.
         timeUntilArrivalRB = new JRadioButton();
         dateTypeRBGroup.add(timeUntilArrivalRB);
@@ -240,12 +241,12 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         });
         timeUntilArrivalPane.add(timeUntilArrivalRB);
-        
+
         // create time until arrival label.
         timeUntilArrivalLabel = new JLabel("Sols Until Arrival:");
         timeUntilArrivalLabel.setEnabled(false);
         timeUntilArrivalPane.add(timeUntilArrivalLabel);
-        
+
         // Create sols text field.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         int solsDiff = (int) Math.round((MarsClock.getTimeDiff(resupplyTime, currentTime) / 1000D));
@@ -254,20 +255,20 @@ public class NewModifyResupplyDialog extends JDialog {
         solsTF.setHorizontalAlignment(JTextField.RIGHT);
         solsTF.setEnabled(false);
         timeUntilArrivalPane.add(solsTF);
-        
+
         // Create sol information label.
         solInfoLabel = new JLabel("(668 Sols = 1 Martian Orbit)");
         solInfoLabel.setEnabled(false);
         timeUntilArrivalPane.add(solInfoLabel);
-        
+
         // Create immigrants panel.
         JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
         topEditPane.add(immigrantsPane, BorderLayout.SOUTH);
-        
+
         // Create immigrants label.
         JLabel immigrantsLabel = new JLabel("Number of Immigrants: ");
         immigrantsPane.add(immigrantsLabel);
-        
+
         // Create immigrants text field.
         int immigrantsNum = 0;
         if (resupply != null) {
@@ -277,12 +278,12 @@ public class NewModifyResupplyDialog extends JDialog {
         immigrantsTF.setText(Integer.toString(immigrantsNum));
         immigrantsTF.setHorizontalAlignment(JTextField.RIGHT);
         immigrantsPane.add(immigrantsTF);
-        
+
         // Create bottom edit pane.
         JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
         bottomEditPane.setBorder(new TitledBorder("Supplies"));
         editPane.add(bottomEditPane, BorderLayout.CENTER);
-        
+
         // Create supply table.
         supplyTableModel = new SupplyTableModel(resupply);
         supplyTable = new JTable(supplyTableModel);
@@ -300,16 +301,16 @@ public class NewModifyResupplyDialog extends JDialog {
                 }
             }
         });
-        
+
         // Create supply scroll pane.
         JScrollPane supplyScrollPane = new JScrollPane(supplyTable);
         supplyScrollPane.setPreferredSize(new Dimension(450, 200));
         bottomEditPane.add(supplyScrollPane, BorderLayout.CENTER);
-        
+
         // Create supply button pane.
         JPanel supplyButtonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
         bottomEditPane.add(supplyButtonPane, BorderLayout.SOUTH);
-        
+
         // Create add supply button.
         JButton addSupplyButton = new JButton("Add");
         addSupplyButton.addActionListener(new ActionListener() {
@@ -319,7 +320,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         });
         supplyButtonPane.add(addSupplyButton);
-        
+
         // Create remove supply button.
         removeSupplyButton = new JButton("Remove");
         removeSupplyButton.addActionListener(new ActionListener() {
@@ -330,11 +331,11 @@ public class NewModifyResupplyDialog extends JDialog {
         });
         removeSupplyButton.setEnabled(false);
         supplyButtonPane.add(removeSupplyButton);
-        
+
         // Create the button pane.
         JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
-        
+
         if (resupply != null) {
             // Create modify button.
             JButton modifyButton = new JButton("Modify");
@@ -358,7 +359,7 @@ public class NewModifyResupplyDialog extends JDialog {
             });
             buttonPane.add(createButton);
         }
-            
+
         // Create cancel button.
         JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
@@ -366,17 +367,17 @@ public class NewModifyResupplyDialog extends JDialog {
                 // Close dialog.
                 dispose();
             }
-            
+
         });
         buttonPane.add(cancelButton);
-        
+
         // Finish and display dialog.
         pack();
         setLocationRelativeTo(owner);
         setResizable(false);
         setVisible(true);
     }
-    
+
     /**
      * Set the components of the arrival date pane to be enabled or disabled.
      * @param enable true if enable components, false if disable components.
@@ -390,7 +391,7 @@ public class NewModifyResupplyDialog extends JDialog {
         orbitLabel.setEnabled(enable);
         orbitCB.setEnabled(enable);
     }
-    
+
     /**
      * Set the components of the time until arrival pane to be enabled or disabled.
      * @param enable true if enable components, false if disable components.
@@ -400,32 +401,32 @@ public class NewModifyResupplyDialog extends JDialog {
         solsTF.setEnabled(enable);
         solInfoLabel.setEnabled(enable);
     }
-    
+
     /**
      * Adds a new supply row to the supply table.
      */
     private void addNewSupplyRow() {
         // Add new supply row.
         supplyTableModel.addNewSupplyItem();
-        
+
         // Select new row.
         int index = supplyTable.getRowCount() - 1;
         supplyTable.setRowSelectionInterval(index, index);
-        
+
         // Scroll to bottom of table.
         supplyTable.scrollRectToVisible(supplyTable.getCellRect(index, 0, true));
     }
-    
+
     /**
      * Remove the selected supply rows.
      */
     private void removeSelectedSupplyRows() {
-        
+
         // Get all selected row indexes and remove items from table.
         int[] removedIndexes = supplyTable.getSelectedRows();
         supplyTableModel.removeSupplyItems(removedIndexes);
     }
-    
+
     /**
      * Modify the resupply mission.
      */
@@ -435,7 +436,7 @@ public class NewModifyResupplyDialog extends JDialog {
         resupply.commitModification();
         dispose();
     }
-    
+
     /**
      * Create the new resupply mission.
      */
@@ -445,40 +446,40 @@ public class NewModifyResupplyDialog extends JDialog {
         MarsClock arrivalDate = getArrivalDate();
         Resupply newResupply = new Resupply(arrivalDate, destination);
         populateResupplyMission(newResupply);
-        Simulation.instance().getResupplyManager().addNewResupplyMission(newResupply);
+        Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
         dispose();
     }
-    
+
     /**
      * Populates a resupply mission from the dialog info.
      * @param resupplyMission the resupply mission to populate.
      */
     private void populateResupplyMission(Resupply resupplyMission) {
-        
+
         // Set destination settlement.
         Settlement destination = (Settlement) destinationCB.getSelectedItem();
         resupplyMission.setSettlement(destination);
-        
+
         // Set arrival date.
         MarsClock arrivalDate = getArrivalDate();
         resupplyMission.setArrivalDate(arrivalDate);
-        
+
         // Determine launch date.
         MarsClock launchDate = (MarsClock) arrivalDate.clone();
-        launchDate.addTime(-1D * ResupplyManager.AVG_TRANSIT_TIME * 1000D);
+        launchDate.addTime(-1D * ResupplyUtil.AVG_TRANSIT_TIME * 1000D);
         resupplyMission.setLaunchDate(launchDate);
-        
+
         // Set resupply state based on launch and arrival time.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        String state = Resupply.PLANNED;
+        String state = Transportable.PLANNED;
         if (MarsClock.getTimeDiff(currentTime, launchDate) > 0D) {
-            state = Resupply.IN_TRANSIT;
+            state = Transportable.IN_TRANSIT;
             if (MarsClock.getTimeDiff(currentTime, arrivalDate) > 0D) {
-                state = Resupply.DELIVERED;
+                state = Transportable.ARRIVED;
             }
         }
-        resupplyMission.setState(state);
-        
+        resupplyMission.setTransitState(state);
+
         // Set immigrant num.
         int immigrantNum = 0;
         try {
@@ -489,14 +490,14 @@ public class NewModifyResupplyDialog extends JDialog {
         catch (NumberFormatException e) {
             e.printStackTrace(System.err);
         }
-        
+
         // Commit any active editing cell in the supply table.
         if (supplyTable.isEditing()) {
             supplyTable.getCellEditor().stopCellEditing();
         }
-        
+
         List<SupplyItem> supplyItems = supplyTableModel.getSupplyItems();
-        
+
         // Set new buildings.
         List<String> newBuildings = new ArrayList<String>();
         Iterator<SupplyItem> i = supplyItems.iterator();
@@ -510,7 +511,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         }
         resupplyMission.setNewBuildings(newBuildings);
-        
+
         // Set new vehicles.
         List<String> newVehicles = new ArrayList<String>();
         Iterator<SupplyItem> j = supplyItems.iterator();
@@ -524,7 +525,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         }
         resupplyMission.setNewVehicles(newVehicles);
-        
+
         // Set new equipment.
         Map<String, Integer> newEquipment = new HashMap<String, Integer>();
         Iterator<SupplyItem> k = supplyItems.iterator();
@@ -540,7 +541,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         }
         resupplyMission.setNewEquipment(newEquipment);
-        
+
         // Set new resources.
         Map<AmountResource, Double> newResources = new HashMap<AmountResource, Double>();
         Iterator<SupplyItem> l = supplyItems.iterator();
@@ -557,7 +558,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
         }
         resupplyMission.setNewResources(newResources);
-        
+
         // Set new parts.
         Map<Part, Integer> newParts = new HashMap<Part, Integer>();
         Iterator<SupplyItem> m = supplyItems.iterator();
@@ -575,7 +576,7 @@ public class NewModifyResupplyDialog extends JDialog {
         }
         resupplyMission.setNewParts(newParts);
     }
-    
+
     /**
      * Gets the arrival date from the dialog info.
      * @return arrival date.
@@ -583,21 +584,21 @@ public class NewModifyResupplyDialog extends JDialog {
     private MarsClock getArrivalDate() {
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
         MarsClock result = (MarsClock) currentTime.clone();
-        
+
         if (arrivalDateRB.isSelected()) {
             // Determine arrival date from arrival date combo boxes.
             try {
                 int sol = solCB.getSelectedIndex() + 1;
                 int month = monthCB.getSelectedIndex() + 1;
                 int orbit = Integer.parseInt((String) orbitCB.getSelectedItem());
-                
+
                 // Set millisols to current time if resupply is current date, otherwise 0.
                 double millisols = 0D;
                 if ((sol == currentTime.getSolOfMonth()) && (month == currentTime.getMonth()) && 
                         (orbit == currentTime.getOrbit())) {
                     millisols = currentTime.getMillisol();
                 }
-                
+
                 result = new MarsClock(orbit, month, sol, millisols);
             }
             catch (NumberFormatException e) {
@@ -619,18 +620,18 @@ public class NewModifyResupplyDialog extends JDialog {
                 e.printStackTrace(System.err);
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Inner class for the Sol combo box model.
      */
     private class MartianSolComboBoxModel extends DefaultComboBoxModel {
-        
+
         // Data members
         private int maxSolNum;
-        
+
         /**
          * Constructor
          * @param month the Martian month number.
@@ -638,12 +639,12 @@ public class NewModifyResupplyDialog extends JDialog {
          */
         private MartianSolComboBoxModel(int month, int orbit) {
             maxSolNum = MarsClock.getSolsInMonth(month, orbit);
-            
+
             for (int x = 1; x <= maxSolNum; x++) {
                 addElement(x);
             }
         }
-        
+
         /**
          * Update the items based on the number of sols in the month.
          * @param month the Martian month number.
@@ -653,7 +654,7 @@ public class NewModifyResupplyDialog extends JDialog {
             int newMaxSolNum = MarsClock.getSolsInMonth(month, orbit);
             if (newMaxSolNum != maxSolNum) {
                 int oldSelectedSol = (Integer) getSelectedItem();
-                
+
                 if (newMaxSolNum < maxSolNum) {
                     removeElementAt(maxSolNum - 1);
                     if (oldSelectedSol == maxSolNum) {
@@ -663,23 +664,23 @@ public class NewModifyResupplyDialog extends JDialog {
                 else {
                     addElement(newMaxSolNum);
                 }
-                
+
                 maxSolNum = newMaxSolNum;
             }
         }
     }
-    
+
     /**
      * Inner class for editing the Category cell with a combo box.
      */
     private class CategoryCellEditor extends AbstractCellEditor 
-            implements TableCellEditor, ActionListener {
+    implements TableCellEditor, ActionListener {
 
         // Data members.
         private JComboBox categoryCB;
         private int editingRow;
         private String previousCategory;
-        
+
         /**
          * Constructor
          */
@@ -692,7 +693,7 @@ public class NewModifyResupplyDialog extends JDialog {
             }
             categoryCB.addActionListener(this);
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             return categoryCB.getSelectedItem();
@@ -712,14 +713,14 @@ public class NewModifyResupplyDialog extends JDialog {
             String category = (String) categoryCB.getSelectedItem();
             if ((editingRow > -1) && (!category.equals(previousCategory))) {
                 supplyTable.setValueAt(category, editingRow, 0);
-                
+
                 // Update supply type cell in row if category has changed.
                 String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
                 supplyTable.setValueAt(defaultType, editingRow, 1);
             }
         }
     }
-    
+
     /**
      * Inner class for editing the Type cell with a combo box.
      */
@@ -728,12 +729,12 @@ public class NewModifyResupplyDialog extends JDialog {
         // Data members.
         private Map<String, JComboBox> typeCBMap;
         private JComboBox currentCB;
-        
+
         /**
          * Constructor
          */
         private TypeCellEditor() {
-            
+
             Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
             typeCBMap = new HashMap<String, JComboBox>(categoryTypeMap.keySet().size());
             Iterator<String> i = categoryTypeMap.keySet().iterator();
@@ -749,7 +750,7 @@ public class NewModifyResupplyDialog extends JDialog {
                 typeCBMap.put(category, categoryCB);
             }
         }
-        
+
         @Override
         public Object getCellEditorValue() {
             Object result = null;
@@ -760,7 +761,7 @@ public class NewModifyResupplyDialog extends JDialog {
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
                 boolean isSelected, int row, int column) {
-            
+
             // Get type combo box based on first column category value.
             String category = (String) table.getValueAt(row, 0);
             currentCB = typeCBMap.get(category);

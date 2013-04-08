@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.03 2012-09-30
+ * @version 3.04 2013-04-05
  * @author Scott Davis
  */
 
@@ -23,22 +23,19 @@ import java.util.Vector;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyEvent;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -50,7 +47,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  * A panel showing a selected resupply mission details.
  */
 public class ResupplyDetailPanel extends JPanel implements ClockListener, 
-        HistoricalEventListener, ListSelectionListener {
+HistoricalEventListener {
 
     // Data members
     private Resupply resupply;
@@ -61,113 +58,112 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
     private JLabel immigrantsValueLabel;
     private int solsToArrival = -1;
     private JPanel innerSupplyPane;
-    
+
     /**
      * Constructor
      */
     public ResupplyDetailPanel() {
-     
+
         // Use JPanel constructor
         super();
-        
+
         // Initialize data members.
         resupply = null;
-        
+
         setLayout(new BorderLayout(0, 10));
         setBorder(new MarsPanelBorder());
-        setPreferredSize(new Dimension(300, 300));
-        
+
         // Create the info panel.
         JPanel infoPane = new JPanel(new BorderLayout());
         add(infoPane, BorderLayout.NORTH);
-        
+
         // Create the title label.
         JLabel titleLabel = new JLabel("Resupply Mission", JLabel.CENTER);
         titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD));
         titleLabel.setPreferredSize(new Dimension(-1, 25));
         infoPane.add(titleLabel, BorderLayout.NORTH);
-        
+
         // Create the info2 panel.
         JPanel info2Pane = new JPanel(new GridLayout(5, 1, 5, 5));
         infoPane.add(info2Pane, BorderLayout.CENTER);
-        
+
         // Create destination panel.
         JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(destinationPane);
-        
+
         // Create destination title label.
         JLabel destinationTitleLabel = new JLabel("Destination: ", JLabel.LEFT);
         destinationPane.add(destinationTitleLabel);
-        
+
         // Create destination value label.
         destinationValueLabel = new JLabel("", JLabel.LEFT);
         destinationPane.add(destinationValueLabel);
-        
+
         // Create state panel.
         JPanel statePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(statePane);
-        
+
         // Create state title label.
         JLabel stateTitleLabel = new JLabel("State: ", JLabel.LEFT);
         statePane.add(stateTitleLabel);
-        
+
         // Create state value label.
         stateValueLabel = new JLabel("", JLabel.LEFT);
         statePane.add(stateValueLabel);
-        
+
         // Create arrival date panel.
         JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(arrivalDatePane);
-        
+
         // Create arrival date title label.
         JLabel arrivalDateTitleLabel = new JLabel("Arrival Date: ", JLabel.LEFT);
         arrivalDatePane.add(arrivalDateTitleLabel);
-        
+
         // Create arrival date value label.
         arrivalDateValueLabel = new JLabel("", JLabel.LEFT);
         arrivalDatePane.add(arrivalDateValueLabel);
-        
+
         // Create time arrival panel.
         JPanel timeArrivalPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(timeArrivalPane);
-        
+
         // Create time arrival title label.
         JLabel timeArrivalTitleLabel = new JLabel("Time Until Arrival: ", JLabel.LEFT);
         timeArrivalPane.add(timeArrivalTitleLabel);
-        
+
         // Create time arrival value label.
         timeArrivalValueLabel = new JLabel("", JLabel.LEFT);
         timeArrivalPane.add(timeArrivalValueLabel);
-        
+
         // Create immigrants panel.
         JPanel immigrantsPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(immigrantsPane);
-        
+
         // Create immigrants title label.
         JLabel immigrantsTitleLabel = new JLabel("Immigrants: ", JLabel.LEFT);
         immigrantsPane.add(immigrantsTitleLabel);
-        
+
         // Create immigrants value label.
         immigrantsValueLabel = new JLabel("", JLabel.LEFT);
         immigrantsPane.add(immigrantsValueLabel);
-        
+
         // Create the outer supply panel.
         JPanel outerSupplyPane = new JPanel(new BorderLayout(0, 0));
         outerSupplyPane.setBorder(new TitledBorder("Supplies"));
         add(outerSupplyPane, BorderLayout.CENTER);
-        
+
         // Create the inner supply panel.
         innerSupplyPane = new JPanel();
         innerSupplyPane.setLayout(new BoxLayout(innerSupplyPane, BoxLayout.Y_AXIS));
         outerSupplyPane.add(new JScrollPane(innerSupplyPane), BorderLayout.CENTER);
-        
+
         // Set as clock listener.
         Simulation.instance().getMasterClock().addClockListener(this);
-        
+
         // Set as historical event listener.
         Simulation.instance().getEventManager().addListener(this);
     }
-    
+
     /**
      * Prepares the panel for deletion.
      */
@@ -176,7 +172,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
         Simulation.instance().getEventManager().removeListener(this);
         Simulation.instance().getMasterClock().removeClockListener(this);
     }
-    
+
     /**
      * Set the resupply mission to show.
      * If resupply is null, clear displayed info.
@@ -193,7 +189,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
             }
         }
     }
-    
+
     /**
      * Clear the resupply info.
      */
@@ -210,84 +206,84 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
      * Update the resupply info with the current resupply mission.
      */
     private void updateResupplyInfo() {
-        
+
         destinationValueLabel.setText(resupply.getSettlement().getName());
-        
-        stateValueLabel.setText(resupply.getState());
-        
+
+        stateValueLabel.setText(resupply.getTransitState());
+
         arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateString());
-        
+
         updateTimeToArrival();
-        
+
         immigrantsValueLabel.setText(Integer.toString(resupply.getNewImmigrantNum()));
-        
+
         updateSupplyPanel();
-        
+
         validate();
     }
-    
+
     /**
      * Update the supply panel with the current resupply mission.
      */
     private void updateSupplyPanel() {
-        
+
         // Clear any previous data.
         innerSupplyPane.removeAll();
-        
+
         // Create buildings panel.
         JPanel buildingsPanel = createBuildingsDisplayPanel();
         if (buildingsPanel != null) {
             innerSupplyPane.add(buildingsPanel);
             innerSupplyPane.add(Box.createVerticalStrut(10));
         }
-            
+
         // Create vehicles panel.
         JPanel vehiclesPanel = createVehiclesDisplayPanel();
         if (vehiclesPanel != null) {
             innerSupplyPane.add(vehiclesPanel);
             innerSupplyPane.add(Box.createVerticalStrut(10));
         }
-        
+
         // Create equipment panel.
         JPanel equipmentPanel = createEquipmentDisplayPanel();
         if (equipmentPanel != null) {
             innerSupplyPane.add(equipmentPanel);
             innerSupplyPane.add(Box.createVerticalStrut(10));
         }
-        
+
         // Create resources panel.
         JPanel resourcesPanel = createResourcesDisplayPanel();
         if (resourcesPanel != null) {
             innerSupplyPane.add(resourcesPanel);
             innerSupplyPane.add(Box.createVerticalStrut(10));
         }
-        
+
         // Create parts panel.
         JPanel partsPanel = createPartsDisplayPanel();
         if (partsPanel != null) {
             innerSupplyPane.add(partsPanel);
         }
-        
+
         innerSupplyPane.add(Box.createVerticalGlue());
     }
-        
+
     /**
      * Create the building display panel.
      * @return panel.
      */
     private JPanel createBuildingsDisplayPanel() {
-        
+
         JPanel buildingsPanel = null;
-        
+
         List<String> buildings = resupply.getNewBuildings();
         if (buildings.size() > 0) {
             // Create buildings panel.
             buildingsPanel = new JPanel(new BorderLayout());
-        
+
             // Create buildings label.
             JLabel buildingsLabel = new JLabel("Buildings", JLabel.CENTER);
             buildingsPanel.add(buildingsLabel, BorderLayout.NORTH);
-        
+
             // Create table data.
             Map<String, Integer> buildingMap = new HashMap<String, Integer>(buildings.size());
             Iterator<String> i = buildings.iterator();
@@ -301,12 +297,12 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                     buildingMap.put(building, 1);
                 }
             }
-            
+
             // Create table model.
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Building Type");
             tableModel.addColumn("Num");
-            
+
             // Populate table model with data.
             List<String> buildingTypes = new ArrayList<String>(buildingMap.keySet());
             Collections.sort(buildingTypes);
@@ -319,41 +315,41 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 rowData.add(num);
                 tableModel.addRow(rowData);
             }
-            
+
             // Create table
             JTable buildingTable = new JTable(tableModel);
             buildingTable.setCellSelectionEnabled(false);
             buildingTable.getColumnModel().getColumn(1).setMaxWidth(50);
             buildingTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
             buildingsPanel.add(new JScrollPane(buildingTable), BorderLayout.CENTER);
-            
+
             // Set preferred height for panel to show all of table.
             int panelHeight = buildingTable.getPreferredSize().height + 
                     buildingTable.getTableHeader().getPreferredSize().height + 
                     buildingsLabel.getPreferredSize().height + 7;
             buildingsPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
-        
+
         return buildingsPanel;
     }
-    
+
     /**
      * Create the vehicle display panel.
      * @return panel.
      */
     private JPanel createVehiclesDisplayPanel() {
-        
+
         JPanel vehiclesPanel = null;
-        
+
         List<String> vehicles = resupply.getNewVehicles();
         if (vehicles.size() > 0) {
             // Create vehicles panel.
             vehiclesPanel = new JPanel(new BorderLayout());
-        
+
             // Create vehicles label.
             JLabel vehiclesLabel = new JLabel("Vehicles", JLabel.CENTER);
             vehiclesPanel.add(vehiclesLabel, BorderLayout.NORTH);
-        
+
             // Create table data.
             Map<String, Integer> vehicleMap = new HashMap<String, Integer>(vehicles.size());
             Iterator<String> i = vehicles.iterator();
@@ -367,12 +363,12 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                     vehicleMap.put(vehicle, 1);
                 }
             }
-            
+
             // Create table model.
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Vehicle Type");
             tableModel.addColumn("Num");
-            
+
             // Populate table model with data.
             List<String> vehicleTypes = new ArrayList<String>(vehicleMap.keySet());
             Collections.sort(vehicleTypes);
@@ -385,46 +381,46 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 rowData.add(num);
                 tableModel.addRow(rowData);
             }
-            
+
             // Create table
             JTable vehicleTable = new JTable(tableModel);
             vehicleTable.setCellSelectionEnabled(false);
             vehicleTable.getColumnModel().getColumn(1).setMaxWidth(50);
             vehicleTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
             vehiclesPanel.add(new JScrollPane(vehicleTable), BorderLayout.CENTER);
-            
+
             // Set preferred height for panel to show all of table.
             int panelHeight = vehicleTable.getPreferredSize().height + 
                     vehicleTable.getTableHeader().getPreferredSize().height + 
                     vehiclesLabel.getPreferredSize().height + 7;
             vehiclesPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
-        
+
         return vehiclesPanel;
     }
-    
+
     /**
      * Create the equipment display panel.
      * @return panel.
      */
     private JPanel createEquipmentDisplayPanel() {
-        
+
         JPanel equipmentPanel = null;
-        
+
         Map<String, Integer> equipment = resupply.getNewEquipment();
         if (equipment.size() > 0) {
             // Create equipment panel.
             equipmentPanel = new JPanel(new BorderLayout());
-        
+
             // Create equipment label.
             JLabel equipmentLabel = new JLabel("Equipment", JLabel.CENTER);
             equipmentPanel.add(equipmentLabel, BorderLayout.NORTH);
-            
+
             // Create table model.
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Equipment Type");
             tableModel.addColumn("Num");
-            
+
             // Populate table model with data.
             List<String> equipmentTypes = new ArrayList<String>(equipment.keySet());
             Collections.sort(equipmentTypes);
@@ -437,46 +433,46 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 rowData.add(num);
                 tableModel.addRow(rowData);
             }
-            
+
             // Create table
             JTable equipmentTable = new JTable(tableModel);
             equipmentTable.setCellSelectionEnabled(false);
             equipmentTable.getColumnModel().getColumn(1).setMaxWidth(50);
             equipmentTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
             equipmentPanel.add(new JScrollPane(equipmentTable), BorderLayout.CENTER);
-            
+
             // Set preferred height for panel to show all of table.
             int panelHeight = equipmentTable.getPreferredSize().height + 
                     equipmentTable.getTableHeader().getPreferredSize().height + 
                     equipmentLabel.getPreferredSize().height + 7;
             equipmentPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
-        
+
         return equipmentPanel;
     }
-    
+
     /**
      * Create the resources display panel.
      * @return panel.
      */
     private JPanel createResourcesDisplayPanel() {
-        
+
         JPanel resourcesPanel = null;
-        
+
         Map<AmountResource, Double> resources = resupply.getNewResources();
         if (resources.size() > 0) {
             // Create resources panel.
             resourcesPanel = new JPanel(new BorderLayout());
-        
+
             // Create resources label.
             JLabel resourcesLabel = new JLabel("Resources", JLabel.CENTER);
             resourcesPanel.add(resourcesLabel, BorderLayout.NORTH);
-            
+
             // Create table model.
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Resource Type");
             tableModel.addColumn("Amount");
-            
+
             // Populate table model with data.
             List<AmountResource> resourceTypes = new ArrayList<AmountResource>(resources.keySet());
             Collections.sort(resourceTypes);
@@ -489,46 +485,46 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 rowData.add(amount);
                 tableModel.addRow(rowData);
             }
-            
+
             // Create table
             JTable resourcesTable = new JTable(tableModel);
             resourcesTable.setCellSelectionEnabled(false);
             resourcesTable.getColumnModel().getColumn(1).setMaxWidth(70);
             resourcesTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(1));
             resourcesPanel.add(new JScrollPane(resourcesTable), BorderLayout.CENTER);
-            
+
             // Set preferred height for panel to show all of table.
             int panelHeight = resourcesTable.getPreferredSize().height + 
                     resourcesTable.getTableHeader().getPreferredSize().height + 
                     resourcesLabel.getPreferredSize().height + 7;
             resourcesPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
-        
+
         return resourcesPanel;
     }
-    
+
     /**
      * Create the parts display panel.
      * @return panel.
      */
     private JPanel createPartsDisplayPanel() {
-        
+
         JPanel partsPanel = null;
-        
+
         Map<Part, Integer> parts = resupply.getNewParts();
         if (parts.size() > 0) {
             // Create parts panel.
             partsPanel = new JPanel(new BorderLayout());
-        
+
             // Create parts label.
             JLabel partsLabel = new JLabel("Parts", JLabel.CENTER);
             partsPanel.add(partsLabel, BorderLayout.NORTH);
-            
+
             // Create table model.
             DefaultTableModel tableModel = new DefaultTableModel();
             tableModel.addColumn("Part Type");
             tableModel.addColumn("Num");
-            
+
             // Populate table model with data.
             List<Part> partTypes = new ArrayList<Part>(parts.keySet());
             Collections.sort(partTypes);
@@ -541,24 +537,24 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
                 rowData.add(num);
                 tableModel.addRow(rowData);
             }
-            
+
             // Create table
             JTable partsTable = new JTable(tableModel);
             partsTable.setCellSelectionEnabled(false);
             partsTable.getColumnModel().getColumn(1).setMaxWidth(50);
             partsTable.getColumnModel().getColumn(1).setCellRenderer(new NumberCellRenderer(0));
             partsPanel.add(new JScrollPane(partsTable), BorderLayout.CENTER);
-            
+
             // Set preferred height for panel to show all of table.
             int panelHeight = partsTable.getPreferredSize().height + 
                     partsTable.getTableHeader().getPreferredSize().height + 
                     partsLabel.getPreferredSize().height + 7;
             partsPanel.setPreferredSize(new Dimension(100, panelHeight));
         }
-        
+
         return partsPanel;
     }
-    
+
     /**
      * Update the time to arrival label.
      */
@@ -575,18 +571,9 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
     }
 
     @Override
-    public void valueChanged(ListSelectionEvent evt) {
-        JList resupplyList = (JList) evt.getSource();
-        if (!resupplyList.getValueIsAdjusting()) {
-            Resupply newResupply = (Resupply) ((JList) evt.getSource()).getSelectedValue();
-            setResupply(newResupply);
-        }
-    }
-
-    @Override
     public void eventAdded(int index, HistoricalEvent event) {
-        if (HistoricalEventManager.SUPPLY.equals(event.getCategory()) && 
-                ResupplyEvent.RESUPPLY_MODIFIED.equals(event.getType())) {
+        if (HistoricalEventManager.TRANSPORT.equals(event.getCategory()) && 
+                TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
             if ((resupply != null) && event.getSource().equals(resupply)) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -626,7 +613,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
             }
         }
     }
-    
+
     @Override
     public void pauseChange(boolean isPaused) {
         // Do nothing
