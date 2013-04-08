@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * IncomingListPanel.java
- * @version 3.02 2012-04-15
+ * @version 3.04 2013-04-05
  * @author Scott Davis
  */
 
@@ -25,9 +25,10 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
+import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
+import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyEvent;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyManager;
 
 /**
  * A panel showing a list of all incoming resupply missions.
@@ -35,113 +36,113 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyManager;
 public class IncomingListPanel extends JPanel implements ListSelectionListener {
 
     // Data members
-    private JList incomingList;
+    private JList<Transportable> incomingList;
     private IncomingListModel listModel;
-    
+
     /**
      * Constructor
      */
     public IncomingListPanel() {
-        
+
         // Use JPanel constructor
         super();
-        
+
         setLayout(new BorderLayout());
         setBorder(new TitledBorder("Incoming Resupplies"));
         setPreferredSize(new Dimension(225, 200));
-        
+
         // Create incoming list.
         listModel = new IncomingListModel();
-        incomingList = new JList(listModel);
+        incomingList = new JList<Transportable>(listModel);
         incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(incomingList);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, BorderLayout.CENTER);
     }
-    
+
     /**
      * Gets the incoming resupply list.
      * @return the incoming resupply list.
      */
-    JList getIncomingList() {
+    JList<Transportable> getIncomingList() {
         return incomingList;
     }
-    
+
     @Override
     public void valueChanged(ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
-            JList arrivedList = (JList) evt.getSource();
+            JList<Transportable> arrivedList = (JList<Transportable>) evt.getSource();
             if (arrivedList.getSelectedValue() != null) {
                 incomingList.clearSelection();
             }
         }
     }
-    
+
     /**
      * Prepare panel for deletion.
      */
     public void destroy() {
         listModel.destroy();
     }
-    
+
     /**
      * Inner class for the incoming resupply list model.
      */
-    private class IncomingListModel extends AbstractListModel implements 
-            HistoricalEventListener {
+    private class IncomingListModel extends AbstractListModel<Transportable> implements 
+    HistoricalEventListener {
 
         // Data members.
-        private List<Resupply> resupplyList;
-        
+        private List<Transportable> transportList;
+
         private IncomingListModel() {
-            
-            ResupplyManager manager = Simulation.instance().getResupplyManager();
-            resupplyList = manager.getIncomingResupplies();
-            Collections.sort(resupplyList);
-            
+
+            TransportManager manager = Simulation.instance().getTransportManager();
+            transportList = manager.getIncomingTransportItems();
+            Collections.sort(transportList);
+
             // Register as historical event listener.
             Simulation.instance().getEventManager().addListener(this);
         }
-        
+
         @Override
-        public Object getElementAt(int index) {
-            Object result = null;
-            if ((index > -1) && (index < resupplyList.size())) {
-                result = resupplyList.get(index);
+        public Transportable getElementAt(int index) {
+            Transportable result = null;
+            if ((index > -1) && (index < transportList.size())) {
+                result = transportList.get(index);
             }
-            
+
             return result;
         }
 
         @Override
         public int getSize() {
-            return resupplyList.size();
+            return transportList.size();
         }
 
         @Override
         public void eventAdded(int index, HistoricalEvent event) {
-            if (event.getCategory().equals(HistoricalEventManager.SUPPLY)) {
-                Resupply resupply = (Resupply) event.getSource();
-                
-                if (ResupplyEvent.RESUPPLY_CREATED.equals(event.getType())) {
-                    if (Resupply.PLANNED.equals(resupply.getState()) || 
-                            Resupply.IN_TRANSIT.equals(resupply.getState())) {
-                        resupplyList.add(resupply);
-                        Collections.sort(resupplyList);
-                        int resupplyIndex = resupplyList.indexOf(resupply);
-                        fireIntervalAdded(this, resupplyIndex, resupplyIndex);
+            if (event.getCategory().equals(HistoricalEventManager.TRANSPORT)) {
+                Transportable transportItem = (Transportable) event.getSource();
+
+                if (TransportEvent.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
+                    if (Resupply.PLANNED.equals(transportItem.getTransitState()) || 
+                            Resupply.IN_TRANSIT.equals(transportItem.getTransitState())) {
+                        transportList.add(transportItem);
+                        Collections.sort(transportList);
+                        int transportIndex = transportList.indexOf(transportItem);
+                        fireIntervalAdded(this, transportIndex, transportIndex);
                     }
                 }
-                else if (ResupplyEvent.RESUPPLY_ARRIVED.equals(event.getType()) || 
-                        ResupplyEvent.RESUPPLY_CANCELLED.equals(event.getType())) {
-                    int resupplyIndex = resupplyList.indexOf(resupply);
-                    resupplyList.remove(resupply);
-                    fireIntervalRemoved(this, resupplyIndex, resupplyIndex);
+                else if (TransportEvent.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) || 
+                        TransportEvent.TRANSPORT_ITEM_CANCELLED.equals(event.getType())) {
+                    int transportIndex = transportList.indexOf(transportItem);
+                    transportList.remove(transportItem);
+                    fireIntervalRemoved(this, transportIndex, transportIndex);
                 }
-                else if (ResupplyEvent.RESUPPLY_MODIFIED.equals(event.getType())) {
-                    if (resupplyList.contains(resupply)) {
-                        Collections.sort(resupplyList);
-                        fireContentsChanged(this, 0, resupplyList.size() - 1);
+                else if (TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
+                    if (transportList.contains(transportItem)) {
+                        Collections.sort(transportList);
+                        fireContentsChanged(this, 0, transportList.size() - 1);
                     }
                 }
             }
@@ -151,13 +152,13 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
         public void eventsRemoved(int startIndex, int endIndex) {
             // Do Nothing
         }
-        
+
         /**
          * Prepares the list for deletion.
          */
         public void destroy() {
-            resupplyList.clear();
-            resupplyList = null;
+            transportList.clear();
+            transportList = null;
             Simulation.instance().getEventManager().removeListener(this);
         }
     }

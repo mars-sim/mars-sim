@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * EventTab.java
- * @version 3.00 2010-08-10
+ * EventFilter.java
+ * @version 3.04 2013-04-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -28,7 +28,7 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 	private JCheckBox medicalCheck;
 	private JCheckBox missionCheck;
 	private JCheckBox taskCheck;
-	private JCheckBox resupplyCheck;
+	private JCheckBox transportCheck;
 
 	/**
 	 * Constructor
@@ -78,11 +78,11 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 		taskCheck.addActionListener(this);
 		categoryPane.add(taskCheck);
 		
-		// Create resupply events checkbox.
-		resupplyCheck = new JCheckBox(HistoricalEventManager.SUPPLY);
-		resupplyCheck.setSelected(model.getDisplaySupply());
-		resupplyCheck.addActionListener(this);
-		categoryPane.add(resupplyCheck);
+		// Create transport events checkbox.
+		transportCheck = new JCheckBox(HistoricalEventManager.TRANSPORT);
+		transportCheck.setSelected(model.getDisplayTransport());
+		transportCheck.addActionListener(this);
+		categoryPane.add(transportCheck);
 		
 		pack();
 		desktop.add(this);
@@ -105,7 +105,7 @@ public class EventFilter extends JInternalFrame implements ActionListener {
 			model.setDisplayMission(missionCheck.isSelected());
 		else if (check == taskCheck)
 			model.setDisplayTask(taskCheck.isSelected());
-		else if (check == resupplyCheck)
-			model.setDisplaySupply(resupplyCheck.isSelected());
+		else if (check == transportCheck)
+			model.setDisplayTransport(transportCheck.isSelected());
 	}
 }

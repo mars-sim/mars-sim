@@ -1,5 +1,5 @@
 <!ELEMENT settlement-configuration (settlement-template-list, 
-initial-settlement-list, settlement-name-list)>
+initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
 <!ELEMENT settlement-template-list (template*)>
 <!ELEMENT template (building*, vehicle*, equipment*, resource*, part*, 
 part-package*, resupply?)>
@@ -33,6 +33,11 @@ part-package*, resupply?)>
 <!ELEMENT settlement (location, population)>
 <!ATTLIST settlement name CDATA #REQUIRED>
 <!ATTLIST settlement template CDATA #REQUIRED>
+<!ELEMENT new-arriving-settlement-list (arriving-settlement*)>
+<!ELEMENT arriving-settlement (location, population)>
+<!ATTLIST arriving-settlement name CDATA #REQUIRED>
+<!ATTLIST arriving-settlement template CDATA #REQUIRED>
+<!ATTLIST arriving-settlement arrival-time CDATA #REQUIRED>
 <!ELEMENT location EMPTY>
 <!ATTLIST location longitude CDATA #REQUIRED>
 <!ATTLIST location latitude CDATA #REQUIRED>
