@@ -1,16 +1,17 @@
 /**
  * Mars Simulation Project
  * SearchWindow.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.search;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -33,13 +34,18 @@ import java.util.Iterator;
  */
 public class SearchWindow extends ToolWindow {
 
-	// Tool name
-	public static final String NAME = "Search Tool";
-	
+    // Tool name
+    public static final String NAME = "Search Tool";
+
+    // Unit categories.
+    public static final String PEOPLE = "People";
+    public static final String SETTLEMENTS = "Settlements";
+    public static final String VEHICLES = "Vehicles";
+
     // Data members
     private JComboBox searchForSelect; // Category selecter
     private JList unitList; // List of selectable units
-    private DefaultListModel unitListModel; // Model for unit select list
+    private UnitListModel unitListModel; // Model for unit select list
     private JTextField selectTextField; // Selection text field
     private JLabel statusLabel; // Status label for displaying warnings.
     private JCheckBox openWindowCheck; // Checkbox to indicate if unit window is to be opened.
@@ -64,9 +70,9 @@ public class SearchWindow extends ToolWindow {
 
         // Initialize unitCategoryNames
         unitCategoryNames = new String[3];
-        unitCategoryNames[0] = "Person";
-        unitCategoryNames[1] = "Settlement";
-        unitCategoryNames[2] = "Vehicle";
+        unitCategoryNames[0] = PEOPLE;
+        unitCategoryNames[1] = SETTLEMENTS;
+        unitCategoryNames[2] = VEHICLES;
 
         // Get content pane
         JPanel mainPane = new JPanel(new BorderLayout());
@@ -82,12 +88,12 @@ public class SearchWindow extends ToolWindow {
         searchForPane.add(searchForLabel);
 
         // Create search for select
-        String[] categoryStrings = { "People", "Settlements", "Vehicles" };
+        String[] categoryStrings = { PEOPLE, SETTLEMENTS, VEHICLES };
         searchForSelect = new JComboBox(categoryStrings);
         searchForSelect.setSelectedIndex(0);
         searchForSelect.addItemListener(new ItemListener() {
-        	public void itemStateChanged(ItemEvent event) {
-            	changeCategory((String) searchForSelect.getSelectedItem());
+            public void itemStateChanged(ItemEvent event) {
+                changeCategory((String) searchForSelect.getSelectedItem());
             }
         });
         searchForPane.add(searchForSelect);
@@ -99,7 +105,7 @@ public class SearchWindow extends ToolWindow {
         // Create select text field
         selectTextField = new JTextField();
         selectTextField.getDocument().addDocumentListener(new DocumentListener() {
-        	public void changedUpdate(DocumentEvent event) {}
+            public void changedUpdate(DocumentEvent event) {}
             public void insertUpdate(DocumentEvent event) {
                 searchTextChange();
             }
@@ -110,12 +116,7 @@ public class SearchWindow extends ToolWindow {
         selectUnitPane.add(selectTextField, "North");
 
         // Create unit list
-        unitListModel = new DefaultListModel();
-        UnitManager unitManager = Simulation.instance().getUnitManager();
-        Collection persons = CollectionUtils.sortByName(unitManager.getPeople());
-        Iterator people = persons.iterator();
-        
-        while (people.hasNext()) unitListModel.addElement(people.next());
+        unitListModel = new UnitListModel(PEOPLE);
         unitList = new JList(unitListModel);
         unitList.setSelectedIndex(0);
         unitList.addMouseListener(new MouseAdapter() {
@@ -132,7 +133,7 @@ public class SearchWindow extends ToolWindow {
             }
         });
         selectUnitPane.add(new JScrollPane(unitList), "Center");
-    
+
         // Create bottom panel
         JPanel bottomPane = new JPanel(new BorderLayout());
         mainPane.add(bottomPane, "South");
@@ -162,7 +163,7 @@ public class SearchWindow extends ToolWindow {
         // Create search button
         JButton searchButton = new JButton("Search");
         searchButton.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent event) {
+            public void actionPerformed(ActionEvent event) {
                 search();
             }
         });
@@ -180,19 +181,19 @@ public class SearchWindow extends ToolWindow {
         Collection<? extends Unit> units = null;
         String category = (String) searchForSelect.getSelectedItem();
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        if (category.equals("People")) {
+        if (category.equals(PEOPLE)) {
             Collection<Person> people = unitManager.getPeople();
             units = CollectionUtils.sortByName(people);
         }
-        else if (category.equals("Settlements")) {
+        else if (category.equals(SETTLEMENTS)) {
             Collection<Settlement> settlement = unitManager.getSettlements();
             units = CollectionUtils.sortByName(settlement);
         }
-        else if (category.equals("Vehicles")) {
+        else if (category.equals(VEHICLES)) {
             Collection<Vehicle> vehicle = unitManager.getVehicles();
             units = CollectionUtils.sortByName(vehicle); 
         }
-  
+
         Iterator<? extends Unit> unitI = units.iterator();
 
         // If entered text equals the name of a unit in this category, take appropriate action.
@@ -223,26 +224,8 @@ public class SearchWindow extends ToolWindow {
      */
     private void changeCategory(String category) {
         // Change unitList to the appropriate category list
-        unitListModel.clear();
-        Collection<? extends Unit> units = null;
-        UnitManager unitManager = Simulation.instance().getUnitManager();
-        if (category.equals("People")) {
-            Collection<Person> people = unitManager.getPeople();
-            units = CollectionUtils.sortByName(people);   
-        }
-        else if (category.equals("Settlements")) {
-            Collection<Settlement> settlement = unitManager.getSettlements();
-            units = CollectionUtils.sortByName(settlement);
-        }
-        else if (category.equals("Vehicles")) {
-            Collection<Vehicle> vehicle= unitManager.getVehicles();
-            units = CollectionUtils.sortByName(vehicle);
-        }
-
-        Iterator<? extends Unit> unitI = units.iterator();
-
         lockUnitList = true;
-        while (unitI.hasNext()) unitListModel.addElement(unitI.next());
+        unitListModel.updateCategory(category);
         unitList.setSelectedIndex(0);
         unitList.ensureIndexIsVisible(0);
         lockUnitList = false;
@@ -278,5 +261,104 @@ public class SearchWindow extends ToolWindow {
 
         // Clear statusLabel
         statusLabel.setText(" ");
+    }
+
+    @Override
+    public void destroy() {} {
+
+        if (unitListModel != null) {
+            UnitManager manager = Simulation.instance().getUnitManager();
+            manager.removeUnitManagerListener(unitListModel);
+            unitListModel.clear();
+            unitListModel = null;
+        }
+    }
+
+    /**
+     * Inner class list model for categorized units.
+     */
+    private class UnitListModel extends DefaultListModel<Unit> 
+    implements UnitManagerListener {
+
+        // Data members.
+        private String category;
+
+        /**
+         * Constructor
+         * @param initialCategory the initial category to display.
+         */
+        public UnitListModel(String initialCategory) {
+
+            // Use DefaultListModel constructor.
+            super();
+
+            // Initialize data members.
+            this.category = initialCategory;
+
+            updateList();
+
+            // Add model as unit manager listener.
+            Simulation.instance().getUnitManager().addUnitManagerListener(this);
+        }
+
+        /**
+         * Updates the category.
+         * @param category the list category
+         */
+        private void updateCategory(String category) {
+            if (!this.category.equals(category)) {
+                this.category = category;
+
+                updateList();
+            }
+        }
+
+        /**
+         * Updates the list items.
+         */
+        private void updateList() {
+
+            clear();
+
+            Collection<? extends Unit> units = null;
+            UnitManager unitManager = Simulation.instance().getUnitManager();
+            if (category.equals(PEOPLE)) {
+                Collection<Person> people = unitManager.getPeople();
+                units = CollectionUtils.sortByName(people);   
+            }
+            else if (category.equals(SETTLEMENTS)) {
+                Collection<Settlement> settlement = unitManager.getSettlements();
+                units = CollectionUtils.sortByName(settlement);
+            }
+            else if (category.equals(VEHICLES)) {
+                Collection<Vehicle> vehicle= unitManager.getVehicles();
+                units = CollectionUtils.sortByName(vehicle);
+            }
+
+            Iterator<? extends Unit> unitI = units.iterator();
+
+            while (unitI.hasNext()) {
+                addElement(unitI.next());
+            }
+        }
+
+        @Override
+        public void unitManagerUpdate(UnitManagerEvent event) {
+
+            Unit selectedUnit = (Unit) unitList.getSelectedValue();
+            lockUnitList = true;
+
+            updateList();
+
+            if (selectedUnit != null) {
+                int index = indexOf(selectedUnit);
+                if (index >= 0) {
+                    unitList.setSelectedIndex(index);
+                    unitList.ensureIndexIsVisible(index);
+                }
+            }
+
+            lockUnitList = false;
+        }
     }
 }
