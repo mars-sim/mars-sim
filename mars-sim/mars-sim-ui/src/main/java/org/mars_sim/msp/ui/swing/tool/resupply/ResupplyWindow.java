@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.04 2013-04-05
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
@@ -23,6 +22,7 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
@@ -87,7 +87,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                createNewResupplyMission();
+                createNewTransportItem();
             }
         });
         buttonPane.add(newButton);
@@ -98,7 +98,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         modifyButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                modifyResupplyMission();
+                modifyTransportItem();
             }
         });
         buttonPane.add(modifyButton);
@@ -109,7 +109,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                cancelResupplyMission();
+                cancelTransportItem();
             }
         });
         buttonPane.add(cancelButton);
@@ -120,42 +120,50 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
     /**
      * Opens a create dialog.
      */
-    private void createNewResupplyMission() {
+    private void createNewTransportItem() {
         // Pause simulation.
         desktop.getMainWindow().pauseSimulation();
 
-        // Create new resupply mission dialog.
-        new NewModifyResupplyDialog(desktop.getMainWindow().getFrame());
+        // Create new transportItem dialog.
+        new NewTransportItemDialog(desktop.getMainWindow().getFrame());
 
         // Unpause simulation.
         desktop.getMainWindow().unpauseSimulation();
     }
 
     /**
-     * Opens a modify dialog for the currently selected resupply mission
+     * Opens a modify dialog for the currently selected transport item.
      */
-    private void modifyResupplyMission() {
+    private void modifyTransportItem() {
         // Pause simulation.
         desktop.getMainWindow().pauseSimulation();
 
-        // Get currently selected incoming resupply mission.
+        // Get currently selected incoming transport item.
         Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
 
-        // TODO: Add arriving settlement modify dialog.
-        if ((transportItem != null) && (transportItem instanceof Resupply)) {
-            // Create modify resupply mission dialog.
-            Resupply resupply = (Resupply) transportItem;
-            new NewModifyResupplyDialog(desktop.getMainWindow().getFrame(), resupply);
+        if ((transportItem != null)) {
+            if (transportItem instanceof Resupply) {
+                // Create modify resupply mission dialog.
+                Resupply resupply = (Resupply) transportItem;
+                String title = "Modify Resupply Mission";
+                new ModifyTransportItemDialog(desktop.getMainWindow().getFrame(), title, resupply);
+            }
+            else if (transportItem instanceof ArrivingSettlement) {
+                // Create modify arriving settlement dialog.
+                ArrivingSettlement settlement = (ArrivingSettlement) transportItem;
+                String title = "Modify Arriving Settlement";
+                new ModifyTransportItemDialog(desktop.getMainWindow().getFrame(), title, settlement);
+            }
         }
-
+ 
         // Unpause simulation.
         desktop.getMainWindow().unpauseSimulation();
     }
 
     /**
-     * Cancels the currently selected resupply mission.
+     * Cancels the currently selected transport item.
      */
-    private void cancelResupplyMission() {
+    private void cancelTransportItem() {
         // Cancel the selected transport item.
         Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
         if (transportItem != null) {
@@ -169,13 +177,13 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
             JList incomingList = (JList) evt.getSource();
             Object selected = incomingList.getSelectedValue();
             if (selected != null) {
-                // Incoming resupply mission is selected, 
+                // Incoming transport item is selected, 
                 // so enable modify and cancel buttons.
                 modifyButton.setEnabled(true);
                 cancelButton.setEnabled(true);
             }
             else {
-                // Incoming resupply mission is unselected,
+                // Incoming transport item is unselected,
                 // so disable modify and cancel buttons.
                 modifyButton.setEnabled(false);
                 cancelButton.setEnabled(false);

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * IncomingListPanel.java
- * @version 3.04 2013-04-05
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
@@ -28,10 +27,9 @@ import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
-import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 
 /**
- * A panel showing a list of all incoming resupply missions.
+ * A panel showing a list of all incoming transport items.
  */
 public class IncomingListPanel extends JPanel implements ListSelectionListener {
 
@@ -48,7 +46,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
         super();
 
         setLayout(new BorderLayout());
-        setBorder(new TitledBorder("Incoming Resupplies"));
+        setBorder(new TitledBorder("Incoming Transport Items"));
         setPreferredSize(new Dimension(225, 200));
 
         // Create incoming list.
@@ -89,7 +87,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
      * Inner class for the incoming resupply list model.
      */
     private class IncomingListModel extends AbstractListModel<Transportable> implements 
-    HistoricalEventListener {
+            HistoricalEventListener {
 
         // Data members.
         private List<Transportable> transportList;
@@ -125,8 +123,8 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
                 Transportable transportItem = (Transportable) event.getSource();
 
                 if (TransportEvent.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
-                    if (Resupply.PLANNED.equals(transportItem.getTransitState()) || 
-                            Resupply.IN_TRANSIT.equals(transportItem.getTransitState())) {
+                    if (Transportable.PLANNED.equals(transportItem.getTransitState()) || 
+                            Transportable.IN_TRANSIT.equals(transportItem.getTransitState())) {
                         transportList.add(transportItem);
                         Collections.sort(transportList);
                         int transportIndex = transportList.indexOf(transportItem);
