@@ -47,7 +47,7 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
         super();
 
         setLayout(new BorderLayout());
-        setBorder(new TitledBorder("Arrived Resupplies"));
+        setBorder(new TitledBorder("Arrived Transport Items"));
         setPreferredSize(new Dimension(200, 200));
 
         // Create arrived list.

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.04 2013-04-05
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.resupply;
 
 import java.awt.BorderLayout;
@@ -47,7 +46,7 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  * A panel showing a selected resupply mission details.
  */
 public class ResupplyDetailPanel extends JPanel implements ClockListener, 
-HistoricalEventListener {
+        HistoricalEventListener {
 
     // Data members
     private Resupply resupply;

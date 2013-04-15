@@ -279,12 +279,12 @@
 	
 	<!--  List of settlements that will arrive on Mars at a later time -->
 	<new-arriving-settlement-list>
-	
+		<!-- Example of new arriving settlement.
 		<arriving-settlement name="Red Hill" template="Mars Direct Base (phase 1)" arrival-time="1.0" >
 			<location longitude="10.3 W" latitude="4.6 S" />
 			<population number="4" />
 		</arriving-settlement>
-	
+		-->
 	</new-arriving-settlement-list>
 	
 	<!-- List of settlement names -->

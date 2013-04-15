@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlementDetailPanel.java
- * @version 3.04 2013-04-07
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  * A panel showing a selected arriving settlement details.
  */
 public class ArrivingSettlementDetailPanel extends JPanel implements
-ClockListener, HistoricalEventListener {
+        ClockListener, HistoricalEventListener {
 
     // Data members
     private ArrivingSettlement arrivingSettlement;
@@ -91,6 +91,30 @@ ClockListener, HistoricalEventListener {
         // Create state value label.
         stateValueLabel = new JLabel("", JLabel.LEFT);
         statePane.add(stateValueLabel);
+        
+        // Create template panel.
+        JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        info2Pane.add(templatePane);
+
+        // Create template title label.
+        JLabel templateTitleLabel = new JLabel("Layout Template: ", JLabel.LEFT);
+        templatePane.add(templateTitleLabel);
+
+        // Create template value label.
+        templateValueLabel = new JLabel("", JLabel.LEFT);
+        templatePane.add(templateValueLabel);
+        
+        // Create population panel.
+        JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
+        info2Pane.add(populationPane);
+
+        // Create population title label.
+        JLabel populationTitleLabel = new JLabel("Immigrants: ", JLabel.LEFT);
+        populationPane.add(populationTitleLabel);
+
+        // Create population value label.
+        populationValueLabel = new JLabel("", JLabel.LEFT);
+        populationPane.add(populationValueLabel);
 
         // Create arrival date panel.
         JPanel arrivalDatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -116,18 +140,6 @@ ClockListener, HistoricalEventListener {
         timeArrivalValueLabel = new JLabel("", JLabel.LEFT);
         timeArrivalPane.add(timeArrivalValueLabel);
 
-        // Create template panel.
-        JPanel templatePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        info2Pane.add(templatePane);
-
-        // Create template title label.
-        JLabel templateTitleLabel = new JLabel("Template: ", JLabel.LEFT);
-        templatePane.add(templateTitleLabel);
-
-        // Create template value label.
-        templateValueLabel = new JLabel("", JLabel.LEFT);
-        templatePane.add(templateValueLabel);
-
         // Create location panel.
         JPanel locationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         info2Pane.add(locationPane);
@@ -139,18 +151,6 @@ ClockListener, HistoricalEventListener {
         // Create location value label.
         locationValueLabel = new JLabel("", JLabel.LEFT);
         locationPane.add(locationValueLabel);
-
-        // Create population panel.
-        JPanel populationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
-        info2Pane.add(populationPane);
-
-        // Create population title label.
-        JLabel populationTitleLabel = new JLabel("Immigrants: ", JLabel.LEFT);
-        populationPane.add(populationTitleLabel);
-
-        // Create population value label.
-        populationValueLabel = new JLabel("", JLabel.LEFT);
-        populationPane.add(populationValueLabel);
 
         // Set as clock listener.
         Simulation.instance().getMasterClock().addClockListener(this);

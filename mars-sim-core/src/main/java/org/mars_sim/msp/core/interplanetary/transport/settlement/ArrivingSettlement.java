@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.04 2013-04-05
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
@@ -16,12 +17,22 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * A new arriving settlement from Earth.
@@ -168,6 +179,15 @@ public class ArrivingSettlement implements Transportable, Serializable {
     public void setPopulationNum(int populationNum) {
         this.populationNum = populationNum;
     }
+    
+    /**
+     * Commits a set of modifications for the arriving settlement.
+     */
+    public void commitModification() {
+        HistoricalEvent newEvent = new TransportEvent(this, TransportEvent.TRANSPORT_ITEM_MODIFIED, 
+                "Arriving settlement modified");
+        Simulation.instance().getEventManager().registerNewEvent(newEvent);  
+    }
 
     @Override
     public void destroy() {
@@ -214,6 +234,18 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
         // Create new immigrants with arriving settlement.
         createNewImmigrants(newSettlement);
+        
+        // Create new equipment.
+        createNewEquipment(newSettlement);
+        
+        // Create new parts.
+        createNewParts(newSettlement);
+        
+        // Create new resources.
+        createNewResources(newSettlement);
+        
+        // Create new vehicles.
+        createNewVehicles(newSettlement);
     }
 
     /**
@@ -231,6 +263,7 @@ public class ArrivingSettlement implements Transportable, Serializable {
 
     /**
      * Create the new immigrants arriving with the settlement.
+     * @param newSettlement the new settlement.
      */
     private void createNewImmigrants(Settlement newSettlement) {
 
@@ -247,6 +280,90 @@ public class ArrivingSettlement implements Transportable, Serializable {
             relationshipManager.addNewImmigrant(immigrant, immigrants);
             immigrants.add(immigrant);
             logger.info(immigrantName + " arrives on Mars at " + newSettlement.getName());
+        }
+    }
+    
+    /**
+     * Create the new settlement's equipment.
+     * @param newSettlement the new settlement.
+     */
+    private void createNewEquipment(Settlement newSettlement) {
+        
+        SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
+                getSettlementTemplate(getTemplate());
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<String> equipmentI = template.getEquipment().keySet().iterator();
+        while (equipmentI.hasNext()) {
+            String equipmentType = equipmentI.next();
+            int number = template.getEquipment().get(equipmentType);
+            for (int x=0; x < number; x++) {
+                Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
+                        newSettlement.getCoordinates(), false);
+                equipment.setName(unitManager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
+                newSettlement.getInventory().storeUnit(equipment);
+            }
+        }
+    }
+    
+    /**
+     * Create the new settlement's parts.
+     * @param newSettlement the new settlement.
+     */
+    private void createNewParts(Settlement newSettlement) {
+        
+        SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
+                getSettlementTemplate(getTemplate());
+        Iterator<Part> partsI = template.getParts().keySet().iterator();
+        while (partsI.hasNext()) {
+            Part part = partsI.next();
+            int number = template.getParts().get(part);
+            newSettlement.getInventory().storeItemResources(part, number);
+        }
+    }
+    
+    /**
+     * Create the new settlement's resources.
+     * @param newSettlement the new settlement.
+     */
+    private void createNewResources(Settlement newSettlement) {
+        
+        SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
+                getSettlementTemplate(getTemplate());
+        Iterator<AmountResource> resourcesI = template.getResources().keySet().iterator();
+        while (resourcesI.hasNext()) {
+            AmountResource resource = resourcesI.next();
+            double amount = template.getResources().get(resource);
+            double capacity = newSettlement.getInventory().getAmountResourceRemainingCapacity(
+                    resource, true, false);
+            if (amount > capacity) amount = capacity;
+            newSettlement.getInventory().storeAmountResource(resource, amount, true);
+        }
+    }
+    
+    /**
+     * Create the new settlement's vehicles.
+     * @param newSettlement the new settlement.
+     */
+    private void createNewVehicles(Settlement newSettlement) {
+        
+        SettlementTemplate template = SimulationConfig.instance().getSettlementConfiguration().
+                getSettlementTemplate(getTemplate());
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<String> vehicleI = template.getVehicles().keySet().iterator();
+        while (vehicleI.hasNext()) {
+            String vehicleType = vehicleI.next();
+            int number = template.getVehicles().get(vehicleType);
+            for (int x = 0; x < number; x++) {
+                Vehicle vehicle = null;
+                if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                    String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
+                    vehicle = new LightUtilityVehicle(name, vehicleType, newSettlement);
+                } else {
+                    String name = unitManager.getNewName(UnitManager.VEHICLE, null, null);
+                    vehicle = new Rover(name, vehicleType, newSettlement);
+                }
+                unitManager.addUnit(vehicle);
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * NewModifyResupplyDialog.java
- * @version 3.04 2013-04-05
+ * ResupplyMissionEditingPanel.java
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -24,12 +24,8 @@ import java.util.Vector;
 
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -53,9 +49,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
 /**
- * A dialog for modifying or creating new resupply missions.
+ * A panel for creating or editing a resupply mission.
  */
-public class NewModifyResupplyDialog extends JDialog {
+public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
     // Data members
     private Resupply resupply;
@@ -77,52 +73,20 @@ public class NewModifyResupplyDialog extends JDialog {
     private SupplyTableModel supplyTableModel;
     private JTable supplyTable;
     private JButton removeSupplyButton;
-
-    /**
-     * Constructor for creating new resupply mission.
-     * @param owner the JFrame owner of the dialog.
-     */
-    public NewModifyResupplyDialog(JFrame owner) {
-        this(owner, "Create New Resupply Mission", null);
-    }
-
-    /**
-     * Constructor for modifying a resupply mission.
-     * @param owner the JFrame owner of the dialog.
-     * @param resupply the resupply mission to modify.
-     */
-    public NewModifyResupplyDialog(JFrame owner, Resupply resupply) {
-        this(owner, "Modify Resupply Mission", resupply);
-    }
-
-    /**
-     * Constructor
-     * @param owner the JFrame owner of the dialog.
-     * @param title the dialog title.
-     * @param resupply the resupply mission to modify or null if new resupply.
-     */
-    private NewModifyResupplyDialog(JFrame owner, String title, Resupply resupply) {
-
-        // Use JDialog constructor
-        super(owner, title, true);
-
+    
+    public ResupplyMissionEditingPanel(Resupply resupply) {
+        // User TransportItemEditingPanel constructor.
+        super(resupply);
+        
         // Initialize data members.
         this.resupply = resupply;
-
-        // Set the layout.
+        
+        setBorder(new MarsPanelBorder());
         setLayout(new BorderLayout(0, 0));
-
-        // Set the border.
-        ((JComponent) getContentPane()).setBorder(new MarsPanelBorder());
-
-        // Create the edit pane.
-        JPanel editPane = new JPanel(new BorderLayout(0, 0));
-        editPane.setBorder(new MarsPanelBorder());
-        getContentPane().add(editPane, BorderLayout.CENTER);
-
+        
         // Create top edit pane.
         JPanel topEditPane = new JPanel(new BorderLayout(10, 10));
-        editPane.add(topEditPane, BorderLayout.NORTH);
+        add(topEditPane, BorderLayout.NORTH);
 
         // Create destination pane.
         JPanel destinationPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -282,7 +246,7 @@ public class NewModifyResupplyDialog extends JDialog {
         // Create bottom edit pane.
         JPanel bottomEditPane = new JPanel(new BorderLayout(0, 0));
         bottomEditPane.setBorder(new TitledBorder("Supplies"));
-        editPane.add(bottomEditPane, BorderLayout.CENTER);
+        add(bottomEditPane, BorderLayout.CENTER);
 
         // Create supply table.
         supplyTableModel = new SupplyTableModel(resupply);
@@ -331,53 +295,8 @@ public class NewModifyResupplyDialog extends JDialog {
         });
         removeSupplyButton.setEnabled(false);
         supplyButtonPane.add(removeSupplyButton);
-
-        // Create the button pane.
-        JPanel buttonPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
-        getContentPane().add(buttonPane, BorderLayout.SOUTH);
-
-        if (resupply != null) {
-            // Create modify button.
-            JButton modifyButton = new JButton("Modify");
-            modifyButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    // Modify resupply mission and close dialog.
-                    modifyResupplyMission();
-                    dispose();
-                }
-            });
-            buttonPane.add(modifyButton);
-        } else {
-            // Create create button.
-            JButton createButton = new JButton("Create");
-            createButton.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent evt) {
-                    // Create new resupply mission and close dialog.
-                    createResupplyMission();
-                    dispose();
-                }
-            });
-            buttonPane.add(createButton);
-        }
-
-        // Create cancel button.
-        JButton cancelButton = new JButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                // Close dialog.
-                dispose();
-            }
-
-        });
-        buttonPane.add(cancelButton);
-
-        // Finish and display dialog.
-        pack();
-        setLocationRelativeTo(owner);
-        setResizable(false);
-        setVisible(true);
     }
-
+    
     /**
      * Set the components of the arrival date pane to be enabled or disabled.
      * @param enable true if enable components, false if disable components.
@@ -426,28 +345,124 @@ public class NewModifyResupplyDialog extends JDialog {
         int[] removedIndexes = supplyTable.getSelectedRows();
         supplyTableModel.removeSupplyItems(removedIndexes);
     }
-
+    
     /**
-     * Modify the resupply mission.
+     * Inner class for editing the Category cell with a combo box.
      */
-    private void modifyResupplyMission() {
-        // Modify resupply mission and dispose dialog.
-        populateResupplyMission(resupply);
-        resupply.commitModification();
-        dispose();
+    private class CategoryCellEditor extends AbstractCellEditor 
+            implements TableCellEditor, ActionListener {
+
+        // Data members.
+        private JComboBox categoryCB;
+        private int editingRow;
+        private String previousCategory;
+
+        /**
+         * Constructor
+         */
+        private CategoryCellEditor() {
+            super();
+            categoryCB = new JComboBox();
+            Iterator<String> i = SupplyTableModel.getCategoryList().iterator();
+            while (i.hasNext()) {
+                categoryCB.addItem(i.next());
+            }
+            categoryCB.addActionListener(this);
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return categoryCB.getSelectedItem();
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            editingRow = row;
+            previousCategory = (String) table.getValueAt(row, column);
+            categoryCB.setSelectedItem(previousCategory);
+            return categoryCB;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent evt) {
+            String category = (String) categoryCB.getSelectedItem();
+            if ((editingRow > -1) && (!category.equals(previousCategory))) {
+                supplyTable.setValueAt(category, editingRow, 0);
+
+                // Update supply type cell in row if category has changed.
+                String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
+                supplyTable.setValueAt(defaultType, editingRow, 1);
+            }
+        }
     }
 
     /**
-     * Create the new resupply mission.
+     * Inner class for editing the Type cell with a combo box.
      */
-    private void createResupplyMission() {
-        // Create new resupply mission and dispose dialog.
+    private class TypeCellEditor extends AbstractCellEditor implements TableCellEditor {
+
+        // Data members.
+        private Map<String, JComboBox> typeCBMap;
+        private JComboBox currentCB;
+
+        /**
+         * Constructor
+         */
+        private TypeCellEditor() {
+
+            Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
+            typeCBMap = new HashMap<String, JComboBox>(categoryTypeMap.keySet().size());
+            Iterator<String> i = categoryTypeMap.keySet().iterator();
+            while (i.hasNext()) {
+                String category = i.next();
+                JComboBox categoryCB = new JComboBox();
+                List<String> types = categoryTypeMap.get(category);
+                Iterator<String> j = types.iterator();
+                while (j.hasNext()) {
+                    String type = j.next();
+                    categoryCB.addItem(type);
+                }
+                typeCBMap.put(category, categoryCB);
+            }
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            Object result = null;
+            if (currentCB != null) result = currentCB.getSelectedItem();
+            return result;
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+
+            // Get type combo box based on first column category value.
+            String category = (String) table.getValueAt(row, 0);
+            currentCB = typeCBMap.get(category);
+            currentCB.setSelectedItem(table.getValueAt(row, column));
+            return currentCB;
+        }
+    }
+    
+    @Override
+    public boolean modifyTransportItem() {
+        // Modify resupply mission.
+        populateResupplyMission(resupply);
+        resupply.commitModification();
+        return true;
+    }
+
+    @Override
+    public boolean createTransportItem() {
+        // Create new resupply mission.
         Settlement destination = (Settlement) destinationCB.getSelectedItem();
         MarsClock arrivalDate = getArrivalDate();
         Resupply newResupply = new Resupply(arrivalDate, destination);
         populateResupplyMission(newResupply);
         Simulation.instance().getTransportManager().addNewTransportItem(newResupply);
-        dispose();
+        return true;
     }
 
     /**
@@ -576,7 +591,7 @@ public class NewModifyResupplyDialog extends JDialog {
         }
         resupplyMission.setNewParts(newParts);
     }
-
+    
     /**
      * Gets the arrival date from the dialog info.
      * @return arrival date.
@@ -622,151 +637,5 @@ public class NewModifyResupplyDialog extends JDialog {
         }
 
         return result;
-    }
-
-    /**
-     * Inner class for the Sol combo box model.
-     */
-    private class MartianSolComboBoxModel extends DefaultComboBoxModel {
-
-        // Data members
-        private int maxSolNum;
-
-        /**
-         * Constructor
-         * @param month the Martian month number.
-         * @param orbit the Martian orbit number.
-         */
-        private MartianSolComboBoxModel(int month, int orbit) {
-            maxSolNum = MarsClock.getSolsInMonth(month, orbit);
-
-            for (int x = 1; x <= maxSolNum; x++) {
-                addElement(x);
-            }
-        }
-
-        /**
-         * Update the items based on the number of sols in the month.
-         * @param month the Martian month number.
-         * @param orbit the Martian orbit number.
-         */
-        private void updateSolNumber(int month, int orbit) {
-            int newMaxSolNum = MarsClock.getSolsInMonth(month, orbit);
-            if (newMaxSolNum != maxSolNum) {
-                int oldSelectedSol = (Integer) getSelectedItem();
-
-                if (newMaxSolNum < maxSolNum) {
-                    removeElementAt(maxSolNum - 1);
-                    if (oldSelectedSol == maxSolNum) {
-                        setSelectedItem(newMaxSolNum);
-                    }
-                }
-                else {
-                    addElement(newMaxSolNum);
-                }
-
-                maxSolNum = newMaxSolNum;
-            }
-        }
-    }
-
-    /**
-     * Inner class for editing the Category cell with a combo box.
-     */
-    private class CategoryCellEditor extends AbstractCellEditor 
-    implements TableCellEditor, ActionListener {
-
-        // Data members.
-        private JComboBox categoryCB;
-        private int editingRow;
-        private String previousCategory;
-
-        /**
-         * Constructor
-         */
-        private CategoryCellEditor() {
-            super();
-            categoryCB = new JComboBox();
-            Iterator<String> i = SupplyTableModel.getCategoryList().iterator();
-            while (i.hasNext()) {
-                categoryCB.addItem(i.next());
-            }
-            categoryCB.addActionListener(this);
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return categoryCB.getSelectedItem();
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
-            editingRow = row;
-            previousCategory = (String) table.getValueAt(row, column);
-            categoryCB.setSelectedItem(previousCategory);
-            return categoryCB;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent evt) {
-            String category = (String) categoryCB.getSelectedItem();
-            if ((editingRow > -1) && (!category.equals(previousCategory))) {
-                supplyTable.setValueAt(category, editingRow, 0);
-
-                // Update supply type cell in row if category has changed.
-                String defaultType = SupplyTableModel.getCategoryTypeMap().get(category).get(0);
-                supplyTable.setValueAt(defaultType, editingRow, 1);
-            }
-        }
-    }
-
-    /**
-     * Inner class for editing the Type cell with a combo box.
-     */
-    private class TypeCellEditor extends AbstractCellEditor implements TableCellEditor {
-
-        // Data members.
-        private Map<String, JComboBox> typeCBMap;
-        private JComboBox currentCB;
-
-        /**
-         * Constructor
-         */
-        private TypeCellEditor() {
-
-            Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
-            typeCBMap = new HashMap<String, JComboBox>(categoryTypeMap.keySet().size());
-            Iterator<String> i = categoryTypeMap.keySet().iterator();
-            while (i.hasNext()) {
-                String category = i.next();
-                JComboBox categoryCB = new JComboBox();
-                List<String> types = categoryTypeMap.get(category);
-                Iterator<String> j = types.iterator();
-                while (j.hasNext()) {
-                    String type = j.next();
-                    categoryCB.addItem(type);
-                }
-                typeCBMap.put(category, categoryCB);
-            }
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            Object result = null;
-            if (currentCB != null) result = currentCB.getSelectedItem();
-            return result;
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
-
-            // Get type combo box based on first column category value.
-            String category = (String) table.getValueAt(row, 0);
-            currentCB = typeCBMap.get(category);
-            currentCB.setSelectedItem(table.getValueAt(row, column));
-            return currentCB;
-        }
     }
 }
