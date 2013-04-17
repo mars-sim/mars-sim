@@ -19,11 +19,11 @@ public class TableSorter extends AbstractTableModel
     // Minimum time (milliseconds) between table sorts.
     private static final long SORTING_TIME_BUFFER = 500L;
     
-    int             indexes[];
-    boolean         sortAscending = false;
-    int             sortedColumn;
-    MonitorModel    sourceModel;
-    long            lastSortedTime;
+    private int indexes[];
+    private boolean sortAscending = false;
+    private int sortedColumn;
+    private MonitorModel sourceModel;
+    private long lastSortedTime;
 
     /**
      * Create a sorter model that provides sorting in front of the specified
@@ -329,6 +329,7 @@ public class TableSorter extends AbstractTableModel
      * Prepares the model for deletion.
      */
     public void destroy() {
+        sourceModel.destroy();
     	// sourceModel = null;
     }
 }

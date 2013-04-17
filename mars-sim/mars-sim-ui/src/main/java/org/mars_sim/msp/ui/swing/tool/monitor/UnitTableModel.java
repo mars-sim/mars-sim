@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitTableModel.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-04-14
  * @author Barry Evans
  */
 
@@ -105,20 +105,6 @@ abstract public class UnitTableModel extends AbstractTableModel
             }
         }
         throw new IllegalStateException("Could not find index for unit " + unit);
-//    	Object[] array = units.toArray();
-//    	int size = array.length;
-//    	int result = 0;
-//
-//    	for(int i = 0; i < size; i++) {
-//    		Unit temp = (Unit) array[i];
-//
-//    		if(temp.equals(unit)) {
-//    			result = i;
-//    			break;
-//    		}
-//    	}
-//
-//    	return result;
     }
     
     /**
@@ -239,8 +225,6 @@ abstract public class UnitTableModel extends AbstractTableModel
             it.next();
         }
         throw new IllegalStateException("Could not find an index " + index);
-//	Object [] array = units.toArray();
-//        return (Unit)array[index];
     }
     
     /**
@@ -262,8 +246,6 @@ abstract public class UnitTableModel extends AbstractTableModel
      */
     public Object getObject(int row) {
         return getUnit(row);
-//    	Object array[] = units.toArray();
-//        return array[row];
     }
     
     /**
@@ -277,7 +259,9 @@ abstract public class UnitTableModel extends AbstractTableModel
      * Prepares the model for deletion.
      */
     public void destroy() {
-    	clear();
+        if (units != null) {
+            clear();
+        }
     	units = null;
     }
     

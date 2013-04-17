@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeTableModel.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-04-14
  * @author Scott Davis
  */
 
@@ -10,6 +10,9 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -17,13 +20,16 @@ import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 public class TradeTableModel extends AbstractTableModel implements
-		UnitListener, MonitorModel {
+		UnitListener, MonitorModel, UnitManagerListener {
 	
 	// Data members
 	private List<Good> goodsList;
@@ -37,13 +43,17 @@ public class TradeTableModel extends AbstractTableModel implements
 		// Initialize goods list.
 		goodsList = GoodsUtil.getGoodsList();
 		
+		UnitManager unitManager = Simulation.instance().getUnitManager();
+		
 		// Initialize settlements.
-		settlements = new ArrayList<Settlement>(
-				Simulation.instance().getUnitManager().getSettlements());
+		settlements = new ArrayList<Settlement>(unitManager.getSettlements());
 		
 		// Add table as listener to each settlement.
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().addUnitListener(this);
+		
+		// Add as unit manager listener.
+		unitManager.addUnitManagerListener(this);
 	}
 	
 	/**
@@ -63,6 +73,9 @@ public class TradeTableModel extends AbstractTableModel implements
 		// Remove as listener for all settlements.
 		Iterator<Settlement> i = settlements.iterator();
 		while (i.hasNext()) i.next().removeUnitListener(this);
+		
+		// Remove as listener to unit manager.
+		Simulation.instance().getUnitManager().removeUnitManagerListener(this);
 	}
 
 	/**
@@ -177,4 +190,37 @@ public class TradeTableModel extends AbstractTableModel implements
 			}
 		}
 	}
+
+    @Override
+    public void unitManagerUpdate(UnitManagerEvent event) {
+        
+        if (event.getUnit() instanceof Settlement) {
+            
+            Settlement settlement = (Settlement) event.getUnit();
+            
+            if (UnitManagerEvent.ADD_UNIT.equals(event.getEventType())) {
+                // If settlement is new, add to settlement list.
+                if (!settlements.contains(settlement)) {
+                    settlements.add(settlement);
+                    settlement.addUnitListener(this);
+                }
+            }
+            else if (UnitManagerEvent.REMOVE_UNIT.equals(event.getEventType())) {
+                // If settlement is gone, remove from settlement list.
+                if (settlements.contains(settlement)) {
+                    settlements.remove(settlement);
+                    settlement.removeUnitListener(this);
+                }
+            }
+            
+            // Update table structure due to cells changing.
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    fireTableStructureChanged();
+                    fireTableStructureChanged();
+                }
+            });
+        }
+    }
 }
