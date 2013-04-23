@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindow.java
- * @version 3.03 2012-09-01
+ * @version 3.04 2013-04-22
  * @author Scott Davis
  */
 
@@ -48,8 +48,9 @@ public class MainWindow {
 
     /**
      * Constructor
+     * @param cleanUI true if window should display a clean UI.
      */
-    public MainWindow() {
+    public MainWindow(boolean cleanUI) {
 
         // use JFrame constructor
         frame = new JFrame(WINDOW_TITLE);
@@ -59,8 +60,10 @@ public class MainWindow {
         //frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Load UI configuration.
-        UIConfig.INSTANCE.parseFile();
-
+        if (!cleanUI) {
+            UIConfig.INSTANCE.parseFile();
+        }
+        
         // Set look and feel of UI.
         boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
@@ -135,24 +138,6 @@ public class MainWindow {
     }
 
     /**
-     * Get the window's x location.
-     * @return x location.
-     */
-    /*
-    public int getX() {
-        return frame.getX();
-    }
-    */
-    /**
-     * Get the window's y location.
-     * @return y location.
-     */
-    /*
-    public int getY() {
-        return frame.getY();
-    }
-    */
-    /**
      * Get the window's frame.
      * @return the frame.
      */
@@ -160,16 +145,6 @@ public class MainWindow {
         return frame;
     }
 
-    /*
-    public int getWidth() {
-        return frame.getWidth();
-    }
-    */
-    /*
-    public int getHeight() {
-        return frame.getHeight();
-    }
-    */
     /**
      * Gets the main desktop panel.
      *
@@ -396,19 +371,6 @@ public class MainWindow {
 
         sim.getMasterClock().exitProgram();
     }
-/*
-	public void notifySimStartOK(boolean itsokaytostart) {
-		//System.out.println("mainWindow: simulation notified it can start");
-		Simulation sim = Simulation.instance();
-		try {
-			sim.mainWindowSimStartOK(itsokaytostart);
-		} catch (Exception e) {
-			logger.log(Level.SEVERE, "MainWindow: Problem notifying sim it was OK to start simulation " + e);
-			e.printStackTrace(System.err);
-		}
-	}
-	
-*/
 
     /**
      * Sets the look and feel of the UI

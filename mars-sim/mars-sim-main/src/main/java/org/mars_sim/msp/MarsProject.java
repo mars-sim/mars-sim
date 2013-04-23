@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project 
  * MarsProject.java
- * @version 3.02 2011-12-09
+ * @version 3.04 2013-04-23
  * @author Scott Davis
  */
 package org.mars_sim.msp;
@@ -50,10 +50,10 @@ public class MarsProject {
             SplashWindow splashWindow = new SplashWindow();
             splashWindow.show();
 
-            initializeSimulation(args);
+            boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
-            MainWindow w = new MainWindow();
+            MainWindow w = new MainWindow(newSim);
             w.getFrame().setVisible(true);
      
             // Start simulation
@@ -74,15 +74,18 @@ public class MarsProject {
     /**
      * Initialize the simulation.
      * @param args the command arguments.
+     * @return true if new simulation (not loaded)
      */
-    private void initializeSimulation(String[] args) {
+    private boolean initializeSimulation(String[] args) {
+        boolean result = false;
+        
         // Create a simulation
         List<String> argList = Arrays.asList(args);
 
         if (argList.contains("-new")) {
             // If new argument, create new simulation.
             handleNewSimulation(); // if this fails we always exit, continuing is useless
-
+            result = true;
 
         } else if (argList.contains("-load")) {
             // If load argument, load simulation from file.
@@ -91,15 +94,19 @@ public class MarsProject {
             } catch (Exception e) {
                 showError("Could not load the desired simulation, trying to create a new Simulation...", e);
                 handleNewSimulation();
+                result = true;
             }
         } else {
             try {
                 handleLoadDefaultSimulation();
             } catch (Exception e) {
-                showError("Could not load the default simulation, trying to create a new Simulation...", e);
+//                showError("Could not load the default simulation, trying to create a new Simulation...", e);
                 handleNewSimulation();
+                result = true;
             }
         }
+        
+        return result;
     }
 
     /**
