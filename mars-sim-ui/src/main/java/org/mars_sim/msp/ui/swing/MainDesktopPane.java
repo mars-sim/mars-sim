@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.00 2011-03-09
+ * @version 3.04 2013-04-22
  * @author Scott Davis
  */
 
@@ -47,8 +47,7 @@ import java.util.logging.Logger;
  */
 public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
-	private static String CLASS_NAME = 
-		"org.mars_sim.msp.ui.standard.MainDesktopPane";
+	private static String CLASS_NAME = MainDesktopPane.class.getName();
 
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
@@ -298,7 +297,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 				if (!window.wasOpened()) {
 					UIConfig config = UIConfig.INSTANCE;
 					if (config.useUIDefault()) {
-						window.setLocation(getRandomLocation(window));
+						window.setLocation(getCenterLocation(window));
 					} else {
 						if (config.isInternalWindowConfigured(toolName)) {
 							window.setLocation(config.getInternalWindowLocation(toolName));
@@ -544,6 +543,22 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		updateThread.setRun(true);
 	}
 
+	private Point getCenterLocation(JInternalFrame tempWindow) {
+	    
+	    Dimension desktop_size = getSize();
+        Dimension window_size = tempWindow.getSize();
+
+        int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
+        int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
+
+        // Make sure y position isn't < 0.
+        if (rY < 0) {
+            rY = 0;
+        }
+
+        return new Point(rX, rY);
+	}
+	
 	/** 
 	 * Gets a random location on the desktop for a given JInternalFrame.
 	 *
@@ -651,8 +666,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	void openInitialWindows() {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-			// Open up navigator tool initially.
-			openToolWindow(NavigatorWindow.NAME);
+		    
+		    // Open user guide tool initially.
+		    openToolWindow(GuideWindow.NAME);
 		}
 		else {
 			// Open windows in Z-order.
