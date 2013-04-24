@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGLoader.java
- * @version 3.00 2010-11-13
+ * @version 3.04 2013-04-23
  * @author Scott Davis
  */
 
@@ -43,7 +43,7 @@ public class SVGLoader {
         
         GraphicsNode found = svgCache.get(name);
         if (found == null) {
-            String fileName = SVG_DIR + name + ".svg";
+            String fileName = SVG_DIR + name;
             URL resource = SVGLoader.class.getResource(fileName);
 
             try {

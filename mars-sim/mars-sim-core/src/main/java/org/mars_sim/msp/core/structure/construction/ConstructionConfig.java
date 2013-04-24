@@ -64,7 +64,7 @@ public class ConstructionConfig implements Serializable {
      * @return list of construction stage infos.
      * @throws Exception if error parsing list.
      */
-    List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) {
+    public List<ConstructionStageInfo> getConstructionStageInfoList(String stageType) {
         
         List<ConstructionStageInfo> stageInfo = null;
         
