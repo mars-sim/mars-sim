@@ -62,7 +62,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
      * Gets the incoming resupply list.
      * @return the incoming resupply list.
      */
-    JList<Transportable> getIncomingList() {
+    JList getIncomingList() {
         return incomingList;
     }
 
@@ -90,7 +90,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
             HistoricalEventListener {
 
         // Data members.
-        private List<Transportable> transportList;
+        private List transportList;
 
         private IncomingListModel() {
 
@@ -106,7 +106,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
         public Transportable getElementAt(int index) {
             Transportable result = null;
             if ((index > -1) && (index < transportList.size())) {
-                result = transportList.get(index);
+                result = (Transportable) transportList.get(index);
             }
 
             return result;
