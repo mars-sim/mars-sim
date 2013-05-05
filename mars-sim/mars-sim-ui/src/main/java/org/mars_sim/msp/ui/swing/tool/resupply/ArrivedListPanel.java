@@ -70,7 +70,7 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
     @Override
     public void valueChanged(ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
-            JList<Transportable> incomingList = (JList) evt.getSource();
+            JList incomingList = (JList) evt.getSource();
             if (incomingList.getSelectedValue() != null) {
                 arrivedList.clearSelection();
             }
@@ -87,8 +87,8 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
     /**
      * Inner class for the arrived resupply list model.
      */
-    private class ArrivedListModel extends AbstractListModel<Transportable> implements 
-    HistoricalEventListener {
+    private class ArrivedListModel extends AbstractListModel implements 
+            HistoricalEventListener {
 
         // Data members.
         private List<Transportable> resupplyList;
