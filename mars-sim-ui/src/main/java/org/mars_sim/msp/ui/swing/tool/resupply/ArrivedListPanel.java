@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 public class ArrivedListPanel extends JPanel implements ListSelectionListener {
 
     // Data members
-    private JList<Transportable> arrivedList;
+    private JList arrivedList;
     private ArrivedListModel listModel;
 
     /**
@@ -52,7 +52,7 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
 
         // Create arrived list.
         listModel = new ArrivedListModel();
-        arrivedList = new JList<Transportable>(listModel);
+        arrivedList = new JList(listModel);
         arrivedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(arrivedList);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -70,7 +70,7 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
     @Override
     public void valueChanged(ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
-            JList<Transportable> incomingList = (JList<Transportable>) evt.getSource();
+            JList<Transportable> incomingList = (JList) evt.getSource();
             if (incomingList.getSelectedValue() != null) {
                 arrivedList.clearSelection();
             }

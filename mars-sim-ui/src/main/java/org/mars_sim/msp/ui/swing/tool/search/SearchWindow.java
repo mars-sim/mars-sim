@@ -277,8 +277,8 @@ public class SearchWindow extends ToolWindow {
     /**
      * Inner class list model for categorized units.
      */
-    private class UnitListModel extends DefaultListModel<Unit> 
-    implements UnitManagerListener {
+    private class UnitListModel extends DefaultListModel 
+            implements UnitManagerListener {
 
         // Data members.
         private String category;

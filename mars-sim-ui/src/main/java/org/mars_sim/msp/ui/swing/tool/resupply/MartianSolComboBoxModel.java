@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A combo box model for Martian sols.
  */
-public class MartianSolComboBoxModel extends DefaultComboBoxModel<Integer> {
+public class MartianSolComboBoxModel extends DefaultComboBoxModel {
 
     // Data members
     private int maxSolNum;

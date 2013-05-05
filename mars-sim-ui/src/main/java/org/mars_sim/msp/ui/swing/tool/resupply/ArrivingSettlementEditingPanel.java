@@ -43,24 +43,24 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
     // Data members
     private ArrivingSettlement settlement;
     private JTextField nameTF;
-    private JComboBox<String> templateCB;
+    private JComboBox templateCB;
     private JRadioButton arrivalDateRB;
     private JLabel arrivalDateTitleLabel;
     private JRadioButton timeUntilArrivalRB;
     private JLabel timeUntilArrivalLabel;
     private MartianSolComboBoxModel martianSolCBModel;
     private JLabel solLabel;
-    private JComboBox<Integer> solCB;
+    private JComboBox solCB;
     private JLabel monthLabel;
-    private JComboBox<String> monthCB;
+    private JComboBox monthCB;
     private JLabel orbitLabel;
-    private JComboBox<String> orbitCB;
+    private JComboBox orbitCB;
     private JTextField solsTF;
     private JLabel solInfoLabel;
     private JTextField latitudeTF;
-    private JComboBox<String> latitudeDirectionCB;
+    private JComboBox latitudeDirectionCB;
     private JTextField longitudeTF;
-    private JComboBox<String> longitudeDirectionCB;
+    private JComboBox longitudeDirectionCB;
     private JTextField populationTF;
     private JLabel errorLabel;
     
@@ -117,7 +117,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         while (i.hasNext()) {
             templateNames.add(i.next().getTemplateName());
         }
-        templateCB = new JComboBox<String>(templateNames);
+        templateCB = new JComboBox(templateNames);
         if (settlement != null) {
             templateCB.setSelectedItem(settlement.getTemplate());
         }
@@ -199,7 +199,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
         // Create sol combo box.
         martianSolCBModel = new MartianSolComboBoxModel(arrivingTime.getMonth(), arrivingTime.getOrbit());
-        solCB = new JComboBox<Integer>(martianSolCBModel);
+        solCB = new JComboBox(martianSolCBModel);
         solCB.setSelectedItem(arrivingTime.getSolOfMonth());
         arrivalDateSelectionPane.add(solCB);
 
@@ -208,12 +208,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         arrivalDateSelectionPane.add(monthLabel);
 
         // Create month combo box.
-        monthCB = new JComboBox<String>(MarsClock.getMonthNames());
+        monthCB = new JComboBox(MarsClock.getMonthNames());
         monthCB.setSelectedItem(arrivingTime.getMonthName());
         monthCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Update sol combo box values.
-                martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1, 
+                martianSolCBModel.updateSolNumber((monthCB.getSelectedIndex() + 1), 
                         Integer.parseInt((String) orbitCB.getSelectedItem()));
             }
         });
@@ -231,12 +231,12 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         for (int x = 0; x < 20; x++) {
             orbitValues[x] = formatter.format(startOrbit + x);
         }
-        orbitCB = new JComboBox<String>(orbitValues);
+        orbitCB = new JComboBox(orbitValues);
         orbitCB.setSelectedItem(formatter.format(startOrbit));
         orbitCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 // Update sol combo box values.
-                martianSolCBModel.updateSolNumber(monthCB.getSelectedIndex() + 1, 
+                martianSolCBModel.updateSolNumber((monthCB.getSelectedIndex() + 1), 
                         Integer.parseInt((String) orbitCB.getSelectedItem()));
             }
         });
@@ -306,14 +306,13 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         latitudePane.add(latDegLabel);
         
         // Create latitude direction combo box.
-        latitudeDirectionCB = new JComboBox<String>();
+        latitudeDirectionCB = new JComboBox();
         latitudeDirectionCB.addItem("N");
         latitudeDirectionCB.addItem("S");
         if (settlement != null) {
             String latString = settlement.getLandingLocation().getFormattedLatitudeString();
             // Get last character in formatted string. ex: "S".
             String dirString = latString.substring(latString.length() - 1, latString.length());
-            System.out.println("latitude dirString: " + dirString);
             latitudeDirectionCB.setSelectedItem(dirString);
         }
         latitudePane.add(latitudeDirectionCB);
@@ -342,14 +341,13 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         longitudePane.add(lonDegLabel);
         
         // Create longitude direction combo box.
-        longitudeDirectionCB = new JComboBox<String>();
+        longitudeDirectionCB = new JComboBox();
         longitudeDirectionCB.addItem("W");
         longitudeDirectionCB.addItem("E");
         if (settlement != null) {
             String lonString = settlement.getLandingLocation().getFormattedLongitudeString();
             // Get last character in formatted string. ex: "W".
             String dirString = lonString.substring(lonString.length() - 1, lonString.length());
-            System.out.println("longitude dirString: " + dirString);
             longitudeDirectionCB.setSelectedItem(dirString);
         }
         longitudePane.add(longitudeDirectionCB);

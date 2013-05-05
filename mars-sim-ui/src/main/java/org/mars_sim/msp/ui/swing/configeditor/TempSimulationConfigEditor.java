@@ -99,7 +99,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create combo box for editing template column in settlement table.
         TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
-        JComboBox<String> templateCB = new JComboBox<String>();
+        JComboBox templateCB = new JComboBox();
         SettlementConfig settlementConfig = config.getSettlementConfiguration();
         Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
         while (i.hasNext()) {
