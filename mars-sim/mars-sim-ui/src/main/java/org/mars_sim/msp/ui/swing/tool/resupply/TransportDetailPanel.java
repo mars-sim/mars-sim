@@ -59,9 +59,9 @@ public class TransportDetailPanel extends JPanel implements ListSelectionListene
     @Override
     public void valueChanged(ListSelectionEvent evt) {
 
-        JList<Transportable> transportList = (JList<Transportable>) evt.getSource();
+        JList transportList = (JList) evt.getSource();
         if (!transportList.getValueIsAdjusting()) {
-            Transportable newTransportable = transportList.getSelectedValue();
+            Transportable newTransportable = (Transportable) transportList.getSelectedValue();
             if (newTransportable instanceof Resupply) {
                 resupplyPanel.setResupply((Resupply) newTransportable);
                 cardLayout.show(this, RESUPPLY);

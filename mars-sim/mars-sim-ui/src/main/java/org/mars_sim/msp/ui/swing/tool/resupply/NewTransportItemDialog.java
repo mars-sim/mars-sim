@@ -60,14 +60,14 @@ public class NewTransportItemDialog extends JDialog {
         getContentPane().add(transportTypePanel, BorderLayout.NORTH);
         
         // Create combo box for determining transport item type.
-        JComboBox<String> typeBox = new JComboBox<String>();
+        JComboBox typeBox = new JComboBox();
         typeBox.addItem(DEFAULT_MESSAGE);
         typeBox.addItem(RESUPPLY_MISSION);
         typeBox.addItem(ARRIVING_SETTLEMENT);
         typeBox.setSelectedItem(DEFAULT_MESSAGE);
         typeBox.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
-                JComboBox<?> cb = (JComboBox<?>) evt.getSource();
+                JComboBox cb = (JComboBox) evt.getSource();
                 setEditingPanel((String) cb.getSelectedItem());
             }
         });
