@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleTest.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 
@@ -76,17 +76,22 @@ public class LoadVehicleTest extends TestCase {
 			settlementInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygen, new Double(100D));
-		resourcesMap.put(food, new Double(100D));
-		resourcesMap.put(water, new Double(100D));
-		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, Integer.valueOf(5));
+		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
+		requiredResourcesMap.put(oxygen, new Double(100D));
+		requiredResourcesMap.put(food, new Double(100D));
+		requiredResourcesMap.put(water, new Double(100D));
+		requiredResourcesMap.put(methane, new Double(100D));
+		requiredResourcesMap.put(hammer, Integer.valueOf(5));
 		
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 		
-		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, resourcesMap, equipmentMap);
+		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		
+		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		
+		LoadVehicleGarage loadVehicle = new LoadVehicleGarage(person, vehicle, requiredResourcesMap, optionalResourcesMap, 
+		        requiredEquipmentMap, optionalEquipmentMap);
 		loadVehicle.loadingPhase(10D);
 		
 		assertEquals("Vehicle loaded correctly.", 5, vehicle.getInventory().findNumUnitsOfClass(SpecimenContainer.class));
@@ -283,17 +288,22 @@ public class LoadVehicleTest extends TestCase {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygen, new Double(100D));
-		resourcesMap.put(food, new Double(100D));
-		resourcesMap.put(water, new Double(100D));
-		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, Integer.valueOf(5));
+		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
+		requiredResourcesMap.put(oxygen, new Double(100D));
+		requiredResourcesMap.put(food, new Double(100D));
+		requiredResourcesMap.put(water, new Double(100D));
+		requiredResourcesMap.put(methane, new Double(100D));
+		requiredResourcesMap.put(hammer, Integer.valueOf(5));
 		
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 		
-		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		
+		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		
+		assertTrue("Vehicle is fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 	
 	/*
@@ -319,17 +329,22 @@ public class LoadVehicleTest extends TestCase {
 		AmountResource water = AmountResource.findAmountResource(WATER);
 		AmountResource methane = AmountResource.findAmountResource(METHANE);
 		
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygen, new Double(100D));
-		resourcesMap.put(food, new Double(100D));
-		resourcesMap.put(water, new Double(100D));
-		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, Integer.valueOf(5));
+		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
+		requiredResourcesMap.put(oxygen, new Double(100D));
+		requiredResourcesMap.put(food, new Double(100D));
+		requiredResourcesMap.put(water, new Double(100D));
+		requiredResourcesMap.put(methane, new Double(100D));
+		requiredResourcesMap.put(hammer, Integer.valueOf(5));
 		
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		
+		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+		        optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 	
 	/*
@@ -362,17 +377,22 @@ public class LoadVehicleTest extends TestCase {
 			inv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygen, new Double(100D));
-		resourcesMap.put(food, new Double(100D));
-		resourcesMap.put(water, new Double(100D));
-		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, Integer.valueOf(5));
+		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
+		requiredResourcesMap.put(oxygen, new Double(100D));
+		requiredResourcesMap.put(food, new Double(100D));
+		requiredResourcesMap.put(water, new Double(100D));
+		requiredResourcesMap.put(methane, new Double(100D));
+		requiredResourcesMap.put(hammer, Integer.valueOf(5));
 		
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		
+		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 	
 	/*
@@ -402,16 +422,21 @@ public class LoadVehicleTest extends TestCase {
 		inv.storeAmountResource(methane, 100D, true);
 		inv.storeItemResources(hammer, 5);
 		
-		Map<Resource, Number> resourcesMap = new HashMap<Resource, Number>();
-		resourcesMap.put(oxygen, new Double(100D));
-		resourcesMap.put(food, new Double(100D));
-		resourcesMap.put(water, new Double(100D));
-		resourcesMap.put(methane, new Double(100D));
-		resourcesMap.put(hammer, Integer.valueOf(5));
+		Map<Resource, Number> requiredResourcesMap = new HashMap<Resource, Number>();
+		requiredResourcesMap.put(oxygen, new Double(100D));
+		requiredResourcesMap.put(food, new Double(100D));
+		requiredResourcesMap.put(water, new Double(100D));
+		requiredResourcesMap.put(methane, new Double(100D));
+		requiredResourcesMap.put(hammer, Integer.valueOf(5));
 		
-		Map<Class, Integer> equipmentMap = new HashMap<Class, Integer>();
-		equipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		Map<Resource, Number> optionalResourcesMap = new HashMap<Resource, Number>(0);
 		
-		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(resourcesMap, equipmentMap, vehicle));
+		Map<Class, Integer> requiredEquipmentMap = new HashMap<Class, Integer>();
+		requiredEquipmentMap.put(SpecimenContainer.class, Integer.valueOf(5));
+		
+		Map<Class, Integer> optionalEquipmentMap = new HashMap<Class, Integer>(0);
+		
+		assertFalse("Vehicle is not fully loaded", LoadVehicleGarage.isFullyLoaded(requiredResourcesMap, 
+                optionalResourcesMap, requiredEquipmentMap, optionalEquipmentMap, vehicle, settlement));
 	}
 }

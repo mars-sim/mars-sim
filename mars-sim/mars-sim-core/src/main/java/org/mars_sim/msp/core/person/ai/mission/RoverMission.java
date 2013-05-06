@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-03-13
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 
@@ -264,8 +264,9 @@ public abstract class RoverMission extends VehicleMission {
 
         // Load vehicle if not fully loaded.
         if (!loadedFlag) {
-            if (isVehicleLoaded())
+            if (isVehicleLoaded()) {
                 loadedFlag = true;
+            }
             else {
                 // Check if vehicle can hold enough supplies for mission.
                 if (isVehicleLoadable()) {
@@ -273,12 +274,14 @@ public abstract class RoverMission extends VehicleMission {
                     // Random chance of having person load (this allows person to do other things sometimes)
                     if (RandomUtil.lessThanRandPercent(75)) {
                         if (BuildingManager.getBuilding(getVehicle()) != null) {
-                            assignTask(person, new LoadVehicleGarage(person, getVehicle(), getResourcesToLoad(),
-                                    getEquipmentToLoad()));
+                            assignTask(person, new LoadVehicleGarage(person, getVehicle(), 
+                                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+                                    getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                         }
                         else {
-                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), getResourcesToLoad(),
-                                    getEquipmentToLoad()));
+                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
+                                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+                                    getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                         }
                     }
                 } else {
@@ -543,17 +546,11 @@ public abstract class RoverMission extends VehicleMission {
         return result;
     }
 
-    /**
-     * Gets a map of all resources needed for the trip.
-     * @param useBuffer should a buffer be used when determining resources?
-     * @param parts include parts.
-     * @param distance the distance of the trip.
-     * @throws MissionException if error determining resources.
-     */
+    @Override
     public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
-            boolean parts, double distance) {
+            double distance) {
         Map<Resource, Number> result = super.getResourcesNeededForTrip(
-                useBuffer, parts, distance);
+                useBuffer, distance);
 
         // Determine estimate time for trip.
         double time = getEstimatedTripTime(useBuffer, distance);
@@ -586,10 +583,7 @@ public abstract class RoverMission extends VehicleMission {
         return result;
     }
 
-    /**
-     * Finalizes the mission
-     * @param reason the reason of ending the mission.
-     */
+    @Override
     public void endMission(String reason) {
         // If at a settlement, associate all members with the settlement.
         Iterator<Person> i = getPeople().iterator();

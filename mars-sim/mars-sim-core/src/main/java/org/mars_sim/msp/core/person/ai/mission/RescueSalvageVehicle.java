@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.04 2012-12-05
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 
@@ -10,7 +10,6 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -555,16 +554,10 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
 		return getStartingSettlement();
 	}
 	
-    /**
-	 * Gets the number and amounts of resources needed for the mission.
-	 * @param useBuffer use time buffers in estimation if true.
-	 * @param parts include parts.
-	 * @return map of amount and item resources and their Double amount or Integer number.
-	 * @throws MissionException if error determining needed resources.
-	 */
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-    		boolean parts) {
-    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
+    @Override
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+        
+    	Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
     	
     	// Include rescue resources if needed.
     	if (rescue && (getRover().getTowedVehicle() == null)) {
@@ -589,12 +582,7 @@ public class RescueSalvageVehicle extends RoverMission implements Serializable {
     	return result;
     }
 	
-    /**
-     * Gets the number and types of equipment needed for the mission.
-     * @param useBuffer use time buffer in estimation if true.
-     * @return map of equipment class and Integer number.
-     * @throws MissionException if error determining needed equipment.
-     */
+    @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
     	if (equipmentNeededCache != null) return equipmentNeededCache;
     	else {

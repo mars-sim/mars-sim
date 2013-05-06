@@ -33,7 +33,7 @@ public class AllJUnitTests extends TestCase {
 		suite.addTestSuite(org.mars_sim.msp.core.person.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.person.ai.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.person.ai.mission.JUnitTests.class);
-		suite.addTestSuite(org.mars_sim.msp.core.person.ai.task.JUnitTests.class);
+		suite.addTest(org.mars_sim.msp.core.person.ai.task.JUnitTests.suite());
 		suite.addTestSuite(org.mars_sim.msp.core.person.medical.JUnitTests.class);
 		suite.addTestSuite(org.mars_sim.msp.core.resource.TestAmountResourceStorage.class);
 		suite.addTestSuite(org.mars_sim.msp.core.resource.TestAmountResourcePhaseStorage.class);

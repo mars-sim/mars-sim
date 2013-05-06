@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditManager.java
- * @version 3.02 2011-11-26
+ * @version 3.04 2013-05-05
  * @author Scott Davis
  */
 
@@ -99,6 +99,21 @@ public class CreditManager implements Serializable {
 		}
 		
 		return result;
+	}
+	
+	/**
+	 * Add a new settlement to the credit graph.
+	 * @param newSettlement the new settlement.
+	 */
+	public void addSettlement(Settlement newSettlement) {
+	    if (newSettlement == null) {
+	        throw new IllegalArgumentException("Settlement is null");
+	    }
+	    if (creditGraph.containsNode(newSettlement)) {
+            throw new IllegalArgumentException("Settlement: " + newSettlement + " already exists in credit graph.");
+	    }
+	    
+	    creditGraph.addNode(newSettlement);
 	}
 	
 	/**

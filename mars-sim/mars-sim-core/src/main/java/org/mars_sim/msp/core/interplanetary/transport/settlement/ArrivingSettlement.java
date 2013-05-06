@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.04 2013-04-14
+ * @version 3.04 2013-05-05
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -257,6 +257,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
         UnitManager unitManager = Simulation.instance().getUnitManager();
         Settlement newSettlement = new Settlement(name, template, landingLocation, populationNum);
         unitManager.addUnit(newSettlement);
+        
+        // Add new settlement to credit manager.
+        Simulation.instance().getCreditManager().addSettlement(newSettlement);
 
         return newSettlement;
     }

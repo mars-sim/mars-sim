@@ -16,7 +16,7 @@ import java.util.EventObject;
  * A credit change event.
  */
 public class CreditEvent extends EventObject {
-
+    
 	// Data members
 	private Settlement settlement1;
 	private Settlement settlement2;

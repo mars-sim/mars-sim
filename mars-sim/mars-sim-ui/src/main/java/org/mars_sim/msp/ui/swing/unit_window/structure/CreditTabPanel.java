@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreditTabPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.04 2013-05-05
  * @author Scott Davis
  */
 
@@ -10,6 +10,8 @@ package org.mars_sim.msp.ui.swing.unit_window.structure;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditEvent;
 import org.mars_sim.msp.core.structure.goods.CreditListener;
@@ -83,7 +85,8 @@ public class CreditTabPanel extends TabPanel {
     /** 
      * Internal class used as model for the credit table.
      */
-    private static class CreditTableModel extends AbstractTableModel implements CreditListener {
+    private static class CreditTableModel extends AbstractTableModel implements CreditListener, 
+            UnitManagerListener {
     	
     	// Data members
     	CreditManager manager;
@@ -96,13 +99,16 @@ public class CreditTabPanel extends TabPanel {
     		
     		// Get collection of all other settlements.
     		settlements = new ConcurrentLinkedQueue<Settlement>();
-    		Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().getSettlements()).iterator();
+    		Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().
+    		        getSettlements()).iterator();
     		while (i.hasNext()) {
     			Settlement settlement = i.next();
     			if (settlement != thisSettlement) settlements.add(settlement);
     		}
     		
     		manager.addListener(this);
+    		
+    		Simulation.instance().getUnitManager().addUnitManagerListener(this);
     	}
     	
         public int getRowCount() {
@@ -166,6 +172,28 @@ public class CreditTabPanel extends TabPanel {
     				}
     			});
     	}
+    	
+        @Override
+        public void unitManagerUpdate(UnitManagerEvent event) {
+            
+            if (event.getUnit() instanceof Settlement) {
+                settlements.clear();
+                Iterator<Settlement> i = CollectionUtils.sortByName(Simulation.instance().getUnitManager().
+                        getSettlements()).iterator();
+                while (i.hasNext()) {
+                    Settlement settlement = i.next();
+                    if (settlement != thisSettlement) {
+                        settlements.add(settlement);
+                    }
+                }
+                
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        fireTableDataChanged();
+                    }
+                });
+            }
+        }
     	
         /**
          * Prepare for deletion.

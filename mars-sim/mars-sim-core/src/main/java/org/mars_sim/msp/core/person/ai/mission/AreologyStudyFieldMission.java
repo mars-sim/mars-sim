@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -637,9 +636,9 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
     }
     
     @Override
-    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer, 
-            boolean parts) {
-        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer, parts);
+    public Map<Resource, Number> getResourcesNeededForRemainingMission(boolean useBuffer) {
+        
+        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
         
         double fieldSiteTime = getEstimatedRemainingFieldSiteTime();
         double timeSols = fieldSiteTime / 1000D;

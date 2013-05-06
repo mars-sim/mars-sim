@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2013-02-11
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -543,12 +543,12 @@ public class Trade extends RoverMission implements Serializable {
                 // Random chance of having person load (this allows person to do other things sometimes)
                 if (RandomUtil.lessThanRandPercent(50)) {
                     if (isRoverInAGarage()) {
-                        assignTask(person, new LoadVehicleGarage(person, getVehicle(), getResourcesToLoad(),
-                                getEquipmentToLoad()));
+                        assignTask(person, new LoadVehicleGarage(person, getVehicle(), getRequiredResourcesToLoad(),
+                                getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                     }
                     else {
-                        assignTask(person, new LoadVehicleEVA(person, getVehicle(), getResourcesToLoad(),
-                                getEquipmentToLoad()));
+                        assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+                                getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                     }
                 }
             } else {
@@ -766,17 +766,13 @@ public class Trade extends RoverMission implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the number and types of equipment needed for the mission.
-     * @param useBuffer use time buffers in estimation if true.
-     * @return map of equipment class and Integer number.
-     * @throws MissionException if error determining needed equipment.
-     */
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(boolean useBuffer) {
+    @Override
+    public Map<Class, Integer> getOptionalEquipmentToLoad() {
+        
         if (equipmentNeededCache != null) {
             return equipmentNeededCache;
         } else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class, Integer> result = super.getOptionalEquipmentToLoad();
 
             // Add buy/sell load.
             Map<Good, Integer> load = null;
@@ -804,15 +800,10 @@ public class Trade extends RoverMission implements Serializable {
         }
     }
 
-    /**
-     * Gets a map of all resources needed for the trip.
-     * @param useBuffer should a buffer be used when determining resources?
-     * @param parts include parts.
-     * @param distance the distance of the trip.
-     * @throws MissionException if error determining resources.
-     */
-    public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer, boolean parts, double distance) {
-        Map<Resource, Number> result = super.getResourcesNeededForTrip(useBuffer, parts, distance);
+    @Override
+    public Map<Resource, Number> getOptionalResourcesToLoad() {
+        
+        Map<Resource, Number> result = super.getOptionalResourcesToLoad();
 
         // Add buy/sell load.
         Map<Good, Integer> load = null;
@@ -1090,6 +1081,17 @@ public class Trade extends RoverMission implements Serializable {
         private TradeProfitInfo(double profit, MarsClock time) {
             this.profit = profit;
             this.time = time;
+        }
+    }
+
+    @Override
+    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+            boolean useBuffer) {
+        if (equipmentNeededCache != null) return equipmentNeededCache;
+        else {
+            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            equipmentNeededCache = result;
+            return result;
         }
     }
 }
