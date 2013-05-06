@@ -160,7 +160,7 @@ public class ExitAirlock extends Task implements Serializable {
         if (!hasSuit) {
             logger.info(person.getName() + " does not have an EVA suit, ExitAirlock ended");
             endTask();
-            return time;
+            return 0D;
         }
         
         // Check if person isn't outside.

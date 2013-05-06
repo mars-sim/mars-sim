@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.04 2013-02-02
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -578,7 +578,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
     @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(
-            boolean useBuffer, boolean parts) {
+            boolean useBuffer) {
         
         Map<Resource, Number> resources = new HashMap<Resource, Number>();
         

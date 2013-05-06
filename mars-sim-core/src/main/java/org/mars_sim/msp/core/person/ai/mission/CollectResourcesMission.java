@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 
@@ -600,17 +600,10 @@ public abstract class CollectResourcesMission extends RoverMission implements
         return result;
     }
 
-    /**
-     * Gets the number and amounts of resources needed for the mission.
-     * @param useBuffer use time buffers in estimation if true.
-     * @param parts include parts.
-     * @return map of amount and item resources and their Double amount or Integer number.
-     * @throws MissionException if error determining needed resources.
-     */
+    @Override
     public Map<Resource, Number> getResourcesNeededForRemainingMission(
-            boolean useBuffer, boolean parts) {
-        Map<Resource, Number> result = super
-                .getResourcesNeededForRemainingMission(useBuffer, parts);
+            boolean useBuffer) {
+        Map<Resource, Number> result = super.getResourcesNeededForRemainingMission(useBuffer);
 
         double collectionSitesTime = getEstimatedRemainingCollectionSiteTime(useBuffer);
         double timeSols = collectionSitesTime / 1000D;
@@ -642,12 +635,7 @@ public abstract class CollectResourcesMission extends RoverMission implements
         return result;
     }
 
-    /**
-     * Gets the parts needed for the trip.
-     * @param distance the distance of the trip.
-     * @return map of part resources and their number.
-     * @throws MissionException if error determining parts.
-     */
+    @Override
     protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
         Map<Resource, Number> result = super.getPartsNeededForTrip(distance);
 
@@ -761,16 +749,12 @@ public abstract class CollectResourcesMission extends RoverMission implements
         return timeLimit;
     }
 
-    /**
-     * Gets the number and types of equipment needed for the mission.
-     * @param useBuffer use time buffer in estimation if true.
-     * @return map of equipment class and Integer number.
-     * @throws MissionException if error determining needed equipment.
-     */
+    @Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
-        if (equipmentNeededCache != null)
+        if (equipmentNeededCache != null) {
             return equipmentNeededCache;
+        }
         else {
             Map<Class, Integer> result = new HashMap<Class, Integer>();
             

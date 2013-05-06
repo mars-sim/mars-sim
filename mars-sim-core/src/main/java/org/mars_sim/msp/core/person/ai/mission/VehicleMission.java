@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.03 2012-07-26
+ * @version 3.04 2013-05-03
  * @author Scott Davis
  */
 
@@ -77,7 +77,7 @@ public abstract class VehicleMission extends TravelMission implements
     protected VehicleMission(String name, Person startingPerson, int minPeople) {
         // Use TravelMission constructor.
         super(name, startingPerson, minPeople);
-
+        
         // Add mission phases.
         addPhase(EMBARKING);
         addPhase(TRAVELLING);
@@ -290,8 +290,9 @@ public abstract class VehicleMission extends TravelMission implements
         if (vehicle == null)
             throw new IllegalStateException(getPhase() + " : vehicle is null");
         try {
-            return LoadVehicleGarage.isFullyLoaded(getResourcesToLoad(),
-                    getEquipmentToLoad(), vehicle);
+            return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), 
+                    getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), 
+                    getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
         } catch (Exception e) {
             throw new IllegalStateException(getPhase(), e);
         }
@@ -304,8 +305,8 @@ public abstract class VehicleMission extends TravelMission implements
      */
     public final boolean isVehicleLoadable() {
 
-        Map<Resource, Number> resources = getResourcesToLoad();
-        Map<Class, Integer> equipment = getEquipmentToLoad();
+        Map<Resource, Number> resources = getRequiredResourcesToLoad();
+        Map<Class, Integer> equipment = getRequiredEquipmentToLoad();
         Vehicle vehicle = this.vehicle;
         Settlement settlement = vehicle.getSettlement();
         double tripTime = getEstimatedRemainingMissionTime(true);
@@ -532,32 +533,25 @@ public abstract class VehicleMission extends TravelMission implements
     /**
      * Gets the number and amounts of resources needed for the mission.
      * @param useBuffer use time buffers in estimation if true.
-     * @param parts include parts.
      * @return map of amount and item resources and their Double amount or Integer number.
-     * @throws MissionException if error determining needed resources.
      */
     public Map<Resource, Number> getResourcesNeededForRemainingMission(
-            boolean useBuffer, boolean parts) {
-        return getResourcesNeededForTrip(useBuffer, parts,
-                getTotalRemainingDistance());
+            boolean useBuffer) {
+        return getResourcesNeededForTrip(useBuffer, getTotalRemainingDistance());
     }
 
     /**
      * Gets the number and amounts of resources needed for a trip.
      * @param useBuffer use time buffers in estimation if true.
-     * @param parts include parts.
      * @param distance the distance (km) of the trip.
      * @return map of amount and item resources and their Double amount or Integer number.
-     * @throws MissionException if error determining needed resources.
      */
     public Map<Resource, Number> getResourcesNeededForTrip(boolean useBuffer,
-            boolean parts, double distance) {
+            double distance) {
         Map<Resource, Number> result = new HashMap<Resource, Number>();
         if (vehicle != null) {
             result.put(vehicle.getFuelType(), getFuelNeededForTrip(distance,
                     vehicle.getFuelEfficiency(), useBuffer));
-            if (parts)
-                result.putAll(getPartsNeededForTrip(distance));
         }
         return result;
     }
@@ -566,7 +560,6 @@ public abstract class VehicleMission extends TravelMission implements
      * Gets the parts needed for the trip.
      * @param distance the distance of the trip.
      * @return map of part resources and their number.
-     * @throws MissionException if error determining parts.
      */
     protected Map<Resource, Number> getPartsNeededForTrip(double distance) {
         Map<Resource, Number> result = new HashMap<Resource, Number>();
@@ -598,19 +591,17 @@ public abstract class VehicleMission extends TravelMission implements
      * Checks if there are enough resources available in the vehicle for the remaining mission.
      * @param useBuffers use time buffers for estimation if true.
      * @return true if enough resources.
-     * @throws MissionException if error checking resources.
      */
     protected final boolean hasEnoughResourcesForRemainingMission(
             boolean useBuffers) {
         return hasEnoughResources(getResourcesNeededForRemainingMission(
-                useBuffers, false));
+                useBuffers));
     }
 
     /**
      * Checks if there are enough resources available in the vehicle.
      * @param neededResources map of amount and item resources and their Double amount or Integer number.
      * @return true if enough resources.
-     * @throws MissionException if error checking resources.
      */
     private boolean hasEnoughResources(Map<Resource, Number> neededResources) {
         boolean result = true;
@@ -652,7 +643,6 @@ public abstract class VehicleMission extends TravelMission implements
      * Determines the emergency destination settlement for the mission if one is reachable, otherwise sets the emergency
      * beacon and ends the mission.
      * @param person the person performing the mission.
-     * @throws MissionException if error determining an emergency destination.
      */
     protected final void determineEmergencyDestination(Person person) {
 
@@ -663,8 +653,7 @@ public abstract class VehicleMission extends TravelMission implements
             // Check if enough resources to get to settlement.
             double distance = getCurrentMissionLocation().getDistance(
                     newDestination.getCoordinates());
-            if (hasEnoughResources(getResourcesNeededForTrip(false, false,
-                    distance))
+            if (hasEnoughResources(getResourcesNeededForTrip(false, distance))
                     && !hasEmergencyAllCrew()) {
 
                 // Check if closest settlement is already the next navpoint.
@@ -731,7 +720,6 @@ public abstract class VehicleMission extends TravelMission implements
     /**
      * Finds the closest settlement to the mission.
      * @return settlement
-     * @throws MissionException if error finding closest settlement.
      */
     public final Settlement findClosestSettlement() {
         Settlement result = null;
@@ -767,7 +755,6 @@ public abstract class VehicleMission extends TravelMission implements
     /**
      * Time passing for mission.
      * @param time the amount of time passing (in millisols)
-     * @throws Exception if error during time passing.
      */
     public void timePassing(double time) {
         // Add this mission as a vehicle listener (does nothing if already listening to vehicle).
@@ -790,27 +777,40 @@ public abstract class VehicleMission extends TravelMission implements
     }
 
     /**
-     * Gets the resources needed for loading the vehicle.
+     * Gets the required resources needed for loading the vehicle.
      * @return resources and their number.
-     * @throws MissionException if error determining resources.
      */
-    public Map<Resource, Number> getResourcesToLoad() {
-        return getResourcesNeededForRemainingMission(true, true);
+    public Map<Resource, Number> getRequiredResourcesToLoad() {
+        return getResourcesNeededForRemainingMission(true);
+    }
+    
+    /**
+     * Gets the optional resources needed for loading the vehicle.
+     * @return resources and their number.
+     */
+    public Map<Resource, Number> getOptionalResourcesToLoad() {
+        return getPartsNeededForTrip(getTotalRemainingDistance());
     }
 
     /**
-     * Gets the equipment needed for loading the vehicle.
+     * Gets the required equipment needed for loading the vehicle.
      * @return equipment and their number.
-     * @throws MissionException if error determining equipment.
      */
-    public Map<Class, Integer> getEquipmentToLoad() {
-        return getEquipmentNeededForRemainingMission(true);
+    public Map<Class, Integer> getRequiredEquipmentToLoad() {
+        return new HashMap<Class, Integer>(0);
+    }
+    
+    /**
+     * Gets the optional equipment needed for loading the vehicle.
+     * @return equipment and their number.
+     */
+    public Map<Class, Integer> getOptionalEquipmentToLoad() {
+        return new HashMap<Class, Integer>(0);
     }
 
     /**
      * Checks if the vehicle has a malfunction that cannot be repaired.
      * @return true if unrepairable malfunction.
-     * @throws MissionException if error checking for malfunction.
      */
     private boolean hasUnrepairableMalfunction() {
         boolean result = false;

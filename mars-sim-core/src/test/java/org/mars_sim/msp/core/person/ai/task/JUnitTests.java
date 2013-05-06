@@ -16,7 +16,7 @@ public class JUnitTests extends TestCase {
 	
 	private static final Class thisClass = JUnitTests.class;
 
-	// Get test properites.
+	// Get test properties.
 	private static final java.util.Properties properties =
 		System.getProperties();
 	{
@@ -49,7 +49,12 @@ public class JUnitTests extends TestCase {
 	 * Collection of external test suites to be included in current testing.
 	 */
 	public static Test suite() {
-		return new TestSuite(thisClass);
+	    TestSuite suite = new TestSuite(thisClass);
+	    
+	    suite.addTestSuite(LoadVehicleTest.class);
+	    suite.addTestSuite(UnloadVehicleTest.class);
+	    
+		return suite;
 	}
 
 	/**
