@@ -46,8 +46,9 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
     private JCheckBoxMenuItem settlementToolItem; // Settlement tool menu item
     private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
     private JCheckBoxMenuItem resupplyToolItem;   // Resupply tool menu item
-    private JCheckBoxMenuItem aboutMspItem;       // About Mars Simulation Project menu item
-    private JCheckBoxMenuItem guideItem;          // User Guide menu item
+    private JMenuItem aboutMspItem;       // About Mars Simulation Project menu item
+    private JMenuItem tutorialItem;       // Tutorial menu item
+    private JMenuItem guideItem;          // User Guide menu item
 
     /** 
      * Constructor
@@ -163,15 +164,21 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         helpMenu.addMenuListener(this);
         add(helpMenu);
 
-        // Create about Mars Simulation Project menu item
-        aboutMspItem = new JCheckBoxMenuItem("About The Mars Simulation Project");
+        // Create About Mars Simulation Project menu item
+        aboutMspItem = new JMenuItem("About");
         aboutMspItem.addActionListener(this);
         helpMenu.add(aboutMspItem);
 
         helpMenu.add(new JSeparator());
 
+        // Create Tutorial menu item
+        tutorialItem = new JMenuItem("Tutorial");
+        tutorialItem.addActionListener(this);
+        tutorialItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
+        helpMenu.add(tutorialItem);
+        
         // Create User Guide menu item
-        guideItem = new JCheckBoxMenuItem("User Guide");
+        guideItem = new JMenuItem("User Guide");
         guideItem.addActionListener(this);
         guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
         helpMenu.add(guideItem);
@@ -237,13 +244,15 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         }
 
         if (selectedItem == aboutMspItem) {
-            if (aboutMspItem.isSelected()) desktop.openToolWindow(AboutWindow.NAME);
-            else desktop.closeToolWindow(AboutWindow.NAME);
+            desktop.openToolWindow(GuideWindow.NAME);
         }
 
         if (selectedItem == guideItem) {
-            if (guideItem.isSelected()) desktop.openToolWindow(GuideWindow.NAME);
-            else desktop.closeToolWindow(GuideWindow.NAME);
+            desktop.openToolWindow(GuideWindow.NAME);
+        }
+        
+        if (selectedItem == tutorialItem) {
+            desktop.openToolWindow(GuideWindow.NAME);
         }
     }
 
@@ -259,8 +268,6 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
         scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
         resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
-        aboutMspItem.setSelected(desktop.isToolWindowOpen(AboutWindow.NAME));
-        guideItem.setSelected(desktop.isToolWindowOpen(GuideWindow.NAME));
    }
 
     public void menuCanceled(MenuEvent event) {}
