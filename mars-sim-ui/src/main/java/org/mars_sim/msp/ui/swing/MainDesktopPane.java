@@ -13,7 +13,6 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.sound.SoundConstants;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-import org.mars_sim.msp.ui.swing.tool.about.AboutWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
@@ -224,12 +223,6 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		try { resupplyWindow.setClosed(true); }
 		catch (PropertyVetoException e) { }
 		toolWindows.add(resupplyWindow);
-
-		// Prepare about tool window
-		AboutWindow aboutWindow = new AboutWindow(this);
-		try { aboutWindow.setClosed(true); }
-		catch (PropertyVetoException e) { }
-		toolWindows.add(aboutWindow);
 
 		// Prepare guide tool window
 		GuideWindow guideWindow = new GuideWindow(this);

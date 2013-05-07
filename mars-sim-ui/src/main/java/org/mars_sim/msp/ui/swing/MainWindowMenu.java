@@ -7,7 +7,6 @@
 
 package org.mars_sim.msp.ui.swing;
 
-import org.mars_sim.msp.ui.swing.tool.about.AboutWindow;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;
