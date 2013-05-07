@@ -109,7 +109,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         globeNav = new GlobeDisplay(this, 150, 150);
         JPanel globePane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         globePane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-                new LineBorder(Color.green)));
+                new LineBorder(Color.gray)));
         globePane.add(globeNav);
         leftTopPane.add(globePane);
 
@@ -117,7 +117,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         navButtons = new NavButtonDisplay(this);
         JPanel navPane = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         navPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-                new LineBorder(Color.green)));
+                new LineBorder(Color.gray)));
         navPane.add(navButtons);
         leftTopPane.add(navPane);
 
@@ -131,7 +131,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         // Prepare surface map display
         JPanel mapPane = new JPanel(new BorderLayout(0, 0));
         mapPane.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-                new LineBorder(Color.green)));
+                new LineBorder(Color.gray)));
         rightTopPane.add(mapPane);
         JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
         mapPaneInner.setBackground(Color.black);
@@ -204,7 +204,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         // Prepare legend icon
         legend = new LegendDisplay();
         legend.setBorder( new CompoundBorder(new BevelBorder(BevelBorder.LOWERED),
-                new LineBorder(Color.green)));
+                new LineBorder(Color.gray)));
         JPanel legendPanel = new JPanel(new BorderLayout(0, 0));
         legendPanel.add(legend, BorderLayout.NORTH);
         topoPane.add(legendPanel, BorderLayout.EAST);
