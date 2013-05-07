@@ -797,7 +797,7 @@ public abstract class VehicleMission extends TravelMission implements
      * @return equipment and their number.
      */
     public Map<Class, Integer> getRequiredEquipmentToLoad() {
-        return new HashMap<Class, Integer>(0);
+        return getEquipmentNeededForRemainingMission(true);
     }
     
     /**

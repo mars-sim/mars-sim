@@ -286,6 +286,7 @@ public abstract class RoverMission extends VehicleMission {
                     }
                 } else {
                     endMission("Vehicle is not loadable (RoverMission).");
+                    return;
                 }
             }
         } else {
@@ -294,16 +295,28 @@ public abstract class RoverMission extends VehicleMission {
                     && !person.getLocationSituation().equals(Person.BURIED)) {
 
                 if (isRoverInAGarage()) {
-                	if (settlement.getInventory().containsUnit(person)) {
-                		settlement.getInventory().retrieveUnit(person);
-                	}
-                    getVehicle().getInventory().storeUnit(person);
+                    if (getVehicle().getInventory().canStoreUnit(person, false)) {
+                        if (settlement.getInventory().containsUnit(person)) {
+                            settlement.getInventory().retrieveUnit(person);
+                        }
+                        getVehicle().getInventory().storeUnit(person);
+                    }
+                    else {
+                        endMission("Crew member " + person + " cannot be loaded in rover " + getVehicle());
+                        return;
+                    }
                     
                     // Store one EVA suit for person (if possible).
                     if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
                         EVASuit suit = (EVASuit) settlement.getInventory().findUnitOfClass(EVASuit.class);
-                        settlement.getInventory().retrieveUnit(suit);
-                        getVehicle().getInventory().storeUnit(suit);
+                        if (getVehicle().getInventory().canStoreUnit(suit, false)) {
+                            settlement.getInventory().retrieveUnit(suit);
+                            getVehicle().getInventory().storeUnit(suit);
+                        }
+                        else {
+                            endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
+                            return;
+                        }
                     }
                     
                     // Move person to random location within rover.
