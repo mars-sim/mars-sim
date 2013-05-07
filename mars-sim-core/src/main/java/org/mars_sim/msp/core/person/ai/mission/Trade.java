@@ -604,14 +604,28 @@ public class Trade extends RoverMission implements Serializable {
         if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
             
             if (isRoverInAGarage()) {
-                tradingSettlement.getInventory().retrieveUnit(person);
-                getVehicle().getInventory().storeUnit(person);
+                if (getVehicle().getInventory().canStoreUnit(person, false)) {
+                    if (tradingSettlement.getInventory().containsUnit(person)) {
+                        tradingSettlement.getInventory().retrieveUnit(person);
+                    }
+                    getVehicle().getInventory().storeUnit(person);
+                }
+                else {
+                    endMission("Crew member " + person + " cannot be loaded in rover " + getVehicle());
+                    return;
+                }
                 
                 // Store one EVA suit for person (if possible).
                 if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
                     EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
-                    tradingSettlement.getInventory().retrieveUnit(suit);
-                    getVehicle().getInventory().storeUnit(suit);
+                    if (getVehicle().getInventory().canStoreUnit(suit, false)) {
+                        tradingSettlement.getInventory().retrieveUnit(suit);
+                        getVehicle().getInventory().storeUnit(suit);
+                    }
+                    else {
+                        endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
+                        return;
+                    }
                 }
                 
                 // Move person to random location within rover.
@@ -1089,7 +1103,7 @@ public class Trade extends RoverMission implements Serializable {
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = new HashMap<Class, Integer>();
+            Map<Class, Integer> result = getOptionalEquipmentToLoad();
             equipmentNeededCache = result;
             return result;
         }
