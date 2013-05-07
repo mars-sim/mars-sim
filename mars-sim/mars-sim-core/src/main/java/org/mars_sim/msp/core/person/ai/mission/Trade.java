@@ -783,35 +783,30 @@ public class Trade extends RoverMission implements Serializable {
     @Override
     public Map<Class, Integer> getOptionalEquipmentToLoad() {
         
-        if (equipmentNeededCache != null) {
-            return equipmentNeededCache;
+        Map<Class, Integer> result = super.getOptionalEquipmentToLoad();
+
+        // Add buy/sell load.
+        Map<Good, Integer> load = null;
+        if (outbound) {
+            load = sellLoad;
         } else {
-            Map<Class, Integer> result = super.getOptionalEquipmentToLoad();
-
-            // Add buy/sell load.
-            Map<Good, Integer> load = null;
-            if (outbound) {
-                load = sellLoad;
-            } else {
-                load = buyLoad;
-            }
-
-            Iterator<Good> i = load.keySet().iterator();
-            while (i.hasNext()) {
-                Good good = i.next();
-                if (good.getCategory().equals(Good.EQUIPMENT)) {
-                    Class equipmentClass = good.getClassType();
-                    int num = load.get(good);
-                    if (result.containsKey(equipmentClass)) {
-                        num += (Integer) result.get(equipmentClass);
-                    }
-                    result.put(equipmentClass, num);
-                }
-            }
-
-            equipmentNeededCache = result;
-            return result;
+            load = buyLoad;
         }
+
+        Iterator<Good> i = load.keySet().iterator();
+        while (i.hasNext()) {
+            Good good = i.next();
+            if (good.getCategory().equals(Good.EQUIPMENT)) {
+                Class equipmentClass = good.getClassType();
+                int num = load.get(good);
+                if (result.containsKey(equipmentClass)) {
+                    num += (Integer) result.get(equipmentClass);
+                }
+                result.put(equipmentClass, num);
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -1103,7 +1098,7 @@ public class Trade extends RoverMission implements Serializable {
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;
         else {
-            Map<Class, Integer> result = getOptionalEquipmentToLoad();
+            Map<Class, Integer> result = new HashMap<Class, Integer>(0);
             equipmentNeededCache = result;
             return result;
         }
