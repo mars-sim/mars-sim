@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDesktopPane.java
- * @version 3.04 2013-04-22
+ * @version 3.04 2013-05-07
  * @author Scott Davis
  */
 
@@ -660,8 +660,17 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
 		    
-		    // Open user guide tool initially.
+		    // Open default windows on desktop.
+		    
+		    // Open mars navigator tool.
+		    openToolWindow(NavigatorWindow.NAME);
+		    // Move mars navigator tool to upper left corner of desktop.
+		    getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
+		    
+		    // Open user guide tool.
 		    openToolWindow(GuideWindow.NAME);
+		    GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+            ourGuide.setURL("/docs/help/tutorial1.html");
 		}
 		else {
 			// Open windows in Z-order.
