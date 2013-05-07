@@ -24,13 +24,14 @@ import java.awt.event.ComponentListener;
 import java.net.URL;
 
 /**
- * The GuideWindow is a tool window that displays the built-in User Guide.
+ * The GuideWindow is a tool window that displays the built-in User Guide,
+ * About Box and Tutorial.
  */
 public class GuideWindow extends ToolWindow implements ActionListener, 
         HyperlinkListener, ComponentListener {
 
     // Tool name
-    public static final String NAME = "User Guide";
+    public static final String NAME = "Help";
 
     // Data members
     private JViewport viewPort; // The view port for the text pane
@@ -114,7 +115,7 @@ public class GuideWindow extends ToolWindow implements ActionListener,
         mainPane.add(toolPanel, BorderLayout.NORTH);
 
         // Have to define a starting size
-        setSize(new Dimension(475, 375));
+        setSize(new Dimension(575, 475));
 
         // Allow the window to be resized by the user.
         setResizable(true);
@@ -146,6 +147,13 @@ public class GuideWindow extends ToolWindow implements ActionListener,
         backButton.setEnabled(!htmlPane.isFirst());
         forwardButton.setEnabled(!htmlPane.isLast());
     }
+
+    /**
+     * Set a display URL .
+     */
+    public void setURL(int type) {
+    	htmlPane.goToURL(getClass().getResource("/docs/help/userguide.html"));
+    	}
 
     // Implementing ActionListener method
     public void actionPerformed(ActionEvent event) {
