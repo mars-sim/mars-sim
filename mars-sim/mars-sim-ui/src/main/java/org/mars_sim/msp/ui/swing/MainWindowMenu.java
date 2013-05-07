@@ -69,12 +69,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         newItem = new JMenuItem("New");
         newItem.addActionListener(this);
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
+        newItem.setToolTipText("Create new simulation");
         fileMenu.add(newItem);
 
         // Create load menu item
         loadItem = new JMenuItem("Open...");
         loadItem.addActionListener(this);
         loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
+        loadItem.setToolTipText("Open a saved simulation");
         fileMenu.add(loadItem);
 
         fileMenu.add(new JSeparator());
@@ -83,12 +85,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         saveItem = new JMenuItem("Save");
         saveItem.addActionListener(this);
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
+        saveItem.setToolTipText("Save the current simulation");
         fileMenu.add(saveItem);
 
         // Create save as menu item
         saveAsItem = new JMenuItem("Save As...");
         saveAsItem.addActionListener(this);
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
+        saveAsItem.setToolTipText("Save the current simulation under a new name");
         fileMenu.add(saveAsItem);
 
         fileMenu.add(new JSeparator());
@@ -97,6 +101,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         exitItem = new JMenuItem("Exit");
         exitItem.addActionListener(this);
         exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
+        exitItem.setToolTipText("Leave Mars Simulation Project");
         fileMenu.add(exitItem);
 
         // Create tools menu
@@ -166,6 +171,7 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         // Create About Mars Simulation Project menu item
         aboutMspItem = new JMenuItem("About");
         aboutMspItem.addActionListener(this);
+        aboutMspItem.setToolTipText("Show credits for MSP");
         helpMenu.add(aboutMspItem);
 
         helpMenu.add(new JSeparator());
@@ -174,12 +180,14 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         tutorialItem = new JMenuItem("Tutorial");
         tutorialItem.addActionListener(this);
         tutorialItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
+        tutorialItem.setToolTipText("Show the tutorial for beginners");
         helpMenu.add(tutorialItem);
         
         // Create User Guide menu item
         guideItem = new JMenuItem("User Guide");
         guideItem.addActionListener(this);
         guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
+        guideItem.setToolTipText("Show the User Guide");
         helpMenu.add(guideItem);
     }
 
