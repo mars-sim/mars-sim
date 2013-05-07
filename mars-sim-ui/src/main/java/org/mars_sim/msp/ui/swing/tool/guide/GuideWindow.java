@@ -151,9 +151,10 @@ public class GuideWindow extends ToolWindow implements ActionListener,
     /**
      * Set a display URL .
      */
-    public void setURL(int type) {
-    	htmlPane.goToURL(getClass().getResource("/docs/help/userguide.html"));
-    	}
+    public void setURL(String fileloc) {
+    	htmlPane.goToURL(getClass().getResource(fileloc));
+
+    }
 
     // Implementing ActionListener method
     public void actionPerformed(ActionEvent event) {
