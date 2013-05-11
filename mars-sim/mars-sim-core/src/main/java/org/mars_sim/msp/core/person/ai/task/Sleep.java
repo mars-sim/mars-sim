@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.03 2012-07-10
+ * @version 3.04 2013-05-11
  * @author Scott Davis
  */
 
@@ -52,18 +52,13 @@ class Sleep extends Task implements Serializable {
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//        	try {
-        		Building quarters = getAvailableLivingQuartersBuilding(person);
-        		if (quarters != null) {
-					BuildingManager.addPersonToBuilding(person, quarters); 
-        			accommodations = (LivingAccommodations) quarters.getFunction(LivingAccommodations.NAME);
-        			accommodations.addSleeper();
-        		}
-//        	}
-//        	catch (BuildingException e){
-//        		logger.log(Level.SEVERE,"Sleep.constructor(): " + e.getMessage());
-//        		endTask();
-//        	}
+
+            Building quarters = getAvailableLivingQuartersBuilding(person);
+            if (quarters != null) {
+                BuildingManager.addPersonToBuilding(person, quarters); 
+                accommodations = (LivingAccommodations) quarters.getFunction(LivingAccommodations.NAME);
+                accommodations.addSleeper();
+            }
         }
         
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -91,17 +86,18 @@ class Sleep extends Task implements Serializable {
 		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) result *= 2D;
         
         // Crowding modifier.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-//        	try {
-        		Building building = getAvailableLivingQuartersBuilding(person);
-        		if (building != null) {
-        			result *= Task.getCrowdingProbabilityModifier(person, building);
-					result *= Task.getRelationshipModifier(person, building);
-        		}
-//        	}
-//        	catch (BuildingException e) {
-//        		logger.log(Level.SEVERE,"Sleep.getProbability(): " + e.getMessage());
-//        	}
+		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+
+		    Building building = getAvailableLivingQuartersBuilding(person);
+		    if (building != null) {
+		        result *= Task.getCrowdingProbabilityModifier(person, building);
+		        result *= Task.getRelationshipModifier(person, building);
+		    }
+		}
+        
+        // No sleeping outside.
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            result = 0D;
         }
 
         return result;
@@ -159,10 +155,10 @@ class Sleep extends Task implements Serializable {
 		super.endTask();
 		
 		// Remove person from living accommodations bed so others can use it.
-//		try {
-			if (accommodations != null && accommodations.getSleepers() > 0) accommodations.removeSleeper();
-//		}
-//		catch(BuildingException e) {}
+		if (accommodations != null && accommodations.getSleepers() > 0) {
+		    accommodations.removeSleeper();
+		}
+
 	}
     
 	/**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.03 2012-07-01
+ * @version 3.04 2013-05-11
  * @author Sebastien Venot
  */
 
@@ -38,6 +38,11 @@ public class Yoga extends Task implements Serializable {
 
         // Stress modifier
         result += person.getPhysicalCondition().getStress() / 2D;
+        
+        // No yoga outside.
+        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+            result = 0D;
+        }
 
         return result;
 
