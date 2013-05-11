@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.03 2012-07-19
+ * @version 3.04 2013-05-11
  * @author Barry Evans
  */
 
@@ -22,9 +22,7 @@ import java.util.logging.Logger;
  */
 public class PhysicalCondition implements Serializable {
     
-    private static String CLASS_NAME = 
-        "org.mars_sim.msp.simulation.person.PhysicalCondition";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
 
 	// Unit events
 	public static final String FATIGUE_EVENT = "fatigue event";
@@ -233,14 +231,7 @@ public class PhysicalCondition implements Serializable {
         double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
         if (foodAvailable == 0D) throw new IllegalStateException("No food available.");
         if (foodEaten > foodAvailable) foodEaten = foodAvailable;
-//        try {
-        	container.getInventory().retrieveAmountResource(food, foodEaten);
-        	// if (checkResourceConsumption(foodEaten, amount, MIN_VALUE, getMedicalManager().getStarvation())) recalculate();
-//        }
-//        catch (InventoryException e) {
-//        	logger.log(Level.SEVERE,person.getName() + " could not retrieve food.");
-//        	e.printStackTrace(System.err);
-//        }
+        container.getInventory().retrieveAmountResource(food, foodEaten);
     }
     
     /**
@@ -501,6 +492,8 @@ public class PhysicalCondition implements Serializable {
 
         deathDetails = new DeathInfo(person);
 
+        logger.severe(person + " dies due to " + illness);
+        
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);
