@@ -122,10 +122,18 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         setDescription("Loading " + vehicle.getName());
         this.vehicle = vehicle;
         
-        if (requiredResources != null) this.requiredResources = new HashMap<Resource, Number>(requiredResources);
-        if (optionalResources != null) this.optionalResources = new HashMap<Resource, Number>(optionalResources);
-        if (requiredEquipment != null) this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
-        if (optionalEquipment != null) this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        if (requiredResources != null) {
+            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+        }
+        if (optionalResources != null) {
+            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+        }
+        if (requiredEquipment != null) {
+            this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
+        }
+        if (optionalEquipment != null) {
+            this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        }
         
         settlement = person.getSettlement();
         
@@ -1182,7 +1190,9 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         // Add experience points
         addExperience(time);
         
-        if (enteredAirlock) endTask();
+        if (enteredAirlock) {
+            endTask();
+        }
         return time;
     }
 
