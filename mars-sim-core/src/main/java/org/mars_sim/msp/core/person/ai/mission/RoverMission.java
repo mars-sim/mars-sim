@@ -352,7 +352,7 @@ public abstract class RoverMission extends VehicleMission {
             }
 
             // If rover is loaded and everyone is aboard, embark from settlement.
-            if (isEveryoneInRover()) {
+            if (!isDone() && isEveryoneInRover()) {
 
                 // Remove from garage if in garage.
                 Building garageBuilding = BuildingManager
