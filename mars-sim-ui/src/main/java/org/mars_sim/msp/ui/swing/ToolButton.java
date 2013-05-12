@@ -35,7 +35,7 @@ public class ToolButton extends JButton {
 		// Initialize tool tip for button
 		toolButtonTip = new JToolTip();
 		toolButtonTip.setBackground(Color.white);
-		toolButtonTip.setBorder(new LineBorder(Color.green));
+		toolButtonTip.setBorder(new LineBorder(Color.yellow));
 		setToolTipText(toolName);
 
 		// Prepare default tool button values
