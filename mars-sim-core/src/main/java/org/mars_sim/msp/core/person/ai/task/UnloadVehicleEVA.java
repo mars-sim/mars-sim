@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.04 2013-02-12
+ * @version 3.04 2013-05-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -333,6 +333,15 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
      * @throws Exception if error in loading phase.
      */
     protected double unloadingPhase(double time) {
+        
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
+        
+        // Check if person should end EVA operation.
+        if (shouldEndEVAOperation()) {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+            return time;
+        }
         
         // Determine unload rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);

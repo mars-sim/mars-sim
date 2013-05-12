@@ -109,7 +109,7 @@ public class TaskManager implements Serializable {
         return (currentTask != null) && !currentTask.isDone();
     }
 
-    /** Returns true if perosn has a task (may be inactive).
+    /** Returns true if person has a task (may be inactive).
      *  @return true if person has a task
      */
     public boolean hasTask() {
