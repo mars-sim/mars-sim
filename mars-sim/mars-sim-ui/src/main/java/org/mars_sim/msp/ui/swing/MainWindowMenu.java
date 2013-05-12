@@ -66,14 +66,16 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         add(fileMenu);
 
         // Create new menu item
-        newItem = new JMenuItem("New");
+        ImageIcon newicon = new ImageIcon(getClass().getResource("/images/New.png"));
+        newItem = new JMenuItem("New", newicon);
         newItem.addActionListener(this);
         newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
         newItem.setToolTipText("Create new simulation");
         fileMenu.add(newItem);
 
         // Create load menu item
-        loadItem = new JMenuItem("Open...");
+        ImageIcon loadicon = new ImageIcon(getClass().getResource("/images/Open.png"));
+        loadItem = new JMenuItem("Open...",loadicon);
         loadItem.addActionListener(this);
         loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
         loadItem.setToolTipText("Open a saved simulation");
@@ -82,14 +84,16 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         fileMenu.add(new JSeparator());
 
         // Create save menu item
-        saveItem = new JMenuItem("Save");
+        ImageIcon saveicon = new ImageIcon(getClass().getResource("/images/Save.png"));
+        saveItem = new JMenuItem("Save", saveicon);
         saveItem.addActionListener(this);
         saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
         saveItem.setToolTipText("Save the current simulation");
         fileMenu.add(saveItem);
 
         // Create save as menu item
-        saveAsItem = new JMenuItem("Save As...");
+        ImageIcon saveasicon = new ImageIcon(getClass().getResource("/images/SaveAs.png"));
+        saveAsItem = new JMenuItem("Save As...", saveasicon);
         saveAsItem.addActionListener(this);
         saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
         saveAsItem.setToolTipText("Save the current simulation under a new name");
@@ -98,7 +102,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         fileMenu.add(new JSeparator());
 
         // Create exit menu item
-        exitItem = new JMenuItem("Exit");
+        ImageIcon exiticon = new ImageIcon(getClass().getResource("/images/Exit.png"));
+        exitItem = new JMenuItem("Exit", exiticon);
         exitItem.addActionListener(this);
         exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
         exitItem.setToolTipText("Leave Mars Simulation Project");
@@ -110,55 +115,64 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         add(toolsMenu);
 
         // Create Mars navigator menu item
-        marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME);
+        ImageIcon marsnavigatoricon = new ImageIcon(getClass().getResource("/images/Planet.png"));
+        marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME, marsnavigatoricon);
         marsNavigatorItem.addActionListener(this);
         marsNavigatorItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false));
         toolsMenu.add(marsNavigatorItem);
 
         // Create search tool menu item
-        searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME);
+        ImageIcon searchicon = new ImageIcon(getClass().getResource("/images/Find.png"));
+        searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME, searchicon);
         searchToolItem.addActionListener(this);
         searchToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false));
         toolsMenu.add(searchToolItem);
 
         // Create time tool menu item
-        timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME);
+        ImageIcon timeicon = new ImageIcon(getClass().getResource("/images/Time.png"));
+        timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME, timeicon);
         timeToolItem.addActionListener(this);
         timeToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false));
         toolsMenu.add(timeToolItem);
 
         // Create monitor tool menu item
-        monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME);
+        ImageIcon monitoricon = new ImageIcon(getClass().getResource("/images/Monitor.png"));
+        monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME, monitoricon);
         monitorToolItem.addActionListener(this);
         monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
         toolsMenu.add(monitorToolItem);
 
         // Create prefs tool menu item
-        prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME);
+        ImageIcon prefsicon = new ImageIcon(getClass().getResource("/images/Preferences.png"));
+        prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME, prefsicon);
         prefsToolItem.addActionListener(this);
         prefsToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
         toolsMenu.add(prefsToolItem);
         
         // Create mission tool menu item
-        missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME);
+        ImageIcon missionicon = new ImageIcon(getClass().getResource("/images/Mission.png"));
+        missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
         missionToolItem.addActionListener(this);
         missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
         toolsMenu.add(missionToolItem);
         
         // Create settlement map tool menu item
-        settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME);
+        ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource("/images/SettlementMapTool.png"));
+        settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME, settlementtoolicon);
         settlementToolItem.addActionListener(this);
         settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
         toolsMenu.add(settlementToolItem);
 
         // Create science tool menu item
-        scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME);
+        ImageIcon scienceicon = new ImageIcon(getClass().getResource("/images/Science.png"));
+        scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME, scienceicon);
         scienceToolItem.addActionListener(this);
         scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
         toolsMenu.add(scienceToolItem);
           
         // Create resupply tool menu item
-        resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME);
+        ImageIcon resupplyicon = new ImageIcon(getClass().getResource("/images/Resupply.png"));
+        resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME, resupplyicon);
         resupplyToolItem.addActionListener(this);
         resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
         toolsMenu.add(resupplyToolItem);
@@ -184,7 +198,8 @@ public class MainWindowMenu extends JMenuBar implements ActionListener, MenuList
         helpMenu.add(tutorialItem);
         
         // Create User Guide menu item
-        guideItem = new JMenuItem("User Guide");
+        ImageIcon guideicon = new ImageIcon(getClass().getResource("/images/Guide.png"));
+        guideItem = new JMenuItem("User Guide", guideicon);
         guideItem.addActionListener(this);
         guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
         guideItem.setToolTipText("Show the User Guide");
