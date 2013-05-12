@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2013-05-03
+ * @version 3.04 2013-05-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -513,7 +514,12 @@ public class Trade extends RoverMission implements Serializable {
                     assignTask(person, new UnloadVehicleGarage(person, getRover()));
                 }
                 else {
-                    assignTask(person, new UnloadVehicleEVA(person, getRover()));
+                    // Check if it is day time.
+                    SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                    if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                            surface.inDarkPolarRegion(person.getCoordinates())) {
+                        assignTask(person, new UnloadVehicleEVA(person, getRover()));
+                    }
                 }
                 
                 return;
@@ -547,8 +553,13 @@ public class Trade extends RoverMission implements Serializable {
                                 getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                     }
                     else {
-                        assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
-                                getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                        // Check if it is day time.
+                        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                        if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                                surface.inDarkPolarRegion(person.getCoordinates())) {
+                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), getRequiredResourcesToLoad(),
+                                    getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                        }
                     }
                 }
             } else {

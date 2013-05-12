@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-05-07
+ * @version 3.04 2013-05-11
  * @author Scott Davis
  */
 
@@ -10,7 +10,9 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
@@ -282,9 +284,14 @@ public abstract class RoverMission extends VehicleMission {
                                     getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
                         }
                         else {
-                            assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
-                                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
-                                    getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                            // Check if it is day time.
+                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                            if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                                    surface.inDarkPolarRegion(person.getCoordinates())) {
+                                assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
+                                        getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+                                        getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                            }
                         }
                     }
                 } else {
@@ -453,7 +460,12 @@ public abstract class RoverMission extends VehicleMission {
                             assignTask(person, new UnloadVehicleGarage(person, rover));
                         }
                         else {
-                            assignTask(person, new UnloadVehicleEVA(person, rover));
+                            // Check if it is day time.
+                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                            if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                                    surface.inDarkPolarRegion(person.getCoordinates())) {
+                                assignTask(person, new UnloadVehicleEVA(person, rover));
+                            }
                         }
                     
                         return;
