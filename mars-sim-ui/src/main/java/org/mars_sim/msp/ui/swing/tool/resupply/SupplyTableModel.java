@@ -183,22 +183,24 @@ public class SupplyTableModel extends AbstractTableModel {
     @Override
     public void setValueAt(Object value, int row, int col) {
         
-        SupplyItem item = supplyList.get(row);
-        if (col == 0) {
-            item.category = (String) value;
-        }
-        else if (col == 1) {
-            item.type = (String) value;
-        }
-        else if (col == 2) {
-            try {
-                item.number = (Integer) value;
-            }
-            catch (NumberFormatException e) {
-                e.printStackTrace(System.err);
-            }
-        }
-        fireTableCellUpdated(row, col);
+    	if (row < supplyList.size()) {
+    		SupplyItem item = supplyList.get(row);
+    		if (col == 0) {
+    			item.category = (String) value;
+    		}
+    		else if (col == 1) {
+    			item.type = (String) value;
+    		}
+    		else if (col == 2) {
+    			try {
+    				item.number = (Integer) value;
+    			}
+    			catch (NumberFormatException e) {
+    				e.printStackTrace(System.err);
+    			}
+    		}
+    		fireTableCellUpdated(row, col);
+    	}
     }
     
     /**
