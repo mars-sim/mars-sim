@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.04 2013-05-01
+ * @version 3.04 2013-05-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -323,6 +323,15 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         if (settlement == null) {
             endTask();
             return 0D;
+        }
+        
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
+        
+        // Check if person should end EVA operation.
+        if (shouldEndEVAOperation()) {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+            return time;
         }
         
         // Determine load rate.
