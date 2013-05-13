@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>mars-sim</artifactId>
 		<groupId>net.sf</groupId>
-		<version>3.04</version>
+		<version>3.04-SNAPSHOT</version>
 	</parent>
 	<groupId>net.sf.mars-sim</groupId>
 	<artifactId>mars-sim-mapdata</artifactId>
