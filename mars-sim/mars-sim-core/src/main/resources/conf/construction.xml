@@ -466,7 +466,7 @@
 		
 		<building name="small sabatier processor" width="5.0" length="5.0" constructable="true" salvagable="true" 
 		 work-time="10.0" skill-required="3" frame="small steel frame" >
-			<resource name="nickel" amount=".5" />
+			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
 			<part name="small electric motor" number="1" />
