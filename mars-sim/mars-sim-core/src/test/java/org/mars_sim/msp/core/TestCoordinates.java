@@ -1,5 +1,7 @@
 package org.mars_sim.msp.core;
 
+import java.text.DecimalFormat;
+
 import org.mars_sim.msp.core.mars.Mars;
 
 import junit.framework.TestCase;
@@ -330,7 +332,9 @@ public class TestCoordinates extends TestCase {
         
         Coordinates loc1 = new Coordinates (0D, 0D);
         String lonString1 = loc1.getFormattedLongitudeString();
-        assertEquals("0.0\u00BA E", lonString1);
+        DecimalFormat format = new DecimalFormat();
+        char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+        assertEquals("0" + decimalPoint + "0\u00BA E", lonString1);
     }
     
     /**
@@ -340,6 +344,8 @@ public class TestCoordinates extends TestCase {
         
         Coordinates loc1 = new Coordinates (0D, 0D);
         String latString1 = loc1.getFormattedLatitudeString();
-        assertEquals("90.0\u00BA N", latString1);
+        DecimalFormat format = new DecimalFormat();
+        char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
+        assertEquals("90"+ decimalPoint + "0\u00BA N", latString1);
     }
 }
