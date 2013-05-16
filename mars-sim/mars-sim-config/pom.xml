@@ -23,6 +23,7 @@
   	 		</configuration>
 			<executions>
 				<execution>
+					<phase>post-clean</phase>
 					<goals>
 						<goal>generate</goal>
 					</goals>
