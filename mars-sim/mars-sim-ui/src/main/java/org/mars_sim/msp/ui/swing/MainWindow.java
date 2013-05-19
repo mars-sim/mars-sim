@@ -400,16 +400,15 @@ public class MainWindow {
                     }
                 }
                 
-                // Set old Mars theme and metal look & feel if Nimbus not found.
+                // Metal Look & Feel fallback if Nimbus not present.
                 if (!foundNimbus) {
-                    logger.log(Level.WARNING, "Could not set Nimbus look&feel, " +
+                    logger.log(Level.WARNING, "Could not set Nimbus Look&Feel, " +
                             "make sure you have a recent JRE 1.6 update or 1.7");
-                    MetalLookAndFeel.setCurrentTheme(new MarsTheme());
                     UIManager.setLookAndFeel(new MetalLookAndFeel());
                     changed = true;
                 }
             } catch (Exception e) {
-                logger.log(Level.WARNING, "Could not set Nimbus look&feel, " +
+                logger.log(Level.WARNING, "Could not set Nimbus Look&Feel, " +
                         "make sure you have a recent JRE 1.6 update or 1.7", e);
             }
         }
