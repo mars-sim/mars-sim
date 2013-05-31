@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.04 2013-05-11
+ * @version 3.05 2013-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -40,7 +40,6 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
@@ -65,11 +64,11 @@ public class Trade extends RoverMission implements Serializable {
     // Static members
     static final int MAX_MEMBERS = 2;
     private static final double MAX_STARTING_PROBABILITY = 10D;
-    
+
     // Static cache for holding trade profit info.
     private static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
     private static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
-    
+
     // Data members.
     private Settlement tradingSettlement;
     private Map<Good, Integer> sellLoad;
@@ -115,30 +114,30 @@ public class Trade extends RoverMission implements Serializable {
             } else {
                 endMission("Could not determine trading settlement.");
             }
-            
+
             if (!isDone()) {
-                // Determine desired buy load,
-                desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                double buyLoadValue = TradeUtil.determineLoadValue(desiredBuyLoad, getStartingSettlement(), true);
-                
-                // Determine best sell load.
-                sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
-                double sellLoadValue = TradeUtil.determineLoadValue(sellLoad, tradingSettlement, true);
-                
                 // Get the credit that the starting settlement has with the destination settlement.
                 CreditManager creditManager = Simulation.instance().getCreditManager();
                 double credit = creditManager.getCredit(getStartingSettlement(), tradingSettlement);
-                
-                // Add more non-profitable goods to balance load values.
-                if ((buyLoadValue + credit) > sellLoadValue) {
-                    sellLoad = TradeUtil.addNonProfitsToLoad(tradingSettlement, getStartingSettlement(), getRover(), 
-                            sellLoad, new HashSet<Good>(), sellLoadValue, buyLoadValue + credit);
+
+                if (credit > (TradeUtil.SELL_CREDIT_LIMIT * -1D)) {
+                    // Determine desired buy load,
+                    desiredBuyLoad = TradeUtil.getDesiredBuyLoad(getStartingSettlement(), getRover(), tradingSettlement);
                 }
                 else {
-                    desiredBuyLoad = TradeUtil.addNonProfitsToLoad(getStartingSettlement(), tradingSettlement, getRover(), 
-                            desiredBuyLoad, new HashSet<Good>(), buyLoadValue, sellLoadValue - credit);
+                    // Cannot buy from settlement due to credit limit.
+                    desiredBuyLoad = new HashMap<Good, Integer>(0);
                 }
-                
+
+                if (credit < TradeUtil.SELL_CREDIT_LIMIT) {
+                    // Determine sell load.
+                    sellLoad = TradeUtil.determineBestSellLoad(getStartingSettlement(), getRover(), tradingSettlement);
+                }
+                else {
+                    // Will not sell to settlement due to credit limit.
+                    sellLoad = new HashMap<Good, Integer>(0);
+                }
+
                 // Determine desired trade profit.
                 desiredProfit = estimateTradeProfit(desiredBuyLoad);
             }
@@ -414,7 +413,7 @@ public class Trade extends RoverMission implements Serializable {
 
         // If rover is not parked at settlement, park it.
         if ((getVehicle() != null) && (getVehicle().getSettlement() == null)) {
-            
+
             tradingSettlement.getInventory().storeUnit(getVehicle());
             getVehicle().determinedSettlementParkedLocationAndFacing();
 
@@ -521,7 +520,7 @@ public class Trade extends RoverMission implements Serializable {
                         assignTask(person, new UnloadVehicleEVA(person, getRover()));
                     }
                 }
-                
+
                 return;
             }
         } else {
@@ -537,13 +536,13 @@ public class Trade extends RoverMission implements Serializable {
     private void performLoadGoodsPhase(Person person) {
 
         if (!isDone()) {
-            
+
             // Load towed vehicle (if necessary).
             loadTowedVehicle();
         }
-        
+
         if (!isDone() && !isVehicleLoaded()) {
-            
+
             // Check if vehicle can hold enough supplies for mission.
             if (isVehicleLoadable()) {
                 // Random chance of having person load (this allows person to do other things sometimes)
@@ -613,7 +612,7 @@ public class Trade extends RoverMission implements Serializable {
 
         // If person is not aboard the rover, board rover.
         if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
-            
+
             if (isRoverInAGarage()) {
                 if (getVehicle().getInventory().canStoreUnit(person, false)) {
                     if (tradingSettlement.getInventory().containsUnit(person)) {
@@ -625,7 +624,7 @@ public class Trade extends RoverMission implements Serializable {
                     endMission("Crew member " + person + " cannot be loaded in rover " + getVehicle());
                     return;
                 }
-                
+
                 // Store one EVA suit for person (if possible).
                 if (tradingSettlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
                     EVASuit suit = (EVASuit) tradingSettlement.getInventory().findUnitOfClass(EVASuit.class);
@@ -638,7 +637,7 @@ public class Trade extends RoverMission implements Serializable {
                         return;
                     }
                 }
-                
+
                 // Move person to random location within rover.
                 Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
                 Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
@@ -793,7 +792,7 @@ public class Trade extends RoverMission implements Serializable {
 
     @Override
     public Map<Class, Integer> getOptionalEquipmentToLoad() {
-        
+
         Map<Class, Integer> result = super.getOptionalEquipmentToLoad();
 
         // Add buy/sell load.
@@ -822,7 +821,7 @@ public class Trade extends RoverMission implements Serializable {
 
     @Override
     public Map<Resource, Number> getOptionalResourcesToLoad() {
-        
+
         Map<Resource, Number> result = super.getOptionalResourcesToLoad();
 
         // Add buy/sell load.
@@ -1056,17 +1055,22 @@ public class Trade extends RoverMission implements Serializable {
         double result = 0D;
 
         try {
-            double sellingValue = TradeUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
-            double buyingValue = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
+            double sellingValueHome = TradeUtil.determineLoadValue(sellLoad, getStartingSettlement(), false);
+            double sellingValueRemote = TradeUtil.determineLoadValue(sellLoad, tradingSettlement, true);
+            double sellingProfit = sellingValueRemote - sellingValueHome;
 
-            double revenue = buyingValue - sellingValue;
+            double buyingValueHome = TradeUtil.determineLoadValue(buyingLoad, getStartingSettlement(), true);
+            double buyingValueRemote = TradeUtil.determineLoadValue(buyingLoad, tradingSettlement, false);
+            double buyingProfit = buyingValueHome - buyingValueRemote;
+
+            double totalProfit = sellingProfit + buyingProfit;
 
             double estimatedDistance = getStartingSettlement().getCoordinates().getDistance(
                     tradingSettlement.getCoordinates()) * 2D;
             double missionCost = TradeUtil.getEstimatedMissionCost(getStartingSettlement(), getRover(),
                     estimatedDistance);
 
-            result = revenue - missionCost;
+            result = totalProfit - missionCost;
         } catch (Exception e) {
             e.printStackTrace(System.err);
             endMission("Could not estimate trade profit.");
@@ -1074,11 +1078,11 @@ public class Trade extends RoverMission implements Serializable {
 
         return result;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         tradingSettlement = null;
         if (sellLoad != null) sellLoad.clear();
         sellLoad = null;
