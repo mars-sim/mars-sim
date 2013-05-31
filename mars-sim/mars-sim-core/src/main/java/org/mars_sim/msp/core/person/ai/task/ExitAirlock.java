@@ -247,8 +247,19 @@ public class ExitAirlock extends Task implements Serializable {
      */
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
+        boolean result = true;
+        
         // Check if EVA suit is available.
-        return (goodEVASuitAvailable(airlock.getEntityInventory()));
+        if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
+            result = false;
+        }
+        
+        // Check if person is incapacitated.
+        if (person.getPerformanceRating() == 0D) {
+            result = false;
+        }
+        
+        return result;
     }
 
     /**
