@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.03 2012-07-10
+ * @version 3.05 2013-06-03
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -161,6 +161,12 @@ public class ObserveAstronomicalObjects extends Task implements
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class);
+        }
         
         return result;
     }

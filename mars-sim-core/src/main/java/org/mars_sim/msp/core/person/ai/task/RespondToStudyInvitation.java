@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitation.java
- * @version 3.02 2011-11-27
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -79,6 +79,12 @@ public class RespondToStudyInvitation extends Task implements Serializable {
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
         if (invitedStudies.size() > 0) result = 50D;
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
+        }
         
         return result;
     }

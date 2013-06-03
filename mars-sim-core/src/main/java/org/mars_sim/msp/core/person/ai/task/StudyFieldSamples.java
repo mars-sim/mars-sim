@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.03 2012-07-19
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -208,6 +208,12 @@ public class StudyFieldSamples extends Task implements
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
+        }
         
         return result;
     }
