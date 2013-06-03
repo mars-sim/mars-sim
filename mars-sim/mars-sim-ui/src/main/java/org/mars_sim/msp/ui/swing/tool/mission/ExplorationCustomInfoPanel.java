@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExplorationCustomInfoPanel.java
- * @version 3.02 2012-05-18
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -79,6 +79,19 @@ public class ExplorationCustomInfoPanel extends MissionCustomInfoPanel {
                 
                 mainPane.add(Box.createVerticalGlue());
                 repaint();
+            }
+            else {
+                // Update existing site completion levels.
+                Map<String, Double> explorationSites = this.mission.getExplorationSiteCompletion();
+                TreeSet<String> treeSet = new TreeSet<String>(explorationSites.keySet());
+                Iterator<String> i = treeSet.iterator();
+                while (i.hasNext()) {
+                    String siteName = i.next();
+                    double completion = explorationSites.get(siteName);
+                    if (sitePanes.containsKey(siteName)) {
+                        sitePanes.get(siteName).updateCompletion(completion);
+                    }
+                }
             }
         }
     }
