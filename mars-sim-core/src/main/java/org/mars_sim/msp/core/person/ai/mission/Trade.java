@@ -262,7 +262,7 @@ public class Trade extends RoverMission implements Serializable {
 
             // Check if minimum number of people are available at the settlement.
             // Plus one to hold down the fort.
-            if (!minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE)) {
+            if (!minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE + 1)) {
                 missionPossible = false;
             }
 
@@ -713,7 +713,7 @@ public class Trade extends RoverMission implements Serializable {
             towed.setReservedForMission(false);
             getRover().setTowedVehicle(null);
             towed.setTowingVehicle(null);
-            getStartingSettlement().getInventory().storeUnit(towed);
+            disembarkSettlement.getInventory().storeUnit(towed);
             towed.determinedSettlementParkedLocationAndFacing();
         }
 

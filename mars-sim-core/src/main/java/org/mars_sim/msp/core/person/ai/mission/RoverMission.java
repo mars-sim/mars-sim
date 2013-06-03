@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-05-11
+ * @version 3.04 2013-06-03
  * @author Scott Davis
  */
 
@@ -345,9 +345,9 @@ public abstract class RoverMission extends VehicleMission {
                         }
                         else {
                             logger.info(person + " unable to exit airlock at " + startingSettlement + " to rover " + 
-                                    getRover() + " due to being unable to obtain a functioning EVA suit.");
+                                    getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
                             endMission(person + " unable to exit airlock from " + startingSettlement + 
-                                    " due to being unable to obtain a functioning EVA suit.");                  
+                                    " due to health problems or being unable to obtain a functioning EVA suit.");                  
                         }
                     }
                     else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
@@ -359,7 +359,7 @@ public abstract class RoverMission extends VehicleMission {
             }
 
             // If rover is loaded and everyone is aboard, embark from settlement.
-            if (!isDone() && isEveryoneInRover()) {
+            if (!isDone() && loadedFlag && isEveryoneInRover()) {
 
                 // Remove from garage if in garage.
                 Building garageBuilding = BuildingManager
@@ -420,7 +420,7 @@ public abstract class RoverMission extends VehicleMission {
                 }
                 else {
                     logger.info(person + " unable to exit " + getRover() + " through airlock to settlement " + 
-                            disembarkSettlement + " due to being unable to obtain a functioning EVA suit.  " + 
+                            disembarkSettlement + " due to health problems or being unable to obtain a functioning EVA suit.  " + 
                             "Using emergency exit procedure.");
                     getVehicle().getInventory().retrieveUnit(person);
                     disembarkSettlement.getInventory().storeUnit(person);
@@ -430,7 +430,7 @@ public abstract class RoverMission extends VehicleMission {
         }
         else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             // Have person enter the settlement via an airlock.
-            assignTask(person, new EnterAirlock(person, startingSettlement.getAvailableAirlock()));
+            assignTask(person, new EnterAirlock(person, disembarkSettlement.getAvailableAirlock()));
         }
 
         Rover rover = (Rover) getVehicle();
