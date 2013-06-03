@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryResearch.java
- * @version 3.04 2013-01-31
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -169,6 +169,12 @@ public class PerformLaboratoryResearch extends Task implements
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class);
+        }
         
         return result;
     }

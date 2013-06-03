@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.03 2012-07-10
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceUtil;
@@ -114,6 +115,12 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
                 }
                 else result = 0D;
             }
+        }
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
         }
         
         return result;

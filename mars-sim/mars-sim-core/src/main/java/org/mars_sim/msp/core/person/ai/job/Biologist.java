@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Biologist.java
- * @version 3.03 2012-07-01
+ * @version 3.05 2013-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -12,6 +12,17 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
+import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
+import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
+import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
+import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
+import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
+import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.person.ai.task.StudyFieldSamples;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Research;
@@ -38,6 +49,17 @@ public class Biologist extends Job implements Serializable {
         super("Biologist");
         
         // Add biologist-related tasks.
+        jobTasks.add(AssistScientificStudyResearcher.class);
+        jobTasks.add(CompileScientificStudyResults.class);
+        jobTasks.add(DigLocalRegolith.class);
+        jobTasks.add(InviteStudyCollaborator.class);
+        jobTasks.add(PeerReviewStudyPaper.class);
+        jobTasks.add(PerformLaboratoryExperiment.class);
+        jobTasks.add(PerformLaboratoryResearch.class);
+        jobTasks.add(ProposeScientificStudy.class);
+        jobTasks.add(ResearchScientificStudy.class);
+        jobTasks.add(RespondToStudyInvitation.class);
+        jobTasks.add(StudyFieldSamples.class);
         
         // Add biologist-related missions.
         jobMissionJoins.add(Exploration.class);

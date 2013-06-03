@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @version 3.02 2011-11-26
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -105,6 +105,12 @@ public class InviteStudyCollaborator extends Task implements Serializable {
                     }
                 }
             }
+        }
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class);
         }
         
         return result;

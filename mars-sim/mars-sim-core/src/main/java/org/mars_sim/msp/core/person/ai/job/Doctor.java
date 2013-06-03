@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Doctor.java
- * @version 3.03 2012-07-01
+ * @version 3.05 2013-05-31
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -13,8 +13,17 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
+import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
+import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
+import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
+import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
+import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
+import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -40,8 +49,17 @@ public class Doctor extends Job implements Serializable {
 		super("Doctor");
 		
 		// Add doctor-related tasks.
-		jobTasks.add(MedicalAssistance.class);
+        jobTasks.add(AssistScientificStudyResearcher.class);
+        jobTasks.add(CompileScientificStudyResults.class);
+        jobTasks.add(InviteStudyCollaborator.class);
+        jobTasks.add(MedicalAssistance.class);
+        jobTasks.add(PeerReviewStudyPaper.class);
+        jobTasks.add(PerformLaboratoryExperiment.class);
+        jobTasks.add(PerformLaboratoryResearch.class);
         jobTasks.add(PrescribeMedication.class);
+        jobTasks.add(ProposeScientificStudy.class);
+        jobTasks.add(ResearchScientificStudy.class);
+        jobTasks.add(RespondToStudyInvitation.class);
 		
 		// Add doctor-related missions.
         jobMissionStarts.add(TravelToSettlement.class);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.02 2011-11-27
+ * @version 3.05 2013-06-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -94,6 +94,12 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
         
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(PeerReviewStudyPaper.class);
+        }
         
         return result;
     }
