@@ -96,7 +96,7 @@
 	<landmark name="Mars Pathfinder Rover" longitude="33.3 W" latitude="19.3 N" />
 	<landmark name="MER Spirit Rover" longitude="175.5 E" latitude="14.6 S" />
 	<landmark name="MER Opportunity Rover" longitude="5.5 W" latitude="2.0 S" />
-  	<landmark name="MSL Curiosity Rover" longitude="137.44 E" latitude="4.59 S"/>
+  	<landmark name="MSL Curiosity Rover" longitude="137.2 E" latitude="4.3 S"/>
 	<landmark name="Mars 2 Lander" longitude="47.0 E" latitude="45.0 S" />
 	<landmark name="Mars 3 Lander" longitude="158.0 W" latitude="45.0 S" />
 	<landmark name="Mars 6 Lander" longitude="19.5 W" latitude="23.9 S" />
