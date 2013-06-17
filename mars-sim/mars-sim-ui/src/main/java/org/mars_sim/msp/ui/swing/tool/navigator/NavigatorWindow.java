@@ -177,7 +177,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         topoPane.add(optionsPane, BorderLayout.CENTER);
 
 		// Prepare options button.
-		optionsButton = new JButton("Map Options");
+		optionsButton = new JButton("Map Options \u25BC");
 		optionsButton.setToolTipText("Options for displaying map.");
 		optionsButton.addActionListener(
 			new ActionListener() {
@@ -189,7 +189,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
 		optionsPane.add(optionsButton);
 		
 		// Prepare minerals button.
-		mineralsButton = new JButton("Minerals");
+		mineralsButton = new JButton("Minerals \u25BC");
 		mineralsButton.setToolTipText("Options for displaying minerals on map.");
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(
