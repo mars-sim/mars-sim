@@ -98,6 +98,15 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 			};
 		});
 		add(saveAsButton);
+
+		ToolButton exitButton = new ToolButton("Exit", "Exit");
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				parentMainWindow.exitSimulation();
+			};
+		});
+		add(exitButton);
+		
 		addSeparator();
 
 		// Add Mars navigator button
@@ -154,7 +163,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		resupplyButton.addActionListener(this);
 		add(resupplyButton);
 		toolButtons.addElement(resupplyButton);
-		
+				
 		addSeparator();
 
 		// Add guide button
