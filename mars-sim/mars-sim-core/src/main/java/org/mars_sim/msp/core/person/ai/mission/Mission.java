@@ -477,7 +477,7 @@ public abstract class Mission implements Serializable {
     protected void recruitPeopleForMission(Person startingPerson) {
 
         int count = 0;
-        while ((count < 4) && (getPeopleNumber() < minPeople)) {
+        while (count < 4) {
             count++;
 
             // Get all people qualified for the mission.

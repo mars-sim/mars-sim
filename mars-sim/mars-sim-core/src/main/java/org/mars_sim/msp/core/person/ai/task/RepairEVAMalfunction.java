@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.04 2013-02-10
+ * @version 3.05 2013-07-08
  * @author Scott Davis
  */
 
@@ -90,17 +90,26 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
      * Gets a malfunctional entity with an EVA malfunction for a user.
      * @param person the person.
      * @param containerUnit the unit the person is doing an EVA from.
-     * @return malfunctional entity.
+     * @return malfunctionable entity.
      * @throws Exception if error checking if error finding entity.
      */
     private static Malfunctionable getEVAMalfunctionEntity(Person person, Unit containerUnit) {
         Malfunctionable result = null;
         
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(
-                (Malfunctionable) containerUnit).iterator();
-        while (i.hasNext() && (result == null)) {
-            Malfunctionable entity = i.next();
-            if (hasEVAMalfunction(person, containerUnit, entity)) result = entity;
+        Collection<Malfunctionable> malfunctionables = null;
+        if (containerUnit instanceof Malfunctionable) {
+            malfunctionables = MalfunctionFactory.getMalfunctionables((Malfunctionable) containerUnit);
+        }
+        else if (containerUnit instanceof Settlement) {
+            malfunctionables = MalfunctionFactory.getMalfunctionables((Settlement) containerUnit);
+        }
+        
+        if (malfunctionables != null) {
+            Iterator<Malfunctionable> i = malfunctionables.iterator();
+            while (i.hasNext() && (result == null)) {
+                Malfunctionable entity = i.next();
+                if (hasEVAMalfunction(person, containerUnit, entity)) result = entity;
+            }
         }
         
         return result;
@@ -149,8 +158,9 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
             while (j.hasNext()) {
             	Malfunction malfunction = j.next();
             	try {
-            		if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), malfunction)) 
+            		if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), malfunction)) {
             			result += 100D;
+            		}
             	}
             	catch (Exception e) {
             		e.printStackTrace(System.err);
@@ -171,9 +181,14 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
         
-		// Job modifier.
+        // Check if person is in vehicle.
+        boolean inVehicle = Person.INVEHICLE.equals(person.getLocationSituation());
+        
+		// Job modifier if not in vehicle.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
+		if ((job != null) && !inVehicle) {
+		    result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
+		}
 
         return result;
     }
