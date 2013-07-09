@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
@@ -52,6 +53,8 @@ public class Engineer extends Job implements Serializable {
 		jobMissionJoins.add(RescueSalvageVehicle.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
         jobMissionJoins.add(BuildingSalvageMission.class);
+        jobMissionStarts.add(EmergencySupplyMission.class);
+        jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**

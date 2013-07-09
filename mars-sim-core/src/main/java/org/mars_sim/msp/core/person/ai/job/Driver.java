@@ -53,6 +53,8 @@ public class Driver extends Job implements Serializable {
 		jobMissionJoins.add(Mining.class);
         jobMissionJoins.add(BuildingConstructionMission.class);
         jobMissionJoins.add(BuildingSalvageMission.class);
+        jobMissionStarts.add(EmergencySupplyMission.class);
+        jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
