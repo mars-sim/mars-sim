@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionManager.java
- * @version 3.03 2012-09-30
+ * @version 3.05 2013-07-02
  * @author Scott Davis
  */
 
@@ -50,11 +50,11 @@ public class MissionManager implements Serializable {
      */
     public MissionManager() {
         // Initialize data members
-        missions = new ArrayList<Mission>();
-        listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>());
+        missions = new ArrayList<Mission>(0);
+        listeners = Collections.synchronizedList(new ArrayList<MissionManagerListener>(0));
         
         // Initialize potential missions.
-        potentialMissions = (Class<? extends Mission>[]) new Class[11];
+        potentialMissions = (Class<? extends Mission>[]) new Class[12];
         potentialMissions[0] = TravelToSettlement.class;
         potentialMissions[1] = Exploration.class;
         potentialMissions[2] = CollectIce.class;
@@ -66,6 +66,7 @@ public class MissionManager implements Serializable {
         potentialMissions[8] = AreologyStudyFieldMission.class;
         potentialMissions[9] = BiologyStudyFieldMission.class;
         potentialMissions[10] = BuildingSalvageMission.class;
+        potentialMissions[11] = EmergencySupplyMission.class;
         
         // Initialize cache values.
         personCache = null;
@@ -359,7 +360,6 @@ public class MissionManager implements Serializable {
     /**
      * Updates mission based on passing time.
      * @param time amount of time passing (millisols)
-     * @throws Exception if error in updating missions
      */
     public void timePassing(double time) {
     	Iterator<Mission> i = missions.iterator();
