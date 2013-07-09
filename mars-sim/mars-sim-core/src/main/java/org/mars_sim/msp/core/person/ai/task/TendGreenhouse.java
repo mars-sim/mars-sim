@@ -12,8 +12,10 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
 import java.io.Serializable;
@@ -83,6 +85,9 @@ public class TendGreenhouse extends Task implements Serializable {
         		if (farmingBuilding != null) {
         			result = 100D;
         		
+        			int needyCropsNum = getCropsNeedingTending(person.getSettlement());
+        			result += needyCropsNum * 10D;
+        			
         			// Crowding modifier.
         			result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
         			result *= Task.getRelationshipModifier(person, farmingBuilding);
@@ -246,6 +251,32 @@ public class TendGreenhouse extends Task implements Serializable {
     	}
     	
     	return result;
+    }
+    
+    /**
+     * Gets the number of crops that currently need work this Sol.
+     * @param settlement the settlement.
+     * @return number of crops.
+     */
+    private static int getCropsNeedingTending(Settlement settlement) {
+        
+        int result = 0;
+        
+        BuildingManager manager = settlement.getBuildingManager();
+        Iterator<Building> i = manager.getBuildings(Farming.NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Farming farm = (Farming) building.getFunction(Farming.NAME);
+            Iterator<Crop> j = farm.getCrops().iterator();
+            while (j.hasNext()) {
+                Crop crop = j.next();
+                if (crop.requiresWork()) {
+                    result++;
+                }
+            }
+        }
+        
+        return result;
     }
     
 	/**

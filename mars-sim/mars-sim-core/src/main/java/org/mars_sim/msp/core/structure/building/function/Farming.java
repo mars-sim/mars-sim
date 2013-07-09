@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.03 2012-07-19
+ * @version 3.05 2013-07-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -144,31 +145,39 @@ public class Farming extends Function implements Serializable {
      */
     public double addWork(double workTime) {
 		double workTimeRemaining = workTime;
-		int needyCrops = 0;
+		Crop needyCrop = null;
 		// Scott - I used the comparison criteria 00001D rather than 0D
 		// because sometimes math anomalies result in workTimeRemaining
 		// becoming very small double values and an endless loop occurs.
-		while (((needyCrops = getNeedyCrops()) > 0) && (workTimeRemaining > 00001D)) {
-			double maxCropTime = workTimeRemaining / (double) needyCrops;
-			Iterator<Crop> i = crops.iterator();
-			while (i.hasNext()) workTimeRemaining -= (maxCropTime - i.next().addWork(maxCropTime));
+		while (((needyCrop = getNeedyCrop()) != null) && (workTimeRemaining > 00001D)) {
+		    workTimeRemaining = needyCrop.addWork(workTimeRemaining);
 		}
  
 		return workTimeRemaining;
     }
     
-	/**
-	 * Gets the number of crops that currently need work.
-	 * @return number of crops requiring work
-	 */
-	private int getNeedyCrops() {
-		int result = 0;
-		Iterator<Crop> i = crops.iterator();
-		while (i.hasNext()) {
-			if (i.next().requiresWork()) result++;
-		}
-		return result;
-	}
+    /**
+     * Gets a crop that needs planting, tending, or harvesting.
+     * @return crop or null if none found.
+     */
+    private Crop getNeedyCrop() {
+        Crop result = null;
+        
+        List<Crop> needyCrops = new ArrayList<Crop>(crops.size());
+        Iterator<Crop> i = crops.iterator();
+        while (i.hasNext()) {
+            Crop crop = i.next();
+            if (crop.requiresWork()) {
+                needyCrops.add(crop);
+            }
+        }
+        
+        if (needyCrops.size() > 0) {
+            result = needyCrops.get(RandomUtil.getRandomInt(needyCrops.size() - 1));
+        }
+        
+        return result;
+    }
     
     /**
      * Adds harvested food to the farm.
