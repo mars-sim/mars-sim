@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SpecimenContainer.java
- * @version 3.00 2010-08-10
+ * @version 3.05 2013-07-01
  * @author Scott Davis
  */
 
@@ -41,4 +41,12 @@ public class SpecimenContainer extends Equipment implements Container, Serializa
 	public Phase getContainingResourcePhase() {
 		return Phase.SOLID;
 	}
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
 }

@@ -19,4 +19,10 @@ public interface Container {
 	 * @return resource phase.
 	 */
 	public Phase getContainingResourcePhase();
+	
+	/**
+	 * Gets the total capacity of resource that this container can hold.
+	 * @return total capacity (kg).
+	 */
+	public double getTotalCapacity();
 }

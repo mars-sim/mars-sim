@@ -84,7 +84,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
-     * @throws MissionException if error constructing mission.
      */
     public Trade(Person startingPerson) {
         // Use RoverMission constructor.
@@ -111,6 +110,10 @@ public class Trade extends RoverMission implements Serializable {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
                 setDescription("Trade with " + tradingSettlement.getName());
+                TRADE_PROFIT_CACHE.remove(getStartingSettlement());
+                TRADE_PROFIT_CACHE.remove(tradingSettlement);
+                TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
+                TRADE_SETTLEMENT_CACHE.remove(tradingSettlement);
             } else {
                 endMission("Could not determine trading settlement.");
             }
@@ -162,7 +165,6 @@ public class Trade extends RoverMission implements Serializable {
             if (startingPerson != null && getRover() != null) {
                 logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
             }
-
         }
     }
 
@@ -175,7 +177,6 @@ public class Trade extends RoverMission implements Serializable {
      * @param description the mission's description.
      * @param sellGoods map of mission sell goods and integer amounts.
      * @param buyGoods map of mission buy goods and integer amounts
-     * @throws MissionException if error constructing mission.
      */
     public Trade(Collection<Person> members, Settlement startingSettlement, Settlement tradingSettlement,
             Rover rover, String description, Map<Good, Integer> sellGoods, Map<Good, Integer> buyGoods) {
@@ -223,6 +224,12 @@ public class Trade extends RoverMission implements Serializable {
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        if (logger.isLoggable(Level.INFO)) {
+            Person startingPerson = (Person) members.toArray()[0];
+            if (startingPerson != null && getRover() != null) {
+                logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
+            }
+        }
     }
 
     /** 
@@ -344,7 +351,6 @@ public class Trade extends RoverMission implements Serializable {
 
     /**
      * Determines a new phase for the mission when the current phase has ended.
-     * @throws MissionException if problem setting a new phase.
      */
     protected void determineNewPhase() {
         if (EMBARKING.equals(getPhase())) {
@@ -385,7 +391,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * The person performs the current phase of the mission.
      * @param person the person performing the phase.
-     * @throws MissionException if problem performing the phase.
      */
     protected void performPhase(Person person) {
         super.performPhase(person);
@@ -405,7 +410,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * Performs the trade disembarking phase.
      * @param person the person performing the mission.
-     * @throws MissionException if error performing the phase.
      */
     private void performTradeDisembarkingPhase(Person person) {
 
@@ -432,8 +436,18 @@ public class Trade extends RoverMission implements Serializable {
                 BuildingManager.addPersonToBuilding(person, garageBuilding);
             }
             else {
-                // Have person exit the rover via its airlock.
-                assignTask(person, new ExitAirlock(person, getRover().getAirlock()));
+                // Have person exit the rover via its airlock if possible.
+                if (ExitAirlock.canExitAirlock(person, getRover().getAirlock())) {
+                    assignTask(person, new ExitAirlock(person, getRover().getAirlock()));
+                }
+                else {
+                    logger.info(person + " unable to exit " + getRover() + " through airlock to settlement " + 
+                            tradingSettlement + " due to health problems or being unable to obtain a functioning EVA suit.  " + 
+                            "Using emergency exit procedure.");
+                    getVehicle().getInventory().retrieveUnit(person);
+                    tradingSettlement.getInventory().storeUnit(person);
+                    BuildingManager.addToRandomBuilding(person, tradingSettlement);
+                }
             }
         }
         else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
@@ -450,7 +464,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * Perform the trade negotiating phase.
      * @param person the person performing the phase.
-     * @throws MissionException if error performing the phase.
      */
     private void performTradeNegotiatingPhase(Person person) {
         if (doNegotiation) {
@@ -491,20 +504,20 @@ public class Trade extends RoverMission implements Serializable {
             equipmentNeededCache = null;
             addNavpoint(new NavPoint(getStartingSettlement().getCoordinates(), getStartingSettlement(),
                     getStartingSettlement().getName()));
+            TRADE_PROFIT_CACHE.remove(getStartingSettlement());
         }
     }
 
     /**
      * Perform the unload goods phase.
      * @param person the person performing the phase.
-     * @throws MissionException if errors performing the phase.
      */
     private void performUnloadGoodsPhase(Person person) {
 
-        //	Unload rover if necessary.
         // Unload towed vehicle (if necessary).
         unloadTowedVehicle();
 
+        // Unload rover if necessary.
         boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
         if (!roverUnloaded) {
             // Random chance of having person unload (this allows person to do other things sometimes)
@@ -523,7 +536,8 @@ public class Trade extends RoverMission implements Serializable {
 
                 return;
             }
-        } else {
+        } 
+        else {
             setPhaseEnded(true);
         }
     }
@@ -531,7 +545,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * Performs the load goods phase.
      * @param person the person performing the phase.
-     * @throws MissionException if error performing the phase.
      */
     private void performLoadGoodsPhase(Person person) {
 
@@ -606,7 +619,6 @@ public class Trade extends RoverMission implements Serializable {
     /**
      * Performs the trade embarking phase.
      * @param person the person performing the phase.
-     * @throws MissionException if error performing the phase.
      */
     private void performTradeEmbarkingPhase(Person person) {
 
@@ -649,7 +661,15 @@ public class Trade extends RoverMission implements Serializable {
                 if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
                     // Have person exit the settlement via an airlock.
-                    assignTask(person, new ExitAirlock(person, tradingSettlement.getAvailableAirlock()));
+                    if (ExitAirlock.canExitAirlock(person, tradingSettlement.getAvailableAirlock())) {
+                        assignTask(person, new ExitAirlock(person, tradingSettlement.getAvailableAirlock()));
+                    }
+                    else {
+                        logger.info(person + " unable to exit airlock at " + tradingSettlement + " to rover " + 
+                                getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
+                        endMission(person + " unable to exit airlock from " + tradingSettlement + 
+                                " due to health problems or being unable to obtain a functioning EVA suit.");                  
+                    }
                 }
                 else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
 
@@ -678,7 +698,6 @@ public class Trade extends RoverMission implements Serializable {
     /** 
      * Performs the embark from settlement phase of the mission.
      * @param person the person currently performing the mission
-     * @throws MissionException if error performing phase.
      */
     protected void performEmbarkFromSettlementPhase(Person person) {
         super.performEmbarkFromSettlementPhase(person);
@@ -703,7 +722,6 @@ public class Trade extends RoverMission implements Serializable {
      * Performs the disembark to settlement phase of the mission.
      * @param person the person currently performing the mission.
      * @param disembarkSettlement the settlement to be disembarked to.
-     * @throws MissionException if error performing phase.
      */
     protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) {
 
@@ -855,19 +873,12 @@ public class Trade extends RoverMission implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the settlement associated with the mission.
-     * @return settlement or null if none.
-     */
+    @Override
     public Settlement getAssociatedSettlement() {
         return getStartingSettlement();
     }
 
-    /**
-     * Checks to see if a person is capable of joining a mission.
-     * @param person the person to check.
-     * @return true if person could join mission.
-     */
+    @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
@@ -879,10 +890,7 @@ public class Trade extends RoverMission implements Serializable {
         return false;
     }
 
-    /**
-     * Recruits new people into the mission.
-     * @param startingPerson the person starting the mission.
-     */
+    @Override
     protected void recruitPeopleForMission(Person startingPerson) {
         super.recruitPeopleForMission(startingPerson);
 
@@ -906,16 +914,7 @@ public class Trade extends RoverMission implements Serializable {
         }
     }
 
-    /**
-     * Compares the quality of two vehicles for use in this mission.
-     * @param firstVehicle the first vehicle to compare
-     * @param secondVehicle the second vehicle to compare
-     * @return -1 if the second vehicle is better than the first vehicle,
-     * 0 if vehicle are equal in quality,
-     * and 1 if the first vehicle is better than the second vehicle.
-     * @throws IllegalArgumentException if firstVehicle or secondVehicle is null.
-     * @throws MissionException if error comparing vehicles.
-     */
+    @Override
     protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
         int result = super.compareVehicles(firstVehicle, secondVehicle);
 
