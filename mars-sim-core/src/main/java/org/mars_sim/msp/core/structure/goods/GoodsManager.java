@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.03 2012-07-19
+ * @version 3.05 2013-07-05
  * @author Scott Davis
  */
 
@@ -130,6 +130,10 @@ public class GoodsManager implements Serializable {
 
         // Create parts demand cache.
         partsDemandCache = new HashMap<Part, Double>(ItemResource.getItemResources().size());
+        
+        // Create vehicle caches.
+        vehicleBuyValueCache = new HashMap<String, Double>();
+        vehicleSellValueCache = new HashMap<String, Double>();
     }
 
     /**
@@ -164,6 +168,10 @@ public class GoodsManager implements Serializable {
     public void updateGoodsValues() {
         // Clear parts demand cache.
         partsDemandCache.clear();
+        
+        // Clear vehicle caches.
+        vehicleBuyValueCache.clear();
+        vehicleSellValueCache.clear();
 
         Iterator<Good> i = goodsValues.keySet().iterator();
         while (i.hasNext()) updateGoodValue(i.next(), true);
@@ -1355,19 +1363,33 @@ public class GoodsManager implements Serializable {
 
         boolean buy = false;
         double currentNum = getNumberOfVehiclesForSettlement(vehicleType);
-        if (supply == currentNum) buy = true;
+        if (supply == currentNum) {
+            buy = true;
+        }
 
-        if (vehicleBuyValueCache == null) vehicleBuyValueCache = new HashMap<String, Double>();
-        if (vehicleSellValueCache == null) vehicleSellValueCache = new HashMap<String, Double>();
+        if (vehicleBuyValueCache == null) {
+            vehicleBuyValueCache = new HashMap<String, Double>();
+        }
+        if (vehicleSellValueCache == null) {
+            vehicleSellValueCache = new HashMap<String, Double>();
+        }
 
         if (useCache) {
             if (buy) {
-                if (vehicleBuyValueCache.containsKey(vehicleType)) value = vehicleBuyValueCache.get(vehicleType);
-                else determineVehicleGoodValue(vehicleGood, supply, false);
+                if (vehicleBuyValueCache.containsKey(vehicleType)) {
+                    value = vehicleBuyValueCache.get(vehicleType);
+                }
+                else {
+                    value = determineVehicleGoodValue(vehicleGood, supply, false);
+                }
             }
             else {
-                if (vehicleSellValueCache.containsKey(vehicleType)) value = vehicleSellValueCache.get(vehicleType);
-                else determineVehicleGoodValue(vehicleGood, supply, false);
+                if (vehicleSellValueCache.containsKey(vehicleType)) {
+                    value = vehicleSellValueCache.get(vehicleType);
+                }
+                else {
+                    value = determineVehicleGoodValue(vehicleGood, supply, false);
+                }
             }
         }
         else {
@@ -1377,45 +1399,71 @@ public class GoodsManager implements Serializable {
             else {
                 double travelToSettlementMissionValue = determineMissionVehicleValue(TRAVEL_TO_SETTLEMENT_MISSION, 
                         vehicleType, buy);
-                if (travelToSettlementMissionValue > value) value = travelToSettlementMissionValue;
+                if (travelToSettlementMissionValue > value) {
+                    value = travelToSettlementMissionValue;
+                }
 
                 double explorationMissionValue = determineMissionVehicleValue(EXPLORATION_MISSION, vehicleType, buy);
-                if (explorationMissionValue > value) value = explorationMissionValue;
+                if (explorationMissionValue > value) {
+                    value = explorationMissionValue;
+                }
 
                 double collectIceMissionValue = determineMissionVehicleValue(COLLECT_ICE_MISSION, vehicleType, buy);
-                if (collectIceMissionValue > value) value = collectIceMissionValue;
+                if (collectIceMissionValue > value) {
+                    value = collectIceMissionValue;
+                }
 
                 double rescueMissionValue = determineMissionVehicleValue(RESCUE_SALVAGE_MISSION, vehicleType, buy);
-                if (rescueMissionValue > value) value = rescueMissionValue;
+                if (rescueMissionValue > value) {
+                    value = rescueMissionValue;
+                }
 
                 double tradeMissionValue = determineMissionVehicleValue(TRADE_MISSION, vehicleType, buy);
-                if (tradeMissionValue > value) value = tradeMissionValue;
+                if (tradeMissionValue > value) {
+                    value = tradeMissionValue;
+                }
 
                 double collectRegolithMissionValue = determineMissionVehicleValue(COLLECT_REGOLITH_MISSION, 
                         vehicleType, buy);
-                if (collectRegolithMissionValue > value) value = collectRegolithMissionValue;
+                if (collectRegolithMissionValue > value){
+                    value = collectRegolithMissionValue;
+                }
 
                 double miningMissionValue = determineMissionVehicleValue(MINING_MISSION, vehicleType, buy);
-                if (miningMissionValue > value) value = miningMissionValue;
+                if (miningMissionValue > value) {
+                    value = miningMissionValue;
+                }
 
                 double constructionMissionValue = determineMissionVehicleValue(CONSTRUCTION_MISSION, vehicleType, buy);
-                if (constructionMissionValue > value) value = constructionMissionValue;
+                if (constructionMissionValue > value) {
+                    value = constructionMissionValue;
+                }
                 
                 double areologyFieldMissionValue = determineMissionVehicleValue(AREOLOGY_STUDY_FIELD_MISSION, vehicleType, buy);
-                if (areologyFieldMissionValue > value) value = areologyFieldMissionValue;
+                if (areologyFieldMissionValue > value) {
+                    value = areologyFieldMissionValue;
+                }
                 
                 double biologyFieldMissionValue = determineMissionVehicleValue(BIOLOGY_STUDY_FIELD_MISSION, vehicleType, buy);
-                if (biologyFieldMissionValue > value) value = biologyFieldMissionValue;
+                if (biologyFieldMissionValue > value) {
+                    value = biologyFieldMissionValue;
+                }
             }
 
             // Multiply by vehicle factor.
             value *= VEHICLE_FACTOR;
 
             double tradeValue = determineTradeVehicleValue(vehicleGood, useCache);
-            if (tradeValue > value) value = tradeValue;
+            if (tradeValue > value) {
+                value = tradeValue;
+            }
 
-            if (buy) vehicleBuyValueCache.put(vehicleType, value);
-            else vehicleSellValueCache.put(vehicleType, value);
+            if (buy) {
+                vehicleBuyValueCache.put(vehicleType, value);
+            }
+            else {
+                vehicleSellValueCache.put(vehicleType, value);
+            }
         }
 
         return value;
@@ -1709,6 +1757,15 @@ public class GoodsManager implements Serializable {
             goodsTradeCache.put(good, bestTradeValue);
             return bestTradeValue;
         }
+    }
+    
+    /**
+     * Prepare the goods manager for a vehicle load calculation.
+     */
+    public void prepareForLoadCalculation() {
+        // Clear vehicle buy and sell value caches.
+        vehicleBuyValueCache.clear();
+        vehicleSellValueCache.clear();
     }
 
     /**

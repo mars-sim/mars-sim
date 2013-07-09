@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Barrel.java
- * @version 3.00 2010-08-10
+ * @version 3.05 2013-07-01
  * @author Scott Davis
  */
 
@@ -45,4 +45,12 @@ public class Barrel extends Equipment implements Container, Serializable {
 	public Phase getContainingResourcePhase() {
 		return Phase.LIQUID;
 	}
+	
+	/**
+     * Gets the total capacity of resource that this container can hold.
+     * @return total capacity (kg).
+     */
+    public double getTotalCapacity() {
+        return CAPACITY;
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.05 2013-05-31
+ * @version 3.05 2013-07-06
  * @author Scott Davis
  */
 
@@ -38,7 +38,7 @@ public final class TradeUtil {
 
     // Credit limit under which a seller is willing to sell goods to a buyer.
     // Buyer must pay off credit to under limit to continue buying.
-    public static final double SELL_CREDIT_LIMIT = 1000000D;
+    public static final double SELL_CREDIT_LIMIT = 10000000D;
 
     // Estimated mission parts mass.
     private static final double MISSION_BASE_MASS = 1000D;
@@ -78,8 +78,13 @@ public final class TradeUtil {
         while (i.hasNext()) {
             Settlement settlement = i.next();
             if (settlement != startingSettlement) {
+                
+                boolean hasCurrentTradeMission = hasCurrentTradeMission(startingSettlement, settlement);
+                
                 double settlementRange = settlement.getCoordinates().getDistance(startingSettlement.getCoordinates());
-                if (settlementRange <= (rover.getRange() * .8D)) {
+                boolean withinRange = (settlementRange <= (rover.getRange() * .8D));
+                
+                if (!hasCurrentTradeMission && withinRange) {
                     // double startTime = System.currentTimeMillis();
                     double profit = getEstimatedTradeProfit(startingSettlement, rover, settlement);
                     // double endTime = System.currentTimeMillis();
@@ -96,6 +101,37 @@ public final class TradeUtil {
         bestTradeSettlementCache = bestSettlement;
 
         return bestProfit;
+    }
+    
+    /**
+     * Checks if there is currently a trade mission between two settlements.
+     * @param settlement1 the first settlement.
+     * @param settlement2 the second settlement.
+     * @return true if current trade mission between settlements.
+     */
+    private static boolean hasCurrentTradeMission(Settlement settlement1, Settlement settlement2) {
+        boolean result = false;
+        
+        MissionManager manager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = manager.getMissions().iterator();
+        while (i.hasNext()) {
+            Mission mission = i.next();
+            if (mission instanceof Trade) {
+                Trade tradeMission = (Trade) mission;
+                Settlement startingSettlement = tradeMission.getStartingSettlement();
+                Settlement tradingSettlement = tradeMission.getTradingSettlement();
+                if (startingSettlement.equals(settlement1) && tradingSettlement.equals(settlement2)) {
+                    result = true;
+                    break;
+                }
+                else if (startingSettlement.equals(settlement2) && tradingSettlement.equals(settlement1)) {
+                    result = true;
+                    break;
+                }
+            }
+        }
+        
+        return result;
     }
 
     /**
@@ -216,6 +252,9 @@ public final class TradeUtil {
         Map<Good, Integer> tradeList = new HashMap<Good, Integer>();
         boolean hasRover = false;
         GoodsManager buyerGoodsManager = buyingSettlement.getGoodsManager();
+        buyerGoodsManager.prepareForLoadCalculation();
+        GoodsManager sellerGoodsManager = sellingSettlement.getGoodsManager();
+        sellerGoodsManager.prepareForLoadCalculation();
 
         double massCapacity = rover.getInventory().getGeneralCapacity();
 
