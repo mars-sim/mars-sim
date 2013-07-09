@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * MockUnit2.java
- * @version 3.01 2011-09-23
+ * MockUnit3.java
+ * @version 3.05 2013-07-01
  * @author Scott Davis
  */
 
@@ -29,5 +29,10 @@ public class MockUnit3 extends Unit implements Container {
     @Override
     public Phase getContainingResourcePhase() {
         return resourcePhase;
+    }
+
+    @Override
+    public double getTotalCapacity() {
+        return 50D;
     }
 }

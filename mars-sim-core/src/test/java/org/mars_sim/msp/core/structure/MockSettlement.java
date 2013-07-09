@@ -1,7 +1,6 @@
 package org.mars_sim.msp.core.structure;
 
 import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -27,9 +26,5 @@ public class MockSettlement extends Settlement {
         
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-        
-        // Add scope string to malfunction manager.
-        malfunctionManager = new MalfunctionManager(this, Double.POSITIVE_INFINITY, 3000D);
-        malfunctionManager.addScopeString("Settlement");
 	}
 }
