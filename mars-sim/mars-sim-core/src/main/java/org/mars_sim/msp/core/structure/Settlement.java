@@ -1,15 +1,13 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.04 2013-03-23
+ * @version 3.05 2013-06-30
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure;
 
 import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -35,8 +33,7 @@ import java.util.logging.Logger;
  * The Settlement class represents a settlement unit on virtual Mars. It contains information related to the state of
  * the settlement.
  */
-public class Settlement extends Structure implements Malfunctionable,
-        org.mars_sim.msp.core.LifeSupport {
+public class Settlement extends Structure implements org.mars_sim.msp.core.LifeSupport {
 
     private static Logger logger = Logger.getLogger(Settlement.class.getName());
 
@@ -61,7 +58,6 @@ public class Settlement extends Structure implements Malfunctionable,
     private boolean resourceProcessOverride; // Override flag for resource process at settlement.
     private boolean constructionOverride; // Override flag for construction/salvage mission creation at settlement.
     private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
-    protected MalfunctionManager malfunctionManager;
     private double zeroPopulationTime;  // Amount of time (millisols) that the settlement has had zero population.
     private int initialPopulation; // The initial population of the settlement.
 
@@ -102,11 +98,6 @@ public class Settlement extends Structure implements Malfunctionable,
 
         // Initialize power grid
         powerGrid = new PowerGrid(this);
-
-        // Add scope string to malfunction manager.
-        malfunctionManager = new MalfunctionManager(this,
-                Double.POSITIVE_INFINITY, MAINTENANCE_TIME);
-        malfunctionManager.addScopeString("Settlement");
 
         // Initialize scientific achievement.
         scientificAchievement = new HashMap<Science, Double>(0);
@@ -203,10 +194,6 @@ public class Settlement extends Structure implements Malfunctionable,
         AmountResource water = AmountResource.findAmountResource("water");
         if (getInventory().getAmountResourceStored(water, false) <= 0D)
             result = false;
-        if (getOxygenFlowModifier() < 100D)
-            result = false;
-        if (getWaterFlowModifier() < 100D)
-            result = false;
         if (getAirPressure() != NORMAL_AIR_PRESSURE)
             result = false;
         if (getTemperature() != NORMAL_TEMP)
@@ -247,16 +234,7 @@ public class Settlement extends Structure implements Malfunctionable,
         getInventory().storeAmountResource(carbonDioxide,
                 carbonDioxideProvided, true);
 
-        return oxygenTaken
-                * (malfunctionManager.getOxygenFlowModifier() / 100D);
-    }
-
-    /**
-     * Gets the oxygen flow modifier for this settlement.
-     * @return oxygen flow modifier
-     */
-    public double getOxygenFlowModifier() {
-        return malfunctionManager.getOxygenFlowModifier();
+        return oxygenTaken;
     }
 
     /**
@@ -273,15 +251,7 @@ public class Settlement extends Structure implements Malfunctionable,
             waterTaken = waterLeft;
         getInventory().retrieveAmountResource(water, waterTaken);
 
-        return waterTaken * (malfunctionManager.getWaterFlowModifier() / 100D);
-    }
-
-    /**
-     * Gets the water flow modifier for this settlement.
-     * @return water flow modifier
-     */
-    public double getWaterFlowModifier() {
-        return malfunctionManager.getWaterFlowModifier();
+        return waterTaken;
     }
 
     /**
@@ -289,7 +259,7 @@ public class Settlement extends Structure implements Malfunctionable,
      * @return air pressure (atm)
      */
     public double getAirPressure() {
-        double result = NORMAL_AIR_PRESSURE * (getAirPressureModifier() / 100D);
+        double result = NORMAL_AIR_PRESSURE;
         double ambient = Simulation.instance().getMars().getWeather()
                 .getAirPressure(getCoordinates());
         if (result < ambient)
@@ -299,33 +269,17 @@ public class Settlement extends Structure implements Malfunctionable,
     }
 
     /**
-     * Gets the air pressure modifier for this settlement.
-     * @return air pressure flow modifier
-     */
-    public double getAirPressureModifier() {
-        return malfunctionManager.getAirPressureModifier();
-    }
-
-    /**
      * Gets the temperature of the life support system.
      * @return temperature (degrees C)
      */
     public double getTemperature() {
-        double result = NORMAL_TEMP * (getTemperatureModifier() / 100D);
+        double result = NORMAL_TEMP;
         double ambient = Simulation.instance().getMars().getWeather()
                 .getTemperature(getCoordinates());
         if (result < ambient)
             return ambient;
         else
             return result;
-    }
-
-    /**
-     * Gets the temperature modifier for this settlement.
-     * @return temperature flow modifier
-     */
-    public double getTemperatureModifier() {
-        return malfunctionManager.getTemperatureModifier();
     }
 
     /**
@@ -362,10 +316,6 @@ public class Settlement extends Structure implements Malfunctionable,
         buildingManager.timePassing(time);
 
         updateGoodsManager(time);
-
-        if (getCurrentPopulationNum() > 0)
-            malfunctionManager.activeTimePassing(time);
-        malfunctionManager.timePassing(time);
     }
 
     private void updateGoodsManager(double time) {
@@ -628,14 +578,6 @@ public class Settlement extends Structure implements Malfunctionable,
 
         scientificAchievement.put(science, achievementCredit);
     }
-
-    /**
-     * Gets the entity's malfunction manager.
-     * @return malfunction manager
-     */
-    public MalfunctionManager getMalfunctionManager() {
-        return malfunctionManager;
-    }
     
     /**
      * Gets the initial population of the settlement.
@@ -660,7 +602,5 @@ public class Settlement extends Structure implements Malfunctionable,
         template = null;
         scientificAchievement.clear();
         scientificAchievement = null;
-        malfunctionManager.destroy();
-        malfunctionManager = null;
     }
 }

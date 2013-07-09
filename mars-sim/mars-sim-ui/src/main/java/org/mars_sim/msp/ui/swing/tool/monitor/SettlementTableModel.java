@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.03 2012-07-19
+ * @version 3.05 2013-06-30
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -151,8 +151,7 @@ public class SettlementTableModel extends UnitTableModel {
 
                 case MALFUNCTION: {
                     int severity = 0;
-                    Malfunction malfunction = settle.getMalfunctionManager().getMostSeriousMalfunction();
-                    if (malfunction != null) severity = malfunction.getSeverity();
+                    Malfunction malfunction = null;
                     Iterator<Building> i = settle.getBuildingManager().getBuildings().iterator();
                     while (i.hasNext()) {
                         Building building = i.next();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionFactory.java
- * @version 3.02 2011-11-26
+ * @version 3.05 2013-06-30
  * @author Scott Davis 
  */
 
@@ -83,7 +83,7 @@ public final class MalfunctionFactory implements Serializable {
     
     /**
      * Gets a collection of malfunctionable entities local to the given person.
-     * @return collection iterator
+     * @return collection collection of malfunctionables.
      */
     public static Collection<Malfunctionable> getMalfunctionables(Person person) {
 
@@ -92,19 +92,23 @@ public final class MalfunctionFactory implements Serializable {
 	
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            entities.add(settlement);
-
             Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-            while (i.hasNext()) entities.add(i.next());
+            while (i.hasNext()) {
+                entities.add(i.next());
+            }
         }
 
-        if (location.equals(Person.INVEHICLE)) entities.add(person.getVehicle());
+        if (location.equals(Person.INVEHICLE)) {
+            entities.add(person.getVehicle());
+        }
 
         if (!location.equals(Person.OUTSIDE)) {
             Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
-                if (unit instanceof Malfunctionable) entities.add((Malfunctionable) unit);
+                if (unit instanceof Malfunctionable) {
+                    entities.add((Malfunctionable) unit);
+                }
             }
         }
 
@@ -113,17 +117,49 @@ public final class MalfunctionFactory implements Serializable {
             Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
-                if (unit instanceof Malfunctionable) entities.add((Malfunctionable)unit);
+                if (unit instanceof Malfunctionable) {
+                    entities.add((Malfunctionable)unit);
+                }
             }
         }
 
+        return entities;
+    }
+    
+    /** 
+     * Gets a collection of malfunctionable entities local to a given settlement.
+     * @param settlement the settlement.
+     * @return collection of malfunctionables.
+     */
+    public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
+        
+        Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+        
+        // Add all buildings within the settlement.
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+        while (i.hasNext()) {
+            entities.add(i.next());
+        }
+        
+        // Add all malfunctionable entities in settlement inventory.
+        Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
+        if (inventoryUnits.size() > 0) {
+            Iterator<Unit> j = inventoryUnits.iterator();
+            while (j.hasNext()) {
+                Unit unit = j.next();
+                if (unit instanceof Malfunctionable) {
+                    entities.add((Malfunctionable)unit);
+                }
+            }
+        }
+        
         return entities;
     }
 
     /**
      * Gets a collection of malfunctionable entities
      * local to the given malfunctionable entity.
-     * @return collection iterator
+     * @return collection of malfunctionables.
      */
     public static Collection<Malfunctionable> getMalfunctionables(Malfunctionable entity) {
 
@@ -131,17 +167,14 @@ public final class MalfunctionFactory implements Serializable {
 
         entities.add(entity);
 
-        if (entity instanceof Settlement) {
-            Iterator<Building> i = ((Settlement) entity).getBuildingManager().getBuildings().iterator();
-            while (i.hasNext()) entities.add(i.next());
-        }
-
         Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
         if (inventoryUnits.size() > 0) {
             Iterator<Unit> i = inventoryUnits.iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
-                if (unit instanceof Malfunctionable) entities.add((Malfunctionable)unit);
+                if (unit instanceof Malfunctionable) {
+                    entities.add((Malfunctionable)unit);
+                }
             }
         }
 
