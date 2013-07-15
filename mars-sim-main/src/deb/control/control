@@ -5,5 +5,9 @@ Priority: optional
 Architecture: all
 Depends: default-jre (>= 1.6)
 Maintainer: Scott Davis <scud1@users.sourceforge.net>
-Description: Mars Simulation Project
+Homepage: http://mars-sim.sourceforge.net
 Distribution: development
+Description: Mars Simulation Project
+ A Java simulation of Martian exploration and colonization.  A GUI provides 
+ the user with a view of the running simulation and the ability to interact 
+ with it.
