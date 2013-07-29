@@ -84,7 +84,7 @@
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/share/mars-sim-main</prefix>
+                                        <prefix>/usr/lib/mars-sim-main</prefix>
                                     </mapper>
                                 </data>
                                 <data>
@@ -92,7 +92,8 @@
                                 	<type>file</type>
                                 	<mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/share/mars-sim-main</prefix>
+                                        <prefix>/usr/bin</prefix>
+                                        <filemode>755</filemode>
                                     </mapper>
                                 </data>
                                 <data>
@@ -101,6 +102,22 @@
                                 	<mapper>
                                         <type>perm</type>
                                         <prefix>/usr/share/doc/mars-sim-main</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                	<src>${project.basedir}/src/deb/marsicon.png</src>
+                                	<type>file</type>
+                                	<mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/doc/mars-sim-main</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                	<src>${project.basedir}/src/deb/mars-sim.desktop</src>
+                                	<type>file</type>
+                                	<mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/applications</prefix>
                                     </mapper>
                                 </data>
                             </dataSet>
