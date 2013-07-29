@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=Mars Simulation Project
+Comment=A simulation of future human settlement of the red planet.
+Exec=/usr/bin/mars-sim.sh
+Icon=/usr/share/doc/mars-sim-main/marsicon.png
+Terminal=false
+Type=Application
+Categories=Science
+StartupNotify=true
