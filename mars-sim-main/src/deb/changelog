@@ -1,0 +1,5 @@
+mars-sim-main (3.05-0ubuntu1) unstable; urgency=low
+
+  * Initial debian package release.
+  
+ -- Scott Davis <scud1@users.sourceforge.net>  Wed, 31 Jul 2013 14:04:40 -0700
