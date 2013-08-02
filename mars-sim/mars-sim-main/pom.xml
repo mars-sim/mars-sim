@@ -84,11 +84,11 @@
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/usr/lib/mars-sim-main</prefix>
+                                        <prefix>/usr/share/mars-sim-main</prefix>
                                     </mapper>
                                 </data>
                                 <data>
-                                	<src>${project.basedir}/src/deb/mars-sim.sh</src>
+                                	<src>${project.basedir}/src/deb/mars-sim</src>
                                 	<type>file</type>
                                 	<mapper>
                                         <type>perm</type>
@@ -98,6 +98,14 @@
                                 </data>
                                 <data>
                                 	<src>${project.basedir}/src/deb/copyright/copyright</src>
+                                	<type>file</type>
+                                	<mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/doc/mars-sim-main</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                	<src>${project.basedir}/src/deb/changelog.gz</src>
                                 	<type>file</type>
                                 	<mapper>
                                         <type>perm</type>
@@ -118,6 +126,14 @@
                                 	<mapper>
                                         <type>perm</type>
                                         <prefix>/usr/share/applications</prefix>
+                                    </mapper>
+                                </data>
+                                <data>
+                                	<src>${project.basedir}/src/deb/man/mars-sim.1.gz</src>
+                                	<type>file</type>
+                                	<mapper>
+                                        <type>perm</type>
+                                        <prefix>/usr/share/man/man1</prefix>
                                     </mapper>
                                 </data>
                             </dataSet>

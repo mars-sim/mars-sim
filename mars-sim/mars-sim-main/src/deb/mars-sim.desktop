@@ -2,9 +2,9 @@
 Encoding=UTF-8
 Name=Mars Simulation Project
 Comment=A simulation of future human settlement of the red planet.
-Exec=/usr/bin/mars-sim.sh
+Exec=/usr/bin/mars-sim
 Icon=/usr/share/doc/mars-sim-main/marsicon.png
 Terminal=false
 Type=Application
-Categories=Science
+Categories=Education;Science;
 StartupNotify=true
