@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.05 2013-08-15
+ * @version 3.05 2013-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -46,6 +46,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -1084,6 +1085,49 @@ public class EmergencySupplyMission extends RoverMission implements
                 }
                 result.put(equipment, num);
             }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets the emergency supplies as a goods map.
+     * @return map of goods and amounts.
+     */
+    public Map<Good, Integer> getEmergencySuppliesAsGoods() {
+        Map<Good, Integer> result = new HashMap<Good, Integer>();
+        
+        // Add emergency resources.
+        Iterator<AmountResource> i = emergencyResources.keySet().iterator();
+        while (i.hasNext()) {
+            AmountResource resource = i.next();
+            double amount = emergencyResources.get(resource);
+            Good resourceGood = GoodsUtil.getResourceGood(resource);
+            result.put(resourceGood, (int) amount);
+        }
+        
+        // Add emergency parts.
+        Iterator<Part> j = emergencyParts.keySet().iterator();
+        while (j.hasNext()) {
+            Part part = j.next();
+            int number = emergencyParts.get(part);
+            Good partGood = GoodsUtil.getResourceGood(part);
+            result.put(partGood, number);
+        }
+        
+        // Add emergency equipment.
+        Iterator<Class> k = emergencyEquipment.keySet().iterator();
+        while (k.hasNext()) {
+            Class equipmentClass = k.next();
+            int number = emergencyEquipment.get(equipmentClass);
+            Good equipmentGood = GoodsUtil.getEquipmentGood(equipmentClass);
+            result.put(equipmentGood, number);
+        }
+        
+        // Add emergency vehicle.
+        if (emergencyVehicle != null) {
+            Good vehicleGood = GoodsUtil.getVehicleGood(emergencyVehicle.getDescription());
+            result.put(vehicleGood, 1);
         }
         
         return result;
