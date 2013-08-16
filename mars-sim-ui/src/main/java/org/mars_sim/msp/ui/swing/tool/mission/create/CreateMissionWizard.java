@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CreateMissionWizard.java
- * @version 3.00 2010-08-10
+ * @version 3.05 2013-07-09
  * @author Scott Davis
  */
 
@@ -220,6 +220,13 @@ public class CreateMissionWizard extends JDialog {
             // TODO: Change members panel to use lead researcher as member.
             addWizardPanel(new MembersPanel(this));
             addWizardPanel(new FieldSitePanel(this));
+        }
+        else if (missionBean.getType().equals(MissionDataBean.EMERGENCY_SUPPLY_MISSION)) {
+            addWizardPanel(new StartingSettlementPanel(this));
+            addWizardPanel(new VehiclePanel(this));
+            addWizardPanel(new MembersPanel(this));
+            addWizardPanel(new DestinationSettlementPanel(this));
+            addWizardPanel(new EmergencySupplyPanel(this));
         }
 	}
 	

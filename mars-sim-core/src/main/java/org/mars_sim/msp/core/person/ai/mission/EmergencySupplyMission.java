@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.05 2013-07-02
+ * @version 3.05 2013-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -44,6 +45,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -77,8 +79,9 @@ public class EmergencySupplyMission extends RoverMission implements
     private Settlement emergencySettlement;
     private boolean outbound;
     private Map<AmountResource, Double> emergencyResources;
-    private Map<Class<? extends Container>, Integer> emergencyContainers;
+    private Map<Class, Integer> emergencyEquipment;
     private Map<Part, Integer> emergencyParts;
+    private Vehicle emergencyVehicle;
     
     /**
      * Constructor.
@@ -110,7 +113,6 @@ public class EmergencySupplyMission extends RoverMission implements
                 // Update mission information for emergency settlement.
                 addNavpoint(new NavPoint(emergencySettlement.getCoordinates(), emergencySettlement,
                         emergencySettlement.getName()));
-                setDescription("Deliver Emergency Supplies to " + emergencySettlement.getName());
                 
                 // Determine emergency supplies.
                 determineNeededEmergencySupplies();
@@ -151,7 +153,8 @@ public class EmergencySupplyMission extends RoverMission implements
      * @param description the mission's description.
      */
     public EmergencySupplyMission(Collection<Person> members, Settlement startingSettlement, 
-            Settlement emergencySettlement, Rover rover, String description) {
+            Settlement emergencySettlement, Map<Good, Integer> emergencyGoods, 
+            Rover rover, String description) {
         // Use RoverMission constructor.
         super(description, (Person) members.toArray()[0], 1, rover);
         
@@ -173,7 +176,40 @@ public class EmergencySupplyMission extends RoverMission implements
                 emergencySettlement.getName()));
         
         // Determine emergency supplies.
-        determineNeededEmergencySupplies();
+        emergencyResources = new HashMap<AmountResource, Double>();
+        emergencyParts = new HashMap<Part, Integer>();
+        emergencyEquipment = new HashMap<Class, Integer>();
+        
+        Iterator<Good> j = emergencyGoods.keySet().iterator();
+        while (j.hasNext()) {
+            Good good = j.next();
+            int amount = emergencyGoods.get(good);
+            if (Good.AMOUNT_RESOURCE.equals(good.getCategory())) {
+                AmountResource resource = (AmountResource) good.getObject();
+                emergencyResources.put(resource, (double) amount);
+            }
+            else if (Good.ITEM_RESOURCE.equals(good.getCategory())) {
+                Part part = (Part) good.getObject();
+                emergencyParts.put(part, amount);
+            }
+            else if (Good.EQUIPMENT.equals(good.getCategory())) {
+                Class<? extends Equipment> equipmentClass = good.getClassType();
+                emergencyEquipment.put(equipmentClass, amount);
+            }
+            else if (Good.VEHICLE.equals(good.getCategory())) {
+                String vehicleType = good.getName();
+                Iterator<Vehicle> h = startingSettlement.getParkedVehicles().iterator();
+                while (h.hasNext()) {
+                    Vehicle vehicle = h.next();
+                    if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
+                        if ((vehicle != getVehicle()) && !vehicle.isReserved()) {
+                            emergencyVehicle = vehicle;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         
         // Add mission members.
         Iterator<Person> i = members.iterator();
@@ -329,6 +365,36 @@ public class EmergencySupplyMission extends RoverMission implements
         }
     }
 
+    @Override
+    protected void performEmbarkFromSettlementPhase(Person person) {
+        super.performEmbarkFromSettlementPhase(person);
+
+        // Set emergency vehicle (if any) to be towed.
+        if (!isDone() && (getRover().getTowedVehicle() == null)) {
+            if (emergencyVehicle != null) {
+                emergencyVehicle.setReservedForMission(true);
+                getRover().setTowedVehicle(emergencyVehicle);
+                emergencyVehicle.setTowingVehicle(getRover());
+                getStartingSettlement().getInventory().retrieveUnit(emergencyVehicle);
+            }
+        }
+    }
+    
+    @Override
+    protected void performDisembarkToSettlementPhase(Person person, Settlement disembarkSettlement) {
+
+        // Unload towed vehicle if any.
+        if (!isDone() && (getRover().getTowedVehicle() != null)) {
+            emergencyVehicle.setReservedForMission(false);
+            getRover().setTowedVehicle(null);
+            emergencyVehicle.setTowingVehicle(null);
+            disembarkSettlement.getInventory().storeUnit(emergencyVehicle);
+            emergencyVehicle.determinedSettlementParkedLocationAndFacing();
+        }
+
+        super.performDisembarkToSettlementPhase(person, disembarkSettlement);
+    }
+    
     /**
      * Perform the supply delivery disembarking phase.
      * @param person the person performing the phase.
@@ -388,6 +454,15 @@ public class EmergencySupplyMission extends RoverMission implements
      * @param person the person performing the phase.
      */
     private void performSupplyDeliveryPhase(Person person) {
+        
+        // Unload towed vehicle (if necessary).
+        if (getRover().getTowedVehicle() != null) {
+            emergencyVehicle.setReservedForMission(false);
+            getRover().setTowedVehicle(null);
+            emergencyVehicle.setTowingVehicle(null);
+            emergencySettlement.getInventory().storeUnit(emergencyVehicle);
+            emergencyVehicle.determinedSettlementParkedLocationAndFacing();
+        }
         
         // Unload rover if necessary.
         boolean roverUnloaded = getRover().getInventory().getTotalInventoryMass(false) == 0D;
@@ -689,7 +764,14 @@ public class EmergencySupplyMission extends RoverMission implements
         emergencyResources = getEmergencyResourcesNeeded(emergencySettlement);
         
         // Determine containers needed to hold emergency resources.
-        emergencyContainers = getContainersRequired(emergencyResources);
+        Map<Class<? extends Container>, Integer> containers = getContainersRequired(emergencyResources);
+        emergencyEquipment = new HashMap<Class, Integer>(containers.size());
+        Iterator<Class<? extends Container>> i = containers.keySet().iterator();
+        while (i.hasNext()) {
+            Class<? extends Container> container = i.next();
+            int number = containers.get(container);
+            emergencyEquipment.put(container, number);
+        }
         
         // Determine emergency parts needed.
         emergencyParts = getEmergencyPartsNeeded(emergencySettlement);
@@ -990,21 +1072,34 @@ public class EmergencySupplyMission extends RoverMission implements
         
         Map<Class, Integer> result = getEquipmentNeededForRemainingMission(true);
         
-        // Add any emergency supply containers needed.
-        if (outbound && (emergencyContainers != null)) {
+        // Add any emergency equipment needed.
+        if (outbound && (emergencyEquipment != null)) {
             
-            Iterator<Class<? extends Container>> i = emergencyContainers.keySet().iterator();
+            Iterator<Class> i = emergencyEquipment.keySet().iterator();
             while (i.hasNext()) {
-                Class<? extends Container> container = i.next();
-                int num = emergencyContainers.get(container);
-                if (result.containsKey(container)) {
-                    num += (Integer) result.get(container);
+                Class equipment = i.next();
+                int num = emergencyEquipment.get(equipment);
+                if (result.containsKey(equipment)) {
+                    num += (Integer) result.get(equipment);
                 }
-                result.put(container, num);
+                result.put(equipment, num);
             }
         }
         
         return result;
+    }
+    
+    @Override
+    public void endMission(String reason) {
+        super.endMission(reason);
+
+        // Unreserve any towed vehicles.
+        if (getRover() != null) {
+            if (getRover().getTowedVehicle() != null) {
+                Vehicle towed = getRover().getTowedVehicle();
+                towed.setReservedForMission(false);
+            }
+        }
     }
     
     @Override
@@ -1018,9 +1113,9 @@ public class EmergencySupplyMission extends RoverMission implements
             emergencyResources = null;
         }
         
-        if (emergencyContainers != null) {
-            emergencyContainers.clear();
-            emergencyContainers = null;
+        if (emergencyEquipment != null) {
+            emergencyEquipment.clear();
+            emergencyEquipment = null;
         }
         
         if (emergencyParts != null) {
