@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainDetailPanel.java
- * @version 3.02 2012-05-24
+ * @version 3.05 2013-08-16
  * @author Scott Davis
  */
 
@@ -286,6 +286,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
         String rescueMissionName = RescueSalvageVehicle.class.getName();
         customInfoPanels.put(rescueMissionName, rescuePanel);
         missionCustomPane.add(rescuePanel, rescueMissionName);
+        
+        // Create custom emergency supply mission panel.
+        MissionCustomInfoPanel emergencySupplyPanel = new EmergencySupplyMissionCustomInfoPanel();
+        String emergencySupplyMissionName = EmergencySupplyMission.class.getName();
+        customInfoPanels.put(emergencySupplyMissionName, emergencySupplyPanel);
+        missionCustomPane.add(emergencySupplyPanel, emergencySupplyMissionName);
 	}
 	
 	/**
