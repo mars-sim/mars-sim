@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Engineer.java
- * @version 3.03 2012-07-01
+ * @version 3.05 2013-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
@@ -44,6 +45,7 @@ public class Engineer extends Job implements Serializable {
 		// Add engineer-related tasks.
 		jobTasks.add(ManufactureGood.class);
         jobTasks.add(DigLocalRegolith.class);
+        jobTasks.add(DigLocalIce.class);
         jobTasks.add(SalvageGood.class);
 		
 		// Add engineer-related missions.

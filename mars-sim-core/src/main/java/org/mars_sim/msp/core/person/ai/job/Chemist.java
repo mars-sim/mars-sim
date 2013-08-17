@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chemist.java
- * @version 3.05 2013-05-31
+ * @version 3.05 2013-08-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
@@ -52,6 +53,7 @@ public class Chemist extends Job implements Serializable {
         jobTasks.add(AssistScientificStudyResearcher.class);
         jobTasks.add(CompileScientificStudyResults.class);
         jobTasks.add(DigLocalRegolith.class);
+        jobTasks.add(DigLocalIce.class);
         jobTasks.add(InviteStudyCollaborator.class);
         jobTasks.add(PeerReviewStudyPaper.class);
         jobTasks.add(PerformLaboratoryExperiment.class);
