@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 3.00 2011-03-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -68,8 +68,8 @@ public class CollectIce extends CollectResourcesMission {
      * @throws MissionException if error constructing mission.
      */
     public CollectIce(Collection<Person> members, Settlement startingSettlement, 
-    		List<Coordinates> iceCollectionSites, Rover rover, String description) 
-            {
+    		List<Coordinates> iceCollectionSites, Rover rover, 
+    		String description) {
     	
        	// Use CollectResourcesMission constructor.
     	super(description, members, startingSettlement, getIceResource(), SITE_GOAL, 

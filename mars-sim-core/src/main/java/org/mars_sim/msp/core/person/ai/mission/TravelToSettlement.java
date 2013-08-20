@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.02 2011-11-26
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -10,12 +10,12 @@ package org.mars_sim.msp.core.person.ai.mission;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -228,6 +228,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
             // Check for embarking missions.
             if (VehicleMission.hasEmbarkingMissions(settlement))
                 missionPossible = false;
+            
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
+                missionPossible = false;
+            }
 
             // Determine mission probability.
             if (missionPossible) {

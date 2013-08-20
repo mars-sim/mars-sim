@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.04 2013-05-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -223,9 +223,14 @@ public class Exploration extends RoverMission implements Serializable {
             // Check if settlement has enough basic resources for a rover mission.
             boolean hasBasicResources = RoverMission
                     .hasEnoughBasicResources(settlement);
+            
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
 
             if (reservableRover && backupRover && minNum && enoughContainers
-                    && !embarkingMissions && hasBasicResources) {
+                    && !embarkingMissions && hasBasicResources && enoughMethane) {
                 try {
                     // Get available rover.
                     Rover rover = (Rover) getVehicleWithGreatestRange(
