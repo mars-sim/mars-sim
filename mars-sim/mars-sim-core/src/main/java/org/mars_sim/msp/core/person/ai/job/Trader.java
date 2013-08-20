@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * Driver.java
- * @version 3.03 2012-07-01
+ * Trader.java
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.structure.Settlement;
 
 import java.io.Serializable;
@@ -29,7 +30,7 @@ public class Trader extends Job implements Serializable {
 		super("Trader");
 		
 		// Add trader-related tasks.
-		// Note: no trader tasks.
+		jobTasks.add(DigLocalIce.class);
 		
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);

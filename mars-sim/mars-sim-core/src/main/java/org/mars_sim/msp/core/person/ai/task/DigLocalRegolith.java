@@ -93,7 +93,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource regolithResource = AmountResource.findAmountResource("regolith");
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-                result = value * 10D;
+                result = value * Bag.CAPACITY;
                 if (result > 100D) result = 100D;
             }
             catch (Exception e) {

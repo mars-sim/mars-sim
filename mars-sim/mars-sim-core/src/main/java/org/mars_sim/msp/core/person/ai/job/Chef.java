@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chef.java
- * @version 3.03 2012-07-01
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
@@ -47,6 +48,7 @@ public class Chef extends Job implements Serializable {
         jobMissionJoins.add(BuildingSalvageMission.class);
         jobMissionStarts.add(EmergencySupplyMission.class);
         jobMissionJoins.add(EmergencySupplyMission.class);
+        jobTasks.add(DigLocalIce.class);
 	}
 
 	/**
