@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 3.03 2012-07-01
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -40,6 +40,7 @@ public class Driver extends Job implements Serializable {
         jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(EnterAirlock.class);
 		jobTasks.add(ExitAirlock.class);
+		jobTasks.add(DigLocalIce.class);
 		
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);

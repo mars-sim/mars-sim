@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Physicist.java
- * @version 3.05 2013-05-31
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryExperiment;
@@ -55,6 +56,7 @@ public class Physicist extends Job implements Serializable {
         jobTasks.add(PerformLaboratoryResearch.class);
         jobTasks.add(ProposeScientificStudy.class);
         jobTasks.add(RespondToStudyInvitation.class);
+        jobTasks.add(DigLocalIce.class);
         
         // Add physicist-related missions.
         jobMissionStarts.add(TravelToSettlement.class);

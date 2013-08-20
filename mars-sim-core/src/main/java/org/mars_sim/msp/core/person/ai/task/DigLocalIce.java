@@ -93,7 +93,7 @@ public class DigLocalIce extends EVAOperation implements Serializable {
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource iceResource = AmountResource.findAmountResource("ice");
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-                result = value * 10D;
+                result = value * Bag.CAPACITY;
                 if (result > 100D) {
                     result = 100D;
                 }
