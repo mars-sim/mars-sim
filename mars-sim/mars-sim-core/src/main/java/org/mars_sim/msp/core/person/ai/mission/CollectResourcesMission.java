@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.04 2013-05-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -231,9 +231,14 @@ public abstract class CollectResourcesMission extends RoverMission implements
             // Check if settlement has enough basic resources for a rover mission.
             boolean hasBasicResources = RoverMission
                     .hasEnoughBasicResources(settlement);
+            
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
 
             if (reservableRover && backupRover && minNum && enoughContainers
-                    && !embarkingMissions && hasBasicResources)
+                    && !embarkingMissions && hasBasicResources && enoughMethane)
                 result = 5D;
 
             // Crowding modifier

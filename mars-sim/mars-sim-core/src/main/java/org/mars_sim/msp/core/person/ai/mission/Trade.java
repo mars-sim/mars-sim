@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.05 2013-05-31
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -323,6 +323,13 @@ public class Trade extends RoverMission implements Serializable {
 
             // Check if settlement has enough basic resources for a rover mission.
             if (!RoverMission.hasEnoughBasicResources(settlement)) {
+                missionPossible = false;
+            }
+            
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            if (settlement.getInventory().getAmountResourceStored(methane, false) < 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
                 missionPossible = false;
             }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.04 2013-06-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -51,6 +51,7 @@ public abstract class RoverMission extends VehicleMission {
 
     // Static members
     protected static final int MIN_PEOPLE = 2;
+    protected static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
 
     // Data members
     private Settlement startingSettlement;

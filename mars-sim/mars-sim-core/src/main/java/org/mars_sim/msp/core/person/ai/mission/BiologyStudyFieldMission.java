@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.04 2013-05-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -154,13 +154,8 @@ public class BiologyStudyFieldMission extends RoverMission
         setPhaseDescription("Embarking from " + getStartingSettlement().getName());
         
         // Check if vehicle can carry enough supplies for the mission.
-//        try {
-            if (hasVehicle() && !isVehicleLoadable()) 
-                endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
-//        }
-//        catch (Exception e) {
-//            throw new MissionException(getPhase(), e);
-//        }
+        if (hasVehicle() && !isVehicleLoadable()) 
+            endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
     }
     
     /** 
@@ -195,8 +190,13 @@ public class BiologyStudyFieldMission extends RoverMission
             boolean enoughSuits = (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
                     > MIN_PEOPLE); 
             
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
+            
             if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources 
-                    && enoughSuits) {
+                    && enoughSuits && enoughMethane) {
 //                try {
                     // Get available rover.
                     Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);

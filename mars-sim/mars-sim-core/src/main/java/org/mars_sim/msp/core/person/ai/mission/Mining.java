@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.04 2013-05-03
+ * @version 3.05 2013-08-19
  * @author Scott Davis
  */
 
@@ -251,9 +251,14 @@ public class Mining extends RoverMission {
             // Check if LUV attachment parts available.
             boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
 
+            // Check if starting settlement has minimum amount of methane fuel.
+            AmountResource methane = AmountResource.findAmountResource("methane");
+            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
+            
             if (reservableRover && backupRover && minNum && enoughBags
                     && !embarkingMissions && reservableLUV
-                    && availableAttachmentParts && hasBasicResources) {
+                    && availableAttachmentParts && hasBasicResources && enoughMethane) {
 
                 try {
                     // Get available rover.
