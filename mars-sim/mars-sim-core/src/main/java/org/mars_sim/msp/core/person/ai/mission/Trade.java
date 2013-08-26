@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.05 2013-08-19
+ * @version 3.05 2013-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -241,17 +241,8 @@ public class Trade extends RoverMission implements Serializable {
 
         double missionProbability = 0D;
 
-        // Determine job modifier.
-        Job job = person.getMind().getJob();
-        double jobModifier = 0D;
-        if (job != null) {
-            jobModifier = job.getStartMissionProbabilityModifier(Trade.class);
-        }
-
         // Check if person is in a settlement.
-        boolean inSettlement = person.getLocationSituation().equals(Person.INSETTLEMENT);
-
-        if (inSettlement && (jobModifier > 0D)) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
             // Check if mission is possible for person based on their circumstance.
             boolean missionPossible = true;
@@ -349,7 +340,10 @@ public class Trade extends RoverMission implements Serializable {
                 }
 
                 // Job modifier.
-                missionProbability *= jobModifier;
+                Job job = person.getMind().getJob();
+                if (job != null) {
+                    missionProbability *= job.getStartMissionProbabilityModifier(Trade.class);
+                }
             }
         }
 
@@ -630,7 +624,8 @@ public class Trade extends RoverMission implements Serializable {
     private void performTradeEmbarkingPhase(Person person) {
 
         // If person is not aboard the rover, board rover.
-        if (!person.getLocationSituation().equals(Person.INVEHICLE) && !person.getLocationSituation().equals(Person.BURIED)) {
+        if (!isDone() && !person.getLocationSituation().equals(Person.INVEHICLE) && 
+                !person.getLocationSituation().equals(Person.BURIED)) {
 
             if (isRoverInAGarage()) {
                 if (getVehicle().getInventory().canStoreUnit(person, false)) {
@@ -687,7 +682,7 @@ public class Trade extends RoverMission implements Serializable {
         }
 
         // If rover is loaded and everyone is aboard, embark from settlement.
-        if (isEveryoneInRover()) {
+        if (!isDone() && isEveryoneInRover()) {
 
             // Remove from garage if in garage.
             Building garageBuilding = BuildingManager.getBuilding(getVehicle());

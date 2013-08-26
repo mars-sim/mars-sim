@@ -760,27 +760,74 @@ public class Exploration extends RoverMission implements Serializable {
                 remainingRange -= siteDistance;
             }
         }
+        
+        List<Coordinates> sites = null;
+        
+        if (unorderedSites.size() > 1) {
+            double unorderedSitesTotalDistance = getTotalDistance(startingLocation, unorderedSites);
 
-        // Reorder sites for shortest distance.
-        int explorationSiteNum = 1;
-        currentLocation = startingLocation;
-        while (unorderedSites.size() > 0) {
-            Coordinates shortest = unorderedSites.get(0);
-            Iterator<Coordinates> i = unorderedSites.iterator();
-            while (i.hasNext()) {
-                Coordinates site = i.next();
-                if (currentLocation.getDistance(site) < currentLocation
-                        .getDistance(shortest)) {
-                    shortest = site;
+            // Try to reorder sites for shortest distance.
+            List<Coordinates> unorderedSites2 = new ArrayList<Coordinates>(unorderedSites);
+            List<Coordinates> orderedSites = new ArrayList<Coordinates>(unorderedSites2.size());
+            currentLocation = startingLocation;
+            while (unorderedSites2.size() > 0) {
+                Coordinates shortest = unorderedSites2.get(0);
+                double shortestDistance = currentLocation.getDistance(shortest);
+                Iterator<Coordinates> i = unorderedSites2.iterator();
+                while (i.hasNext()) {
+                    Coordinates site = i.next();
+                    double distance = currentLocation.getDistance(site);
+                    if (distance < shortestDistance) {
+                        shortest = site;
+                        shortestDistance = distance;
+                    }
                 }
+
+                unorderedSites2.remove(shortest);
+                orderedSites.add(shortest);
+                currentLocation = shortest;
             }
+
+            double orderedSitesTotalDistance = getTotalDistance(startingLocation, orderedSites);
+
+            sites = unorderedSites;
+            if (orderedSitesTotalDistance < unorderedSitesTotalDistance) {
+                sites = orderedSites;
+            }
+            else {
+                sites = unorderedSites;
+            }
+        }
+        else {
+            sites = unorderedSites;
+        }
+        
+        int explorationSiteNum = 1;
+        Iterator<Coordinates> j = sites.iterator();
+        while (j.hasNext()) {
+            Coordinates site = j.next();
             String siteName = "exploration site " + explorationSiteNum;
-            addNavpoint(new NavPoint(shortest, siteName));
+            addNavpoint(new NavPoint(site, siteName));
             explorationSiteCompletion.put(siteName, 0D);
-            unorderedSites.remove(shortest);
-            currentLocation = shortest;
             explorationSiteNum++;
         }
+    }
+    
+    private double getTotalDistance(Coordinates startingLoc, List<Coordinates> sites) {
+        double result = 0D;
+        
+        Coordinates currentLoc = startingLoc;
+        Iterator<Coordinates> i = sites.iterator();
+        while (i.hasNext()) {
+            Coordinates site = i.next();
+            result += currentLoc.getDistance(site);
+            currentLoc = site;
+        }
+        
+        // Add return trip to starting loc.
+        result += currentLoc.getDistance(startingLoc);
+        
+        return result;
     }
 
     /**

@@ -99,7 +99,7 @@ public class ManufactureConstructionMaterials extends Task implements
      */
     public static double getProbability(Person person) {
         double result = 0D;
-
+        
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             try {
                 // See if there is an available manufacturing building.
