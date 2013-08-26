@@ -338,9 +338,9 @@ public class PersonTableModel extends UnitTableModel {
     		mission = null;
     	}
     	else {
-    		settlement.removeUnitListener(settlementListener);
-    		settlementListener = null;
-    		settlement = null;
+    	    settlement.removeUnitListener(settlementListener);
+    	    settlementListener = null;
+    	    settlement = null;
     	}
     }
     

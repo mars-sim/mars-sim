@@ -329,7 +329,7 @@ public class TableSorter extends AbstractTableModel
      * Prepares the model for deletion.
      */
     public void destroy() {
-        sourceModel.destroy();
+        // sourceModel.destroy();
     	// sourceModel = null;
     }
 }
