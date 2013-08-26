@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.04 2013-08-19
+ * @version 3.05 2013-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -223,13 +223,6 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
                                 }
                             }
                         }
-                        
-                        // If researcher's current job isn't related to areology, divide by two.
-                        Job job = person.getMind().getJob();
-                        if (job != null) {
-                            Science jobScience = ScienceUtil.getAssociatedScience(job);
-                            if (!areology.equals(jobScience)) result /= 2D;
-                        }
                     }
                 }
                 catch (Exception e) {
@@ -239,7 +232,13 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
             
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-            if (crowding > 0) result *= (crowding + 1);     
+            if (crowding > 0) result *= (crowding + 1);  
+            
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartMissionProbabilityModifier(AreologyStudyFieldMission.class);
+            }
         }
         
         return result;

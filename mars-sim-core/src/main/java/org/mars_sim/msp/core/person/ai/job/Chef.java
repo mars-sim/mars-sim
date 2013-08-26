@@ -38,6 +38,7 @@ public class Chef extends Job implements Serializable {
 		
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
+		jobTasks.add(DigLocalIce.class);
 		
 		// Add chef-related missions.
         jobMissionStarts.add(TravelToSettlement.class);
@@ -48,7 +49,6 @@ public class Chef extends Job implements Serializable {
         jobMissionJoins.add(BuildingSalvageMission.class);
         jobMissionStarts.add(EmergencySupplyMission.class);
         jobMissionJoins.add(EmergencySupplyMission.class);
-        jobTasks.add(DigLocalIce.class);
 	}
 
 	/**

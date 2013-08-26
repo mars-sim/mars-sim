@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.04 2013-05-01
+ * @version 3.05 2013-08-24
  * @author Scott Davis
  */
 
@@ -1096,7 +1096,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
             if (storedNum < num) {
                 
                 // Check if enough stored in settlement.
-                int storedSettlement = sInv.findNumUnitsOfClass(equipmentType);
+                int storedSettlement = sInv.findNumEmptyUnitsOfClass(equipmentType, false);
                 if (settlement.getParkedVehicles().contains(vehicle)) {
                     storedSettlement -= storedNum;
                 }

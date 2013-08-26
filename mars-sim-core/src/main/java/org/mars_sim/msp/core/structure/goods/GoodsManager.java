@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.05 2013-07-05
+ * @version 3.05 2013-08-24
  * @author Scott Davis
  */
 
@@ -527,7 +527,10 @@ public class GoodsManager implements Serializable {
         while (i.hasNext()) {
             ManufactureProcessItem item = i.next();
             if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()) && 
-                    resource.getName().equalsIgnoreCase(item.getName())) resourceInput = item;
+                    resource.getName().equalsIgnoreCase(item.getName())) {
+                            resourceInput = item;
+                            break;
+            }
         }
 
         if (resourceInput != null) {
@@ -544,7 +547,7 @@ public class GoodsManager implements Serializable {
 
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
 
-            demand = (resourceItems / totalItems) * totalInputsValue / resourceItems;
+            demand = (resourceItems / totalItems) * totalInputsValue;
         }
 
         return demand;
@@ -642,7 +645,7 @@ public class GoodsManager implements Serializable {
 
             double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
 
-            demand = (resourceItems / totalItems) * totalInputsValue / resourceItems;
+            demand = (resourceItems / totalItems) * totalInputsValue;
         }
 
         return demand;
@@ -1017,8 +1020,8 @@ public class GoodsManager implements Serializable {
      * @return demand (# of parts)
      * @throws Exception if error determining manufacturing demand.
      */
-    private double getPartManufacturingProcessDemand(Part part, ManufactureProcessInfo process) 
-    {
+    private double getPartManufacturingProcessDemand(Part part, 
+            ManufactureProcessInfo process) {
         double demand = 0D;
         double totalInputNum = 0D;
 
@@ -1043,7 +1046,7 @@ public class GoodsManager implements Serializable {
             double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
             double partNum = partInput.getAmount();
 
-            demand = totalInputsValue * (partNum / totalInputNum) / partNum;
+            demand = totalInputsValue * (partNum / totalInputNum);
         }
 
         return demand;
@@ -1102,7 +1105,7 @@ public class GoodsManager implements Serializable {
 
             double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
 
-            demand = totalInputsValue * (partNumber / totalNumber) / partNumber;
+            demand = totalInputsValue * (partNumber / totalNumber);
         }
 
         return demand;
@@ -1319,12 +1322,12 @@ public class GoodsManager implements Serializable {
      * @return number of equipment for the settlement.
      * @throws InventoryException if error getting the number of the equipment.
      */
-    private double getNumberOfEquipmentForSettlement(Class<? extends Equipment> equipmentClass) 
-    {
+    private double getNumberOfEquipmentForSettlement(
+            Class<? extends Equipment> equipmentClass) {
         double number = 0D;
 
         // Get number of the equipment in settlement storage.
-        number += settlement.getInventory().findNumUnitsOfClass(equipmentClass);
+        number += settlement.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 
         // Get number of resource out on mission vehicles.
         Iterator<Mission> i = Simulation.instance().getMissionManager().getMissionsForSettlement(settlement).iterator();
@@ -1333,7 +1336,7 @@ public class GoodsManager implements Serializable {
             if (mission instanceof VehicleMission) {
                 Vehicle vehicle = ((VehicleMission) mission).getVehicle();
                 if ((vehicle != null) && !settlement.equals(vehicle.getSettlement())) 
-                    number += vehicle.getInventory().findNumUnitsOfClass(equipmentClass);
+                    number += vehicle.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
             }
         }
 
@@ -1342,7 +1345,7 @@ public class GoodsManager implements Serializable {
         while (j.hasNext()) {
             Person person = j.next();
             if (person.getLocationSituation().equals(Person.OUTSIDE)) 
-                number += person.getInventory().findNumUnitsOfClass(equipmentClass);
+                number += person.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
         }
 
         return number;

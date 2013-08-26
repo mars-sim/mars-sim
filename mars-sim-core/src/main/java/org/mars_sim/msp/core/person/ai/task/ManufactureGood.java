@@ -84,7 +84,11 @@ public class ManufactureGood extends Task implements Serializable {
      */
     public static double getProbability(Person person) {
         double result = 0D;
-
+        
+        // Cancel any manufacturing processes that's beyond the skill of any people 
+        // associated with the settlement.
+        cancelDifficultManufacturingProcesses(person);
+        
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
             // See if there is an available manufacturing building.
@@ -129,6 +133,46 @@ public class ManufactureGood extends Task implements Serializable {
         }
             
         return result;
+    }
+    
+    /** 
+     * Cancel any manufacturing processes that's beyond the skill of any people 
+     * associated with the settlement.
+     * @param person the person
+     */
+    private static void cancelDifficultManufacturingProcesses(Person person) {
+        
+        Settlement settlement = person.getSettlement();
+        if (settlement != null) {
+            int highestSkillLevel = 0;
+            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+            while (i.hasNext()) {
+                Person tempPerson = i.next();
+                SkillManager skillManager = tempPerson.getMind().getSkillManager();
+                int skill = skillManager.getSkillLevel(Skill.MATERIALS_SCIENCE);
+                if (skill > highestSkillLevel) {
+                    highestSkillLevel = skill;
+                }
+            }
+                    
+            BuildingManager manager = person.getSettlement().getBuildingManager();
+            Iterator<Building> j = manager.getBuildings(Manufacture.NAME).iterator();
+            while (j.hasNext()) {
+                Building building = (Building) j.next();
+                Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+                List<ManufactureProcess> processes = new ArrayList<ManufactureProcess>(
+                        manufacturingFunction.getProcesses());
+                Iterator<ManufactureProcess> k = processes.iterator();
+                while (k.hasNext()) {
+                    ManufactureProcess process = k.next();
+                    int processSkillLevel = process.getInfo().getSkillLevelRequired();
+                    if (processSkillLevel > highestSkillLevel) {
+                        // Cancel manufacturing process.
+                        manufacturingFunction.endManufacturingProcess(process, true);
+                    }
+                }
+            }
+        }
     }
 
     /**

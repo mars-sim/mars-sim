@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.04 2013-05-11
+ * @version 3.05 2013-08-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -1172,7 +1172,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             if (storedNum < num) {
                 
                 // Check if enough stored in settlement.
-                int storedSettlement = sInv.findNumUnitsOfClass(equipmentType);
+                int storedSettlement = sInv.findNumEmptyUnitsOfClass(equipmentType, false);
                 if (settlement.getParkedVehicles().contains(vehicle)) {
                     storedSettlement -= storedNum;
                 }

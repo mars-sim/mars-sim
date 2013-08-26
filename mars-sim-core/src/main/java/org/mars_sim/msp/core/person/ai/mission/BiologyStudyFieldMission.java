@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.05 2013-08-19
+ * @version 3.05 2013-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -197,51 +197,46 @@ public class BiologyStudyFieldMission extends RoverMission
             
             if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources 
                     && enoughSuits && enoughMethane) {
-//                try {
-                    // Get available rover.
-                    Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
-                    if (rover != null) {
-                        
-                        Science biology = ScienceUtil.getScience(Science.BIOLOGY);
-                        
-                        // Add probability for researcher's primary study (if any).
-                        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-                        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-                        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-                            if (!primaryStudy.isPrimaryResearchCompleted()) {
-                                if (biology.equals(primaryStudy.getScience())) 
-                                    result += 10D;
-                            }
-                        }
-                        
-                        // Add probability for each study researcher is collaborating on.
-                        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-                        while (i.hasNext()) {
-                            ScientificStudy collabStudy = i.next();
-                            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-                                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                                    if (biology.equals(collabStudy.getCollaborativeResearchers().get(person)))
-                                        result += 5D;
-                                }
-                            }
-                        }
-                        
-                        // If researcher's current job isn't related to biology, divide by two.
-                        Job job = person.getMind().getJob();
-                        if (job != null) {
-                            Science jobScience = ScienceUtil.getAssociatedScience(job);
-                            if (!biology.equals(jobScience)) result /= 2D;
+
+                // Get available rover.
+                Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
+                if (rover != null) {
+
+                    Science biology = ScienceUtil.getScience(Science.BIOLOGY);
+
+                    // Add probability for researcher's primary study (if any).
+                    ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+                    ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+                    if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
+                        if (!primaryStudy.isPrimaryResearchCompleted()) {
+                            if (biology.equals(primaryStudy.getScience())) 
+                                result += 10D;
                         }
                     }
-//                }
-//                catch (Exception e) {
-//                    logger.log(Level.SEVERE, "Error determining rover.", e);
-//                }
+
+                    // Add probability for each study researcher is collaborating on.
+                    Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+                    while (i.hasNext()) {
+                        ScientificStudy collabStudy = i.next();
+                        if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
+                            if (!collabStudy.isCollaborativeResearchCompleted(person)) {
+                                if (biology.equals(collabStudy.getCollaborativeResearchers().get(person)))
+                                    result += 5D;
+                            }
+                        }
+                    }
+                }
             }
             
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-            if (crowding > 0) result *= (crowding + 1);     
+            if (crowding > 0) result *= (crowding + 1);  
+            
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class);
+            }
         }
         
         return result;

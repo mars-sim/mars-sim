@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.04 2013-05-03
+ * @version 3.05 2013-08-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -286,16 +286,8 @@ public class BuildingConstructionMission extends Mission implements Serializable
         
         double result = 0D;
         
-        // Determine job modifier.
-        Job job = person.getMind().getJob();
-        double jobModifier = 0D;
-        if (job != null) 
-            jobModifier = job.getStartMissionProbabilityModifier(BuildingConstructionMission.class); 
-        
         // Check if person is in a settlement.
-        boolean inSettlement = person.getLocationSituation().equals(Person.INSETTLEMENT);
-        
-        if (inSettlement && (jobModifier > 0D)) {
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
         
             // Check if available light utility vehicles.
@@ -323,8 +315,9 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                         ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                         double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
-                        if (constructionProfit > 0D) {
-                            result = 10D;
+                        result = constructionProfit;
+                        if (result > 100D) {
+                            result = 100D;
                         }
                     }
                 }
@@ -334,8 +327,15 @@ public class BuildingConstructionMission extends Mission implements Serializable
             }       
             
             // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) 
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) {
                 result = 0D;
+            }
+            
+            // Job modifier.
+            Job job = person.getMind().getJob();
+            if (job != null) {
+                result *= job.getStartMissionProbabilityModifier(BuildingConstructionMission.class);
+            }
         }
         
         return result;
