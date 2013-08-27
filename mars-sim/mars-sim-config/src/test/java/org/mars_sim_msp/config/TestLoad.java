@@ -33,10 +33,10 @@ import org.mars_sim.msp.config.model.building.Building;
  * @author <a href="mailto:mail@landrus.de">Christian Domsch</a>
  *
  */
-public class Load {
+public class TestLoad {
 
 	@Test
-	public void load() {
+	public void testLoad() {
 		try {
 			SimulationConfigImpl config = new SimulationConfigImpl();
 
