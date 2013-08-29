@@ -1,10 +1,11 @@
 # Mars Simulation Project
 # csv2xml.py
-# @version 3.03 2012-08-06
+# @version 3.05 2013-08-29
 # @author Lars Naesbye Christensen [lechimp]
 #
-# Requires Python 2.3 or later and the 'SearchResults.csv' file in same directory
-# CSV file can be generated at http://planetarynames.wr.usgs.gov/SearchResults?target=MARS
+# This script requires Python 2.3 or later and the 'SearchResults.csv' file in the same
+# directory as the script file.
+# The CSV file can be generated at http://planetarynames.wr.usgs.gov/SearchResults?target=MARS
 # Usage : 'python csv2xml.py'
 #
 # TODO: Insert the doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd">
@@ -19,10 +20,10 @@ index_lat = 3
 index_long = 4
 
 # Add introductory comments 
-introcomment = xmldoc.createComment("Landmark coordinates from USGS Astrogeology Research Program")
+introcomment1 = xmldoc.createComment("Landmark coordinates from USGS Astrogeology Research Program")
 introcomment2 = xmldoc.createComment("http://planetarynames.wr.usgs.gov/SearchResults?target=MARS")
 introcomment3 = xmldoc.createComment("Landmarks to be displayed in the user interface. ")
-xmldoc.appendChild(introcomment)
+xmldoc.appendChild(introcomment1)
 xmldoc.appendChild(introcomment2)
 xmldoc.appendChild(introcomment3)
  
@@ -64,7 +65,7 @@ for csvline in csvlinelist:
 		landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
 		landmarks.appendChild(landmark)
 
-# Add the rovers and other craft
+# Add the rovers and other artificial objects
 rovercomment = xmldoc.createComment("Martian Landers and Rovers")
 landmarks.appendChild(rovercomment)
 
@@ -87,7 +88,6 @@ for rover in roverarray:
 	landmark.setAttribute("longitude", rover[1]) 
 	landmark.setAttribute("latitude", rover[2]) 
 	landmarks.appendChild(landmark)
-
 
 f.close() # close our CSV file stream nicely
  
