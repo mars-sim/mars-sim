@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -60,6 +60,9 @@ public class GroundVehicleMaintenanceDescriptor extends org.exolab.castor.xml.ut
         _nsURI = "http://mars-sim.sourceforge.net/building";
         _xmlName = "ground-vehicle-maintenance";
         _elementDefinition = true;
+
+        //-- set grouping compositor
+        setCompositorAsSequence();
         org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
         org.exolab.castor.mapping.FieldHandler             handler        = null;
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
@@ -113,6 +116,55 @@ public class GroundVehicleMaintenanceDescriptor extends org.exolab.castor.xml.ut
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
 
+        //-- _parkingLocationList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.ParkingLocation.class, "_parkingLocationList", "parking-location", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                GroundVehicleMaintenance target = (GroundVehicleMaintenance) object;
+                return target.getParkingLocation();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    GroundVehicleMaintenance target = (GroundVehicleMaintenance) object;
+                    target.addParkingLocation( (org.mars_sim.msp.config.model.building.ParkingLocation) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
+                try {
+                    GroundVehicleMaintenance target = (GroundVehicleMaintenance) object;
+                    target.removeAllParkingLocation();
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.mars_sim.msp.config.model.building.ParkingLocation();
+            }
+        };
+        desc.setSchemaType("list");
+        desc.setComponentType("org.mars_sim.msp.config.model.building.ParkingLocation");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
+        desc.setMultivalued(true);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _parkingLocationList
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(0);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
     }
 
 

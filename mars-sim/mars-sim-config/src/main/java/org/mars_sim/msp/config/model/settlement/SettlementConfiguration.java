@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -31,6 +31,11 @@ public class SettlementConfiguration implements java.io.Serializable {
     private org.mars_sim.msp.config.model.settlement.InitialSettlementList _initialSettlementList;
 
     /**
+     * Field _newArrivingSettlementList.
+     */
+    private org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList _newArrivingSettlementList;
+
+    /**
      * Field _settlementNameList.
      */
     private org.mars_sim.msp.config.model.settlement.SettlementNameList _settlementNameList;
@@ -57,6 +62,16 @@ public class SettlementConfiguration implements java.io.Serializable {
     public org.mars_sim.msp.config.model.settlement.InitialSettlementList getInitialSettlementList(
     ) {
         return this._initialSettlementList;
+    }
+
+    /**
+     * Returns the value of field 'newArrivingSettlementList'.
+     * 
+     * @return the value of field 'NewArrivingSettlementList'.
+     */
+    public org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList getNewArrivingSettlementList(
+    ) {
+        return this._newArrivingSettlementList;
     }
 
     /**
@@ -135,6 +150,17 @@ public class SettlementConfiguration implements java.io.Serializable {
     public void setInitialSettlementList(
             final org.mars_sim.msp.config.model.settlement.InitialSettlementList initialSettlementList) {
         this._initialSettlementList = initialSettlementList;
+    }
+
+    /**
+     * Sets the value of field 'newArrivingSettlementList'.
+     * 
+     * @param newArrivingSettlementList the value of field
+     * 'newArrivingSettlementList'.
+     */
+    public void setNewArrivingSettlementList(
+            final org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList newArrivingSettlementList) {
+        this._newArrivingSettlementList = newArrivingSettlementList;
     }
 
     /**

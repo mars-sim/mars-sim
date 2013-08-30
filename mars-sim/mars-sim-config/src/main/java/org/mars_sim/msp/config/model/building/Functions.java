@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -21,6 +21,11 @@ public class Functions implements java.io.Serializable {
     //--------------------------/
 
     /**
+     * Field _astronomicalObservation.
+     */
+    private org.mars_sim.msp.config.model.building.AstronomicalObservation _astronomicalObservation;
+
+    /**
      * Field _communication.
      */
     private org.mars_sim.msp.config.model.building.Communication _communication;
@@ -34,6 +39,11 @@ public class Functions implements java.io.Serializable {
      * Field _dining.
      */
     private org.mars_sim.msp.config.model.building.Dining _dining;
+
+    /**
+     * Field _earthReturn.
+     */
+    private org.mars_sim.msp.config.model.building.EarthReturn _earthReturn;
 
     /**
      * Field _EVA.
@@ -71,6 +81,11 @@ public class Functions implements java.io.Serializable {
     private org.mars_sim.msp.config.model.building.Manufacture _manufacture;
 
     /**
+     * Field _management.
+     */
+    private org.mars_sim.msp.config.model.building.Management _management;
+
+    /**
      * Field _medicalCare.
      */
     private org.mars_sim.msp.config.model.building.MedicalCare _medicalCare;
@@ -104,11 +119,6 @@ public class Functions implements java.io.Serializable {
      * Field _storage.
      */
     private org.mars_sim.msp.config.model.building.Storage _storage;
-
-    /**
-     * Field _astronomicalObservation.
-     */
-    private org.mars_sim.msp.config.model.building.AstronomicalObservation _astronomicalObservation;
 
 
       //----------------/
@@ -175,6 +185,16 @@ public class Functions implements java.io.Serializable {
     }
 
     /**
+     * Returns the value of field 'earthReturn'.
+     * 
+     * @return the value of field 'EarthReturn'.
+     */
+    public org.mars_sim.msp.config.model.building.EarthReturn getEarthReturn(
+    ) {
+        return this._earthReturn;
+    }
+
+    /**
      * Returns the value of field 'exercise'.
      * 
      * @return the value of field 'Exercise'.
@@ -222,6 +242,16 @@ public class Functions implements java.io.Serializable {
     public org.mars_sim.msp.config.model.building.LivingAccommodations getLivingAccommodations(
     ) {
         return this._livingAccommodations;
+    }
+
+    /**
+     * Returns the value of field 'management'.
+     * 
+     * @return the value of field 'Management'.
+     */
+    public org.mars_sim.msp.config.model.building.Management getManagement(
+    ) {
+        return this._management;
     }
 
     /**
@@ -403,6 +433,16 @@ public class Functions implements java.io.Serializable {
     }
 
     /**
+     * Sets the value of field 'earthReturn'.
+     * 
+     * @param earthReturn the value of field 'earthReturn'.
+     */
+    public void setEarthReturn(
+            final org.mars_sim.msp.config.model.building.EarthReturn earthReturn) {
+        this._earthReturn = earthReturn;
+    }
+
+    /**
      * Sets the value of field 'exercise'.
      * 
      * @param exercise the value of field 'exercise'.
@@ -452,6 +492,16 @@ public class Functions implements java.io.Serializable {
     public void setLivingAccommodations(
             final org.mars_sim.msp.config.model.building.LivingAccommodations livingAccommodations) {
         this._livingAccommodations = livingAccommodations;
+    }
+
+    /**
+     * Sets the value of field 'management'.
+     * 
+     * @param management the value of field 'management'.
+     */
+    public void setManagement(
+            final org.mars_sim.msp.config.model.building.Management management) {
+        this._management = management;
     }
 
     /**

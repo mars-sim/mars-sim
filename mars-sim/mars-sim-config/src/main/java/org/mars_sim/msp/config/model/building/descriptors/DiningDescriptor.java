@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -18,7 +18,7 @@ import org.mars_sim.msp.config.model.building.Dining;
  * 
  * @version $Revision$ $Date$
  */
-public class DiningDescriptor extends org.mars_sim.msp.config.model.configuration.descriptors.EmptyTypeDescriptor {
+public class DiningDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptorImpl {
 
 
       //--------------------------/
@@ -57,10 +57,62 @@ public class DiningDescriptor extends org.mars_sim.msp.config.model.configuratio
 
     public DiningDescriptor() {
         super();
-        setExtendsWithoutFlatten(new org.mars_sim.msp.config.model.configuration.descriptors.EmptyTypeDescriptor());
         _nsURI = "http://mars-sim.sourceforge.net/building";
         _xmlName = "dining";
         _elementDefinition = true;
+        org.exolab.castor.xml.util.XMLFieldDescriptorImpl  desc           = null;
+        org.exolab.castor.mapping.FieldHandler             handler        = null;
+        org.exolab.castor.xml.FieldValidator               fieldValidator = null;
+        //-- initialize attribute descriptors
+
+        //-- _capacity
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Long.TYPE, "_capacity", "capacity", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Dining target = (Dining) object;
+                if (!target.hasCapacity()) { return null; }
+                return new java.lang.Long(target.getCapacity());
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Dining target = (Dining) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteCapacity();
+                        return;
+                    }
+                    target.setCapacity( ((java.lang.Long) value).longValue());
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("integer");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _capacity
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.LongValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.LongValidator();
+            fieldValidator.setValidator(typeValidator);
+        }
+        desc.setValidator(fieldValidator);
+        //-- initialize element descriptors
+
     }
 
 
@@ -88,9 +140,6 @@ public class DiningDescriptor extends org.mars_sim.msp.config.model.configuratio
     @Override()
     public org.exolab.castor.mapping.FieldDescriptor getIdentity(
     ) {
-        if (_identity == null) {
-            return super.getIdentity();
-        }
         return _identity;
     }
 

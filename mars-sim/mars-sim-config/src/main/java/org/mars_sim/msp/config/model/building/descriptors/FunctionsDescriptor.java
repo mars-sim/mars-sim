@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -67,6 +67,45 @@ public class FunctionsDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
 
         //-- initialize element descriptors
 
+        //-- _astronomicalObservation
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.AstronomicalObservation.class, "_astronomicalObservation", "astronomical-observation", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Functions target = (Functions) object;
+                return target.getAstronomicalObservation();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Functions target = (Functions) object;
+                    target.setAstronomicalObservation( (org.mars_sim.msp.config.model.building.AstronomicalObservation) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.mars_sim.msp.config.model.building.AstronomicalObservation();
+            }
+        };
+        desc.setSchemaType("org.mars_sim.msp.config.model.building.AstronomicalObservation");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _astronomicalObservation
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
         //-- _communication
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.Communication.class, "_communication", "communication", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
@@ -180,6 +219,45 @@ public class FunctionsDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         addSequenceElement(desc);
 
         //-- validation code for: _dining
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _earthReturn
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.EarthReturn.class, "_earthReturn", "earth-return", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Functions target = (Functions) object;
+                return target.getEarthReturn();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Functions target = (Functions) object;
+                    target.setEarthReturn( (org.mars_sim.msp.config.model.building.EarthReturn) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.mars_sim.msp.config.model.building.EarthReturn();
+            }
+        };
+        desc.setSchemaType("org.mars_sim.msp.config.model.building.EarthReturn");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _earthReturn
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
         }
@@ -457,6 +535,45 @@ public class FunctionsDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
+        //-- _management
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.Management.class, "_management", "management", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Functions target = (Functions) object;
+                return target.getManagement();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Functions target = (Functions) object;
+                    target.setManagement( (org.mars_sim.msp.config.model.building.Management) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.mars_sim.msp.config.model.building.Management();
+            }
+        };
+        desc.setSchemaType("org.mars_sim.msp.config.model.building.Management");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _management
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
         //-- _medicalCare
         desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.MedicalCare.class, "_medicalCare", "medical-care", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
@@ -726,45 +843,6 @@ public class FunctionsDescriptor extends org.exolab.castor.xml.util.XMLClassDesc
         addSequenceElement(desc);
 
         //-- validation code for: _storage
-        fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        { //-- local scope
-        }
-        desc.setValidator(fieldValidator);
-        //-- _astronomicalObservation
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.AstronomicalObservation.class, "_astronomicalObservation", "astronomical-observation", org.exolab.castor.xml.NodeType.Element);
-        handler = new org.exolab.castor.xml.XMLFieldHandler() {
-            @Override
-            public java.lang.Object getValue( java.lang.Object object ) 
-                throws IllegalStateException
-            {
-                Functions target = (Functions) object;
-                return target.getAstronomicalObservation();
-            }
-            @Override
-            public void setValue( java.lang.Object object, java.lang.Object value) 
-                throws IllegalStateException, IllegalArgumentException
-            {
-                try {
-                    Functions target = (Functions) object;
-                    target.setAstronomicalObservation( (org.mars_sim.msp.config.model.building.AstronomicalObservation) value);
-                } catch (java.lang.Exception ex) {
-                    throw new IllegalStateException(ex.toString());
-                }
-            }
-            @Override
-            @SuppressWarnings("unused")
-            public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.mars_sim.msp.config.model.building.AstronomicalObservation();
-            }
-        };
-        desc.setSchemaType("org.mars_sim.msp.config.model.building.AstronomicalObservation");
-        desc.setHandler(handler);
-        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
-        desc.setMultivalued(false);
-        addFieldDescriptor(desc);
-        addSequenceElement(desc);
-
-        //-- validation code for: _astronomicalObservation
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
         }

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -12,8 +12,7 @@ package org.mars_sim.msp.config.model.configuration.types;
  * 
  * @version $Revision$ $Date$
  */
-@SuppressWarnings("serial")
-public enum Gender implements java.io.Serializable {
+public enum Gender {
 
 
       //------------------/
@@ -38,6 +37,19 @@ public enum Gender implements java.io.Serializable {
      */
     private final java.lang.String value;
 
+    /**
+     * Field enumConstants.
+     */
+    private static final java.util.Map<java.lang.String, Gender> enumConstants = new java.util.HashMap<java.lang.String, Gender>();
+
+
+    static {
+        for (Gender c: Gender.values()) {
+            Gender.enumConstants.put(c.value, c);
+        }
+
+    };
+
 
       //----------------/
      //- Constructors -/
@@ -60,10 +72,9 @@ public enum Gender implements java.io.Serializable {
      */
     public static org.mars_sim.msp.config.model.configuration.types.Gender fromValue(
             final java.lang.String value) {
-        for (Gender c: Gender.values()) {
-            if (c.value.equals(value)) {
-                return c;
-            }
+        Gender c = Gender.enumConstants.get(value);
+        if (c != null) {
+            return c;
         }
         throw new IllegalArgumentException(value);
     }

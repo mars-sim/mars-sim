@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -24,6 +24,26 @@ public class Vehicle implements java.io.Serializable {
      * Field _type.
      */
     private java.lang.String _type;
+
+    /**
+     * Field _width.
+     */
+    private double _width;
+
+    /**
+     * keeps track of state for field: _width
+     */
+    private boolean _has_width;
+
+    /**
+     * Field _length.
+     */
+    private double _length;
+
+    /**
+     * keeps track of state for field: _length
+     */
+    private boolean _has_length;
 
     /**
      * Field _fuelEfficiency.
@@ -78,6 +98,20 @@ public class Vehicle implements java.io.Serializable {
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     */
+    public void deleteLength(
+    ) {
+        this._has_length= false;
+    }
+
+    /**
+     */
+    public void deleteWidth(
+    ) {
+        this._has_width= false;
+    }
 
     /**
      * Returns the value of field 'baseSpeed'.
@@ -140,6 +174,16 @@ public class Vehicle implements java.io.Serializable {
     }
 
     /**
+     * Returns the value of field 'length'.
+     * 
+     * @return the value of field 'Length'.
+     */
+    public double getLength(
+    ) {
+        return this._length;
+    }
+
+    /**
      * Returns the value of field 'partAttachment'.
      * 
      * @return the value of field 'PartAttachment'.
@@ -167,6 +211,36 @@ public class Vehicle implements java.io.Serializable {
     public java.lang.String getType(
     ) {
         return this._type;
+    }
+
+    /**
+     * Returns the value of field 'width'.
+     * 
+     * @return the value of field 'Width'.
+     */
+    public double getWidth(
+    ) {
+        return this._width;
+    }
+
+    /**
+     * Method hasLength.
+     * 
+     * @return true if at least one Length has been added
+     */
+    public boolean hasLength(
+    ) {
+        return this._has_length;
+    }
+
+    /**
+     * Method hasWidth.
+     * 
+     * @return true if at least one Width has been added
+     */
+    public boolean hasWidth(
+    ) {
+        return this._has_width;
     }
 
     /**
@@ -277,6 +351,17 @@ public class Vehicle implements java.io.Serializable {
     }
 
     /**
+     * Sets the value of field 'length'.
+     * 
+     * @param length the value of field 'length'.
+     */
+    public void setLength(
+            final double length) {
+        this._length = length;
+        this._has_length = true;
+    }
+
+    /**
      * Sets the value of field 'partAttachment'.
      * 
      * @param partAttachment the value of field 'partAttachment'.
@@ -304,6 +389,17 @@ public class Vehicle implements java.io.Serializable {
     public void setType(
             final java.lang.String type) {
         this._type = type;
+    }
+
+    /**
+     * Sets the value of field 'width'.
+     * 
+     * @param width the value of field 'width'.
+     */
+    public void setWidth(
+            final double width) {
+        this._width = width;
+        this._has_width = true;
     }
 
     /**
