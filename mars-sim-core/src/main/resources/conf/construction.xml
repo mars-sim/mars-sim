@@ -39,7 +39,8 @@
 			</vehicle>
 		</foundation>
 		
-		<foundation name="unprepared surface foundation" width="*" length="*" constructable="false" salvagable="true" 
+		<!-- Unprepared surface foundation has width and length that is dynamically set. -->
+		<foundation name="unprepared surface foundation" width="-1.0" length="-1.0" constructable="false" salvagable="true" 
 		 work-time="0.0" skill-required="0" />
 		 
 		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" constructable="true" 
