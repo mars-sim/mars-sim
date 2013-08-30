@@ -12,6 +12,7 @@
     		<xs:sequence>
     			<xs:element ref="set:settlement-template-list"></xs:element>
     			<xs:element ref="set:initial-settlement-list"></xs:element>
+    			<xs:element ref="set:new-arriving-settlement-list"></xs:element>
     			<xs:element ref="set:settlement-name-list"></xs:element>
     		</xs:sequence>
     	</xs:complexType>
@@ -37,6 +38,7 @@
     			<xs:element ref="set:resupply" minOccurs="0"></xs:element>
     		</xs:sequence>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="default-population" type="xs:integer"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
@@ -100,7 +102,7 @@
     <xs:element name="initial-settlement-list">
     	<xs:complexType>
     		<xs:sequence>
-    			<xs:element ref="set:settlement" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="set:settlement" minOccurs="0" maxOccurs="unbounded"></xs:element>
     		</xs:sequence>
     	</xs:complexType>
     </xs:element>
@@ -109,6 +111,7 @@
     	<xs:complexType>
     		<xs:sequence>
     			<xs:element ref="set:location"></xs:element>
+    			<xs:element ref="set:population"></xs:element>
     		</xs:sequence>
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
     		<xs:attribute name="template" type="xs:string"></xs:attribute>
@@ -119,6 +122,32 @@
     	<xs:complexType>
     		<xs:attribute name="longitude" type="xs:string"></xs:attribute>
     		<xs:attribute name="latitude" type="xs:string"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="new-arriving-settlement-list">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:arriving-settlement" minOccurs="0" maxOccurs="unbounded"></xs:element>
+    		</xs:sequence>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="arriving-settlement">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="set:location"></xs:element>
+    			<xs:element ref="set:population"></xs:element>
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string"></xs:attribute>
+    		<xs:attribute name="template" type="xs:string"></xs:attribute>
+    		<xs:attribute name="arrival-time" type="xs:double"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="population">
+    	<xs:complexType>
+    		<xs:attribute name="number" type="xs:integer"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     

@@ -6,11 +6,11 @@
 	xsi:schemaLocation="http://mars-sim.sourceforge.net/construction schema/construction.xsd">
 	
 	<foundation-list>
+
 		<foundation name="surface foundation 3m x 2m" width="2.0" length="3.0" constructable="true" salvagable="true" 
 		 work-time=".5" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
@@ -19,7 +19,6 @@
 		 work-time="2.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
@@ -28,7 +27,6 @@
 		 work-time="4.0" skill-required="1" >
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="bulldozer blade" />
-				<attachment-part name="backhoe" />
 				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
@@ -40,12 +38,64 @@
 			<vehicle type="light utility vehicle" >    
 				<attachment-part name="bulldozer blade" />
 				<attachment-part name="backhoe" />
-				<attachment-part name="soil compactor" />
 			</vehicle>
 		</foundation>
 		
-		<foundation name="unprepared surface foundation" width="1" length="1" constructable="false" salvagable="true" 
+		<!-- Unprepared surface foundation has width and length that is dynamically set. -->
+		<foundation name="unprepared surface foundation" width="-1.0" length="-1.0" constructable="false" salvagable="true" 
 		 work-time="0.0" skill-required="0" />
+		 
+		<foundation name="shallow borehole drilling site" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="100.0" skill-required="3" >
+		 	<resource name="water" amount="100.0" />
+		 	<part name="bore drill bit" number="1" />
+		 	<part name="bore drill pipe" number="20" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="deep borehole drilling site" width="10.0" length="15.0" constructable="true" 
+		 salvagable="true" work-time="300.0" skill-required="4" >
+		 	<resource name="water" amount="200.0" />
+		 	<part name="bore drill bit" number="4" />
+		 	<part name="bore drill pipe" number="60" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="crane boom" />
+				<attachment-part name="drilling rig" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="subsurface foundation 10m x 10m x 3m" width="10.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="40.0" skill-required="1" >
+			<resource name="concrete" amount="2500.0" />
+			<resource name="water" amount="800.0" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="ramped subsurface foundation 15m x 18m x 5m" width="10.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="40.0" skill-required="1" >
+			<resource name="concrete" amount="2500.0" />
+			<resource name="water" amount="800.0" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+			</vehicle>
+		</foundation>
+		
+		<foundation name="subsurface foundation 5m x 10m x 3m" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="30.0" skill-required="1" >
+			<resource name="concrete" amount="1200.0" />
+			<resource name="water" amount="400.0" />
+			<vehicle type="light utility vehicle" >    
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="backhoe" />
+			</vehicle>
+		</foundation>
 
 	</foundation-list>
 
@@ -118,8 +168,8 @@
 			<part name="solar panel" number="4" />
 		</frame>
 		
-		<!-- Note: the transparant inflatable frame is just for salvaging and cannot be constructed insitu. -->
-		<frame name="transparant inflatable frame" width="6.0" length="9.0" constructable="false" salvagable="true" 
+		<!-- Note: the transparent inflatable frame is just for salvaging and cannot be constructed insitu. -->
+		<frame name="transparent inflatable frame" width="6.0" length="9.0" constructable="false" salvagable="true" 
 		 work-time="100.0" skill-required="2" foundation="unprepared surface foundation" >
 			<part name="aluminum scrap" number="5" />
 			<part name="plastic sheet" number="100" />
@@ -229,6 +279,76 @@
 			<part name="wire connector" number="5" />
 			<part name="power cable" number="2" />
 			<part name="gasket" number="4" />
+		</frame>
+		
+		<frame name="small areothermal well frame" width="5.0" length="10.0" constructable="true" 
+		 salvagable="true" work-time="100.0" skill-required="2" foundation="shallow borehole drilling site" >
+			<resource name="concrete" amount="25.0" />
+			<resource name="water" amount="10.0" />
+			<part name="steel truss" number="10" />
+			<part name="steel sheet" number="5" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="large areothermal well frame" width="10.0" length="15.0" constructable="true" 
+		 salvagable="true" work-time="400.0" skill-required="3" foundation="deep borehole drilling site" >
+			<resource name="concrete" amount="75.0" />
+			<resource name="water" amount="30.0" />
+			<part name="steel truss" number="30" />
+			<part name="steel sheet" number="15" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="small vaulted brick frame" width="10.0" length="10.0" constructable="true" salvagable="true" 
+		 work-time="80.0" skill-required="2" foundation="subsurface foundation 10m x 10m x 3m" >
+			<resource name="mortar" amount="24000.0" />
+			<resource name="water" amount="24000.0" />
+			<part name="brick" number="24000" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="garage brick frame" width="15.0" length="18.0" constructable="true" salvagable="true" 
+		 work-time="100.0" skill-required="3" foundation="ramped subsurface foundation 15m x 18m x 5m" >
+			<resource name="mortar" amount="40000.0" />
+			<resource name="water" amount="40000.0" />
+			<part name="brick" number="40000" />
+			<part name="steel truss" number="2" />
+			<part name="steel sheet" number="5" />
+			<part name="aluminum sheet" number="5" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<part name="power cable" number="2" />
+			<part name="gasket" number="4" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</frame>
+		
+		<frame name="vaulted glass brick frame" width="5.0" length="10.0" constructable="true" salvagable="true" 
+		 work-time="100.0" skill-required="3" foundation="subsurface foundation 5m x 10m x 3m" >
+			<resource name="mortar" amount="7000.0" />
+			<resource name="water" amount="7000.0" />
+			<part name="brick" number="7000" />
+			<part name="steel truss" number="4" />
+			<part name="aluminum sheet" number="7" />
+			<part name="glass sheet" number="10" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="5" />
+			<part name="gasket" number="5" />
+			<part name="electrical wire" number="6" />
+			<part name="wire connector" number="6" />
+			<part name="power cable" number="3" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
 		</frame>
 		
 	</frame-list>
@@ -349,7 +469,7 @@
 		
 		<building name="small sabatier processor" width="5.0" length="5.0" constructable="true" salvagable="true" 
 		 work-time="10.0" skill-required="3" frame="small steel frame" >
-			<resource name="nickel" amount=".5" />
+			<resource name="nickel" amount="1.0" />
 			<part name="valve" number="6" />
 			<part name="gasket" number="6" />
 			<part name="small electric motor" number="1" />
@@ -473,7 +593,7 @@
 		
 		<!-- Inflatable greenhouse building project for refitting or salvaging. -->
 		<building name="inflatable greenhouse" width="6.0" length="9.0" constructable="true" salvagable="true" 
-		 work-time="50.0" skill-required="2" frame="transparant inflatable frame" >
+		 work-time="50.0" skill-required="2" frame="transparent inflatable frame" >
 			<resource name="polyester resin" amount="5.0" />
 			<resource name="styrene" amount="1.0" />
 			<resource name="polyethylene" amount="10.0" />
@@ -500,7 +620,7 @@
 		</building>
 		
 		<!-- Starting ERV base building project for salvaging (cannot be refitted). -->
-		<building name="starting erv base" width="4.0" length="6.0" constructable="false" salvagable="true" 
+		<building name="starting erv base" width="10.0" length="10.0" constructable="false" salvagable="true" 
 		 work-time="75.0" skill-required="2" frame="erv base frame" >
 			<part name="steel sheet" number="10" />
 			<part name="aluminum sheet" number="10" />
@@ -696,6 +816,132 @@
 			<part name="valve" number="7" />
 			<part name="electrical wire" number="5" />
 			<part name="wire connector" number="5" />
+		</building>
+		
+		<!-- Small areothermal well for generating electricity. -->
+		<building name="small areothermal well" width="5.0" length="10.0" constructable="true" salvagable="true"
+		 work-time="15.0" skill-required="3" frame="small areothermal well frame" >
+			<resource name="water" amount="500.0" />
+			<part name="condenser coil" number="1" />
+			<part name="steel pipe" number="10" />
+			<part name="water pump" number="1" />
+			<part name="turbine generator" number="1" />
+			<part name="valve" number="5" />
+			<part name="gasket" number="5" />
+			<part name="rover water tank" number="1" />
+			<part name="fiberglass cloth" number="10" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<!-- Large areothermal well for generating electricity. -->
+		<building name="large areothermal well" width="10.0" length="15.0" constructable="true" salvagable="true"
+		 work-time="50.0" skill-required="3" frame="large areothermal well frame" >
+			<resource name="water" amount="1500.0" />
+			<part name="condenser coil" number="2" />
+			<part name="steel pipe" number="20" />
+			<part name="water pump" number="2" />
+			<part name="turbine generator" number="2" />
+			<part name="valve" number="15" />
+			<part name="gasket" number="15" />
+			<part name="rover water tank" number="2" />
+			<part name="fiberglass cloth" number="20" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="40" />
+			<part name="wire connector" number="40" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="outpost hub" width="10.0" length="10.0" constructable="true" salvagable="true" work-time="60.0" 
+		 skill-required="3" frame="small vaulted brick frame" >
+			<part name="steel pipe" number="6" />
+			<part name="plastic pipe" number="8" />
+			<part name="valve" number="10" />
+			<part name="gasket" number="10" />
+			<part name="plastic tubing" number="6" />
+			<part name="power cable" number="2" />
+			<part name="electrical wire" number="20" />
+			<part name="wire connector" number="20" />
+			<part name="epoxy resin bottle" number="50" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="storage shed" width="5.0" length="5.0" constructable="true" salvagable="true" work-time="20.0" 
+		 skill-required="3" frame="small brick shed frame" >
+			<resource name="polyester resin" amount="2.0" />
+			<resource name="styrene" amount="1.0" />
+			<resource name="polyethylene" amount="10.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="7" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="fiberglass cloth" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="7" />
+			<part name="wire connector" number="7" />
+		</building>
+		
+		<building name="loading dock garage" width="15.0" length="18.0" constructable="true" salvagable="true" 
+		 work-time="80.0" skill-required="4" frame="garage brick frame" >
+			<resource name="polyester resin" amount="25.0" />
+			<resource name="styrene" amount="15.0" />
+			<resource name="polyethylene" amount="50.0" />
+			<part name="steel sheet" number="10" />
+			<part name="aluminum sheet" number="10" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="7" />
+			<part name="valve" number="7" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="mining lab" width="5.0" length="5.0" constructable="true" salvagable="true" work-time="20.0" 
+		 skill-required="3" frame="small brick shed frame" >
+		 	<resource name="cement" amount="20.0" />
+			<part name="steel pipe" number="3" />
+			<part name="plastic pipe" number="10" />
+			<part name="valve" number="10" />
+			<part name="gasket" number="10" />
+			<part name="plastic tubing" number="10" />
+			<part name="power cable" number="10" />
+			<part name="electrical wire" number="50" />
+			<part name="wire connector" number="50" />
+			<part name="epoxy resin bottle" number="25" />
+			<part name="small electric motor" number="1" />
+			<part name="brick" number="100" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
+		</building>
+		
+		<building name="inground greenhouse" width="5.0" length="10.0" constructable="true" salvagable="true" 
+		 work-time="50.0" skill-required="3" frame="vaulted glass brick frame" >
+		 	<resource name="polyester resin" amount="5.0" />
+			<resource name="styrene" amount="1.0" />
+			<resource name="polyethylene" amount="10.0" />
+			<part name="aluminum sheet" number="3" />
+			<part name="plastic sheet" number="10" />
+			<part name="fiberglass" number="5" />
+			<part name="plastic pipe" number="5" />
+			<part name="valve" number="5" />
+			<part name="electrical wire" number="5" />
+			<part name="wire connector" number="5" />
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="crane boom" />
+			</vehicle>
 		</building>
 
 	</building-list>
