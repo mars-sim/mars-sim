@@ -124,16 +124,16 @@ public class ConstructionConfig implements Serializable {
                 // Get name.
                 name = stageInfoElement.getAttributeValue(NAME);
                 
-                double width = 0D;
                 String widthStr = stageInfoElement.getAttributeValue(WIDTH);
-                if (!widthStr.equals("*")) width = Double.parseDouble(widthStr);
+                double width = Double.parseDouble(widthStr);
                 
-                double length = 0D;
                 String lengthStr = stageInfoElement.getAttributeValue(LENGTH);
-                if (!lengthStr.equals("*")) length = Double.parseDouble(lengthStr);
+                double length = Double.parseDouble(lengthStr);
                 
                 boolean unsetDimensions = false;
-                if (widthStr.equals("*") || lengthStr.equals("*")) unsetDimensions = true;
+                if ((width == -1D) || (length == -1D)) {
+                    unsetDimensions = true;
+                }
                 
                 // Get constructable.
                 // Note should be false if constructable attribute doesn't exist.
