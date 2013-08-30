@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -147,6 +147,47 @@ public class SettlementConfigurationDescriptor extends org.exolab.castor.xml.uti
         addSequenceElement(desc);
 
         //-- validation code for: _initialSettlementList
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        fieldValidator.setMinOccurs(1);
+        { //-- local scope
+        }
+        desc.setValidator(fieldValidator);
+        //-- _newArrivingSettlementList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList.class, "_newArrivingSettlementList", "new-arriving-settlement-list", org.exolab.castor.xml.NodeType.Element);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                SettlementConfiguration target = (SettlementConfiguration) object;
+                return target.getNewArrivingSettlementList();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    SettlementConfiguration target = (SettlementConfiguration) object;
+                    target.setNewArrivingSettlementList( (org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return new org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList();
+            }
+        };
+        desc.setSchemaType("org.mars_sim.msp.config.model.settlement.NewArrivingSettlementList");
+        desc.setHandler(handler);
+        desc.setNameSpaceURI("http://mars-sim.sourceforge.net/settlements");
+        desc.setRequired(true);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+        addSequenceElement(desc);
+
+        //-- validation code for: _newArrivingSettlementList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

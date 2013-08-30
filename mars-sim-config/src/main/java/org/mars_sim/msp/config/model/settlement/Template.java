@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -24,6 +24,16 @@ public class Template implements java.io.Serializable {
      * Field _name.
      */
     private java.lang.String _name;
+
+    /**
+     * Field _defaultPopulation.
+     */
+    private long _defaultPopulation;
+
+    /**
+     * keeps track of state for field: _defaultPopulation
+     */
+    private boolean _has_defaultPopulation;
 
     /**
      * Field _buildingList.
@@ -249,6 +259,13 @@ public class Template implements java.io.Serializable {
     }
 
     /**
+     */
+    public void deleteDefaultPopulation(
+    ) {
+        this._has_defaultPopulation= false;
+    }
+
+    /**
      * Method enumerateBuilding.
      * 
      * @return an Enumeration over all possible elements of this
@@ -358,6 +375,16 @@ public class Template implements java.io.Serializable {
     public int getBuildingCount(
     ) {
         return this._buildingList.size();
+    }
+
+    /**
+     * Returns the value of field 'defaultPopulation'.
+     * 
+     * @return the value of field 'DefaultPopulation'.
+     */
+    public long getDefaultPopulation(
+    ) {
+        return this._defaultPopulation;
     }
 
     /**
@@ -608,6 +635,16 @@ public class Template implements java.io.Serializable {
     public int getVehicleCount(
     ) {
         return this._vehicleList.size();
+    }
+
+    /**
+     * Method hasDefaultPopulation.
+     * 
+     * @return true if at least one DefaultPopulation has been added
+     */
+    public boolean hasDefaultPopulation(
+    ) {
+        return this._has_defaultPopulation;
     }
 
     /**
@@ -942,6 +979,18 @@ public class Template implements java.io.Serializable {
         for (int i = 0; i < vBuildingArray.length; i++) {
                 this._buildingList.add(vBuildingArray[i]);
         }
+    }
+
+    /**
+     * Sets the value of field 'defaultPopulation'.
+     * 
+     * @param defaultPopulation the value of field
+     * 'defaultPopulation'.
+     */
+    public void setDefaultPopulation(
+            final long defaultPopulation) {
+        this._defaultPopulation = defaultPopulation;
+        this._has_defaultPopulation = true;
     }
 
     /**

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -108,6 +108,52 @@ public class TemplateDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
             typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- _defaultPopulation
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Long.TYPE, "_defaultPopulation", "default-population", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Template target = (Template) object;
+                if (!target.hasDefaultPopulation()) { return null; }
+                return new java.lang.Long(target.getDefaultPopulation());
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Template target = (Template) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteDefaultPopulation();
+                        return;
+                    }
+                    target.setDefaultPopulation( ((java.lang.Long) value).longValue());
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("integer");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _defaultPopulation
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.LongValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.LongValidator();
+            fieldValidator.setValidator(typeValidator);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

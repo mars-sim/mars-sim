@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -108,6 +108,102 @@ public class VehicleDescriptor extends org.exolab.castor.xml.util.XMLClassDescri
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
             typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- _width
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_width", "width", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Vehicle target = (Vehicle) object;
+                if (!target.hasWidth()) { return null; }
+                return new java.lang.Double(target.getWidth());
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Vehicle target = (Vehicle) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteWidth();
+                        return;
+                    }
+                    target.setWidth( ((java.lang.Double) value).doubleValue());
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("double");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _width
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
+        }
+        desc.setValidator(fieldValidator);
+        //-- _length
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.Double.TYPE, "_length", "length", org.exolab.castor.xml.NodeType.Attribute);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Vehicle target = (Vehicle) object;
+                if (!target.hasLength()) { return null; }
+                return new java.lang.Double(target.getLength());
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Vehicle target = (Vehicle) object;
+                    // if null, use delete method for optional primitives 
+                    if (value == null) {
+                        target.deleteLength();
+                        return;
+                    }
+                    target.setLength( ((java.lang.Double) value).doubleValue());
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("double");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _length
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.DoubleValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.DoubleValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setMinInclusive(-1.7976931348623157E308);
+            typeValidator.setMaxInclusive(1.7976931348623157E308);
         }
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors

@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -35,6 +35,11 @@ public class Settlement implements java.io.Serializable {
      */
     private org.mars_sim.msp.config.model.settlement.Location _location;
 
+    /**
+     * Field _population.
+     */
+    private org.mars_sim.msp.config.model.settlement.Population _population;
+
 
       //----------------/
      //- Constructors -/
@@ -67,6 +72,16 @@ public class Settlement implements java.io.Serializable {
     public java.lang.String getName(
     ) {
         return this._name;
+    }
+
+    /**
+     * Returns the value of field 'population'.
+     * 
+     * @return the value of field 'Population'.
+     */
+    public org.mars_sim.msp.config.model.settlement.Population getPopulation(
+    ) {
+        return this._population;
     }
 
     /**
@@ -144,6 +159,16 @@ public class Settlement implements java.io.Serializable {
     public void setName(
             final java.lang.String name) {
         this._name = name;
+    }
+
+    /**
+     * Sets the value of field 'population'.
+     * 
+     * @param population the value of field 'population'.
+     */
+    public void setPopulation(
+            final org.mars_sim.msp.config.model.settlement.Population population) {
+        this._population = population;
     }
 
     /**

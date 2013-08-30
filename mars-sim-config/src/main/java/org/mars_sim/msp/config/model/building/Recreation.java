@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -13,9 +13,22 @@ package org.mars_sim.msp.config.model.building;
  * @version $Revision$ $Date$
  */
 @SuppressWarnings("serial")
-public class Recreation extends org.mars_sim.msp.config.model.configuration.EmptyType 
-implements java.io.Serializable
-{
+public class Recreation implements java.io.Serializable {
+
+
+      //--------------------------/
+     //- Class/Member Variables -/
+    //--------------------------/
+
+    /**
+     * Field _populationSupport.
+     */
+    private long _populationSupport;
+
+    /**
+     * keeps track of state for field: _populationSupport
+     */
+    private boolean _has_populationSupport;
 
 
       //----------------/
@@ -30,6 +43,33 @@ implements java.io.Serializable
       //-----------/
      //- Methods -/
     //-----------/
+
+    /**
+     */
+    public void deletePopulationSupport(
+    ) {
+        this._has_populationSupport= false;
+    }
+
+    /**
+     * Returns the value of field 'populationSupport'.
+     * 
+     * @return the value of field 'PopulationSupport'.
+     */
+    public long getPopulationSupport(
+    ) {
+        return this._populationSupport;
+    }
+
+    /**
+     * Method hasPopulationSupport.
+     * 
+     * @return true if at least one PopulationSupport has been added
+     */
+    public boolean hasPopulationSupport(
+    ) {
+        return this._has_populationSupport;
+    }
 
     /**
      * Method isValid.
@@ -76,6 +116,18 @@ implements java.io.Serializable
             final org.xml.sax.ContentHandler handler)
     throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException {
         org.exolab.castor.xml.Marshaller.marshal(this, handler);
+    }
+
+    /**
+     * Sets the value of field 'populationSupport'.
+     * 
+     * @param populationSupport the value of field
+     * 'populationSupport'.
+     */
+    public void setPopulationSupport(
+            final long populationSupport) {
+        this._populationSupport = populationSupport;
+        this._has_populationSupport = true;
     }
 
     /**

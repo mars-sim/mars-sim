@@ -1,6 +1,6 @@
 /*
  * This class was automatically generated with 
- * <a href="http://www.castor.org">Castor 1.3.0.1</a>, using an XML
+ * <a href="http://www.castor.org">Castor 1.3.1</a>, using an XML
  * Schema.
  * $Id$
  */
@@ -109,14 +109,13 @@ public class InitialSettlementListDescriptor extends org.exolab.castor.xml.util.
         desc.setComponentType("org.mars_sim.msp.config.model.settlement.Settlement");
         desc.setHandler(handler);
         desc.setNameSpaceURI("http://mars-sim.sourceforge.net/settlements");
-        desc.setRequired(true);
         desc.setMultivalued(true);
         addFieldDescriptor(desc);
         addSequenceElement(desc);
 
         //-- validation code for: _settlementList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
-        fieldValidator.setMinOccurs(1);
+        fieldValidator.setMinOccurs(0);
         { //-- local scope
         }
         desc.setValidator(fieldValidator);
