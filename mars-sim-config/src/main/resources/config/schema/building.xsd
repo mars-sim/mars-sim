@@ -37,9 +37,11 @@
     <xs:element name="functions">
     	<xs:complexType>
     		<xs:all>
+    			<xs:element ref="bld:astronomical-observation" minOccurs="0"></xs:element>
     			<xs:element ref="bld:communication" minOccurs="0"></xs:element>
     			<xs:element ref="bld:cooking" minOccurs="0"></xs:element>
     			<xs:element ref="bld:dining" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:earth-return" minOccurs="0"></xs:element>
     			<xs:element ref="bld:EVA" minOccurs="0"></xs:element>
     			<xs:element ref="bld:exercise" minOccurs="0"></xs:element>
     			<xs:element ref="bld:farming" minOccurs="0"></xs:element>
@@ -47,6 +49,7 @@
     			<xs:element ref="bld:life-support" minOccurs="0"></xs:element>
     			<xs:element ref="bld:living-accommodations" minOccurs="0"></xs:element>
     			<xs:element ref="bld:manufacture" minOccurs="0"></xs:element>
+    			<xs:element ref="bld:management" minOccurs="0"></xs:element>
     			<xs:element ref="bld:medical-care" minOccurs="0"></xs:element>
     			<xs:element ref="bld:power-generation" minOccurs="0"></xs:element>
     			<xs:element ref="bld:power-storage" minOccurs="0"></xs:element>
@@ -54,7 +57,7 @@
     			<xs:element ref="bld:research" minOccurs="0"></xs:element>
     			<xs:element ref="bld:resource-processing" minOccurs="0"></xs:element>
     			<xs:element ref="bld:storage" minOccurs="0"></xs:element>
-    			<xs:element ref="bld:astronomical-observation" minOccurs="0"></xs:element>
+    			
     		</xs:all>
     	</xs:complexType>
     </xs:element>
@@ -67,8 +70,17 @@
    		</xs:complexType>
     </xs:element>
     
-    <xs:element name="dining" type="conf:emptyType"></xs:element>
+    <xs:element name="dining">
+    	<xs:complexType>
+    		<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
     
+    <xs:element name="earth-return">
+    	<xs:complexType>
+    		<xs:attribute name="crew-capacity" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
     
     <xs:element name="EVA">
    		<xs:complexType>
@@ -93,8 +105,17 @@
     
     <xs:element name="ground-vehicle-maintenance">
    		<xs:complexType>
+   			<xs:sequence>
+   				<xs:element ref="bld:parking-location" minOccurs="0" maxOccurs="unbounded"></xs:element>
+   			</xs:sequence>
    			<xs:attribute name="vehicle-capacity" type="xs:integer"></xs:attribute>
    		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="parking-location">
+    	<xs:complexType>
+  			<xs:attributeGroup ref="conf:positionAttributes2"></xs:attributeGroup>
+  		</xs:complexType>
     </xs:element>
     
     <xs:element name="life-support">
@@ -108,6 +129,12 @@
    		<xs:complexType>
    			<xs:attribute name="beds" type="xs:integer"></xs:attribute>
    		</xs:complexType>
+    </xs:element>
+    
+    <xs:element name="management">
+    	<xs:complexType>
+    		<xs:attribute name="population-support" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
     </xs:element>
     
     <xs:element name="manufacture">
@@ -148,7 +175,11 @@
    		</xs:complexType>
     </xs:element>
     
-    <xs:element name="recreation" type="conf:emptyType"></xs:element>
+    <xs:element name="recreation">
+    	<xs:complexType>
+    		<xs:attribute name="population-support" type="xs:integer"></xs:attribute>
+    	</xs:complexType>
+    </xs:element>
     
     <xs:element name="research">
    		<xs:complexType>

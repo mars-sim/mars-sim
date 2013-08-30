@@ -37,6 +37,11 @@
     	<xs:attribute name="facing" type="xs:double"></xs:attribute>
     </xs:attributeGroup>
     
+    <xs:attributeGroup name="positionAttributes2">
+    	<xs:attribute name="x-location" type="xs:double"></xs:attribute>
+    	<xs:attribute name="y-location" type="xs:double"></xs:attribute>
+    </xs:attributeGroup>
+    
     <xs:attributeGroup name="editorAttributes">
     	<xs:attribute name="enabled" type="xs:boolean"></xs:attribute>
     	<xs:attribute name="editable" type="xs:boolean"></xs:attribute>

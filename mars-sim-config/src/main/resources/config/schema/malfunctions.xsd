@@ -102,7 +102,7 @@
     <xs:element name="medical-complaint-list">
     	<xs:complexType>
     		<xs:sequence>
-    			<xs:element ref="mal:medical-complaint" maxOccurs="unbounded"></xs:element>
+    			<xs:element ref="mal:medical-complaint" minOccurs="0" maxOccurs="unbounded"></xs:element>
     		</xs:sequence>
     	</xs:complexType>
     </xs:element>

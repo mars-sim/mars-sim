@@ -29,6 +29,7 @@
     			<xs:element ref="v:lab" minOccurs="0"></xs:element>
     		</xs:sequence>
     		<xs:attribute name="type" type="xs:string"></xs:attribute>
+    		<xs:attributeGroup ref="conf:rectangleAttributes"></xs:attributeGroup>
     	</xs:complexType>
     </xs:element>
     
