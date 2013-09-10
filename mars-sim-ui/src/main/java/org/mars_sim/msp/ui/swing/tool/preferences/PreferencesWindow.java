@@ -34,7 +34,6 @@ public class PreferencesWindow extends ToolWindow {
 	private AudioPlayer soundPlayer;
 	private JCheckBox muteCheck;
 	private JSlider volumeSlider;
-	private JCheckBox uiCheck;
 	private JCheckBox toolToolBarCheck;
 	private JCheckBox unitToolBarCheck;
 
@@ -100,19 +99,7 @@ public class PreferencesWindow extends ToolWindow {
 		uiPane.setBorder(new MarsPanelBorder());
 		mainPane.add(uiPane, BorderLayout.SOUTH);
 
-		// Create UI checkbox.
-		boolean nativeLookAndFeel = UIConfig.INSTANCE.useNativeLookAndFeel();
-		if (UIConfig.INSTANCE.useUIDefault())
-			nativeLookAndFeel = false;
-		uiCheck = new JCheckBox("Native Look & Feel", nativeLookAndFeel);
 		final MainWindow theMainwindow = desktop.getMainWindow();
-		uiCheck.setToolTipText("Use OS native Look & Feel.");
-		uiCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				theMainwindow.setLookAndFeel(uiCheck.isSelected());
-			}
-		});
-		uiPane.add(uiCheck, BorderLayout.NORTH);
 
 		// Create Unit Toolbar Visibility checkbox.
 		boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
