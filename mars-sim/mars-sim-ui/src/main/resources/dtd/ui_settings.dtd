@@ -1,6 +1,5 @@
 <!ELEMENT ui (main-window,volume,internal-windows)>
 <!ATTLIST ui use-default CDATA #REQUIRED>
-<!ATTLIST ui look-and-feel CDATA #REQUIRED>
 <!ATTLIST ui show-tool-bar CDATA #REQUIRED>
 <!ATTLIST ui show-unit-bar CDATA #REQUIRED>
 <!ELEMENT main-window (#PCDATA)>

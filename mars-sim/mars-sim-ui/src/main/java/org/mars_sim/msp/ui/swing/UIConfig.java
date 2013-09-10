@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UIConfig.java
- * @version 3.01 2011-07-07
+ * @version 3.05 2013-09-10
  * @author Scott Davis
  */
 
@@ -55,7 +55,6 @@ public class UIConfig {
     // UI config elements and attributes.
     private static final String UI = "ui";
     private static final String USE_DEFAULT = "use-default";
-    private static final String LOOK_AND_FEEL = "look-and-feel";
     private static final String SHOW_UNIT_BAR = "show-unit-bar";
     private static final String SHOW_TOOL_BAR = "show-tool-bar";
     private static final String MAIN_WINDOW = "main-window";
@@ -119,17 +118,12 @@ public class UIConfig {
             outputDoc.addContent(uiElement);
             outputDoc.setRootElement(uiElement);
 
-            uiElement.setAttribute(USE_DEFAULT, "false"); // lechimp asks: why is this always set to false?
+            uiElement.setAttribute(USE_DEFAULT, "false"); // lechimp 10/9/13: why is this always set to false upon save?
     		
             
             uiElement.setAttribute(SHOW_TOOL_BAR, Boolean.toString(window.getToolToolBar().isVisible()));
             uiElement.setAttribute(SHOW_UNIT_BAR, Boolean.toString(window.getUnitToolBar().isVisible()));
 
-            String currentLFClassName = UIManager.getLookAndFeel().getClass().getName();
-            String systemLFClassName = UIManager.getSystemLookAndFeelClassName();
-            if (currentLFClassName.equals(systemLFClassName))
-                uiElement.setAttribute(LOOK_AND_FEEL, "native");
-            else uiElement.setAttribute(LOOK_AND_FEEL, "default");
             
             Element mainWindowElement = new Element(MAIN_WINDOW);
             uiElement.addContent(mainWindowElement);
@@ -234,21 +228,7 @@ public class UIConfig {
         }
     }
 
-    /**
-     * Checks if UI should use native or default look & feel.
-     * 
-     * @return true if native.
-     */
-    public boolean useNativeLookAndFeel() {
-        try {
-            Element root = configDoc.getRootElement();
-            String lookAndFeel = root.getAttributeValue(LOOK_AND_FEEL);
-            return (lookAndFeel.equals("native"));
-        } 
-        catch (Exception e) {
-            return false;
-        }
-    }
+
 
     /**
      * Checks if UI should show the Tool bar.

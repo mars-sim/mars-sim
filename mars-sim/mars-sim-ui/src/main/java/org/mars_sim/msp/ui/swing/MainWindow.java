@@ -67,11 +67,7 @@ public class MainWindow {
         // Set look and feel of UI.
         boolean useDefault = UIConfig.INSTANCE.useUIDefault();
 
-        if (!useDefault) {
-            setLookAndFeel(UIConfig.INSTANCE.useNativeLookAndFeel());
-        } else {
             setLookAndFeel(false);
-        }
 
         frame.addWindowListener(new WindowAdapter() {
             @Override
