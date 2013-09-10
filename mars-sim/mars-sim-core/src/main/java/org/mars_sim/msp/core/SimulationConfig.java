@@ -186,7 +186,7 @@ public class SimulationConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the Mars dat/time for when the simulation starts.
+	 * Gets the Mars date/time for when the simulation starts.
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
