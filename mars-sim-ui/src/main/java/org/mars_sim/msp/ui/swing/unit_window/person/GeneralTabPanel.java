@@ -42,7 +42,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -63,6 +63,16 @@ public class GeneralTabPanel extends TabPanel {
 		String birthdate = person.getBirthDate();
 		JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
 		infoPanel.add(birthDateLabel);
+
+		// Prepare birth location name label
+		JLabel birthLocationNameLabel = new JLabel("Birth Location", JLabel.LEFT);
+		infoPanel.add(birthLocationNameLabel);
+		
+		// Prepare birth location label
+		String birthLocation = "Terra";// TODO: get from Person
+		JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
+		infoPanel.add(birthLocationLabel);
+		
 
 		// Prepare age name label
 		JLabel ageNameLabel = new JLabel("Age", JLabel.LEFT);
