@@ -69,7 +69,7 @@ public class GeneralTabPanel extends TabPanel {
 		infoPanel.add(birthLocationNameLabel);
 		
 		// Prepare birth location label
-		String birthLocation = "Terra";// TODO: get from Person
+		String birthLocation = "Earth";// TODO: get from Person
 		JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
 		infoPanel.add(birthLocationLabel);
 		
