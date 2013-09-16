@@ -35,7 +35,7 @@ public class Simulation implements ClockListener, Serializable {
     private static Logger logger = Logger.getLogger(Simulation.class.getName());
     
     // Version string.
-    public final static String VERSION = "3.05";
+    public final static String VERSION = "3.06";
     
     // Default save file.
     public final static String DEFAULT_FILE = "default.sim";
