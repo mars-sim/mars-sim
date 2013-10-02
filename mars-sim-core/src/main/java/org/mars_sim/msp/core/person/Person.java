@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.04 2013-01-25
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 
@@ -70,6 +70,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
     private String gender; // The gender of the person (male or female).
+    private String birthplace; // The birthplace of the person.
     private EarthClock birthTimeStamp; // The birth time of the person.
     private Settlement associatedSettlement; // The settlement the person is
                                              // currently associated with.
@@ -86,7 +87,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * @param settlement the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
-    public Person(String name, String gender, Settlement settlement) {
+    public Person(String name, String gender, String birthplace, Settlement settlement) {
         // Use Unit constructor
         super(name, settlement.getCoordinates());
 
@@ -94,6 +95,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         xLoc = 0D;
         yLoc = 0D;
         this.gender = gender;
+        this.birthplace = birthplace;
         String timeString = createTimeString();
         birthTimeStamp = new EarthClock(timeString);
         attributes = new NaturalAttributeManager(this);
@@ -450,7 +452,15 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     public String getGender() {
         return gender;
     }
-
+    
+    /**
+     * Gets the birthplace of the person
+     * 
+     * @return the gender
+     */
+    public String getBirthplace() {
+        return birthplace;
+    }
     /**
      * Gets the person's local group of people (in building or rover)
      * 

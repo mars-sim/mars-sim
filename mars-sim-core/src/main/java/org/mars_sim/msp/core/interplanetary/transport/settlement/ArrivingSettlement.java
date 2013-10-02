@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.04 2013-05-05
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -277,8 +277,9 @@ public class ArrivingSettlement implements Transportable, Serializable {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             String gender = Person.FEMALE;
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+            String birthplace = "Earth"; //TODO: randomize from list of countries/federations
             String immigrantName = unitManager.getNewName(UnitManager.PERSON, null, gender);
-            Person immigrant = new Person(immigrantName, gender, newSettlement);
+            Person immigrant = new Person(immigrantName, gender, birthplace, newSettlement);
             unitManager.addUnit(immigrant);
             relationshipManager.addNewImmigrant(immigrant, immigrants);
             immigrants.add(immigrant);

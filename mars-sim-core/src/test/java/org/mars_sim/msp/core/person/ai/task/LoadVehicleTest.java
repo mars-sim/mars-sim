@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleTest.java
- * @version 3.04 2013-05-03
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 
@@ -40,7 +40,7 @@ public class LoadVehicleTest extends TestCase {
 	 */
 	public void testLoadingPhase() throws Exception {
 		Settlement settlement = new MockSettlement();
-		Person person = new Person("test person", Person.MALE, settlement);
+		Person person = new Person("test person", Person.MALE, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         String resourceName = "hammer";
