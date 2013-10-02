@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GeneralTabPanel.java
- * @version 3.00 2010-08-10
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
@@ -42,7 +42,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -59,8 +59,8 @@ public class GeneralTabPanel extends TabPanel {
 		JLabel birthNameLabel = new JLabel("Birth Date", JLabel.LEFT);
 		infoPanel.add(birthNameLabel);
 		
-		// Prepare birthdate label
-		String birthdate = person.getBirthDate();
+		// Prepare birthdate and age label
+		String birthdate = person.getBirthDate()+" ("+person.getAge()+" y)";
 		JLabel birthDateLabel = new JLabel(birthdate, JLabel.RIGHT);
 		infoPanel.add(birthDateLabel);
 
@@ -72,17 +72,7 @@ public class GeneralTabPanel extends TabPanel {
 		String birthLocation = person.getBirthplace();
 		JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
 		infoPanel.add(birthLocationLabel);
-		
-
-		// Prepare age name label
-		JLabel ageNameLabel = new JLabel("Age", JLabel.LEFT);
-		infoPanel.add(ageNameLabel);
-		
-		// Prepare age label
-		String age = Integer.toString(person.getAge());
-		JLabel ageLabel = new JLabel(age, JLabel.RIGHT);
-		infoPanel.add(ageLabel);
-		
+				
 		// Prepare personality name label
 		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
 		infoPanel.add(personalityNameLabel);
