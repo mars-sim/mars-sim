@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnitManager.java
- * @version 3.04 2013-03-23
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -449,7 +449,7 @@ public class UnitManager implements Serializable {
                     if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
                         gender = Person.MALE;
                     }
-                    Person person = new Person(getNewName(PERSON, null, gender), gender, settlement);
+                    Person person = new Person(getNewName(PERSON, null, gender), gender, "Earth",settlement); //TODO: read from file
                     addUnit(person);
                     relationshipManager.addInitialSettler(person, settlement);
                 }
@@ -529,7 +529,7 @@ public class UnitManager implements Serializable {
         	}
 
         	// Create person and add to the unit manager.
-        	Person person = new Person(name, gender, settlement);
+        	Person person = new Person(name, gender, "jorden",settlement); //TODO: read from file
         	addUnit(person);
         	relationshipManager.addInitialSettler(person, settlement);
 

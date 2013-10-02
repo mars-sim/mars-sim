@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.04 2013-04-05
+ * @version 3.06 2013-10-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -357,8 +357,9 @@ public class Resupply implements Serializable, Transportable {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             String gender = Person.FEMALE;
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+            String birthplace = "Earth"; //TODO: randomize from list of countries/federations
             String immigrantName = unitManager.getNewName(UnitManager.PERSON, null, gender);
-            Person immigrant = new Person(immigrantName, gender, settlement);
+            Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
             unitManager.addUnit(immigrant);
             relationshipManager.addNewImmigrant(immigrant, immigrants);
             immigrants.add(immigrant);

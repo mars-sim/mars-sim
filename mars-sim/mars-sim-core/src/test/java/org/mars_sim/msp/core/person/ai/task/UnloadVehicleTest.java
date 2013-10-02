@@ -1,3 +1,10 @@
+/**
+ * Mars Simulation Project
+ * LoadVehicleTest.java
+ * @version 3.06 2013-10-03
+ * @author Scott Davis
+ */
+
 package org.mars_sim.msp.core.person.ai.task;
 
 import junit.framework.TestCase;
@@ -53,7 +60,7 @@ public class UnloadVehicleTest extends TestCase {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
-		Person person = new Person("test person", Person.MALE, settlement);
+		Person person = new Person("test person", Person.MALE, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);
