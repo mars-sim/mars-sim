@@ -42,7 +42,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(4, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -55,7 +55,7 @@ public class GeneralTabPanel extends TabPanel {
 		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
 		infoPanel.add(genderLabel);
 
-		// Prepare birthdate name label
+		// Prepare birthdate and age name label
 		JLabel birthNameLabel = new JLabel("Birth Date", JLabel.LEFT);
 		infoPanel.add(birthNameLabel);
 		
@@ -72,6 +72,15 @@ public class GeneralTabPanel extends TabPanel {
 		String birthLocation = person.getBirthplace();
 		JLabel birthLocationLabel = new JLabel(birthLocation, JLabel.RIGHT);
 		infoPanel.add(birthLocationLabel);
+		
+		// Prepare weight name label
+		JLabel weightNameLabel = new JLabel("Weight", JLabel.LEFT);
+		infoPanel.add(weightNameLabel);
+		
+		// Prepare weight label
+		double baseMass = person.getBaseMass();
+		JLabel weightLabel = new JLabel(baseMass+" kg", JLabel.RIGHT);
+		infoPanel.add(weightLabel);
 				
 		// Prepare personality name label
 		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
