@@ -84,6 +84,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * 
      * @param name the person's name
      * @param gender the person's gender ("male" or "female")
+     * @param birthplace the location of the person's birth
      * @param settlement the settlement the person is at
      * @throws Exception if no inhabitable building available at settlement.
      */
@@ -104,8 +105,9 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<Science, Double>(0);
 
-        // Set base mass of person.
-        setBaseMass(70D);
+        // Set base mass of person from 61 to 79, peaking at 70.
+        setBaseMass(59D + RandomUtil.getRandomInt(10)
+                + RandomUtil.getRandomInt(10));
 
         // Set inventory total mass capacity based on the person's strength.
         int strength = attributes
