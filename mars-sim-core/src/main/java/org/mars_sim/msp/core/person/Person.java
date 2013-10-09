@@ -70,6 +70,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
     private PhysicalCondition health; // Person's physical
     private boolean isBuried; // True if person is dead and buried.
     private String gender; // The gender of the person (male or female).
+    private int height; // The height of the person (in cm).
     private String birthplace; // The birthplace of the person.
     private EarthClock birthTimeStamp; // The birth time of the person.
     private Settlement associatedSettlement; // The settlement the person is
@@ -106,9 +107,14 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         scientificAchievement = new HashMap<Science, Double>(0);
 
         // Set base mass of person from 61 to 79, peaking at 70.
-        setBaseMass(59D + RandomUtil.getRandomInt(10)
-                + RandomUtil.getRandomInt(10));
+        setBaseMass(59D + (RandomUtil.getRandomInt(100)
+                + RandomUtil.getRandomInt(100))/10D);
 
+        // Set height of person as gender-correlated curve.
+        height = ( this.gender == "MALE" ? 152 + (RandomUtil.getRandomInt(22)
+                + RandomUtil.getRandomInt(22)) : 142 + (RandomUtil.getRandomInt(15)
+                        + RandomUtil.getRandomInt(15)) );
+        
         // Set inventory total mass capacity based on the person's strength.
         int strength = attributes
                 .getAttribute(NaturalAttributeManager.STRENGTH);
@@ -376,6 +382,17 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         return age;
     }
 
+    /**
+     * Returns the person's height in cm
+     * 
+     * @return the person's height
+     */
+    public int getHeight() {
+
+        return height;
+    }
+    
+    
     /**
      * Returns the person's birth date
      * 
