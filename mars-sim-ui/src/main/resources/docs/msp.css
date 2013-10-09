@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * msp.css
- * @version 3.04 2013-03-26
+ * @version 3.06 2013-10-03
  * @author Lars Naesbye Christensen
  */
 
@@ -11,5 +11,4 @@ body { background-color: #D9D6D6; color: #000000; font-family: Arial, sans-serif
 body, h3 { font-size: 11px }
 h2 { font-size: 13px; text-align: center; text-decoration: underline }
 h2, h3 { font-weight: bold }
-hr { width: 90.0% }
 p { margin-left: 4px }
