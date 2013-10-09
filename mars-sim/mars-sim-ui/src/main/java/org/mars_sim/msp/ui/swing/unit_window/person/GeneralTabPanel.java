@@ -42,7 +42,7 @@ public class GeneralTabPanel extends TabPanel {
 		generalLabelPanel.add(generalLabel);
 		
 		// Prepare info panel.
-		JPanel infoPanel = new JPanel(new GridLayout(5, 2, 0, 0));
+		JPanel infoPanel = new JPanel(new GridLayout(7, 2, 0, 0));
 		infoPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(infoPanel, BorderLayout.NORTH);
 		
@@ -81,7 +81,32 @@ public class GeneralTabPanel extends TabPanel {
 		double baseMass = person.getBaseMass();
 		JLabel weightLabel = new JLabel(baseMass+" kg", JLabel.RIGHT);
 		infoPanel.add(weightLabel);
-				
+
+		// Prepare height name label
+		JLabel heightNameLabel = new JLabel("Height", JLabel.LEFT);
+		infoPanel.add(heightNameLabel);
+		
+		// Prepare height label
+		int baseHeight = person.getHeight();
+		JLabel heightLabel = new JLabel(baseHeight+" cm", JLabel.RIGHT);
+		infoPanel.add(heightLabel);
+
+		// Prepare BMI name label
+		JLabel BMINameLabel = new JLabel("BMI", JLabel.LEFT);
+		infoPanel.add(BMINameLabel);
+		
+		// Prepare BMI label
+		double heightInCmSquared = (person.getHeight()/100D)*(person.getHeight()/100D);
+		double BMI = (person.getBaseMass()/heightInCmSquared);
+			// categorize according to general weight class
+			String weightClass= "Underweight";
+			if (BMI > 18.5)  {weightClass ="Normal";}
+			if (BMI > 25)  {weightClass ="Overweight";}
+			if (BMI > 30)  {weightClass ="Obese";}
+		JLabel BMILabel = new JLabel(String.valueOf((int)BMI)+" ("+weightClass+")", JLabel.RIGHT);
+		infoPanel.add(BMILabel);
+			
+		
 		// Prepare personality name label
 		JLabel personalityNameLabel = new JLabel("Personality (MBTI)", JLabel.LEFT);
 		infoPanel.add(personalityNameLabel);
