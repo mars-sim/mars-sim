@@ -1,23 +1,24 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 3.05 2013-08-19
+ * @version 3.06 2013-10-14
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -32,10 +33,10 @@ public class CollectRegolith  extends CollectResourcesMission {
 	public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
 	
 	// Amount of regolith to be gathered at a given site (kg). 
-	private static final double SITE_GOAL = 500D;
+	private static final double SITE_GOAL = 1000D;
 	
 	// Number of bags required for the mission. 
-	public static final int REQUIRED_BAGS = 10;
+	public static final int REQUIRED_BAGS = 20;
 	
 	// Collection rate of regolith during EVA (kg/millisol).
 	private static final double COLLECTION_RATE = 5D;
@@ -91,20 +92,28 @@ public class CollectRegolith  extends CollectResourcesMission {
 				REQUIRED_BAGS, MIN_PEOPLE, CollectRegolith.class);
 		
 		if (result > 0D) {
-			try {
-				// Factor the value of regolith at the settlement.
-				GoodsManager manager = person.getSettlement().getGoodsManager();
-				AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
-				result *= value * 10D;
-                if (result > 100D) result = 100D;
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE, "Error checking good value of regolith.");
-			}
+		    
+		    // Factor the value of regolith at the settlement.
+		    GoodsManager manager = person.getSettlement().getGoodsManager();
+		    AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+		    double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
+		    result *= value;
+		    if (result > 100D) {
+		        result = 100D;
+		    }
+			
+            // Don't start mission until after first Sol of the simulation.
+            MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+            MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+            double totalTimeSols = MarsClock.getTimeDiff(currentTime, startTime) / 1000D;
+            if (totalTimeSols < 1D) {
+                result = 0;
+            }
 			
 			// Check if min number of EVA suits at settlement.
-			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) {
+			    result = 0D;
+			}
 		}
 		
 		return result;

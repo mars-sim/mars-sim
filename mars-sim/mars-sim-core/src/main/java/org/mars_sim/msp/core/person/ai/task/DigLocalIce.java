@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIce.java
- * @version 3.05 2013-08-16
+ * @version 3.06 2013-09-26
  * @author Scott Davis
  */
 
@@ -93,7 +93,7 @@ public class DigLocalIce extends EVAOperation implements Serializable {
                 GoodsManager manager = settlement.getGoodsManager();
                 AmountResource iceResource = AmountResource.findAmountResource("ice");
                 double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-                result = value * Bag.CAPACITY;
+                result = value;
                 if (result > 100D) {
                     result = 100D;
                 }
@@ -224,7 +224,9 @@ public class DigLocalIce extends EVAOperation implements Serializable {
                 Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
                 while (i.hasNext() && (emptyBag == null)) {
                     Bag foundBag = (Bag) i.next();
-                    if (foundBag.getInventory().getTotalInventoryMass(false) == 0D) emptyBag = foundBag;
+                    if (foundBag.getInventory().isEmpty(false)) {
+                        emptyBag = foundBag;
+                    }
                 }
                 
                 if (emptyBag != null) {
@@ -233,6 +235,12 @@ public class DigLocalIce extends EVAOperation implements Serializable {
                         person.getInventory().storeUnit(emptyBag);
                         bag = emptyBag;
                     }
+                    else {
+                        logger.severe(person.getName() + " unable to carry empty bag");
+                    }
+                }
+                else {
+                    logger.severe("Unable to find empty bag in settlement inventory");
                 }
             }
             
@@ -243,7 +251,6 @@ public class DigLocalIce extends EVAOperation implements Serializable {
                 moveToDiggingLocation();
             }
             else {
-                logger.log(Level.SEVERE, "Unable to find empty bag in settlement inventory");
                 setPhase(ENTER_AIRLOCK);
             }
         }

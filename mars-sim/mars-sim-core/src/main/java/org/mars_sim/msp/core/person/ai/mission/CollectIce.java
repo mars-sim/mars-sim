@@ -1,23 +1,24 @@
 /**
  * Mars Simulation Project
  * CollectIce.java
- * @version 3.05 2013-08-19
+ * @version 3.06 2013-10-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
+import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /** 
@@ -88,20 +89,28 @@ public class CollectIce extends CollectResourcesMission {
 				REQUIRED_BAGS, MIN_PEOPLE, CollectIce.class);
 		
 		if (result > 0D) {
-			try {
-				// Factor the value of ice at the settlement.
-				GoodsManager manager = person.getSettlement().getGoodsManager();
-				AmountResource iceResource = AmountResource.findAmountResource("ice");
-				double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
-				result *= value * 10D;
-                if (result > 100D) result = 100D;
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE, "Error checking good value of ice.");
-			}
+		    
+		    // Factor the value of ice at the settlement.
+		    GoodsManager manager = person.getSettlement().getGoodsManager();
+		    AmountResource iceResource = AmountResource.findAmountResource("ice");
+		    double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
+		    result *= value;
+		    if (result > 100D) {
+		        result = 100D;
+		    }
+
+		    // Don't start mission until after first Sol of the simulation.
+		    MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+		    MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+		    double totalTimeSols = MarsClock.getTimeDiff(currentTime, startTime) / 1000D;
+		    if (totalTimeSols < 1D) {
+		        result = 0;
+		    }
 			
 			// Check if min number of EVA suits at settlement.
-			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) result = 0D;
+			if (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) < MIN_PEOPLE) {
+			    result = 0D;
+			}
 		}
 		
 		return result;
@@ -122,11 +131,6 @@ public class CollectIce extends CollectResourcesMission {
      * @throws MissionException if error getting ice resource.
      */
     private static AmountResource getIceResource() {
-//    	try {
-    		return AmountResource.findAmountResource("ice");
-//    	}
-//    	catch (Exception e) {
-//    		throw new MissionException(null, e);
-//    	}
+        return AmountResource.findAmountResource("ice");
     }
 }
