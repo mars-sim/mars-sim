@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.03 2012-07-19
+ * @version 3.06 2013-10-08
  * @author Scott Davis
  */
 
@@ -37,10 +37,11 @@ import java.util.logging.Logger;
  */
 public class Manufacture extends Function implements Serializable {
 
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.structure.building.function.Manufacture";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static Logger logger = Logger.getLogger(Manufacture.class.getName());
+	
 	public static final String NAME = "Manufacture";
+	
+	public static final double PROCESS_MAX_VALUE = 100D;
 	
 	// Data members.
 	private int techLevel;
@@ -77,22 +78,10 @@ public class Manufacture extends Function implements Serializable {
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
         
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double buildingTech = config.getManufactureTechLevel(buildingName);
+        double result = 0D;
         
-        // Determine demand as highest manufacturing process value for settlement.
-        /*
-        double demand = 0D;
-        Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
-        while (i.hasNext()) {
-            ManufactureProcessInfo process = i.next();
-            if (process.getTechLevelRequired() <= buildingTech) {
-                double value = ManufactureUtil.getManufactureProcessValue(process, settlement);
-                if (value > demand) demand = value;
-            }
-        }
-        demand /= 1000D;
-        */
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        int buildingTech = config.getManufactureTechLevel(buildingName);
         
         double demand = 0D;
         Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
@@ -101,6 +90,7 @@ public class Manufacture extends Function implements Serializable {
         }
         
         double supply = 0D;
+        int highestExistingTechLevel = 0;
         boolean removedBuilding = false;
         Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
         while (j.hasNext()) {
@@ -110,10 +100,14 @@ public class Manufacture extends Function implements Serializable {
             }
             else {
                 Manufacture manFunction = (Manufacture) building.getFunction(NAME);
-                double tech = manFunction.techLevel;
+                int tech = manFunction.techLevel;
                 double processes = manFunction.concurrentProcesses;
                 double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                 supply += (tech * tech) * processes * wearModifier;
+                
+                if (tech > highestExistingTechLevel) {
+                    highestExistingTechLevel = tech;
+                }
             }
         }
         
@@ -122,7 +116,54 @@ public class Manufacture extends Function implements Serializable {
         double processes = config.getManufactureConcurrentProcesses(buildingName);
         double manufactureValue = (buildingTech * buildingTech) * processes;
         
-        return manufactureValue * baseManufactureValue;
+        result = manufactureValue * baseManufactureValue;
+        
+        // If building has higher tech level than other buildings at settlement, 
+        // add difference between best manufacturing processes.
+        if (buildingTech > highestExistingTechLevel) {
+            double bestExistingProcessValue = 0D;
+            if (highestExistingTechLevel > 0D) {
+                bestExistingProcessValue = getBestManufacturingProcessValue(highestExistingTechLevel, settlement);
+            }
+            double bestBuildingProcessValue = getBestManufacturingProcessValue(buildingTech, settlement);
+            double processValueDiff = bestBuildingProcessValue - bestExistingProcessValue;
+            
+            if (processValueDiff < 0D) {
+                processValueDiff = 0D;
+            }
+            
+            if (processValueDiff > PROCESS_MAX_VALUE) {
+                processValueDiff = PROCESS_MAX_VALUE;
+            }
+            
+            result += processValueDiff;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets the best manufacturing process value for a given manufacturing tech level at a settlement.
+     * @param techLevel the manufacturing tech level.
+     * @param settlement the settlement
+     * @return best manufacturing process value.
+     */
+    private static double getBestManufacturingProcessValue(int techLevel, Settlement settlement) {
+        
+        double result = 0D;
+        
+        Iterator<ManufactureProcessInfo> i = ManufactureUtil.getAllManufactureProcesses().iterator();
+        while (i.hasNext()) {
+            ManufactureProcessInfo process = i.next();
+            if (process.getTechLevelRequired() <= techLevel) {
+                double value = ManufactureUtil.getManufactureProcessValue(process, settlement);
+                if (value > result) {
+                    result = value;
+                }
+            }
+        }
+        
+        return result;
     }
 	
 	/**
@@ -372,7 +413,13 @@ public class Manufacture extends Function implements Serializable {
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
                         double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
-                        if (item.getAmount() > capacity) amount = capacity;  
+                        if (item.getAmount() > capacity) {
+                            double overAmount = item.getAmount() - capacity;
+                            logger.severe("Not enough storage capacity to store " + overAmount + " of " + 
+                                    item.getName() + " from " + process.getInfo().getName() + " at " + 
+                                    settlement.getName());
+                            amount = capacity;
+                        }
                         inv.storeAmountResource(resource, amount, true);
                     }
                     else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {

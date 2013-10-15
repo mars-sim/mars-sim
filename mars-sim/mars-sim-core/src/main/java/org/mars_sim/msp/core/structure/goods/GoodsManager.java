@@ -72,9 +72,9 @@ public class GoodsManager implements Serializable {
     private static final double VEHICLE_FACTOR = 10000D;
     private static final double LIFE_SUPPORT_FACTOR = 4D;
     private static final double VEHICLE_FUEL_FACTOR = 10D;
-    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .75D;
-    private static final double MANUFACTURING_INPUT_FACTOR = .75D;
-    private static final double CONSTRUCTING_INPUT_FACTOR = .75D;
+    private static final double RESOURCE_PROCESSING_INPUT_FACTOR = .5D;
+    private static final double MANUFACTURING_INPUT_FACTOR = .1D;
+    private static final double CONSTRUCTING_INPUT_FACTOR = .5D;
 
     // Data members
     private Settlement settlement;
@@ -571,7 +571,9 @@ public class GoodsManager implements Serializable {
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) 
                     && isLocallyConstructable(stage)) {
                 double constructionDemand = getResourceConstructionStageDemand(resource, stage, stageValue);
-                demand += constructionDemand;
+                if (constructionDemand > 0D) {
+                    demand += constructionDemand;
+                }
             }
         }
 
@@ -1070,7 +1072,9 @@ public class GoodsManager implements Serializable {
             if (stageValue > 0D && ConstructionStageInfo.BUILDING.equals(stage.getType()) && 
                     isLocallyConstructable(stage)) {
                 double constructionStageDemand = getPartConstructionStageDemand(part, stage, stageValue);
-                demand += constructionStageDemand;
+                if (constructionStageDemand > 0D) {
+                    demand += constructionStageDemand;
+                }
             }
         }
 
