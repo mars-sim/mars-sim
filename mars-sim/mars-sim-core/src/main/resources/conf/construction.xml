@@ -430,6 +430,11 @@
 			<resource name="concrete" amount="10.0" />
 		</building>
 		
+		<building name="ice storage bin" width="2.0" length="3.0" constructable="true" salvagable="true" 
+		 work-time=".5" skill-required="1" frame="brick bin frame" >
+			<resource name="concrete" amount="10.0" />
+		</building>
+		
 		<building name="manufacturing shed" width="5.0" length="5.0" constructable="true" salvagable="true" 
 		 work-time="20.0" skill-required="3" frame="small brick shed frame" >
 			<resource name="cement" amount="20.0" />

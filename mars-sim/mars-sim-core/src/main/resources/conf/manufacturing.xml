@@ -29,6 +29,17 @@
 		</outputs>
 	</process>
 	
+	<process name="extract iron oxide from regolith (large batch)" tech="1" skill="2" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="iron oxide" amount="70.0" />
+			<resource name="sand" amount="400.0" />
+		</outputs>
+	</process>
+	
 	<process name="extract aluminum oxide from regolith" tech="1" skill="0" work-time="100" process-time="0"
 			power-required="0.0">
 		<inputs>
@@ -39,6 +50,16 @@
 		</outputs>
 	</process>
 	
+	<process name="extract aluminum oxide from regolith (large batch)" tech="1" skill="2" work-time="500" process-time="0"
+			power-required="0.0">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum oxide" amount="20.0" />
+		</outputs>
+	</process>
+	
 	<process name="extract aluminum oxide from sand" tech="1" skill="0" work-time="100" process-time="0" 
 			power-required="0.0">
 		<inputs>
@@ -46,6 +67,16 @@
 		</inputs>
 		<outputs>
 			<resource name="aluminum oxide" amount="2.0" />
+		</outputs>
+	</process>
+	
+	<process name="extract aluminum oxide from sand (large batch)" tech="1" skill="2" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="sand" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="aluminum oxide" amount="20.0" />
 		</outputs>
 	</process>
 	
@@ -62,6 +93,19 @@
 		</outputs>
 	</process>
 	
+	<!-- Fe2O3 + 3CO -> 2Fe + 3CO2 -->
+	<process name="carbon monoxide iron reduction (large batch)" tech="1" skill="3" work-time="250" process-time="1000"
+			power-required="2.0">
+		<inputs>
+			<resource name="iron oxide" amount="500.0" />
+			<resource name="carbon monoxide" amount="264.0" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="349.0" />
+			<resource name="carbon dioxide" amount="413.0" />
+		</outputs>
+	</process>
+	
 	<!-- Fe2O3 + 3H2 -> 2Fe + 3H2O -->
 	<process name="hydrogen iron reduction" tech="1" skill="1" work-time="50" process-time="200" 
 			power-required="2.0">
@@ -75,7 +119,20 @@
 		</outputs>
 	</process>
 	
-	<!-- Produces 5kg iron ingot. -->
+	<!-- Fe2O3 + 3H2 -> 2Fe + 3H2O -->
+	<process name="hydrogen iron reduction (large batch)" tech="1" skill="3" work-time="250" process-time="1000" 
+			power-required="2.0">
+		<inputs>
+			<resource name="iron oxide" amount="500.0" />
+			<resource name="hydrogen" amount="25.0" />
+		</inputs>
+		<outputs>
+			<resource name="iron powder" amount="349.0" />
+			<resource name="water" amount="169.0" />
+		</outputs>
+	</process>
+	
+	<!-- Produces 5 5kg iron ingots. -->
 	<process name="iron ingot casting" tech="2" skill="2" work-time="100" process-time="200" 
 			power-required="5.0">
 		<inputs>
@@ -83,6 +140,17 @@
 		</inputs>
 		<outputs>
 			<part name="iron ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- Produces 50 5kg iron ingots. -->
+	<process name="iron ingot casting (large batch)" tech="2" skill="4" work-time="500" process-time="1000" 
+			power-required="5.0">
+		<inputs>
+			<resource name="iron powder" amount="250.0" />
+		</inputs>
+		<outputs>
+			<part name="iron ingot" number="50" />
 		</outputs>
 	</process>
 	
@@ -109,7 +177,7 @@
 	</process>
 	
 	<!-- Al2O3 + 3C -> 2Al + 3CO -->
-	<!-- Produces 1kg ingot of aluminum. -->
+	<!-- Produces 5 1kg aluminum ingots. -->
 	<process name="aluminum ingot casting" tech="2" skill="2" work-time="100" process-time="200" 
 			power-required="20.0">
 		<inputs>
@@ -119,6 +187,20 @@
 		<outputs>
 			<resource name="carbon monoxide" amount="7.5" />
 			<part name="aluminum ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- Al2O3 + 3C -> 2Al + 3CO -->
+	<!-- Produces 50 1kg aluminum ingots. -->
+	<process name="aluminum ingot casting (large batch)" tech="2" skill="4" work-time="500" process-time="1000" 
+			power-required="20.0">
+		<inputs>
+			<resource name="aluminum oxide" amount="95.0" />
+			<resource name="carbon" amount="30.0" />
+		</inputs>
+		<outputs>
+			<resource name="carbon monoxide" amount="75.0" />
+			<part name="aluminum ingot" number="50" />
 		</outputs>
 	</process>
 	
@@ -182,7 +264,7 @@
 		</outputs>
 	</process>
 	
-	<!-- Produces 5kg ingot of steel. -->
+	<!-- Produces 5 5kg steel ingots. -->
 	<process name="steel ingot alloying" tech="2" skill="3" work-time="100" process-time="100" 
 			power-required="10.0">
 		<inputs>
@@ -191,6 +273,18 @@
 		</inputs>
 		<outputs>
 			<part name="steel ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- Produces 50 5kg steel ingots. -->
+	<process name="steel ingot alloying" tech="2" skill="5" work-time="500" process-time="500" 
+			power-required="10.0">
+		<inputs>
+			<resource name="iron powder" amount="250.0" />
+			<resource name="carbon" amount="5.0" />
+		</inputs>
+		<outputs>
+			<part name="steel ingot" number="50" />
 		</outputs>
 	</process>
 	
@@ -389,6 +483,22 @@
 		</outputs>
 	</process>
 	
+	<!-- 2CO + 4H2 -> C2H4 (ethylene) + 2H2O -->
+	<!-- Requires iron catalyst -->
+	<process name="ethylene production (large batch)" tech="3" skill="4" work-time="250" process-time="2000" 
+			power-required="1.0">
+		<inputs>
+			<resource name="carbon dioxide" amount="1000.0" />
+			<resource name="hydrogen" amount="150.0" />
+			<resource name="iron powder" amount="10.0" />
+		</inputs>
+		<outputs>
+			<resource name="ethylene" amount="500.0" />
+			<resource name="water" amount="642" />
+			<resource name="iron powder" amount="10.0" />
+		</outputs>
+	</process>
+	
 	<!-- Assuming 10% loss during production. -->
 	<process name="polyethylene production" tech="3" skill="2" work-time="50" process-time="400" 
 			power-required="0.5">
@@ -397,6 +507,17 @@
 		</inputs>
 		<outputs>
 			<resource name="polyethylene" amount="45.0" />
+		</outputs>
+	</process>
+	
+	<!-- Assuming 10% loss during production. -->
+	<process name="polyethylene production (large batch)" tech="3" skill="4" work-time="250" process-time="2000" 
+			power-required="0.5">
+		<inputs>
+			<resource name="ethylene" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="polyethylene" amount="450.0" />
 		</outputs>
 	</process>
 	
@@ -465,6 +586,18 @@
 	
 	<!-- Gypsum is CaSO4 * 2H2O -->
 	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
+	<process name="extract gypsum from regolith (large batch)" tech="1" skill="3" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="regolith" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="gypsum" amount="100.0" />
+		</outputs>
+	</process>
+	
+	<!-- Gypsum is CaSO4 * 2H2O -->
+	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
 	<process name="extract gypsum from sand" tech="1" skill="1" work-time="100" process-time="0" 
 			power-required="0.0">
 		<inputs>
@@ -472,6 +605,18 @@
 		</inputs>
 		<outputs>
 			<resource name="gypsum" amount="10.0" />
+		</outputs>
+	</process>
+	
+	<!-- Gypsum is CaSO4 * 2H2O -->
+	<!-- Going with 20% gypsum in regolith.  Not sure if this is good estimate or not. -->
+	<process name="extract gypsum from sand (large batch)" tech="1" skill="3" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="sand" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="gypsum" amount="100.0" />
 		</outputs>
 	</process>
 
@@ -493,6 +638,24 @@
 		</outputs>
 	</process>
 	
+	<!-- Process for reducing gypsum to calcium carbonate using carbon. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 2C -> CaS + 2CO2 + 2H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with carbon (large batch)" tech="1" skill="3" work-time="500" 
+			process-time="1000" power-required="2.0">
+		<inputs>
+			<resource name="gypsum" amount="500.0" />
+			<resource name="carbon" amount="70.0" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="290.0" />
+			<resource name="carbon dioxide" amount="127.0" />
+			<resource name="water" amount="52.0" />
+		</outputs>
+	</process>
+	
 	<!-- Process for reducing gypsum to calcium carbonate using carbon monoxide. -->
 	<!-- Wrapping two processes: -->
 	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
@@ -508,6 +671,24 @@
 			<resource name="calcium carbonate" amount="29.0" />
 			<resource name="carbon dioxide" amount="38.1" />
 			<resource name="water" amount="5.2" />
+		</outputs>
+	</process>
+	
+	<!-- Process for reducing gypsum to calcium carbonate using carbon monoxide. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 4CO -> CaS + 4CO2 + 2H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with carbon monoxide (large batch)" tech="1" skill="3" work-time="500" 
+			process-time="1000" power-required="2.0">
+		<inputs>
+			<resource name="gypsum" amount="500.0" />
+			<resource name="carbon monoxide" amount="325.0" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="290.0" />
+			<resource name="carbon dioxide" amount="381.0" />
+			<resource name="water" amount="52.0" />
 		</outputs>
 	</process>
 	
@@ -529,6 +710,24 @@
 		</outputs>
 	</process>
 	
+	<!-- Process for reducing gypsum to calcium carbonate using hydrogen. -->
+	<!-- Wrapping two processes: -->
+	<!-- CaSO4*2H2O (gypsum) + 4H2 -> CaS + 6H2O -->
+	<!-- CaS + H2O + CO2 -> CaCO3 (calcium carbonate) + H2S -->
+	<!-- Note: ignoring hydrogen sulfide as waste for now. -->
+	<process name="reduce gypsum to calcium carbonate with hydrogen (large batch)" tech="1" skill="3" work-time="500" 
+			process-time="1000" power-required="2.0">
+		<inputs>
+			<resource name="gypsum" amount="500.0" />
+			<resource name="hydrogen" amount="23.0" />
+			<resource name="carbon dioxide" amount="128.0" />
+		</inputs>
+		<outputs>
+			<resource name="calcium carbonate" amount="290.0" />
+			<resource name="water" amount="260.0" />
+		</outputs>
+	</process>
+	
 	<!-- CaCO3 (calcium carbonate) -> CaO (lime) + CO2 -->
 	<process name="baking calcium carbonate to lime" tech="1" skill="1" work-time="50" process-time="400" 
 			power-required="4.0">
@@ -538,6 +737,18 @@
 		<outputs>
 			<resource name="lime" amount="27.8" />
 			<resource name="carbon dioxide" amount="21.8" />
+		</outputs>
+	</process>
+	
+	<!-- CaCO3 (calcium carbonate) -> CaO (lime) + CO2 -->
+	<process name="baking calcium carbonate to lime (large batch)" tech="1" skill="3" work-time="250" process-time="2000" 
+			power-required="4.0">
+		<inputs>
+			<resource name="calcium carbonate" amount="500.0" />
+		</inputs>
+		<outputs>
+			<resource name="lime" amount="278.0" />
+			<resource name="carbon dioxide" amount="218.0" />
 		</outputs>
 	</process>
 	
@@ -557,6 +768,25 @@
 		<outputs>
 			<resource name="carbon monoxide" amount="24.97" />
 			<resource name="styrene" amount="30.95" />
+		</outputs>
+	</process>
+	
+	<!-- Wrapping four processes: -->
+	<!-- 3C + CaO -> CaC2 + CO -->
+	<!-- CaC2 + H2O -> C2H2 (acetylene) + CaO -->
+	<!-- 3C2H2 (acetylene) -> (condensed) C6H6 (benzene) -->
+	<!-- C6H6 (benzene) + C2H4 (ethylene) -> C2H3C6H5 (styrene) -->
+	<process name="styrene production (large batch)" tech="3" skill="5" work-time="500" process-time="2000" 
+			power-required="8.0">
+		<inputs>
+			<resource name="carbon" amount="321.2" />
+			<resource name="lime" amount="20.0" />
+			<resource name="water" amount="160.5" />
+			<resource name="ethylene" amount="83.4" />
+		</inputs>
+		<outputs>
+			<resource name="carbon monoxide" amount="249.7" />
+			<resource name="styrene" amount="309.5" />
 		</outputs>
 	</process>
 	
@@ -650,6 +880,19 @@
 		</outputs>
 	</process>
 	
+	<!-- This is to produce unsaturated polyester resin (C10H8O4). -->
+	<!-- We don't have a detailed process for producing polyester, so we're just using component elements. -->
+	<process name="polyester resin production (large batch)" tech="3" skill="5" work-time="500" process-time="2000" 
+			power-required="0.5">
+		<inputs>
+			<resource name="carbon" amount="300.0" />
+			<resource name="water" amount="200.0" />
+		</inputs>
+		<outputs>
+			<resource name="polyester resin" amount="500.0" />
+		</outputs>
+	</process>
+	
 	<!-- Epoxy uses bisphenol-A (C15H16O2) -->
 	<process name="epoxy resin bottle manufacturing" tech="3" skill="3" work-time="100" process-time="300" 
 			power-required="0.5">
@@ -728,6 +971,17 @@
 		</outputs>
 	</process>
 	
+    <!-- Produces 10 1kg spools of fiber glass. -->
+	<process name="optical fiber glass drawing (large batch)" tech="3" skill="5" work-time="1500" process-time="1500" 
+			power-required="10.0">
+		<inputs>
+			<resource name="sand" amount="20.0" />
+		</inputs>
+		<outputs>
+			<part name="fiberglass" number="10" />
+		</outputs>
+	</process>
+	
 	<!-- Produces 1kg spool of fiber glass. -->
 	<process name="dark fiber glass drawing" tech="3" skill="3" work-time="300" process-time="300" 
 			power-required="10.0">
@@ -736,6 +990,17 @@
 		</inputs>
 		<outputs>
 			<part name="fiberglass" number="1" />
+		</outputs>
+	</process>
+	
+	<!-- Produces 10 1kg spools of fiber glass. -->
+	<process name="dark fiber glass drawing (large batch)" tech="3" skill="5" work-time="1500" process-time="1500" 
+			power-required="10.0">
+		<inputs>
+			<resource name="regolith" amount="20.0" />
+		</inputs>
+		<outputs>
+			<part name="fiberglass" number="10" />
 		</outputs>
 	</process>
 	
@@ -1348,7 +1613,7 @@
 		</outputs>
 	</process>
 	
-	<!-- Produces 5kg ingot of steel. -->
+	<!-- Produces 5 5kg ingots of steel. -->
 	<process name="steel ingot nickel alloying" tech="2" skill="3" work-time="100" process-time="100" 
 			power-required="10.0">
 		<inputs>
@@ -1358,6 +1623,19 @@
 		</inputs>
 		<outputs>
 			<part name="steel ingot" number="5" />
+		</outputs>
+	</process>
+	
+	<!-- Produces 50 5kg ingots of steel. -->
+	<process name="steel ingot nickel alloying (large batch)" tech="2" skill="5" work-time="500" process-time="500" 
+			power-required="10.0">
+		<inputs>
+			<resource name="iron powder" amount="225.0" />
+			<resource name="nickel" amount="25.0" />
+			<resource name="carbon" amount="3.0" />
+		</inputs>
+		<outputs>
+			<part name="steel ingot" number="50" />
 		</outputs>
 	</process>
 	
@@ -1636,6 +1914,19 @@
 		</outputs>
 	</process>
 	
+	<process name="cement manufacturing (large batch)" tech="1" skill="3" work-time="250" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="calcium carbonate" amount="400.0" />
+			<resource name="gypsum" amount="80.0" />
+			<resource name="aluminum oxide" amount="10.0" />
+			<resource name="iron oxide" amount="10.0" />
+		</inputs>
+		<outputs>
+			<resource name="cement" amount="500.0" />
+		</outputs>
+	</process>
+	
 	<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
 	<process name="regolith mortar mixing" tech="1" skill="1" work-time="100" process-time="0" 
 			power-required="0.0">
@@ -1648,6 +1939,18 @@
 		</outputs>
 	</process>
 	
+	<!-- Makes dry mortar mix with cement and regolith (1:5 mixture). -->
+	<process name="regolith mortar mixing (large batch)" tech="1" skill="3" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="cement" amount="170.0" />
+			<resource name="regolith" amount="830.0" />
+		</inputs>
+		<outputs>
+			<resource name="mortar" amount="1000.0" />
+		</outputs>
+	</process>
+	
 	<!-- Makes dry mortar mix with cement and sand (1:5 mixture). -->
 	<process name="sand mortar mixing" tech="1" skill="1" work-time="100" process-time="0" 
 			power-required="0.0">
@@ -1657,6 +1960,18 @@
 		</inputs>
 		<outputs>
 			<resource name="mortar" amount="100.0" />
+		</outputs>
+	</process>
+	
+	<!-- Makes dry mortar mix with cement and sand (1:5 mixture). -->
+	<process name="sand mortar mixing (large batch)" tech="1" skill="3" work-time="500" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="cement" amount="170.0" />
+			<resource name="sand" amount="830.0" />
+		</inputs>
+		<outputs>
+			<resource name="mortar" amount="1000.0" />
 		</outputs>
 	</process>
 	
@@ -1673,6 +1988,19 @@
 		</outputs>
 	</process>
 	
+	<!-- Makes dry concrete using cement with sand and regolith as aggregates. -->
+	<process name="concrete mixing (large batch)" tech="1" skill="5" work-time="250" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="cement" amount="100.0" />
+			<resource name="sand" amount="150.0" />
+			<resource name="regolith" amount="250.0" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="500.0" />
+		</outputs>
+	</process>
+	
 	<!-- Same as concrete mixing but using lime in place of cement. -->
 	<process name="limecrete mixing" tech="1" skill="1" work-time="50" process-time="0" 
 			power-required="0.0">
@@ -1686,12 +2014,25 @@
 		</outputs>
 	</process>
 	
+	<!-- Same as concrete mixing but using lime in place of cement. -->
+	<process name="limecrete mixing (large batch)" tech="1" skill="5" work-time="250" process-time="0" 
+			power-required="0.0">
+		<inputs>
+			<resource name="lime" amount="100" />
+			<resource name="sand" amount="150" />
+			<resource name="regolith" amount="250" />
+		</inputs>
+		<outputs>
+			<resource name="concrete" amount="500.0" />
+		</outputs>
+	</process>
+	
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
 	<process name="regolith brick baking" tech="1" skill="0" work-time="10" process-time="50" 
 			power-required="4.0">
 		<inputs>
-			<resource name="regolith" amount="28.6" />
-			<resource name="water" amount="5.0" />
+			<resource name="regolith" amount="32.6" />
+			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="brick" number="10" />
@@ -1702,8 +2043,8 @@
 	<process name="sand brick baking" tech="1" skill="0" work-time="10" process-time="50" 
 			power-required="4.0">
 		<inputs>
-			<resource name="sand" amount="28.6" />
-			<resource name="water" amount="5.0" />
+			<resource name="sand" amount="32.6" />
+			<resource name="water" amount="1.0" />
 		</inputs>
 		<outputs>
 			<part name="brick" number="10" />
@@ -1711,11 +2052,11 @@
 	</process>
 	
 	<!-- Brick manufacturing with regolith, water, heat and pressure. -->
-	<process name="large batch regolith brick baking" tech="1" skill="2" work-time="100" process-time="500" 
-			power-required="20.0">
+	<process name="regolith brick baking (large batch)" tech="1" skill="2" work-time="50" process-time="250" 
+			power-required="4.0">
 		<inputs>
-			<resource name="regolith" amount="286.0" />
-			<resource name="water" amount="50.0" />
+			<resource name="regolith" amount="326.0" />
+			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="brick" number="100" />
@@ -1723,11 +2064,11 @@
 	</process>
 	
 	<!-- Brick manufacturing with sand, water, heat and pressure. -->
-	<process name="large batch sand brick baking" tech="1" skill="2" work-time="100" process-time="500" 
-			power-required="20.0">
+	<process name="sand brick baking (large batch)" tech="1" skill="2" work-time="50" process-time="250" 
+			power-required="4.0">
 		<inputs>
-			<resource name="sand" amount="286.0" />
-			<resource name="water" amount="50.0" />
+			<resource name="sand" amount="326.0" />
+			<resource name="water" amount="10.0" />
 		</inputs>
 		<outputs>
 			<part name="brick" number="100" />
@@ -1743,6 +2084,18 @@
 		<outputs>
 			<resource name="water" amount="50.0" />
 			<resource name="regolith" amount="50.0" />
+		</outputs>
+	</process>
+	
+	<!-- Melting permafrost ice and filtering the water. -->
+	<process name="melting/filtering ice (large batch)" tech="1" skill="2" work-time="50.0" process-time="250" 
+			power-required="4.0">
+		<inputs>
+			<resource name="ice" amount="1000.0" />
+		</inputs>
+		<outputs>
+			<resource name="water" amount="500.0" />
+			<resource name="regolith" amount="500.0" />
 		</outputs>
 	</process>
 	

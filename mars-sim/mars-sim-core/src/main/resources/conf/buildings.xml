@@ -571,6 +571,16 @@
 		</functions>
 	</building>
 	
+	<!-- A small brick bin for storing ice. -->
+	<building name="Ice Storage Bin" width="2.0" length="3.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<storage>
+				<resource-storage resource="Ice" capacity="5000.0" />
+			</storage>
+		</functions>
+	</building>
+	
 	<!-- A small brick manufacturing building. -->
 	<building name="Manufacturing Shed" width="5.0" length="5.0">
 		<power-required base-power="3.0" base-power-down-power="0.0" />
