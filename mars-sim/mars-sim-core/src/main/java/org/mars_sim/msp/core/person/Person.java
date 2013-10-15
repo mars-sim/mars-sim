@@ -106,13 +106,13 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         health = new PhysicalCondition(this);
         scientificAchievement = new HashMap<Science, Double>(0);
 
-        // Set base mass of person from 61 to 79, peaking at 70.
-        setBaseMass(59D + (RandomUtil.getRandomInt(100)
+        // Set base mass of person from 58 to 76, peaking at 67.
+        setBaseMass(56D + (RandomUtil.getRandomInt(100)
                 + RandomUtil.getRandomInt(100))/10D);
 
         // Set height of person as gender-correlated curve.
-        height = ( this.gender == "MALE" ? 152 + (RandomUtil.getRandomInt(22)
-                + RandomUtil.getRandomInt(22)) : 142 + (RandomUtil.getRandomInt(15)
+        height = ( this.gender == "MALE" ? 156 + (RandomUtil.getRandomInt(22)
+                + RandomUtil.getRandomInt(22)) : 146 + (RandomUtil.getRandomInt(15)
                         + RandomUtil.getRandomInt(15)) );
         
         // Set inventory total mass capacity based on the person's strength.
