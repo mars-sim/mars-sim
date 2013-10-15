@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.02 2011-11-26
+ * @version 3.06 2013-10-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -26,7 +27,8 @@ import java.util.List;
 public class ResourceProcessing extends Function implements Serializable {
         
 	public static final String NAME = "Resource Processing";
-	private static final double PROCESS_MAX_VALUE = 100D;
+	
+	public static final double PROCESS_MAX_VALUE = 100D;
         
 	private double powerDownProcessingLevel;
     private List<ResourceProcess> resourceProcesses;
@@ -58,6 +60,7 @@ public class ResourceProcessing extends Function implements Serializable {
             Settlement settlement) {
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        Inventory inv = settlement.getInventory();
         
         double result = 0D;
         List<ResourceProcess> processes = config.getResourceProcesses(buildingName);
@@ -76,6 +79,8 @@ public class ResourceProcessing extends Function implements Serializable {
                 }
             }
             
+            double inputInventoryLimit = 1D;
+            
             Iterator<AmountResource> k = process.getInputResources().iterator();
             while (k.hasNext()) {
                 AmountResource resource = k.next();
@@ -83,6 +88,15 @@ public class ResourceProcessing extends Function implements Serializable {
                     Good resourceGood = GoodsUtil.getResourceGood(resource);
                     double rate = process.getMaxInputResourceRate(resource) * 1000D;
                     processValue -= settlement.getGoodsManager().getGoodValuePerItem(resourceGood) * rate;
+                    
+                    // Check inventory limit.
+                    double inputSupply = inv.getAmountResourceStored(resource, false);
+                    if (inputSupply < rate) {
+                        double limit = inputSupply / rate;
+                        if (limit < inputInventoryLimit) {
+                            inputInventoryLimit = limit;
+                        }
+                    }
                 }
             }
             
@@ -92,8 +106,17 @@ public class ResourceProcessing extends Function implements Serializable {
             double powerValue = powerHrsRequiredPerSol * settlement.getPowerGrid().getPowerValue();
             processValue -= powerValue;
             
-            if (processValue < 0D) processValue = 0D;
-            if (processValue > PROCESS_MAX_VALUE) processValue = PROCESS_MAX_VALUE;
+            if (processValue < 0D) {
+                processValue = 0D;
+            }
+            
+            // Modify by input inventory limit.
+            processValue *= inputInventoryLimit;
+            
+            if (processValue > PROCESS_MAX_VALUE) {
+                processValue = PROCESS_MAX_VALUE;
+            }
+            
             result += processValue;
         }
         
@@ -131,12 +154,7 @@ public class ResourceProcessing extends Function implements Serializable {
 		// Run each resource process.
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
-//			try {
 				i.next().processResources(time, productionLevel, getBuilding().getInventory());
-//			}
-//			catch(Exception e) {
-//				throw new BuildingException("Error processing resources: " + e.getMessage(), e);
-//			}
 		}
 	}
 	
