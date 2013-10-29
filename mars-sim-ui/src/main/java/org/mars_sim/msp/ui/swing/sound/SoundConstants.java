@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 3.00 2010-08-10
+ * @version 3.06 2013-10-29
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.swing.sound;
@@ -27,7 +27,6 @@ public interface SoundConstants {
     public final static String SND_SPLASH = "splash.wav";
 
     // Unit window sounds for people.
-    // TODO: Add additional sounds for people based on activity.
     public final static String SND_PERSON_FEMALE1 = "female_person1.wav";
     public final static String SND_PERSON_FEMALE2 = "female_person2.wav";
     public final static String SND_PERSON_MALE1 = "male_person1.wav";
