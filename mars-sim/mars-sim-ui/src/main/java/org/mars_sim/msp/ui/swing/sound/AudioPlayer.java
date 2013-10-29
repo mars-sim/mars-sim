@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AudioPlayer.java
- * @version 3.04 2013-02-14
+ * @version 3.06 2013-10-29
  * @author Dima Stepanchuk
  * @author Sebastien Venot
  */
@@ -34,16 +34,16 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     /** The current clip sound. */
     private Clip currentClip;
 
-    /** The current midi sound. */
+    /** The current MIDI sound. */
     private Sequencer sequencer;
 
-    /** midi sound synthetiser */
+    /** MIDI sound synthesizer */
     private Synthesizer synthesizer;
 
-    /** midi sound receiver */
+    /** MIDI sound receiver */
     private Receiver synthReceiver;
 
-    /** midi sound transmitter */
+    /** MIDI sound transmitter */
     private Transmitter seqTransmitter;
 
     /** Is the audio player muted? */
@@ -86,8 +86,8 @@ public class AudioPlayer implements LineListener, MetaEventListener {
      */
     private void startPlay(final String filepath, final boolean loop) {
 
-        // if the sound is long(the whole UI get stuck, so we play
-        // the sound within his own thread
+        // if the sound is long, the whole UI get stuck, so we play
+        // the sound within its own thread
         sound_player = new Thread() {
             public void run() {
                 if ((filepath != null) && filepath.length() != 0) {
@@ -110,7 +110,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     }
 
     /**
-     * Play and cache sound of type wav.
+     * Play and cache sound of type WAV.
      * 
      * @param filepath the file path to the sound
      * @param loop Should the sound clip be looped?
@@ -159,7 +159,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     }
 
     /**
-     * Play compressed sound (mp3 or ogg files) The sounds are not cached in
+     * Play compressed sound (MP3 or OGG files) The sounds are not cached in
      * this case.
      * 
      * @param filepath filepath the file path to the sound
@@ -224,7 +224,7 @@ public class AudioPlayer implements LineListener, MetaEventListener {
     }
 
     /**
-     * Play compressed sound (mp3 or ogg files) The sounds are not cached in
+     * Play compressed sound (MP3 or OGG files) The sounds are not cached in
      * this case.
      * 
      * @param filepath filepath the file path to the sound
@@ -336,7 +336,6 @@ public class AudioPlayer implements LineListener, MetaEventListener {
             // Note: No linear volume control for the clip,
             // so use gain control.
             // Linear volume = pow(10.0, gainDB/20.0)
-            // Note Math.log10 is Java 1.5 or better.
             // float gainLog10 = (float) Math.log10(volume);
             float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
             float gain = gainLog10 * 20F;
@@ -353,7 +352,6 @@ public class AudioPlayer implements LineListener, MetaEventListener {
             // Note: No linear volume control for the clip,
             // so use gain control.
             // Linear volume = pow(10.0, gainDB/20.0)
-            // Note Math.log10 is Java 1.5 or better.
             // float gainLog10 = (float) Math.log10(volume);
             float gainLog10 = (float) (Math.log(volume) / Math.log(10F));
             float gain = gainLog10 * 20F;
