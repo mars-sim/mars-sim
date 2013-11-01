@@ -16,7 +16,11 @@
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
 			
 			<!-- Inflatable greenhouse can be used to grow crops. -->
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0" />
+			
+			<!-- Hallway connecting lander hab and inflatable greenhouse. -->
+			<!-- Note: hallways have variable length but fixed width, so length argument is given here. -->
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0" />
 			
 			<!-- Small nuclear reactor power generator. -->
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
@@ -69,9 +73,12 @@
 	
 		<template name="Mars Direct Base (phase 2)" default-population="8">
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
-			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
@@ -97,11 +104,16 @@
 		
 		<template name="Mars Direct Base (phase 3)" default-population="12">
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
-			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
-			<building type="Lander Hab" x-location="0.0" y-location="18.0" facing="0.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="18.0" facing="270.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />
@@ -130,20 +142,33 @@
 		
 		<template name="Alpha Base (MD phase 4)" default-population="24">
 			<building type="Atmospheric Processor" x-location="0.0" y-location="-20.0" facing="90.0" />
-			<building type="Residential Quarters" x-location="-18.0" y-location="26.0" facing="270.0" />
-			<building type="Lounge" x-location="-9.0" y-location="26.0" facing="270.0" />
-			<building type="Infirmary" x-location="-27.0" y-location="26.0" facing="270.0" />
-			<building type="Command and Control" x-location="0.0" y-location="26.0" facing="270.0" />
-			<building type="Large Greenhouse" x-location="-36.0" y-location="13.5" facing="0.0" />
-			<building type="Laboratory" x-location="-36.0" y-location="26.0" facing="270.0" />
-			<building type="Garage" x-location="-45.0" y-location="37.5" facing="0.0" />
-			<building type="Workshop" x-location="-45.0" y-location="26.0" facing="270.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="32.5" facing="0.0" />
+			<building type="Command and Control" x-location="0.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="2.0" x-location="-5.5" y-location="37.5" facing="270.0" />
+			<building type="Lounge" x-location="-11.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="2.0" x-location="-16.5" y-location="37.5" facing="270.0" />
+			<building type="Residential Quarters" x-location="-22.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="2.0" x-location="-27.5" y-location="37.5" facing="270.0" />
+			<building type="Infirmary" x-location="-33.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="2.0" x-location="-38.5" y-location="37.5" facing="270.0" />
+			<building type="Laboratory" x-location="-44.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="2.0" x-location="-49.5" y-location="37.5" facing="270.0" />
+			<building type="Workshop" x-location="-55.0" y-location="37.5" facing="270.0" />
+			<building type="Hallway" length="5.0" x-location="-44.0" y-location="31.5" facing="0.0" />
+			<building type="Large Greenhouse" x-location="-44.0" y-location="20.0" facing="0.0" />
+			<building type="Hallway" length="5.0" x-location="-55.0" y-location="43.5" facing="0.0" />
+			<building type="Garage" x-location="-55.0" y-location="54.0" facing="0.0" />
 			<building type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0" />
-			<building type="Lander Hab" x-location="0.0" y-location="9.0" facing="0.0" />
-			<building type="Lander Hab" x-location="0.0" y-location="18.0" facing="0.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="0.0" facing="270.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="9.0" facing="270.0" />
-			<building type="Inflatable Greenhouse" x-location="-9.0" y-location="18.0" facing="270.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="6.5" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="13.0" facing="0.0" />
+			<building type="Hallway" length="4.0" x-location="0.0" y-location="19.5" facing="0.0" />
+			<building type="Lander Hab" x-location="0.0" y-location="26.0" facing="0.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="0.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="0.0" facing="270.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="13.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="13.0" facing="270.0" />
+			<building type="Hallway" length="3.0" x-location="-6.0" y-location="26.0" facing="270.0" />
+			<building type="Inflatable Greenhouse" x-location="-12.0" y-location="26.0" facing="270.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-62.0" y-location="-53.0" facing="0.0" />
 			<building type="MD1 Nuclear Reactor" x-location="-52.0" y-location="-68.0" facing="0.0" />

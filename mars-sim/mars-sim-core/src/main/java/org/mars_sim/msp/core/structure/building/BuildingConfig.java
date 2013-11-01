@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.04 2012-12-06
+ * @version 3.04 2012-12-16
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -90,6 +90,7 @@ public class BuildingConfig implements Serializable {
     private static final String CREW_CAPACITY = "crew-capacity";
     private static final String MANAGEMENT = "management";
     private static final String POPULATION_SUPPORT = "population-support";
+    private static final String BUILDING_CONNECTION = "building-connection";
 	
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -846,6 +847,15 @@ public class BuildingConfig implements Serializable {
 	 */
 	public int getEarthReturnCrewCapacity(String buildingName) {
 	    return getValueAsInteger(buildingName, FUNCTIONS, EARTH_RETURN, CREW_CAPACITY);
+	}
+	
+	/**
+	 * Checks if the building has a building connection function.
+	 * @param buildingName the name of the building.
+	 * @return true if building has a building connection function.
+	 */
+	public boolean hasBuildingConnection(String buildingName) {
+	    return hasElements(buildingName, FUNCTIONS, BUILDING_CONNECTION);
 	}
 	
 	private int getValueAsInteger(String buildingName, String child, 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.04 2013-02-04
+ * @version 3.06 2013-10-20
  * @author Scott Davis
  */
 
@@ -251,9 +251,33 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
      * @param stage the construction stage.
      */
     private void updateDimensions(ConstructionStage stage) {
+        
+        double stageWidth = stage.getInfo().getWidth();
+        double stageLength = stage.getInfo().getLength();
+        
         if (!stage.getInfo().isUnsetDimensions()) {
-            if (stage.getInfo().getWidth() != width) width = stage.getInfo().getWidth();
-            if (stage.getInfo().getLength() != length) length = stage.getInfo().getLength();
+            if (stageWidth != width) {
+                width = stageWidth;
+            }
+            if (stageLength != length) {
+                length = stageLength;
+            }
+        }
+        else {
+            if ((stageWidth > 0D) && (stageWidth != width)) {
+                width = stageWidth;
+            }
+            else if (width <= 0D) {
+                // TODO determine width of construction site.
+                width = 10D;
+            }
+            if ((stageLength > 0D) && (stageLength != length)) {
+                length = stageLength;
+            }
+            else if (length <= 0D) {
+                // TODO determine length of construction site.
+                length = 10D;
+            }
         }
     }
     
@@ -301,7 +325,7 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
     public Building createBuilding(BuildingManager manager) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
         
-        Building newBuilding = new Building(buildingStage.getInfo().getName(), xLocation,
+        Building newBuilding = new Building(buildingStage.getInfo().getName(), width, length, xLocation,
                 yLocation, facing, manager);
         manager.addBuilding(newBuilding);
         

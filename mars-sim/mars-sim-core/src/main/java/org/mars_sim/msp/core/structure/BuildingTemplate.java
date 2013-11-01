@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.00 2011-02-23
+ * @version 3.06 2013-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -15,12 +15,17 @@ public class BuildingTemplate implements Serializable {
 
     // Data members
     private String type;
+    private double width;
+    private double length;
     private double xLoc;
     private double yLoc;
     private double facing;
     
-    public BuildingTemplate(String type, double xLoc, double yLoc, double facing) {
+    public BuildingTemplate(String type, double width, double length, double xLoc, 
+            double yLoc, double facing) {
         this.type = type;
+        this.width = width;
+        this.length = length;
         this.xLoc = xLoc;
         this.yLoc = yLoc;
         this.facing = facing;
@@ -32,6 +37,24 @@ public class BuildingTemplate implements Serializable {
      */
     public String getType() {
         return type;
+    }
+    
+    /**
+     * Gets the width of the building.
+     * Note: value is -1 if not set in template.
+     * @return width (meters) of building or -1 if not set.
+     */
+    public double getWidth() {
+        return width;
+    }
+    
+    /**
+     * Gets the length of the building.
+     * Note: value is -1 if not set in template.
+     * @return length (meters) of building or -1 if not set.
+     */
+    public double getLength() {
+        return length;
     }
 
     /**

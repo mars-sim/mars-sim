@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.02 2012-04-12
+ * @version 3.06 2013-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -27,6 +27,8 @@ public class ResupplyConfig implements Serializable {
 	private static final String RESUPPLY = "resupply";
 	private static final String NAME = "name";
 	private static final String BUILDING = "building";
+	private static final String WIDTH = "width";
+	private static final String LENGTH = "length";
 	private static final String X_LOCATION = "x-location";
 	private static final String Y_LOCATION = "y-location";
 	private static final String FACING = "facing";
@@ -56,7 +58,7 @@ public class ResupplyConfig implements Serializable {
 	}
 	
 	/**
-	 * Loads teh resupply templates.
+	 * Loads the resupply templates.
 	 * @param resupplyDoc DOM document for resupply configuration.
 	 * @param partPackageConfig th epart package configuration.
 	 * @throws Exception if error parsing XML.
@@ -77,10 +79,24 @@ public class ResupplyConfig implements Serializable {
 			List<Element> buildingNodes = resupplyElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
 				String buildingType = buildingElement.getAttributeValue(TYPE);
+				
+                // Determine optional width attribute value.  "-1" if it doesn't exist.
+                double width = -1D;
+                if (buildingElement.getAttribute(WIDTH) != null) {
+                    width = Double.parseDouble(buildingElement.getAttributeValue(WIDTH));
+                }
+                
+                // Determine optional length attribute value.  "-1" if it doesn't exist.
+                double length = -1D;
+                if (buildingElement.getAttribute(LENGTH) != null) {
+                    length = Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+                }
+				
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
-				template.buildings.add(new BuildingTemplate(buildingType, xLoc, yLoc, facing));
+				template.buildings.add(new BuildingTemplate(buildingType, width, length, xLoc, 
+				        yLoc, facing));
 			}
 			
 			// Load vehicles
