@@ -14,7 +14,7 @@
    height="700"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="astronomy_observatory.svg">
   <defs
      id="defs4">
@@ -71,7 +71,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.79571429"
-     inkscape:cx="350"
+     inkscape:cx="201.70557"
      inkscape:cy="386.83242"
      inkscape:document-units="px"
      inkscape:current-layer="layer2"
@@ -79,9 +79,9 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-global="true"
-     inkscape:window-width="1440"
-     inkscape:window-height="825"
-     inkscape:window-x="0"
+     inkscape:window-width="1871"
+     inkscape:window-height="1056"
+     inkscape:window-x="49"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:snap-grids="false"
@@ -133,7 +133,7 @@
        sodipodi:cy="350.62836"
        sodipodi:rx="343.08798"
        sodipodi:ry="343.08798"
-       d="m 693.71634,350.62836 a 343.08798,343.08798 0 1 1 -686.1759652,0 343.08798,343.08798 0 1 1 686.1759652,0 z"
+       d="m 693.71634,350.62836 c 0,189.48226 -153.60572,343.08798 -343.08798,343.08798 C 161.1461,693.71634 7.5403748,540.11062 7.5403748,350.62836 7.5403748,161.1461 161.1461,7.5403748 350.62836,7.5403748 c 189.48226,0 343.08798,153.6057252 343.08798,343.0879852 z"
        transform="translate(0,352.36218)" />
   </g>
   <g
@@ -590,21 +590,5 @@
        sodipodi:rx="247.57629"
        sodipodi:ry="247.57629"
        d="m 598.20465,350.62836 a 247.57629,247.57629 0 1 1 -495.15259,0 247.57629,247.57629 0 1 1 495.15259,0 z" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer5"
-     inkscape:label="Airlock"
-     sodipodi:insensitive="true"
-     style="display:inline">
-    <rect
-       ry="59.985283"
-       rx="0"
-       y="0.014717102"
-       x="237.19983"
-       height="59.985283"
-       width="227.8271"
-       id="rect3611"
-       style="fill:#000080;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.85500002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new" />
   </g>
 </svg>

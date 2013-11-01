@@ -105,6 +105,16 @@ public final class SVGMapUtil {
     }
     
     /**
+     * Gets a SVG node for a building overlay pattern.
+     * @param buildingName the building's name.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getBuildingPatternSVG(String buildingName) {
+        
+        return getSVGGraphicsNode("building.pattern", buildingName);
+    }
+    
+    /**
      * Gets a SVG node for a construction site.
      * @param constructionSiteStageName the construction site's current stage name.
      * @return SVG node or null if none found.
