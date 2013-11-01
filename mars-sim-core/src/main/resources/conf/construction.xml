@@ -349,6 +349,13 @@
 			</vehicle>
 		</frame>
 		
+		<frame name="hallway frame" width="2.0" length="-1.0" constructable="true" salvagable="true" 
+		 work-time="3.0" skill-required="1" foundation="unprepared surface foundation" >
+			<resource name="concrete" amount="10.0" />
+			<resource name="water" amount="4.0" />
+			<part name="steel truss" number="5" />
+		</frame> 
+		
 	</frame-list>
 
 	<building-list>
@@ -945,6 +952,16 @@
 			<vehicle type="light utility vehicle" >
 				<attachment-part name="crane boom" />
 			</vehicle>
+		</building>
+		
+		<building name="hallway" width="2.0" length="-1.0" constructable="true" salvagable="true" work-time="5.0"
+		 skill-required="1" frame="hallway frame" >
+		    <part name="plastic sheet" number="2" />
+		    <part name="plastic pipe" number="3" />
+			<part name="valve" number="4" />
+			<part name="gasket" number="4" />
+			<part name="electrical wire" number="3" />
+			<part name="wire connector" number="3" /> 
 		</building>
 
 	</building-list>

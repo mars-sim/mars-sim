@@ -837,4 +837,14 @@
 		</functions>
 	</building>
 	
+	<!-- A pressurized hallway connecting two inhabitable buildings. -->
+	<!-- A hallways length is variable and determined in templates or during construction. -->
+	<building name="Hallway" width="2.0" length="-1.0">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<building-connection />
+			<life-support capacity="1" power-required=".5" />
+		</functions>
+	</building>
+	
 </building-list>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.06 2013-10-03
+ * @version 3.06 2013-10-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -419,8 +419,19 @@ public class Resupply implements Serializable, Transportable {
                 }
             }
             else {
+                // TODO: Replace width and length defaults to deal with variable width and length buildings.
+                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(buildingType);
+                if (width <= 0D) {
+                    width = 10D;
+                }
+                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(buildingType);
+                if (length <= 0D) {
+                    length = 10D;
+                }
+                
                 // If no buildings at settlement, position new building at 0,0 with random facing.
-                newPosition = new BuildingTemplate(buildingType, 0D, 0D, RandomUtil.getRandomDouble(360D));
+                newPosition = new BuildingTemplate(buildingType, width, length, 0D, 0D, 
+                        RandomUtil.getRandomDouble(360D));
             }
         }
         
@@ -438,8 +449,15 @@ public class Resupply implements Serializable, Transportable {
             double separationDistance) {
         BuildingTemplate newPosition = null;
         
+        // TODO: Replace width and length defaults to deal with variable width and length buildings.
         double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
+        if (width <= 0D) {
+            width = 10D;
+        }
         double length = SimulationConfig.instance().getBuildingConfiguration().getLength(newBuildingType);
+        if (length <= 0D) {
+            length = 10D;
+        }
         
         final int front = 0;
         final int back = 1;
@@ -482,8 +500,8 @@ public class Resupply implements Serializable, Transportable {
             if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
-                newPosition = new BuildingTemplate(newBuildingType, rectCenterX, rectCenterY, 
-                        building.getFacing());
+                newPosition = new BuildingTemplate(newBuildingType, width, length, rectCenterX, 
+                        rectCenterY, building.getFacing());
                 break;
             }
         }

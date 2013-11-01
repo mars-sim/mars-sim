@@ -206,10 +206,25 @@ public class BuildingConstructionMission extends Mission implements Serializable
             constructionSite = manager.createNewConstructionSite();
             
             if (constructionSite != null) {
-                // Set new construction site location and facing.
-                constructionSite.setWidth(stageInfo.getWidth());
-                constructionSite.setLength(stageInfo.getLength());
                 
+                // Set construction site size.
+                if (stageInfo.getWidth() > 0D) {
+                    constructionSite.setWidth(stageInfo.getWidth());
+                }
+                else {
+                    // TODO: Change this to properly determine variable width.
+                    constructionSite.setWidth(10D);
+                }
+                
+                if (stageInfo.getLength() > 0D) {
+                    constructionSite.setLength(stageInfo.getLength());
+                }
+                else {
+                    // TODO: Change this to properly determine variable length.
+                    constructionSite.setLength(10D);
+                }
+                
+                // Set new construction site location and facing.
                 // TODO: Replace auto-positioning with set position/facing from parameters
                 // when mission creation wizard supports this.
                 positionNewConstructionSite(constructionSite, stageInfo);

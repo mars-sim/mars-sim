@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.04 2013-02-02
+ * @version 3.06 2013-10-20
  * @author Scott Davis
  */
  
@@ -62,21 +62,23 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      * @throws BuildingException if building can not be created.
      */
     public Building(BuildingTemplate template, BuildingManager manager) {
-        this(template.getType(), template.getXLoc(), template.getYLoc(), 
-                template.getFacing(), manager);
+        this(template.getType(), template.getWidth(), template.getLength(), 
+                template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
     }
     
     /**
      * Constructs a Building object.
      * @param name the building's name.
+     * @param width the width (meters) of the building or -1 if not set.
+     * @param length the length (meters) of the building or -1 if not set.
      * @param xLoc the x location of the building in the settlement.
      * @param yLoc the y location of the building in the settlement.
      * @param facing the facing of the building (degrees clockwise from North).
      * @param manager the building's building manager.
      * @throws BuildingException if building can not be created.
      */
-    public Building(String name, double xLoc, double yLoc, double facing, 
-            BuildingManager manager) {
+    public Building(String name, double width, double length, double xLoc, 
+            double yLoc, double facing, BuildingManager manager) {
 
         this.name = name;
         this.manager = manager;
@@ -95,8 +97,25 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
         basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
 
         // Get building's dimensions.
-        width = config.getWidth(name);
-        length = config.getLength(name);
+        if (width != -1D) {
+            this.width = width;
+        }
+        else {
+            this.width = config.getWidth(name);
+        }
+        if (this.width <= 0D) {
+            throw new IllegalStateException("Invalid building width: " + this.width + " m. for new building " + name);
+        }
+        
+        if (length != -1D) {
+            this.length = length;
+        }
+        else {
+            this.length = config.getLength(name);
+        }
+        if (this.length <= 0D) {
+            throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + name);
+        }
 
         // Set up malfunction manager.
         malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
@@ -188,6 +207,9 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
         
         // Set Earth return function.
         if (config.hasEarthReturn(name)) buildingFunctions.add(new EarthReturn(this));
+        
+        // Set building connection function.
+        if (config.hasBuildingConnection(name)) buildingFunctions.add(new BuildingConnection(this));
     	
     	return buildingFunctions;
     }
