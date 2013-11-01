@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTemplate.java
- * @version 3.04 2013-03-23
+ * @version 3.06 2013-10-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
