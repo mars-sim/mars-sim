@@ -94,6 +94,15 @@
 				<attachment-part name="backhoe" />
 			</vehicle>
 		</foundation>
+		
+		<!-- Surface foundation with a variable width and length that is dynamically set. -->
+		<foundation name="surface foundation variable size" width="-1.0" length="-1.0" constructable="true"
+		 salvagable="true" work-time="5.0" skill-required="1" >
+			<vehicle type="light utility vehicle" >
+				<attachment-part name="bulldozer blade" />
+				<attachment-part name="soil compactor" />
+			</vehicle>
+		</foundation>
 
 	</foundation-list>
 
@@ -350,7 +359,7 @@
 		</frame>
 		
 		<frame name="hallway frame" width="2.0" length="-1.0" constructable="true" salvagable="true" 
-		 work-time="3.0" skill-required="1" foundation="unprepared surface foundation" >
+		 work-time="3.0" skill-required="1" foundation="surface foundation variable size" >
 			<resource name="concrete" amount="10.0" />
 			<resource name="water" amount="4.0" />
 			<part name="steel truss" number="5" />
