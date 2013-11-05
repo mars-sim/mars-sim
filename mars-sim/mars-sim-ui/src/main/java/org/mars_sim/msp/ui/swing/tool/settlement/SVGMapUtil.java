@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.04 2013-04-23
+ * @version 3.06 2013-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -122,6 +122,16 @@ public final class SVGMapUtil {
     public static GraphicsNode getConstructionSiteSVG(String constructionSiteStageName) {
         
         return getSVGGraphicsNode("construction_stage", constructionSiteStageName);
+    }
+    
+    /**
+     * Gets a SVG node for a construction site overlay pattern.
+     * @param constructionSiteStageName the construction site's current stage name.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getConstructionSitePatternSVG(String constructionSiteStageName) {
+        
+        return getSVGGraphicsNode("construction_stage.pattern", constructionSiteStageName);
     }
     
     /**

@@ -943,8 +943,6 @@ public class BuildingConstructionMission extends Mission implements Serializable
                             structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
             }
             
-            goodPosition = true;
-            
             double distance = structureDistance + separationDistance;
             double radianDirection = Math.PI * direction / 180D;
             double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
@@ -959,6 +957,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
                 site.setXLocation(rectCenterX);
                 site.setYLocation(rectCenterY);
                 site.setFacing(building.getFacing());
+                goodPosition = true;
                 break;
             }
         }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.06 2013-10-30
+ * @version 3.06 2013-11-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -146,7 +146,7 @@ public class StructureMapLayer implements SettlementMapLayer {
         if (svg != null) {
             
             // Determine construction site pattern SVG image if available.
-            GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(stage.getInfo().getName().toLowerCase());
+            GraphicsNode patternSVG = SVGMapUtil.getConstructionSitePatternSVG(stage.getInfo().getName().toLowerCase());
             
             drawSVGStructure(g2d, site.getXLocation(), site.getYLocation(), 
                     site.getWidth(), site.getLength(), site.getFacing(), svg, patternSVG);
