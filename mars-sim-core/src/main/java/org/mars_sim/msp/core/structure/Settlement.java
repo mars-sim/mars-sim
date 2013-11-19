@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Settlement.java
- * @version 3.05 2013-06-30
+ * @version 3.06 2013-11-08
  * @author Scott Davis
  */
 
@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
@@ -49,6 +50,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
 
     // Data members
     protected BuildingManager buildingManager; // The settlement's building manager.
+    protected BuildingConnectorManager buildingConnectorManager; // The settlement's building connector manager.
     protected GoodsManager goodsManager; // The settlement's goods manager.
     protected ConstructionManager constructionManager; // The settlement's construction manager.
     protected PowerGrid powerGrid; // The settlement's building power grid.
@@ -89,6 +91,9 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
 
         // Initialize building manager
         buildingManager = new BuildingManager(this);
+        
+        // Initialize building connector manager.
+        buildingConnectorManager = new BuildingConnectorManager(this);
 
         // Initialize goods manager.
         goodsManager = new GoodsManager(this);
@@ -369,6 +374,14 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     public BuildingManager getBuildingManager() {
         return buildingManager;
     }
+    
+    /**
+     * Gets the settlement's building connector manager.
+     * @return building connector manager.
+     */
+    public BuildingConnectorManager getBuildingConnectorManager() {
+        return buildingConnectorManager;
+    }
 
     /**
      * Gets the settlement's goods manager.
@@ -593,6 +606,8 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
         
         buildingManager.destroy();
         buildingManager = null;
+        buildingConnectorManager.destroy();
+        buildingConnectorManager = null;
         goodsManager.destroy();
         goodsManager = null;
         constructionManager.destroy();

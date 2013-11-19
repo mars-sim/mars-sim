@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.06 2013-10-18
+ * @version 3.06 2013-11-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -95,7 +95,7 @@ public class ResupplyConfig implements Serializable {
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
-				template.buildings.add(new BuildingTemplate(buildingType, width, length, xLoc, 
+				template.buildings.add(new BuildingTemplate(0, buildingType, width, length, xLoc, 
 				        yLoc, facing));
 			}
 			

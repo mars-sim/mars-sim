@@ -1,0 +1,168 @@
+/**
+ * Mars Simulation Project
+ * BuildingConnector.java
+ * @version 3.06 2013-11-17
+ * @author Scott Davis
+ */
+package org.mars_sim.msp.core.structure.building.connection;
+
+import java.io.Serializable;
+
+import org.mars_sim.msp.core.structure.building.Building;
+
+/**
+ * A connection between two buildings.
+ */
+public class BuildingConnector implements Serializable {
+    
+    // Comparison to indicate a small but non-zero amount.
+    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+    
+    // Data members
+    private Building building1;
+    private Building building2;
+    private Hatch hatch1;
+    private Hatch hatch2;
+    
+    /**
+     * Constructor
+     * @param building1 The first connected building.
+     * @param building1XLocation The hatch X location connecting the first building.
+     * @param building1YLocation The hatch Y location connecting the first building.
+     * @param building1Facing The hatch facing (degrees) connecting the first building.
+     * @param building2 The second connected building.
+     * @param building2XLocation The hatch X location connecting the second building.
+     * @param building2YLocation The hatch y location connecting the second building.
+     * @param building2Facing The hatch facing (degrees) connecting the second building.
+     */
+    public BuildingConnector(Building building1, double building1XLocation, 
+            double building1YLocation, double building1Facing, Building building2, 
+            double building2XLocation, double building2YLocation, double building2Facing) {
+        
+        this.building1 = building1;
+        hatch1 = new Hatch(building1XLocation, building1YLocation, building1Facing);
+        this.building2 = building2;
+        hatch2 = new Hatch(building2XLocation, building2YLocation, building2Facing);
+        
+        // Check if building 1 and 2 locations are off by a small amount.
+        if (Math.abs(building1XLocation - building2XLocation) < SMALL_AMOUNT_COMPARISON) {
+            hatch2.setXLocation(building1XLocation);
+        }
+        if (Math.abs(building1YLocation - building2YLocation) < SMALL_AMOUNT_COMPARISON) {
+            hatch2.setYLocation(building1YLocation);
+        }
+    }
+
+    /**
+     * Gets the first connected building.
+     * @return building.
+     */
+    public Building getBuilding1() {
+        return building1;
+    }
+
+    /**
+     * Gets the second connected building.
+     * @return building.
+     */
+    public Building getBuilding2() {
+        return building2;
+    }
+    
+    /**
+     * The hatch connecting the first building.
+     * @return hatch.
+     */
+    public Hatch getHatch1() {
+        return hatch1;
+    }
+    
+    /**
+     * The hatch connecting the second building.
+     * @return hatch.
+     */
+    public Hatch getHatch2() {
+        return hatch2;
+    }
+    
+    /**
+     * Checks if the two hatches are not at the same location for the connection.
+     * @return true if hatches are split.
+     */
+    public boolean isSplitConnection() {
+        
+        return ((hatch1.getXLocation() != hatch2.getXLocation()) || 
+                (hatch1.getYLocation() != hatch2.getYLocation()));
+    }
+    
+    /**
+     * Gets the X location of the center of the building connection.
+     * @return x location.
+     */
+    public double getCenterXLocation() {
+        
+        double result = 0D;
+        
+        if (isSplitConnection()) {
+            result = (hatch1.getXLocation() + hatch2.getXLocation()) / 2D;
+        }
+        else {
+            result = hatch1.getXLocation();
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets the Y location of the center of the building connection.
+     * @return y location.
+     */
+    public double getCenterYLocation() {
+        
+        double result = 0D;
+        
+        if (isSplitConnection()) {
+            result = (hatch1.getYLocation() + hatch2.getYLocation()) / 2D;
+        }
+        else {
+            result = hatch1.getYLocation();
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public boolean equals(Object other) {
+        
+        boolean result = false;
+        
+        // Note: building 1 and building 2 can be reversed in equal connectors.
+        if (other instanceof BuildingConnector) {
+            BuildingConnector otherConnector = (BuildingConnector) other;
+            if (building1.equals(otherConnector.getBuilding1()) && 
+                    hatch1.equals(otherConnector.getHatch1()) &&
+                    building2.equals(otherConnector.getBuilding2()) && 
+                    hatch2.equals(otherConnector.getHatch2())) {
+                result = true;
+            }
+            else if (building1.equals(otherConnector.getBuilding2()) && 
+                    hatch1.equals(otherConnector.getHatch2()) &&
+                    building2.equals(otherConnector.getBuilding1()) && 
+                    hatch2.equals(otherConnector.getHatch1())) {
+                result = true;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Prepare object for garbage collection.
+     */
+    public void destroy() {
+        building1 = null;
+        building2 = null;
+        hatch1 = null;
+        hatch2 = null;
+    }
+}

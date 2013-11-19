@@ -1854,6 +1854,16 @@
 		</outputs>
 	</process>
 	
+		<process name="steel post manufacturing" tech="2" skill="2" work-time="100" process-time="200" 
+			power-required="10.0">
+		<inputs>
+			<part name="steel ingot" number="10" />
+		</inputs>
+		<outputs>
+			<part name="steel post" number="10" />
+		</outputs>
+	</process>
+	
 	<process name="turbine blade forming" tech="2" skill="3" work-time="200" process-time="200" 
 			power-required="3.0">
 		<inputs>

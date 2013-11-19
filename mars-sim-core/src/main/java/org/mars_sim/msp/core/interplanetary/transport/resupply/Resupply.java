@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.06 2013-10-20
+ * @version 3.06 2013-11-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -430,7 +430,7 @@ public class Resupply implements Serializable, Transportable {
                 }
                 
                 // If no buildings at settlement, position new building at 0,0 with random facing.
-                newPosition = new BuildingTemplate(buildingType, width, length, 0D, 0D, 
+                newPosition = new BuildingTemplate(0, buildingType, width, length, 0D, 0D, 
                         RandomUtil.getRandomDouble(360D));
             }
         }
@@ -500,7 +500,7 @@ public class Resupply implements Serializable, Transportable {
             if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
-                newPosition = new BuildingTemplate(newBuildingType, width, length, rectCenterX, 
+                newPosition = new BuildingTemplate(0, newBuildingType, width, length, rectCenterX, 
                         rectCenterY, building.getFacing());
                 break;
             }
