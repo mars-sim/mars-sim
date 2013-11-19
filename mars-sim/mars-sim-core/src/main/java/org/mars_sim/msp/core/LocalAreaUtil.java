@@ -284,4 +284,15 @@ public class LocalAreaUtil {
                 rectangle.getCenterY());
         return new Path2D.Double(rectangle, at);
     }
+    
+    /**
+     * Gets the distance between two points.
+     * @param point1 the first point.
+     * @param point2 the second point.
+     * @return distance (meters).
+     */
+    public static double getDistance(Point2D.Double point1, Point2D.Double point2) {
+        
+        return Point2D.Double.distance(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+    }
 }
