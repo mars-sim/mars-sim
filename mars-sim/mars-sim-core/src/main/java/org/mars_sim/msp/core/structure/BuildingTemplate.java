@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * BuildingTemplate.java
- * @version 3.06 2013-10-18
+ * @version 3.06 2013-11-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A building template information.
@@ -14,23 +16,35 @@ import java.io.Serializable;
 public class BuildingTemplate implements Serializable {
 
     // Data members
+    private int id;
     private String type;
     private double width;
     private double length;
     private double xLoc;
     private double yLoc;
     private double facing;
+    private List<BuildingConnectionTemplate> connectionList;
     
-    public BuildingTemplate(String type, double width, double length, double xLoc, 
-            double yLoc, double facing) {
+    public BuildingTemplate(int id, String type, double width, double length, 
+            double xLoc, double yLoc, double facing) {
+        this.id = id;
         this.type = type;
         this.width = width;
         this.length = length;
         this.xLoc = xLoc;
         this.yLoc = yLoc;
         this.facing = facing;
+        connectionList = new ArrayList<BuildingConnectionTemplate>(0);
     }
 
+    /**
+     * Gets the building's unique ID.
+     * @return ID number.
+     */
+    public int getID() {
+        return id;
+    }
+    
     /**
      * Gets the building type.
      * @return building type.
@@ -79,5 +93,80 @@ public class BuildingTemplate implements Serializable {
      */
     public double getFacing() {
         return facing;
+    }
+    
+    /**
+     * Add a new building connection.
+     * @param id the unique id of the building being connected to.
+     * @param xLocation the x axis location (local to the building) (meters).
+     * @param yLocation the y axis location (local to the building) (meters).
+     */
+    public void addBuildingConnection(int id, double xLocation, double yLocation) {
+        
+        BuildingConnectionTemplate template = new BuildingConnectionTemplate(id, xLocation, yLocation);
+        if (!connectionList.contains(template)) {
+            connectionList.add(template);
+        }
+        else {
+            throw new IllegalArgumentException("New building connection already exists in building.");
+        }
+    }
+    
+    /**
+     * Get a list of all building connection templates.
+     * @return list of all building connection templates.
+     */
+    public List<BuildingConnectionTemplate> getBuildingConnectionTemplates() {
+        return new ArrayList<BuildingConnectionTemplate>(connectionList);
+    }
+    
+    /**
+     * Inner class to represent a building connection template.
+     */
+    public class BuildingConnectionTemplate implements Serializable {
+        
+        // Data members
+        private int id;
+        private double xLocation;
+        private double yLocation;
+        
+        /**
+         * Constructor
+         * @param id the unique id of the building being connected to.
+         * @param xLocation the x axis location (local to the building) (meters).
+         * @param yLocation the y axis location (local to the building) (meters).
+         */
+        private BuildingConnectionTemplate(int id, double xLocation, double yLocation) {
+            this.id = id;
+            this.xLocation = xLocation;
+            this.yLocation = yLocation;
+        }
+        
+        public int getID() {
+            return id;
+        }
+        
+        public double getXLocation() {
+            return xLocation;
+        }
+        
+        public double getYLocation() {
+            return yLocation;
+        }
+        
+        @Override
+        public boolean equals(Object otherObject) {
+            boolean result = false;
+            
+            if (otherObject instanceof BuildingConnectionTemplate) {
+                BuildingConnectionTemplate template = (BuildingConnectionTemplate) otherObject;
+                if ((id == template.id) && (xLocation == template.xLocation) && 
+                        (yLocation == template.yLocation)) {
+                    result = true;
+                }
+            }
+            
+            return result;
+        }
     }
 }

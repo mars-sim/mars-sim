@@ -1,20 +1,18 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.06 2013-10-20
+ * @version 3.06 2013-11-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.structure.construction;
 
 import org.mars_sim.msp.core.LocalBoundedObject;
-import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -325,8 +323,9 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
     public Building createBuilding(BuildingManager manager) {
         if (buildingStage == null) throw new IllegalStateException("Building stage doesn't exist");
         
-        Building newBuilding = new Building(buildingStage.getInfo().getName(), width, length, xLocation,
-                yLocation, facing, manager);
+        int id = manager.getUniqueBuildingIDNumber();
+        Building newBuilding = new Building(id, buildingStage.getInfo().getName(), width, length, 
+                xLocation, yLocation, facing, manager);
         manager.addBuilding(newBuilding);
         
         // Record completed building name.

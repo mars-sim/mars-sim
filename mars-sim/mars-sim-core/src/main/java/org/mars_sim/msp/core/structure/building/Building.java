@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.06 2013-10-20
+ * @version 3.06 2013-11-11
  * @author Scott Davis
  */
  
@@ -43,6 +43,7 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
     
     // Data members
     protected BuildingManager manager; 
+    protected int id;
     protected String name;
     protected double width;
     protected double length;
@@ -62,12 +63,13 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      * @throws BuildingException if building can not be created.
      */
     public Building(BuildingTemplate template, BuildingManager manager) {
-        this(template.getType(), template.getWidth(), template.getLength(), 
+        this(template.getID(), template.getType(), template.getWidth(), template.getLength(), 
                 template.getXLoc(), template.getYLoc(), template.getFacing(), manager);
     }
     
     /**
      * Constructs a Building object.
+     * @param id the building's unique ID number.
      * @param name the building's name.
      * @param width the width (meters) of the building or -1 if not set.
      * @param length the length (meters) of the building or -1 if not set.
@@ -77,9 +79,10 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      * @param manager the building's building manager.
      * @throws BuildingException if building can not be created.
      */
-    public Building(String name, double width, double length, double xLoc, 
+    public Building(int id, String name, double width, double length, double xLoc, 
             double yLoc, double facing, BuildingManager manager) {
 
+        this.id = id;
         this.name = name;
         this.manager = manager;
         powerMode = FULL_POWER;
@@ -263,6 +266,14 @@ public class Building implements Malfunctionable, Serializable, Comparable<Build
      */
     public BuildingManager getBuildingManager() {
         return manager;
+    }
+    
+    /**
+     * Gets the building's unique ID number.
+     * @return ID integer.
+     */
+    public int getID() {
+        return id;
     }
     
     /**

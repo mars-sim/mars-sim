@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.06 2013-11-04
+ * @version 3.06 2013-11-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -10,6 +10,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -17,8 +19,11 @@ import java.util.Iterator;
 import java.util.Map;
 
 import org.apache.batik.gvt.GraphicsNode;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
+import org.mars_sim.msp.core.structure.building.connection.Hatch;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 
@@ -30,6 +35,8 @@ public class StructureMapLayer implements SettlementMapLayer {
     // Static members
     private static final Color BUILDING_COLOR = Color.GREEN;
     private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
+    private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
+    private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.DARK_GRAY;
     
     // Data members
     private SettlementMapPanel mapPanel;
@@ -75,6 +82,9 @@ public class StructureMapLayer implements SettlementMapLayer {
         
         // Draw all construction sites.
         drawConstructionSites(g2d, settlement);
+        
+        // Draw all building connectors.
+        drawBuildingConnectors(g2d, settlement);
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
@@ -146,7 +156,8 @@ public class StructureMapLayer implements SettlementMapLayer {
         if (svg != null) {
             
             // Determine construction site pattern SVG image if available.
-            GraphicsNode patternSVG = SVGMapUtil.getConstructionSitePatternSVG(stage.getInfo().getName().toLowerCase());
+            GraphicsNode patternSVG = SVGMapUtil.getConstructionSitePatternSVG(
+                    stage.getInfo().getName().toLowerCase());
             
             drawSVGStructure(g2d, site.getXLocation(), site.getYLocation(), 
                     site.getWidth(), site.getLength(), site.getFacing(), svg, patternSVG);
@@ -156,6 +167,100 @@ public class StructureMapLayer implements SettlementMapLayer {
             drawRectangleStructure(g2d, site.getXLocation(), site.getYLocation(), 
                     site.getWidth(), site.getLength(), site.getFacing(), 
                     CONSTRUCTION_SITE_COLOR);
+        }
+    }
+    
+    /**
+     * Draws all of the building connectors at the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawBuildingConnectors(Graphics2D g2d, Settlement settlement) {
+        
+        if (settlement != null) {
+            Iterator<BuildingConnector> i = settlement.getBuildingConnectorManager().
+                    getAllBuildingConnections().iterator();
+            while (i.hasNext()) {
+                drawBuildingConnector(i.next(), g2d);
+            }
+        }
+    }
+    
+    /**
+     * Draws a building connector.
+     * @param connector the building connector.
+     * @param g2d the graphics context.
+     */
+    private void drawBuildingConnector(BuildingConnector connector, Graphics2D g2d) {
+        
+        if (connector.isSplitConnection()) {
+            Hatch hatch1 = connector.getHatch1();
+            Hatch hatch2 = connector.getHatch2();
+
+            // Draw building connector area between two hatches.
+            Path2D.Double splitAreaPath = new Path2D.Double();
+            Point2D.Double leftHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / 2D, 0D, hatch1);
+            splitAreaPath.moveTo(leftHatch1Loc.getX(), leftHatch1Loc.getY());
+            Point2D.Double rightHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / -2D, 0D,  hatch2);
+            splitAreaPath.lineTo(rightHatch2Loc.getX(), rightHatch2Loc.getY());
+            Point2D.Double leftHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / 2D, 0D,  hatch2);
+            splitAreaPath.lineTo(leftHatch2Loc.getX(), leftHatch2Loc.getY());
+            Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
+            splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
+            splitAreaPath.closePath();
+            drawPathShape(splitAreaPath, g2d, BUILDING_SPLIT_CONNECTOR_COLOR);
+            
+            // Use SVG image for hatch 1 if available.
+            // TODO: Use different connector names other than just "hatch".
+            GraphicsNode hatch1SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatch1SVG != null) {
+
+                // Draw hatch 1.
+                drawSVGStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
+                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), hatch1SVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch 1.
+                drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
+                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
+
+            // Use SVG image for hatch 2 if available.
+            // TODO: Use different connector names other than just "hatch".
+            GraphicsNode hatch2SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatch2SVG != null) {
+
+                // Draw hatch 2.
+                drawSVGStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
+                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), hatch2SVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch 2.
+                drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
+                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
+        }
+        else {
+            
+            Hatch hatch = connector.getHatch1();
+            
+            // Use SVG image for hatch if available.
+            // TODO: Use different connector names other than just "hatch".
+            GraphicsNode hatchSVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatchSVG != null) {
+
+                // Draw hatch.
+                drawSVGStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
+                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(), hatchSVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch.
+                drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
+                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
         }
     }
     
@@ -235,11 +340,6 @@ public class StructureMapLayer implements SettlementMapLayer {
         newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
         
         if (isSVG) {
-            // Draw SVG image.
-//            newTransform.scale(scalingWidth, scalingLength);
-//            svg.setTransform(newTransform);
-//            svg.paint(g2d);
-            
             // Draw buffered image of structure.
             BufferedImage image = getBufferedImage(svg, width, length, patternSVG);
             if (image != null) {
@@ -254,6 +354,43 @@ public class StructureMapLayer implements SettlementMapLayer {
             g2d.setColor(color);
             g2d.fill(bounds);
         }
+        
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
+    
+    /**
+     * Draws a path shape on the map.
+     * @param g2d the graphics2D context.
+     * @param color the color to display the path shape.
+     */
+    private void drawPathShape(Path2D pathShape, Graphics2D g2d, Color color) {
+        
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
+        
+        // Determine bounds.
+        Rectangle2D bounds = pathShape.getBounds2D();
+        
+        // Determine transform information.
+        double boundsPosX = bounds.getX() * scale;
+        double boundsPosY = bounds.getY() * scale;
+        double centerX = bounds.getWidth() * scale / 2D;
+        double centerY = bounds.getHeight() * scale / 2D;
+        double translationX = (-1D * bounds.getCenterX() * scale) - centerX - boundsPosX;
+        double translationY = (-1D * bounds.getCenterY() * scale) - centerY - boundsPosY;
+        double facingRadian = Math.PI;
+        
+        // Apply graphic transforms for path shape.
+        AffineTransform newTransform = new AffineTransform();
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
+        
+        // Draw filled path shape.
+        newTransform.scale(scale, scale);
+        g2d.transform(newTransform);
+        g2d.setColor(color);
+        g2d.fill(pathShape);
         
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);

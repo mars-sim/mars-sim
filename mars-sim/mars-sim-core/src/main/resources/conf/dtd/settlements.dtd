@@ -5,13 +5,19 @@ initial-settlement-list, new-arriving-settlement-list, settlement-name-list)>
 part-package*, resupply?)>
 <!ATTLIST template name CDATA #REQUIRED>
 <!ATTLIST template default-population CDATA #REQUIRED>
-<!ELEMENT building EMPTY>
+<!ELEMENT building (connection-list?)>
+<!ATTLIST building id CDATA #REQUIRED>
 <!ATTLIST building type CDATA #REQUIRED>
 <!ATTLIST building width CDATA #IMPLIED>
 <!ATTLIST building length CDATA #IMPLIED>
 <!ATTLIST building x-location CDATA #REQUIRED>
 <!ATTLIST building y-location CDATA #REQUIRED>
 <!ATTLIST building facing CDATA #REQUIRED>
+<!ELEMENT connection-list (connection*)>
+<!ELEMENT connection EMPTY>
+<!ATTLIST connection id CDATA #REQUIRED>
+<!ATTLIST connection x-location CDATA #REQUIRED>
+<!ATTLIST connection y-location CDATA #REQUIRED> 
 <!ELEMENT vehicle EMPTY>
 <!ATTLIST vehicle type CDATA #REQUIRED>
 <!ATTLIST vehicle number CDATA #REQUIRED>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementConfig.java
- * @version 3.06 2013-10-18
+ * @version 3.06 2013-11-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure;
@@ -12,6 +12,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTe
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.PartPackageConfig;
+import org.mars_sim.msp.core.structure.BuildingTemplate.BuildingConnectionTemplate;
 
 import java.io.Serializable;
 import java.util.*;
@@ -29,12 +30,15 @@ public class SettlementConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String DEFAULT_POPULATION = "default-population";
 	private static final String BUILDING = "building";
+	private static final String ID = "id";
 	private static final String TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
 	private static final String X_LOCATION = "x-location";
 	private static final String Y_LOCATION = "y-location";
 	private static final String FACING = "facing";
+	private static final String CONNECTION_LIST = "connection-list";
+	private static final String CONNECTION = "connection";
 	private static final String NUMBER = "number";
 	private static final String VEHICLE = "vehicle";
 	private static final String EQUIPMENT = "equipment";
@@ -106,8 +110,15 @@ public class SettlementConfig implements Serializable {
 			settlementTemplates.add(template);
 			
 			// Load buildings
+			Set<Integer> existingIDs = new HashSet<Integer>();
 			List<Element> buildingNodes = templateElement.getChildren(BUILDING);
 			for (Element buildingElement : buildingNodes) {
+			    int id = Integer.parseInt(buildingElement.getAttributeValue(ID));
+			    if (existingIDs.contains(id)) {
+			        throw new IllegalStateException("Building ID in settlement template " + name + " not unique.");
+			    }
+			    existingIDs.add(id);
+			    
 				String buildingType = buildingElement.getAttributeValue(TYPE);
 				
 				// Determine optional width attribute value.  "-1" if it doesn't exist.
@@ -125,8 +136,42 @@ public class SettlementConfig implements Serializable {
 				double xLoc = Double.parseDouble(buildingElement.getAttributeValue(X_LOCATION));
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
-				template.addBuildingTemplate(new BuildingTemplate(buildingType, width, length, xLoc, 
-				        yLoc, facing));
+				
+				BuildingTemplate buildingTemplate = new BuildingTemplate(id, buildingType, width, length, xLoc, 
+                        yLoc, facing);
+				template.addBuildingTemplate(buildingTemplate);
+				
+				// Create building connection templates.
+				Element connectionListElement = buildingElement.getChild(CONNECTION_LIST);
+				if (connectionListElement != null) {
+				    List<Element> connectionNodes = connectionListElement.getChildren(CONNECTION);
+				    for (Element connectionElement : connectionNodes) {
+				        int connectionID = Integer.parseInt(connectionElement.getAttributeValue(ID));
+				        
+				        // Check that connection ID is not the same as the building ID.
+				        if (connectionID == id) {
+				            throw new IllegalStateException("Connection ID cannot be the same as building ID for building: " + 
+				                    buildingType + " in settlement template: " + name);
+				        }
+				        
+				        double connectionXLoc = Double.parseDouble(connectionElement.getAttributeValue(X_LOCATION));
+				        double connectionYLoc = Double.parseDouble(connectionElement.getAttributeValue(Y_LOCATION));
+				        
+				        buildingTemplate.addBuildingConnection(connectionID, connectionXLoc, connectionYLoc);
+				    }
+				}
+			}
+			
+			// Check that building connections point to valid building ID's.
+			List<BuildingTemplate> buildingTemplates = template.getBuildingTemplates();
+			for (BuildingTemplate buildingTemplate : buildingTemplates) {
+			    List<BuildingConnectionTemplate> connectionTemplates = buildingTemplate.getBuildingConnectionTemplates();
+			    for (BuildingConnectionTemplate connectionTemplate : connectionTemplates) {
+			        if (!existingIDs.contains(connectionTemplate.getID())) {
+			            throw new IllegalStateException("Connection ID: " + connectionTemplate.getID() + 
+			                    " invalid for building: " + buildingTemplate.getType() + " in settlement template: " + name);
+			        }
+			    }
 			}
 			
 			// Load vehicles

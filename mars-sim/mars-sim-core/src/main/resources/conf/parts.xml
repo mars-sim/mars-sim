@@ -442,7 +442,10 @@
 	</part>
 	
 	<!-- Large steel bar used for construction. -->
-	<part name="steel truss" mass="50" />
+	<part name="steel truss" mass="50.0" />
+	
+	<!-- A small, light steel bar used for construction. -->
+	<part name="steel post" mass="5.0" />
 	
 	<!-- Blade for a wind turbine. -->
 	<part name="wind turbine blade" mass="2.0" >

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SVGMapUtil.java
- * @version 3.06 2013-11-04
+ * @version 3.06 2013-11-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -172,5 +172,15 @@ public final class SVGMapUtil {
     public static GraphicsNode getAttachmentPartSVG(String partType) {
         
         return getSVGGraphicsNode("vehicle.attachment_part", partType);
+    }
+    
+    /**
+     * Gets a SVG node for a building connector.
+     * @param connectorType the connector type.
+     * @return SVG node or null if none found.
+     */
+    public static GraphicsNode getBuildingConnectorSVG(String connectorType) {
+        
+        return getSVGGraphicsNode("building_connector", connectorType);
     }
 }

@@ -84,15 +84,15 @@
 		<part type="airleak patch" number="306" />
 		<part type="co2 extinguisher" number="46" />
 		<part type="rover wheel" number="12" />
-		<part type="gasket" number="156" />
+		<part type="gasket" number="168" />
 		<part type="timing belt" number="16" />
-		<part type="valve" number="80" />
+		<part type="valve" number="92" />
 		<part type="epoxy resin bottle" number="286" />
 		<part type="spark plug" number="18" />
 		<part type="coolant bottle" number="18" />
-		<part type="electrical wire" number="512" />
+		<part type="electrical wire" number="521" />
 		<part type="power cable" number="24" />
-		<part type="wire connector" number="322" />
+		<part type="wire connector" number="331" />
 		<part type="plastic tubing" number="104" />
 		<part type="lubricant bottle" number="24" />
 		<part type="rover battery" number="4" />
@@ -101,7 +101,7 @@
 		<part type="communications circuit board" number="4" />
 		<part type="navigation circuit board" number="2" />
 		<part type="suit heating unit" number="18" />
-		<part type="plastic pipe" number="30" />
+		<part type="plastic pipe" number="39" />
 		<part type="steel pipe" number="18" />
 		<part type="copper pipe" number="22" />
 		<part type="iron pipe" number="18" />
@@ -143,6 +143,8 @@
 		<part type="drilling rig" number="2" />
 		<part type="condenser coil" number="2" />
 		<part type="water pump" number="2" />
+		<part type="steel post" number="15" />
+		<part type="plastic sheet" number="6" />
 	
 	</part-package>
 	
@@ -151,15 +153,15 @@
 		<part type="airleak patch" number="468" />
 		<part type="co2 extinguisher" number="72" />
 		<part type="rover wheel" number="22" />
-		<part type="gasket" number="246" />
+		<part type="gasket" number="258" />
 		<part type="timing belt" number="34" />
-		<part type="valve" number="126" />
+		<part type="valve" number="138" />
 		<part type="epoxy resin bottle" number="460" />
 		<part type="spark plug" number="36" />
 		<part type="coolant bottle" number="36" />
-		<part type="electrical wire" number="788" />
+		<part type="electrical wire" number="797" />
 		<part type="power cable" number="32" />
-		<part type="wire connector" number="502" />
+		<part type="wire connector" number="511" />
 		<part type="plastic tubing" number="160" />
 		<part type="lubricant bottle" number="46" />
 		<part type="rover battery" number="10" />
@@ -168,7 +170,7 @@
 		<part type="communications circuit board" number="8" />
 		<part type="navigation circuit board" number="4" />
 		<part type="suit heating unit" number="26" />
-		<part type="plastic pipe" number="26" />
+		<part type="plastic pipe" number="35" />
 		<part type="steel pipe" number="26" />
 		<part type="copper pipe" number="32" />
 		<part type="iron pipe" number="26" />
@@ -210,6 +212,8 @@
 		<part type="drilling rig" number="4" />
 		<part type="condenser coil" number="4" />
 		<part type="water pump" number="4" />
+		<part type="steel post" number="15" />
+		<part type="plastic sheet" number="6" />
 		
 	</part-package>
 	
@@ -218,15 +222,15 @@
 		<part type="airleak patch" number="536" />
 		<part type="co2 extinguisher" number="78" />
 		<part type="rover wheel" number="38" />
-		<part type="gasket" number="340" />
+		<part type="gasket" number="372" />
 		<part type="timing belt" number="58" />
-		<part type="valve" number="170" />
+		<part type="valve" number="202" />
 		<part type="epoxy resin bottle" number="620" />
 		<part type="spark plug" number="64" />
 		<part type="coolant bottle" number="64" />
-		<part type="electrical wire" number="1080" />
+		<part type="electrical wire" number="1104" />
 		<part type="power cable" number="36" />
-		<part type="wire connector" number="692" />
+		<part type="wire connector" number="716" />
 		<part type="plastic tubing" number="220" />
 		<part type="lubricant bottle" number="74" />
 		<part type="rover battery" number="16" />
@@ -235,7 +239,7 @@
 		<part type="communications circuit board" number="12" />
 		<part type="navigation circuit board" number="8" />
 		<part type="suit heating unit" number="26" />
-		<part type="plastic pipe" number="62" />
+		<part type="plastic pipe" number="86" />
 		<part type="steel pipe" number="38" />
 		<part type="copper pipe" number="40" />
 		<part type="iron pipe" number="38" />
@@ -277,6 +281,8 @@
 		<part type="drilling rig" number="6" />
 		<part type="condenser coil" number="6" />
 		<part type="water pump" number="6" />
+		<part type="steel post" number="40" />
+		<part type="plastic sheet" number="16" />
 	
 	</part-package>
 	

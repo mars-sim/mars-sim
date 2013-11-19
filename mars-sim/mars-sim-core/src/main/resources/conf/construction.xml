@@ -362,7 +362,7 @@
 		 work-time="3.0" skill-required="1" foundation="surface foundation variable size" >
 			<resource name="concrete" amount="10.0" />
 			<resource name="water" amount="4.0" />
-			<part name="steel truss" number="5" />
+			<part name="steel post" number="5" />
 		</frame> 
 		
 	</frame-list>

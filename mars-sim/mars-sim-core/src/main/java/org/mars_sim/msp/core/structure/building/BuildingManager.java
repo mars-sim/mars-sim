@@ -144,6 +144,26 @@ public class BuildingManager implements Serializable {
     }
     
     /**
+     * Gets the building with a given ID number.
+     * @param id the unique building ID number.
+     * @return building or null if none found.
+     */
+    public Building getBuilding(int id) {
+        
+        Building result = null;
+        
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (building.getID() == id) {
+                result = building;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Gets the buildings in a settlement that has a given function.
      * @param functionName the name of the building.
      * @return list of buildings.
@@ -733,6 +753,25 @@ public class BuildingManager implements Serializable {
         }
         
         return result;
+    }
+    
+    /**
+     * Gets a unique ID number for a new building.
+     * @return ID integer.
+     */
+    public int getUniqueBuildingIDNumber() {
+        
+        int largestID = 0;
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            int id = building.getID();
+            if (id > largestID) {
+                largestID = id;
+            }
+        }
+        
+        return largestID + 1;
     }
 
     /**
