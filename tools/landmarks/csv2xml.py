@@ -1,14 +1,15 @@
 # Mars Simulation Project
 # csv2xml.py
-# @version 3.05 2013-08-29
+# @version 3.06 2013-11-26
 # @author Lars Naesbye Christensen [lechimp]
 #
-# This script requires Python 2.3 or later and the 'SearchResults.csv' file in the same
+# This script requires Python 2.3 or later and the 'SearchResults.csv' file to be in the same
 # directory as the script file.
 # The CSV file can be generated at http://planetarynames.wr.usgs.gov/SearchResults?target=MARS
+# Scroll down and click 'CSV (comma separated values) for importing into Excel', and save the file
 # Usage : 'python csv2xml.py'
 #
-# TODO: Insert the doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd">
+# TODO: Insert the doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd"> - doesn't seem to be necessary, though
 
 from xml.dom.minidom import Document
 
@@ -65,7 +66,7 @@ for csvline in csvlinelist:
 		landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
 		landmarks.appendChild(landmark)
 
-# Add the rovers and other artificial objects
+# Add data for rovers and other artificial objects (from Google Mars and Wikipedia)
 rovercomment = xmldoc.createComment("Martian Landers and Rovers")
 landmarks.appendChild(rovercomment)
 
@@ -75,10 +76,10 @@ roverarray =[["Beagle 2 Lander", "90.0 E", "10.6 N"],
              ["Mars 6 Lander", "19.5 W", "23.9 S"],
              ["Mars Pathfinder Rover", "33.3 W", "19.3 N"],
              ["Mars Polar Lander", "164.7 E", "76.7 S"],
-             ["MSL Curiosity Rover", "137.44 E", "4.59 S"],
-             ["MER Spirit Rover", "175.5 E", "14.6 S"],
-             ["MER Opportunity Rover", "5.5 W", "2.0 S"],
-             ["Phoenix Mars Lander", "123.0 W", "68.0 N"],
+             ["MSL Curiosity Rover", "137.2 E", "4.3 S"],
+             ["MER Spirit Rover", "175.47 E", "14.57 S"],
+             ["MER Opportunity Rover", "5.53 W", "1.95 S"],
+             ["Phoenix Mars Lander", "125.7 W", "68.22 N"],
              ["Viking Lander 1", "48.0 W", "22.5 N"],
              ["Viking Lander 2", "133.7 E", "47.9 N"]]
              
