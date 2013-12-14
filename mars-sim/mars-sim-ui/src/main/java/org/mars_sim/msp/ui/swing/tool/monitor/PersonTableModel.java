@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PersonTableModel.java
- * @version 3.03 2012-07-25
+ * @version 3.06 2013-12-07
  * @author Barry Evans
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -301,7 +302,7 @@ public class PersonTableModel extends UnitTableModel {
             	case TASK : {
             		// If the Person is dead, there is no Task Manager
             		TaskManager mgr = person.getMind().getTaskManager();
-            		result = ((mgr != null)? mgr.getTaskDescription() : null);
+            		result = ((mgr != null)? mgr.getTaskName() : null);
             	} break;
 
             	case MISSION : {
@@ -373,6 +374,8 @@ public class PersonTableModel extends UnitTableModel {
             m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
             m.put(Mind.JOB_EVENT, JOB);
             m.put(TaskManager.TASK_EVENT, TASK);
+            m.put(Task.TASK_ENDED_EVENT, TASK);
+            m.put(Task.TASK_SUBTASK_EVENT, TASK);
             m.put(Mind.MISSION_EVENT, MISSION);
             m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
             m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
