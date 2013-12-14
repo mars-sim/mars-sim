@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcess.java
- * @version 3.03 2012-07-19
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
  
@@ -127,8 +127,12 @@ public class ResourceProcess implements Serializable {
     	if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
     		toggleRunningWorkTime = 0D;
     		runningProcess = !runningProcess;
-    		 if (runningProcess) logger.info(name + " turned on.");
-    		 else logger.info(name + " turned off.");
+    		 if (runningProcess) {
+    		     logger.fine(name + " turned on.");
+    		 }
+    		 else {
+    		     logger.fine(name + " turned off.");
+    		 }
     	}
     }
     

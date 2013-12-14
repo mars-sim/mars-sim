@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.04 2013-02-02
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -107,7 +107,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         double newFacing = getBuilding().getFacing();
         vehicle.setParkedLocation(newXLoc, newYLoc, newFacing);
         
-        logger.info("Adding " + vehicle.getName());
+        logger.fine("Adding " + vehicle.getName());
     }
 
     /** 
@@ -127,7 +127,7 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
             
             vehicle.determinedSettlementParkedLocationAndFacing();
             
-            logger.info("Removing " + vehicle.getName());
+            logger.fine("Removing " + vehicle.getName());
         } 
     }
 

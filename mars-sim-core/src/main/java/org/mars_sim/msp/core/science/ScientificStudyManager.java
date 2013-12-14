@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ScientificStudyManager.java
- * @version 3.02 2011-11-26
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.science;
@@ -22,8 +22,7 @@ import java.util.logging.Logger;
  */
 public class ScientificStudyManager implements Serializable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.science.ScientificStudyManager";
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
     
     // Data members
     private List<ScientificStudy> studies;
@@ -51,7 +50,7 @@ public class ScientificStudyManager implements Serializable {
         ScientificStudy study = new ScientificStudy(researcher, science, difficultyLevel);
         studies.add(study);
         
-        logger.info(researcher.getName() + " begins writing proposal for new " + study.toString());
+        logger.fine(researcher.getName() + " begins writing proposal for new " + study.toString());
         
         return study;
     }
@@ -306,7 +305,7 @@ public class ScientificStudyManager implements Serializable {
                 // Check if primary researcher has died.
                 if (isPrimaryResearcherDead(study)) {
                     study.setCompleted(ScientificStudy.CANCELED);
-                    logger.info(study.toString() + " canceled due to primary researcher death.");
+                    logger.fine(study.toString() + " canceled due to primary researcher death.");
                     continue;
                 }
                 
@@ -316,7 +315,7 @@ public class ScientificStudyManager implements Serializable {
                     Person collaborator = j.next();
                     if (collaborator.getPhysicalCondition().isDead()) {
                         study.removeCollaborativeResearcher(collaborator);
-                        logger.info(collaborator.getName() + " removed as collaborator in " + study.toString() + 
+                        logger.fine(collaborator.getName() + " removed as collaborator in " + study.toString() + 
                                 " due to death.");
                     }
                 }
@@ -325,7 +324,7 @@ public class ScientificStudyManager implements Serializable {
                     // Check if proposal work time is completed, then move to invitation phase.
                     if (study.getProposalWorkTimeCompleted() >= 
                             study.getTotalProposalWorkTimeRequired()) {
-                        logger.info(study.getPrimaryResearcher().getName() + " finishes writing proposal for " 
+                        logger.fine(study.getPrimaryResearcher().getName() + " finishes writing proposal for " 
                                 + study.toString() + " and is starting to invite collaborative researchers");
                         
                         study.setPhase(ScientificStudy.INVITATION_PHASE);
@@ -346,9 +345,9 @@ public class ScientificStudyManager implements Serializable {
                     else phaseEnded = true;
                     
                     if (phaseEnded) {
-                        logger.info(study.toString() + " ending invitation phase with " + 
+                        logger.fine(study.toString() + " ending invitation phase with " + 
                                 study.getCollaborativeResearchers().size() + " collaborative researchers.");
-                        logger.info(study.toString() + " starting research.");
+                        logger.fine(study.toString() + " starting research.");
                         study.setPhase(ScientificStudy.RESEARCH_PHASE);
                         
                         // Set initial research work time for primary and all collaborative researchers.
@@ -363,7 +362,7 @@ public class ScientificStudyManager implements Serializable {
                     
                     if (study.isAllResearchCompleted()) {
                         study.setPhase(ScientificStudy.PAPER_PHASE);
-                        logger.info(study.toString() + " finished research and is starting data results compiling.");
+                        logger.fine(study.toString() + " finished research and is starting data results compiling.");
                         continue;
                     }
                     else {
@@ -376,7 +375,7 @@ public class ScientificStudyManager implements Serializable {
                             if ((lastPrimaryWork != null) && MarsClock.getTimeDiff(currentDate, lastPrimaryWork) > 
                                     ScientificStudy.PRIMARY_WORK_DOWNTIME_ALLOWED) {
                                 study.setCompleted(ScientificStudy.CANCELED);
-                                logger.info(study.toString() + " canceled due to lack of primary researcher participation.");
+                                logger.fine(study.toString() + " canceled due to lack of primary researcher participation.");
                                 continue;
                             }
                         }
@@ -390,7 +389,7 @@ public class ScientificStudyManager implements Serializable {
                                 if ((lastCollaborativeWork != null) && MarsClock.getTimeDiff(currentDate, lastCollaborativeWork) 
                                         > ScientificStudy.COLLABORATIVE_WORK_DOWNTIME_ALLOWED) {
                                     study.removeCollaborativeResearcher(researcher);
-                                    logger.info(researcher.getName() + " removed as collaborator in " + study.toString() + 
+                                    logger.fine(researcher.getName() + " removed as collaborator in " + study.toString() + 
                                             " due to lack of participation.");
                                 }
                             }
@@ -402,7 +401,7 @@ public class ScientificStudyManager implements Serializable {
                     if (study.isAllPaperWritingCompleted()) {
                         study.setPhase(ScientificStudy.PEER_REVIEW_PHASE);
                         study.startingPeerReview();
-                        logger.info(study.toString() + " has compiled data results and is starting peer review.");
+                        logger.fine(study.toString() + " has compiled data results and is starting peer review.");
                         continue;
                     }
                 }
@@ -415,11 +414,11 @@ public class ScientificStudyManager implements Serializable {
                             
                             // Provide scientific achievement to primary and collaborative researchers.
                             ScientificStudyUtil.provideCompletionAchievements(study);
-                            logger.info(study.toString() + " is completed with a successful peer review.");
+                            logger.fine(study.toString() + " is completed with a successful peer review.");
                         }
                         else {
                             study.setCompleted(ScientificStudy.FAILED_COMPLETION);
-                            logger.info(study.toString() + " is completed with a failed peer review.");
+                            logger.fine(study.toString() + " is completed with a failed peer review.");
                         }
                     }
                 }

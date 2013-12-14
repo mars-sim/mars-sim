@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionValues.java
- * @version 3.03 2012-07-19
+ * @version 3.06 2013-11-21
  * @author Scott Davis
  */
 
@@ -11,12 +11,14 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -28,7 +30,7 @@ import java.util.Map;
 public class ConstructionValues implements Serializable {
 
     // Value modifier for lower stages.
-    public final static double LOWER_STAGE_VALUE_MODIFIER = .75D;
+    public final static double LOWER_STAGE_VALUE_MODIFIER = .5D;
     
     // Data members
     private Settlement settlement;
@@ -268,6 +270,9 @@ public class ConstructionValues implements Serializable {
             }
             
             allStageInfoValueCacheTime = (MarsClock) currentTime.clone();
+            
+            // Display building construction values report to System.out for testing purposes.
+//            displayAllBuildingConstructionValues();
         }
         
         return allStageInfoValueCache;
@@ -408,6 +413,96 @@ public class ConstructionValues implements Serializable {
             }
         }
         
+        return result;
+    }
+    
+    /**
+     * Display construction values report to System.out for testing purposes.
+     */
+    private void displayAllBuildingConstructionValues() {
+        
+        System.out.println(settlement.getName() + " constructable building profits:");
+        DecimalFormat formatter = new DecimalFormat("0.0");
+        Iterator<ConstructionStageInfo> i = ConstructionUtil.getAllConstructionStageInfoList()
+                .iterator();
+        while (i.hasNext()) {
+            ConstructionStageInfo stageInfo = i.next();
+            if (ConstructionStageInfo.BUILDING.equals(stageInfo.getType()) && isLocallyConstructable(stageInfo)) {
+                double value = getConstructionStageValue(stageInfo);
+                double cost = getConstructionStageCost(stageInfo);
+                ConstructionStageInfo buildingStage = stageInfo;
+                ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+                if ((frameStage != null) && frameStage.isConstructable()) {
+                    cost += getConstructionStageCost(frameStage);
+                    ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+                    if ((foundationStage != null) && foundationStage.isConstructable()) {
+                        cost += getConstructionStageCost(foundationStage);
+                    }
+                }
+                double profit = value - cost;
+                
+                boolean canConstruct = false;
+                if (hasConstructionMaterials(stageInfo)) {
+                    if ((frameStage != null) && frameStage.isConstructable() && hasConstructionMaterials(frameStage)) {
+                        ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+                        if ((foundationStage != null) && foundationStage.isConstructable() && hasConstructionMaterials(foundationStage)) {
+                            canConstruct = true;
+                        }
+                    }
+                }
+                
+                StringBuffer buff = new StringBuffer();
+                buff.append(stageInfo.getName());
+                buff.append(" = ");
+                buff.append("value: ");
+                buff.append(formatter.format(value));
+                buff.append(" cost: ");
+                buff.append(formatter.format(cost));
+                buff.append(" profit: ");
+                buff.append(formatter.format(profit));
+                buff.append(" can construct: ");
+                buff.append(canConstruct);
+                System.out.println(buff.toString());
+            }
+        }
+    }
+    
+    /**
+     * Checks if a building construction stage can be constructed at the local settlement.
+     * @param buildingStage the building construction stage info.
+     * @return true if building can be constructed.
+     */
+    private boolean isLocallyConstructable(ConstructionStageInfo buildingStage) {
+        boolean result = false;
+
+        if (buildingStage.isConstructable()) {
+            ConstructionStageInfo frameStage = ConstructionUtil.getPrerequisiteStage(buildingStage);
+            if (frameStage != null) {
+                ConstructionStageInfo foundationStage = ConstructionUtil.getPrerequisiteStage(frameStage);
+                if (foundationStage != null) {
+                    if (frameStage.isConstructable() && foundationStage.isConstructable()) {
+                        result = true;
+                    }
+                    else {
+                        // Check if any existing buildings have same frame stage and can be refit or refurbished 
+                        // into new building.
+                        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+                        while (i.hasNext()) {
+                            ConstructionStageInfo tempBuildingStage = ConstructionUtil.getConstructionStageInfo(
+                                    i.next().getName());
+                            if (tempBuildingStage != null) {
+                                ConstructionStageInfo tempFrameStage = ConstructionUtil.getPrerequisiteStage(
+                                        tempBuildingStage);
+                                if (frameStage.equals(tempFrameStage)) {
+                                    result = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            } 
+        }
+
         return result;
     }
     
