@@ -193,7 +193,9 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		
 		// Add person to building if possible.
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-			BuildingManager.addPersonToBuilding(problem.getSufferer(), getBuilding());
+		    // TODO: Try to walk to this location.
+			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
+			        getBuilding());
 		}
 	}
 	
@@ -209,7 +211,9 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
         
 		// Add person to building if possible.
 		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-		    BuildingManager.addPersonToBuilding(problem.getSufferer(), getBuilding());
+		    // TODO: Try to walk to this location.
+		    BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
+		            getBuilding());
 		}
 	}
 	

@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.03 2012-07-10
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -20,9 +21,11 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.time.MarsClock;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,13 +59,15 @@ public class SalvageGood extends Task implements Serializable {
      */
     public SalvageGood(Person person) {
         super("Salvage Good", person, true, false, STRESS_MODIFIER, 
-                true, RandomUtil.getRandomDouble(100D));
+                true, 10D + RandomUtil.getRandomDouble(40D));
         
         // Get available manufacturing workshop if any.
         Building manufactureBuilding = getAvailableManufacturingBuilding(person);
         if (manufactureBuilding != null) {
             workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
-            BuildingManager.addPersonToBuilding(person, manufactureBuilding);
+            
+            // Walk to manufacturing workshop.
+            walkToWorkshopBuilding(manufactureBuilding);
         }
         else endTask();
         
@@ -139,6 +144,34 @@ public class SalvageGood extends Task implements Serializable {
         }
 
         return result;
+    }
+    
+    /**
+     * Walk to workshop building.
+     * @param workshopBuilding the workshop building.
+     */
+    private void walkToWorkshopBuilding(Building workshopBuilding) {
+        
+        // Determine location within workshop building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), workshopBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, workshopBuilding)) {
+            Task walkingTask = new WalkInterior(person, workshopBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to workshop building.
+            BuildingManager.addPersonToBuilding(person, workshopBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     @Override

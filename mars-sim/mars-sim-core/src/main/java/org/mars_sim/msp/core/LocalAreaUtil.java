@@ -142,12 +142,7 @@ public class LocalAreaUtil {
         while (i.hasNext() && result) {
             Vehicle vehicle = i.next();
             if (vehicle.getCoordinates().equals(coordinates)) {
-                Rectangle2D vehicleRect = new Rectangle2D.Double(vehicle.getXLocation() - 
-                        (vehicle.getWidth() / 2D), vehicle.getYLocation() - (vehicle.getLength() / 2D), 
-                        vehicle.getWidth(), vehicle.getLength());
-                Path2D vehiclePath = getPathFromRectangleRotation(vehicleRect, vehicle.getFacing());
-                Area area = new Area(vehiclePath);
-                if (area.contains(xLoc, yLoc)) {
+                if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, vehicle)) {
                     result = false;
                 }
             }
@@ -163,13 +158,7 @@ public class LocalAreaUtil {
                 Iterator<Building> j = settlement.getBuildingManager().getBuildings().iterator();
                 while (j.hasNext() && result) {
                     Building building = j.next();
-                    Rectangle2D buildingRect = new Rectangle2D.Double(building.getXLocation() - 
-                            (building.getWidth() / 2D), building.getYLocation() - 
-                            (building.getLength() / 2D), building.getWidth(), building.getLength());
-                    Path2D buildingPath = getPathFromRectangleRotation(buildingRect, 
-                            building.getFacing());
-                    Area area = new Area(buildingPath);
-                    if (area.contains(xLoc, yLoc)) {
+                    if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
                         result = false;
                     }
                 }
@@ -179,17 +168,35 @@ public class LocalAreaUtil {
                         getConstructionSites().iterator();
                 while (k.hasNext() && result) {
                     ConstructionSite site = k.next();
-                    Rectangle2D siteRect = new Rectangle2D.Double(site.getXLocation() - 
-                            (site.getWidth() / 2D), site.getYLocation() - 
-                            (site.getLength() / 2D), site.getWidth(), site.getLength());
-                    Path2D sitePath = getPathFromRectangleRotation(siteRect, 
-                            site.getFacing());
-                    Area area = new Area(sitePath);
-                    if (area.contains(xLoc, yLoc)) {
+                    if (checkLocationWithinLocalBoundedObject(xLoc, yLoc, site)) {
                         result = false;
                     }
                 }
             }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Checks if a point location is within a local bounded object's bounds.
+     * @param xLoc the new X location.
+     * @param yLoc the new Y location.
+     * @param object the local bounded object.
+     * @return true if location is within object bounds.
+     */
+    public static boolean checkLocationWithinLocalBoundedObject(double xLoc, double yLoc, 
+            LocalBoundedObject object) {
+        boolean result = false;
+        
+        Rectangle2D rect = new Rectangle2D.Double(object.getXLocation() - 
+                (object.getWidth() / 2D), object.getYLocation() - 
+                (object.getLength() / 2D), object.getWidth(), object.getLength());
+        Path2D path = getPathFromRectangleRotation(rect, 
+                object.getFacing());
+        Area area = new Area(path);
+        if (area.contains(xLoc, yLoc)) {
+            result = true;
         }
         
         return result;
@@ -221,13 +228,7 @@ public class LocalAreaUtil {
         while (i.hasNext() && result) {
             Vehicle vehicle = i.next();
             if (vehicle != boundedObject) {
-                Rectangle2D tempVehicleRect = new Rectangle2D.Double(vehicle.getXLocation() - 
-                        (vehicle.getWidth() / 2D), vehicle.getYLocation() - (vehicle.getLength() / 2D), 
-                        vehicle.getWidth(), vehicle.getLength());
-                Path2D tempVehiclePath = getPathFromRectangleRotation(tempVehicleRect, vehicle.getFacing());
-                Area area = new Area(newObjectPath);
-                area.intersect(new Area(tempVehiclePath));
-                if (!area.isEmpty()) {
+                if (checkPathLocalBoundedObjectCollision(newObjectPath, vehicle)) {
                     result = false;
                 }
             }
@@ -238,14 +239,7 @@ public class LocalAreaUtil {
         while (j.hasNext() && result) {
             Building building = j.next();
             if (building != boundedObject) {
-                Rectangle2D buildingRect = new Rectangle2D.Double(building.getXLocation() - 
-                        (building.getWidth() / 2D), building.getYLocation() - 
-                        (building.getLength() / 2D), building.getWidth(), building.getLength());
-                Path2D buildingPath = getPathFromRectangleRotation(buildingRect, 
-                        building.getFacing());
-                Area area = new Area(newObjectPath);
-                area.intersect(new Area(buildingPath));
-                if (!area.isEmpty()) {
+                if (checkPathLocalBoundedObjectCollision(newObjectPath, building)) {
                     result = false;
                 }
             }
@@ -256,17 +250,33 @@ public class LocalAreaUtil {
         while (k.hasNext() && result) {
             ConstructionSite site = k.next();
             if (site != boundedObject) {
-                Rectangle2D siteRect = new Rectangle2D.Double(site.getXLocation() - 
-                        (site.getWidth() / 2D), site.getYLocation() - 
-                        (site.getLength() / 2D), site.getWidth(), site.getLength());
-                Path2D sitePath = getPathFromRectangleRotation(siteRect, 
-                        site.getFacing());
-                Area area = new Area(newObjectPath);
-                area.intersect(new Area(sitePath));
-                if (!area.isEmpty()) {
+                if (checkPathLocalBoundedObjectCollision(newObjectPath, site)) {
                     result = false;
                 }
             }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Checks if a path collides with a local bounded object.
+     * @param path the path.
+     * @param object the local bounded object.
+     * @return true if the path and the local bounded object collide.
+     */
+    private static boolean checkPathLocalBoundedObjectCollision(Path2D path, LocalBoundedObject object) {
+        boolean result = false;
+        
+        Rectangle2D objectRect = new Rectangle2D.Double(object.getXLocation() - 
+                (object.getWidth() / 2D), object.getYLocation() - 
+                (object.getLength() / 2D), object.getWidth(), object.getLength());
+        Path2D objectPath = getPathFromRectangleRotation(objectRect, 
+                object.getFacing());
+        Area area = new Area(path);
+        area.intersect(new Area(objectPath));
+        if (!area.isEmpty()) {
+            result = true;
         }
         
         return result;

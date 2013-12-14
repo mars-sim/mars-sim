@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.04 2013-02-10
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
@@ -56,12 +56,19 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
    
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
-        if (vehicle != null) vehicle.setReservedForMaintenance(true);
-        else endTask();
-        
-        // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
+        if (vehicle != null) {
+            vehicle.setReservedForMaintenance(true);
+            
+            // Get an available airlock.
+            airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
+                    vehicle.getYLocation());
+            if (airlock == null) {
+                endTask();
+            }
+        }
+        else {
+            endTask();
+        }
         
         // Initialize phase.
         addPhase(MAINTAIN_VEHICLE);
@@ -96,7 +103,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         }
 
         // Check if an airlock is available
-        if (getAvailableAirlock(person) == null) result = 0D;
+        if (getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.05 2013-08-24
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -78,10 +78,6 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         // Use Task constructor
         super("Loading vehicle EVA", person);
         
-        // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
-        
         VehicleMission mission = getMissionNeedingLoading();
         if (mission != null) {
             vehicle = mission.getVehicle();
@@ -91,10 +87,21 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
             requiredEquipment = mission.getRequiredEquipmentToLoad();
             optionalEquipment = mission.getOptionalEquipmentToLoad();
             settlement = person.getSettlement();
-            if (settlement == null) endTask();
+            if (settlement == null) {
+                endTask();
+            }
             
             // End task if vehicle not available.
-            if (vehicle == null) endTask();    
+            if (vehicle == null) {
+                endTask();    
+            }
+            
+            // Get an available airlock.
+            airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
+                    vehicle.getYLocation());
+            if (airlock == null) {
+                endTask();
+            }
             
             // Initialize task phase
             addPhase(LOADING);
@@ -138,8 +145,11 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         settlement = person.getSettlement();
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
+        airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
+                vehicle.getYLocation());
+        if (airlock == null) {
+            endTask();
+        }
         
         // Initialize task phase
         addPhase(LOADING);
@@ -167,7 +177,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         }
 
         // Check if an airlock is available
-        if (getAvailableAirlock(person) == null) {
+        if (getWalkableAvailableAirlock(person) == null) {
             result = 0D;
         }
 

@@ -25,7 +25,8 @@ public class Yoga extends Task implements Serializable {
     private static final double STRESS_MODIFIER = -.7D;
 
     public Yoga(Person person) {
-        super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
+        super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
+                10D + RandomUtil.getRandomDouble(30D));
 
         // Initialize phase
         addPhase(DOING_YOGA);

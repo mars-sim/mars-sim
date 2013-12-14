@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,10 +25,12 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -71,7 +73,7 @@ public class StudyFieldSamples extends Task implements
     public StudyFieldSamples(Person person) {
         // Use Task constructor.
         super("Study Field Samples", person, true, false, STRESS_MODIFIER, true, 
-                RandomUtil.getRandomDouble(100D));
+                10D + RandomUtil.getRandomDouble(40D));
         
         // Determine study.
         study = determineStudy();
@@ -440,7 +442,9 @@ public class StudyFieldSamples extends Task implements
             String location = person.getLocationSituation();
             if (location.equals(Person.INSETTLEMENT)) {
                 Building labBuilding = ((Research) lab).getBuilding();
-                BuildingManager.addPersonToBuilding(person, labBuilding);
+                
+                // Walk to lab building.
+                walkToLabBuilding(labBuilding);
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
             }
@@ -451,6 +455,34 @@ public class StudyFieldSamples extends Task implements
         }
         catch (Exception e) {
             logger.log(Level.SEVERE,"addPersonToLab(): " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Walk to lab building.
+     * @param labBuilding the lab building.
+     */
+    private void walkToLabBuilding(Building labBuilding) {
+        
+        // Determine location within lab building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), labBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, labBuilding)) {
+            Task walkingTask = new WalkInterior(person, labBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to lab building.
+            BuildingManager.addPersonToBuilding(person, labBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
         }
     }
     

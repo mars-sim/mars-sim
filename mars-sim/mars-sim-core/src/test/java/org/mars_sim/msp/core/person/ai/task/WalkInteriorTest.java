@@ -1,0 +1,147 @@
+package org.mars_sim.msp.core.person.ai.task;
+
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.MockSettlement;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.MockBuilding;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+
+import junit.framework.TestCase;
+
+public class WalkInteriorTest extends TestCase {
+
+    private static final double SMALL_DELTA = .00001D;
+
+    public void testDetermineDirection() {
+        
+        Settlement settlement = new MockSettlement();
+        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        person.setXLocation(0D);
+        person.setYLocation(0D);
+        
+        MockBuilding building = new MockBuilding(settlement.getBuildingManager());
+        building.setWidth(10D);
+        building.setLength(10D);
+        settlement.getBuildingManager().addBuilding(building);
+        BuildingManager.addPersonToBuildingSameLocation(person, building);
+        
+        WalkInterior walkTask = new WalkInterior(person, building, 0D, 0D);
+        
+        assertEquals(0D, walkTask.determineDirection(0D, 5D), SMALL_DELTA);
+        assertEquals((Math.PI / 2D), walkTask.determineDirection(-5D, 0D), SMALL_DELTA);
+        assertEquals(Math.PI, walkTask.determineDirection(0D, -5D), SMALL_DELTA);
+        assertEquals((3D * Math.PI / 2D), walkTask.determineDirection(5D, 0D), SMALL_DELTA);
+    }
+    
+    public void testWalkInDirection() {
+        
+        Settlement settlement = new MockSettlement();
+        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        person.setXLocation(0D);
+        person.setYLocation(0D);
+        
+        MockBuilding building = new MockBuilding(settlement.getBuildingManager());
+        building.setWidth(10D);
+        building.setLength(10D);
+        settlement.getBuildingManager().addBuilding(building);
+        BuildingManager.addPersonToBuildingSameLocation(person, building);
+        
+        WalkInterior walkTask = new WalkInterior(person, building, 0D, 0D);
+        
+        // Walk North 5m.
+        walkTask.walkInDirection(0D, 5D);
+        assertEquals(0D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(5D, person.getYLocation(), SMALL_DELTA);
+        
+        // Walk South 5m.
+        walkTask.walkInDirection(Math.PI, 5D);
+        assertEquals(0D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+        
+        // Walk West 5m.
+        walkTask.walkInDirection((3D * Math.PI / 2D), 5D);
+        assertEquals(5D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+        
+        // Walk East 5m.
+        walkTask.walkInDirection((Math.PI / 2D), 5D);
+        assertEquals(0D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+    }
+    
+    public void testWalkingPhase() {
+        
+        Settlement settlement = new MockSettlement();
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
+        assertNotNull(connectorManager);
+        
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addBuilding(building0);
+        
+        MockBuilding building1 = new MockBuilding(buildingManager);
+        building1.setID(1);
+        building1.setName("building 1");
+        building1.setWidth(6D);
+        building1.setLength(9D);
+        building1.setXLocation(-12D);
+        building1.setYLocation(0D);
+        building1.setFacing(270D);
+        buildingManager.addBuilding(building1);
+        
+        MockBuilding building2 = new MockBuilding(buildingManager);
+        building2.setID(2);
+        building2.setName("building 2");
+        building2.setWidth(2D);
+        building2.setLength(3D);
+        building2.setXLocation(-6D);
+        building2.setYLocation(0D);
+        building2.setFacing(270D);
+        buildingManager.addBuilding(building2);
+        
+        connectorManager.addBuildingConnection(new BuildingConnector(building0, -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
+        connectorManager.addBuildingConnection(new BuildingConnector(building1, -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
+        
+        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        person.setXLocation(0D);
+        person.setYLocation(0D);
+        BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        
+        // Walking time (millisols) for 1m. distance.
+        double walkingTimeMeter = .008110369D;
+        
+        WalkInterior walkTask = new WalkInterior(person, building1, -11D, 1D);
+        
+        assertEquals(0D, walkTask.walkingPhase(walkingTimeMeter), SMALL_DELTA);
+        
+        assertEquals(-1D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+        
+        assertEquals(0D, walkTask.walkingPhase(walkingTimeMeter * 5D), SMALL_DELTA);
+        
+        assertEquals(-6D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+        
+        assertEquals(0D, walkTask.walkingPhase(walkingTimeMeter * 1.5D), SMALL_DELTA);
+        
+        assertEquals(-7.5D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(0D, person.getYLocation(), SMALL_DELTA);
+        
+        double remainingTime = walkTask.walkingPhase(walkingTimeMeter * 4D);
+        assertTrue(remainingTime > 0D);
+        
+        assertEquals(-11D, person.getXLocation(), SMALL_DELTA);
+        assertEquals(1D, person.getYLocation(), SMALL_DELTA);
+        
+        assertTrue(walkTask.isDone());
+    }
+}

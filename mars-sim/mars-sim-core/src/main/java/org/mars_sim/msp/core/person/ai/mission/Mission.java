@@ -411,7 +411,7 @@ public abstract class Mission implements Serializable {
         boolean canPerformTask = true;
 
         // If task is effort-driven and person too ill, do not assign task.
-        if (task.isEffortDriven() && (person.getPerformanceRating() < .5D)) {
+        if (task.isEffortDriven() && (person.getPerformanceRating() == 0D)) {
             canPerformTask = false;
         }
 

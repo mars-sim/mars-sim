@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.06 2013-11-11
+ * @version 3.06 2013-11-21
  * @author Scott Davis
  */
  
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
+import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
 import org.mars_sim.msp.core.structure.building.function.*;
 
 import java.io.Serializable;
@@ -30,7 +31,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * The Building class is a settlement's building.
  */
 public class Building implements Malfunctionable, Serializable, Comparable<Building>, 
-        LocalBoundedObject {
+        LocalBoundedObject, InsidePathLocation {
     
     // Power Modes
     public static final String FULL_POWER = "Full Power";

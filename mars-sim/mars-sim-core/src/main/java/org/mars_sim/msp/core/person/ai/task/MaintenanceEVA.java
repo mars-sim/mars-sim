@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.04 2013-02-10
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
@@ -56,18 +56,30 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 	public MaintenanceEVA(Person person) {
 		super("Performing EVA Maintenance", person);
 		
-		// Get an available airlock.
-		airlock = getAvailableAirlock(person);
-		if (airlock == null) endTask();
-		
 		try {
 			entity = getMaintenanceMalfunctionable();
-			if (entity == null) endTask();
+			if (entity == null) {
+			    endTask();
+			}
 		}
 		catch (Exception e) {
 		    logger.log(Level.SEVERE,"MaintenanceEVA.constructor()",e);
 			endTask();
 		}
+		
+	    // Get an available airlock.
+		if (entity instanceof LocalBoundedObject) {
+		    LocalBoundedObject bounds = (LocalBoundedObject) entity;
+		    airlock = getClosestWalkableAvailableAirlock(person, bounds.getXLocation(), 
+		            bounds.getYLocation());
+		}
+		else {
+		    airlock = getWalkableAvailableAirlock(person);
+		}
+		
+        if (airlock == null) {
+            endTask();
+        }
 		
 		// Initialize phase
 		addPhase(MAINTAIN);
@@ -110,7 +122,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
     	}
 		
 		// Check if an airlock is available
-		if (getAvailableAirlock(person) == null) result = 0D;
+		if (getWalkableAvailableAirlock(person) == null) result = 0D;
 
 		// Check if it is night time.
 		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();

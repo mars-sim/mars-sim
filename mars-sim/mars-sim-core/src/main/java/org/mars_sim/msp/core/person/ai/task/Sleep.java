@@ -1,20 +1,23 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.04 2013-05-11
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,14 +51,15 @@ class Sleep extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public Sleep(Person person) {
-        super("Sleeping", person, false, false, STRESS_MODIFIER, true, (250D + RandomUtil.getRandomInt(100)));
+        super("Sleeping", person, false, false, STRESS_MODIFIER, true, (250D + RandomUtil.getRandomDouble(80D)));
 
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
             Building quarters = getAvailableLivingQuartersBuilding(person);
             if (quarters != null) {
-                BuildingManager.addPersonToBuilding(person, quarters); 
+                // Walk to quarters.
+                walkToQuartersBuilding(quarters);
                 accommodations = (LivingAccommodations) quarters.getFunction(LivingAccommodations.NAME);
                 accommodations.addSleeper();
             }
@@ -101,6 +105,34 @@ class Sleep extends Task implements Serializable {
         }
 
         return result;
+    }
+    
+    /**
+     * Walk to sleeping quarters building.
+     * @param quartersBuilding the quarters building.
+     */
+    private void walkToQuartersBuilding(Building quartersBuilding) {
+        
+        // Determine location within sleeping quarters building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(quartersBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), quartersBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, quartersBuilding)) {
+            Task walkingTask = new WalkInterior(person, quartersBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to sleeping quarters building.
+            BuildingManager.addPersonToBuilding(person, quartersBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

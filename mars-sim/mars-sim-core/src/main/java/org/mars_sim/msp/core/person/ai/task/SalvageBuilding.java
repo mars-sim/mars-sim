@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.04 2013-02-02
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -67,7 +67,8 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         this.vehicles = vehicles;
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
+        airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
+                site.getYLocation());
         if (airlock == null) endTask();
         
         // Add task phase
@@ -83,8 +84,10 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         
         // Check if person can exit the settlement airlock.
         boolean exitable = false;
-        Airlock airlock = getAvailableAirlock(person);
-        if (airlock != null) exitable = ExitAirlock.canExitAirlock(person, airlock);
+        Airlock airlock = getWalkableAvailableAirlock(person);
+        if (airlock != null) {
+            exitable = ExitAirlock.canExitAirlock(person, airlock);
+        }
 
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 

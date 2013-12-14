@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.04 2013-05-11
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -45,7 +45,7 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
     private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
-    
+
     // Task phase
     private static final String UNLOADING = "Unloading";
 
@@ -64,13 +64,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     public UnloadVehicleEVA(Person person) {
         // Use Task constructor.
         super("Unloading vehicle EVA", person);
-        
+
         settlement = person.getSettlement();
-        
-        // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
-        
+
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
             vehicle = mission.getVehicle();
@@ -81,16 +77,26 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
             }
         }
-        
+
         if (vehicle != null) {
+
+            // Get an available airlock.
+            airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
+                    vehicle.getYLocation());
+            if (airlock == null) {
+                endTask();
+            }
+
             setDescription("Unloading " + vehicle.getName());
-            
+
             // Initialize task phase
             addPhase(UNLOADING);
         }
-        else endTask();
+        else {
+            endTask();
+        }
     }
-    
+
     /** 
      * Constructor
      * @param person the person to perform the task
@@ -104,17 +110,20 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
-        
+
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
-        
+        airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
+                vehicle.getYLocation());
+        if (airlock == null) {
+            endTask();
+        }
+
         // Initialize phase
         addPhase(UNLOADING);
 
         // logger.info(person.getName() + " is unloading " + vehicle.getName());
     }
-    
+
     /** 
      * Returns the weighted probability that a person might perform this task.
      * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
@@ -125,7 +134,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         double result = 0D;
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            
+
             // Check all vehicle missions occurring at the settlement.
             try {
                 int numVehicles = 0;
@@ -140,17 +149,18 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         }
 
         // Check if an airlock is available
-        if (getAvailableAirlock(person) == null) {
+        if (getWalkableAvailableAirlock(person) == null) {
             result = 0D;
         }
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
+            }
         } 
-        
+
         // Crowded settlement modifier
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
@@ -158,17 +168,19 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 result *= 2D;
             }
         }
-        
+
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
-        
+
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null) result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);        
-    
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);        
+        }
+
         return result;
     }
-    
+
     /**
      * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.
@@ -176,7 +188,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
      */
     private static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
         List<Vehicle> result = new ArrayList<Vehicle>();
-        
+
         if (settlement != null) {
             Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
             while (i.hasNext()) {
@@ -203,19 +215,19 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets a list of all disembarking vehicle missions at a settlement.
      * @param settlement the settlement.
      * @return list of vehicle missions.
      */
     private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
-        
+
         List<Mission> result = new ArrayList<Mission>();
-        
+
         MissionManager manager = Simulation.instance().getMissionManager();
         Iterator<Mission> i = manager.getMissions().iterator();
         while (i.hasNext()) {
@@ -240,29 +252,29 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 }
             }
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets a random vehicle mission unloading at the settlement.
      * @return vehicle mission.
      * @throws Exception if error finding vehicle mission.
      */
     private VehicleMission getMissionNeedingUnloading() {
-        
+
         VehicleMission result = null;
-        
+
         List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
-        
+
         if (unloadingMissions.size() > 0) {
             int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
             result = (VehicleMission) unloadingMissions.get(index);
         }
-        
+
         return result;
     }
-    
+
     /**
      * Gets the vehicle being unloaded.
      * @return vehicle
@@ -270,7 +282,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     public Vehicle getVehicle() {
         return vehicle;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
@@ -279,7 +291,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
         else return time;
     }
-    
+
     /**
      * Perform the exit airlock phase of the task.
      * @param time the time to perform this phase (in millisols)
@@ -287,10 +299,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
      * @throws Exception if error exiting the airlock.
      */
     private double exitEVA(double time) {
-        
+
         try {
             time = exitAirlock(time, airlock);
-        
+
             // Add experience points
             addExperience(time);
         }
@@ -298,16 +310,16 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
             // Person unable to exit airlock.
             endTask();
         }
-        
+
         if (exitedAirlock) {
             setPhase(UNLOADING);
-            
+
             // Move person outside next vehicle.
             moveToUnloadingLocation();
         }
         return time;
     }
-    
+
     /**
      * Move person outside next to vehicle.
      */
@@ -325,7 +337,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         person.setXLocation(newLocation.getX());
         person.setYLocation(newLocation.getY());
     }
-    
+
     /**
      * Perform the unloading phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
@@ -333,43 +345,43 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
      * @throws Exception if error in loading phase.
      */
     protected double unloadingPhase(double time) {
-        
+
         // Check for an accident during the EVA operation.
         checkForAccident(time);
-        
+
         // Check if person should end EVA operation.
         if (shouldEndEVAOperation()) {
             setPhase(EVAOperation.ENTER_AIRLOCK);
             return time;
         }
-        
+
         // Determine unload rate.
         int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
-        
+
         Inventory vehicleInv = vehicle.getInventory();
         if (settlement == null) {
             endTask();
             return 0D;
         }
         Inventory settlementInv = settlement.getInventory();
-        
+
         // Unload equipment.
         if (amountUnloading > 0D) {
             Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
             while (k.hasNext() && (amountUnloading > 0D)) {
                 Equipment equipment = (Equipment) k.next();
-                
+
                 // Unload inventories of equipment (if possible)
                 unloadEquipmentInventory(equipment);
-                
+
                 vehicleInv.retrieveUnit(equipment);
                 settlementInv.storeUnit(equipment);
                 amountUnloading -= equipment.getMass();
             }
         }
-        
+
         // Unload amount resources.
         Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored(false).iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
@@ -388,7 +400,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
             catch (Exception e) {}
             amountUnloading -= amount;
         }
-        
+
         // Unload item resources.
         if (amountUnloading > 0D) {
             Iterator<ItemResource> j = vehicleInv.getAllItemResourcesStored().iterator();
@@ -404,7 +416,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 amountUnloading -= (num * resource.getMassPerItem());
             }
         }
-        
+
         // Unload towed vehicles.
         if (vehicle instanceof Towing) {
             Towing towingVehicle = (Towing) vehicle;
@@ -418,14 +430,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
                 }
             }
         }
-        
+
         if (isFullyUnloaded(vehicle)) {
             setPhase(ENTER_AIRLOCK);
         }
-        
+
         return 0D;
     }
-    
+
     /**
      * Unload the inventory from a piece of equipment.
      * @param equipment the equipment.
@@ -433,7 +445,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     private void unloadEquipmentInventory(Equipment equipment) {
         Inventory eInv = equipment.getInventory();
         Inventory sInv = settlement.getInventory();
-        
+
         // Unload amount resources.
         // Note: only unloading amount resources at the moment.
         Iterator<AmountResource> i = eInv.getAllAmountResourcesStored(false).iterator();
@@ -449,7 +461,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
             catch (Exception e) {}
         }
     }
-    
+
     /** 
      * Returns true if the vehicle is fully unloaded.
      * @param vehicle Vehicle to check.
@@ -459,7 +471,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
     }
-    
+
     /**
      * Perform the enter airlock phase of the task.
      * @param time amount of time to perform the phase
@@ -468,10 +480,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
      */
     private double enterEVA(double time) {
         time = enterAirlock(time, airlock);
-        
+
         // Add experience points
         addExperience(time);
-        
+
         if (enteredAirlock) endTask();
         return time;
     }
@@ -496,7 +508,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         // Add experience to "EVA Operations" skill.
         // (1 base experience point per 100 millisols of time spent)
         double evaExperience = time / 100D;
-        
+
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
         int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
@@ -505,11 +517,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         evaExperience *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         vehicle = null;
         settlement = null;
         airlock = null;

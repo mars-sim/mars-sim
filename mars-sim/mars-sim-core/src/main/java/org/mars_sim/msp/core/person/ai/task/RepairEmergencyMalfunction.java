@@ -1,12 +1,14 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.02 2011-11-27
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -18,7 +20,9 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -51,8 +55,12 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
 
 		// Add person to malfunctioning building if necessary.
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			if (entity instanceof Building) {
-				BuildingManager.addPersonToBuilding(person, (Building) entity);
+	        if (entity != null) {
+	            // Add person to building if malfunctionable is a building with life support.
+	            addPersonToMalfunctionableBuilding(entity); 
+	        }
+	        else {
+	            endTask();
 			}
 		}
 
@@ -169,6 +177,51 @@ public class RepairEmergencyMalfunction extends Task implements Repair, Serializ
      */
     public Malfunctionable getEntity() {
         return entity;
+    }
+    
+    /**
+     * Adds the person to building if malfunctionable is a building with life support.
+     * Otherwise does nothing.
+     * @param malfunctionable the malfunctionable the person is repairing.
+     */
+    private void addPersonToMalfunctionableBuilding(Malfunctionable malfunctionable) {
+        
+        if (malfunctionable instanceof Building) {
+            Building building = (Building) malfunctionable;
+            if (building instanceof LifeSupport) {
+                
+                // Walk to malfunctioning building.
+                walkToMalfunctioningBuilding(building);
+            }
+        }
+    }
+    
+    /**
+     * Walk to malfunctioning building.
+     * @param malfunctioningBuilding the malfunctioning building.
+     */
+    private void walkToMalfunctioningBuilding(Building malfunctioningBuilding) {
+        
+        // Determine location within malfunctioning building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(malfunctioningBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), malfunctioningBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, malfunctioningBuilding)) {
+            Task walkingTask = new WalkInterior(person, malfunctioningBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to malfunctioning building.
+            BuildingManager.addPersonToBuilding(person, malfunctioningBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
 	/**

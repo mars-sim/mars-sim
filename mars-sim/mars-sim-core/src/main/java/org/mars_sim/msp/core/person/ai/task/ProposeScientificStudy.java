@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -45,7 +44,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
      */
     public ProposeScientificStudy(Person person) {
         super("Proposing a Scientific Study", person, false, true, STRESS_MODIFIER, 
-                true, RandomUtil.getRandomDouble(100D));
+                true, 10D + RandomUtil.getRandomDouble(50D));
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         study = manager.getOngoingPrimaryStudy(person);
@@ -59,12 +58,14 @@ public class ProposeScientificStudy extends Task implements Serializable {
                 study = manager.createScientificStudy(person, science, level);
             }
             else {
-                logger.log(Level.SEVERE, "Person's job: " + job.getName() + " not scientist.");
+                logger.severe("Person's job: " + job.getName() + " not scientist.");
                 endTask();
             }
         }
         
-        if (study != null) setDescription("Proposing a " + study.getScience().getName() + " study");
+        if (study != null) {
+            setDescription("Proposing a " + study.getScience().getName() + " study");
+        }
         
         // Initialize phase
         addPhase(PROPOSAL_PHASE);

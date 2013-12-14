@@ -1,18 +1,21 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.03 2012-07-10
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Recreation;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,10 +27,8 @@ import java.util.logging.Logger;
  *  The duration of the task is by default chosen randomly, up to 100 millisols.
  */
 class Relax extends Task implements Serializable {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.simulation.person.ai.task.Task";
 	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+    private static Logger logger = Logger.getLogger(Relax.class.getName());
 	
 	// Task phase
 	private static final String RELAXING = "Relaxing";
@@ -41,13 +42,17 @@ class Relax extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public Relax(Person person) {
-        super("Relaxing", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomInt(100));
+        super("Relaxing", person, false, false, STRESS_MODIFIER, true, 10D + 
+                RandomUtil.getRandomDouble(40D));
 
         // If person is in a settlement, try to find a place to relax.
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {      	
         	try {
         		Building recBuilding = getAvailableRecreationBuilding(person);
-        		if (recBuilding != null) BuildingManager.addPersonToBuilding(person, recBuilding);
+        		if (recBuilding != null) {
+                    // Walk to recreation building.
+                    walkToRecreationBuilding(recBuilding);
+        		}
         	}
         	catch (Exception e) {
         		logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
@@ -86,6 +91,34 @@ class Relax extends Task implements Serializable {
     	}
         
         return result;
+    }
+    
+    /**
+     * Walk to recreation building.
+     * @param recreationBuilding the recreation building.
+     */
+    private void walkToRecreationBuilding(Building recreationBuilding) {
+        
+        // Determine location within recreation building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(recreationBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), recreationBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, recreationBuilding)) {
+            Task walkingTask = new WalkInterior(person, recreationBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to recreation building.
+            BuildingManager.addPersonToBuilding(person, recreationBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
 
     /**

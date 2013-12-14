@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -17,9 +18,11 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceUtil;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -66,13 +69,15 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
                 researchTask.setResearchAssistant(person);
                 setDescription("Assisting researcher " + researcher.getName());
                 
-                // If in settlement, move teacher to building researcher is in.
+                // If in settlement, move assistant to building researcher is in.
                 if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
-                    Building assistantBuilding = BuildingManager.getBuilding(person);
                     Building researcherBuilding = BuildingManager.getBuilding(researcher);
-                    if (!assistantBuilding.equals(researcherBuilding)) 
-                        BuildingManager.addPersonToBuilding(person, researcherBuilding);
+                    if (researcherBuilding != null) {
+                        
+                        // Walk to researcher
+                        walkToResearcherBuilding(researcherBuilding);
+                    }
                 }
             }
             else {
@@ -140,6 +145,34 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         }
         
         return result;
+    }
+    
+    /**
+     * Walk to researcher's building.
+     * @param researcherBuilding the researcher's building.
+     */
+    private void walkToResearcherBuilding(Building researcherBuilding) {
+        
+        // Determine location within researcher's building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(researcherBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), researcherBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, researcherBuilding)) {
+            Task walkingTask = new WalkInterior(person, researcherBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to researcher's building.
+            BuildingManager.addPersonToBuilding(person, researcherBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

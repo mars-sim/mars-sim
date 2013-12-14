@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EnterAirlock.java
- * @version 3.04 2013-02-13
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
@@ -84,7 +84,7 @@ public class EnterAirlock extends Task implements Serializable {
                 if (p != person) {
                     String location = p.getLocationSituation();
                     if (location.equals(Person.INSETTLEMENT)) {
-                        airlock = p.getSettlement().getAvailableAirlock();
+                        airlock = p.getSettlement().getClosestAvailableAirlock(person);
                     }
                     else if (location.equals(Person.INVEHICLE)) {
                         Vehicle vehicle = p.getVehicle();
@@ -101,7 +101,7 @@ public class EnterAirlock extends Task implements Serializable {
             while (i.hasNext() && (airlock == null)) {
                 Settlement settlement = i.next();
                 if (person.getCoordinates().equals(settlement.getCoordinates())) 
-                    airlock = settlement.getAvailableAirlock();
+                    airlock = settlement.getClosestAvailableAirlock(person);
             }
         }
 
@@ -168,6 +168,7 @@ public class EnterAirlock extends Task implements Serializable {
                         person.getCoordinates());
             }
             
+            // TODO: Add EVA walk to outside location.
             person.setXLocation(newLocation.getX());
             person.setYLocation(newLocation.getY());
         }
@@ -181,15 +182,9 @@ public class EnterAirlock extends Task implements Serializable {
         // Move the person to a random location inside the airlock entity.
         if (airlock.getEntity() instanceof LocalBoundedObject) {
             LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double newLocation = null;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 20) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                        boundedLocalPoint.getY(), entityBounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
-            }
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
+            Point2D.Double newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), entityBounds);
             
             person.setXLocation(newLocation.getX());
             person.setYLocation(newLocation.getY());

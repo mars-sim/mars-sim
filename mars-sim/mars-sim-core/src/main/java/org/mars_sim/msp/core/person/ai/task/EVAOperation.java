@@ -218,26 +218,65 @@ public abstract class EVAOperation extends Task implements Serializable {
         }
     }
     
+//    /**
+//     * Gets an available airlock for a person.
+//     *
+//     * @return airlock or null if none available
+//     */
+//    public static Airlock getAvailableAirlock(Person person) {
+//        Airlock result = null;
+//        String location = person.getLocationSituation();
+//        
+//        if (location.equals(Person.INSETTLEMENT)) {
+//            Settlement settlement = person.getSettlement();
+//            result = settlement.getAvailableAirlock();
+//        }
+//        else if (location.equals(Person.INVEHICLE)) {
+//            Vehicle vehicle = person.getVehicle();
+//            if (vehicle instanceof Airlockable) {
+//                result = ((Airlockable) vehicle).getAirlock();
+//            }
+//        }
+//        
+//        return result;
+//    }
+    
     /**
-     * Gets an available airlock for a person.
-     *
+     * Gets the closest available airlock to a given location that has a walkable path 
+     * from the person's current location.
+     * @param person the person.
+     * @param double xLocation the destination's X location.
+     * @param double yLocation the destination's Y location.
      * @return airlock or null if none available
      */
-    public static Airlock getAvailableAirlock(Person person) {
+    public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, 
+            double yLocation) {
         Airlock result = null;
         String location = person.getLocationSituation();
         
         if (location.equals(Person.INSETTLEMENT)) {
             Settlement settlement = person.getSettlement();
-            result = settlement.getAvailableAirlock();
+            result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
         }
         else if (location.equals(Person.INVEHICLE)) {
             Vehicle vehicle = person.getVehicle();
-            if (vehicle instanceof Airlockable) 
+            if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();
+            }
         }
         
         return result;
+    }
+    
+    /**
+     * Gets an available airlock to a given location that has a walkable path 
+     * from the person's current location.
+     * @param person the person.
+     * @return airlock or null if none available
+     */
+    public static Airlock getWalkableAvailableAirlock(Person person) {
+        
+        return getClosestWalkableAvailableAirlock(person, 0D, 0D);
     }
     
     @Override

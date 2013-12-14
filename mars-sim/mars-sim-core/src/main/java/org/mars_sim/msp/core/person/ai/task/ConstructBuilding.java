@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.04 2013-02-05
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -67,7 +67,8 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         this.vehicles = vehicles;
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
+        airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
+                site.getYLocation());
         if (airlock == null) endTask();
         
         // Add task phase
@@ -79,11 +80,12 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
      * @param person the person.
      * @return true if person can construct.
      */
-    public static boolean canConstruct(Person person) {
+    public static boolean canConstruct(Person person, ConstructionSite site) {
         
         // Check if person can exit the settlement airlock.
         boolean exitable = false;
-        Airlock airlock = getAvailableAirlock(person);
+        Airlock airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
+                site.getYLocation());
         if (airlock != null) exitable = ExitAirlock.canExitAirlock(person, airlock);
 
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();

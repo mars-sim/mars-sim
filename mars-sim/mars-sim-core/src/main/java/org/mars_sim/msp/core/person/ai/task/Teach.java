@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.02 2011-11-27
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
@@ -13,9 +14,11 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -59,19 +62,17 @@ public class Teach extends Task implements Serializable {
             student = (Person) array[rand];
             teachingTask = student.getMind().getTaskManager().getTask();
             teachingTask.setTeacher(person);
-            setDescription("Teaching " + teachingTask.getName() + " to "
+            setDescription("Teaching " + teachingTask.getName(false) + " to "
                     + student.getName());
 
             // If in settlement, move teacher to building student is in.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                Building teacherBuilding = BuildingManager.getBuilding(person);
-                Building studentBuilding = BuildingManager.getBuilding(student);
-                if (teacherBuilding != studentBuilding)
-                    BuildingManager
-                            .addPersonToBuilding(person, studentBuilding);
+                // Walk to student's building.
+                walkToStudentBuilding(BuildingManager.getBuilding(student));
             }
-        } else
+        } else {
             endTask();
+        }
 
         // Initialize phase
         addPhase(TEACHING);
@@ -106,6 +107,34 @@ public class Teach extends Task implements Serializable {
         }
 
         return result;
+    }
+    
+    /**
+     * Walk to student's building.
+     * @param studentBuilding the student's building.
+     */
+    private void walkToStudentBuilding(Building studentBuilding) {
+        
+        // Determine location within student's building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(studentBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), studentBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, studentBuilding)) {
+            Task walkingTask = new WalkInterior(person, studentBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to student's building.
+            BuildingManager.addPersonToBuilding(person, studentBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
 
     /**

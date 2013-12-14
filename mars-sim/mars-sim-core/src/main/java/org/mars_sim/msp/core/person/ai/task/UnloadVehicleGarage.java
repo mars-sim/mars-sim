@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.04 2013-02-06
+ * @version 3.06 2013-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -22,9 +23,12 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -46,7 +50,7 @@ public class UnloadVehicleGarage extends Task implements Serializable {
     // The amount of resources (kg) one person of average strength can unload per millisol.
     private static double UNLOAD_RATE = 20D;
 	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
-	private static final double DURATION = 100D; // The duration of the task (millisols).
+	private static final double DURATION = 50D; // The duration of the task (millisols).
 
     // Data members
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
@@ -80,7 +84,8 @@ public class UnloadVehicleGarage extends Task implements Serializable {
     		// If vehicle is in a garage, add person to garage.
             Building garageBuilding = BuildingManager.getBuilding(vehicle);
             if (garageBuilding != null) {
-                BuildingManager.addPersonToBuilding(person, garageBuilding);
+                // Walk to garage building.
+                walkToGarageBuilding(garageBuilding);
             }
             
             // End task if vehicle or garage not available.
@@ -109,9 +114,10 @@ public class UnloadVehicleGarage extends Task implements Serializable {
         settlement = person.getSettlement();
         
         // If vehicle is in a garage, add person to garage.
-        Building garage = BuildingManager.getBuilding(vehicle);
-        if (garage != null) {
-            BuildingManager.addPersonToBuilding(person, garage);
+        Building garageBuilding = BuildingManager.getBuilding(vehicle);
+        if (garageBuilding != null) {
+            // Walk to garage building.
+            walkToGarageBuilding(garageBuilding);
         }
         
         // Initialize phase
@@ -153,6 +159,34 @@ public class UnloadVehicleGarage extends Task implements Serializable {
 		if (job != null) result *= job.getStartTaskProbabilityModifier(UnloadVehicleGarage.class);        
 	
         return result;
+    }
+    
+    /**
+     * Walk to garage building.
+     * @param garageBuilding the garage building.
+     */
+    private void walkToGarageBuilding(Building garageBuilding) {
+        
+        // Determine location within garage building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), garageBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, garageBuilding)) {
+            Task walkingTask = new WalkInterior(person, garageBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to garage.
+            BuildingManager.addPersonToBuilding(person, garageBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

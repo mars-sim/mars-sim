@@ -114,8 +114,21 @@ public abstract class Task implements Serializable, Comparable<Task> {
      *  @return the task's name
      */
     public String getName() {
-        if ((subTask != null) && !subTask.done) return subTask.getName();
-        else return name;
+        return getName(true);
+    }
+    
+    /**
+     * Gets the name of the task.
+     * @param allowSubtask true if subtask name should be used.
+     * @return the task's name.
+     */
+    public String getName(boolean allowSubtask) {
+        if (allowSubtask && (subTask != null) && !subTask.done) {
+            return subTask.getName();
+        }
+        else {
+            return name;
+        }
     }
     
     /**
@@ -136,6 +149,20 @@ public abstract class Task implements Serializable, Comparable<Task> {
     public String getDescription() {
         if ((subTask != null) && !subTask.done) return subTask.getDescription();
         else return description;
+    }
+    
+    /** 
+     * Gets the description of the task.
+     * @param allowSubtask true if subtask description should be used.
+     * @return the task description.
+     */
+    public String getDescription(boolean allowSubtask) {
+        if (allowSubtask && (subTask != null) && !subTask.done) {
+            return subTask.getDescription();
+        }
+        else {
+            return description;
+        }
     }
     
     /**

@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.05 2013-08-19
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -341,14 +342,24 @@ public abstract class RoverMission extends VehicleMission {
                     if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
                         // Have person exit the settlement via an airlock.
-                        if (ExitAirlock.canExitAirlock(person, startingSettlement.getAvailableAirlock())) {
-                            assignTask(person, new ExitAirlock(person, startingSettlement.getAvailableAirlock()));
+                        Airlock airlock = startingSettlement.getClosestWalkableAvailableAirlock(person, 
+                                getRover().getXLocation(), getRover().getYLocation());
+                        if (airlock != null) {
+                            if (ExitAirlock.canExitAirlock(person, airlock)) {
+                                assignTask(person, new ExitAirlock(person, airlock));
+                            }
+                            else {
+                                logger.info(person + " unable to exit airlock at " + startingSettlement + " to rover " + 
+                                        getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
+                                endMission(person + " unable to exit airlock from " + startingSettlement + 
+                                        " due to health problems or being unable to obtain a functioning EVA suit.");                  
+                            }
                         }
                         else {
                             logger.info(person + " unable to exit airlock at " + startingSettlement + " to rover " + 
-                                    getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
+                                    getRover() + " due to no valid path to an airlock.");
                             endMission(person + " unable to exit airlock from " + startingSettlement + 
-                                    " due to health problems or being unable to obtain a functioning EVA suit.");                  
+                                    " due to no valid path to an airlock.");     
                         }
                     }
                     else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
@@ -411,7 +422,7 @@ public abstract class RoverMission extends VehicleMission {
                     getVehicle().getInventory().retrieveUnit(person);
                     disembarkSettlement.getInventory().storeUnit(person);
                     garageBuilding = BuildingManager.getBuilding(getVehicle());
-                    BuildingManager.addPersonToBuilding(person, garageBuilding);
+                    BuildingManager.addPersonToBuildingRandomLocation(person, garageBuilding);
                 }
             }
             else {
@@ -431,7 +442,7 @@ public abstract class RoverMission extends VehicleMission {
         }
         else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             // Have person enter the settlement via an airlock.
-            assignTask(person, new EnterAirlock(person, disembarkSettlement.getAvailableAirlock()));
+            assignTask(person, new EnterAirlock(person, disembarkSettlement.getClosestAvailableAirlock(person)));
         }
 
         Rover rover = (Rover) getVehicle();

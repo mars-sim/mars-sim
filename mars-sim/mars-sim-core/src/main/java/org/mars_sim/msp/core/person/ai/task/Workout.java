@@ -1,18 +1,21 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.03 2012-07-10
+ * @version 3.06 2013-12-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Exercise;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,14 +46,15 @@ public class Workout extends Task implements Serializable {
     public Workout(Person person) {
         // Use Task constructor.
         super("Exercise", person, true, false, STRESS_MODIFIER, true,
-                50D + RandomUtil.getRandomInt(100));
+                10D + RandomUtil.getRandomDouble(30D));
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
             // If person is in a settlement, try to find a gym.
             Building gymBuilding = getAvailableGym(person);
             if (gymBuilding != null) {
-                BuildingManager.addPersonToBuilding(person, gymBuilding);
+                // Walk to gym building.
+                walkToGymBuilding(gymBuilding);
                 gym = (Exercise) gymBuilding.getFunction(Exercise.NAME);
             } else
                 endTask();
@@ -93,6 +97,34 @@ public class Workout extends Task implements Serializable {
         result *= person.getPerformanceRating();
 
         return result;
+    }
+    
+    /**
+     * Walk to gym building.
+     * @param gymBuilding the gym building.
+     */
+    private void walkToGymBuilding(Building gymBuilding) {
+        
+        // Determine location within gym building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(gymBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), gymBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, gymBuilding)) {
+            Task walkingTask = new WalkInterior(person, gymBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to gym.
+            BuildingManager.addPersonToBuilding(person, gymBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
 
     /**

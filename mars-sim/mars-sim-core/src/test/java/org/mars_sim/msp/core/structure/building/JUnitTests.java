@@ -16,7 +16,7 @@ public class JUnitTests extends TestCase {
 	
 	private static final Class thisClass = JUnitTests.class;
 
-	// Get test properites.
+	// Get test properties.
 	private static final java.util.Properties properties =
 		System.getProperties();
 	{

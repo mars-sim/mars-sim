@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -47,7 +47,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
     public CompileScientificStudyResults(Person person) {
         // Use task constructor.
         super("Compiling Scientific Study Data Results", person, true, false, 
-                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
+                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(50D));
         
         // Determine study.
         study = determineStudy();
@@ -55,7 +55,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
             setDescription("Compiling Data Results for " + study.toString());
         }
         else {
-            logger.info("study could not be determined");
+            logger.severe("Study could not be determined");
             endTask();
         }
         

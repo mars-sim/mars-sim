@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConnector.java
- * @version 3.06 2013-11-17
+ * @version 3.06 2013-11-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -13,7 +13,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 /**
  * A connection between two buildings.
  */
-public class BuildingConnector implements Serializable {
+public class BuildingConnector implements Serializable, InsidePathLocation {
     
     // Comparison to indicate a small but non-zero amount.
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
@@ -27,29 +27,32 @@ public class BuildingConnector implements Serializable {
     /**
      * Constructor
      * @param building1 The first connected building.
-     * @param building1XLocation The hatch X location connecting the first building.
-     * @param building1YLocation The hatch Y location connecting the first building.
-     * @param building1Facing The hatch facing (degrees) connecting the first building.
+     * @param building1HatchXLocation The hatch X location connecting the first building.
+     * @param building1HatchYLocation The hatch Y location connecting the first building.
+     * @param building1HatchFacing The hatch facing (degrees) connecting the first building.
      * @param building2 The second connected building.
-     * @param building2XLocation The hatch X location connecting the second building.
-     * @param building2YLocation The hatch y location connecting the second building.
-     * @param building2Facing The hatch facing (degrees) connecting the second building.
+     * @param building2HatchXLocation The hatch X location connecting the second building.
+     * @param building2HatchYLocation The hatch y location connecting the second building.
+     * @param building2HatchFacing The hatch facing (degrees) connecting the second building.
      */
-    public BuildingConnector(Building building1, double building1XLocation, 
-            double building1YLocation, double building1Facing, Building building2, 
-            double building2XLocation, double building2YLocation, double building2Facing) {
+    public BuildingConnector(Building building1, double building1HatchXLocation, 
+            double building1HatchYLocation, double building1HatchFacing, Building building2, 
+            double building2HatchXLocation, double building2HatchYLocation, 
+            double building2HatchFacing) {
         
         this.building1 = building1;
-        hatch1 = new Hatch(building1XLocation, building1YLocation, building1Facing);
+        hatch1 = new Hatch(building1, this, building1HatchXLocation, building1HatchYLocation, 
+                building1HatchFacing);
         this.building2 = building2;
-        hatch2 = new Hatch(building2XLocation, building2YLocation, building2Facing);
+        hatch2 = new Hatch(building2, this, building2HatchXLocation, building2HatchYLocation, 
+                building2HatchFacing);
         
         // Check if building 1 and 2 locations are off by a small amount.
-        if (Math.abs(building1XLocation - building2XLocation) < SMALL_AMOUNT_COMPARISON) {
-            hatch2.setXLocation(building1XLocation);
+        if (Math.abs(building1HatchXLocation - building2HatchXLocation) < SMALL_AMOUNT_COMPARISON) {
+            hatch2.setXLocation(building1HatchXLocation);
         }
-        if (Math.abs(building1YLocation - building2YLocation) < SMALL_AMOUNT_COMPARISON) {
-            hatch2.setYLocation(building1YLocation);
+        if (Math.abs(building1HatchYLocation - building2HatchYLocation) < SMALL_AMOUNT_COMPARISON) {
+            hatch2.setYLocation(building1HatchYLocation);
         }
     }
 
@@ -99,7 +102,7 @@ public class BuildingConnector implements Serializable {
      * Gets the X location of the center of the building connection.
      * @return x location.
      */
-    public double getCenterXLocation() {
+    public double getXLocation() {
         
         double result = 0D;
         
@@ -117,7 +120,7 @@ public class BuildingConnector implements Serializable {
      * Gets the Y location of the center of the building connection.
      * @return y location.
      */
-    public double getCenterYLocation() {
+    public double getYLocation() {
         
         double result = 0D;
         
@@ -162,7 +165,9 @@ public class BuildingConnector implements Serializable {
     public void destroy() {
         building1 = null;
         building2 = null;
+        hatch1.destroy();
         hatch1 = null;
+        hatch2.destroy();
         hatch2 = null;
     }
 }
