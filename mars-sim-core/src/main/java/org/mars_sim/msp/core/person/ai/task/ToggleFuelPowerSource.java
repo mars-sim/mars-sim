@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.04 2013-02-10
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
@@ -72,14 +73,21 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
             isEVA = !building.hasFunction(LifeSupport.NAME);
             
             // If habitable building, add person to building.
-            if (!isEVA) BuildingManager.addPersonToBuilding(person, building);
+            if (!isEVA) {
+                // Walk to power source building.
+                walkToPowerSourceBuilding(building);
+            }
+            else {
+                // Get an available airlock.
+                airlock = getClosestWalkableAvailableAirlock(person, building.getXLocation(), 
+                        building.getYLocation());
+                if (airlock == null) {
+                    endTask();
+                }
+            }
         }
-        else endTask();
-        
-        if (isEVA) {
-            // Get an available airlock.
-            airlock = getAvailableAirlock(person);
-            if (airlock == null) endTask();
+        else {
+            endTask();
         }
         
         addPhase(TOGGLE_POWER_SOURCE);
@@ -123,7 +131,9 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
             
             if (isEVA) {
                 // Check if an airlock is available
-                if (getAvailableAirlock(person) == null) result = 0D;
+                if (getWalkableAvailableAirlock(person) == null) {
+                    result = 0D;
+                }
                 
                 // Check if it is night time.
                 SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -147,6 +157,34 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
         }
         
         return result;
+    }
+    
+    /**
+     * Walk to power source building.
+     * @param powerBuilding the power source building.
+     */
+    private void walkToPowerSourceBuilding(Building powerBuilding) {
+        
+        // Determine location within power source building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), powerBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, powerBuilding)) {
+            Task walkingTask = new WalkInterior(person, powerBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to power source building.
+            BuildingManager.addPersonToBuilding(person, powerBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

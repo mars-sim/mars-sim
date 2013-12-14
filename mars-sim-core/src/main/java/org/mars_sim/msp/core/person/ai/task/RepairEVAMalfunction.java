@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.05 2013-07-08
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 
@@ -57,8 +57,18 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         if (entity == null) endTask();
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
+        if (entity instanceof LocalBoundedObject) {
+            LocalBoundedObject bounds = (LocalBoundedObject) entity;
+            airlock = getClosestWalkableAvailableAirlock(person, bounds.getXLocation(), 
+                    bounds.getYLocation());
+        }
+        else {
+            airlock = getWalkableAvailableAirlock(person);
+        }
+        
+        if (airlock == null) {
+            endTask();
+        }
 
         // Initialize phase
         addPhase(REPAIR_MALFUNCTION);
@@ -169,13 +179,16 @@ public class RepairEVAMalfunction extends EVAOperation implements Repair, Serial
         }
 
         // Check if an airlock is available
-        if (getAvailableAirlock(person) == null) result = 0D;
+        if (getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
 
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-			if (!surface.inDarkPolarRegion(person.getCoordinates()))
+			if (!surface.inDarkPolarRegion(person.getCoordinates())) {
         		result = 0D;
+			}
         } 
 	
         // Effort-driven task modifier.

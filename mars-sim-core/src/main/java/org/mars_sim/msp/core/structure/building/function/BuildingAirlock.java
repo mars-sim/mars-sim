@@ -59,7 +59,7 @@ public class BuildingAirlock extends Airlock {
         // Check if person is entering airlock from inside.
         if (result && inside) {
             // Add person to the building.
-            BuildingManager.addPersonToBuilding(person, building);
+            BuildingManager.addPersonToBuildingRandomLocation(person, building);
         }
 
         return result;
@@ -78,7 +78,7 @@ public class BuildingAirlock extends Airlock {
 
             if (PRESSURIZED.equals(getState())) {
                 // Exit person to inside building.
-                BuildingManager.addPersonToBuilding(person, building);
+                BuildingManager.addPersonToBuildingRandomLocation(person, building);
                 inv.storeUnit(person);
             }
             else if (DEPRESSURIZED.equals(getState())) {

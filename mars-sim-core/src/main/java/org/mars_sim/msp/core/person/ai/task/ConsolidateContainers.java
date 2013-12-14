@@ -38,7 +38,7 @@ public class ConsolidateContainers extends Task implements Serializable {
     private static double LOAD_RATE = 20D;
     
     // Time (millisols) duration.
-    private static final double DURATION = 50D;
+    private static final double DURATION = 30D;
     
     // Data members.
     private Inventory topInventory = null;

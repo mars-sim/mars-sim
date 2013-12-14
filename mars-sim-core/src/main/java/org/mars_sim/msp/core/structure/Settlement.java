@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.util.*;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
@@ -390,27 +391,67 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     public GoodsManager getGoodsManager() {
         return goodsManager;
     }
-
+    
     /**
-     * Gets an available airlock for the settlement.
+     * Gets the closest available airlock to a person.
+     * @param person the person.
      * @return airlock or null if none available.
      */
-    public Airlock getAvailableAirlock() {
+    public Airlock getClosestAvailableAirlock(Person person) {
         Airlock result = null;
-
+        
+        double leastDistance = Double.MAX_VALUE;
         BuildingManager manager = buildingManager;
-        List<Building> evaBuildings = manager.getBuildings(EVA.NAME);
-        // Note - I don't think least crowded is useful for picking EVA building. - Scott.
-        //evaBuildings = BuildingManager.getLeastCrowdedBuildings(evaBuildings);
-
-        if (evaBuildings.size() > 0) {
-            // Pick random EVA building from list.
-            int rand = RandomUtil.getRandomInt(evaBuildings.size() - 1);
-            Building building = evaBuildings.get(rand);
-            EVA eva = (EVA) building.getFunction(EVA.NAME);
-            result = eva.getAirlock();
+        Iterator<Building> i = manager.getBuildings(EVA.NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            
+            double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+                    person.getXLocation(), person.getYLocation());
+            if (distance < leastDistance) {
+                EVA eva = (EVA) building.getFunction(EVA.NAME);
+                result = eva.getAirlock();
+                leastDistance = distance;
+            }
         }
-
+        
+        return result;
+    }
+    
+    /**
+     * Gets the closest available airlock at the settlement to the given location.
+     * The airlock must have a valid walkable interior path from the person's current location.
+     * @param person the person.
+     * @param xLocation the X location.
+     * @param yLocation the Y location.
+     * @return airlock or null if none available.
+     */
+    public Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, double yLocation) {
+        Airlock result = null;
+        
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        if (currentBuilding == null) {
+            throw new IllegalStateException(person.getName() + " is not currently in a building.");
+        }
+        
+        double leastDistance = Double.MAX_VALUE;
+        BuildingManager manager = buildingManager;
+        Iterator<Building> i = manager.getBuildings(EVA.NAME).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            
+            if (buildingConnectorManager.hasValidPath(currentBuilding, building)) {
+            
+                double distance = Point2D.distance(building.getXLocation(), building.getYLocation(), 
+                        xLocation, yLocation);
+                if (distance < leastDistance) {
+                    EVA eva = (EVA) building.getFunction(EVA.NAME);
+                    result = eva.getAirlock();
+                    leastDistance = distance;
+                }
+            }
+        }
+        
         return result;
     }
 

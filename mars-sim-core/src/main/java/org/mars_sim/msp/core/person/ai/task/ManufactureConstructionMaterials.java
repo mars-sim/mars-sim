@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.03 2012-07-10
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -23,10 +24,12 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -49,7 +52,7 @@ public class ManufactureConstructionMaterials extends Task implements
 
     // Static members
     private static final double STRESS_MODIFIER = .1D; // The stress modified
-                                                       // per millisol.
+                                                          // per millisol.
 
     // Lists of construction material resources and parts.
     private static List<AmountResource> constructionResources;
@@ -57,7 +60,7 @@ public class ManufactureConstructionMaterials extends Task implements
 
     // Data members
     private Manufacture workshop; // The manufacturing workshop the person is
-                                  // using.
+                                   // using.
 
     /**
      * Constructor
@@ -66,7 +69,7 @@ public class ManufactureConstructionMaterials extends Task implements
      */
     public ManufactureConstructionMaterials(Person person) {
         super("Manufacturing Construction Materials", person, true, false,
-                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
+                STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
 
         // Initialize data members
         if (person.getSettlement() != null) {
@@ -82,7 +85,9 @@ public class ManufactureConstructionMaterials extends Task implements
         if (manufactureBuilding != null) {
             workshop = (Manufacture) manufactureBuilding
                     .getFunction(Manufacture.NAME);
-            BuildingManager.addPersonToBuilding(person, manufactureBuilding);
+            
+            // Walk to manufacturing building.
+            walkToManufacturingBuilding(manufactureBuilding);
         } else {
             endTask();
         }
@@ -152,6 +157,34 @@ public class ManufactureConstructionMaterials extends Task implements
         }
 
         return result;
+    }
+    
+    /**
+     * Walk to manufacturing building.
+     * @param manufactureBuilding the manufacturing building.
+     */
+    private void walkToManufacturingBuilding(Building manufactureBuilding) {
+        
+        // Determine location within manufacturing building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(manufactureBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), manufactureBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, manufactureBuilding)) {
+            Task walkingTask = new WalkInterior(person, manufactureBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to manufacturing building.
+            BuildingManager.addPersonToBuilding(person, manufactureBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
 
     /**

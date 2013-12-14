@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.05 2013-08-25
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -539,7 +539,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
             if (RandomUtil.lessThanRandPercent(75D)) {
 
                 // Assign construction task to person.
-                if (ConstructBuilding.canConstruct(person)) {
+                if (ConstructBuilding.canConstruct(person, constructionSite)) {
                     assignTask(person, new ConstructBuilding(person, constructionStage, 
                             constructionSite, constructionVehicles));
                 }

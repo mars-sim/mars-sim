@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalIce.java
- * @version 3.06 2013-09-26
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
@@ -53,6 +53,8 @@ public class DigLocalIce extends EVAOperation implements Serializable {
     private Airlock airlock; // Airlock to be used for EVA.
     private Bag bag; // Bag for collecting ice.
     private Settlement settlement;
+    private double diggingXLocation;
+    private double diggingYLocation;
     
     /**
      * Constructor
@@ -66,8 +68,15 @@ public class DigLocalIce extends EVAOperation implements Serializable {
         settlement = person.getSettlement();
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
+        airlock = getWalkableAvailableAirlock(person);
+        if (airlock == null) {
+            endTask();
+        }
+        
+        // Determine digging location.
+        Point2D.Double diggingLoc = determineDiggingLocation();
+        diggingXLocation = diggingLoc.getX();
+        diggingYLocation = diggingLoc.getY();
         
         // Initialize phase.
         addPhase(COLLECT_ICE);
@@ -115,7 +124,7 @@ public class DigLocalIce extends EVAOperation implements Serializable {
             }
 
             // Check if an airlock is available
-            if (getAvailableAirlock(person) == null) {
+            if (getWalkableAvailableAirlock(person) == null) {
                 result = 0D;
             }
 
@@ -258,9 +267,10 @@ public class DigLocalIce extends EVAOperation implements Serializable {
     }
     
     /**
-     * Move person to a location for digging ice.
+     * Determine location for digging ice.
+     * @return digging X and Y location outside settlement.
      */
-    private void moveToDiggingLocation() {
+    private Point2D.Double determineDiggingLocation() {
         
         Point2D.Double newLocation = null;
         boolean goodLocation = false;
@@ -283,8 +293,17 @@ public class DigLocalIce extends EVAOperation implements Serializable {
             }
         }
         
-        person.setXLocation(newLocation.getX());
-        person.setYLocation(newLocation.getY());
+        return newLocation;
+    }
+    
+    /**
+     * Move person to a location for digging ice.
+     */
+    private void moveToDiggingLocation() {
+        
+        // TODO: replace with EVA walking task.
+        person.setXLocation(diggingXLocation);
+        person.setYLocation(diggingYLocation);
     }
     
     /**

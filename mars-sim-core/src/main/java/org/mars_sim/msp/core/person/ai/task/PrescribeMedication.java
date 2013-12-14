@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.04 2013-02-09
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -17,9 +18,11 @@ import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -61,10 +64,9 @@ public class PrescribeMedication extends Task implements Serializable {
             
             // If in settlement, move doctor to building patient is in.
             if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-                Building doctorBuilding = BuildingManager.getBuilding(person);
-                Building patientBuilding = BuildingManager.getBuilding(patient);
-                if (doctorBuilding != patientBuilding) 
-                    BuildingManager.addPersonToBuilding(person, patientBuilding);
+                
+                // Walk to patient's building.
+                walkToPatientBuilding(BuildingManager.getBuilding(patient));
             }
             
             logger.info(person.getName() + " prescribing " + medication.getName() + 
@@ -101,6 +103,34 @@ public class PrescribeMedication extends Task implements Serializable {
         result *= person.getPerformanceRating();
 
         return result;
+    }
+    
+    /**
+     * Walk to patient's building.
+     * @param patientBuilding the patient's building.
+     */
+    private void walkToPatientBuilding(Building patientBuilding) {
+        
+        // Determine location within patient's building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(patientBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), patientBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, patientBuilding)) {
+            Task walkingTask = new WalkInterior(person, patientBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to patient's building.
+            BuildingManager.addPersonToBuilding(person, patientBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

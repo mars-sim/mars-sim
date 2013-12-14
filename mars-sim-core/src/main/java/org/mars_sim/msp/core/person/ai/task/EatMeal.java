@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.03 2012-07-19
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -18,10 +19,12 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.Dining;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,16 +38,15 @@ import java.util.logging.Logger;
  *  Note: Eating a meal reduces hunger to 0.
  */
 class EatMeal extends Task implements Serializable {
-	
+
     private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
-	// Task phase
+    // Task phase
     private static final String EATING = "Eating";
-	
+
     // Static members
-    private static final double DURATION = 40D; // The predetermined duration of task in millisols
     private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
-    
+
     private CookedMeal meal;
 
     /** 
@@ -53,21 +55,32 @@ class EatMeal extends Task implements Serializable {
      * @throws Exception if error constructing task.
      */
     public EatMeal(Person person) {
-        super("Eating a meal", person, false, false, STRESS_MODIFIER, true, DURATION);
-        
+        super("Eating a meal", person, false, false, STRESS_MODIFIER, true, 10D + 
+                RandomUtil.getRandomDouble(30D));
+
         String location = person.getLocationSituation();
         if (location.equals(Person.INSETTLEMENT)) {
-			// If person is in a settlement, try to find a dining area.
-        	Building diningBuilding = getAvailableDiningBuilding(person);
-        	if (diningBuilding != null) BuildingManager.addPersonToBuilding(person, diningBuilding);
-        	
-        	// If cooked meal in a local kitchen available, take it to eat.
-        	Cooking kitchen = getKitchenWithFood(person);
-        	if (kitchen != null) meal = kitchen.getCookedMeal();
-        	if (meal != null) setDescription("Eating a cooked meal");
+            // If person is in a settlement, try to find a dining area.
+            Building diningBuilding = getAvailableDiningBuilding(person);
+            if (diningBuilding != null) {
+
+                // Walk to dining building.
+                walkToDiningBuilding(diningBuilding);
+            }
+
+            // If cooked meal in a local kitchen available, take it to eat.
+            Cooking kitchen = getKitchenWithFood(person);
+            if (kitchen != null) {
+                meal = kitchen.getCookedMeal();
+            }
+            if (meal != null) {
+                setDescription("Eating a cooked meal");
+            }
         }
-        else if (location.equals(Person.OUTSIDE)) endTask();
-        
+        else if (location.equals(Person.OUTSIDE)) {
+            endTask();
+        }
+
         // Initialize task phase.
         addPhase(EATING);
         setPhase(EATING);
@@ -82,25 +95,53 @@ class EatMeal extends Task implements Serializable {
 
         double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0D) result = 0D;
-        
+
         if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 0D;
-	
+
         Building building = getAvailableDiningBuilding(person);
         if (building != null) {
             result *= Task.getCrowdingProbabilityModifier(person, building);
             result *= Task.getRelationshipModifier(person, building);
         }
-		
-		// Check if there's a cooked meal at a local kitchen.
-		if (getKitchenWithFood(person) != null) result *= 5D;
-		else {
-			// Check if there is food available to eat.
-			if (!isFoodAvailable(person)) result = 0D;
-		}
-	
+
+        // Check if there's a cooked meal at a local kitchen.
+        if (getKitchenWithFood(person) != null) result *= 5D;
+        else {
+            // Check if there is food available to eat.
+            if (!isFoodAvailable(person)) result = 0D;
+        }
+
         return result;
     }
-    
+
+    /**
+     * Walk to dining building.
+     * @param diningBuilding the dining building.
+     */
+    private void walkToDiningBuilding(Building diningBuilding) {
+
+        // Determine location within dining building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(diningBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), diningBuilding);
+
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+
+        if (connectorManager.hasValidPath(currentBuilding, diningBuilding)) {
+            Task walkingTask = new WalkInterior(person, diningBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to dining building.
+            BuildingManager.addPersonToBuilding(person, diningBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
+    }
+
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time (millisol) the phase is to be performed.
@@ -108,11 +149,11 @@ class EatMeal extends Task implements Serializable {
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (EATING.equals(getPhase())) return eatingPhase(time);
-    	else return time;
+        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
+        if (EATING.equals(getPhase())) return eatingPhase(time);
+        else return time;
     }
-    
+
     /**
      * Performs the eating phase of the task.
      * @param time the amount of time (millisol) to perform the eating phase.
@@ -120,38 +161,38 @@ class EatMeal extends Task implements Serializable {
      * @throws Exception if error performing the eating phase.
      */
     private double eatingPhase(double time) {
-    	
-    	PhysicalCondition condition = person.getPhysicalCondition();
-    	
-		// If person has a cooked meal, additional stress is reduced.
-		if (meal != null) {
-			double stress = condition.getStress();
-			condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
-		}
-    	
-        if (getDuration() <= (getTimeCompleted() + time)) {
-    		PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-    		try {
-    			person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
-    			condition.setHunger(0D);
-    		}
-    		catch (Exception e) {
-    			// If person can't obtain food from container, end the task.
-    			endTask();
-    		}
+
+        PhysicalCondition condition = person.getPhysicalCondition();
+
+        // If person has a cooked meal, additional stress is reduced.
+        if (meal != null) {
+            double stress = condition.getStress();
+            condition.setStress(stress - (STRESS_MODIFIER * (meal.getQuality() + 1D)));
         }
-        
+
+        if (getDuration() <= (getTimeCompleted() + time)) {
+            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+            try {
+                person.consumeFood(config.getFoodConsumptionRate() * (1D / 3D), (meal == null));
+                condition.setHunger(0D);
+            }
+            catch (Exception e) {
+                // If person can't obtain food from container, end the task.
+                endTask();
+            }
+        }
+
         return 0D; 
     }
-    
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
-    
+
+    /**
+     * Adds experience to the person's skills used in this task.
+     * @param time the amount of time (ms) the person performed this task.
+     */
+    protected void addExperience(double time) {
+        // This task adds no experience.
+    }
+
     /**
      * Gets an available dining building that the person can use.
      * Returns null if no dining building is currently available.
@@ -161,92 +202,93 @@ class EatMeal extends Task implements Serializable {
      * @throws BuildingException if error finding dining building.
      */
     private static Building getAvailableDiningBuilding(Person person) {
-     
+
         Building result = null;
-        
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Settlement settlement = person.getSettlement();
-        	BuildingManager manager = settlement.getBuildingManager();
-        	List<Building> diningBuildings = manager.getBuildings(Dining.NAME);
-        	diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
-        	diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
-        	
-        	if (diningBuildings.size() > 0) {
+
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            BuildingManager manager = settlement.getBuildingManager();
+            List<Building> diningBuildings = manager.getBuildings(Dining.NAME);
+            diningBuildings = BuildingManager.getWalkableBuildings(person, diningBuildings);
+            diningBuildings = BuildingManager.getNonMalfunctioningBuildings(diningBuildings);
+            diningBuildings = BuildingManager.getLeastCrowdedBuildings(diningBuildings);
+
+            if (diningBuildings.size() > 0) {
                 Map<Building, Double> diningBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                         person, diningBuildings);
                 result = RandomUtil.getWeightedRandomObject(diningBuildingProbs);
             }
-		}
-        
+        }
+
         return result;
     }
-    
+
     /**
      * Gets a kitchen in the person's settlement that currently has cooked meals.
      * @param person the person to check for
      * @return the kitchen or null if none.
      */
     private static Cooking getKitchenWithFood(Person person) {
-    	Cooking result = null;
-    	
-    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-    	    Settlement settlement = person.getSettlement();
-    	    BuildingManager manager = settlement.getBuildingManager();
-    	    List<Building> cookingBuildings = manager.getBuildings(Cooking.NAME);
-    	    Iterator<Building> i = cookingBuildings.iterator();
-    	    while (i.hasNext()) {
-    	        Building building = i.next();
-    	        Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
-    	        if (kitchen.hasCookedMeal()) result = kitchen;
-    	    }
-    	}
+        Cooking result = null;
 
-    	return result;
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            Settlement settlement = person.getSettlement();
+            BuildingManager manager = settlement.getBuildingManager();
+            List<Building> cookingBuildings = manager.getBuildings(Cooking.NAME);
+            Iterator<Building> i = cookingBuildings.iterator();
+            while (i.hasNext()) {
+                Building building = i.next();
+                Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+                if (kitchen.hasCookedMeal()) result = kitchen;
+            }
+        }
+
+        return result;
     }
-    
+
     /**
      * Checks if there is food available for the person.
      * @param person the person to check.
      * @return true if food is available.
      */
     private static boolean isFoodAvailable(Person person) {
-    	boolean result = false;
-		Unit containerUnit = person.getContainerUnit();
-		if (containerUnit != null) {
-			try {
-				Inventory inv = containerUnit.getInventory();
-				AmountResource food = AmountResource.findAmountResource("food");
-				if (inv.getAmountResourceStored(food, false) > 0D) result = true;;
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-		}
-		return result;
+        boolean result = false;
+        Unit containerUnit = person.getContainerUnit();
+        if (containerUnit != null) {
+            try {
+                Inventory inv = containerUnit.getInventory();
+                AmountResource food = AmountResource.findAmountResource("food");
+                if (inv.getAmountResourceStored(food, false) > 0D) result = true;;
+            }
+            catch (Exception e) {
+                e.printStackTrace(System.err);
+            }
+        }
+        return result;
     }
-    
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
-		return 0;
-	}
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(0);
-		return results;
-	}
-	
-	@Override
-	public void destroy() {
-	    super.destroy();
-	    
-	    meal = null;
-	}
+
+    /**
+     * Gets the effective skill level a person has at this task.
+     * @return effective skill level
+     */
+    public int getEffectiveSkillLevel() {
+        return 0;
+    }
+
+    /**
+     * Gets a list of the skills associated with this task.
+     * May be empty list if no associated skills.
+     * @return list of skills as strings
+     */
+    public List<String> getAssociatedSkills() {
+        List<String> results = new ArrayList<String>(0);
+        return results;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        meal = null;
+    }
 }

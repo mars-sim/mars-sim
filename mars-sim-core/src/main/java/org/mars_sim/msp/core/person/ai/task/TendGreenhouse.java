@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.03 2012-10-24
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -15,9 +16,11 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -50,20 +53,27 @@ public class TendGreenhouse extends Task implements Serializable {
      */
     public TendGreenhouse(Person person) {
         // Use Task constructor
-        super("Tending Greenhouse", person, false, false, STRESS_MODIFIER, true, RandomUtil.getRandomDouble(100D));
+        super("Tending Greenhouse", person, false, false, STRESS_MODIFIER, true, 
+                10D + RandomUtil.getRandomDouble(50D));
         
         // Initialize data members
-        if (person.getSettlement() != null)
+        if (person.getSettlement() != null) {
         	setDescription("Tending Greenhouse at " + person.getSettlement().getName());
-        else endTask();
+        }
+        else {
+            endTask();
+        }
         
         // Get available greenhouse if any.
         Building farmBuilding = getAvailableGreenhouse(person);
         if (farmBuilding != null) {
             greenhouse = (Farming) farmBuilding.getFunction(Farming.NAME);
-            BuildingManager.addPersonToBuilding(person, farmBuilding);
+            // Walk to greenhouse.
+            walkToGreenhouseBuilding(farmBuilding);
         }
-        else endTask();
+        else {
+            endTask();
+        }
         
         // Initialize phase
         addPhase(TENDING);
@@ -112,6 +122,34 @@ public class TendGreenhouse extends Task implements Serializable {
 		if (job != null) result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
 
         return result;
+    }
+    
+    /**
+     * Walk to greenhouse building.
+     * @param greenhouseBuilding the greenhouse building.
+     */
+    private void walkToGreenhouseBuilding(Building greenhouseBuilding) {
+        
+        // Determine location within greenhouse building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(greenhouseBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), greenhouseBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, greenhouseBuilding)) {
+            Task walkingTask = new WalkInterior(person, greenhouseBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to greenhouse building.
+            BuildingManager.addPersonToBuilding(person, greenhouseBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

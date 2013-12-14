@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.06 2013-09-26
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 
@@ -53,6 +53,8 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     private Airlock airlock; // Airlock to be used for EVA.
     private Bag bag; // Bag for collecting regolith.
     private Settlement settlement;
+    private double diggingXLocation;
+    private double diggingYLocation;
     
     /**
      * Constructor
@@ -66,8 +68,15 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         settlement = person.getSettlement();
         
         // Get an available airlock.
-        airlock = getAvailableAirlock(person);
-        if (airlock == null) endTask();
+        airlock = getWalkableAvailableAirlock(person);
+        if (airlock == null) {
+            endTask();
+        }
+        
+        // Determine digging location.
+        Point2D.Double diggingLoc = determineDiggingLocation();
+        diggingXLocation = diggingLoc.getX();
+        diggingYLocation = diggingLoc.getY();
         
         // Initialize phase.
         addPhase(COLLECT_REGOLITH);
@@ -109,7 +118,9 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             if (numEmptyBags == 0) result = 0D;
 
             // Check if an airlock is available
-            if (getAvailableAirlock(person) == null) result = 0D;
+            if (getWalkableAvailableAirlock(person) == null) {
+                result = 0D;
+            }
 
             // Check if it is night time.
             SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
@@ -246,9 +257,10 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     }
     
     /**
-     * Move person to a location for digging regolith.
+     * Determine location for digging regolith.
+     * @return digging X and Y location outside settlement.
      */
-    private void moveToDiggingLocation() {
+    private Point2D.Double determineDiggingLocation() {
         
         Point2D.Double newLocation = null;
         boolean goodLocation = false;
@@ -271,8 +283,17 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             }
         }
         
-        person.setXLocation(newLocation.getX());
-        person.setYLocation(newLocation.getY());
+        return newLocation;
+    }
+    
+    /**
+     * Move person to a location for digging regolith.
+     */
+    private void moveToDiggingLocation() {
+        
+        // TODO: replace with EVA walking task.
+        person.setXLocation(diggingXLocation);
+        person.setYLocation(diggingYLocation);
     }
     
     /**

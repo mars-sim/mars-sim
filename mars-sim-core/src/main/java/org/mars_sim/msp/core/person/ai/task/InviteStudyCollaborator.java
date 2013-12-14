@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,7 +20,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -34,7 +33,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
     private static final double STRESS_MODIFIER = 0D;
     
     // Duration (millisols) of task.
-    private static final double DURATION = 50D;
+    private static final double DURATION = 25D;
     
     // Task phase.
     private static final String WRITING_INVITATION = "Writing Invitation";
@@ -59,12 +58,12 @@ public class InviteStudyCollaborator extends Task implements Serializable {
             invitee = determineBestInvitee();
             
             if (invitee == null) {
-                logger.log(Level.SEVERE, "No available collaborative researchers available for invitation.");
+                logger.severe("No available collaborative researchers available for invitation.");
                 endTask();
             }
         }
         else {
-            logger.log(Level.SEVERE, person.getName() + " does not have a primary scientific study.");
+            logger.severe(person.getName() + " does not have a primary scientific study.");
             endTask();
         }
         
@@ -201,7 +200,7 @@ public class InviteStudyCollaborator extends Task implements Serializable {
             double currentOpinion = relationship.getPersonOpinion(invitee);
             relationship.setPersonOpinion(invitee, currentOpinion + 10D);
             
-            logger.info(person.getName() + " inviting " + invitee.getName() + 
+            logger.fine(person.getName() + " inviting " + invitee.getName() + 
                     " to collaborate in " + study.toString());
         }
         

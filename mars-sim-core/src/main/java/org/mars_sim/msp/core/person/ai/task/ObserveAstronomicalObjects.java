@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-09
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -20,8 +21,10 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,7 +59,7 @@ public class ObserveAstronomicalObjects extends Task implements
     public ObserveAstronomicalObjects(Person person) {
         // Use task constructor.
         super("Observe Night Sky with Telescope", person, true, false, STRESS_MODIFIER, 
-                true, RandomUtil.getRandomDouble(300D));
+                true, 10D + RandomUtil.getRandomDouble(300D));
         
         // Determine study.
         study = determineStudy();
@@ -64,9 +67,9 @@ public class ObserveAstronomicalObjects extends Task implements
             // Determine observatory to use.
             observatory = determineObservatory(person);
             if (observatory != null) {
-                // Add person to observatory building.
-                Building observatoryBuilding = observatory.getBuilding();
-                BuildingManager.addPersonToBuilding(person, observatoryBuilding);
+                
+                // Walk to observatory building.
+                walkToObservatoryBuilding(observatory.getBuilding());
                 observatory.addObserver();
             }
             else {
@@ -169,6 +172,34 @@ public class ObserveAstronomicalObjects extends Task implements
         }
         
         return result;
+    }
+    
+    /**
+     * Walk to observatory building.
+     * @param observatoryBuilding the observatory building.
+     */
+    private void walkToObservatoryBuilding(Building observatoryBuilding) {
+        
+        // Determine location within observatory building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(observatoryBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), observatoryBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, observatoryBuilding)) {
+            Task walkingTask = new WalkInterior(person, observatoryBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to observatory building.
+            BuildingManager.addPersonToBuilding(person, observatoryBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

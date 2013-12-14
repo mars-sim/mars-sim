@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.03 2012-07-10
+ * @version 3.06 2013-12-09
  * @author Barry Evans
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -22,12 +23,14 @@ import org.mars_sim.msp.core.person.medical.Treatment;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.SickBay;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -86,8 +89,9 @@ public class MedicalAssistance extends Task implements Serializable {
                 // Add person to medical care building if necessary.
 				if (medical instanceof MedicalCare) {
         			MedicalCare medicalCare = (MedicalCare) medical;
-        			Building building = medicalCare.getBuilding();
-					BuildingManager.addPersonToBuilding(person, building);
+        			
+        			// Walk to medical care building.
+        			walkToMedicalCareBuilding(medicalCare.getBuilding());
 				}
                 
 				// Create starting task event if needed.
@@ -144,6 +148,34 @@ public class MedicalAssistance extends Task implements Serializable {
 		}        
 
         return result;
+    }
+    
+    /**
+     * Walk to medical care building.
+     * @param medicalBuilding the medical care building.
+     */
+    private void walkToMedicalCareBuilding(Building medicalBuilding) {
+        
+        // Determine location within medical care building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(medicalBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), medicalBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, medicalBuilding)) {
+            Task walkingTask = new WalkInterior(person, medicalBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to medical care building.
+            BuildingManager.addPersonToBuilding(person, medicalBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
     
     /**

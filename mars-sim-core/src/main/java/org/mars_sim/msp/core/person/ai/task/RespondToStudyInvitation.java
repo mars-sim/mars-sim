@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitation.java
- * @version 3.05 2013-06-03
+ * @version 3.06 2013-12-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -23,7 +23,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -37,7 +36,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
     private static final double STRESS_MODIFIER = 0D;
     
     // Duration (millisols) of task.
-    private static final double DURATION = 50D;
+    private static final double DURATION = 40D;
     
     // Task phase.
     private static final String RESPONDING_INVITATION = "Responding to Invitation";
@@ -59,7 +58,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
             study = invitedStudies.get(0);
         }
         else {
-            logger.log(Level.SEVERE, person.getName() + " does not have any open invited studies.");
+            logger.severe(person.getName() + " does not have any open invited studies.");
             endTask();
         }
         
@@ -121,7 +120,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
                 }
                 
-                logger.info(job.getName() + " " + person.getName() + 
+                logger.fine(job.getName() + " " + person.getName() + 
                         " accepting invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }
@@ -133,7 +132,7 @@ public class RespondToStudyInvitation extends Task implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
                 }
                 
-                logger.info(job.getName() + " " + person.getName() + 
+                logger.fine(job.getName() + " " + person.getName() + 
                         " rejecting invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }

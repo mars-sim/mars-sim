@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.05 2013-08-16
+ * @version 3.06 2013-12-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -422,7 +423,7 @@ public class EmergencySupplyMission extends RoverMission implements
                 getVehicle().getInventory().retrieveUnit(person);
                 emergencySettlement.getInventory().storeUnit(person);
                 garageBuilding = BuildingManager.getBuilding(getVehicle());
-                BuildingManager.addPersonToBuilding(person, garageBuilding);
+                BuildingManager.addPersonToBuildingRandomLocation(person, garageBuilding);
             }
             else {
                 // Have person exit the rover via its airlock if possible.
@@ -441,7 +442,7 @@ public class EmergencySupplyMission extends RoverMission implements
         }
         else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
             // Have person enter the settlement via an airlock.
-            assignTask(person, new EnterAirlock(person, emergencySettlement.getAvailableAirlock()));
+            assignTask(person, new EnterAirlock(person, emergencySettlement.getClosestAvailableAirlock(person)));
         }
 
         // End the phase when everyone is out of the rover.
@@ -573,14 +574,24 @@ public class EmergencySupplyMission extends RoverMission implements
                 if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
 
                     // Have person exit the settlement via an airlock.
-                    if (ExitAirlock.canExitAirlock(person, emergencySettlement.getAvailableAirlock())) {
-                        assignTask(person, new ExitAirlock(person, emergencySettlement.getAvailableAirlock()));
+                    Airlock airlock = emergencySettlement.getClosestWalkableAvailableAirlock(person, 
+                            getVehicle().getXLocation(), getVehicle().getYLocation());
+                    if (airlock != null) {
+                        if (ExitAirlock.canExitAirlock(person, airlock)) {
+                            assignTask(person, new ExitAirlock(person, airlock));
+                        }
+                        else {
+                            logger.info(person + " unable to exit airlock at " + emergencySettlement + " to rover " + 
+                                    getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
+                            endMission(person + " unable to exit airlock from " + emergencySettlement + 
+                                    " due to health problems or being unable to obtain a functioning EVA suit.");                  
+                        }
                     }
                     else {
                         logger.info(person + " unable to exit airlock at " + emergencySettlement + " to rover " + 
-                                getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
+                                getRover() + " due to no walkable airlock found.");
                         endMission(person + " unable to exit airlock from " + emergencySettlement + 
-                                " due to health problems or being unable to obtain a functioning EVA suit.");                  
+                                " due to no walkable airlock found.");
                     }
                 }
                 else if (person.getLocationSituation().equals(Person.OUTSIDE)) {

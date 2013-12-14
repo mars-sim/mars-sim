@@ -45,7 +45,7 @@ public class PeerReviewStudyPaper extends Task implements Serializable {
     public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
         super("Peer Review Compiled Study Paper", person, true, false, 
-                STRESS_MODIFIER, true, RandomUtil.getRandomDouble(300D));
+                STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(300D));
         
         // Determine study to review.
         study = determineStudy();

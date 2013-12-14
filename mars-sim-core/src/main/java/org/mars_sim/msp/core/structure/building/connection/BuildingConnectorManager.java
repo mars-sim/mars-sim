@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @version 3.06 2013-11-18
+ * @version 3.06 2013-12-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -14,6 +14,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -28,6 +29,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  */
 public class BuildingConnectorManager implements Serializable {
 
+    private static Logger logger = Logger.getLogger(BuildingConnectorManager.class.getName());
+    
     // Data members.
     private Settlement settlement;
     private Set<BuildingConnector> buildingConnections;
@@ -166,6 +169,14 @@ public class BuildingConnectorManager implements Serializable {
     }
     
     /**
+     * Get the settlement.
+     * @return settlement.
+     */
+    public Settlement getSettlement() {
+        return settlement;
+    }
+    
+    /**
      * Adds a new building connector.
      * @param buildingConnector new building connector.
      */
@@ -216,6 +227,16 @@ public class BuildingConnectorManager implements Serializable {
     }
     
     /**
+     * Checks if the settlement contains a given building connector.
+     * @param connector the building connector.
+     * @return true if settlement contains building connector.
+     */
+    public boolean containsBuildingConnector(BuildingConnector connector) {
+        
+        return buildingConnections.contains(connector);
+    }
+    
+    /**
      * Gets all of the building connections at a settlement.
      * @return set of building connectors.
      */
@@ -245,26 +266,72 @@ public class BuildingConnectorManager implements Serializable {
     }
     
     /**
-     * Determines the shortest building path between a starting location and another building.
-     * @param startPosition The starting location at the settlement.
+     * Checks if there is a valid interior walking path between two buildings.
      * @param building1 the first building.
      * @param building2 the second building.
-     * @return shortest path or null if no path found.
+     * @return true if valid interior walking path.
      */
-    public BuildingPath determineShortestPath(Point2D.Double startPosition, Building building1, 
-            Building building2) {
+    public boolean hasValidPath(Building building1, Building building2) {
         
-        if (building1.equals(building2)) {
-            throw new IllegalArgumentException("building1 and building2 are same building: " + building1.getName());
+        boolean result = false;
+        
+        if ((building1 == null) || (building2 == null)) {
+            throw new IllegalArgumentException("Building arguments cannot be null");
         }
         
-        BuildingPath startingPath = new BuildingPath();
+        InsideBuildingPath validPath = determineShortestPath(building1, building1.getXLocation(), 
+                building1.getYLocation(), building2, building2.getXLocation(), building2.getYLocation());
         
-        // Add starting point to building path.
-        startingPath.addPathPoint(startPosition);
+        if (validPath != null) {
+            result = true;
+        }
+        else {
+            logger.fine("Unable to find valid interior walking path between " + building1 + 
+                    " and " + building2);
+        }
         
-        // Check shortest path to target building from this building.
-        return determineShortestPath(startingPath, building1, building2);
+        return result;
+    }
+    
+    /**
+     * Determines the shortest building path between two locations in buildings.
+     * @param building1 the first building.
+     * @param building1XLoc the starting X location in the first building.
+     * @param building1YLoc the starting Y location in the first building.
+     * @param building2 the second building.
+     * @param building2XLoc the ending X location in the second building.
+     * @param building2YLoc the ending Y location in the second building.
+     * @return shortest path or null if no path found.
+     */
+    public InsideBuildingPath determineShortestPath(Building building1, double building1XLoc, double building1YLoc, 
+            Building building2, double building2XLoc, double building2YLoc) {
+        
+        if ((building1 == null) || (building2 == null)) {
+            throw new IllegalArgumentException("Building arguments cannot be null");
+        }
+        
+        BuildingLocation startingLocation = new BuildingLocation(building1, building1XLoc, building1YLoc);
+        BuildingLocation endingLocation = new BuildingLocation(building2, building2XLoc, building2YLoc);
+        
+        InsideBuildingPath startingPath = new InsideBuildingPath();
+        startingPath.addPathLocation(startingLocation);
+        
+        InsideBuildingPath finalPath = null;
+        if (!building1.equals(building2)) {
+            // Check shortest path to target building from this building.
+            finalPath = determineShortestPath(startingPath, building1, building2, endingLocation);
+        }
+        else {
+            finalPath = startingPath;
+            finalPath.addPathLocation(endingLocation);
+        }
+        
+        // Iterate path index.
+        if (finalPath != null) {
+            finalPath.iteratePathLocation();
+        }
+        
+        return finalPath;
     }
     
     /**
@@ -272,12 +339,13 @@ public class BuildingConnectorManager implements Serializable {
      * @param existingPath the current path.
      * @param currentBuilding the current building.
      * @param targetBuilding the target building.
+     * @param endingLocation the end building location.
      * @return shortest path or null if none found.
      */
-    private BuildingPath determineShortestPath(BuildingPath existingPath, Building currentBuilding, 
-            Building targetBuilding) {
+    private InsideBuildingPath determineShortestPath(InsideBuildingPath existingPath, Building currentBuilding, 
+            Building targetBuilding, BuildingLocation endingLocation) {
         
-        BuildingPath result = null;
+        InsideBuildingPath result = null;
         
         // Try each building connection from current building.
         Iterator<BuildingConnector> i = getConnectionsToBuilding(currentBuilding).iterator();
@@ -285,55 +353,51 @@ public class BuildingConnectorManager implements Serializable {
             BuildingConnector connector = i.next();
             
             Building connectionBuilding = null;
-            Point2D.Double connectorNearPoint = null;
-            Point2D.Double connectorFarPoint = null;
-            Hatch hatch1 = connector.getHatch1();
-            Hatch hatch2 = connector.getHatch2();
+            Hatch nearHatch = null;
+            Hatch farHatch = null;
             if (connector.getBuilding1().equals(currentBuilding)) {
                 connectionBuilding = connector.getBuilding2();
-                connectorNearPoint = new Point2D.Double(hatch1.getXLocation(), hatch1.getYLocation());
-                connectorFarPoint = new Point2D.Double(hatch2.getXLocation(), hatch2.getYLocation());
+                nearHatch = connector.getHatch1();
+                farHatch = connector.getHatch2();
             }
             else {
                 connectionBuilding = connector.getBuilding1();
-                connectorNearPoint = new Point2D.Double(hatch2.getXLocation(), hatch2.getYLocation());
-                connectorFarPoint = new Point2D.Double(hatch1.getXLocation(), hatch1.getYLocation());
+                nearHatch = connector.getHatch2();
+                farHatch = connector.getHatch1();
             }
             
-            Point2D.Double connectionBuildingLoc = new Point2D.Double(connectionBuilding.getXLocation(), 
-                    connectionBuilding.getYLocation());
-            Point2D.Double connectorCenterLoc = new Point2D.Double(connector.getCenterXLocation(), 
-                    connector.getCenterYLocation());
-            
             // Make sure building or connection is not already in existing path.
-            if (existingPath.containsPathPoint(connectionBuildingLoc) || 
-                    existingPath.containsPathPoint(connectorCenterLoc)) {
+            if (existingPath.containsPathLocation(connectionBuilding) || 
+                    existingPath.containsPathLocation(connector)) {
                 continue;
             }
             
             // Copy existing path to create new path.
-            BuildingPath newPath = (BuildingPath) existingPath.clone();
+            InsideBuildingPath newPath = (InsideBuildingPath) existingPath.clone();
             
             // Add building connector to new path.
             if (connector.isSplitConnection()) {
-                newPath.addPathPoint(connectorNearPoint);
-                newPath.addPathPoint(connectorCenterLoc);
-                newPath.addPathPoint(connectorFarPoint);
+                newPath.addPathLocation(nearHatch);
+                newPath.addPathLocation(connector);
+                newPath.addPathLocation(farHatch);
             }
             else {
-                newPath.addPathPoint(connectorCenterLoc);
+                newPath.addPathLocation(connector);
             }
             
-            // Add connection building to new path.
-            newPath.addPathPoint(connectionBuildingLoc);
-            
-            BuildingPath bestPath = null;
+            InsideBuildingPath bestPath = null;
             if (connectionBuilding.equals(targetBuilding)) { 
+                // Add ending location within connection building.
+                newPath.addPathLocation(endingLocation);
                 bestPath = newPath;
             }
             else {
+                // Add connection building to new path.
+                newPath.addPathLocation(connectionBuilding);
+                
                 // Recursively call this method with new path and connection building.
-                bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding);
+                bestPath = determineShortestPath(newPath, connectionBuilding, targetBuilding, 
+                        endingLocation);
             }
             
             if (bestPath != null) {

@@ -14,7 +14,10 @@
 		
 			<!-- Lander habitat building is the main habitation in the Mars Direct mission plan. -->
 			<building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0">
+				<!-- List of all connections to other buildings (optional). -->
 				<connection-list>
+					<!-- Connection to another building.  "id" is other building's ID value. -->
+					<!-- X & Y locations are relative to this building, not settlement locale. -->
 					<connection id="2" x-location="-4.5" y-location="0.0" />
 				</connection-list>
 			</building>

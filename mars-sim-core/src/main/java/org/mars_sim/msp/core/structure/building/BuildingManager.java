@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.06 2013-10-14
+ * @version 3.06 2013-12-07
  * @author Scott Davis
  */
  
@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
 import org.mars_sim.msp.core.structure.building.function.*;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
@@ -144,6 +146,15 @@ public class BuildingManager implements Serializable {
     }
     
     /**
+     * Checks if the settlement contains a given building.
+     * @param building the building.
+     * @return true if settlement contains building.
+     */
+    public boolean containsBuilding(Building building) {
+        return buildings.contains(building);
+    }
+    
+    /**
      * Gets the building with a given ID number.
      * @param id the unique building ID number.
      * @return building or null if none found.
@@ -240,7 +251,7 @@ public class BuildingManager implements Serializable {
             }
         }
         
-        if (building != null) addPersonToBuilding(person, building);
+        if (building != null) addPersonToBuildingRandomLocation(person, building);
         else throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
     }
     
@@ -449,11 +460,90 @@ public class BuildingManager implements Serializable {
     }
     
     /**
-     * Adds the person to the building if possible.
+     * Gets a list of buildings that have a valid interior walking path from the person's current building.
+     * @param person the person.
+     * @param buildingList initial list of buildings.
+     * @return list of buildings with valid walking path.
+     */
+    public static List<Building> getWalkableBuildings(Person person, List<Building> buildingList) {
+        List<Building> result = new ArrayList<Building>();
+        
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        if (currentBuilding != null) {
+            BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        
+            Iterator<Building> i = buildingList.iterator();
+            while (i.hasNext()) {
+                Building building = i.next();
+                
+                InsideBuildingPath validPath = connectorManager.determineShortestPath(currentBuilding, 
+                        currentBuilding.getXLocation(), currentBuilding.getYLocation(), building, 
+                        building.getXLocation(), building.getYLocation());
+            
+                if (validPath != null) {
+                    result.add(building);
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Adds the person to the building the person's same location if possible.
      * @param person the person to add.
      * @param building the building to add the person to.
      */
-    public static void addPersonToBuilding(Person person, Building building)  {
+    public static void addPersonToBuildingSameLocation(Person person, Building building)  {
+        if (building != null) {
+            try {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                if (!lifeSupport.containsPerson(person)) {
+                    lifeSupport.addPerson(person); 
+                }
+            }
+            catch (Exception e) {
+                throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+            }
+        }
+        else throw new IllegalStateException("Building is null");
+    }
+    
+    /**
+     * Adds the person to the building at a given location if possible.
+     * @param person the person to add.
+     * @param building the building to add the person to.
+     */
+    public static void addPersonToBuilding(Person person, Building building, double xLocation, double yLocation)  {
+        if (building != null) {
+            
+            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLocation, yLocation, building)) {
+                throw new IllegalArgumentException(building.getName() + " does not contain location x: " + 
+                        xLocation + ", y: " + yLocation);
+            }
+            
+            try {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                if (!lifeSupport.containsPerson(person)) {
+                    lifeSupport.addPerson(person); 
+                }
+                
+                person.setXLocation(xLocation);
+                person.setYLocation(yLocation);
+            }
+            catch (Exception e) {
+                throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
+            }
+        }
+        else throw new IllegalStateException("Building is null");
+    }
+    
+    /**
+     * Adds the person to the building at a random location if possible.
+     * @param person the person to add.
+     * @param building the building to add the person to.
+     */
+    public static void addPersonToBuildingRandomLocation(Person person, Building building)  {
 		if (building != null) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);

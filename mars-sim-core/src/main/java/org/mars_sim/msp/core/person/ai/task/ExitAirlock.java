@@ -18,6 +18,9 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 
 import java.awt.geom.Point2D;
 import java.io.Serializable;
@@ -97,18 +100,28 @@ public class ExitAirlock extends Task implements Serializable {
         // Move the person to a random location inside the airlock entity.
         if (airlock.getEntity() instanceof LocalBoundedObject) {
             LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double newLocation = null;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 20) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                        boundedLocalPoint.getY(), entityBounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
-            }
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomInteriorLocation(entityBounds);
+            Point2D.Double newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), entityBounds);
             
-            person.setXLocation(newLocation.getX());
-            person.setYLocation(newLocation.getY());
+            // If airlock entity is a building, walk to the building.
+            if (airlock.getEntity() instanceof Building) {
+                Building building = (Building) airlock.getEntity();
+                
+                // Check if there is a valid interior walking path between buildings.
+                BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+                Building currentBuilding = BuildingManager.getBuilding(person);
+                
+                if (connectorManager.hasValidPath(currentBuilding, building)) {
+                    Task walkingTask = new WalkInterior(person, building, newLocation.getX(), 
+                            newLocation.getY());
+                    addSubTask(walkingTask);
+                }
+                else {
+                    throw new IllegalStateException(person.getName() + " has no valid interior walking path to " + 
+                            building.getName());
+                }
+            }
         }
     }
 

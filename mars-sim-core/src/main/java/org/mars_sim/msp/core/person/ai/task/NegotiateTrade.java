@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.05 2013-05-31
+ * @version 3.06 2013-12-09
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
@@ -17,10 +18,12 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.vehicle.Rover;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,10 +135,40 @@ public class NegotiateTrade extends Task implements Serializable {
      * @throws BuildingException if error following the selling trader.
      */
     private void followSeller() {
-        Building buyerBuilding = BuildingManager.getBuilding(buyingTrader);
         Building sellerBuilding = BuildingManager.getBuilding(sellingTrader);
-        if ((buyerBuilding != sellerBuilding) && (sellerBuilding != null)) 
-            BuildingManager.addPersonToBuilding(buyingTrader, sellerBuilding);
+        if (sellerBuilding != null) {
+            
+            // Walk to seller trader's building.
+            walkToSellerTraderBuilding(sellerBuilding);
+        }
+    }
+    
+    /**
+     * Walk to seller trader's building.
+     * @param sellerBuilding the seller trader's building.
+     */
+    private void walkToSellerTraderBuilding(Building sellerBuilding) {
+        
+        // Determine location within seller trader's building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(sellerBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), sellerBuilding);
+        
+        // Check if there is a valid interior walking path between buildings.
+        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        if (connectorManager.hasValidPath(currentBuilding, sellerBuilding)) {
+            Task walkingTask = new WalkInterior(person, sellerBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+            addSubTask(walkingTask);
+        }
+        else {
+            // TODO: Add task for EVA walking to get to seller trader's building.
+            BuildingManager.addPersonToBuilding(person, sellerBuilding, settlementLoc.getX(), 
+                    settlementLoc.getY());
+        }
     }
 
     /**
