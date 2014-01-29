@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingLocation.java
- * @version 3.06 2013-12-10
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
