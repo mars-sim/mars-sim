@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trader.java
- * @version 3.05 2013-08-19
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

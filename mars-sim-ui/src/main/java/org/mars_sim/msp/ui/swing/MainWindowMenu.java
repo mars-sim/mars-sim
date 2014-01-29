@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MainWindowMenu.java
- * @version 3.04 2012-11-11
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

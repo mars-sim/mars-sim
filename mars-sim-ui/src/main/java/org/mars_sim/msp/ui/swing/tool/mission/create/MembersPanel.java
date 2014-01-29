@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MembersPanel.java
- * @version 3.02 2012-05-24
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

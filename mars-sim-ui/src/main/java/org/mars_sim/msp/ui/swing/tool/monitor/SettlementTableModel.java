@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.05 2013-06-30
+ * @version 3.06 2014-01-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;

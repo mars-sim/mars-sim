@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GlobeDisplay.java
- * @version 3.00 2011-03-27
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

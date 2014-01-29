@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueMissionCustomInfoPanel.java
- * @version 3.01 2011-07-22
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;

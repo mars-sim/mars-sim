@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SoundConstants.java
- * @version 3.06 2013-10-29
+ * @version 3.06 2014-01-29
  * @author Dima Stepanchuk
  */
 package org.mars_sim.msp.ui.swing.sound;
