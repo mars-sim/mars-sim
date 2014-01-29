@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.04 2012-03-10
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.05 2013-05-31
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.03 2012-07-26
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 

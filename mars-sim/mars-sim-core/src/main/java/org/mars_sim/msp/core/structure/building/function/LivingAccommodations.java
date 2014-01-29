@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LivingAccommodations.java
- * @version 3.03 2012-07-19
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;

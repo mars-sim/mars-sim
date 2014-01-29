@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EventTableModel.java
- * @version 3.04 2013-04-05
+ * @version 3.06 2014-01-29
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;

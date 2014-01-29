@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CannedMarsMap.java
- * @version 3.02 2011-11-08
+ * @version 3.06 2014-01-29
  * @author Greg Whelan
  */
 

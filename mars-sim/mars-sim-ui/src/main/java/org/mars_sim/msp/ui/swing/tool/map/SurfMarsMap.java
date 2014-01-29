@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SurfMarsMap.java
- * @version 3.02 2011-11-08
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  * @author Greg Whelan
  */

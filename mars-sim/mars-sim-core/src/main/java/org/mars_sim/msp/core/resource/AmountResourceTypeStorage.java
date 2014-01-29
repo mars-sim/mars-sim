@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AmountResourceTypeStorage.java
- * @version 3.04 2013-02-08
+ * @version 3.06 2014-01-29
  * @author Scott Davis 
  */
 

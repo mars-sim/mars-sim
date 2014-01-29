@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * HistoricalEventManager.java
- * @version 3.04 2013-04-01
+ * @version 3.06 2014-01-29
  * @author Barry Evans
  */
 

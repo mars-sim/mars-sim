@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.04 2013-05-11
+ * @version 3.06 2014-01-29
  * @author Sebastien Venot
  */
 

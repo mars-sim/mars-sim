@@ -1,6 +1,6 @@
 # Mars Simulation Project
 # csv2xml.py
-# @version 3.06 2013-11-26
+# @version 3.06 2014-01-29
 # @author Lars Naesbye Christensen [lechimp]
 #
 # This script requires Python 2.3 or later and the 'SearchResults.csv' file to be in the same
