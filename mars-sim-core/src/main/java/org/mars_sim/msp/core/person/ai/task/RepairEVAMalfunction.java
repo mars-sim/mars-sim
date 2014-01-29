@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.06 2013-12-12
+ * @version 3.06 2014-01-29
  * @author Scott Davis
  */
 
