@@ -160,7 +160,8 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     	
     	// If settlement has garages, place vehicle near a random garage.
     	// Otherwise place vehicle near settlement center.
-    	List<Building> garageList = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME);
+    	List<Building> garageList = settlement.getBuildingManager().getBuildings(
+    	        GroundVehicleMaintenance.NAME);
     	if (garageList.size() >= 1) {
     		Collections.shuffle(garageList);
     		Building garage = garageList.get(0);
@@ -185,7 +186,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     		    
     		    // Check if new vehicle location collides with anything.
     		    foundGoodLocation = LocalAreaUtil.checkBoundedObjectNewLocationCollision(this, 
-    		            newXLoc, newYLoc, newFacing, getSettlement());
+    		            newXLoc, newYLoc, newFacing, getCoordinates());
     		}
     	}
     	

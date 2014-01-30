@@ -29,16 +29,16 @@ import java.util.List;
  * tasks internally to accomplish things.
  */
 public abstract class Task implements Serializable, Comparable<Task> {
-	
-	// Unit event types
-	public static final String TASK_NAME_EVENT = "task name";
-	public static final String TASK_DESC_EVENT = "task name";
-	public static final String TASK_PHASE_EVENT = "task name";
-	public static final String TASK_ENDED_EVENT = "task ended";
-	public static final String TASK_SUBTASK_EVENT = "subtask";
-	
-	private static final double JOB_STRESS_MODIFIER = .5D;
-	private static final double SKILL_STRESS_MODIFIER = .1D;
+
+    // Unit event types
+    public static final String TASK_NAME_EVENT = "task name";
+    public static final String TASK_DESC_EVENT = "task name";
+    public static final String TASK_PHASE_EVENT = "task name";
+    public static final String TASK_ENDED_EVENT = "task ended";
+    public static final String TASK_SUBTASK_EVENT = "subtask";
+
+    private static final double JOB_STRESS_MODIFIER = .5D;
+    private static final double SKILL_STRESS_MODIFIER = .1D;
 
     // Data members
     private String name;            // The name of the task
@@ -70,16 +70,16 @@ public abstract class Task implements Serializable, Comparable<Task> {
      * @throws Exception if task could not be constructed.
      */
     public Task(String name, Person person, boolean effort, boolean createEvents, 
-    		double stressModifier, boolean hasDuration, double duration) {
+            double stressModifier, boolean hasDuration, double duration) {
         this.name = name;
         this.person = person;
-		this.createEvents = createEvents;
-		this.stressModifier = stressModifier;
-		this.hasDuration = hasDuration;
-		this.duration = duration;
+        this.createEvents = createEvents;
+        this.stressModifier = stressModifier;
+        this.hasDuration = hasDuration;
+        this.duration = duration;
 
         done = false;
-        
+
         timeCompleted = 0D;
         description = name;
         subTask = null;
@@ -87,18 +87,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
         effortDriven = effort;
         phases = new ArrayList<String>();
     }
-    
+
     /**
      * Ends the task and performs any final actions.
      */
     public void endTask() {
+
         done = true;
         person.fireUnitUpdate(TASK_ENDED_EVENT, this);
-        
+
         // Create ending task historical event if needed.
         if (createEvents) {
-        	TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
-			Simulation.instance().getEventManager().registerNewEvent(endingEvent);
+            TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
+            Simulation.instance().getEventManager().registerNewEvent(endingEvent);
         }
     }
 
@@ -116,7 +117,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
     public String getName() {
         return getName(true);
     }
-    
+
     /**
      * Gets the name of the task.
      * @param allowSubtask true if subtask name should be used.
@@ -130,14 +131,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
             return name;
         }
     }
-    
+
     /**
      * Sets the task's name.
      * @param name the task name.
      */
     protected void setName(String name) {
-    	this.name = name;
-    	person.fireUnitUpdate(TASK_NAME_EVENT, name);
+        this.name = name;
+        person.fireUnitUpdate(TASK_NAME_EVENT, name);
     }
 
     /** Returns a string that is a description of what the task is currently doing.
@@ -147,10 +148,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
      *  @return the description of what the task is currently doing
      */
     public String getDescription() {
-        if ((subTask != null) && !subTask.done) return subTask.getDescription();
-        else return description;
+        if ((subTask != null) && !subTask.done) {
+            return subTask.getDescription();
+        }
+        else {
+            return description;
+        }
     }
-    
+
     /** 
      * Gets the description of the task.
      * @param allowSubtask true if subtask description should be used.
@@ -164,14 +169,14 @@ public abstract class Task implements Serializable, Comparable<Task> {
             return description;
         }
     }
-    
+
     /**
      * Sets the task's description.
      * @param description the task description.
      */
     protected void setDescription(String description) {
-    	this.description = description;
-    	person.fireUnitUpdate(TASK_DESC_EVENT, description);
+        this.description = description;
+        person.fireUnitUpdate(TASK_DESC_EVENT, description);
     }
 
     /** Returns a boolean whether this task should generate events
@@ -186,39 +191,49 @@ public abstract class Task implements Serializable, Comparable<Task> {
      * @return the current phase of the task
      */
     public String getPhase() {
-        if ((subTask != null) && !subTask.done) return subTask.getPhase();
+        if ((subTask != null) && !subTask.done) {
+            return subTask.getPhase();
+        }
         return phase;
     }
-    
+
     /**
      * Gets a string of the current phase of this task, ignoring subtasks.
      * @return the current phase of this task.
      */
     public String getTopPhase() {
-    	return phase;
+        return phase;
     }
-    
+
     /**
      * Sets the task's current phase.
      * @param newPhase the phase to set the a task at.
      * @throws Exception if newPhase is not in the task's collection of phases.
      */
     protected void setPhase(String newPhase) {
-    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
-    	else if (phases.contains(newPhase)) {
-    		phase = newPhase;
-    		person.fireUnitUpdate(TASK_PHASE_EVENT, newPhase);
-    	}
-    	else throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
+        if (newPhase == null) {
+            throw new IllegalArgumentException("newPhase is null");
+        }
+        else if (phases.contains(newPhase)) {
+            phase = newPhase;
+            person.fireUnitUpdate(TASK_PHASE_EVENT, newPhase);
+        }
+        else {
+            throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
+        }
     }
-    
+
     /**
      * Adds a phase to the task's collection of phases.
      * @param newPhase the new phase to add.
      */
     protected void addPhase(String newPhase) {
-    	if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
-    	else if (!phases.contains(newPhase)) phases.add(newPhase);
+        if (newPhase == null) {
+            throw new IllegalArgumentException("newPhase is null");
+        }
+        else if (!phases.contains(newPhase)) {
+            phases.add(newPhase);
+        }
     }
 
     /** Determines if task is still active.
@@ -232,10 +247,19 @@ public abstract class Task implements Serializable, Comparable<Task> {
      *  @param newSubTask the new sub-task to be added
      */
     void addSubTask(Task newSubTask) {
-        if (subTask != null) subTask.addSubTask(newSubTask);
+        if (subTask != null) {
+            if (subTask.done) {
+                subTask.destroy();
+                subTask = newSubTask;
+                person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
+            }
+            else {
+                subTask.addSubTask(newSubTask);
+            }
+        }
         else {
-        	subTask = newSubTask;
-        	person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
+            subTask = newSubTask;
+            person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
         }
     }
 
@@ -253,7 +277,9 @@ public abstract class Task implements Serializable, Comparable<Task> {
      *  @param person the person to perform the task
      *  @return the weighted probability that a person might perform this task
      */
-    public static double getProbability(Person person) { return 0D; }
+    public static double getProbability(Person person) { 
+        return 0D; 
+    }
 
     /** 
      * Perform the task for the given number of seconds.
@@ -265,22 +291,27 @@ public abstract class Task implements Serializable, Comparable<Task> {
     double performTask(double time) {
         double timeLeft = time;
         if (subTask != null) {
-            if (subTask.done) subTask = null;
-            else timeLeft = subTask.performTask(timeLeft);
+            if (subTask.done) {
+                subTask.destroy();
+                subTask = null;
+            }
+            else {
+                timeLeft = subTask.performTask(timeLeft);
+            }
         }
-        
+
         // If no subtask, perform this task.
         if ((subTask == null) || subTask.done) {
-            
+
             // If task is effort-driven and person is incapacitated, end task.
             if (effortDriven && (person.getPerformanceRating() == 0D)) {
                 endTask();
             } else {
-            
+
                 // Perform phases of task until time is up or task is done.
-                while ((timeLeft > 0D) && !done) {
+                while ((timeLeft > 0D) && !done && ((subTask == null) || subTask.done)) {
                     if (hasDuration) {
-                        
+
                         // Keep track of the duration of the task.
                         if ((timeCompleted + timeLeft) >= duration) {
                             double performTime = duration - timeCompleted;
@@ -300,10 +331,10 @@ public abstract class Task implements Serializable, Comparable<Task> {
                 }        
             }
         }
-        
+
         // Modify stress performing task.
         modifyStress(time - timeLeft);
-        
+
         return timeLeft;
     }
 
@@ -314,7 +345,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected abstract double performMappedPhase(double time);
-    
+
     /**
      * SHould the start of this task create an historical event.
      * @param create New flag value.
@@ -344,45 +375,47 @@ public abstract class Task implements Serializable, Comparable<Task> {
     public int compareTo(Task other) {
         return name.compareTo(other.name);
     }
-    
+
     /**
      * Modify stress from performing task for given time.
      * @param time the time performing the task.
      */
     private void modifyStress(double time) {
-    	PhysicalCondition condition = person.getPhysicalCondition();
-    	
-    	double effectiveStressModifier = stressModifier;
-    	
-    	if (stressModifier > 0D) {
-    		
-    		// Reduce stress modifier if task is in person's current job description.
-    		Job job = person.getMind().getJob();
-    		if ((job != null) && job.isJobRelatedTask(this.getClass())) {
-    			// logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
-    			effectiveStressModifier*= JOB_STRESS_MODIFIER;
-    		}
-    		
-    		// Reduce stress modifier for person's skill related to the task.
-    		int skill = this.getEffectiveSkillLevel();
-    		effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
-    		
-    		// If effective stress modifier < 0, set it to 0.
-    		if (effectiveStressModifier < 0D) effectiveStressModifier = 0D;
-    	}
-    	
-    	condition.setStress(condition.getStress() + (effectiveStressModifier * time));
+        PhysicalCondition condition = person.getPhysicalCondition();
+
+        double effectiveStressModifier = stressModifier;
+
+        if (stressModifier > 0D) {
+
+            // Reduce stress modifier if task is in person's current job description.
+            Job job = person.getMind().getJob();
+            if ((job != null) && job.isJobRelatedTask(this.getClass())) {
+                // logger.info("Job: " + job.getName() + " related to " + this.getName() + " task");
+                effectiveStressModifier*= JOB_STRESS_MODIFIER;
+            }
+
+            // Reduce stress modifier for person's skill related to the task.
+            int skill = this.getEffectiveSkillLevel();
+            effectiveStressModifier-= (effectiveStressModifier * (double) skill * SKILL_STRESS_MODIFIER);
+
+            // If effective stress modifier < 0, set it to 0.
+            if (effectiveStressModifier < 0D) {
+                effectiveStressModifier = 0D;
+            }
+        }
+
+        condition.setStress(condition.getStress() + (effectiveStressModifier * time));
     }
-    
+
     /**
      * Set the task's stress modifier.
      * Stress modifier can be positive (increase in stress) or negative (decrease in stress).
      * @param newStressModifier stress modification per millisol.
      */
     protected void setStressModifier(double newStressModifier) {
-    	this.stressModifier = newStressModifier;
+        this.stressModifier = newStressModifier;
     }
-    
+
     /**
      * Gets the probability modifier for a task if person needs to go to a new building.
      * @param person the person to perform the task.
@@ -390,150 +423,166 @@ public abstract class Task implements Serializable, Comparable<Task> {
      * @return probability modifier
      * @throws BuildingException if current or new building doesn't have life support function.
      */
-	protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) 
-			{
-		double modifier = 1D;
-		
-		Building currentBuilding = BuildingManager.getBuilding(person);
-		if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
-			
-			// Increase probability if current building is overcrowded.
-			LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(LifeSupport.NAME);
-			int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
-			if (currentOverCrowding > 0) modifier *= ((double) currentOverCrowding + 2);
-			
-			// Decrease probability if new building is overcrowded.
-			LifeSupport newLS = (LifeSupport) newBuilding.getFunction(LifeSupport.NAME);
-			int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
-			if (newOverCrowding > 0) modifier /= ((double) newOverCrowding + 2);
-		}
-		
-		return modifier;
-	}
-	
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public abstract int getEffectiveSkillLevel();
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public abstract List<String> getAssociatedSkills();
-	
-	/**
-	 * Checks if someone is teaching this task to the person performing it.
-	 * @return true if teacher.
-	 */
-	public boolean hasTeacher() {
-		return (teacher != null);
-	}
-	
-	/**
-	 * Gets the person teaching this task.
-	 * @return teacher or null if none.
-	 */
-	public Person getTeacher() {
-		return teacher;
-	}
-	
-	/**
-	 * Sets the person teaching this task.
-	 * @param newTeacher the new teacher.
-	 */
-	public void setTeacher(Person newTeacher) {
-		this.teacher = newTeacher;
-	}
-	
-	/**
-	 * Gets the experience modifier when being taught by a teacher.
-	 * @return modifier;
-	 */
-	protected double getTeachingExperienceModifier() {
-		double result = 1D;
-		
-		if (hasTeacher()) {
-			int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.TEACHING);
-			int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
-			result+= (double) (teachingModifier + learningModifier) / 100D;
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Gets the probability modifier for a person performing a task based on his/her 
-	 * relationships with the people in the room the task is to be performed in.
-	 * @param person the person to check for.
-	 * @param building the building the person will need to be in for the task.
-	 * @return probability modifier
-	 */
-	protected static double getRelationshipModifier(Person person, Building building) {
-		double result = 1D;
-		
-		RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
-		
-		if ((person == null) || (building == null)) throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
-		else {
-			if (building.hasFunction(LifeSupport.NAME)) {
-				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				double totalOpinion = 0D;
-				Iterator<Person> i = lifeSupport.getOccupants().iterator();
-				while (i.hasNext()) {
-					Person occupant = i.next();
-					if (person != occupant) totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);
-				}
-				
-				if (totalOpinion >= 0D) result*= (1D + totalOpinion);
-				else result/= (1D - totalOpinion); 
-			}
-		}
-		
-		return result;
-	}
-	
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
-	protected abstract void addExperience(double time);
-	
-	/**
-	 * Gets the duration of the task or 0 if none.
-	 * @return duration (millisol)
-	 */
-	protected double getDuration() {
-		return duration;
-	}
-	
-	/**
-	 * Sets the duration of the task
-	 * @param newDuration the new duration (millisol)
-	 */
-	protected void setDuration(double newDuration) {
-		if (newDuration < 0D) throw new IllegalArgumentException("newDuration less than 0");
-		this.duration = newDuration;
-	}
-	
-	/**
-	 * Gets the amount of time the task has completed.
-	 * @return time (in millisols)
-	 */
-	protected double getTimeCompleted() {
-		return timeCompleted;
-	}
+    protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) 
+    {
+        double modifier = 1D;
 
-	/**
-	 * Prepare object for garbage collection.
-	 */
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
+
+            // Increase probability if current building is overcrowded.
+            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(LifeSupport.NAME);
+            int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
+            if (currentOverCrowding > 0) {
+                modifier *= ((double) currentOverCrowding + 2);
+            }
+
+            // Decrease probability if new building is overcrowded.
+            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(LifeSupport.NAME);
+            int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
+            if (newOverCrowding > 0) {
+                modifier /= ((double) newOverCrowding + 2);
+            }
+        }
+
+        return modifier;
+    }
+
+    /**
+     * Gets the effective skill level a person has at this task.
+     * @return effective skill level
+     */
+    public abstract int getEffectiveSkillLevel();
+
+    /**
+     * Gets a list of the skills associated with this task.
+     * May be empty list if no associated skills.
+     * @return list of skills as strings
+     */
+    public abstract List<String> getAssociatedSkills();
+
+    /**
+     * Checks if someone is teaching this task to the person performing it.
+     * @return true if teacher.
+     */
+    public boolean hasTeacher() {
+        return (teacher != null);
+    }
+
+    /**
+     * Gets the person teaching this task.
+     * @return teacher or null if none.
+     */
+    public Person getTeacher() {
+        return teacher;
+    }
+
+    /**
+     * Sets the person teaching this task.
+     * @param newTeacher the new teacher.
+     */
+    public void setTeacher(Person newTeacher) {
+        this.teacher = newTeacher;
+    }
+
+    /**
+     * Gets the experience modifier when being taught by a teacher.
+     * @return modifier;
+     */
+    protected double getTeachingExperienceModifier() {
+        double result = 1D;
+
+        if (hasTeacher()) {
+            int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.TEACHING);
+            int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+            result+= (double) (teachingModifier + learningModifier) / 100D;
+        }
+
+        return result;
+    }
+
+    /**
+     * Gets the probability modifier for a person performing a task based on his/her 
+     * relationships with the people in the room the task is to be performed in.
+     * @param person the person to check for.
+     * @param building the building the person will need to be in for the task.
+     * @return probability modifier
+     */
+    protected static double getRelationshipModifier(Person person, Building building) {
+        double result = 1D;
+
+        RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
+
+        if ((person == null) || (building == null)) {
+            throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
+        }
+        else {
+            if (building.hasFunction(LifeSupport.NAME)) {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                double totalOpinion = 0D;
+                Iterator<Person> i = lifeSupport.getOccupants().iterator();
+                while (i.hasNext()) {
+                    Person occupant = i.next();
+                    if (person != occupant) {
+                        totalOpinion+= ((relationshipManager.getOpinionOfPerson(person, occupant) - 50D) / 50D);
+                    }
+                }
+
+                if (totalOpinion >= 0D) {
+                    result*= (1D + totalOpinion);
+                }
+                else {
+                    result/= (1D - totalOpinion); 
+                }
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * Adds experience to the person's skills used in this task.
+     * @param time the amount of time (ms) the person performed this task.
+     */
+    protected abstract void addExperience(double time);
+
+    /**
+     * Gets the duration of the task or 0 if none.
+     * @return duration (millisol)
+     */
+    protected double getDuration() {
+        return duration;
+    }
+
+    /**
+     * Sets the duration of the task
+     * @param newDuration the new duration (millisol)
+     */
+    protected void setDuration(double newDuration) {
+        if (newDuration < 0D) {
+            throw new IllegalArgumentException("newDuration less than 0");
+        }
+        this.duration = newDuration;
+    }
+
+    /**
+     * Gets the amount of time the task has completed.
+     * @return time (in millisols)
+     */
+    protected double getTimeCompleted() {
+        return timeCompleted;
+    }
+
+    /**
+     * Prepare object for garbage collection.
+     */
     public void destroy() {
         name = null;
         person = null;
         description = null;
-        if (subTask != null) subTask.destroy();
+        if (subTask != null) {
+            subTask.destroy();
+        }
         subTask = null;
         phase = null;
         teacher = null;

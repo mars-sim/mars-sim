@@ -8,6 +8,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -19,6 +21,7 @@ import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -29,7 +32,10 @@ import java.util.List;
  */
 public class CollectResources extends EVAOperation implements Serializable {
 
+    // Task phases
+    private static final String WALK_TO_SITE = "Walk to Site";
     private static final String COLLECT_RESOURCES = "Collecting Resources";
+    private static final String WALK_TO_ROVER = "Walk to Rover";
 
     // Data members
     protected Rover rover; // Rover used.
@@ -38,6 +44,10 @@ public class CollectResources extends EVAOperation implements Serializable {
     protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
     protected AmountResource resourceType; // The resource type 
     protected Class containerType; // The container type to use to collect resource.
+    private double collectionSiteXLoc;
+    private double collectionSiteYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
 
     /**
      * Constructor
@@ -65,8 +75,60 @@ public class CollectResources extends EVAOperation implements Serializable {
         this.resourceType = resourceType;
         this.containerType = containerType;
 
-        // Add task phase
+        // Determine location for collection site.
+        Point2D collectionSiteLoc = determineCollectionSiteLocation();
+        collectionSiteXLoc = collectionSiteLoc.getX();
+        collectionSiteYLoc = collectionSiteLoc.getY();
+        
+        // Determine location for reentering rover airlock.
+        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
+        enterAirlockXLoc = enterAirlockLoc.getX();
+        enterAirlockYLoc = enterAirlockLoc.getY();
+        
+        // Add task phases
+        addPhase(WALK_TO_SITE);
         addPhase(COLLECT_RESOURCES);
+        addPhase(WALK_TO_ROVER);
+    }
+    
+    /**
+     * Determine location for the collection site.
+     * @return site X and Y location outside rover.
+     */
+    private Point2D determineCollectionSiteLocation() {
+        
+        Point2D newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 5) && !goodLocation; x++) {
+            for (int y = 0; (y < 10) && !goodLocation; y++) {
+
+                double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
+                double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+                double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+                double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+                Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), rover);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+        }
+
+        return newLocation;
+    }
+    
+    /**
+     * Determine location for returning to rover airlock.
+     * @return X and Y location outside rover.
+     */
+    private Point2D determineRoverAirlockEnteringLocation() {
+        
+        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
+        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                vehicleLoc.getY(), rover);
+        
+        return newLocation;
     }
 
     /**
@@ -76,11 +138,27 @@ public class CollectResources extends EVAOperation implements Serializable {
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
-        if (COLLECT_RESOURCES.equals(getPhase())) return collectResources(time);
-        if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitRover(time);
+        }
+        else if (WALK_TO_SITE.equals(getPhase())) {
+            return walkToCollectionSitePhase(time);
+        }
+        else if (COLLECT_RESOURCES.equals(getPhase())) {
+            return collectResources(time);
+        }
+        else if (WALK_TO_ROVER.equals(getPhase())) {
+            return walkToRoverAirlock(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterRover(time);
+        }
+        else {
+            return time;
+        }
     }
 
     /**
@@ -132,9 +210,14 @@ public class CollectResources extends EVAOperation implements Serializable {
 
         if (exitedAirlock) {
             // Take container for collecting resource.
-            if (!hasContainers()) takeContainer();
+            if (!hasContainers()) {
+                takeContainer();
+            }
 
-            if (hasContainers()) setPhase(COLLECT_RESOURCES);
+            if (hasContainers()) {
+                // Set task phase to walk to collecting site.
+                setPhase(WALK_TO_SITE);
+            }
             else {
                 setPhase(ENTER_AIRLOCK);
             }
@@ -191,6 +274,59 @@ public class CollectResources extends EVAOperation implements Serializable {
     }
 
     /**
+     * Perform the walk to mining collection site phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToCollectionSitePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_ROVER);
+            return time;
+        }
+        
+        // If not at resource collection site location, create walk outside subtask.
+        if ((person.getXLocation() != collectionSiteXLoc) || (person.getYLocation() != collectionSiteYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    collectionSiteXLoc, collectionSiteYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(COLLECT_RESOURCES);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to rover airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToRoverAirlock(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside rover airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
+    }
+    
+    /**
      * Perform the collect resources phase of the task.
      * @param time the time to perform this phase (in millisols)
      * @return the time remaining after performing this phase (in millisols)
@@ -214,19 +350,26 @@ public class CollectResources extends EVAOperation implements Serializable {
                 resourceType, false) - startingCargo; 
         double remainingSamplesNeeded = targettedAmount - currentSamplesCollected;
         double sampleLimit = remainingPersonCapacity;
-        if (remainingSamplesNeeded < remainingPersonCapacity) sampleLimit = remainingSamplesNeeded;
+        if (remainingSamplesNeeded < remainingPersonCapacity) {
+            sampleLimit = remainingSamplesNeeded;
+        }
 
         double samplesCollected = time * collectionRate;
 
         // Modify collection rate by "Areology" skill.
         int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
-        if (areologySkill == 0) samplesCollected /= 2D;
-        if (areologySkill > 1) samplesCollected += samplesCollected * (.2D * areologySkill);
+        if (areologySkill == 0) {
+            samplesCollected /= 2D;
+        }
+        if (areologySkill > 1) {
+            samplesCollected += samplesCollected * (.2D * areologySkill);
+        }
 
         // Modify collection rate by polar region if ice collecting.
         if (resourceType.equals(AmountResource.findAmountResource("ice"))) {
-            if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates()))
+            if (Simulation.instance().getMars().getSurfaceFeatures().inPolarRegion(person.getCoordinates())) {
                 samplesCollected *= 3D;
+            }
         }
 
         // Add experience points
@@ -238,8 +381,10 @@ public class CollectResources extends EVAOperation implements Serializable {
             return 0D;
         }
         else {
-            if (sampleLimit >= 0D) person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
-            setPhase(ENTER_AIRLOCK);
+            if (sampleLimit >= 0D) {
+                person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
+            }
+            setPhase(WALK_TO_ROVER);
             return time - (sampleLimit / collectionRate);
         }
     }

@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -47,7 +48,9 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
 
     // Task phase
+    private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String UNLOADING = "Unloading";
+    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
     // The amount of resources (kg) one person of average strength can unload per millisol.
     private static double UNLOAD_RATE = 20D;
@@ -56,6 +59,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     private Vehicle vehicle;  // The vehicle that needs to be unloaded.
     private Settlement settlement; // The settlement the person is unloading to.
     private Airlock airlock; // Airlock to be used for EVA.
+    private double unloadingXLoc;
+    private double unloadingYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
 
     /**
      * Constructor
@@ -80,17 +87,30 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
         if (vehicle != null) {
 
+            // Determine location for unloading.
+            Point2D unloadingLoc = determineUnloadingLocation();
+            unloadingXLoc = unloadingLoc.getX();
+            unloadingYLoc = unloadingLoc.getY();
+            
             // Get an available airlock.
             airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
                     vehicle.getYLocation());
             if (airlock == null) {
                 endTask();
             }
+            else {
+                // Determine location for reentering building airlock.
+                Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+                enterAirlockXLoc = enterAirlockLoc.getX();
+                enterAirlockYLoc = enterAirlockLoc.getY();
+            }
 
             setDescription("Unloading " + vehicle.getName());
 
             // Initialize task phase
+            addPhase(WALK_TO_VEHICLE);
             addPhase(UNLOADING);
+            addPhase(WALK_TO_AIRLOCK);
         }
         else {
             endTask();
@@ -109,6 +129,11 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         setDescription("Unloading " + vehicle.getName());
         this.vehicle = vehicle;
 
+        // Determine location for unloading.
+        Point2D unloadingLoc = determineUnloadingLocation();
+        unloadingXLoc = unloadingLoc.getX();
+        unloadingYLoc = unloadingLoc.getY();
+        
         settlement = person.getSettlement();
 
         // Get an available airlock.
@@ -117,9 +142,17 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         if (airlock == null) {
             endTask();
         }
+        else {
+            // Determine location for reentering building airlock.
+            Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+            enterAirlockXLoc = enterAirlockLoc.getX();
+            enterAirlockYLoc = enterAirlockLoc.getY();
+        }
 
         // Initialize phase
+        addPhase(WALK_TO_VEHICLE);
         addPhase(UNLOADING);
+        addPhase(WALK_TO_AIRLOCK);
 
         // logger.info(person.getName() + " is unloading " + vehicle.getName());
     }
@@ -282,14 +315,76 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     public Vehicle getVehicle() {
         return vehicle;
     }
+    
+    /**
+     * Determine location to unload the vehicle.
+     * @return location.
+     */
+    private Point2D determineUnloadingLocation() {
+        
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 50) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), vehicle);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getCoordinates());
+        }
+        
+        return newLocation;
+    }
+    
+    /**
+     * Determine location outside building airlock.
+     * @return location.
+     */
+    private Point2D determineAirlockEnteringLocation() {
+        
+        Point2D result = null;
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            result = newLocation;
+        }
+        
+        return result;
+    }
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
-        if (UNLOADING.equals(getPhase())) return unloadingPhase(time);
-        if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitEVA(time);
+        }
+        else if (WALK_TO_VEHICLE.equals(getPhase())) {
+            return walkToVehiclePhase(time);
+        }
+        else if (UNLOADING.equals(getPhase())) {
+            return unloadingPhase(time);
+        }
+        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
+            return walkToAirlockPhase(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterEVA(time);
+        }
+        else {
+            return time;
+        }
     }
 
     /**
@@ -312,30 +407,62 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         }
 
         if (exitedAirlock) {
-            setPhase(UNLOADING);
-
-            // Move person outside next vehicle.
-            moveToUnloadingLocation();
+            setPhase(WALK_TO_VEHICLE);
         }
         return time;
     }
-
+    
     /**
-     * Move person outside next to vehicle.
+     * Perform the walk to vehicle loading location phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
      */
-    private void moveToUnloadingLocation() {
-        Point2D.Double newLocation = null;
-        boolean goodLocation = false;
-        for (int x = 0; (x < 20) && !goodLocation; x++) {
-            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                    boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getCoordinates());
+    private double walkToVehiclePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_AIRLOCK);
+            return time;
         }
-
-        person.setXLocation(newLocation.getX());
-        person.setYLocation(newLocation.getY());
+        
+        // If not at vehicle unloading location, create walk outside subtask.
+        if ((person.getXLocation() != unloadingXLoc) || (person.getYLocation() != unloadingYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    unloadingXLoc, unloadingYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(UNLOADING);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
     }
 
     /**
@@ -351,7 +478,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
 
         // Check if person should end EVA operation.
         if (shouldEndEVAOperation()) {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
+            setPhase(WALK_TO_AIRLOCK);
             return time;
         }
 
@@ -432,7 +559,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         }
 
         if (isFullyUnloaded(vehicle)) {
-            setPhase(ENTER_AIRLOCK);
+            setPhase(WALK_TO_AIRLOCK);
         }
 
         return 0D;
@@ -484,7 +611,10 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         // Add experience points
         addExperience(time);
 
-        if (enteredAirlock) endTask();
+        if (enteredAirlock) {
+            endTask();
+        }
+        
         return time;
     }
 

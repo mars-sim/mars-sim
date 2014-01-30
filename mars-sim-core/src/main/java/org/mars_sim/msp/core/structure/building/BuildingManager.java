@@ -26,11 +26,7 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
 import java.util.*;
 import java.util.logging.Level;
@@ -743,62 +739,10 @@ public class BuildingManager implements Serializable {
             double width, double length, double facing, ConstructionSite site) {
         boolean goodLocation = true;
         
-        // Create path for proposed new building position.
-        Rectangle2D newBuildingRect = new Rectangle2D.Double(xLoc - (width / 2D), 
-                yLoc - (length / 2D), width, length);
-        Path2D newBuildingPath = getPathFromRectangleRotation(newBuildingRect, facing);
-        
-        // Check to see if proposed new building position intersects with any existing buildings.
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-        while (i.hasNext()) {
-            Building existingBuilding = i.next();
-            Rectangle2D existingBuildingRect = new Rectangle2D.Double(existingBuilding.getXLocation() - 
-                    (existingBuilding.getWidth() / 2D), existingBuilding.getYLocation() - 
-                    (existingBuilding.getLength() / 2D), existingBuilding.getWidth(), existingBuilding.getLength());
-            Path2D existingBuildingPath = getPathFromRectangleRotation(existingBuildingRect, 
-                    existingBuilding.getFacing());
-            Area area = new Area(newBuildingPath);
-            area.intersect(new Area(existingBuildingPath));
-            if (!area.isEmpty()) {
-                goodLocation = false;
-                break;
-            }
-        }
-        
-        // Check to see if proposed new building position intersects with any existing construction sites.
-        Iterator<ConstructionSite> j = settlement.getConstructionManager().getConstructionSites().iterator();
-        while (j.hasNext() && goodLocation) {
-            ConstructionSite existingSite = j.next();
-            // Check if existing site is not the same as the new construction site.
-            if ((site == null) || (!site.equals(existingSite))) {
-                Rectangle2D existingSiteRect = new Rectangle2D.Double(existingSite.getXLocation() - 
-                        (existingSite.getWidth() / 2D), existingSite.getYLocation() - 
-                        (existingSite.getLength() / 2D), existingSite.getWidth(), existingSite.getLength());
-                Path2D existingSitePath = getPathFromRectangleRotation(existingSiteRect, 
-                        existingSite.getFacing());
-                Area area = new Area(newBuildingPath);
-                area.intersect(new Area(existingSitePath));
-                if (!area.isEmpty()) {
-                    goodLocation = false;
-                    break;
-                }
-            }
-        }
+        goodLocation = LocalAreaUtil.checkObjectCollision(site, width, length, 
+                xLoc, yLoc, facing, settlement.getCoordinates());
         
         return goodLocation;
-    }
-    
-    /**
-     * Creates a Path2D object from a rectangle with a given rotation.
-     * @param rectangle the rectangle.
-     * @param rotation the rotation (degrees clockwise from North).
-     * @return path representing rotated rectangle.
-     */
-    private Path2D getPathFromRectangleRotation(Rectangle2D rectangle, double rotation) {
-        double radianRotation = rotation * (Math.PI / 180D);
-        AffineTransform at = AffineTransform.getRotateInstance(radianRotation, rectangle.getCenterX(), 
-                rectangle.getCenterY());
-        return new Path2D.Double(rectangle, at);
     }
     
     /**

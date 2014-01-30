@@ -645,18 +645,30 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
     public void destroy() {
         super.destroy();
         
-        buildingManager.destroy();
+        if (buildingManager != null) {
+            buildingManager.destroy();
+        }
         buildingManager = null;
-        buildingConnectorManager.destroy();
+        if (buildingConnectorManager != null) {
+            buildingConnectorManager.destroy();
+        }
         buildingConnectorManager = null;
-        goodsManager.destroy();
+        if (goodsManager != null) {
+            goodsManager.destroy();
+        }
         goodsManager = null;
-        constructionManager.destroy();
+        if (constructionManager != null) {
+            constructionManager.destroy();
+        }
         constructionManager = null;
-        powerGrid.destroy();
+        if (powerGrid != null) {
+            powerGrid.destroy();
+        }
         powerGrid = null;
         template = null;
-        scientificAchievement.clear();
+        if (scientificAchievement != null) {
+            scientificAchievement.clear();
+        }
         scientificAchievement = null;
     }
 }

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -36,7 +37,9 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     private static Logger logger = Logger.getLogger(SalvageBuilding.class.getName());
     
     // Task phases
+    private static final String WALK_TO_SITE = "Walk to Site";
     private static final String SALVAGE = "Salvage";
+    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
     
     // The base chance of an accident while operating LUV per millisol.
     public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -48,6 +51,10 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
     private Airlock airlock;
     private LightUtilityVehicle luv;
     private boolean operatingLUV;
+    private double salvageXLoc;
+    private double salvageYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
     
     /**
      * Constructor
@@ -71,8 +78,20 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
                 site.getYLocation());
         if (airlock == null) endTask();
         
+        // Determine location for salvage site.
+        Point2D salvageSiteLoc = determineSalvageLocation();
+        salvageXLoc = salvageSiteLoc.getX();
+        salvageYLoc = salvageSiteLoc.getY();
+        
+        // Determine location for reentering building airlock.
+        Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+        enterAirlockXLoc = enterAirlockLoc.getX();
+        enterAirlockYLoc = enterAirlockLoc.getY();
+        
         // Add task phase
+        addPhase(WALK_TO_SITE);
         addPhase(SALVAGE);
+        addPhase(WALK_TO_AIRLOCK);
     }
     
     /**
@@ -101,6 +120,46 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         boolean medical = person.getPerformanceRating() < .5D;
     
         return (exitable && (sunlight || darkRegion) && !medical);
+    }
+    
+    /**
+     * Determine location to go to at salvage site.
+     * @return location.
+     */
+    private Point2D determineSalvageLocation() {
+        
+        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
+        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
+                relativeLocSite.getY(), site);
+        
+        return settlementLocSite;
+    }
+    
+    /**
+     * Determine location outside building airlock.
+     * @return location.
+     */
+    private Point2D determineAirlockEnteringLocation() {
+        
+        Point2D result = null;
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            result = newLocation;
+        }
+        
+        return result;
     }
     
     @Override
@@ -156,11 +215,27 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
-        if (SALVAGE.equals(getPhase())) return salvage(time);
-        if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (WALK_TO_SITE.equals(getPhase())) {
+            return walkToSalvageSitePhase(time);
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitEVA(time);
+        }
+        else if (SALVAGE.equals(getPhase())) {
+            return salvage(time);
+        }
+        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
+            return walkToAirlockPhase(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterEVA(time);
+        }
+        else {
+            return time;
+        }
     }
     
     @Override
@@ -215,10 +290,7 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         }
         
         if (exitedAirlock) {
-            setPhase(SALVAGE);
-            
-            // Move person to location at construction site.
-            moveToConstructionSiteLocation();
+            setPhase(WALK_TO_SITE);
         }
         return time;
     }
@@ -235,7 +307,63 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         // Add experience points
         addExperience(time);
         
-        if (enteredAirlock) endTask();
+        if (enteredAirlock) {
+            endTask();
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to salvage site phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToSalvageSitePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_AIRLOCK);
+            return time;
+        }
+        
+        // If not at salvage site location, create walk outside subtask.
+        if ((person.getXLocation() != salvageXLoc) || (person.getYLocation() != salvageYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    salvageXLoc, salvageYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(SALVAGE);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
         return time;
     }
     
@@ -255,7 +383,7 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
             if ((luv != null) && luv.getInventory().containsUnit(person))  
                 returnVehicle();
             
-            setPhase(EVAOperation.ENTER_AIRLOCK);
+            setPhase(WALK_TO_AIRLOCK);
             return time;
         }
         
@@ -278,18 +406,6 @@ public class SalvageBuilding extends EVAOperation implements Serializable {
         checkForAccident(time);
 
         return 0D;
-    }
-    
-    /**
-     * Moves the person to a location at the construction site.
-     */
-    private void moveToConstructionSiteLocation() {
-        
-        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
-        Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
-                relativeLocSite.getY(), site);
-        person.setXLocation(settlementLocSite.getX());
-        person.setYLocation(settlementLocSite.getY());
     }
     
     /**
