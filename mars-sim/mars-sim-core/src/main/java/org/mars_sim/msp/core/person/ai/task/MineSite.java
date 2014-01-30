@@ -37,7 +37,9 @@ public class MineSite extends EVAOperation implements Serializable {
     private static Logger logger = Logger.getLogger(MineSite.class.getName());
     
 	// Task phases
+    private static final String WALK_TO_SITE = "Walk to Site";
 	private static final String MINING = "Mining";
+	private static final String WALK_TO_ROVER = "Walk to Rover";
 	
 	// Excavation rates (kg/millisol)
 	private static final double HAND_EXCAVATION_RATE = .1D;
@@ -55,6 +57,10 @@ public class MineSite extends EVAOperation implements Serializable {
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
 	private double miningTime;
+	private double miningSiteXLoc;
+    private double miningSiteYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
 	
 	/**
 	 * Constructor
@@ -76,9 +82,61 @@ public class MineSite extends EVAOperation implements Serializable {
 		this.luv = luv;
 		operatingLUV = false;
 		
+        // Determine location for mining site.
+        Point2D miningSiteLoc = determineMiningSiteLocation();
+        miningSiteXLoc = miningSiteLoc.getX();
+        miningSiteYLoc = miningSiteLoc.getY();
+        
+        // Determine location for reentering rover airlock.
+        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
+        enterAirlockXLoc = enterAirlockLoc.getX();
+        enterAirlockYLoc = enterAirlockLoc.getY();
+		
 		// Add task phase
+        addPhase(WALK_TO_SITE);
 		addPhase(MINING);
+		addPhase(WALK_TO_ROVER);
 	}
+	
+    /**
+     * Determine location for the mining site.
+     * @return site X and Y location outside rover.
+     */
+    private Point2D determineMiningSiteLocation() {
+        
+        Point2D newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 5) && !goodLocation; x++) {
+            for (int y = 0; (y < 10) && !goodLocation; y++) {
+
+                double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
+                double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+                double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+                double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+                Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), rover);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+        }
+
+        return newLocation;
+    }
+    
+    /**
+     * Determine location for returning to rover airlock.
+     * @return X and Y location outside rover.
+     */
+    private Point2D determineRoverAirlockEnteringLocation() {
+        
+        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
+        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                vehicleLoc.getY(), rover);
+        
+        return newLocation;
+    }
 	
 	/**
 	 * Checks if a person can mine a site.
@@ -110,7 +168,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error exiting rover.
 	 */
-	private double exitRover(double time) {
+	private double exitRoverPhase(double time) {
 		
 		try {
 			time = exitAirlock(time, rover.getAirlock());
@@ -123,7 +181,9 @@ public class MineSite extends EVAOperation implements Serializable {
 			endTask();
 		}
 		
-		if (exitedAirlock) setPhase(MINING);
+		if (exitedAirlock) {
+		    setPhase(WALK_TO_SITE);
+		}
 
 		return time;
 	}
@@ -134,7 +194,7 @@ public class MineSite extends EVAOperation implements Serializable {
 	 * @return the time remaining after performing this phase (in millisols)
 	 * @throws Exception if error entering rover.
 	 */
-	private double enterRover(double time) {
+	private double enterRoverPhase(double time) {
 
 		time = enterAirlock(time, rover.getAirlock());
 
@@ -148,6 +208,59 @@ public class MineSite extends EVAOperation implements Serializable {
         
 		return 0D;
 	}
+	
+    /**
+     * Perform the walk to mining site phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToMiningSitePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_ROVER);
+            return time;
+        }
+        
+        // If not at mining site location, create walk outside subtask.
+        if ((person.getXLocation() != miningSiteXLoc) || (person.getYLocation() != miningSiteYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    miningSiteXLoc, miningSiteYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(MINING);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to rover airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToRoverAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside rover airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
+    }
 	
 	/**
 	 * Perform the mining phase of the task.
@@ -172,7 +285,7 @@ public class MineSite extends EVAOperation implements Serializable {
 				luv.setOperator(null);
 				operatingLUV = false;
 			}
-			setPhase(EVAOperation.ENTER_AIRLOCK);
+			setPhase(WALK_TO_ROVER);
 			return time;
 		}
 		
@@ -190,8 +303,6 @@ public class MineSite extends EVAOperation implements Serializable {
 	            luv.setOperator(person);
 		        operatingLUV = true;
 		        setDescription("Excavating site with " + luv.getName());
-		        
-		        // TODO: Determine random excavation location surrounding rover.
 		    }
 		    else {
 		        logger.info(person.getName() + " could not operate " + luv.getName());
@@ -223,7 +334,9 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (operatingLUV) {
 				amountExcavated = LUV_EXCAVATION_RATE * time;
 			}
-			else amountExcavated = HAND_EXCAVATION_RATE * time;
+			else {
+			    amountExcavated = HAND_EXCAVATION_RATE * time;
+			}
 			double mineralConcentration = minerals.get(mineralName);
 			amountExcavated *= mineralConcentration / 100D;
 			amountExcavated *= getEffectiveSkillLevel();
@@ -296,11 +409,27 @@ public class MineSite extends EVAOperation implements Serializable {
 
 	@Override
 	protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
-    	if (MINING.equals(getPhase())) return miningPhase(time);
-    	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+    	    return exitRoverPhase(time);
+    	}
+    	else if (WALK_TO_SITE.equals(getPhase())) {
+            return walkToMiningSitePhase(time);
+        }
+    	else if (MINING.equals(getPhase())) {
+    	    return miningPhase(time);
+    	}
+    	else if (WALK_TO_ROVER.equals(getPhase())) {
+            return walkToRoverAirlockPhase(time);
+        }
+    	else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+    	    return enterRoverPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
 	}
 
 	@Override

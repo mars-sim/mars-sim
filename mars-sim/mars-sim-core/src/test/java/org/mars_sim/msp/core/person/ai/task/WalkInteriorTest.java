@@ -10,10 +10,16 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 
 import junit.framework.TestCase;
 
+/**
+ * A unit test suite for the WalkInterior task class.
+ */
 public class WalkInteriorTest extends TestCase {
 
     private static final double SMALL_DELTA = .00001D;
 
+    /**
+     * Test the determineDirection method.
+     */
     public void testDetermineDirection() {
         
         Settlement settlement = new MockSettlement();
@@ -35,6 +41,9 @@ public class WalkInteriorTest extends TestCase {
         assertEquals((3D * Math.PI / 2D), walkTask.determineDirection(5D, 0D), SMALL_DELTA);
     }
     
+    /**
+     * Test the walkInDirection method.
+     */
     public void testWalkInDirection() {
         
         Settlement settlement = new MockSettlement();
@@ -71,6 +80,9 @@ public class WalkInteriorTest extends TestCase {
         assertEquals(0D, person.getYLocation(), SMALL_DELTA);
     }
     
+    /**
+     * Test the walkingPhase method.
+     */
     public void testWalkingPhase() {
         
         Settlement settlement = new MockSettlement();

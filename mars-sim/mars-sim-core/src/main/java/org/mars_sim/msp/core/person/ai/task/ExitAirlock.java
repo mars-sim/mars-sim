@@ -64,6 +64,7 @@ public class ExitAirlock extends Task implements Serializable {
         setPhase(EXITING_AIRLOCK);
         
         // Move the person to the inside of the airlock.
+        // TODO: Replace with walking to airlock location.
         movePersonInsideAirlock();
 
         logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());

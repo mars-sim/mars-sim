@@ -131,14 +131,32 @@ public abstract class EVAOperation extends Task implements Serializable {
         boolean result = false;
         
         // Check end EVA flag.
-        if (endEVA) result = true;
+        if (endEVA) {
+            result = true;
+        }
+        // Check if any EVA problem.
+        else if (checkEVAProblem(person)) {
+            result = true;
+        }
+	
+        return result;
+    }
+    
+    /**
+     * Checks if there is an EVA problem for a person.
+     * @param person the person.
+     * @return true if an EVA problem.
+     */
+    public static boolean checkEVAProblem(Person person) {
+        
+        boolean result = false;
         
         // Check if it is night time. 
         Mars mars = Simulation.instance().getMars();
         if (mars.getSurfaceFeatures().getSurfaceSunlight(person.getCoordinates()) == 0) {
             logger.fine(person.getName() + " should end EVA: night time.");
             if (!mars.getSurfaceFeatures().inDarkPolarRegion(person.getCoordinates()))
-            	result = true;
+                result = true;
         }
 
         EVASuit suit = (EVASuit) person.getInventory().findUnitOfClass(EVASuit.class);
@@ -147,48 +165,48 @@ public abstract class EVAOperation extends Task implements Serializable {
             return true;
         }
         Inventory suitInv = suit.getInventory();
-	
+    
         try {
-        	// Check if EVA suit is at 15% of its oxygen capacity.
-        	AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
-        	double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
-        	double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
-        	if (oxygen <= (oxygenCap * .15D)) {
-        		logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%");	
-        		result = true;
-        	}
+            // Check if EVA suit is at 15% of its oxygen capacity.
+            AmountResource oxygenResource = AmountResource.findAmountResource("oxygen");
+            double oxygenCap = suitInv.getAmountResourceCapacity(oxygenResource, false);
+            double oxygen = suitInv.getAmountResourceStored(oxygenResource, false);
+            if (oxygen <= (oxygenCap * .15D)) {
+                logger.fine(person.getName() + " should end EVA: EVA suit oxygen level less than 15%"); 
+                result = true;
+            }
 
-        	// Check if EVA suit is at 15% of its water capacity.
-        	AmountResource waterResource = AmountResource.findAmountResource("water");
-        	double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
-        	double water = suitInv.getAmountResourceStored(waterResource, false);
-        	if (water <= (waterCap * .15D)) {
-        		logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");	
-        		result = true;
-        	}
+            // Check if EVA suit is at 15% of its water capacity.
+            AmountResource waterResource = AmountResource.findAmountResource("water");
+            double waterCap = suitInv.getAmountResourceCapacity(waterResource, false);
+            double water = suitInv.getAmountResourceStored(waterResource, false);
+            if (water <= (waterCap * .15D)) {
+                logger.fine(person.getName() + " should end EVA: EVA suit water level less than 15%");  
+                result = true;
+            }
 
-        	// Check if life support system in suit is working properly.
-        	if (!suit.lifeSupportCheck()) {
-        		logger.fine(person.getName() + " should end EVA: EVA suit failed life support check.");	
-        		result = true;
-        	}
+            // Check if life support system in suit is working properly.
+            if (!suit.lifeSupportCheck()) {
+                logger.fine(person.getName() + " should end EVA: EVA suit failed life support check."); 
+                result = true;
+            }
         }
         catch (Exception e) {
-        	e.printStackTrace(System.err);
+            e.printStackTrace(System.err);
         }
 
         // Check if suit has any malfunctions.
         if (suit.getMalfunctionManager().hasMalfunction()) {
-            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");	
+            logger.fine(person.getName() + " should end EVA: EVA suit has malfunction.");   
             result = true;
         }
-	
+    
         // Check if person's medical condition is sufficient to continue phase.
         if (person.getPerformanceRating() < .5D) {
-            logger.fine(person.getName() + " should end EVA: medical problems.");	
+            logger.fine(person.getName() + " should end EVA: medical problems.");   
             result = true;
         }
-	
+        
         return result;
     }
 
@@ -217,29 +235,6 @@ public abstract class EVAOperation extends Task implements Serializable {
             }
         }
     }
-    
-//    /**
-//     * Gets an available airlock for a person.
-//     *
-//     * @return airlock or null if none available
-//     */
-//    public static Airlock getAvailableAirlock(Person person) {
-//        Airlock result = null;
-//        String location = person.getLocationSituation();
-//        
-//        if (location.equals(Person.INSETTLEMENT)) {
-//            Settlement settlement = person.getSettlement();
-//            result = settlement.getAvailableAirlock();
-//        }
-//        else if (location.equals(Person.INVEHICLE)) {
-//            Vehicle vehicle = person.getVehicle();
-//            if (vehicle instanceof Airlockable) {
-//                result = ((Airlockable) vehicle).getAirlock();
-//            }
-//        }
-//        
-//        return result;
-//    }
     
     /**
      * Gets the closest available airlock to a given location that has a walkable path 
@@ -276,7 +271,7 @@ public abstract class EVAOperation extends Task implements Serializable {
      */
     public static Airlock getWalkableAvailableAirlock(Person person) {
         
-        return getClosestWalkableAvailableAirlock(person, 0D, 0D);
+        return getClosestWalkableAvailableAirlock(person, person.getXLocation(), person.getYLocation());
     }
     
     @Override

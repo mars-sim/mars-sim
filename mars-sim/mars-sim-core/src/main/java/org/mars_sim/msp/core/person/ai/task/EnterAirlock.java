@@ -61,9 +61,6 @@ public class EnterAirlock extends Task implements Serializable {
         // Initialize task phase
         addPhase(ENTERING_AIRLOCK);
         setPhase(ENTERING_AIRLOCK);
-
-        // Move person to random location outside airlock entity.
-        movePersonOutsideAirlock();
         
         logger.fine(person.getName() + " is starting to enter " + airlock.getEntityName());
     }
@@ -168,9 +165,10 @@ public class EnterAirlock extends Task implements Serializable {
                         person.getCoordinates());
             }
             
-            // TODO: Add EVA walk to outside location.
-            person.setXLocation(newLocation.getX());
-            person.setYLocation(newLocation.getY());
+            // Add EVA walk to outside location subtask.
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    newLocation.getX(), newLocation.getY(), false);
+            addSubTask(walkingTask);
         }
     }
     

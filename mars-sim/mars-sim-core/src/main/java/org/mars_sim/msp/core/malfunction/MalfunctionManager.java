@@ -818,7 +818,9 @@ public class MalfunctionManager implements Serializable {
         scope = null;
         malfunctions.clear();
         malfunctions = null;
-        partsNeededForMaintenance.clear();
+        if (partsNeededForMaintenance != null) {
+            partsNeededForMaintenance.clear();
+        }
         partsNeededForMaintenance = null;
     }
 }

@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -41,7 +42,9 @@ import java.util.List;
 public class ToggleResourceProcess extends EVAOperation implements Serializable {
 
     // Task phase
+    private static final String WALK_OUTSIDE_TO_BUILDING = "Walk Outside to Building";
     private static final String TOGGLE_PROCESS = "toggle process";
+    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
     // Data members
     private boolean isEVA; // True if toggling process is EVA operation.
@@ -49,7 +52,11 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
     private ResourceProcess process; // The resource process to toggle.
     private Building building; // The building the resource process is in.
     private boolean toggleOn; // True if process is to be turned on, false if turned off.
-
+    private double toggleXLoc;
+    private double toggleYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
+    
     /**
      * Constructor
      * @param person the person performing the task.
@@ -74,11 +81,22 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
                 walkToProcessBuilding(building);
             }
             else {
+                // Determine location for toggling power source.
+                Point2D toggleLoc = determineToggleLocation();
+                toggleXLoc = toggleLoc.getX();
+                toggleYLoc = toggleLoc.getY();
+                
                 // Get an available airlock.
                 airlock = getClosestWalkableAvailableAirlock(person, building.getXLocation(), 
                         building.getYLocation());
                 if (airlock == null) {
                     endTask();
+                }
+                else {
+                    // Determine location for reentering building airlock.
+                    Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+                    enterAirlockXLoc = enterAirlockLoc.getX();
+                    enterAirlockYLoc = enterAirlockLoc.getY();
                 }
             }
         }
@@ -86,8 +104,16 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             endTask();
         }
 
+        addPhase(WALK_OUTSIDE_TO_BUILDING);
         addPhase(TOGGLE_PROCESS);
-        if (!isEVA) setPhase(TOGGLE_PROCESS);
+        addPhase(WALK_TO_AIRLOCK);
+        
+        if (isEVA) {
+            setPhase(EVAOperation.EXIT_AIRLOCK);
+        }
+        else {
+            setPhase(TOGGLE_PROCESS);
+        }
     }
 
     /** 
@@ -162,6 +188,53 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Determine location to toggle power source.
+     * @return location.
+     */
+    private Point2D determineToggleLocation() {
+        
+        Point2D.Double newLocation = new Point2D.Double(0D, 0D);
+        
+        boolean goodLocation = false;
+        for (int x = 0; (x < 50) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), building);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getCoordinates());
+        }
+        
+        return newLocation;
+    }
+    
+    /**
+     * Determine location outside building airlock.
+     * @return location.
+     */
+    private Point2D determineAirlockEnteringLocation() {
+        
+        Point2D result = null;
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            result = newLocation;
+        }
+        
         return result;
     }
 
@@ -393,16 +466,26 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      */
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (isEVA) {
-            if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
-            if (TOGGLE_PROCESS.equals(getPhase())) return toggleProcessPhase(time);
-            if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
-            else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitEVA(time);
+        }
+        else if (WALK_OUTSIDE_TO_BUILDING.equals(getPhase())) {
+            return walkOutsideToBuildingPhase(time);
+        }
+        else if (TOGGLE_PROCESS.equals(getPhase())) {
+            return toggleProcessPhase(time);
+        }
+        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
+            return walkToAirlockPhase(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterEVA(time);
         }
         else {
-            if (TOGGLE_PROCESS.equals(getPhase())) return toggleProcessPhase(time);
-            else return time;
+            return time;
         }
     }
 
@@ -426,31 +509,62 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
         }
 
         if (exitedAirlock) {
-            setPhase(TOGGLE_PROCESS);
-
-            // Move person outside next to building.
-            moveToResourceProcessLocation();
+            setPhase(WALK_OUTSIDE_TO_BUILDING);
         }
         return time;
     }
-
+    
     /**
-     * Move person next to resource process location.
+     * Perform the walk outside to building phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
      */
-    public void moveToResourceProcessLocation() {
-
-        Point2D.Double newLocation = null;
-        boolean goodLocation = false;
-        for (int x = 0; (x < 20) && !goodLocation; x++) {
-            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                    boundedLocalPoint.getY(), building);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getCoordinates());
+    private double walkOutsideToBuildingPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_AIRLOCK);
+            return time;
         }
-
-        person.setXLocation(newLocation.getX());
-        person.setYLocation(newLocation.getY());
+        
+        // If not at power source toggle location, create walk outside subtask.
+        if ((person.getXLocation() != toggleXLoc) || (person.getYLocation() != toggleYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    toggleXLoc, toggleYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(TOGGLE_PROCESS);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
     }
 
     /**
@@ -465,7 +579,10 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
         // Add experience points
         addExperience(time);
 
-        if (enteredAirlock) endTask();
+        if (enteredAirlock) {
+            endTask();
+        }
+        
         return time;
     }	
 
@@ -479,23 +596,37 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 
         // If person is incapacitated, enter airlock.
         if (person.getPerformanceRating() == 0D) {
-            if (isEVA) setPhase(ENTER_AIRLOCK);
-            else endTask();
+            if (isEVA) {
+                setPhase(WALK_TO_AIRLOCK);
+            }
+            else {
+                endTask();
+            }
         }
 
         // Check if process has already been completed.
         if (process.isProcessRunning() == toggleOn) {
-            if (isEVA) setPhase(ENTER_AIRLOCK);
-            else endTask();
+            if (isEVA) {
+                setPhase(WALK_TO_AIRLOCK);
+            }
+            else {
+                endTask();
+            }
         }
 
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
         int mechanicSkill = getEffectiveSkillLevel();
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        if (mechanicSkill == 0) {
+            workTime /= 2;
+        }
+        if (mechanicSkill > 1) {
+            workTime += workTime * (.2D * mechanicSkill);
+        }
 
         // Add work to the toggle process.
         process.addToggleWorkTime(workTime);
@@ -505,8 +636,12 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
 
         // Check if process has already been completed.
         if (process.isProcessRunning() == toggleOn) {
-            if (isEVA) setPhase(ENTER_AIRLOCK);
-            else endTask();
+            if (isEVA) {
+                setPhase(WALK_TO_AIRLOCK);
+            }
+            else {
+                endTask();
+            }
             // Settlement settlement = building.getBuildingManager().getSettlement();
             // String toggle = "off";
             // if (toggleOn) toggle = "on";

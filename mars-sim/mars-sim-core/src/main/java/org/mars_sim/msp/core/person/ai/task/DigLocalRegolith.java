@@ -44,7 +44,9 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
     
     // Phase name
+    private static final String WALK_TO_SITE = "Walk to Dig Site";
     private static final String COLLECT_REGOLITH = "Collecting Regolith";
+    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
     
     //  Collection rate of regolith during EVA (kg/millisol).
     private static final double COLLECTION_RATE = 20D;
@@ -55,6 +57,8 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     private Settlement settlement;
     private double diggingXLocation;
     private double diggingYLocation;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
     
     /**
      * Constructor
@@ -78,8 +82,15 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         diggingXLocation = diggingLoc.getX();
         diggingYLocation = diggingLoc.getY();
         
-        // Initialize phase.
+        // Determine location for reentering airlock.
+        Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+        enterAirlockXLoc = enterAirlockLoc.getX();
+        enterAirlockYLoc = enterAirlockLoc.getY();
+        
+        // Add task phases
+        addPhase(WALK_TO_SITE);
         addPhase(COLLECT_REGOLITH);
+        addPhase(WALK_TO_AIRLOCK);
         
         logger.finest(person.getName() + " starting DigLocalRegolith task.");
     }
@@ -144,17 +155,60 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     }
     
     /**
+     * Determine location outside building airlock.
+     * @return location.
+     */
+    private Point2D determineAirlockEnteringLocation() {
+        
+        Point2D result = null;
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            result = newLocation;
+        }
+        
+        return result;
+    }
+    
+    /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
-        if (COLLECT_REGOLITH.equals(getPhase())) return collectRegolith(time);
-        if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitEVA(time);
+        }
+        else if (WALK_TO_SITE.equals(getPhase())) {
+            return walkToDigSitePhase(time);
+        }
+        else if (COLLECT_REGOLITH.equals(getPhase())) {
+            return collectRegolith(time);
+        }
+        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
+            return walkToAirlock(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterEVA(time);
+        }
+        else {
+            return time;
+        }
     }
     
     @Override
@@ -244,10 +298,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             }
             
             if (bag != null) {
-                setPhase(COLLECT_REGOLITH);
-                
-                // Move person to digging location.
-                moveToDiggingLocation();
+                setPhase(WALK_TO_SITE);
             }
             else {
                 setPhase(ENTER_AIRLOCK);
@@ -287,13 +338,56 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     }
     
     /**
-     * Move person to a location for digging regolith.
+     * Perform the walk to dig site phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
      */
-    private void moveToDiggingLocation() {
+    private double walkToDigSitePhase(double time) {
         
-        // TODO: replace with EVA walking task.
-        person.setXLocation(diggingXLocation);
-        person.setYLocation(diggingYLocation);
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_AIRLOCK);
+            return time;
+        }
+        
+        // If not at construction site location, create walk outside subtask.
+        if ((person.getXLocation() != diggingXLocation) || (person.getYLocation() != diggingYLocation)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    diggingXLocation, diggingYLocation, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(COLLECT_REGOLITH);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToAirlock(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
     }
     
     /**
@@ -348,7 +442,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
         if (shouldEndEVAOperation()) {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
+            setPhase(WALK_TO_AIRLOCK);
             return time;
         }
         
@@ -365,7 +459,9 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         
         person.getInventory().storeAmountResource(regolith, regolithCollected, true);
         
-        if (finishedCollecting) setPhase(ENTER_AIRLOCK);
+        if (finishedCollecting) {
+            setPhase(WALK_TO_AIRLOCK);
+        }
         
         // Add experience points
         addExperience(time);

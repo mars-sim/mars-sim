@@ -8,6 +8,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -21,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -32,14 +35,20 @@ import java.util.List;
 public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
     // Task phases
+    private static final String WALK_TO_SITE = "Walk to Site";
     private static final String COLLECT_MINERALS = "Collecting Minerals";
-
+    private static final String WALK_TO_ROVER = "Walk to Rover";
+    
     // Rate of mineral collection (kg/millisol)
     private static final double MINERAL_COLLECTION_RATE = 10D;
 
     // Data members
     private Rover rover; // Rover used.
     protected AmountResource mineralType; 
+    private double collectionSiteXLoc;
+    private double collectionSiteYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
 
     /**
      * Constructor
@@ -57,8 +66,60 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         this.rover = rover;
         this.mineralType = mineralType;
 
-        // Add task phase
+        // Determine location for collection site.
+        Point2D collectionSiteLoc = determineCollectionSiteLocation();
+        collectionSiteXLoc = collectionSiteLoc.getX();
+        collectionSiteYLoc = collectionSiteLoc.getY();
+        
+        // Determine location for reentering rover airlock.
+        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
+        enterAirlockXLoc = enterAirlockLoc.getX();
+        enterAirlockYLoc = enterAirlockLoc.getY();
+        
+        // Add task phases
+        addPhase(WALK_TO_SITE);
         addPhase(COLLECT_MINERALS);
+        addPhase(WALK_TO_ROVER);
+    }
+    
+    /**
+     * Determine location for the collection site.
+     * @return site X and Y location outside rover.
+     */
+    private Point2D determineCollectionSiteLocation() {
+        
+        Point2D newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 5) && !goodLocation; x++) {
+            for (int y = 0; (y < 10) && !goodLocation; y++) {
+
+                double distance = RandomUtil.getRandomDouble(50D) + (x * 100D) + 50D;
+                double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+                double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+                double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+                Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), rover);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+        }
+
+        return newLocation;
+    }
+    
+    /**
+     * Determine location for returning to rover airlock.
+     * @return X and Y location outside rover.
+     */
+    private Point2D determineRoverAirlockEnteringLocation() {
+        
+        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
+        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                vehicleLoc.getY(), rover);
+        
+        return newLocation;
     }
 
     /**
@@ -67,7 +128,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting rover.
      */
-    private double exitRover(double time) {
+    private double exitRoverPhase(double time) {
 
         try {
             time = exitAirlock(time, rover.getAirlock());
@@ -84,7 +145,11 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
             // Take bag for collecting mineral.
             if (!hasBags()) takeBag();
 
-            if (hasBags()) setPhase(COLLECT_MINERALS);
+            if (hasBags()) {
+                
+                // Set task phase to walk to collecting site.
+                setPhase(WALK_TO_SITE);
+            }
             else {
                 setPhase(ENTER_AIRLOCK);
             }
@@ -138,6 +203,59 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
         return result;
     }
+    
+    /**
+     * Perform the walk to mining collection site phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToCollectionSitePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_ROVER);
+            return time;
+        }
+        
+        // If not at mining collection site location, create walk outside subtask.
+        if ((person.getXLocation() != collectionSiteXLoc) || (person.getYLocation() != collectionSiteYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    collectionSiteXLoc, collectionSiteYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(COLLECT_MINERALS);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to rover airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToRoverAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside rover airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
+    }
 
     /**
      * Perform the collect minerals phase of the task.
@@ -145,7 +263,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error collecting minerals.
      */
-    private double collectMinerals(double time) {
+    private double collectMineralsPhase(double time) {
 
         // Check for an accident during the EVA operation.
         checkForAccident(time);
@@ -153,7 +271,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         // Check if there is reason to cut the collection phase short and return
         // to the rover.
         if (shouldEndEVAOperation()) {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
+            setPhase(WALK_TO_ROVER);
             return time;
         }
 
@@ -180,7 +298,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         person.getInventory().storeAmountResource(mineralType, mineralsCollected, true);
         mission.collectMineral(mineralType, mineralsCollected);
         if (((mineralsExcavated - mineralsCollected) <= 0D) || 
-                (mineralsCollected >= remainingPersonCapacity)) setPhase(ENTER_AIRLOCK);
+                (mineralsCollected >= remainingPersonCapacity)) setPhase(WALK_TO_ROVER);
 
         return 0D;
     }
@@ -191,7 +309,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error entering rover.
      */
-    private double enterRover(double time) {
+    private double enterRoverPhase(double time) {
 
         time = enterAirlock(time, rover.getAirlock());
 
@@ -307,10 +425,24 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitRover(time);
-        if (COLLECT_MINERALS.equals(getPhase())) return collectMinerals(time);
-        if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterRover(time);
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+            return exitRoverPhase(time);
+        }
+        else if (WALK_TO_SITE.equals(getPhase())) {
+            return walkToCollectionSitePhase(time);
+        }
+        else if (COLLECT_MINERALS.equals(getPhase())) {
+            return collectMineralsPhase(time);
+        }
+        else if (WALK_TO_ROVER.equals(getPhase())) {
+            return walkToRoverAirlockPhase(time);
+        }
+        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+            return enterRoverPhase(time);
+        }
         else return time;
     }
 

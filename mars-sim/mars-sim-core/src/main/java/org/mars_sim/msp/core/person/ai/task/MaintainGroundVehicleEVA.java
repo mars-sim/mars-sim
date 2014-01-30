@@ -10,6 +10,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -41,10 +42,17 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     private static Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
 	
     // Phase names
+    private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
+    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
  
+    // Data members.
     private GroundVehicle vehicle; // Vehicle to be maintained.
     private Airlock airlock; // Airlock to be used for EVA.
+    private double maintenanceXLoc;
+    private double maintenanceYLoc;
+    private double enterAirlockXLoc;
+    private double enterAirlockYLoc;
     
 	/** 
 	 * Constructor
@@ -59,11 +67,22 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (vehicle != null) {
             vehicle.setReservedForMaintenance(true);
             
+            // Determine location for maintenance.
+            Point2D maintenanceLoc = determineMaintenanceLocation();
+            maintenanceXLoc = maintenanceLoc.getX();
+            maintenanceYLoc = maintenanceLoc.getY();
+            
             // Get an available airlock.
             airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
                     vehicle.getYLocation());
             if (airlock == null) {
                 endTask();
+            }
+            else {
+                // Determine location for reentering building airlock.
+                Point2D enterAirlockLoc = determineAirlockEnteringLocation();
+                enterAirlockXLoc = enterAirlockLoc.getX();
+                enterAirlockYLoc = enterAirlockLoc.getY();
             }
         }
         else {
@@ -71,7 +90,9 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         }
         
         // Initialize phase.
+        addPhase(WALK_TO_VEHICLE);
         addPhase(MAINTAIN_VEHICLE);
+        addPhase(WALK_TO_AIRLOCK);
         
         logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
     }
@@ -131,17 +152,79 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
     }
     
     /**
+     * Determine location to perform vehicle maintenance.
+     * @return location.
+     */
+    private Point2D determineMaintenanceLocation() {
+        
+        Point2D.Double newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 50) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), vehicle);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getCoordinates());
+        }
+        
+        return newLocation;
+    }
+    
+    /**
+     * Determine location outside building airlock.
+     * @return location.
+     */
+    private Point2D determineAirlockEnteringLocation() {
+        
+        Point2D result = null;
+        
+        // Move the person to a random location outside the airlock entity.
+        if (airlock.getEntity() instanceof LocalBoundedObject) {
+            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
+            Point2D.Double newLocation = null;
+            boolean goodLocation = false;
+            for (int x = 0; (x < 20) && !goodLocation; x++) {
+                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), entityBounds);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+            
+            result = newLocation;
+        }
+        
+        return result;
+    }
+    
+    /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
      * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) return exitEVA(time);
-    	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehicle(time);
-    	if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) return enterEVA(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
+    	    return exitEVAPhase(time);
+    	}
+    	else if (WALK_TO_VEHICLE.equals(getPhase())) {
+            return walkToVehiclePhase(time);
+        }
+    	else if (MAINTAIN_VEHICLE.equals(getPhase())) {
+    	    return maintainVehiclePhase(time);
+    	}
+    	else if (WALK_TO_AIRLOCK.equals(getPhase())) {
+            return walkToAirlockPhase(time);
+        }
+    	else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
+    	    return enterEVAPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
     
 	/**
@@ -178,7 +261,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error exiting the airlock.
      */
-    private double exitEVA(double time) {
+    private double exitEVAPhase(double time) {
     	
     	try {
     		time = exitAirlock(time, airlock);
@@ -192,31 +275,62 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 		}
     	
         if (exitedAirlock) {
-            setPhase(MAINTAIN_VEHICLE);
-            
-            // Move person outside next to malfunctionable entity.
-            moveToMaintenanceLocation();
+            setPhase(WALK_TO_VEHICLE);
         }
         return time;
     }
     
     /**
-     * Move person outside next to ground vehicle.
+     * Perform the walk to vehicle maintenance location phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
      */
-    private void moveToMaintenanceLocation() {
-         
-        Point2D.Double newLocation = null;
-        boolean goodLocation = false;
-        for (int x = 0; (x < 20) && !goodLocation; x++) {
-            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                    boundedLocalPoint.getY(), vehicle);
-            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                    person.getCoordinates());
+    private double walkToVehiclePhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // Check if there is reason to cut the EVA walk phase short and return
+        // to the rover.
+        if (shouldEndEVAOperation()) {
+            setPhase(WALK_TO_AIRLOCK);
+            return time;
         }
-
-        person.setXLocation(newLocation.getX());
-        person.setYLocation(newLocation.getY());
+        
+        // If not at vehicle maintenance location, create walk outside subtask.
+        if ((person.getXLocation() != maintenanceXLoc) || (person.getYLocation() != maintenanceYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    maintenanceXLoc, maintenanceYLoc, false);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(MAINTAIN_VEHICLE);
+        }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk to airlock phase.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     */
+    private double walkToAirlockPhase(double time) {
+        
+        // Check for an accident during the EVA walk.
+        checkForAccident(time);
+        
+        // If not at outside airlock location, create walk outside subtask.
+        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
+            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
+                    enterAirlockXLoc, enterAirlockYLoc, true);
+            addSubTask(walkingTask);
+        }
+        else {
+            setPhase(EVAOperation.ENTER_AIRLOCK);
+        }
+        
+        return time;
     }
     
     /**
@@ -225,7 +339,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return the time remaining after performing this phase (in millisols)
      * @throws Exception if error maintaining vehicle.
      */
-    private double maintainVehicle(double time) {
+    private double maintainVehiclePhase(double time) {
         
         MalfunctionManager manager = vehicle.getMalfunctionManager();
         boolean malfunction = manager.hasMalfunction();
@@ -233,7 +347,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         if (finishedMaintenance) vehicle.setReservedForMaintenance(false);
         
         if (finishedMaintenance || malfunction || shouldEndEVAOperation()) {
-            setPhase(ENTER_AIRLOCK);
+            setPhase(WALK_TO_AIRLOCK);
             return time;
         }
         
@@ -256,7 +370,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         	}
         }
         else {
-			setPhase(ENTER_AIRLOCK);
+			setPhase(WALK_TO_AIRLOCK);
 			return time;
 		}
         
@@ -278,13 +392,16 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
      * @return time remaining after performing the phase
      * @throws Exception if error entering airlock.
      */
-    private double enterEVA(double time) {
+    private double enterEVAPhase(double time) {
         time = enterAirlock(time, airlock);
         
         // Add experience points
         addExperience(time);
         
-        if (enteredAirlock) endTask();
+        if (enteredAirlock) {
+            endTask();
+        }
+        
         return time;
     }	
     

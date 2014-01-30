@@ -28,7 +28,8 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A subtask for walking between two interior locations in a settlement.
- * (Ex: Between two connected inhabitable buildings.)
+ * (Ex: Between two connected inhabitable buildings or two locations in 
+ * a single inhabitable building.)
  */
 public class WalkInterior extends Task implements Serializable {
 
@@ -39,7 +40,7 @@ public class WalkInterior extends Task implements Serializable {
     
     // Static members
     private static final double WALKING_SPEED = 5D; // km / hr.
-    private static final double VERY_SMALL_DISTANCE = .000001D;
+    private static final double VERY_SMALL_DISTANCE = .00001D;
     
     // Data members
     private Settlement settlement;
@@ -58,7 +59,7 @@ public class WalkInterior extends Task implements Serializable {
      */
     public WalkInterior(Person person, Building destinationBuilding, 
             double destinationXLocation, double destinationYLocation) {
-        super("Walking", person, false, false, 0D, false, 0D);
+        super("Walking Interior", person, false, false, 0D, false, 0D);
         
         // Check that the person is currently inside the settlement.
         String location = person.getLocationSituation();
