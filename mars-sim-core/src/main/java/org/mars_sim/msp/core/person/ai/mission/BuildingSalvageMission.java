@@ -6,6 +6,17 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -20,7 +31,12 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.construction.*;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.structure.construction.SalvageValues;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -28,42 +44,39 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Mission for salvaging a construction stage at a building construction site.
  */
 public class BuildingSalvageMission extends Mission implements Serializable {
 
-    private static Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Salvage Building";
+	private static Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
 
-    // Mission phases
-    final public static String PREPARE_SITE_PHASE = "Prepare Site";
-    final public static String SALVAGE_PHASE = "Salvage";
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Salvage Building";
 
-    // Number of mission members.
-    private static final int MIN_PEOPLE = 3;
-    private static final int MAX_PEOPLE = 10;
+	// Mission phases
+	final public static String PREPARE_SITE_PHASE = "Prepare Site";
+	final public static String SALVAGE_PHASE = "Salvage";
 
-    // Time (millisols) required to prepare construction site for salvaging stage.
-    private static final double SITE_PREPARE_TIME = 500D;
+	// Number of mission members.
+	private static final int MIN_PEOPLE = 3;
+	private static final int MAX_PEOPLE = 10;
 
-    // Data members
-    private Settlement settlement;
-    private ConstructionSite constructionSite;
-    private ConstructionStage constructionStage;
-    private List<GroundVehicle> constructionVehicles;
-    private MarsClock sitePreparationStartTime;
-    private boolean finishingExistingStage;
-    private List<Part> luvAttachmentParts;
-    private double wearCondition;
+	/** Time (millisols) required to prepare construction site for salvaging stage. */
+	private static final double SITE_PREPARE_TIME = 500D;
+
+	// Data members
+	private Settlement settlement;
+	private ConstructionSite constructionSite;
+	private ConstructionStage constructionStage;
+	private List<GroundVehicle> constructionVehicles;
+	private MarsClock sitePreparationStartTime;
+	private boolean finishingExistingStage;
+	private List<Part> luvAttachmentParts;
+	private double wearCondition;
 
     /**
      * Constructor

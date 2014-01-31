@@ -7,21 +7,9 @@
 
 package org.mars_sim.msp.ui.swing.tool.time;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.time.*;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.MouseInputAdapter;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -29,59 +17,99 @@ import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.MouseInputAdapter;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.time.ClockListener;
+import org.mars_sim.msp.core.time.EarthClock;
+import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.time.MasterClock;
+import org.mars_sim.msp.core.time.UpTimer;
+import org.mars_sim.msp.ui.swing.JSliderMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ToolWindow;
+
 /** 
  * The TimeWindow is a tool window that displays the current 
  * Martian and Earth time 
  */
 public class TimeWindow extends ToolWindow implements ClockListener {
 	
-    private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-	// Tool name
+	private static Logger logger = Logger.getLogger(TimeWindow.class.getName());
+
+	/** Tool name. */
 	public static final String NAME = "Time Tool";		
 	
-    /*
-     * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
-     * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
-     * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
-     * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
-     * and lots of settlers die.
-     */
-	// the "default" ratio that will be set at 50, the middle of the scale
+	/*
+	 * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
+	 * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
+	 * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
+	 * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
+	 * and lots of settlers die.
+	 */
+	/** the "default" ratio that will be set at 50, the middle of the scale. */
 	private static final double ratioatmid = 1000.0D;
-	
-	// the max ratio the sim can be set at
-    private static final double maxratio = 10800.0D;
-    
-    // the minimum ratio the sim can be set at
-    private static final double minfracratio = 0.001D;
-    
-    // the largest fractional ratio the sim can be set at
-    private static final double maxfracratio = 0.98D;
 
-    // don't recommend changing these:
-    private static final double minslider = 20.0D;
-    private static final double midslider = (50.0D - minslider);
-    private static final double maxslider = 100D - minslider;
-    private static final double minfracpos = 1D;
-    private static final double maxfracpos = minslider - 1D;
+	/** the max ratio the sim can be set at. */
+	private static final double maxratio = 10800.0D;
 
-    // Data members
-    private MasterClock master;      // Master Clock
-    private MarsClock marsTime;      // Martian Clock
-    private EarthClock earthTime;    // Earth Clock
-    private UpTimer uptimer;         // Uptime Timer
-    private MarsCalendarDisplay calendarDisplay;  // Martian calendar panel
-    private JLabel martianTimeLabel; // JLabel for Martian time
-    private JLabel martianMonthLabel; // JLabel for Martian month
-    private JLabel northernSeasonLabel; // JLabel for Northern hemisphere season
-    private JLabel southernSeasonLabel; // JLabel for Southern hemisphere season
-    private JLabel earthTimeLabel;   // JLabel for Earth time
-    private JLabel uptimeLabel;      // JLabel for uptimer
-    private JLabel pulsespersecondLabel;      // JLabel for pulses per second label 
-    private JSlider pulseSlider;     // JSlider for pulse
-    private int sliderpos = 50;
-    private JButton pauseButton;
+	/** the minimum ratio the sim can be set at. */
+	private static final double minfracratio = 0.001D;
+
+	/** the largest fractional ratio the sim can be set at. */
+	private static final double maxfracratio = 0.98D;
+
+	// don't recommend changing these:
+	private static final double minslider = 20.0D;
+	private static final double midslider = (50.0D - minslider);
+	private static final double maxslider = 100D - minslider;
+	private static final double minfracpos = 1D;
+	private static final double maxfracpos = minslider - 1D;
+
+	// Data members
+	/** Master Clock. */
+	private MasterClock master;
+	/** Martian Clock. */
+	private MarsClock marsTime;
+	/** Earth Clock. */
+	private EarthClock earthTime;
+	/** Uptime Timer. */
+	private UpTimer uptimer;
+	/** Martian calendar panel. */
+	private MarsCalendarDisplay calendarDisplay;
+	/** label for Martian time. */
+	private JLabel martianTimeLabel;
+	/** label for Martian month. */
+	private JLabel martianMonthLabel;
+	/** label for Northern hemisphere season. */
+	private JLabel northernSeasonLabel;
+	/** label for Southern hemisphere season. */
+	private JLabel southernSeasonLabel;
+	/** label for Earth time. */
+	private JLabel earthTimeLabel;
+	/** label for uptimer. */
+	private JLabel uptimeLabel;
+	/** label for pulses per second label. */
+	private JLabel pulsespersecondLabel; 
+	/** slider for pulse. */
+	private JSliderMW pulseSlider;
+	private int sliderpos = 50;
+	private JButton pauseButton;
     
     /** Constructs a TimeWindow object 
      *  @param desktop the desktop pane
@@ -247,7 +275,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 		});
         
         // Create pulse slider
-        pulseSlider = new JSlider(1, 100, sliderpos);
+        pulseSlider = new JSliderMW(1, 100, sliderpos);
         pulseSlider.setMajorTickSpacing(10);
         pulseSlider.setMinorTickSpacing(2);
         pulseSlider.setPaintTicks(true);
