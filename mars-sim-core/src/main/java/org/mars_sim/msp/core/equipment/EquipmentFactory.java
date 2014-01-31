@@ -35,7 +35,6 @@ public final class EquipmentFactory {
 	 * @return set of equipment name strings.
 	 */
 	public static Set<String> getEquipmentNames() {
-	    
 	    if (equipmentNamesCache == null) {
 	        equipmentNamesCache = new HashSet<String>(6);
 	        equipmentNamesCache.add(Bag.TYPE);
@@ -45,7 +44,6 @@ public final class EquipmentFactory {
 	        equipmentNamesCache.add(LargeBag.TYPE);
 	        equipmentNamesCache.add(SpecimenContainer.TYPE);
 	    }
-	    
 	    return new HashSet<String>(equipmentNamesCache);
 	}
 	
@@ -58,7 +56,6 @@ public final class EquipmentFactory {
 	 * @throws Exception if error creating equipment instance.
 	 */
 	public static Equipment getEquipment(String type, Coordinates location, boolean temp) {
-		
 		if (temp) {
 			if (equipmentTypeCache.containsKey(type)) return equipmentTypeCache.get(type);
 			else {
@@ -67,7 +64,6 @@ public final class EquipmentFactory {
 				return equipment;
 			}
 		}
-		
 		if (Bag.TYPE.equalsIgnoreCase(type)) return new Bag(location);
 		else if (Barrel.TYPE.equalsIgnoreCase(type)) return new Barrel(location);
 		else if (EVASuit.TYPE.equalsIgnoreCase(type)) return new EVASuit(location);
@@ -76,7 +72,7 @@ public final class EquipmentFactory {
 		else if (SpecimenContainer.TYPE.equalsIgnoreCase(type)) return new SpecimenContainer(location);
 		else throw new IllegalStateException("Equipment: " + type + " could not be constructed.");
 	}
-	
+
 	/**
 	 * Gets an equipment instance from an equipment class.
 	 * @param equipmentClass the equipment class to use.
@@ -85,9 +81,11 @@ public final class EquipmentFactory {
 	 * @return the equipment instance.
 	 * @throws Exception if error creating equipment instance.
 	 */
-	public static Equipment getEquipment(Class<? extends Equipment> equipmentClass, Coordinates location, 
-	        boolean temp) {
-		
+	public static Equipment getEquipment(
+		Class<? extends Equipment> equipmentClass,
+		Coordinates location, 
+		boolean temp
+	) {
 		if (temp) {
 			if (equipmentClassCache.containsKey(equipmentClass)) return equipmentClassCache.get(equipmentClass);
 			else {
@@ -96,7 +94,6 @@ public final class EquipmentFactory {
 				return equipment;
 			}
 		}
-		
 		if (Bag.class.equals(equipmentClass)) return new Bag(location);
 		else if (Barrel.class.equals(equipmentClass)) return new Barrel(location);
 		else if (EVASuit.class.equals(equipmentClass)) return new EVASuit(location);

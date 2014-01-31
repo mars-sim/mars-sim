@@ -6,13 +6,19 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 
 
 /**
@@ -21,17 +27,23 @@ import java.awt.*;
  */
 public class MedicalCareBuildingPanel extends BuildingFunctionPanel {
     
-    // Data members
-    private MedicalCare medical; // The medical care.
-    private JLabel physicianLabel; // Label of number of physicians.
-    private MedicalTableModel medicalTableModel; // Table of medical info.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	/** The medical care. */
+    private MedicalCare medical;
+    /** Label of number of physicians. */
+    private JLabel physicianLabel;
+    /** Table of medical info. */
+    private MedicalTableModel medicalTableModel;
     
     // Data cache
-    private int physicianCache; // Cache of number of physicians.
+    /** Cache of number of physicians. */
+    private int physicianCache;
     
     /**
-     * Constructor
-     *
+     * Constructor.
      * @param medical the medical care building this panel is for.
      * @param desktop The main desktop.
      */
@@ -97,8 +109,11 @@ public class MedicalCareBuildingPanel extends BuildingFunctionPanel {
      */
     private static class MedicalTableModel extends AbstractTableModel {
         
-        MedicalCare medical;
-        java.util.List healthProblems;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private MedicalCare medical;
+        private java.util.List<?> healthProblems;
         
         private MedicalTableModel(MedicalCare medical) {
             this.medical = medical;
@@ -114,7 +129,7 @@ public class MedicalCareBuildingPanel extends BuildingFunctionPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = String.class;
             return dataType;

@@ -6,6 +6,30 @@
  */
 package org.mars_sim.msp.ui.swing.tool.search;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -15,18 +39,10 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-
-import javax.swing.*;
-import javax.swing.border.EtchedBorder;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Collection;
-import java.util.Iterator;
 
 /** 
  * The SearchWindow is a tool window that allows the user to search
@@ -34,7 +50,10 @@ import java.util.Iterator;
  */
 public class SearchWindow extends ToolWindow {
 
-    // Tool name
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Tool name. */
     public static final String NAME = "Search Tool";
 
     // Unit categories.
@@ -43,21 +62,30 @@ public class SearchWindow extends ToolWindow {
     public static final String VEHICLES = "Vehicles";
 
     // Data members
-    private JComboBox searchForSelect; // Category selecter
-    private JList unitList; // List of selectable units
-    private UnitListModel unitListModel; // Model for unit select list
-    private JTextField selectTextField; // Selection text field
-    private JLabel statusLabel; // Status label for displaying warnings.
-    private JCheckBox openWindowCheck; // Checkbox to indicate if unit window is to be opened.
-    private JCheckBox centerMapCheck; // Checkbox to indicate if map is to be centered on unit.
-    private boolean lockUnitList; // True if unitList selection events should be ignored.
-    private boolean lockSearchText; // True if selectTextField events should be ignored.
-    private String[] unitCategoryNames; // Array of category names.
+    /** Category selector. */
+    private JComboBoxMW<?> searchForSelect;
+    /** List of selectable units. */
+    private JList<Unit> unitList;
+    /** Model for unit select list. */
+    private UnitListModel unitListModel;
+    /** Selection text field. */
+    private JTextField selectTextField;
+    /** Status label for displaying warnings. */
+    private JLabel statusLabel;
+    /** Checkbox to indicate if unit window is to be opened. */
+    private JCheckBox openWindowCheck;
+    /** Checkbox to indicate if map is to be centered on unit. */
+    private JCheckBox centerMapCheck;
+    /** True if unitList selection events should be ignored. */
+    private boolean lockUnitList;
+    /** True if selectTextField events should be ignored. */
+    private boolean lockSearchText;
+    /** Array of category names. */
+    private String[] unitCategoryNames;
 
     /** 
-     * Constructor
-     *
-     * @param desktop the desktop pane
+     * Constructor.
+     * @param desktop {@link MainDesktopPane} the desktop pane
      */
     public SearchWindow(MainDesktopPane desktop) {
 
@@ -89,7 +117,7 @@ public class SearchWindow extends ToolWindow {
 
         // Create search for select
         String[] categoryStrings = { PEOPLE, SETTLEMENTS, VEHICLES };
-        searchForSelect = new JComboBox(categoryStrings);
+        searchForSelect = new JComboBoxMW<Object>(categoryStrings);
         searchForSelect.setSelectedIndex(0);
         searchForSelect.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent event) {
@@ -117,7 +145,7 @@ public class SearchWindow extends ToolWindow {
 
         // Create unit list
         unitListModel = new UnitListModel(PEOPLE);
-        unitList = new JList(unitListModel);
+        unitList = new JList<Unit>(unitListModel);
         unitList.setSelectedIndex(0);
         unitList.addMouseListener(new MouseAdapter() {
             public void mouseReleased(MouseEvent event) {
@@ -277,10 +305,14 @@ public class SearchWindow extends ToolWindow {
     /**
      * Inner class list model for categorized units.
      */
-    private class UnitListModel extends DefaultListModel 
+    private class UnitListModel extends DefaultListModel<Unit> 
             implements UnitManagerListener {
 
-        // Data members.
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		// Data members.
         private String category;
 
         /**

@@ -17,7 +17,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -33,6 +32,7 @@ import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlem
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
@@ -43,24 +43,24 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
     // Data members
     private ArrivingSettlement settlement;
     private JTextField nameTF;
-    private JComboBox templateCB;
+    private JComboBoxMW templateCB;
     private JRadioButton arrivalDateRB;
     private JLabel arrivalDateTitleLabel;
     private JRadioButton timeUntilArrivalRB;
     private JLabel timeUntilArrivalLabel;
     private MartianSolComboBoxModel martianSolCBModel;
     private JLabel solLabel;
-    private JComboBox solCB;
+    private JComboBoxMW solCB;
     private JLabel monthLabel;
-    private JComboBox monthCB;
+    private JComboBoxMW monthCB;
     private JLabel orbitLabel;
-    private JComboBox orbitCB;
+    private JComboBoxMW orbitCB;
     private JTextField solsTF;
     private JLabel solInfoLabel;
     private JTextField latitudeTF;
-    private JComboBox latitudeDirectionCB;
+    private JComboBoxMW latitudeDirectionCB;
     private JTextField longitudeTF;
-    private JComboBox longitudeDirectionCB;
+    private JComboBoxMW longitudeDirectionCB;
     private JTextField populationTF;
     private JLabel errorLabel;
     
@@ -117,7 +117,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         while (i.hasNext()) {
             templateNames.add(i.next().getTemplateName());
         }
-        templateCB = new JComboBox(templateNames);
+        templateCB = new JComboBoxMW(templateNames);
         if (settlement != null) {
             templateCB.setSelectedItem(settlement.getTemplate());
         }
@@ -199,7 +199,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
 
         // Create sol combo box.
         martianSolCBModel = new MartianSolComboBoxModel(arrivingTime.getMonth(), arrivingTime.getOrbit());
-        solCB = new JComboBox(martianSolCBModel);
+        solCB = new JComboBoxMW(martianSolCBModel);
         solCB.setSelectedItem(arrivingTime.getSolOfMonth());
         arrivalDateSelectionPane.add(solCB);
 
@@ -208,7 +208,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         arrivalDateSelectionPane.add(monthLabel);
 
         // Create month combo box.
-        monthCB = new JComboBox(MarsClock.getMonthNames());
+        monthCB = new JComboBoxMW(MarsClock.getMonthNames());
         monthCB.setSelectedItem(arrivingTime.getMonthName());
         monthCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -231,7 +231,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         for (int x = 0; x < 20; x++) {
             orbitValues[x] = formatter.format(startOrbit + x);
         }
-        orbitCB = new JComboBox(orbitValues);
+        orbitCB = new JComboBoxMW(orbitValues);
         orbitCB.setSelectedItem(formatter.format(startOrbit));
         orbitCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -306,7 +306,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         latitudePane.add(latDegLabel);
         
         // Create latitude direction combo box.
-        latitudeDirectionCB = new JComboBox();
+        latitudeDirectionCB = new JComboBoxMW();
         latitudeDirectionCB.addItem("N");
         latitudeDirectionCB.addItem("S");
         if (settlement != null) {
@@ -341,7 +341,7 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         longitudePane.add(lonDegLabel);
         
         // Create longitude direction combo box.
-        longitudeDirectionCB = new JComboBox();
+        longitudeDirectionCB = new JComboBoxMW();
         longitudeDirectionCB.addItem("W");
         longitudeDirectionCB.addItem("E");
         if (settlement != null) {

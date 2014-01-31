@@ -7,16 +7,40 @@
 
 package org.mars_sim.msp.ui.swing.tool.navigator;  
   
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JTextField;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
-import org.mars_sim.msp.core.*;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
@@ -44,31 +68,55 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  */
 public class NavigatorWindow extends ToolWindow implements ActionListener {
 	
-	// Tool name
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Tool name. */
 	public static final String NAME = "Mars Navigator";
 
     // Data members
-    private MapPanel map; // map navigation
-    private GlobeDisplay globeNav; // Globe navigation
-    private NavButtonDisplay navButtons; // Compass navigation buttons
-    private LegendDisplay legend; // Topographical and distance legend
-    private JTextField latText; // Latitude entry
-    private JTextField longText; // Longitude entry
-    private JComboBox latDir; // Latitude direction choice
-    private JComboBox longDir; // Longitude direction choice
-    private JButton goThere; // Location entry submit button
-    private JButton optionsButton; // Options for map display
-    private JPopupMenu optionsMenu; // Map options menu
-    private JButton mineralsButton; // Minerals button
-    private JCheckBoxMenuItem topoItem; //Topographical map menu item.
-    private JCheckBoxMenuItem unitLabelItem; // Show unit labels menu item.
-    private JCheckBoxMenuItem dayNightItem; // Day/night tracking menu item.
-    private JCheckBoxMenuItem usgsItem; // Show USGS map mode menu item.
-    private JCheckBoxMenuItem trailItem; // Show vehicle trails menu item.
-    private JCheckBoxMenuItem landmarkItem; // Show landmarks menu item. 
-    private JCheckBoxMenuItem navpointItem; // Show navpoints menu item.
-    private JCheckBoxMenuItem exploredSiteItem;  // Show explored sites menu item.
-    private JCheckBoxMenuItem mineralItem; // Show minerals menu item.
+	/** map navigation. */
+    private MapPanel map;
+    /** Globe navigation. */
+    private GlobeDisplay globeNav;
+    /** Compass navigation buttons. */
+    private NavButtonDisplay navButtons;
+    /** Topographical and distance legend. */
+    private LegendDisplay legend;
+    /** Latitude entry. */
+    private JTextField latText;
+    /** Longitude entry. */
+    private JTextField longText;
+    /** Latitude direction choice. */
+    private JComboBoxMW<?> latDir;
+    /** Longitude direction choice. */
+    private JComboBoxMW<?> longDir;
+    /** Location entry submit button. */
+    private JButton goThere;
+    /** Options for map display. */
+    private JButton optionsButton;
+    /** Map options menu. */
+    private JPopupMenu optionsMenu;
+    /** Minerals button. */
+    private JButton mineralsButton;
+    /** Topographical map menu item. */
+    private JCheckBoxMenuItem topoItem;
+    /** Show unit labels menu item. */
+    private JCheckBoxMenuItem unitLabelItem;
+    /** Day/night tracking menu item. */
+    private JCheckBoxMenuItem dayNightItem;
+    /** Show USGS map mode menu item. */
+    private JCheckBoxMenuItem usgsItem;
+    /** Show vehicle trails menu item. */
+    private JCheckBoxMenuItem trailItem;
+    /** Show landmarks menu item. */
+    private JCheckBoxMenuItem landmarkItem;
+    /** Show navpoints menu item. */
+    private JCheckBoxMenuItem navpointItem;
+    /** Show explored sites menu item. */
+    private JCheckBoxMenuItem exploredSiteItem;
+    /** Show minerals menu item. */
+    private JCheckBoxMenuItem mineralItem;
     private MapLayer unitIconLayer;
     private MapLayer unitLabelLayer;
     private MapLayer shadingLayer;
@@ -79,8 +127,9 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
     private MapLayer exploredSiteLayer;
     
 
-    /** Constructs a NavigatorWindow object 
-     *  @param desktop the desktop pane
+    /**
+     * Constructs a {@link NavigatorWindow} object, hence a constructor. 
+     * @param desktop {@link MainDesktopPane} the desktop pane
      */
     public NavigatorWindow(MainDesktopPane desktop) {
 
@@ -224,7 +273,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         positionPane.add(latText);
 
         String[] latStrings = { "N", "S" };
-        latDir = new JComboBox(latStrings);
+        latDir = new JComboBoxMW<Object>(latStrings);
         latDir.setEditable(false);
         latDir.setPreferredSize(new Dimension(45, -1));
         positionPane.add(latDir);
@@ -242,7 +291,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         positionPane.add(longText);
 
         String[] longStrings = { "E", "W" };
-        longDir = new JComboBox(longStrings);
+        longDir = new JComboBoxMW<Object>(longStrings);
         longDir.setEditable(false);
         longDir.setPreferredSize(new Dimension(45, -1));
         positionPane.add(longDir);

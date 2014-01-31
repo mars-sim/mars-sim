@@ -6,24 +6,29 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.structure.building.Building;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * This class provides a table model for use with the MonitorWindow that
  * provides a mean to display the Historical Event. This is actually an
  * Adapter onto the existing Event Manager.
  */
-public class EventTableModel extends AbstractTableModel
-            implements MonitorModel, HistoricalEventListener {
+public class EventTableModel
+extends AbstractTableModel
+implements MonitorModel, HistoricalEventListener {
+
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Column names
     private static final int TIMESTAMP = 0;
@@ -33,8 +38,10 @@ public class EventTableModel extends AbstractTableModel
     private static final int DESC = 4;
     private static final int COLUMNCOUNT = 5;
 
-    static private String columnNames[];   // Names of the displayed columns
-    static private Class  columnTypes[];   // Types of the individual columns
+    /** Names of the displayed columns. */
+    static private String columnNames[];
+    /** Types of the individual columns. */
+    static private Class<?> columnTypes[];
 
     static {
         columnNames = new String[COLUMNCOUNT];
@@ -62,6 +69,7 @@ public class EventTableModel extends AbstractTableModel
     private boolean displayTransport = false;
 
     /**
+     * constructor.
      * Create a new Event model based on the specified event manager.
      * @param manager Manager to extract events from.
      */

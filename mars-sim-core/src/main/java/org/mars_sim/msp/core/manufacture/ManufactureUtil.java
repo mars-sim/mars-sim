@@ -7,6 +7,12 @@
 
 package org.mars_sim.msp.core.manufacture;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeMap;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -20,6 +26,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -30,11 +37,6 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * Utility class for getting manufacturing processes.
@@ -51,12 +53,25 @@ public final class ManufactureUtil {
 	 * @return list of processes.
 	 * @throws Exception if error getting processes.
 	 */
-	public static List<ManufactureProcessInfo> getAllManufactureProcesses()
-			{
-		ManufactureConfig config = SimulationConfig.instance().getManufactureConfiguration();
-		return new ArrayList<ManufactureProcessInfo>(config.getManufactureProcessList());
+	public static List<ManufactureProcessInfo> getAllManufactureProcesses() {
+		return SimulationConfig
+		.instance()
+		.getManufactureConfiguration()
+		.getManufactureProcessList();
 	}
-	
+
+	/**
+	 * gives back an alphabetically ordered map of all manufacturing processes.
+	 * @return {@link TreeMap}<{@link String},{@link ManufactureProcessInfo}>
+	 */
+	public static TreeMap<String,ManufactureProcessInfo> getAllManufactureProcessesMap() {
+		TreeMap<String,ManufactureProcessInfo> map = new TreeMap<String,ManufactureProcessInfo>();
+		for (ManufactureProcessInfo item : getAllManufactureProcesses()) {
+			map.put(item.getName(),item);
+		}
+		return map;
+	}
+
 	/**
 	 * Gets manufacturing processes within the capability of a tech level.
 	 * @param techLevel the tech level.
@@ -76,7 +91,45 @@ public final class ManufactureUtil {
 		
 		return result;
 	}
-	
+
+	/**
+	 * gets manufacturing processes with given output.
+	 * @param item {@link String} name of desired output
+	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
+	 */
+	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenOutput(
+		String name
+	) {
+		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		Iterator<ManufactureProcessInfo> i = SimulationConfig
+		.instance().getManufactureConfiguration()
+		.getManufactureProcessList().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessInfo process = i.next();
+			if (process.getOutputNames().contains(name)) result.add(process);
+		}
+		return result;
+	}
+
+	/**
+	 * gets manufacturing processes with given input.
+	 * @param item {@link String} desired input
+	 * @return {@link List}<{@link ManufactureProcessItem}> list of processes
+	 */
+	public static List<ManufactureProcessInfo> getManufactureProcessesWithGivenInput(
+		String item
+	) {
+		List<ManufactureProcessInfo> result = new ArrayList<ManufactureProcessInfo>();
+		Iterator<ManufactureProcessInfo> i = SimulationConfig
+		.instance().getManufactureConfiguration()
+		.getManufactureProcessList().iterator();
+		while (i.hasNext()) {
+			ManufactureProcessInfo process = i.next();
+			if (process.getInputNames().contains(item)) result.add(process);
+		}
+		return result;
+	}
+
 	/**
 	 * Gets manufacturing processes within the capability of a tech level and a skill level.
 	 * @param techLevel the tech level.

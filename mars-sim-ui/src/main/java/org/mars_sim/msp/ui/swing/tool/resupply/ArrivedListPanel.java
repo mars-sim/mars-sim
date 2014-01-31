@@ -32,14 +32,19 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 /**
  * A panel showing a list of all arrived resupply missions.
  */
-public class ArrivedListPanel extends JPanel implements ListSelectionListener {
+public class ArrivedListPanel
+extends JPanel
+implements ListSelectionListener {
+
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     // Data members
-    private JList arrivedList;
+    private JList<?> arrivedList;
     private ArrivedListModel listModel;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public ArrivedListPanel() {
 
@@ -52,7 +57,7 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
 
         // Create arrived list.
         listModel = new ArrivedListModel();
-        arrivedList = new JList(listModel);
+        arrivedList = new JList<Object>(listModel);
         arrivedList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(arrivedList);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -63,14 +68,14 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
      * Gets the arrived resupply list.
      * @return the arrived resupply list.
      */
-    JList getArrivedList() {
+    JList<?> getArrivedList() {
         return arrivedList;
     }
 
     @Override
     public void valueChanged(ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
-            JList incomingList = (JList) evt.getSource();
+            JList<?> incomingList = (JList<?>) evt.getSource();
             if (incomingList.getSelectedValue() != null) {
                 arrivedList.clearSelection();
             }
@@ -87,10 +92,14 @@ public class ArrivedListPanel extends JPanel implements ListSelectionListener {
     /**
      * Inner class for the arrived resupply list model.
      */
-    private class ArrivedListModel extends AbstractListModel implements 
-            HistoricalEventListener {
+    private class ArrivedListModel
+    extends AbstractListModel<Object>
+    implements HistoricalEventListener {
 
-        // Data members.
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		// Data members.
         private List<Transportable> resupplyList;
 
         private ArrivedListModel() {

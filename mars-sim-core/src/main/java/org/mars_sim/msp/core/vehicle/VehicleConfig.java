@@ -20,6 +20,8 @@ import java.util.*;
  */
 public class VehicleConfig implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Element names
 	private static final String VEHICLE = "vehicle";
 	private static final String TYPE = "type";
@@ -50,8 +52,8 @@ public class VehicleConfig implements Serializable {
 	private List<String> roverNames;
 	
 	/**
-	 * Constructor
-	 * @param vehicleDoc DOM document with vehicle configuration.
+	 * Constructor.
+	 * @param vehicleDoc {@link Document} DOM document with vehicle configuration.
 	 */
 	public VehicleConfig(Document vehicleDoc) {
 		this.vehicleDoc = vehicleDoc;

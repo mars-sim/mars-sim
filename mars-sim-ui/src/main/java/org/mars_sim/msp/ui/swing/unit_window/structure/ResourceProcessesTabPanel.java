@@ -61,7 +61,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		processesScrollPanel = new JScrollPane();
 		processesScrollPanel.setPreferredSize(new Dimension(220, 280));
-		topContentPanel.add(processesScrollPanel);         
+		centerContentPanel.add(processesScrollPanel,BorderLayout.CENTER);         
         
         // Prepare process list panel.
         processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
@@ -71,7 +71,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
         
         // Create override check box panel.
         JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        topContentPanel.add(overrideCheckboxPane);
+        centerContentPanel.add(overrideCheckboxPane,BorderLayout.SOUTH);
         
         // Create override check box.
         overrideCheckbox = new JCheckBox("Override resource process toggling");

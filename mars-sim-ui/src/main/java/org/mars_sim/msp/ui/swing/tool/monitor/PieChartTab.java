@@ -7,6 +7,19 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.swing.Icon;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -15,12 +28,6 @@ import org.jfree.data.AbstractDataset;
 import org.jfree.data.PieDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
-import java.util.*;
 
 /**
  * This class presents a Pie chart as a Monitor tab. The data for the Pie
@@ -32,26 +39,34 @@ import java.util.*;
  */
 class PieChartTab extends MonitorTab {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     public final static Icon PIEICON = ImageLoader.getIcon("PieChart");
     
-    // Minimum time (milliseconds) between chart updates based on table
-    // update events.
+    /**
+     * Minimum time (milliseconds) between chart updates
+     * based on table update events.
+     */
     private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
-    /**
-     * The category name for unknwown
-     */
+    /** The category name for unknwown. */
     private final static String NONECAT = "None";
 
     /**
-     *  Basic Pie Dataset with a method to recalculate.
+     * Basic Pie Dataset with a method to recalculate.
      */
-    static class TablePieDataset extends AbstractDataset
-            implements PieDataset, TableModelListener {
+    @SuppressWarnings("rawtypes")
+    static class TablePieDataset
+    extends AbstractDataset
+    implements PieDataset, TableModelListener {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
         private TableModel model;
         private int column;
-        private Map<Comparable, Integer> dataMap;
+		private Map<Comparable, Integer> dataMap;
         private long lastUpdateTime;
 
         public TablePieDataset(TableModel model, int column) {
@@ -283,7 +298,7 @@ class PieChartTab extends MonitorTab {
 
     }
 
-    protected List getSelection() {
+    protected List<?> getSelection() {
         return Collections.EMPTY_LIST;
     }
 

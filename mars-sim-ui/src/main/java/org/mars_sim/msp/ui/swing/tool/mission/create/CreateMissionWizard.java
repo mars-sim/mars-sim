@@ -21,6 +21,8 @@ import java.util.List;
  */
 public class CreateMissionWizard extends JDialog {
 	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Data members
 	private JPanel infoPane;
 	private JButton prevButton;
@@ -31,7 +33,7 @@ public class CreateMissionWizard extends JDialog {
 	private int displayPanelIndex;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param owner The owner frame.
 	 */
 	public CreateMissionWizard(Frame owner) {

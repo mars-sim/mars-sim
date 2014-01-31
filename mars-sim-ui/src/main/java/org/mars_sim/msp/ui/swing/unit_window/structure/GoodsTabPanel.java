@@ -7,6 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -17,20 +28,18 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.util.List;
-
 public class GoodsTabPanel extends TabPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private GoodsTableModel goodsTableModel;
 	
     /**
-     * Constructor
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
+     * Constructor.
+     * @param unit {@link Unit} the unit to display.
+     * @param desktop {@link MainDesktopPane} the main desktop.
      */
 	public GoodsTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
@@ -82,9 +91,11 @@ public class GoodsTabPanel extends TabPanel {
      */
     private static class GoodsTableModel extends AbstractTableModel {
     	
-    	// Data members
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		// Data members
     	GoodsManager manager;
-    	List goods;
+    	List<?> goods;
     	
     	private GoodsTableModel(GoodsManager manager) {
     		this.manager = manager;
@@ -100,7 +111,7 @@ public class GoodsTabPanel extends TabPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = Double.class;
             return dataType;

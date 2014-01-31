@@ -7,19 +7,24 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Enumeration;
+
+import javax.swing.JCheckBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JPanel;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * The MonitorPropsDialog class display the columns of a specific table.
@@ -27,14 +32,20 @@ import java.util.Enumeration;
  */
 class TableProperties extends JInternalFrame {
 
-    // Data members
-    private TableColumnModel model; // Table to change
-    private ArrayList<JCheckBox> columnButtons = new ArrayList<JCheckBox>(); // Check boxes
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** Constructs a MonitorPropsDialog class
-     *  @param title The name of the specified model
-     *  @param table the table to configure
-     *  @param desktop the main desktop.
+    // Data members
+	/** Table to change. */
+    private TableColumnModel model;
+    /** Checkboxes. */
+    private ArrayList<JCheckBox> columnButtons = new ArrayList<JCheckBox>();
+
+    /**
+     * Constructs a MonitorPropsDialog class.
+     * @param title The name of the specified model
+     * @param table the table to configure
+     * @param desktop the main desktop.
      */
     public TableProperties(String title, JTable table,
                               MainDesktopPane main) {
@@ -62,17 +73,19 @@ class TableProperties extends JInternalFrame {
             JCheckBox column = new JCheckBox(name);
             column.setSelected(false);
 
-            column.addActionListener(new ActionListener() {
+            column.addActionListener(
+            	new ActionListener() {
                     public void actionPerformed(ActionEvent event) {
                         columnSelected(event);
                     }
-                });
+                }
+            );
             columnButtons.add(column);
             columnPane.add(column);
         }
 
         // Selected if column is visible
-        Enumeration en = model.getColumns();
+        Enumeration<?> en = model.getColumns();
         while(en.hasMoreElements()) {
             int selected = ((TableColumn)en.nextElement()).getModelIndex();
             JCheckBox columnButton = columnButtons.get(selected);
@@ -101,7 +114,7 @@ class TableProperties extends JInternalFrame {
         }
         else {
             TableColumn col = null;
-            Enumeration en = model.getColumns();
+            Enumeration<?> en = model.getColumns();
             while((col == null) && en.hasMoreElements()) {
                 TableColumn next = (TableColumn)en.nextElement();
                 if (next.getModelIndex() == index) {

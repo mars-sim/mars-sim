@@ -7,6 +7,28 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -18,26 +40,18 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * Tab panel displaying vehicle mission info.
  */
 public class MissionTabPanel extends TabPanel {
 
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	private JTextArea missionTextArea;
     private JTextArea missionPhaseTextArea;
-    private DefaultListModel memberListModel;
-    private JList memberList;
+    private DefaultListModel<Person> memberListModel;
+    private JList<Person> memberList;
     private JButton missionButton;
     private JButton monitorButton;
     
@@ -47,7 +61,7 @@ public class MissionTabPanel extends TabPanel {
     private Collection<Person> memberCache;
 	
     /**
-     * Constructor
+     * Constructor.
      * @param vehicle the vehicle.
      * @param desktop the main desktop.
      */
@@ -114,14 +128,14 @@ public class MissionTabPanel extends TabPanel {
         memberListPanel.add(memberScrollPanel);
         
         // Create member list model
-        memberListModel = new DefaultListModel();
+        memberListModel = new DefaultListModel<Person>();
         if (mission != null) memberCache = mission.getPeople();
         else memberCache = new ConcurrentLinkedQueue<Person>();
-        Iterator i = memberCache.iterator();
+        Iterator<Person> i = memberCache.iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
-        memberList = new JList(memberListModel);
+        memberList = new JList<Person>(memberListModel);
         // memberList.addMouseListener(this);
         memberList.addMouseListener(new MouseAdapter() {
         	public void mouseClicked(MouseEvent arg0) {
@@ -193,7 +207,7 @@ public class MissionTabPanel extends TabPanel {
         if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
             memberCache = tempCollection;
             memberListModel.clear();
-            Iterator i = memberCache.iterator();
+            Iterator<Person> i = memberCache.iterator();
             while (i.hasNext()) memberListModel.addElement(i.next());
         }
         

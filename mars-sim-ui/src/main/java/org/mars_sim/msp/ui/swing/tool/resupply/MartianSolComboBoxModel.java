@@ -13,15 +13,17 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A combo box model for Martian sols.
  */
-public class MartianSolComboBoxModel extends DefaultComboBoxModel {
+public class MartianSolComboBoxModel extends DefaultComboBoxModel<Integer> {
 
-    // Data members
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	/** Data members. */
     private int maxSolNum;
 
     /**
-     * Constructor
-     * @param month the Martian month number.
-     * @param orbit the Martian orbit number.
+     * Constructor.
+     * @param month {@link Integer} the Martian month number.
+     * @param orbit {@link Integer} the Martian orbit number.
      */
     public MartianSolComboBoxModel(int month, int orbit) {
         maxSolNum = MarsClock.getSolsInMonth(month, orbit);

@@ -6,6 +6,28 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -17,34 +39,26 @@ import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Tab panel displaying a list of settlement missions.
  */
 public class MissionTabPanel extends TabPanel {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Data members
 	private Settlement settlement;
 	private List<Mission> missionsCache;
-	private DefaultListModel missionListModel;
-	private JList missionList;
+	private DefaultListModel<Mission> missionListModel;
+	private JList<Mission> missionList;
 	private JButton missionButton;
 	private JButton monitorButton;
 	private JCheckBox overrideCheckbox;
 	
 	/**
-	 * Constructor
-	 * @param settlement the settlement this tab panel is for.
-	 * @param desktop the main desktop panel.
+	 * Constructor.
+	 * @param settlement {@link Settlement} the settlement this tab panel is for.
+	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public MissionTabPanel(Settlement settlement, MainDesktopPane desktop) {
         // Use the TabPanel constructor
@@ -76,14 +90,14 @@ public class MissionTabPanel extends TabPanel {
 		missionListPanel.add(missionScrollPanel);
 		
 		// Create mission list model.
-		missionListModel = new DefaultListModel();
+		missionListModel = new DefaultListModel<Mission>();
 		MissionManager manager = Simulation.instance().getMissionManager();
         missionsCache = manager.getMissionsForSettlement(settlement);
 		Iterator<Mission> i = missionsCache.iterator();
 		while (i.hasNext()) missionListModel.addElement(i.next());
 		
 		// Create mission list.
-		missionList = new JList(missionListModel);
+		missionList = new JList<Mission>(missionListModel);
 		missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		missionList.addListSelectionListener(new ListSelectionListener() {
 			public void valueChanged(ListSelectionEvent e) {

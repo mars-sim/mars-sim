@@ -7,6 +7,27 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.Part;
@@ -17,25 +38,18 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 public class SalvageProjectPanel extends WizardPanel {
 
-    // The wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
     private final static String NAME = "Salvage Project";
     
     // Data members
     private JLabel errorMessageLabel;
-    private DefaultListModel projectListModel;
-    private JList projectList;
+    private DefaultListModel<Object> projectListModel;
+    private JList<Object> projectList;
     private PartsTableModel partsTableModel;
     private JTable partsTable;
     
@@ -77,9 +91,9 @@ public class SalvageProjectPanel extends WizardPanel {
         projectPane.add(projectListScrollPane, BorderLayout.CENTER);
         
         // Create project selection list.
-        projectListModel = new DefaultListModel();
+        projectListModel = new DefaultListModel<Object>();
         populateProjectListModel();
-        projectList = new JList(projectListModel);
+        projectList = new JList<Object>(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         projectList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent arg0) {
@@ -196,7 +210,10 @@ public class SalvageProjectPanel extends WizardPanel {
      */
     private class PartsTableModel extends AbstractTableModel {
 
-        // Data members.
+        /** default serial id. */
+    	private static final long serialVersionUID = 1L;
+
+    	// Data members.
         private ConstructionStageInfo info = null;
         private Map<Part, Integer> partsNumber;
         

@@ -19,7 +19,7 @@ import junit.framework.TestSuite;
  */
 public class JUnitTests extends TestCase {
 
-    private static final Class thisClass = JUnitTests.class;
+    private static final Class<JUnitTests> thisClass = JUnitTests.class;
 
     // Get test properties.
     private static final java.util.Properties properties =

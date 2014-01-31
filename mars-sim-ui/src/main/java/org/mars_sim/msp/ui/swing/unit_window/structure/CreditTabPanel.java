@@ -7,6 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -21,19 +35,15 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 public class CreditTabPanel extends TabPanel {
 	
-    /**
-     * Constructor
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/**
+     * Constructor.
+     * @param unit {@link Unit} the unit to display.
+     * @param desktop {@link MainDesktopPane} the main desktop.
      */
 	public CreditTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use TabPanel constructor.
@@ -78,6 +88,7 @@ public class CreditTabPanel extends TabPanel {
     /**
      * Updates the info on this panel.
      */
+	@Override
 	public void update() {
 		// Do nothing.
 	}
@@ -88,11 +99,18 @@ public class CreditTabPanel extends TabPanel {
     private static class CreditTableModel extends AbstractTableModel implements CreditListener, 
             UnitManagerListener {
     	
-    	// Data members
-    	CreditManager manager;
-    	Collection<Settlement> settlements;
-    	Settlement thisSettlement;
-    	
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+		
+		// Data members
+    	private CreditManager manager;
+    	private Collection<Settlement> settlements;
+    	private Settlement thisSettlement;
+
+    	/**
+    	 * hidden constructor.
+    	 * @param thisSettlement {@link Settlement}
+    	 */
     	private CreditTableModel(Settlement thisSettlement) {
     		this.thisSettlement = thisSettlement;
     		manager = Simulation.instance().getCreditManager();
@@ -111,22 +129,26 @@ public class CreditTabPanel extends TabPanel {
     		Simulation.instance().getUnitManager().addUnitManagerListener(this);
     	}
     	
+    	@Override
         public int getRowCount() {
             return settlements.size();
         }
         
+    	@Override
         public int getColumnCount() {
             return 3;
         }
         
+    	@Override
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = Double.class;
             else if (columnIndex == 2) dataType = String.class;
             return dataType;
         }
         
+    	@Override
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Settlement";
             else if (columnIndex == 1) return "VP";
@@ -134,6 +156,7 @@ public class CreditTabPanel extends TabPanel {
             else return "unknown";
         }
         
+    	@Override
         public Object getValueAt(int row, int column) {
         	if (row < getRowCount()) {
         		Settlement settlement = (Settlement) settlements.toArray()[row];
@@ -163,14 +186,18 @@ public class CreditTabPanel extends TabPanel {
     	 * Catch credit update event.
     	 * @param event the credit event.
     	 */
+    	@Override
     	public void creditUpdate(CreditEvent event) {
     		if ((thisSettlement == event.getSettlement1()) || 
     				(thisSettlement == event.getSettlement2())) 
-    			SwingUtilities.invokeLater(new Runnable() {
-    				public void run() {
-    					fireTableDataChanged();
-    				}
-    			});
+    			SwingUtilities.invokeLater(
+    				new Runnable() {
+	                	@Override
+	    				public void run() {
+	    					fireTableDataChanged();
+	    				}
+	    			}
+    			);
     	}
     	
         @Override
@@ -187,21 +214,25 @@ public class CreditTabPanel extends TabPanel {
                     }
                 }
                 
-                SwingUtilities.invokeLater(new Runnable() {
-                    public void run() {
-                        fireTableDataChanged();
-                    }
-                });
+                SwingUtilities.invokeLater(
+                	new Runnable() {
+                    	@Override
+                		public void run() {
+                			fireTableDataChanged();
+                		}
+                	}
+                );
             }
         }
     	
-        /**
+        /*
          * Prepare for deletion.
-         */
+         *
         public void destroy() {
         	manager.removeListener(this);
         	settlements = null;
         	thisSettlement = null;
         }
+        */
     }
 }

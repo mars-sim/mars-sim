@@ -40,7 +40,7 @@ public abstract class UnitWindow extends JInternalFrame {
     public UnitWindow(MainDesktopPane desktop, Unit unit, boolean displayDescription) {
         
         // Use JInternalFrame constructor
-        super(unit.getName(), false, true, false, true);
+        super(unit.getName(), true, true, false, true);
 
         // Initialize data members
         this.desktop = desktop;

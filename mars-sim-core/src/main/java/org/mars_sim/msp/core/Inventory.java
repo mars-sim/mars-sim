@@ -6,19 +6,25 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.AmountResourceStorage;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Phase;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /** 
  * The Inventory class represents what a unit 
@@ -28,20 +34,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class Inventory implements Serializable {
 
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     // Unit events
     public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
     public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
     public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
     
-    // Comparison to indicate a small but non-zero amount.
+    /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
     // Data members
-    private Unit owner; // The unit that owns this inventory. 
-    private Collection<Unit> containedUnits = null; // Collection of units in inventory.
-    private Map<ItemResource, Integer> containedItemResources = null; // Map of item resources.
-    private double generalCapacity = 0D; // General mass capacity of inventory.
-    private AmountResourceStorage resourceStorage = null; // Resource storage.
+    /** The unit that owns this inventory. */
+    private Unit owner;
+    /** Collection of units in inventory. */
+    private Collection<Unit> containedUnits = null;
+    /** Map of item resources. */
+    private Map<ItemResource, Integer> containedItemResources = null;
+    /** General mass capacity of inventory. */
+    private double generalCapacity = 0D;
+    /** Resource storage. */
+    private AmountResourceStorage resourceStorage = null;
 
     // Cache capacity variables.
     private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
@@ -1000,7 +1014,7 @@ public class Inventory implements Serializable {
      */
     private synchronized void initializeAmountResourceCapacityCache() {
         
-        Set<AmountResource> resources = AmountResource.getAmountResources();
+        Collection<AmountResource> resources = AmountResource.getAmountResources();
         amountResourceCapacityCache = new HashMap<AmountResource, Double>(resources.size());
         amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
         
@@ -1139,7 +1153,7 @@ public class Inventory implements Serializable {
      */
     private synchronized void initializeAmountResourceStoredCache() {
         
-        Set<AmountResource> resources = AmountResource.getAmountResources();
+        Collection<AmountResource> resources = AmountResource.getAmountResources();
         amountResourceStoredCache = new HashMap<AmountResource, Double>(resources.size());
         amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
         

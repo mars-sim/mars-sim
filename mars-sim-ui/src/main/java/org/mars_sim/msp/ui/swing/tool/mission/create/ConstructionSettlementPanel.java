@@ -28,7 +28,10 @@ import java.util.Iterator;
  */
 class ConstructionSettlementPanel extends WizardPanel {
 
-    // The wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
     private final static String NAME = "Construction Settlement";
     
     // Data members.
@@ -37,10 +40,10 @@ class ConstructionSettlementPanel extends WizardPanel {
     private JLabel errorMessageLabel;
     
     /**
-     * Constructor
+     * Constructor.
      * @param wizard the create mission wizard.
      */
-    ConstructionSettlementPanel(CreateMissionWizard wizard) {
+    public ConstructionSettlementPanel(CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
         
@@ -92,7 +95,8 @@ class ConstructionSettlementPanel extends WizardPanel {
                         }
                     }
                 }
-            });
+            }
+        );
         settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
         settlementScrollPane.setViewportView(settlementTable);
         
@@ -137,8 +141,11 @@ class ConstructionSettlementPanel extends WizardPanel {
      */
     private static class SettlementTableModel extends UnitTableModel {
         
-        /**
-         * Constructor
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		/**
+         * hidden constructor.
          */
         private SettlementTableModel() {
             // Use UnitTableModel constructor.

@@ -445,7 +445,7 @@ public class Manufacture extends Function implements Serializable {
                         String vehicleType = item.getName();
                         int number = (int) item.getAmount();
                         for (int x = 0; x < number; x++) {
-                            if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                            if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
                                 String name = manager.getNewName(UnitManager.VEHICLE, "LUV", null);
                                 manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
                             }

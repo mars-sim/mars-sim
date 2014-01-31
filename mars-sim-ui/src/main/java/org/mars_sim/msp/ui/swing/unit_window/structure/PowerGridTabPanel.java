@@ -7,6 +7,19 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.text.DecimalFormat;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -18,35 +31,42 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.text.DecimalFormat;
-
 /** 
  * The PowerGridTabPanel is a tab panel for a settlement's power grid information.
  */
 public class PowerGridTabPanel extends TabPanel {
     
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     // Data Members
-    private JLabel powerGeneratedLabel; // The total power generated label.
-    private JLabel powerUsedLabel; // The total power used label.
-    private JLabel powerStorageCapacityLabel; // The total power storage capacity label.
-    private JLabel powerStoredLabel; // The total power stored label.
-    private PowerTableModel powerTableModel; // Table model for power info.
-    private PowerGrid powerGrid; // The settlement's power grid.
+	/** The total power generated label. */
+    private JLabel powerGeneratedLabel;
+    /** The total power used label. */
+    private JLabel powerUsedLabel;
+    /** The total power storage capacity label. */
+    private JLabel powerStorageCapacityLabel;
+    /** The total power stored label. */
+    private JLabel powerStoredLabel;
+    /** Table model for power info. */
+    private PowerTableModel powerTableModel;
+    /** The settlement's power grid. */
+    private PowerGrid powerGrid;
     
     // Data cache
-    private double powerGeneratedCache; // The total power generated cache.
-    private double powerUsedCache; // The total power used cache.
-    private double powerStorageCapacityCache; // The total power storage capacity cache.
-    private double powerStoredCache; // The total power stored cache.
+    /** The total power generated cache. */
+    private double powerGeneratedCache;
+    /** The total power used cache. */
+    private double powerUsedCache;
+    /** The total power storage capacity cache. */
+    private double powerStorageCapacityCache;
+    /** The total power stored cache. */
+    private double powerStoredCache;
     
     private DecimalFormat formatter = new DecimalFormat("0.0");
     
     /**
-     * Constructor
-     *
+     * Constructor.
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
@@ -98,7 +118,7 @@ public class PowerGridTabPanel extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		JScrollPane powerScrollPanel = new JScrollPane();
 		powerScrollPanel.setPreferredSize(new Dimension(257, 230));
-		topContentPanel.add(powerScrollPanel);         
+		centerContentPanel.add(powerScrollPanel,BorderLayout.CENTER);         
         
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -167,11 +187,14 @@ public class PowerGridTabPanel extends TabPanel {
      */
     private static class PowerTableModel extends AbstractTableModel {
         
-        Settlement settlement;
-        java.util.List<Building> buildings;
-        ImageIcon redDot;
-        ImageIcon yellowDot;
-        ImageIcon greenDot;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+        private Settlement settlement;
+        private java.util.List<Building> buildings;
+        private ImageIcon redDot;
+        private ImageIcon yellowDot;
+        private ImageIcon greenDot;
         
         private PowerTableModel(Settlement settlement) {
             this.settlement = settlement;
@@ -190,7 +213,7 @@ public class PowerGridTabPanel extends TabPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = ImageIcon.class;
             else if (columnIndex == 1) dataType = String.class;
             else if (columnIndex == 2) dataType = Double.class;

@@ -6,20 +6,24 @@
  */
 package org.mars_sim.msp.core.resource;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
+
+import org.jdom.Document;
+import org.jdom.Element;
 
 /**
  * Provides configuration information about parts. Uses a DOM document to get the information.
  */
 public final class PartConfig implements Serializable {
 
-    // Element names
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Element names
     private static final String PART = "part";
     private static final String NAME = "name";
     private static final String MASS = "mass";
@@ -82,12 +86,25 @@ public final class PartConfig implements Serializable {
             }
         }
     }
-    
-    /**
-     * Gets a set of all item resources.
-     * @return set of item resources.
-     */
-    public Set<ItemResource> getItemResources() {
-        return itemResources;
-    }
+
+	/**
+	 * Gets a collection of all item resources.
+	 * @return collection of item resources.
+	 */
+	public Set<ItemResource> getItemResources() {
+		return itemResources;
+	}
+
+	/**
+	 * gives back an alphabetically ordered map of all
+	 * item resources.
+	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
+	 */
+	public TreeMap<String,ItemResource> getItemResourcesMap() {
+		TreeMap<String,ItemResource> map = new TreeMap<String,ItemResource>();
+		for (ItemResource resource : itemResources) {
+			map.put(resource.getName(),resource);
+		}
+		return map;
+	}
 }

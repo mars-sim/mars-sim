@@ -7,31 +7,54 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.manufacture.*;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.manufacture.SalvageProcess;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /**
  * A tab panel displaying settlement manufacturing information.
  */
 public class ManufactureTabPanel extends TabPanel {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	private static String CLASS_NAME = 
 	    "org.mars_sim.msp.ui.standard.unit_window.structure.ManufactureTabPanel";
 	private static Logger logger = Logger.getLogger(CLASS_NAME);
@@ -42,18 +65,24 @@ public class ManufactureTabPanel extends TabPanel {
 	private JScrollPane manufactureScrollPane;
 	private List<ManufactureProcess> processCache;
 	private List<SalvageProcess> salvageCache;
-	private JComboBox buildingSelection; // Building selector.
-	private Vector<Building> buildingSelectionCache; // List of available manufacture buildings.
-	private JComboBox processSelection; // Process selector.
-	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
-	private Vector<SalvageProcessInfo> salvageSelectionCache; // List of available salvage processes.
-	private JButton newProcessButton; // Process selection button.
+	/** building selector. */
+	private JComboBoxMW<Building> buildingSelection;
+	/** List of available manufacture buildings. */
+	private Vector<Building> buildingSelectionCache;
+	/** Process selector. */
+	private JComboBoxMW<Object> processSelection;
+	/** List of available processes. */
+	private Vector<ManufactureProcessInfo> processSelectionCache;
+	/** List of available salvage processes. */
+	private Vector<SalvageProcessInfo> salvageSelectionCache;
+	/** Process selection button. */
+	private JButton newProcessButton;
 	private JCheckBox overrideCheckbox;
 	
     /**
      * Constructor
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
+     * @param unit {@link Unit} the unit to display.
+     * @param desktop {@link MainDesktopPane} the main desktop.
      */
 	public ManufactureTabPanel(Unit unit, MainDesktopPane desktop) {
         // Use the TabPanel constructor
@@ -74,7 +103,7 @@ public class ManufactureTabPanel extends TabPanel {
         manufactureScrollPane = new JScrollPane();
         manufactureScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
-        topContentPanel.add(manufactureScrollPane);  
+        centerContentPanel.add(manufactureScrollPane);  
 		
         // Prepare manufacture outer list pane.
         JPanel manufactureOuterListPane = new JPanel(new BorderLayout(0, 0));
@@ -102,7 +131,7 @@ public class ManufactureTabPanel extends TabPanel {
         
         // Create new building selection.
         buildingSelectionCache = getManufacturingBuildings();
-        buildingSelection = new JComboBox(buildingSelectionCache);
+        buildingSelection = new JComboBoxMW<Building>(buildingSelectionCache);
         buildingSelection.setToolTipText("Select a manufacturing building");
         buildingSelection.addItemListener(new ItemListener() {
         	public void itemStateChanged(ItemEvent event) {
@@ -114,7 +143,7 @@ public class ManufactureTabPanel extends TabPanel {
         // Create new manufacture process selection.
         Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
         processSelectionCache = getAvailableProcesses(workshopBuilding);
-        processSelection = new JComboBox(processSelectionCache);
+        processSelection = new JComboBoxMW(processSelectionCache);
         processSelection.setRenderer(new ManufactureSelectionListCellRenderer());
         processSelection.setToolTipText("Select an available manufacturing process");
         interactionPanel.add(processSelection);
@@ -441,8 +470,11 @@ public class ManufactureTabPanel extends TabPanel {
 	 */
 	private static class ManufactureSelectionListCellRenderer extends DefaultListCellRenderer {
 		
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
 		@Override
-		public Component getListCellRendererComponent(JList list, Object value, int index, 
+		public Component getListCellRendererComponent(JList<?> list, Object value, int index, 
 				boolean isSelected, boolean cellHasFocus) {
 		    Component result = super.getListCellRendererComponent(list, value, index, isSelected, 
                     cellHasFocus);

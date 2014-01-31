@@ -115,11 +115,13 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     
     /** 
      * Internal class used as model for the resource table.
+     * TODO would be nice to see capacity as 3rd column in the inventory view.
      */
     private static class ResourceTableModel extends AbstractTableModel {
         
         private Inventory inventory;
         private Map<Resource, Number> resources;
+        private Map<Resource, Number> capacity;
         private List<Resource> keys;
         private DecimalFormat decFormatter = new DecimalFormat("0.0");
         
@@ -127,12 +129,14 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             this.inventory = inventory;
             keys = new ArrayList<Resource>();
             resources = new HashMap<Resource, Number>();
+            capacity = new HashMap<Resource, Number>();
             
             keys.addAll(inventory.getAllAmountResourcesStored(false));
             Iterator<Resource> iAmount = keys.iterator();
             while (iAmount.hasNext()) {
                 AmountResource resource = (AmountResource) iAmount.next();
                 resources.put(resource, inventory.getAmountResourceStored(resource, true));
+                capacity.put(resource, inventory.getAmountResourceCapacity(resource, true));
             }
 
             Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
@@ -141,6 +145,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             while (iItem.hasNext()) {
                 ItemResource resource = iItem.next();
                 resources.put(resource, inventory.getItemResourceNum(resource));
+                capacity.put(resource, null);
             }
 
             // Sort resources alphabetically by name.
@@ -152,7 +157,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public int getColumnCount() {
-            return 2;
+            return 3;
         }
         
         public Class<?> getColumnClass(int columnIndex) {
@@ -162,8 +167,9 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
         
         public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "Resource";
-            else if (columnIndex == 1) return "# or Mass (kg)";
+            if (columnIndex == 0) return "resource";
+            else if (columnIndex == 1) return "# or kg";
+            else if (columnIndex == 2) return "capacity";
             else return "unknown";
         }
         
@@ -178,6 +184,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	}
             	return result;
             }
+            else if (column == 2) {
+            	Number number = capacity.get(keys.get(row));
+            	return (number == null) ? "-" : decFormatter.format(number);
+            }
             else return "unknown";
         }
   
@@ -186,10 +196,12 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
         		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(true));
         		Map<Resource, Number> newResources = new HashMap<Resource, Number>();
+        		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
         		Iterator<Resource> i = newResourceKeys.iterator();
         		while (i.hasNext()) {
         			AmountResource resource = (AmountResource) i.next();
         			newResources.put(resource, inventory.getAmountResourceStored(resource, true));
+        			newCapacity.put(resource, inventory.getAmountResourceCapacity(resource, true));
         		}
         		
         		Set<ItemResource> itemResources = inventory.getAllItemResourcesStored();
@@ -198,6 +210,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             	while (iItem.hasNext()) {
             		ItemResource resource = iItem.next();
             		newResources.put(resource, inventory.getItemResourceNum(resource));
+            		newCapacity.put(resource, null);
             	}
                 
             	// Sort resources alphabetically by name.
@@ -205,6 +218,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             
         		if (!resources.equals(newResources)) {
         			resources = newResources;
+        			capacity = newCapacity;
         			keys = newResourceKeys;
         			fireTableDataChanged();
         		}
@@ -214,58 +228,76 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             }
         }
     }
-    
+
     /** 
      * Internal class used as model for the equipment table.
      */
     private static class EquipmentTableModel extends AbstractTableModel {
-        
+
         Inventory inventory;
-        List<Unit> equipment;
-        
+        List<Unit> list;
+        Map<String,String> equipment;
+
         private EquipmentTableModel(Inventory inventory) {
             this.inventory = inventory;
-            Collection<Unit> equipmentCol = inventory.findAllUnitsOfClass(Equipment.class);
-            equipment = new ArrayList<Unit>(equipmentCol);
-            
             // Sort equipment alphabetically by name.
-            Collections.sort(equipment);
+        	list = new ArrayList<Unit>();
+        	
+            equipment = new TreeMap<String,String>();
+            for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+            	equipment.put(
+            		unit.getName(),
+                	unit.getInventory().isEmpty(true) ? "empty" : "filled"
+            	);
+            	list.add(unit);
+            }
+        	Collections.sort(list);
         }
-        
+
         public int getRowCount() {
             return equipment.size();
         }
-        
+
         public int getColumnCount() {
-            return 1;
+            return 2;
         }
-        
+
         public Class<?> getColumnClass(int columnIndex) {
             Class<?> dataType = super.getColumnClass(columnIndex);
             return dataType;
         }
-        
+
         public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "Equipment";
+            if (columnIndex == 0) return "equipment";
+            else if (columnIndex == 1) return "total mass";
             else return "unknown";
         }
-        
+
         public Object getValueAt(int row, int column) {
             if ((row >= 0) && (row < equipment.size())) {
-                return equipment.get(row);
+            	if (column == 0) return list.get(row);
+            	else if (column == 1) return equipment.get(list.get(row).getName());
             }   
-            else return "unknown";
+            return "unknown";
         }
-  
+
         public void update() {
-            List<Unit> newEquipment = new ArrayList<Unit>(
-                    inventory.findAllUnitsOfClass(Equipment.class));
-            
+            List<Unit> newList = new ArrayList<Unit>();
+            Map<String,String> newMap = new TreeMap<String,String>();
+            for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+            	newMap.put(
+            		unit.getName(),
+            		unit.getInventory().isEmpty(true) ? "empty" : "filled"
+            	);
+            	newList.add(unit);
+            };
+
             // Sort equipment alphabetically by name.
-            Collections.sort(newEquipment);
-            
-            if (!equipment.equals(newEquipment)) {
-                equipment = newEquipment;
+            Collections.sort(newList);
+
+            if (!list.equals(newList)) {
+            	list = newList;
+                equipment = newMap;
                 fireTableDataChanged();
             }
         }

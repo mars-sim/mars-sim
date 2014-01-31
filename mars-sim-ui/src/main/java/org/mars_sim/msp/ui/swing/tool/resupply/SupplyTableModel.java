@@ -255,6 +255,20 @@ public class SupplyTableModel extends AbstractTableModel {
         
         return categoryList;
     }
+
+    public static List<String> getSortedBuildingTypes() {
+        Set<String> buildingTypes = SimulationConfig.instance().getBuildingConfiguration().getBuildingNames();
+        List<String> sortedBuildingTypes = new ArrayList<String>(buildingTypes);
+        Collections.sort(sortedBuildingTypes);
+        return sortedBuildingTypes;
+    }
+
+    public static List<String> getSortedVehicleTypes() {
+        Set<String> vehicleTypes = SimulationConfig.instance().getVehicleConfiguration().getVehicleTypes();
+        List<String> sortedVehicleTypes = new ArrayList<String>(vehicleTypes);
+        Collections.sort(sortedVehicleTypes);
+        return sortedVehicleTypes;
+    }
     
     /**
      * Gets a map of categories and a list of their types.
@@ -267,18 +281,10 @@ public class SupplyTableModel extends AbstractTableModel {
             categoryTypeMap = new HashMap<String, List<String>>(5);
             
             // Create building type list.
-            Set<String> buildingTypes = 
-                SimulationConfig.instance().getBuildingConfiguration().getBuildingNames();
-            List<String> sortedBuildingTypes = new ArrayList<String>(buildingTypes);
-            Collections.sort(sortedBuildingTypes);
-            categoryTypeMap.put(BUILDING, sortedBuildingTypes);
+            categoryTypeMap.put(BUILDING, getSortedBuildingTypes());
             
             // Create vehicle type list.
-            Set<String> vehicleTypes = 
-                SimulationConfig.instance().getVehicleConfiguration().getVehicleTypes();
-            List<String> sortedVehicleTypes = new ArrayList<String>(vehicleTypes);
-            Collections.sort(sortedVehicleTypes);
-            categoryTypeMap.put(VEHICLE, sortedVehicleTypes);
+            categoryTypeMap.put(VEHICLE, getSortedVehicleTypes());
             
             // Create equipment type list.
             Set<String> equipmentTypes = EquipmentFactory.getEquipmentNames();
@@ -287,13 +293,7 @@ public class SupplyTableModel extends AbstractTableModel {
             categoryTypeMap.put(EQUIPMENT, sortedEquipmentTypes);
             
             // Create resource type list.
-            List<String> resourceNames = new ArrayList<String>();
-            Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
-            while (i.hasNext()) {
-                resourceNames.add(i.next().getName());
-            }
-            Collections.sort(resourceNames);
-            categoryTypeMap.put(RESOURCE, resourceNames);
+            categoryTypeMap.put(RESOURCE, AmountResource.getAmountResourcesSortedList());
             
             // Create part type list.
             List<String> partNames = new ArrayList<String>();

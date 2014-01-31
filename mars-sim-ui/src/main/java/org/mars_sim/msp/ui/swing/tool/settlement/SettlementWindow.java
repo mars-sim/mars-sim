@@ -7,28 +7,6 @@
 
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.UnitManager;
-import org.mars_sim.msp.core.UnitManagerEvent;
-import org.mars_sim.msp.core.UnitManagerListener;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.JButton;
-import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSlider;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -43,6 +21,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSlider;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 
 /**
@@ -59,7 +60,7 @@ public class SettlementWindow extends ToolWindow {
     // Zoom change.
     private static final double ZOOM_CHANGE = 1D;
 
-    private JComboBox settlementListBox; // Lists all settlements
+    private JComboBoxMW settlementListBox; // Lists all settlements
     private SettlementComboBoxModel settlementCBModel; // Combo box model.
     private JLabel zoomLabel; // Label for Zoom box
     private JSlider zoomSlider; // Slider for Zoom level
@@ -121,7 +122,7 @@ public class SettlementWindow extends ToolWindow {
         mainPane.add(mapPane, BorderLayout.CENTER);
 
         settlementCBModel = new SettlementComboBoxModel();
-        settlementListBox = new JComboBox(settlementCBModel);
+        settlementListBox = new JComboBoxMW(settlementCBModel);
         settlementListBox.setToolTipText("Select settlement");
         settlementListBox.addItemListener(new ItemListener() {
             @Override

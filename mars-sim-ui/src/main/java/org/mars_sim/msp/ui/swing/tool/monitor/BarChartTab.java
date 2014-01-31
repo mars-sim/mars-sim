@@ -7,6 +7,17 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.Dimension;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.JScrollPane;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -20,27 +31,26 @@ import org.jfree.data.CategoryDataset;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  */
 class BarChartTab extends MonitorTab {
 
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     public final static Icon BARICON = ImageLoader.getIcon("BarChart");
 
-    private final static int MAXLABEL = 12;         // Maximum label length
+    /** Maximum label length. */
+    private final static int MAXLABEL = 12;
     private final static int COLUMNWIDTH = 4;
     private final static int LABELWIDTH = 8;
-    private final static int SCROLLTHRESHOLD = 400; // Large non-scroll chart
+    /** Large non-scroll chart. */
+    private final static int SCROLLTHRESHOLD = 400;
     
-    // Minimum time (milliseconds) between chart updates based on table
-    // update events.
+    /**
+     * Minimum time (milliseconds) between chart updates
+     * based on table update events.
+     */
     private static final long MIN_TIME_BETWEEN_UPDATES = 1000L;
 
     /**
@@ -49,9 +59,14 @@ class BarChartTab extends MonitorTab {
      *  rows of the Table Model. The Series are the columns specified to be
      *  displayed.
      */
-    static class TableBarDataset extends AbstractSeriesDataset
-            implements CategoryDataset, TableModelListener {
+    @SuppressWarnings("rawtypes")
+    static class TableBarDataset
+    extends AbstractSeriesDataset
+    implements CategoryDataset, TableModelListener {
         
+        /** default serial id. */
+    	private static final long serialVersionUID = 1L;
+    	
         private TableModel model;
         private int[] columns;
         private List<String> categories;
@@ -161,7 +176,7 @@ class BarChartTab extends MonitorTab {
             return columns.length;
         }
         
-        public Comparable getRowKey(int index) {
+        public Comparable<?> getRowKey(int index) {
             return model.getColumnName(columns[index]);
         }
         
@@ -200,7 +215,7 @@ class BarChartTab extends MonitorTab {
             return (Number) model.getValueAt(column, columns[row]);
         }
         
-        public Number getValue(Comparable rowKey, Comparable columnKey) {
+		public Number getValue(Comparable rowKey, Comparable columnKey) {
             int rowIndex = getRowIndex(rowKey);
             int columnIndex = getColumnIndex(columnKey);
             return getValue(rowIndex, columnIndex);
@@ -322,8 +337,8 @@ class BarChartTab extends MonitorTab {
         }
     }
 
-    protected List getSelection() {
-        return new ArrayList();
+    protected List<?> getSelection() {
+        return new ArrayList<Object>();
     }
 
     /**

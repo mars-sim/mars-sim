@@ -50,7 +50,7 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 		// Create the main panel.
 		Box mainPane = Box.createVerticalBox();
 		mainPane.setBorder(new MarsPanelBorder());
-		add(mainPane, BorderLayout.CENTER);
+		add(mainPane, BorderLayout.WEST);
 		
 		// Create the map display panel.
 		JPanel mapDisplayPane = new JPanel(new BorderLayout(0, 0));

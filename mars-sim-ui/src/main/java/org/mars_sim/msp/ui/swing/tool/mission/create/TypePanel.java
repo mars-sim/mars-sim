@@ -7,30 +7,42 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel for selecting mission type.
  */
 class TypePanel extends WizardPanel implements ItemListener {
 
-	// The wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
 	private final static String NAME = "Mission Type";
 	
 	// Private members.
-	private JComboBox typeSelect;
+	private JComboBoxMW<?> typeSelect;
 	private JLabel descriptionInfoLabel;
 	private JLabel descriptionLabel;
 	private JTextField descriptionField;
 	
 	/**
-	 * Constructor
-	 * @param wizard the create mission wizard.
+	 * Constructor.
+	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
 	 */
 	TypePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
@@ -62,7 +74,7 @@ class TypePanel extends WizardPanel implements ItemListener {
 		String[] displayMissionTypes = new String[missionTypes.length + 1];
 		displayMissionTypes[0] = "";
         System.arraycopy(missionTypes, 0, displayMissionTypes, 1, missionTypes.length);
-		typeSelect = new JComboBox(displayMissionTypes);
+		typeSelect = new JComboBoxMW<Object>(displayMissionTypes);
 		typeSelect.addItemListener(this);
         typeSelect.setMaximumRowCount(typeSelect.getItemCount());
 		typePane.add(typeSelect);

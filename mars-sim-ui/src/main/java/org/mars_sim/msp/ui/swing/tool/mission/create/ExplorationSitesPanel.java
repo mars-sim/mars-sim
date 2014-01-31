@@ -19,6 +19,7 @@ import org.mars_sim.msp.ui.swing.tool.map.*;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -29,10 +30,13 @@ import java.util.List;
  */
 class ExplorationSitesPanel extends WizardPanel {
 
-	// Wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Wizard panel name. */
 	private final static String NAME = "Exploration Sites";
 	
-	// Range modifier.
+	/** Range modifier. */
 	private final static double RANGE_MODIFIER = .95D;
 
 	// Data members.
@@ -49,8 +53,8 @@ class ExplorationSitesPanel extends WizardPanel {
 	private double timePerSite;
 	
 	/**
-	 * Constructor
-	 * @param wizard the create mission wizard.
+	 * Constructor.
+	 * @param wizard {@link CreateMissionWizard} the create mission wizard.
 	 */
 	ExplorationSitesPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
@@ -399,6 +403,8 @@ class ExplorationSitesPanel extends WizardPanel {
 	 */
 	private class SitePanel extends JPanel {
 		
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 		// Private members.
 		private Coordinates site;
 		private int siteNum;
@@ -406,7 +412,7 @@ class ExplorationSitesPanel extends WizardPanel {
 		private JLabel siteLocationLabel;
 		
 		/**
-		 * Constructor
+		 * Constructor.
 		 * @param siteNum the exploration site's number.
 		 * @param site the exploration site coordinates.
 		 */
@@ -653,7 +659,9 @@ class ExplorationSitesPanel extends WizardPanel {
      */
     private class MineralTableModel extends AbstractTableModel {
         
-        private java.util.Map<String, Color> mineralColors = null;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		private java.util.Map<String, Color> mineralColors = null;
         private List<String> mineralNames = null;
         
         private MineralTableModel() {
@@ -670,7 +678,7 @@ class ExplorationSitesPanel extends WizardPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             if (columnIndex == 1) dataType = Color.class;
             return dataType;

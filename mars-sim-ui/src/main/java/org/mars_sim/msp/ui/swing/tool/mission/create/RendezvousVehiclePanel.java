@@ -7,6 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -19,20 +38,15 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * A wizard panel for selecting a mission rendezvous vehicle.
  */
 class RendezvousVehiclePanel extends WizardPanel {
 
-	// Wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Wizard panel name. */
 	private final static String NAME = "Rendezvous Vehicle";
 	
 	// Data members.
@@ -41,10 +55,10 @@ class RendezvousVehiclePanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	RendezvousVehiclePanel(CreateMissionWizard wizard) {
+	public RendezvousVehiclePanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
@@ -152,8 +166,11 @@ class RendezvousVehiclePanel extends WizardPanel {
 	 */
     private class VehicleTableModel extends UnitTableModel {
     	
+        /** default serial id. */
+    	private static final long serialVersionUID = 1L;
+
     	/**
-    	 * Constructor
+    	 * Constructor.
     	 */
     	private VehicleTableModel() {
     		// Use UnitTableModel constructor.
@@ -268,7 +285,7 @@ class RendezvousVehiclePanel extends WizardPanel {
     		Vehicle result = null;
     		
     	   	MissionManager manager = Simulation.instance().getMissionManager();
-        	Iterator i = manager.getMissions().iterator();
+        	Iterator<?> i = manager.getMissions().iterator();
         	while (i.hasNext()) {
         		Mission mission = (Mission) i.next();
         		if (mission instanceof RescueSalvageVehicle) {
