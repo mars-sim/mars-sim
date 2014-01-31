@@ -27,6 +27,7 @@ public class VehicleConfig implements Serializable {
 	private static final String TYPE = "type";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
+	private static final String DESCRIPTION = "description";
 	private static final String FUEL_EFFICIENCY = "fuel-efficiency";
 	private static final String BASE_SPEED = "base-speed";
 	private static final String EMPTY_MASS = "empty-mass";
@@ -370,7 +371,16 @@ public class VehicleConfig implements Serializable {
 		
 		return result;
 	}
-	
+
+	public String getDescription(String vehicleType) {
+		Element vehicleElement = getVehicleElement(vehicleType);
+		Element descriptionElement = vehicleElement.getChild(DESCRIPTION);
+		if (descriptionElement != null) {
+			return descriptionElement.getValue();
+		}
+		return "no description available.";
+	}
+
 	/**
 	 * Gets a list of rover names.
 	 * @return list of rover names as strings.

@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!DOCTYPE vehicle-configuration SYSTEM "conf/dtd/vehicles.dtd">
-
 <vehicle-configuration>
 
-	<!-- Explorer rover -->
-	<!-- A rover for collecting rock samples from remote sites
-		 and ice prospecting. -->
 	<vehicle type="Explorer Rover" width="3.5" length="8.0">
+		<description>A rover for collecting rock samples from remote sites and ice prospecting.</description>
 
 		<!-- The fuel efficiency of the rover (km/kg) (required) -->
 		<!-- Default: 2.0 -->
@@ -78,8 +75,8 @@
 	</vehicle>
 
 	<!-- Transport rover -->
-	<!-- A rover for transporting people from one settlement to another. -->
 	<vehicle type="Transport Rover" width="3.5" length="9.5">
+		<description>A rover for transporting people from one settlement to another.</description>
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
@@ -94,8 +91,8 @@
 	</vehicle>
 	
 	<!-- Cargo rover -->
-	<!-- A rover for transporting cargo from one settlement to another. -->
 	<vehicle type="Cargo Rover" width="4.0" length="8.0">
+		<description>A rover for transporting cargo from one settlement to another.</description>
 		<fuel-efficiency value="2.0" />
 		<base-speed value="30.0" />
 		<empty-mass value="10000.0" />
@@ -110,8 +107,8 @@
 	</vehicle>
 	
 	<!-- Light Utility Vehicle -->
-	<!-- A small, unpressurized, one crew utility vehicle with attachable parts. -->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
+		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
 		<fuel-efficiency value="0.0" />
 		<base-speed value="0.0" />
 		<empty-mass value="300.0" />

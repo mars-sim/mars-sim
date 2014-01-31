@@ -2,6 +2,7 @@ package org.mars_sim.msp.helpGenerator;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.TreeMap;
@@ -14,6 +15,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
@@ -26,8 +28,8 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
  */
 public class HelpGenerator {
 
-    // Initialize logger for this class.
-    private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
+	// Initialize logger for this class.
+	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 
 	private static final String DIR = "\\docs\\help\\";
 	private static final String SUFFIX = ".html";
@@ -46,6 +48,11 @@ public class HelpGenerator {
 
 	private static final String EQUIPMENTS = "equipment";
 	private static final String EQUIPMENT = "equipment_";
+
+	/** used to count how many files are generated. */
+	private static int filesGenerated = 0;
+	/** used to count how many files could not be generated. */
+	private static int filesNotGenerated = 0;
 
 	/**
 	 * insert html header with given page title into given stringbuffer.
@@ -103,16 +110,22 @@ public class HelpGenerator {
 			PrintWriter pw = new PrintWriter(file);
 			pw.write(content.toString());
 			pw.close();
-			logger.log(Level.INFO,"generated file " + file.getAbsolutePath());
+//			logger.log(Level.INFO,"generated file " + file.getName());
+			filesGenerated++;
 		} catch (Exception e) {
 			logger.log(Level.WARNING,"failed to generate file " + path.toString());
+			filesNotGenerated++;
 		}
+	}
+
+	private static String escape(String s) {
+		return s.replace(" ","_").replace("/","--");
 	}
 
 	private static final StringBuffer getPathVehicle(final String vehicle) {
 		return new StringBuffer()
 		.append(VEHICLE)
-		.append(vehicle.replace(" ","_"))
+		.append(escape(vehicle))
 		.append(SUFFIX);
 	}
 	
@@ -125,7 +138,7 @@ public class HelpGenerator {
 	private static final StringBuffer getPathResource(final String resource) {
 		return new StringBuffer()
 		.append(RESOURCE)
-		.append(resource.replace(" ","_"))
+		.append(escape(resource))
 		.append(SUFFIX);
 	}
 
@@ -138,7 +151,7 @@ public class HelpGenerator {
 	private static final StringBuffer getPathPart(final String part) {
 		return new StringBuffer()
 		.append(PART)
-		.append(part.replace(" ","_"))
+		.append(escape(part))
 		.append(SUFFIX);
 	}
 
@@ -151,7 +164,7 @@ public class HelpGenerator {
 	private static final StringBuffer getPathProcess(final String process) {
 		return new StringBuffer()
 		.append(PROCESS)
-		.append(process.replace(" ","_"))
+		.append(escape(process))
 		.append(SUFFIX);
 	}
 
@@ -164,7 +177,7 @@ public class HelpGenerator {
 	private static final StringBuffer getPathEquipment(final String equipment) {
 		return new StringBuffer()
 		.append(EQUIPMENT)
-		.append(equipment.replace(" ","_"))
+		.append(escape(equipment))
 		.append(SUFFIX);
 	}
 
@@ -299,11 +312,23 @@ public class HelpGenerator {
 			.append("</p></p>\n")
 			.append("<p>")
 			.append(getLinkVehicles("back to vehicles overview"))
-			.append("</p></p>\n")
+			.append("</p><br/>\n")
+			.append("<p>")
+			.append(config.getDescription(vehicle))
+			.append("</p>")
 			.append("<table>\n");
 
 			if (config.hasPartAttachments(vehicle)) {
-				helpFileTableRow(content,new String[] {"attachable parts",config.getAttachableParts(vehicle).toString()});
+				StringBuffer parts = new StringBuffer().append("[");
+				Iterator<Part> iterator = config.getAttachableParts(vehicle).iterator();
+				while (iterator.hasNext()) {
+					Part part = iterator.next();
+					parts.append(getLinkPart(part.getName()));
+					if (iterator.hasNext()) {
+						parts.append(", ");
+					}
+				}
+				helpFileTableRow(content,new String[] {"attachable parts",parts.append("]").toString()});
 				helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(config.getPartAttachmentSlotNumber(vehicle))});
 			}
 			helpFileTableRow(content,new String[] {"base speed",Double.toString(config.getBaseSpeed(vehicle))});
@@ -638,9 +663,19 @@ public class HelpGenerator {
 	 * generate html help files for use in the in-game help and tutorial browser.
 	 */
 	public static final void generateHtmlHelpFiles() {
+		logger.log(Level.INFO,"starting to generate help files");
 		HelpGenerator.generateVehicleDescriptions();
 		HelpGenerator.generateResourceDescriptions();
 		HelpGenerator.generatePartsDescriptions();
 		HelpGenerator.generateProcessDescriptions();
+		logger.log(
+			Level.INFO,
+			new StringBuffer()
+				.append("generated ")
+				.append(Integer.toString(filesGenerated))
+				.append(" help files. failures: ")
+				.append(Integer.toString(filesNotGenerated))
+			.toString()
+		);
 	}
 }
