@@ -25,6 +25,7 @@ public final class PartConfig implements Serializable {
 
 	// Element names
     private static final String PART = "part";
+    private static final String DESCRIPTION = "description";
     private static final String NAME = "name";
     private static final String MASS = "mass";
     private static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
@@ -33,7 +34,8 @@ public final class PartConfig implements Serializable {
     private static final String MAX_NUMBER = "max-number";
     
     // Data members.
-    private Set<ItemResource> itemResources;
+    private Set<ItemResource> itemResources = new HashSet<ItemResource>();
+    private TreeMap<String,String> descriptions = new TreeMap<String,String>();
 
     /**
      * Constructor
@@ -41,7 +43,6 @@ public final class PartConfig implements Serializable {
      * @throws Exception if error reading XML document
      */
     public PartConfig(Document itemResourceDoc) {
-        itemResources = new HashSet<ItemResource>();
         loadItemResources(itemResourceDoc);
     }
 
@@ -54,11 +55,20 @@ public final class PartConfig implements Serializable {
     private void loadItemResources(Document itemResourceDoc) {
         Element root = itemResourceDoc.getRootElement();
         List<Element> partNodes = root.getChildren(PART);
+        descriptions.clear();
         for (Element partElement : partNodes) {
             String name = "";
+            String description = "";
 
             // Get name.
             name = partElement.getAttributeValue(NAME);
+            
+            // get description
+            Element descriptElem = partElement.getChild(DESCRIPTION);
+            if (descriptElem != null) {
+            	description = descriptElem.getText();
+            }
+            descriptions.put(name,description);
 
             // Get mass.
             double mass = Double.parseDouble(partElement
@@ -93,6 +103,13 @@ public final class PartConfig implements Serializable {
 	 */
 	public Set<ItemResource> getItemResources() {
 		return itemResources;
+	}
+
+	public String getDescription(ItemResource resource) {
+		String description = descriptions.get(resource.getName());
+		if (description != null && description.length() > 0) {
+			return description;
+		} else return "no description available.";
 	}
 
 	/**

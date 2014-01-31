@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -34,6 +35,7 @@ public class AmountResourceConfig implements Serializable {
 	
 	// Data members.
 	private Set<AmountResource> resources = new HashSet<AmountResource>();
+	private Map<String,String> descriptions = new TreeMap<String,String>();
 
 	/**
 	 * Constructor
@@ -53,12 +55,13 @@ public class AmountResourceConfig implements Serializable {
 	private void loadAmountResources(Document amountResourceDoc) {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
-
+		descriptions.clear();
 		for (Element resourceElement : resourceNodes) {
 			String name = "";
 
 			// Get name.
 			name = resourceElement.getAttributeValue(NAME);
+			descriptions.put(name,resourceElement.getText());
 
 			// Get phase.
 			String phaseString = resourceElement.getAttributeValue(PHASE);
@@ -71,6 +74,13 @@ public class AmountResourceConfig implements Serializable {
 			AmountResource resource = new AmountResource(name, phase, lifeSupport);
 			resources.add(resource);
 		}
+	}
+
+	public String getDescription(AmountResource resource) {
+		String description = descriptions.get(resource.getName());
+		if (description != null && description.length() > 0) {
+			return description;
+		} else return "no description available.";
 	}
 
 	/**

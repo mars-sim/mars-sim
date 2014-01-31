@@ -367,8 +367,7 @@ public class VehicleConfig implements Serializable {
 				result.add(part);
 			}
 		}
-	
-		
+
 		return result;
 	}
 

@@ -29,12 +29,13 @@ implements Resource, Serializable {
 	private String name;
 	private double massPerItem;
 	
-	/**
+	/*
 	 * Default private constructor
-	 */
+	 *
 	private ItemResource() {
 		throw new UnsupportedOperationException("invalid constructor");
 	}
+	*/
 	
 	/**
 	 * Constructor.
@@ -45,7 +46,7 @@ implements Resource, Serializable {
 		this.name = name;
 		this.massPerItem = massPerItem;
 	}
-	
+
 	/**
 	 * Gets the resource's name.
 	 * @return name of resource.
