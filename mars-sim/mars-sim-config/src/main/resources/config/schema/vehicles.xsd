@@ -19,6 +19,7 @@
     <xs:element name="vehicle">
     	<xs:complexType>
     		<xs:sequence>
+    			<xs:element ref="v:description" maxOccurs="1" minOccurs="0"></xs:element>
     			<xs:element ref="v:fuel-efficiency"></xs:element>
     			<xs:element ref="v:base-speed"></xs:element>
     			<xs:element ref="v:empty-mass"></xs:element>
@@ -33,6 +34,8 @@
     	</xs:complexType>
     </xs:element>
     
+    <xs:element name="description" type="xs:string"></xs:element>
+
     <xs:element name="fuel-efficiency">
     	<xs:complexType>
     		<xs:attribute name="value" type="xs:double"></xs:attribute>
