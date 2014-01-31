@@ -8,9 +8,12 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -18,19 +21,23 @@ import org.mars_sim.msp.core.SimulationConfig;
  * The AmountResource class represents a type of resource that is a material 
  * measured in mass kg.
  */
-public final class AmountResource implements Resource, Serializable {
-    
+public final class AmountResource
+implements Resource, Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Data members
 	private String name;
 	private Phase phase;
 	private boolean lifeSupport;
 	private int hashcode = -1;
-	
+
 	/**
-	 * Default private constructor
+	 * Default private constructor.
 	 */
 	private AmountResource() {}
-	
+
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
@@ -42,22 +49,16 @@ public final class AmountResource implements Resource, Serializable {
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
 	}
-	
+
 	/**
-	 * Gets the resource's name
-	 * @return name
+	 * Gets the resource's name.
+	 * @return name of resource.
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
-	
-	/**
-	 * Returns the resource as a string.
-	 */
-	public String toString() {
-		return name;
-	}
-	
+
 	/**
 	 * Gets the resources material phase.
 	 * @return phase value
@@ -65,7 +66,7 @@ public final class AmountResource implements Resource, Serializable {
 	public Phase getPhase() {
 		return phase;
 	}
-	
+
 	/**
 	 * Checks if life support resource.
 	 * @return true if life support resource.
@@ -73,7 +74,7 @@ public final class AmountResource implements Resource, Serializable {
 	public boolean isLifeSupport() {
 		return lifeSupport;
 	}
-	
+
 	/**
 	 * Finds an amount resource by name.
 	 * @param name the name of the resource.
@@ -85,7 +86,7 @@ public final class AmountResource implements Resource, Serializable {
 		Iterator<AmountResource> i = getAmountResources().iterator();
 		while (i.hasNext()) {
 			AmountResource resource = i.next();
-			if (resource.name.equalsIgnoreCase(name)) result = resource;
+			if (resource.getName().equalsIgnoreCase(name)) result = resource;
 		}
 		if (result != null) return result;
 		else throw new IllegalStateException("Resource: " + name + " could not be found.");
@@ -96,43 +97,79 @@ public final class AmountResource implements Resource, Serializable {
 	 * @return set of amount resources.
 	 */
 	public static Set<AmountResource> getAmountResources() {
-        SimulationConfig simulationConfig = SimulationConfig.instance();
-        AmountResourceConfig resourceConfiguration = simulationConfig.getResourceConfiguration();
-        Set<AmountResource> amountResources = resourceConfiguration.
-	            getAmountResources();
-		return Collections.unmodifiableSet(amountResources);
+		Set<AmountResource> set = SimulationConfig
+		.instance()
+		.getResourceConfiguration()
+		.getAmountResources();
+		return Collections.unmodifiableSet(set);
 	}
-	
+
+	/**
+	 * gets a sorted map of all amount resources by calling
+	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
+	 * @return {@link TreeMap}<{@link String},{@link AmountResource}>
+	 */
+	public static TreeMap<String,AmountResource> getAmountResourcesMap() {
+		return SimulationConfig
+		.instance()
+		.getResourceConfiguration()
+		.getAmountResourcesMap();
+	}
+
+	/**
+	 * convenience method that calls {@link #getAmountResources()} and
+	 * turns the result into an alphabetically ordered list of strings.
+	 * @return {@link List}<{@link String}>
+	 */
+	public static List<String> getAmountResourcesSortedList() {
+		List<String> resourceNames = new ArrayList<String>();
+		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		while (i.hasNext()) {
+			resourceNames.add(i.next().getName());
+		}
+		Collections.sort(resourceNames);
+		return resourceNames;
+	}
+
 	/**
 	 * Checks if an object is equal to this object.
 	 * @return true if equal
 	 */
+	@Override
 	public boolean equals(Object object) {
 		if (object instanceof AmountResource) {
 			AmountResource otherObject = (AmountResource) object;
-			if ((name.equals(otherObject.name)) && (phase.equals(otherObject.phase)))
+			if ((getName().equals(otherObject.getName())) && (phase.equals(otherObject.phase)))
 				return true;
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-	    if (hashcode == -1) {
-	        hashcode = name.hashCode() * phase.hashCode();
-	    }
+		if (hashcode == -1) {
+			hashcode = getName().hashCode() * phase.hashCode();
+		}
 		return hashcode;
 	}
-    
-    /**
-     * Compares this object with the specified object for order.
-     * @param o the Object to be compared.
-     * @return a negative integer, zero, or a positive integer as this object is less than, 
-     * equal to, or greater than the specified object.
-     */
-    public int compareTo(Resource o) {
-        return name.compareTo(o.getName());
-    }
+
+	/**
+	 * Returns the resource as a string.
+	 */
+	public String toString() {
+		return getName();
+	}
+
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * equal to, or greater than the specified object.
+	 */
+	@Override
+	public final int compareTo(Resource o) {
+		return getName().compareToIgnoreCase(o.getName());
+	}
 }

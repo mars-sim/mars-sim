@@ -371,7 +371,45 @@
 			
 		</person>
 		<person name="Rik Declercq" gender="male"/>
-	
+
+        <person name="Leonardo DaVinci" gender="male" settlement="Alpha Basis" job="Engineer">
+            <skill-list>
+                <!-- A skill for the person. -->
+                <!-- name: the name of the skill. (required). -->
+                <!-- level: the level of the skill ( >= 0 ) (required). -->
+                <skill name="Driving" level="1"/>
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="1"/>
+                <skill name="EVA Operations" level="1"/>
+                <skill name="Areology" level="1"/>
+                <skill name="Medicine" level="1"/>
+                <skill name="Cooking" level="1"/>
+                <skill name="Materials Science" level="4"/>
+            </skill-list>
+            <relationship-list>
+                <relationship person-name="Lena LaGranda" opinion="100"/>
+            </relationship-list>
+        </person>
+        <person name="Lena LaGranda" gender="female" settlement="Alpha Basis" job="Engineer">
+            <skill-list>
+                <!-- A skill for the person. -->
+                <!-- name: the name of the skill. (required). -->
+                <!-- level: the level of the skill ( >= 0 ) (required). -->
+                <skill name="Driving" level="1"/>
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="1"/>
+                <skill name="EVA Operations" level="1"/>
+                <skill name="Areology" level="1"/>
+                <skill name="Chemistry" level="1"/>
+                <skill name="Materials Science" level="4"/>
+            </skill-list>
+            <relationship-list>
+                <relationship person-name="Leonardo DaVinci" opinion="100"/>
+            </relationship-list>
+        </person>
+
 	</person-list>
 
 </people-configuration>

@@ -7,39 +7,52 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.Iterator;
+
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A dialog window for adding members to the mission for the mission tool.
  */
 class AddMembersDialog extends JDialog {
 	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Data members.
-	Mission mission;
-	DefaultListModel memberListModel;
-	DefaultListModel availableListModel;
-	JList availableList;
-	JButton addButton;
+	private Mission mission;
+	private DefaultListModel<Person> memberListModel;
+	private DefaultListModel<Person> availableListModel;
+	private JList<Person> availableList;
+	private JButton addButton;
 	
 	/**
-	 * Constructor
-	 * @param owner the owner dialog.
-	 * @param mission the mission to add to.
-	 * @param memberListModel the member list model in the edit mission dialog.
-	 * @param availablePeople the available people to add.
+	 * Constructor.
+	 * @param owner {@link Dialog} the owner dialog.
+	 * @param mission {@link Mission} the mission to add to.
+	 * @param memberListModel {@link DefaultListModel}<{@link Person}> the member list model in the edit mission dialog.
+	 * @param availablePeople {@link Collection}<{@link People}> the available people to add.
 	 */
-	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel memberListModel, 
+	public AddMembersDialog(Dialog owner, Mission mission, DefaultListModel<Person> memberListModel, 
 			Collection<Person> availablePeople) {
 		// Use JDialog constructor
 		super(owner, "Add Members", true);
@@ -68,12 +81,12 @@ class AddMembersDialog extends JDialog {
         availablePeoplePane.add(availableScrollPane, BorderLayout.CENTER);
         
         // Create available list model
-        availableListModel = new DefaultListModel();
+        availableListModel = new DefaultListModel<Person>();
         Iterator<Person> i = availablePeople.iterator();
         while (i.hasNext()) availableListModel.addElement(i.next());
         
         // Create member list
-        availableList = new JList(availableListModel);
+        availableList = new JList<Person>(availableListModel);
         availableList.addListSelectionListener(
         		new ListSelectionListener() {
         			public void valueChanged(ListSelectionEvent e) {

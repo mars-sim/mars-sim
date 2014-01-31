@@ -7,21 +7,25 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 
 /**
  * The BuildingsTabPanel is a tab panel containing building panels.
@@ -29,7 +33,7 @@ import java.util.List;
 public class BuildingsTabPanel extends TabPanel implements ActionListener {
     
     private DefaultComboBoxModel buildingComboBoxModel;
-    private JComboBox buildingComboBox;
+    private JComboBoxMW buildingComboBox;
     private List<Building> buildingsCache;
     private JPanel buildingDisplayPanel;
     private CardLayout buildingLayout;
@@ -61,7 +65,7 @@ public class BuildingsTabPanel extends TabPanel implements ActionListener {
         while (i.hasNext()) buildingComboBoxModel.addElement(i.next());
         
         // Create building list.
-        buildingComboBox = new JComboBox(buildingComboBoxModel);
+        buildingComboBox = new JComboBoxMW(buildingComboBoxModel);
         buildingComboBox.addActionListener(this);
         buildingComboBox.setMaximumRowCount(10);
         buildingSelectPanel.add(buildingComboBox);

@@ -6,16 +6,21 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-
-
 
 /**
  * The FarmingBuildingPanel class is a building function panel representing 
@@ -23,21 +28,28 @@ import java.awt.*;
  */
 public class FarmingBuildingPanel extends BuildingFunctionPanel {
     
-    // Data members
-    private Farming farm; // The farming building.
-    private JLabel farmersLabel; // The number of farmers label.
-    private JLabel cropsLabel; // The number of crops label.
-    private CropTableModel cropTableModel; // Table model for crop info.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	// Data members
+	/** The farming building. */
+    private Farming farm;
+    /** The number of farmers label. */
+    private JLabel farmersLabel;
+    /** The number of crops label. */
+    private JLabel cropsLabel;
+    /** Table model for crop info. */
+    private CropTableModel cropTableModel;
     
     // Data cache
-    private int farmersCache;  // The number of farmers cache.
-    private int cropsCache; // The number of crops cache.
+    /** The number of farmers cache. */
+    private int farmersCache;
+    /** The number of crops cache. */
+    private int cropsCache;
     
     /**
-     * Constructor
-     *
-     * @param farm the farming building this panel is for.
-     * @param desktop The main desktop.
+     * Constructor.
+     * @param farm {@link Farming} the farming building this panel is for.
+     * @param desktop {@link MainDesktopPane} The main desktop.
      */
     public FarmingBuildingPanel(Farming farm, MainDesktopPane desktop) {
         
@@ -112,11 +124,13 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
      */
     private static class CropTableModel extends AbstractTableModel {
         
-        Farming farm;
-        java.util.List<Crop> crops;
-        ImageIcon redDot;
-        ImageIcon yellowDot;
-        ImageIcon greenDot;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		private Farming farm;
+		private java.util.List<Crop> crops;
+		private ImageIcon redDot;
+		private ImageIcon yellowDot;
+		private ImageIcon greenDot;
         
         private CropTableModel(Farming farm) {
             this.farm = farm;
@@ -135,7 +149,7 @@ public class FarmingBuildingPanel extends BuildingFunctionPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = ImageIcon.class;
             else if (columnIndex == 1) dataType = String.class;
             else if (columnIndex == 2) dataType = String.class;

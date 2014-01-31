@@ -53,7 +53,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
  */
 public class EmergencySupplyPanel extends WizardPanel {
 
-    // Data members.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	// Data members.
     private JLabel errorMessageLabel;
     private JTable supplyTable;
     private JTable cargoTable;
@@ -283,7 +285,8 @@ public class EmergencySupplyPanel extends WizardPanel {
      * @return true if enough containers
      * @throws Exception if error checking containers.
      */
-    private boolean hasEnoughContainers() {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private boolean hasEnoughContainers() {
         boolean result = true;
         
         Map<Class, Integer> containerMap = new HashMap<Class, Integer>(3);
@@ -330,7 +333,8 @@ public class EmergencySupplyPanel extends WizardPanel {
      * @param containerType the container class.
      * @return number of containers.
      */
-    private int getNumberOfCargoContainers(Class containerType) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private int getNumberOfCargoContainers(Class containerType) {
         int result = 0;
         Good containerGood = GoodsUtil.getEquipmentGood(containerType);
         Map<Good, Integer> cargoGoods = cargoTableModel.getCargoGoods();
@@ -343,7 +347,8 @@ public class EmergencySupplyPanel extends WizardPanel {
      * @param phase the amount resource phase.
      * @return container class.
      */
-    private Class getContainerTypeNeeded(Phase phase) {
+    @SuppressWarnings("rawtypes")
+	private Class getContainerTypeNeeded(Phase phase) {
         Class result = null;
         if (phase.equals(Phase.SOLID)) result = Bag.class;
         if (phase.equals(Phase.LIQUID)) result = Barrel.class;
@@ -351,10 +356,10 @@ public class EmergencySupplyPanel extends WizardPanel {
         return result;
     }
     
-    /**
+    /*
      * Gets a list of emergency resources.
      * @return list of amount resources.
-     */
+     *
     private List<AmountResource> getEmergencyResources() {
         
         List<AmountResource> result = new ArrayList<AmountResource>(4);
@@ -365,14 +370,17 @@ public class EmergencySupplyPanel extends WizardPanel {
         
         return result;
     }
-    
+    */
+
     private class SupplyTableModel extends AbstractTableModel {
         
-        private Map<Good, Integer> goodsMap;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		private Map<Good, Integer> goodsMap;
         private List<Good> goodsList;
         
         /**
-         * Constructor
+         * Constructor.
          */
         private SupplyTableModel() {
             // Use AbstractTableModel constructor.
@@ -500,11 +508,13 @@ public class EmergencySupplyPanel extends WizardPanel {
     
     private class CargoTableModel extends AbstractTableModel {
         
-        private Map<Good, Integer> cargoMap;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		private Map<Good, Integer> cargoMap;
         private List<Good> cargoList;
         
         /**
-         * Constructor
+         * Constructor.
          */
         private CargoTableModel() {
             // Use AbstractTableModel constructor.

@@ -7,7 +7,22 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -19,10 +34,6 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
-import javax.swing.*;
-
-import java.util.*;
-
 /**
  * The PersonTableModel that maintains a list of Person objects. By defaults
  * the source of the list is the Unit Manager.
@@ -30,22 +41,40 @@ import java.util.*;
  */
 public class PersonTableModel extends UnitTableModel {
 
-    // Column indexes
-    private final static int NAME = 0;           // Person name column
-    private final static int GENDER = 1;         // Gender column
-    private final static int LOCATION = 2;       // Location column
-    private final static int PERSONALITY = 3;    // Personality column
-    private final static int HUNGER = 4;         // Hunger column
-    private final static int FATIGUE = 5;        // Fatigue column
-    private final static int STRESS = 6;         // Stress column
-    private final static int PERFORMANCE = 7;    // Performance column
-    private final static int JOB = 8;            // Job column
-    private final static int TASK = 9;           // Task column
-    private final static int MISSION = 10;       // Mission column
-    private final static int HEALTH = 11;        // Health column
-    private final static int COLUMNCOUNT = 12;   // The number of Columns
-    private static String columnNames[];         // Names of Columns
-    private static Class columnTypes[];          // Types of Columns
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Column indexes
+	/** Person name column. */
+    private final static int NAME = 0;
+    /** Gender column. */
+    private final static int GENDER = 1;
+    /** Location column. */
+    private final static int LOCATION = 2;
+    /** Personality column. */
+    private final static int PERSONALITY = 3;
+    /** Hunger column. */
+    private final static int HUNGER = 4;
+    /** Fatigue column. */
+    private final static int FATIGUE = 5;
+    /** Stress column. */
+    private final static int STRESS = 6;
+    /** Performance column. */
+    private final static int PERFORMANCE = 7;
+    /** Job column. */
+    private final static int JOB = 8;
+    /** Task column. */
+    private final static int TASK = 9;
+    /** Mission column. */
+    private final static int MISSION = 10;
+    /** Health column. */
+    private final static int HEALTH = 11;
+    /** The number of Columns. */
+    private final static int COLUMNCOUNT = 12;
+    /** Names of Columns. */
+    private static String columnNames[];
+    /** Types of Columns. */
+    private static Class<?> columnTypes[];
     
     /**
      * The static initializer creates the name & type arrays.
@@ -118,6 +147,7 @@ public class PersonTableModel extends UnitTableModel {
     private UnitManagerListener unitManagerListener;
 
     /**
+     * constructor.
      * Constructs a PersonTableModel object that displays all people in the simulation.
      * @param unitManager Manager containing Person objects.
      */

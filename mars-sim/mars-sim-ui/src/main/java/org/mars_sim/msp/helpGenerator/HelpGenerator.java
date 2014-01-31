@@ -1,0 +1,646 @@
+package org.mars_sim.msp.helpGenerator;
+
+import java.io.File;
+import java.io.PrintWriter;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
+
+/**
+ * this can be run at development time to generate .html-files
+ * for the in-game help tool.
+ * 
+ * @author stpa
+ * 2014-01-29
+ */
+public class HelpGenerator {
+
+    // Initialize logger for this class.
+    private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
+
+	private static final String DIR = "\\docs\\help\\";
+	private static final String SUFFIX = ".html";
+
+	private static final String VEHICLES = "vehicles";
+	private static final String VEHICLE = "vehicle_";
+
+	private static final String RESOURCES = "resources";
+	private static final String RESOURCE = "resource_";
+
+	private static final String PARTS = "parts";
+	private static final String PART = "part_";
+
+	private static final String PROCESSES = "processes";
+	private static final String PROCESS = "process_";
+
+	private static final String EQUIPMENTS = "equipment";
+	private static final String EQUIPMENT = "equipment_";
+
+	/**
+	 * insert html header with given page title into given stringbuffer.
+	 * @param s {@link StringBuffer}
+	 * @param title {@link String}
+	 */
+	private static final void helpFileHeader(final StringBuffer s, final String title) {
+		StringBuffer header = new StringBuffer()
+		.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n")
+		.append("<html>\n")
+		.append("\t<head>\n")
+		.append("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
+		.append("\t\t<title>")
+		.append("Mars Simulation Project - generated help file - ")
+		.append(title)
+		.append("</title>\n")
+		.append("\t\t<link rel=\"stylesheet\" href=\"../msp.css\">\n")
+		.append("\t</head>\n")
+		.append("\t<body>\n\n");
+		s.insert(0,header.toString());
+	}
+
+	private static final void helpFileFooter(final StringBuffer s) {
+		s.append("\n\t</body>\n");
+		s.append("</html>\n");
+	}
+
+	private static final void helpFileTableRow(
+		final StringBuffer s,
+		final String[] columnContents
+	) {
+		s.append("\t<tr>\n");
+		for (String columnContent : columnContents) {
+			s.append("\t\t<td>");
+			s.append(columnContent.replace(" ","&nbsp;"));
+			s.append("</td>\n");
+		}
+		s.append("\t</tr>\n");
+	}
+
+	private static final void helpFileNoSuchProcess(final StringBuffer content) {
+		content.append("<p>&nbsp;&nbsp;no such manufacturing processes known.</p>");
+	}
+
+	private static final void generateFile(final StringBuffer path, final StringBuffer content) {
+		try {
+			String absPath = new File(
+				HelpGenerator
+				.class
+				.getClassLoader()
+				.getResource(DIR)
+				.toURI()
+			).getAbsolutePath();
+			File file = new File(absPath + '/' + path.toString());
+			PrintWriter pw = new PrintWriter(file);
+			pw.write(content.toString());
+			pw.close();
+			logger.log(Level.INFO,"generated file " + file.getAbsolutePath());
+		} catch (Exception e) {
+			logger.log(Level.WARNING,"failed to generate file " + path.toString());
+		}
+	}
+
+	private static final StringBuffer getPathVehicle(final String vehicle) {
+		return new StringBuffer()
+		.append(VEHICLE)
+		.append(vehicle.replace(" ","_"))
+		.append(SUFFIX);
+	}
+	
+	private static final StringBuffer getPathVehicles() {
+		return new StringBuffer()
+		.append(VEHICLES)
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathResource(final String resource) {
+		return new StringBuffer()
+		.append(RESOURCE)
+		.append(resource.replace(" ","_"))
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathResources() {
+		return new StringBuffer()
+		.append(RESOURCES)
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathPart(final String part) {
+		return new StringBuffer()
+		.append(PART)
+		.append(part.replace(" ","_"))
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathParts() {
+		return new StringBuffer()
+		.append(PARTS)
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathProcess(final String process) {
+		return new StringBuffer()
+		.append(PROCESS)
+		.append(process.replace(" ","_"))
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathProcesses() {
+		return new StringBuffer()
+		.append(PROCESSES)
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathEquipment(final String equipment) {
+		return new StringBuffer()
+		.append(EQUIPMENT)
+		.append(equipment.replace(" ","_"))
+		.append(SUFFIX);
+	}
+
+	private static final StringBuffer getPathEquipments() {
+		return new StringBuffer()
+		.append(EQUIPMENTS)
+		.append(SUFFIX);
+	}
+
+	/**
+	 * produces a link <code> a href = getPathResource(name) </code>
+	 * with the name as caption.
+	 * @param resourceName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkResource(final String resourceName) {
+		return link(getPathResource(resourceName),resourceName);
+	}
+
+	/**
+	 * produces a link to the resources page with the given caption.
+	 * @param caption {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkResources(final String caption) {
+		return link(getPathResources(),caption);
+	}
+
+	/**
+	 * produces a link <code> a href = getPathVehicle(name) </code>
+	 * with the name as caption.
+	 * @param vehicleName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkVehicle(final String vehicleName) {
+		return link(getPathVehicle(vehicleName),vehicleName);
+	}
+
+	/**
+	 * produces a link to the vehicles page with the given caption.
+	 * @param caption {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkVehicles(final String caption) {
+		return link(getPathVehicles(),caption);
+	}
+
+	/**
+	 * produces a link <code> a href = getPathProcess(name) </code>
+	 * with the name as caption.
+	 * @param processName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkProcess(final String processName) {
+		return link(getPathProcess(processName),processName);
+	}
+
+	/**
+	 * produces a link to the processes page with the given caption.
+	 * @param caption {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkProcesses(final String caption) {
+		return link(getPathProcesses(),caption);
+	}
+
+	private static final String getLinkEquipment(final String equipmentName) {
+		return link(getPathEquipment(equipmentName),equipmentName);
+	}
+
+	private static final String getLinkEquipments(final String caption) {
+		return link(getPathEquipments(),caption);
+	}
+
+	/**
+	 * produces a link <code> a href = getPathPart(name) </code>
+	 * with the name as caption.
+	 * @param partName {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkPart(final String partName) {
+		return link(getPathPart(partName),partName);
+	}
+
+	/**
+	 * produces a link to the parts page with the given caption.
+	 * @param caption {@link String}
+	 * @return {@link String}
+	 */
+	private static final String getLinkParts(final String caption) {
+		return link(getPathParts(),caption);
+	}
+
+	private static final String link(final StringBuffer target, final String caption) {
+		return new StringBuffer()
+		.append("<a href=\"")
+		.append(target)
+		.append("\">")
+		.append(caption)
+		.append("</a>")
+		.toString();
+	}
+
+	/**
+	 * generate help files with vehicle descriptions.
+	 */
+	private static final void generateVehicleDescriptions() {
+		List<String> vehicles = SupplyTableModel.getSortedVehicleTypes();
+		
+		// first generate "vehicles.html" with a list of defined vehicles
+		StringBuffer content = new StringBuffer()
+		.append("<h2>Vehicles</h2>\n")
+		.append("<p>MSP features several types of vehicles for use on the Mars surface. Here are the default ones defined:</p>")
+		.append("<ul>\n");
+		for (String vehicle : vehicles) {
+			content.append("<li>")
+			.append(getLinkVehicle(vehicle))
+			.append("</li>\n");
+		}
+		content.append("</ul>");		
+		helpFileHeader(content,"vehicles");
+		helpFileFooter(content);
+		generateFile(getPathVehicles(),content);
+		
+		// second loop over vehicle types to generate a help file for each one
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+		for (String vehicle : vehicles) {
+			content = new StringBuffer()
+			.append("<h2>vehicle \"")
+			.append(vehicle)
+			.append("\"</h2>\n")
+			.append("</p></p>\n")
+			.append("<p>")
+			.append(getLinkVehicles("back to vehicles overview"))
+			.append("</p></p>\n")
+			.append("<table>\n");
+
+			if (config.hasPartAttachments(vehicle)) {
+				helpFileTableRow(content,new String[] {"attachable parts",config.getAttachableParts(vehicle).toString()});
+				helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(config.getPartAttachmentSlotNumber(vehicle))});
+			}
+			helpFileTableRow(content,new String[] {"base speed",Double.toString(config.getBaseSpeed(vehicle))});
+			helpFileTableRow(content,new String[] {"total cargo capacity",Double.toString(config.getTotalCapacity(vehicle))});
+			for (String cargo : new String[] {"methane","oxygen","water","food","rock samples","ice"}) {
+				Double capacity = config.getCargoCapacity(vehicle,cargo);
+				if (capacity > 0.0) {
+					StringBuffer caption = new StringBuffer()
+					.append("cargo capacity for ")
+					.append(getLinkResource(cargo));
+					helpFileTableRow(
+						content,
+						new String[] {
+							caption.toString(),
+							Double.toString(capacity)
+						}
+					);
+				}
+			}
+			helpFileTableRow(content,new String[] {"crew size",Integer.toString(config.getCrewSize(vehicle))});
+			helpFileTableRow(content,new String[] {"empty mass",Double.toString(config.getEmptyMass(vehicle))});
+			helpFileTableRow(content,new String[] {"fuel efficiency",Double.toString(config.getFuelEfficiency(vehicle))});
+			if (config.hasLab(vehicle)) {
+				helpFileTableRow(content,new String[] {"lab tech level",Integer.toString(config.getLabTechLevel(vehicle))});
+				helpFileTableRow(content,new String[] {"lab specialties",config.getLabTechSpecialities(vehicle).toString()});
+			}
+			if (config.hasSickbay(vehicle)) {
+				helpFileTableRow(content,new String[] {"sickbay tech level",Integer.toString(config.getSickbayTechLevel(vehicle))});
+				helpFileTableRow(content,new String[] {"sickbay beds",Integer.toString(config.getSickbayBeds(vehicle))});
+			}
+			helpFileTableRow(content,new String[] {"width",Double.toString(config.getWidth(vehicle))});
+			helpFileTableRow(content,new String[] {"length",Double.toString(config.getLength(vehicle))});
+			
+			content.append("</table>\n");
+			
+			helpFileHeader(content,"vehicle \"" + vehicle + "\"");
+			helpFileFooter(content);
+			generateFile(getPathVehicle(vehicle),content);
+		}
+	}
+
+	/**
+	 * generate help files with resources descriptions.
+	 */
+	private static final void generateResourceDescriptions() {
+		TreeMap<String,AmountResource> resources = AmountResource.getAmountResourcesMap();
+
+		// first: generate "resources.html" with a list of defined resources
+		StringBuffer content = new StringBuffer()
+		.append("<h2>resources</h2>\n")
+		.append("<p>these are all the default resources:</p>\n")
+		.append("<table>\n");
+
+		for (Entry<String,AmountResource> entry : resources.entrySet()) {
+			AmountResource resource = entry.getValue();
+			String name = entry.getKey();
+			String life = resource.isLifeSupport() ? "(life support)" : "";
+			helpFileTableRow(
+				content,
+				new String[] {
+					getLinkResource(name),
+					resource.getPhase().getName(),
+					life
+				}
+			);
+		}
+
+		content.append("</table>\n");
+		
+		helpFileHeader(content,"resources");
+		helpFileFooter(content);
+		generateFile(getPathResources(),content);
+		
+		// second: loop over resource types to generate a help file for each one
+		for (Entry<String,AmountResource> entry : resources.entrySet()) {
+			AmountResource resource = entry.getValue();
+			String name = entry.getKey();
+			content = new StringBuffer()
+			.append("<h2>resource \"")
+			.append(name)
+			.append("\" ")
+			.append(resource.getPhase().getName())
+			.append("</h2>\n")
+			.append("<br/>\n")
+			.append("<p>")
+			.append(getLinkResources("back to resources overview"))
+			.append("</p><br/>\n");
+			if (resource.isLifeSupport()) {
+				content.append("<p>this resource is needed for life support.</p>\n");
+			}
+			// list of manufacturing processes with the current resource as output
+			List<ManufactureProcessInfo> output = ManufactureUtil
+			.getManufactureProcessesWithGivenOutput(name);
+			content.append("<p><u>manufacturing processes with ")
+			.append(name)
+			.append(" as output:</u></p>\n");
+			if (output.size() > 0) {
+				content.append("<ul>\n");
+				for (ManufactureProcessInfo info : output) {
+					content.append("\t<li>")
+					.append(getLinkProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchProcess(content);
+			// list of manufacturing processes with the current resource as input
+			List<ManufactureProcessInfo> input = ManufactureUtil
+			.getManufactureProcessesWithGivenInput(name);
+			content.append("<p><u>manufacturing processes with ")
+			.append(name)
+			.append(" as input:</u></p>\n");
+			if (input.size() > 0) {
+				content.append("<ul>\n");
+				for (ManufactureProcessInfo info : input) {
+					content.append("\t<li>")
+					.append(getLinkProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchProcess(content);
+			// finalize and generate help file
+			helpFileHeader(content,"resource \"" + resource + "\"");
+			helpFileFooter(content);
+			generateFile(getPathResource(name),content);
+		}
+	}
+
+	/**
+	 * generate help files with parts descriptions.
+	 */
+	private static final void generatePartsDescriptions() {
+		TreeMap<String,ItemResource> parts = ItemResource.getItemResourcesMap();
+
+		// first: generate "parts.html" with a list of defined equipment parts
+		StringBuffer content = new StringBuffer()
+		.append("<h2>parts</h2>\n")
+		.append("<p>these are all the default equipment parts:</p>\n")
+		.append("<ul>\n");
+		for (String part : parts.keySet()) {
+			content.append("\t<li>")
+			.append(getLinkPart(part))
+			.append("</li>\n");
+		}
+		content.append("</ul>\n");
+		helpFileHeader(content,"parts");
+		helpFileFooter(content);
+		generateFile(getPathParts(),content);
+		
+		// second: loop over part types to generate a help file for each one
+		for (Entry<String,ItemResource> entry : parts.entrySet()) {
+			ItemResource part = entry.getValue();
+			String name = entry.getKey();
+			content = new StringBuffer()
+			.append("<h2>part \"")
+			.append(name)
+			.append("\"</h2>\n")
+			.append("</p><br/>\n")
+			.append("<p>")
+			.append(getLinkParts("back to parts overview"))
+			.append("</p><br/>\n")
+			.append("<p>mass per unit: ")
+			.append(Double.toString(part.getMassPerItem()))
+			.append("kg</p>");
+			// list of manufacturing processes with the current part as output
+			List<ManufactureProcessInfo> output = ManufactureUtil
+			.getManufactureProcessesWithGivenOutput(name);
+			content.append("<p><u>how to make ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (output.size() > 0) {
+				content.append("<ul>\n");
+				for (ManufactureProcessInfo info : output) {
+					content.append("\t<li>")
+					.append(getLinkProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchProcess(content);
+			content.append("</p>\n");
+			// list of manufacturing processes with the current part as input
+			List<ManufactureProcessInfo> input = ManufactureUtil
+			.getManufactureProcessesWithGivenInput(name);
+			content.append("<p><u>what to do with ")
+			.append(name)
+			.append(":</u></p>\n");
+			if (input.size() > 0) {
+				content.append("<ul>\n");
+				for (ManufactureProcessInfo info : input) {
+					content.append("\t<li>")
+					.append(getLinkProcess(info.getName()))
+					.append("</li>\n");
+				}
+				content.append("</ul>\n");
+			} else helpFileNoSuchProcess(content);
+			// finalize and generate help file
+			helpFileHeader(content,"part \"" + part + "\"");
+			helpFileFooter(content);
+			generateFile(getPathPart(name),content);
+		}
+	}
+
+	/**
+	 * generate help files with manufacturing process descriptions.
+	 */
+	private static final void generateProcessDescriptions() {
+		TreeMap<String,ManufactureProcessInfo> processes = ManufactureUtil.getAllManufactureProcessesMap();
+
+		// first: generate "processes.html" with a list of defined processes
+		String[] header = new String[] {
+			"<b>tech</b>",
+			"<b>skill</b>",
+			"<b>work</b>",
+			"<b>time</b>",
+			"<b>power</b>",
+			"<b>name</b>"
+		};
+		StringBuffer content = new StringBuffer()
+		.append("<h2>processes</h2>\n")
+		.append("<p>these are all the default manufacturing processes:</p>\n")
+		.append("<table>\n");
+		helpFileTableRow(content,header);
+		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
+			String name = process.getKey();
+			ManufactureProcessInfo info = process.getValue();
+			helpFileTableRow(
+				content,
+				new String[] {
+					Integer.toString(info.getTechLevelRequired()),
+					Integer.toString(info.getSkillLevelRequired()),
+					Double.toString(info.getWorkTimeRequired()),
+					Double.toString(info.getProcessTimeRequired()),
+					Double.toString(info.getPowerRequired()),
+					getLinkProcess(name)
+				}
+			);
+		}
+		helpFileTableRow(content,header);
+		content.append("</table>\n");
+		helpFileHeader(content,"processes");
+		helpFileFooter(content);
+		generateFile(getPathProcesses(),content);
+
+		// second: loop over processes to generate a help file for each one
+		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
+			String name = process.getKey();
+			ManufactureProcessInfo info = process.getValue();
+			content = new StringBuffer()
+			.append("<h2>process \"")
+			.append(name)
+			.append("\"</h2>\n")
+			.append("<br/>")
+			.append(getLinkProcesses("back to processes overview"))
+			.append("</br>\n")
+			.append("<table>\n");
+			helpFileTableRow(content,new String [] {"required building tech level",Integer.toString(info.getTechLevelRequired())});
+			helpFileTableRow(content,new String [] {"required skill level",Integer.toString(info.getSkillLevelRequired())});
+			helpFileTableRow(content,new String [] {"work time in millisols",Double.toString(info.getWorkTimeRequired())});
+			helpFileTableRow(content,new String [] {"time in millisols",Double.toString(info.getProcessTimeRequired())});
+			helpFileTableRow(content,new String [] {"power requirement",Double.toString(info.getPowerRequired())});
+			content.append("</table>\n")
+			.append("<br/>\n")
+			.append("<p><u>process inputs:</u></p>\n")
+			.append("<table>\n");
+			for (ManufactureProcessItem input : info.getInputList()) {
+				String link = "";
+				String type = "";
+				String inputName = input.getName();
+				String inputType = input.getType();
+				if (inputType.equalsIgnoreCase(ManufactureProcessItem.AMOUNT_RESOURCE)) {
+					link = getLinkResource(inputName);
+					type = getLinkResources("resource");
+				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.EQUIPMENT)) {
+					link = getLinkEquipment(inputName);
+					type = getLinkEquipments("equipment");
+				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.PART)) {
+					link = getLinkPart(inputName);
+					type = getLinkParts("part");
+				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.VEHICLE)) {
+					link = getLinkVehicle(inputName);
+					type = getLinkVehicles("vehicle");
+				}
+				helpFileTableRow(
+					content,
+					new String[] {
+						type,
+						Double.toString(input.getAmount()),
+						link
+					}
+				);
+			}
+			content.append("</table>\n")
+			.append("<br/>\n")
+			.append("<p><u>process outputs:</u></p>\n")
+			.append("<table>\n");
+			for (ManufactureProcessItem output : info.getOutputList()) {
+				String link = "";
+				String type = "";
+				String outputName = output.getName();
+				String outputType = output.getType();
+				if (outputType.equalsIgnoreCase(ManufactureProcessItem.AMOUNT_RESOURCE)) {
+					link = getLinkResource(outputName);
+					type = getLinkResources("resource");
+				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.EQUIPMENT)) {
+					link = getLinkEquipment(outputName);
+					type = getLinkEquipments("equipment");
+				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.PART)) {
+					link = getLinkPart(outputName);
+					type = getLinkParts("part");
+				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.VEHICLE)) {
+					link = getLinkVehicle(outputName);
+					type = getLinkVehicles("vehicle");
+				}
+				helpFileTableRow(
+					content,
+					new String[] {
+						type,
+						Double.toString(output.getAmount()),
+						link
+					}
+				);
+			}
+			content.append("</table>\n");
+
+			// finalize and generate help file
+			helpFileHeader(content,"process \"" + name + "\"");
+			helpFileFooter(content);
+			generateFile(getPathProcess(name),content);
+		}
+	}
+
+	/**
+	 * generate html help files for use in the in-game help and tutorial browser.
+	 */
+	public static final void generateHtmlHelpFiles() {
+		HelpGenerator.generateVehicleDescriptions();
+		HelpGenerator.generateResourceDescriptions();
+		HelpGenerator.generatePartsDescriptions();
+		HelpGenerator.generateProcessDescriptions();
+	}
+}

@@ -7,19 +7,11 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.edit;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
@@ -27,33 +19,63 @@ import java.util.Iterator;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+
 /**
  * The mission info panel for the edit mission dialog.
  */
 public class InfoPanel extends JPanel {
 
-	// Action text
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	/** action text. */
 	final static String ACTION_NONE = "None";
+	/** action text. */
 	final static String ACTION_CONTINUE = "End EVA and Continue to Next Site";
+	/** action text. */
 	final static String ACTION_HOME = "Return to Home Settlement and End Mission";
+	/** action text. */
 	final static String ACTION_NEAREST = "Go to Nearest Settlement and End Mission";
 	
 	// Data members.
 	Mission mission;
 	Dialog parent;
 	JTextField descriptionField;
-	JComboBox actionDropDown;
-	DefaultListModel memberListModel;
-	JList memberList;
+	JComboBoxMW<?> actionDropDown;
+	DefaultListModel<Person> memberListModel;
+	JList<Person> memberList;
 	JButton addMembersButton;
 	JButton removeMembersButton;
 	
 	/**
-	 * Constructor
-	 * @param mission the mission to edit.
-	 * @param parent the parent dialog.
+	 * Constructor.
+	 * @param mission {@link Mission} the mission to edit.
+	 * @param parent {@link Dialog} the parent dialog.
 	 */
-	InfoPanel(Mission mission, Dialog parent) {
+	public InfoPanel(Mission mission, Dialog parent) {
 		
 		// Data members
 		this.mission = mission;
@@ -88,7 +110,7 @@ public class InfoPanel extends JPanel {
 		actionPane.add(actionLabel);
 		
 		// Create the action drop down box.
-		actionDropDown = new JComboBox(getActions(mission));
+		actionDropDown = new JComboBoxMW<String>(getActions(mission));
 		actionDropDown.setEnabled(actionDropDown.getItemCount() > 1);
 		actionPane.add(actionDropDown);
 		
@@ -113,14 +135,15 @@ public class InfoPanel extends JPanel {
         memberListPane.add(memberScrollPane, BorderLayout.CENTER);
         
         // Create member list model
-        memberListModel = new DefaultListModel();
+        memberListModel = new DefaultListModel<Person>();
         Iterator<Person> i = mission.getPeople().iterator();
         while (i.hasNext()) memberListModel.addElement(i.next());
         
         // Create member list
-        memberList = new JList(memberListModel);
+        memberList = new JList<Person>(memberListModel);
         memberList.addListSelectionListener(
         		new ListSelectionListener() {
+        			@Override
         			public void valueChanged(ListSelectionEvent e) {
         				// Enable remove members button if there are members in the list.
         				removeMembersButton.setEnabled(memberList.getSelectedValues().length > 0);
@@ -190,7 +213,7 @@ public class InfoPanel extends JPanel {
 	
 	/**
 	 * Gets a vector of possible actions for the mission.
-	 * @param mission the mission 
+	 * @param mission {@link Mission} the mission 
 	 * @return vector of actions.
 	 */
 	private Vector<String> getActions(Mission mission) {

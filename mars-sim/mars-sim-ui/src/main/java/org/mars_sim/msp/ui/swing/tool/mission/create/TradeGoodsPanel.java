@@ -7,6 +7,33 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.JButton;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.text.NumberFormatter;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -21,19 +48,10 @@ import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.text.NumberFormatter;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.ParseException;
-import java.util.*;
-import java.util.List;
-
 class TradeGoodsPanel extends WizardPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	private boolean buyGoods;
 	private JLabel errorMessageLabel;
@@ -47,7 +65,7 @@ class TradeGoodsPanel extends WizardPanel {
 	private JFormattedTextField amountTextField;
 	private NumberFormatter formatter;
 	
-	TradeGoodsPanel(CreateMissionWizard wizard, boolean buyGoods) {
+	public TradeGoodsPanel(CreateMissionWizard wizard, boolean buyGoods) {
 		// Use WizardPanel constructor
 		super(wizard);
 		
@@ -253,6 +271,7 @@ class TradeGoodsPanel extends WizardPanel {
 	 * @return true if enough containers
 	 * @throws Exception if error checking containers.
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private boolean hasEnoughContainers() {
 		boolean result = true;
 		
@@ -300,6 +319,7 @@ class TradeGoodsPanel extends WizardPanel {
 	 * @param containerType the container class.
 	 * @return number of containers.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private int getNumberOfTradedContainers(Class containerType) {
 		int result = 0;
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
@@ -313,6 +333,7 @@ class TradeGoodsPanel extends WizardPanel {
 	 * @param phase the amount resource phase.
 	 * @return container class.
 	 */
+	@SuppressWarnings("rawtypes")
 	private Class getContainerTypeNeeded(Phase phase) {
 		Class result = null;
 		if (phase.equals(Phase.SOLID)) result = Bag.class;
@@ -351,7 +372,10 @@ class TradeGoodsPanel extends WizardPanel {
 	
     private class GoodsTableModel extends AbstractTableModel {
     	
-    	private Map<Good, Integer> goodsMap;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private Map<Good, Integer> goodsMap;
     	private List<Good> goodsList;
     	
     	/**
@@ -484,7 +508,10 @@ class TradeGoodsPanel extends WizardPanel {
     
     private class TradeTableModel extends AbstractTableModel {
     	
-    	private Map<Good, Integer> tradeMap;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private Map<Good, Integer> tradeMap;
     	private List<Good> tradeList;
     	
     	/**

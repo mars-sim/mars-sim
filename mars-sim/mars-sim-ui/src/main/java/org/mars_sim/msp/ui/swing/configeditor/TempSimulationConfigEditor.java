@@ -41,6 +41,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.structure.SettlementTemplate;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 
 /**
  * A temporary simulation configuration editor dialog.
@@ -99,7 +100,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create combo box for editing template column in settlement table.
         TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
-        JComboBox templateCB = new JComboBox();
+        JComboBox templateCB = new JComboBoxMW();
         SettlementConfig settlementConfig = config.getSettlementConfiguration();
         Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
         while (i.hasNext()) {

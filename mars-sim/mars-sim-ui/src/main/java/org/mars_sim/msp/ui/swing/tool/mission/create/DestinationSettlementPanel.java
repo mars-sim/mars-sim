@@ -23,7 +23,10 @@ import java.util.Iterator;
  */
 class DestinationSettlementPanel extends WizardPanel {
 
-	// Wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Wizard panel name. */
 	private final static String NAME = "Destination Settlement";
 	
 	// Data members.
@@ -32,10 +35,10 @@ class DestinationSettlementPanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	DestinationSettlementPanel(CreateMissionWizard wizard) {
+	public DestinationSettlementPanel(CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
@@ -71,6 +74,7 @@ class DestinationSettlementPanel extends WizardPanel {
         settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         settlementTable.getSelectionModel().addListSelectionListener(
         	new ListSelectionListener() {
+        		@Override
         		public void valueChanged(ListSelectionEvent e) {
         			if (e.getValueIsAdjusting()) {
         				int index = settlementTable.getSelectedRow();
@@ -107,7 +111,8 @@ class DestinationSettlementPanel extends WizardPanel {
 	 * Gets the wizard panel name.
 	 * @return panel name.
 	 */
-	String getPanelName() {
+	@Override
+	public String getPanelName() {
 		return NAME;
 	}
 
@@ -143,8 +148,11 @@ class DestinationSettlementPanel extends WizardPanel {
 	 */
     private class SettlementTableModel extends UnitTableModel {
     	
+    	/** default serial id. */
+    	private static final long serialVersionUID = 1L;
+
     	/**
-    	 * Constructor
+    	 * hidden constructor.
     	 */
     	private SettlementTableModel() {
     		// Use UnitTableModel constructor.
@@ -188,7 +196,8 @@ class DestinationSettlementPanel extends WizardPanel {
     	/**
     	 * Updates the table data.
     	 */
-    	void updateTable() {
+    	@Override
+    	public void updateTable() {
     		units.clear();
     		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();    		
     		Collection<Settlement> settlements = Simulation.instance().getUnitManager().getSettlements();

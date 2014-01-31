@@ -25,7 +25,6 @@ import java.util.Vector;
 import javax.swing.AbstractCellEditor;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -45,6 +44,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 
@@ -53,20 +53,22 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
  */
 public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
-    // Data members
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	// Data members
     private Resupply resupply;
-    private JComboBox destinationCB;
+    private JComboBoxMW<Settlement> destinationCB;
     private JRadioButton arrivalDateRB;
     private JLabel arrivalDateTitleLabel;
     private JRadioButton timeUntilArrivalRB;
     private JLabel timeUntilArrivalLabel;
     private MartianSolComboBoxModel martianSolCBModel;
     private JLabel solLabel;
-    private JComboBox solCB;
+    private JComboBoxMW<?> solCB;
     private JLabel monthLabel;
-    private JComboBox monthCB;
+    private JComboBoxMW<?> monthCB;
     private JLabel orbitLabel;
-    private JComboBox orbitCB;
+    private JComboBoxMW<?> orbitCB;
     private JTextField solsTF;
     private JLabel solInfoLabel;
     private JTextField immigrantsTF;
@@ -100,7 +102,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
         Vector<Settlement> settlements = new Vector<Settlement>(
                 Simulation.instance().getUnitManager().getSettlements());
         Collections.sort(settlements);
-        destinationCB = new JComboBox(settlements);
+        destinationCB = new JComboBoxMW<Settlement>(settlements);
         if (resupply != null) {
             destinationCB.setSelectedItem(resupply.getSettlement());
         }
@@ -147,7 +149,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
         // Create sol combo box.
         martianSolCBModel = new MartianSolComboBoxModel(resupplyTime.getMonth(), resupplyTime.getOrbit());
-        solCB = new JComboBox(martianSolCBModel);
+        solCB = new JComboBoxMW<Integer>(martianSolCBModel);
         solCB.setSelectedItem(resupplyTime.getSolOfMonth());
         arrivalDateSelectionPane.add(solCB);
 
@@ -156,7 +158,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
         arrivalDateSelectionPane.add(monthLabel);
 
         // Create month combo box.
-        monthCB = new JComboBox(MarsClock.getMonthNames());
+        monthCB = new JComboBoxMW<Object>(MarsClock.getMonthNames());
         monthCB.setSelectedItem(resupplyTime.getMonthName());
         monthCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -179,7 +181,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
         for (int x = 0; x < 20; x++) {
             orbitValues[x] = formatter.format(startOrbit + x);
         }
-        orbitCB = new JComboBox(orbitValues);
+        orbitCB = new JComboBoxMW<Object>(orbitValues);
         orbitCB.setSelectedItem(formatter.format(startOrbit));
         orbitCB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -350,10 +352,12 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
      * Inner class for editing the Category cell with a combo box.
      */
     private class CategoryCellEditor extends AbstractCellEditor 
-            implements TableCellEditor, ActionListener {
+    implements TableCellEditor, ActionListener {
 
-        // Data members.
-        private JComboBox categoryCB;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		// Data members.
+        private JComboBoxMW<String> categoryCB;
         private int editingRow;
         private String previousCategory;
 
@@ -362,7 +366,7 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
          */
         private CategoryCellEditor() {
             super();
-            categoryCB = new JComboBox();
+            categoryCB = new JComboBoxMW<String>();
             Iterator<String> i = SupplyTableModel.getCategoryList().iterator();
             while (i.hasNext()) {
                 categoryCB.addItem(i.next());
@@ -402,9 +406,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
      */
     private class TypeCellEditor extends AbstractCellEditor implements TableCellEditor {
 
-        // Data members.
-        private Map<String, JComboBox> typeCBMap;
-        private JComboBox currentCB;
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		// Data members.
+        private Map<String, JComboBoxMW<String>> typeCBMap;
+        private JComboBoxMW<String> currentCB;
 
         /**
          * Constructor
@@ -412,11 +418,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
         private TypeCellEditor() {
 
             Map<String, List<String>> categoryTypeMap = SupplyTableModel.getCategoryTypeMap();
-            typeCBMap = new HashMap<String, JComboBox>(categoryTypeMap.keySet().size());
+            typeCBMap = new HashMap<String, JComboBoxMW<String>>(categoryTypeMap.keySet().size());
             Iterator<String> i = categoryTypeMap.keySet().iterator();
             while (i.hasNext()) {
                 String category = i.next();
-                JComboBox categoryCB = new JComboBox();
+                JComboBoxMW<String> categoryCB = new JComboBoxMW<String>();
                 List<String> types = categoryTypeMap.get(category);
                 Iterator<String> j = types.iterator();
                 while (j.hasNext()) {

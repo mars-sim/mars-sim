@@ -7,6 +7,21 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -16,20 +31,15 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-
-
 /** 
  * The HealthTabPanel is a tab panel for a person's health.
  */
 public class HealthTabPanel extends TabPanel {
     
-    private DecimalFormat formatter = new DecimalFormat("0.0");
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private DecimalFormat formatter = new DecimalFormat("0.0");
     private JLabel fatigueLabel;
     private JLabel hungerLabel;
     private JLabel stressLabel;
@@ -198,8 +208,11 @@ public class HealthTabPanel extends TabPanel {
      */
     private static class HealthProblemTableModel extends AbstractTableModel {
         
-        PhysicalCondition condition;
-        java.util.Collection problemsCache;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private PhysicalCondition condition;
+        private Collection<?> problemsCache;
         
         private HealthProblemTableModel(Person person) {
             condition = person.getPhysicalCondition();
@@ -215,7 +228,7 @@ public class HealthTabPanel extends TabPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             if (columnIndex == 1) dataType = String.class;
             return dataType;
@@ -230,7 +243,7 @@ public class HealthTabPanel extends TabPanel {
         public Object getValueAt(int row, int column) {
             HealthProblem problem = null;
             if (row < problemsCache.size()) {
-                Iterator i = problemsCache.iterator();
+                Iterator<?> i = problemsCache.iterator();
                 int count = 0;
                 while (i.hasNext()) {
                     HealthProblem prob = (HealthProblem) i.next();
@@ -266,7 +279,10 @@ public class HealthTabPanel extends TabPanel {
      */
     private static class MedicationTableModel extends AbstractTableModel {
         
-        private PhysicalCondition condition;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private PhysicalCondition condition;
         private List<Medication> medicationCache;
         
         private MedicationTableModel(Person person) {
@@ -283,7 +299,7 @@ public class HealthTabPanel extends TabPanel {
         }
         
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = Double.class;
             return dataType;

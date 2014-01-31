@@ -20,15 +20,24 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * The UnitTableModel that maintains a table model of Units objects.
  * It is only a partial implementation of the TableModel interface.
  */
-abstract public class UnitTableModel extends AbstractTableModel
-            implements MonitorModel, UnitListener {
+abstract public class UnitTableModel
+extends AbstractTableModel
+implements MonitorModel, UnitListener {
+
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     // Data members
-    private Collection<Unit> units;   // Collection of units
-    private String name;            // Model name
-    private String statusSuffix;    // Suffix to added to status message
-    private String columnNames[];   // Names of the displayed columns
-    private Class  columnTypes[];   // Types of the individual columns
+	/** Collection of units. */
+    private Collection<Unit> units;
+    /** Model name. */
+    private String name;
+    /** Suffix to added to status message. */
+    private String statusSuffix;
+    /** Names of the displayed columns. */
+    private String columnNames[];
+    /** Types of the individual columns. */
+    private Class<?>  columnTypes[];
     private int size = -1;
     private boolean refreshSize = true;
 
@@ -41,7 +50,7 @@ abstract public class UnitTableModel extends AbstractTableModel
      *  @param types The Classes of the individual columns.
      */
     protected UnitTableModel(String name, String suffix,
-                             String names[], Class types[]) {
+                             String names[], Class<?> types[]) {
 
         // Initialize data members
         this.name = name;

@@ -38,6 +38,8 @@ public class Technician extends Job implements Serializable {
 		jobTasks.add(RepairEVAMalfunction.class);
 		jobTasks.add(ToggleResourceProcess.class);
         jobTasks.add(ToggleFuelPowerSource.class);
+        jobTasks.add(UnloadVehicleEVA.class);
+        jobTasks.add(UnloadVehicleGarage.class);
         jobTasks.add(DigLocalIce.class);
 		
 		// Add engineer-related missions.

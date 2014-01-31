@@ -7,6 +7,19 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -16,16 +29,12 @@ import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 
 /** 
@@ -33,27 +42,33 @@ import java.awt.event.ActionListener;
  */
 public class ActivityTabPanel extends TabPanel implements ActionListener {
     
-    private JTextArea taskTextArea;
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	private JTextArea taskTextArea;
     private JTextArea taskPhaseTextArea;
     private JTextArea missionTextArea;
     private JTextArea missionPhaseTextArea;
     private JLabel jobLabel;
-    private JComboBox jobComboBox;
+    private JComboBoxMW<?> jobComboBox;
     private JButton monitorButton;
     private JButton missionButton;
     
-    // Data cache
+    /** data cache */
     private String jobCache = "";
+    /** data cache */
     private String taskCache = "";
+    /** data cache */
     private String taskPhaseCache = "";
+    /** data cache */
     private String missionCache = "";
+    /** data cache */
     private String missionPhaseCache = "";
     
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param unit the unit to display.
-     * @param desktop the main desktop.
+     * @param unit {@link Unit} the unit to display.
+     * @param desktop {@link MainDesktopPane} the main desktop.
      */
     public ActivityTabPanel(Unit unit, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
@@ -86,7 +101,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         String[] jobNames = new String[JobManager.getJobs().size()];
         for (int x=0; x < JobManager.getJobs().size(); x++)
         	jobNames[x] = JobManager.getJobs().get(x).getName();
-        jobComboBox = new JComboBox(jobNames);
+        jobComboBox = new JComboBoxMW<Object>(jobNames);
         jobComboBox.setSelectedItem(jobCache);
         jobComboBox.addActionListener(this);
         jobPanel.add(jobComboBox);
@@ -201,6 +216,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     /**
      * Updates the info on this panel.
      */
+    @Override
     public void update() {
         
         Person person = (Person) unit;
@@ -256,9 +272,9 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
     
     /** 
      * Action event occurs.
-     *
-     * @param event the action event
+     * @param event {@link ActionEvent} the action event
      */
+    @Override
     public void actionPerformed(ActionEvent event) {
     	Object source = event.getSource();
     	

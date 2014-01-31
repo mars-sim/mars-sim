@@ -6,31 +6,55 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.*;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-
 import java.util.Iterator;
 import java.util.List;
 
-public class MissionTableModel extends AbstractTableModel implements
-		MonitorModel, MissionManagerListener, MissionListener {
+import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.RoverMission;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+
+public class MissionTableModel
+extends AbstractTableModel
+implements MonitorModel, MissionManagerListener, MissionListener {
+
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Column indexes
-	private final static int TYPE = 0;               // Type column
-	private final static int DESCRIPTION = 1;        // Description column
-	private final static int PHASE = 2;              // Phase column
-	private final static int VEHICLE = 3;            // Mission vehicle column
-	private final static int STARTING_SETTLEMENT = 4;// Starting settlement column
-	private final static int MEMBER_NUM = 5;         // Member number column
-	private final static int NAVPOINT_NUM = 6;       // Navpoint number column
-	private final static int TRAVELLED_DISTANCE = 7; // Travelled distance column
-	private final static int REMAINING_DISTANCE = 8; // Remaining distance column
-	private final static int COLUMNCOUNT = 9;        // The number of Columns
-	private static String columnNames[];             // Names of Columns
-    private static Class columnTypes[];              // Types of Columns
+	/** Type column. */
+	private final static int TYPE = 0;
+	/** Description column. */
+	private final static int DESCRIPTION = 1;
+	/** Phase column. */
+	private final static int PHASE = 2;
+	/** Mission vehicle column. */
+	private final static int VEHICLE = 3;
+	/** Starting settlement column. */
+	private final static int STARTING_SETTLEMENT = 4;
+	/** Member number column. */
+	private final static int MEMBER_NUM = 5;
+	/** Navpoint number column. */
+	private final static int NAVPOINT_NUM = 6;
+	/** Travelled distance column. */
+	private final static int TRAVELLED_DISTANCE = 7;
+	/** Remaining distance column. */
+	private final static int REMAINING_DISTANCE = 8;
+	/** The number of Columns. */
+	private final static int COLUMNCOUNT = 9;
+	/** Names of Columns. */
+	private static String columnNames[];
+    /** Types of Columns. */
+	private static Class<?> columnTypes[];
 	
     private List<Mission> missionCache;
     

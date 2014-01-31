@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -18,7 +19,11 @@ import org.mars_sim.msp.core.SimulationConfig;
  * The ItemResource class represents a type of resource that is measured in units, 
  * such as simple tools and parts.
  */
-public class ItemResource implements Resource, Serializable {
+public class ItemResource
+implements Resource, Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private String name;
@@ -28,11 +33,11 @@ public class ItemResource implements Resource, Serializable {
 	 * Default private constructor
 	 */
 	private ItemResource() {
-        throw new UnsupportedOperationException("invalid constructor");
-    }
+		throw new UnsupportedOperationException("invalid constructor");
+	}
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param name the name of the resource.
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 */
@@ -45,17 +50,11 @@ public class ItemResource implements Resource, Serializable {
 	 * Gets the resource's name.
 	 * @return name of resource.
 	 */
+	@Override
 	public String getName() {
 		return name;
 	}
-	
-	/**
-	 * Returns the resource as a string.
-	 */
-	public String toString() {
-		return name;
-	}
-	
+
 	/**
 	 * Gets the mass for an item of the resource.
 	 * @return mass (kg)
@@ -73,7 +72,7 @@ public class ItemResource implements Resource, Serializable {
             return false;
         }
         final ItemResource other = (ItemResource) obj;
-        if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
+        if ((this.getName() == null) ? (other.getName() != null) : !this.getName().equals(other.getName())) {
             return false;
         }
         if (Double.doubleToLongBits(this.massPerItem) != Double.doubleToLongBits(other.massPerItem)) {
@@ -85,7 +84,7 @@ public class ItemResource implements Resource, Serializable {
     @Override
     public int hashCode() {
         int hash = 7;
-        hash = 19 * hash + (this.name != null ? this.name.hashCode() : 0);
+        hash = 19 * hash + (this.getName() != null ? this.getName().hashCode() : 0);
         hash = 19 * hash + (int) (Double.doubleToLongBits(this.massPerItem) ^ (Double.doubleToLongBits(this.massPerItem) >>> 32));
         return hash;
     }
@@ -101,35 +100,33 @@ public class ItemResource implements Resource, Serializable {
 		Iterator<ItemResource> i = getItemResources().iterator();
 		while (i.hasNext()) {
 			ItemResource resource = i.next();
-			if (resource.name.equals(name)) result = resource;
+			if (resource.getName().equals(name)) result = resource;
 		}
 		if (result != null) return result;
 		else throw new UnknownResourceName(name);
 	}
 	
 	/**
-	 * Gets a ummutable set of all the item resources.
-	 * @return set of item resources.
+	 * Gets a ummutable collection of all the item resources.
+	 * @return collection of item resources.
 	 */
 	public static Set<ItemResource> getItemResources() {
+		Set<ItemResource> set = SimulationConfig
+		.instance()
+		.getPartConfiguration()
+		.getItemResources();
+		return Collections.unmodifiableSet(set);
+	}
 
-	    Set<ItemResource> resources = SimulationConfig.instance().getPartConfiguration().
-                getItemResources();
-		return Collections.unmodifiableSet(resources);
+	public static TreeMap<String,ItemResource> getItemResourcesMap() {
+		return SimulationConfig
+		.instance()
+		.getPartConfiguration()
+		.getItemResourcesMap();
 	}
 
     public static ItemResource createItemResource(String resourceName, double massPerItem) {
         return new ItemResource(resourceName, massPerItem);
-    }
-
-    /**
-     * Compares this object with the specified object for order.
-     * @param o the Object to be compared.
-     * @return a negative integer, zero, or a positive integer as this object is less than, 
-     * equal to, or greater than the specified object.
-     */
-    public int compareTo(Resource o) {
-        return name.compareTo(o.getName());
     }
 
     private static class UnknownResourceName extends RuntimeException {
@@ -139,9 +136,29 @@ public class ItemResource implements Resource, Serializable {
             super("Unknown resource name : " + name);
             this.name = name;
         }
-
+/*
         public String getName() {
             return name;
         }
+*/
     }
+
+    /**
+	 * Returns the resource as a string.
+	 */
+	@Override
+	public String toString() {
+		return getName();
+	}
+
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * equal to, or greater than the specified object.
+	 */
+	@Override
+	public final int compareTo(Resource o) {
+		return getName().compareToIgnoreCase(o.getName());
+	}
 }

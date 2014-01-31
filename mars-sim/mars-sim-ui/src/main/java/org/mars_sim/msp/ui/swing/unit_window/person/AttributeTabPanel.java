@@ -7,15 +7,20 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 
 
 /** 
@@ -23,13 +28,14 @@ import java.awt.*;
  */
 public class AttributeTabPanel extends TabPanel {
     
-    private AttributeTableModel attributeTableModel;
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	private AttributeTableModel attributeTableModel;
     
     /**
-     * Constructor
-     *
-     * @param person the person.
-     * @param desktop the main desktop.
+     * Constructor.
+     * @param person {@link Person} the person.
+     * @param desktop {@link MainDesktopPane} the main desktop.
      */
     public AttributeTabPanel(Person person, MainDesktopPane desktop) { 
         // Use the TabPanel constructor
@@ -64,6 +70,7 @@ public class AttributeTabPanel extends TabPanel {
     /**
      * Updates the info on this panel.
      */
+    @Override
     public void update() {}
     
     /** 
@@ -71,42 +78,53 @@ public class AttributeTabPanel extends TabPanel {
      */
     private static class AttributeTableModel extends AbstractTableModel {
         
-        NaturalAttributeManager manager;
-        
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+		NaturalAttributeManager manager;
+
+		/**
+		 * hidden constructor.
+		 * @param person {@link Person}
+		 */
         private AttributeTableModel(Person person) {
             manager = person.getNaturalAttributeManager();
         }
-        
+
+        @Override
         public int getRowCount() {
             return manager.getAttributeNum();
         }
-        
+
+        @Override
         public int getColumnCount() {
             return 2;
         }
-        
+
+        @Override
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             if (columnIndex == 1) dataType = String.class;
             return dataType;
         }
-        
+
+        @Override
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Attribute";
             else if (columnIndex == 1) return "Level";
             else return "unknown";
         }
-        
+
+        @Override
         public Object getValueAt(int row, int column) {
             String[] attributeNames = NaturalAttributeManager.getKeys();
             if (column == 0) return attributeNames[row];
             else if (column == 1) return getLevelString(manager.getAttribute(attributeNames[row]));
             else return "unknown";
         }
-  
+/*
         public void update() {}
-        
+*/
         public String getLevelString(int level) {
         	String result = "";
         	

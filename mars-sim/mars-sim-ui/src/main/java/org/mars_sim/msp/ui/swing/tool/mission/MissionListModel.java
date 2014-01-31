@@ -7,25 +7,33 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.*;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.AbstractListModel;
+import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
+
 /**
  * List model for the mission list.
  */
-public class MissionListModel extends AbstractListModel implements
+public class MissionListModel extends AbstractListModel<Mission> implements
 		MissionManagerListener, MissionListener {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Private members.
 	private List<Mission> missions;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public MissionListModel() {
 		missions = new ArrayList<Mission>();
@@ -41,8 +49,9 @@ public class MissionListModel extends AbstractListModel implements
 	
 	/**
 	 * Adds a mission to this list.
-	 * @param mission the mission to add.
+	 * @param mission {@link Mission} the mission to add.
 	 */
+	@Override
 	public void addMission(Mission mission) {
 		if (!missions.contains(mission)) {
 			missions.add(mission);
@@ -54,8 +63,9 @@ public class MissionListModel extends AbstractListModel implements
 
 	/**
 	 * Removes a mission from this list.
-	 * @param mission mission to remove.
+	 * @param mission {@link Mission} mission to remove.
 	 */
+	@Override
 	public void removeMission(Mission mission) {
 		if (missions.contains(mission)) {
 			int index = missions.indexOf(mission);
@@ -70,6 +80,7 @@ public class MissionListModel extends AbstractListModel implements
 	 * Catch mission update event.
 	 * @param event the mission event.
 	 */
+	@Override
 	public void missionUpdate(MissionEvent event) {
 		if (event.getType().equals(Mission.DESCRIPTION_EVENT)) {
 			int index = missions.indexOf(event.getSource());
@@ -84,6 +95,7 @@ public class MissionListModel extends AbstractListModel implements
 	 * Gets the list size.
 	 * @return size.
 	 */
+	@Override
 	public int getSize() {
 		return missions.size();
 	}
@@ -93,7 +105,8 @@ public class MissionListModel extends AbstractListModel implements
 	 * @param index the index.
 	 * @return the object at the index or null if one.
 	 */
-	public Object getElementAt(int index) {
+	@Override
+	public Mission getElementAt(int index) {
 		try {
 			return missions.get(index);
 		}

@@ -19,6 +19,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
@@ -60,7 +61,7 @@ public class NewTransportItemDialog extends JDialog {
         getContentPane().add(transportTypePanel, BorderLayout.NORTH);
         
         // Create combo box for determining transport item type.
-        JComboBox typeBox = new JComboBox();
+        JComboBox typeBox = new JComboBoxMW();
         typeBox.addItem(DEFAULT_MESSAGE);
         typeBox.addItem(RESUPPLY_MISSION);
         typeBox.addItem(ARRIVING_SETTLEMENT);

@@ -19,10 +19,13 @@ import java.util.List;
  */
 public class MissionTab extends TableTab {
 
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
-	MissionTab() {
+	public MissionTab() {
 		// Use TableTab constructor
 		super(new MissionTableModel(), true, true);
 	}
@@ -32,7 +35,7 @@ public class MissionTab extends TableTab {
      * @param desktop the main desktop.
      */
     public void displayMission(MainDesktopPane desktop) {
-    	List selection = getSelection();
+    	List<?> selection = getSelection();
     	if (selection.size() > 0) {
     		Object selected = selection.get(0);
     		if (selected instanceof Mission) {
@@ -47,8 +50,8 @@ public class MissionTab extends TableTab {
      * @param desktop Main window of application.
      */
     public void centerMap(MainDesktopPane desktop) {
-        List rows = getSelection();
-        Iterator it = rows.iterator();
+        List<?> rows = getSelection();
+        Iterator<?> it = rows.iterator();
         if (it.hasNext()) {
             Mission mission = (Mission) it.next();
             if (mission.getPeopleNumber() > 0) 

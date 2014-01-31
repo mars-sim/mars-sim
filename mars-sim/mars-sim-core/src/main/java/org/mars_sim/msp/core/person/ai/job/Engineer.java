@@ -18,6 +18,8 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureGood;
 import org.mars_sim.msp.core.person.ai.task.SalvageGood;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
@@ -43,6 +45,8 @@ public class Engineer extends Job implements Serializable {
 		super("Engineer");
 		
 		// Add engineer-related tasks.
+        jobTasks.add(UnloadVehicleEVA.class);
+        jobTasks.add(UnloadVehicleGarage.class);
 		jobTasks.add(ManufactureGood.class);
         jobTasks.add(DigLocalRegolith.class);
         jobTasks.add(DigLocalIce.class);

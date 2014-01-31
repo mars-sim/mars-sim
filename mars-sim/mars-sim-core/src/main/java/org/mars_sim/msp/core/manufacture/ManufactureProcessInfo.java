@@ -8,12 +8,16 @@
 package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Information about a type of manufacturing process.
  */
 public class ManufactureProcessInfo implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private String name;
@@ -144,7 +148,33 @@ public class ManufactureProcessInfo implements Serializable {
 	public List<ManufactureProcessItem> getOutputList() {
 		return outputList;
 	}
-	
+
+	/**
+	 * convenience method that gives back a list of
+	 * strings of the output items' names.
+	 * @return {@link List}<{@link String}>
+	 */
+	public List<String> getOutputNames() {
+		List<String> list = new ArrayList<String>();
+		for (ManufactureProcessItem item : outputList) {
+			list.add(item.getName());
+		}
+		return list;
+	}
+
+	/**
+	 * convenience method that gives back a list of
+	 * strings of the input items' names.
+	 * @return {@link List}<{@link String}>
+	 */
+	public List<String> getInputNames() {
+		List<String> list = new ArrayList<String>();
+		for (ManufactureProcessItem item : inputList) {
+			list.add(item.getName());
+		}
+		return list;
+	}
+
 	/**
 	 * Sets the list of the output items produced by the process.
 	 * @param outputList the output items.
@@ -152,7 +182,7 @@ public class ManufactureProcessInfo implements Serializable {
 	public void setOutputList(List<ManufactureProcessItem> outputList) {
 		this.outputList = outputList;
 	}
-	
+
 	/**
 	 * Prepares object for garbage collection.
 	 */
@@ -162,7 +192,7 @@ public class ManufactureProcessInfo implements Serializable {
 	    if (outputList != null) outputList.clear();
 	    outputList = null;
 	}
-	
+
 	@Override
 	public String toString() {
 		return name;

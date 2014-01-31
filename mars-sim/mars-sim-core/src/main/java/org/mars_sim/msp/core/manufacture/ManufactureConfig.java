@@ -56,7 +56,7 @@ public class ManufactureConfig implements Serializable {
      * @throws Exception if error getting info.
      */
     @SuppressWarnings("unchecked")
-    List<ManufactureProcessInfo> getManufactureProcessList() {
+    public List<ManufactureProcessInfo> getManufactureProcessList() {
 
         if (manufactureProcessList == null) {
 

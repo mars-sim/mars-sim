@@ -4,8 +4,24 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.mission;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Iterator;
+
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.ListSelectionModel;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -18,30 +34,24 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
 import org.mars_sim.msp.ui.swing.tool.mission.edit.EditMissionDialog;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Iterator;
-
 /**
  * Window for the mission tool.
  */
 public class MissionWindow extends ToolWindow {
 
-	// Tool name
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Tool name. */
 	public static final String NAME = "Mission Tool";	
 
 	// Private members
-	private JList missionList;
+	private JList<Mission> missionList;
 	private NavpointPanel navpointPane;
 	
 	/**
-	 * Constructor
-	 * @param desktop the main desktop panel.
+	 * Constructor.
+	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
 	public MissionWindow(MainDesktopPane desktop) {
 		
@@ -62,13 +72,13 @@ public class MissionWindow extends ToolWindow {
         mainPane.add(missionListPane, BorderLayout.WEST);
         
         // Create the mission list.
-        missionList = new JList(new MissionListModel());
+        missionList = new JList<Mission>(new MissionListModel());
         missionList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         missionListPane.add(new JScrollPane(missionList), BorderLayout.CENTER);
         
         // Create the info tab panel.
         JTabbedPane infoPane = new JTabbedPane();
-        mainPane.add(infoPane, BorderLayout.EAST);
+        mainPane.add(infoPane, BorderLayout.CENTER);
         
         // Create the main detail panel.
         MainDetailPanel mainDetailPane = new MainDetailPanel(desktop);
@@ -220,6 +230,7 @@ public class MissionWindow extends ToolWindow {
 	/**
 	 * Prepares tool window for deletion.
 	 */
+	@Override
 	public void destroy() {
 		missionList.clearSelection();
 		((MissionListModel) missionList.getModel()).destroy();

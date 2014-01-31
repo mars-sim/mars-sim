@@ -7,13 +7,23 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.Coordinates;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
+
+import org.mars_sim.msp.core.Coordinates;
 
 /**
  * This window displays a list of columns from the specified model.
@@ -21,13 +31,15 @@ import java.util.Vector;
  */
 public class ColumnSelector extends JDialog {
 
-    private final static String PIE_MESSAGE =
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	private final static String PIE_MESSAGE =
                         "Select a single column to display in the Pie chart";
     private final static String BAR_MESSAGE =
                         "Select a multiple columns to display in the Bar chart";
 
     // Data members
-    private JList columnList = null; // Check boxes
+    private JList<?> columnList = null; // Check boxes
     private int columnMappings[] = null;
     private boolean okPressed = false;
 
@@ -47,7 +59,7 @@ public class ColumnSelector extends JDialog {
         columnMappings = new int[model.getColumnCount()-1];
         for(int i = 1; i < model.getColumnCount(); i++) {
             // If a valid column then add to model.
-            Class columnType = model.getColumnClass(i);
+            Class<?> columnType = model.getColumnClass(i);
 
             // If a bar, look for Number classes
             if (bar) {
@@ -65,7 +77,7 @@ public class ColumnSelector extends JDialog {
         // Center pane
         JPanel centerPane = new JPanel(new BorderLayout());
         centerPane.setBorder(BorderFactory.createRaisedBevelBorder());
-        columnList = new JList(items);
+        columnList = new JList<Object>(items);
         if (bar) {
             columnList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
             centerPane.add(new JLabel(BAR_MESSAGE), "North");
@@ -167,7 +179,7 @@ public class ColumnSelector extends JDialog {
      *
      * @return Is the class a category
      */
-    private boolean isCategory(Class columnClass) {
+    private boolean isCategory(Class<?> columnClass) {
         return (!Number.class.isAssignableFrom(columnClass) &&
                 !Coordinates.class.equals(columnClass));
     }

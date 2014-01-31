@@ -6,7 +6,22 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -24,41 +39,44 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** 
  * A mission to do areology research at a remote field location for a
  * scientific study.
  */
 public class AreologyStudyFieldMission extends RoverMission implements Serializable {
 
-    private static Logger logger = Logger.getLogger(AreologyStudyFieldMission.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(AreologyStudyFieldMission.class.getName());
     
-    // Default description.
+    /** Default description. */
     public static final String DEFAULT_DESCRIPTION = "Areology Study Field Mission";
     
-    // Mission phases
+    /** Mission phases. */
     final public static String RESEARCH_SITE = "Researching Field Site";
     
-    // Minimum number of people to do mission.
+    /** Minimum number of people to do mission. */
     private final static int MIN_PEOPLE = 2;
     
-    // Amount of time to field a site.
+    /** Amount of time to field a site. */
     public final static double FIELD_SITE_TIME = 1000D;
     
     // Data members
-    private MarsClock fieldSiteStartTime; // The start time at the field site.
-    private boolean endFieldSite; // External flag for ending research at the field site.
-    private Coordinates fieldSite; // The field site location.
-    private ScientificStudy study; // Scientific study to research.
-    private Person leadResearcher; // The person leading the areology research.
+    /** The start time at the field site. */
+    private MarsClock fieldSiteStartTime;
+    /** External flag for ending research at the field site. */
+    private boolean endFieldSite;
+    /** The field site location. */
+    private Coordinates fieldSite;
+    /** Scientific study to research. */
+    private ScientificStudy study;
+    /** The person leading the areology research. */
+    private Person leadResearcher;
     
     /**
-     * Constructor
-     * @param startingPerson the person starting the mission.
+     * Constructor.
+     * @param startingPerson {@link Person} the person starting the mission.
      * @throws MissionException if problem constructing mission.
      */
     public AreologyStudyFieldMission(Person startingPerson) {
@@ -439,7 +457,8 @@ public class AreologyStudyFieldMission extends RoverMission implements Serializa
         return result;
     }
     
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Map<Class, Integer> getEquipmentNeededForRemainingMission(
             boolean useBuffer) {
         if (equipmentNeededCache != null) return equipmentNeededCache;

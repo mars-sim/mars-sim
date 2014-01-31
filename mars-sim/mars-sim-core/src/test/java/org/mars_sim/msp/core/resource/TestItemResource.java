@@ -1,8 +1,9 @@
 package org.mars_sim.msp.core.resource;
 
-import java.util.Set;
+import java.util.Collection;
 
 import junit.framework.TestCase;
+
 import org.mars_sim.msp.core.SimulationConfig;
 
 public class TestItemResource extends TestCase {
@@ -10,7 +11,7 @@ public class TestItemResource extends TestCase {
     private ItemResource hammer;
     private ItemResource socketWrench;
     private ItemResource pipeWrench;
-    private Set<ItemResource> resources;
+    private Collection<ItemResource> resources;
 
     public TestItemResource() {
         super();

@@ -8,11 +8,13 @@ package org.mars_sim.msp;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.helpGenerator.HelpGenerator;
 import org.mars_sim.msp.ui.swing.MainWindow;
 import org.mars_sim.msp.ui.swing.SplashWindow;
 import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 
 import javax.swing.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -27,15 +29,17 @@ import java.util.logging.Logger;
  */
 public class MarsProject {
 
-    // Initialize logger for this class.
+    /** initialized logger for this class. */
     private static Logger logger = Logger.getLogger(MarsProject.class.getName());
     
-    // True if displaying graphic user interface.
+    /** true if displaying graphic user interface. */
     private boolean useGUI = true;
 
+    /** true if help documents should be generated from config xml files. */
+    private boolean generateHelp = false;
+
     /**
-     * Constructor
-     *
+     * Constructor.
      * @param args command line arguments.
      */
     public MarsProject(String args[]) {
@@ -44,6 +48,7 @@ public class MarsProject {
 
         List<String> argList = Arrays.asList(args);
         useGUI = !argList.contains("-headless");
+        generateHelp = argList.contains("-generateHelp");
         
         if (useGUI) {
             // Create a splash window
@@ -68,6 +73,11 @@ public class MarsProject {
             
             // Start the simulation.
             startSimulation();
+        }
+        
+        // this will generate html files for in-game help based on config xml files
+        if (generateHelp) {
+        	HelpGenerator.generateHtmlHelpFiles();
         }
     }
 

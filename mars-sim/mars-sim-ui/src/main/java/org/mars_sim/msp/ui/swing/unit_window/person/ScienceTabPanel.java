@@ -6,6 +6,26 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.List;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.Science;
@@ -19,20 +39,13 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.tool.science.ScienceWindow;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.List;
-
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
 public class ScienceTabPanel extends TabPanel {
+
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     // Data members
     private JButton scienceToolButton;
@@ -43,7 +56,7 @@ public class ScienceTabPanel extends TabPanel {
     private JLabel totalAchievementLabel;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person.
      * @param desktop the main desktop.
      */
@@ -194,13 +207,16 @@ public class ScienceTabPanel extends TabPanel {
      * Inner class for study table model.
      */
     private static class StudyTableModel extends AbstractTableModel {
-        
+
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
         // Data members.
         private Person person;
         private List<ScientificStudy> studies;
         
         /**
-         * Constructor
+         * Constructor.
          * @param person the person.
          */
         private StudyTableModel(Person person) {
@@ -300,7 +316,10 @@ public class ScienceTabPanel extends TabPanel {
      */
     private static class AchievementTableModel extends AbstractTableModel {
         
-        // Data members.
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		// Data members.
         private Person person;
         private List<Science> sciences;
         
@@ -333,7 +352,7 @@ public class ScienceTabPanel extends TabPanel {
          * @return the common ancestor class of the object values in the model.
          */
         public Class<?> getColumnClass(int columnIndex) {
-            Class dataType = super.getColumnClass(columnIndex);
+            Class<?> dataType = super.getColumnClass(columnIndex);
             if (columnIndex == 0) dataType = String.class;
             else if (columnIndex == 1) dataType = Double.class;
             return dataType;

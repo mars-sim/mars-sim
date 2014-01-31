@@ -33,12 +33,15 @@ import org.mars_sim.msp.core.interplanetary.transport.Transportable;
  */
 public class IncomingListPanel extends JPanel implements ListSelectionListener {
 
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     // Data members
-    private JList incomingList;
+    private JList<?> incomingList;
     private IncomingListModel listModel;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public IncomingListPanel() {
 
@@ -51,7 +54,7 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
 
         // Create incoming list.
         listModel = new IncomingListModel();
-        incomingList = new JList(listModel);
+        incomingList = new JList<Object>(listModel);
         incomingList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane scrollPane = new JScrollPane(incomingList);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -62,14 +65,14 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
      * Gets the incoming resupply list.
      * @return the incoming resupply list.
      */
-    JList getIncomingList() {
+    JList<?> getIncomingList() {
         return incomingList;
     }
 
     @Override
     public void valueChanged(ListSelectionEvent evt) {
         if (evt.getValueIsAdjusting()) {
-            JList arrivedList = (JList) evt.getSource();
+            JList<?> arrivedList = (JList<?>) evt.getSource();
             if (arrivedList.getSelectedValue() != null) {
                 incomingList.clearSelection();
             }
@@ -86,11 +89,15 @@ public class IncomingListPanel extends JPanel implements ListSelectionListener {
     /**
      * Inner class for the incoming resupply list model.
      */
-    private class IncomingListModel extends AbstractListModel implements 
-            HistoricalEventListener {
+    private class IncomingListModel
+    extends AbstractListModel<Object>
+    implements HistoricalEventListener {
+
+        /** default serial id. */
+    	private static final long serialVersionUID = 1L;
 
         // Data members.
-        private List transportList;
+        private List<Transportable> transportList;
 
         private IncomingListModel() {
 

@@ -7,14 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
+
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
  * This class represents an absraction of a view displayed in the Monitor Window.
@@ -23,11 +25,16 @@ import java.util.List;
  */
 abstract class MonitorTab extends JPanel {
     
-    private MonitorModel model;    // Mode providing the data
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Model providing the data. */
+	private MonitorModel model;
     private Icon icon;
     private boolean mandatory;
 
     /**
+     * constructor.
      * Create a view within a tab displaying the specified model.
      * @param model The model of entities to display.
      * @param mandatory This view is a mandatory view can can not be removed.
@@ -55,8 +62,8 @@ abstract class MonitorTab extends JPanel {
      * Display details for selected rows
      */
     public void displayDetails(MainDesktopPane desktop) {
-        List rows = getSelection();
-        Iterator it = rows.iterator();
+        List<?> rows = getSelection();
+        Iterator<?> it = rows.iterator();
         while(it.hasNext()) {
             Object selected = it.next();
             if (selected instanceof Unit) desktop.openUnitWindow((Unit) selected, false);
@@ -68,8 +75,8 @@ abstract class MonitorTab extends JPanel {
      * @param desktop Main window of application.
      */
     public void centerMap(MainDesktopPane desktop) {
-        List rows = getSelection();
-        Iterator it = rows.iterator();
+        List<?> rows = getSelection();
+        Iterator<?> it = rows.iterator();
         if (it.hasNext()) {
             Unit unit = (Unit) it.next();
             desktop.centerMapGlobe(unit.getCoordinates());
@@ -87,7 +94,7 @@ abstract class MonitorTab extends JPanel {
      *
      * @return List of objects selected in this tab.
      */
-    abstract protected List getSelection();
+    abstract protected List<?> getSelection();
     
     /**
      * Gets the tab count string.
