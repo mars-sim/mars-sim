@@ -14,8 +14,10 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.AmountResourceConfig;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.PartConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
@@ -315,7 +317,7 @@ public class HelpGenerator {
 			.append("</p><br/>\n")
 			.append("<p>")
 			.append(config.getDescription(vehicle))
-			.append("</p>")
+			.append("</p><br/>")
 			.append("<table>\n");
 
 			if (config.hasPartAttachments(vehicle)) {
@@ -403,6 +405,7 @@ public class HelpGenerator {
 		generateFile(getPathResources(),content);
 		
 		// second: loop over resource types to generate a help file for each one
+		AmountResourceConfig config = SimulationConfig.instance().getResourceConfiguration();
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
 			AmountResource resource = entry.getValue();
 			String name = entry.getKey();
@@ -415,6 +418,9 @@ public class HelpGenerator {
 			.append("<br/>\n")
 			.append("<p>")
 			.append(getLinkResources("back to resources overview"))
+			.append("</p><br/>\n")
+			.append("<p>")
+			.append(config.getDescription(resource))
 			.append("</p><br/>\n");
 			if (resource.isLifeSupport()) {
 				content.append("<p>this resource is needed for life support.</p>\n");
@@ -478,6 +484,7 @@ public class HelpGenerator {
 		generateFile(getPathParts(),content);
 		
 		// second: loop over part types to generate a help file for each one
+		PartConfig config = SimulationConfig.instance().getPartConfiguration();
 		for (Entry<String,ItemResource> entry : parts.entrySet()) {
 			ItemResource part = entry.getValue();
 			String name = entry.getKey();
@@ -491,7 +498,10 @@ public class HelpGenerator {
 			.append("</p><br/>\n")
 			.append("<p>mass per unit: ")
 			.append(Double.toString(part.getMassPerItem()))
-			.append("kg</p>");
+			.append("kg</p><br/>\n")
+			.append("<p>")
+			.append(config.getDescription(part))
+			.append("</p><br/>\n");
 			// list of manufacturing processes with the current part as output
 			List<ManufactureProcessInfo> output = ManufactureUtil
 			.getManufactureProcessesWithGivenOutput(name);

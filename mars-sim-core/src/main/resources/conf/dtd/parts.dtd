@@ -1,7 +1,8 @@
 <!ELEMENT part-list (part*)>
-<!ELEMENT part (maintenance-entity-list?)>
+<!ELEMENT part (description?,maintenance-entity-list?)>
 <!ATTLIST part name CDATA #REQUIRED>
 <!ATTLIST part mass CDATA #REQUIRED>
+<!ELEMENT description (#PCDATA)>
 <!ELEMENT maintenance-entity-list (entity*)>
 <!ELEMENT entity EMPTY>
 <!ATTLIST entity name CDATA #REQUIRED>

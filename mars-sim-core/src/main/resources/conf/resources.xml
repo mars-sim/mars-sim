@@ -10,7 +10,7 @@
 	<!-- phase - the normal phase of the resource as used. -->
 	<!--         Possible values: "solid", "liquid" or "gas" -->
 	<!-- life-support - Is the resources used for life support? -->
-	<resource name="water" phase="liquid" life-support="true" />
+	<resource name="water" phase="liquid" life-support="true">potable water</resource>
 	
 	<resource name="oxygen" phase="gas" life-support="true" />
 	<resource name="hydrogen" phase="gas" life-support="false" />
@@ -18,35 +18,22 @@
 	<resource name="carbon dioxide" phase="gas" life-support="false" />
 	<resource name="carbon monoxide" phase="gas" life-support="false" />
 	
-	<!-- Represents general freeze dried food. -->
-	<resource name="food" phase="solid" life-support="true" />
+	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
+	<resource name="rock samples" phase="solid" life-support="false">Rock samples collected from explored sites.</resource>
+	<resource name="waste water" phase="liquid" life-support="false">Sewage water used as crop fertilizer.</resource>
+	<resource name="ice" phase="solid" life-support="false">Ice-rich permafrost soil</resource>
+	<resource name="regolith" phase="solid" life-support="false">Martian soil</resource>
+
+	<resource name="iron oxide" phase="solid" life-support="false"/>
 	
-	<!-- Rock samples collected from explored sites. -->
-	<resource name="rock samples" phase="solid" life-support="false" />
-	
-	<!-- Sewage water used as crop fertilizer. -->
-	<resource name="waste water" phase="liquid" life-support="false" />
-	
-	<!-- Ice-rich permafrost soil -->
-	<resource name="ice" phase="solid" life-support="false" />
-	
-	<!-- Martian soil -->
-	<resource name="regolith" phase="solid" life-support="false" />
-	
-	<resource name="iron oxide" phase="solid" life-support="false" />
-	
-	<!-- Carbon powder -->
-	<resource name="carbon" phase="solid" life-support="false" />
-	
-	<!-- Martian soil with iron oxide removed. Used for making glass. -->
-	<resource name="sand" phase="solid" life-support="false" />
+	<resource name="carbon" phase="solid" life-support="false">Carbon powder</resource>
+	<resource name="sand" phase="solid" life-support="false">Martian soil with iron oxide removed. Used for making glass.</resource>
 	
 	<resource name="iron powder" phase="solid" life-support="false" />
 	<resource name="aluminum oxide" phase="solid" life-support="false" />
 	<resource name="ethylene" phase="gas" life-support="false" />
 	
-	<!-- Polyethylene pellets or flakes. -->
-	<resource name="polyethylene" phase="solid" life-support="false" />
+	<resource name="polyethylene" phase="solid" life-support="false">Polyethylene pellets or flakes.</resource>
 	
 	<resource name="gypsum" phase="solid" life-support="false" />
 	<resource name="calcium carbonate" phase="solid" life-support="false" />

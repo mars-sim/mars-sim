@@ -6,9 +6,9 @@
 <!-- Parts are used for maintenance, repair and manufacturing. -->
 <part-list>
 
-	<!-- Plastic and adhesive patch for airleaks. -->
 	<!-- mass - The mass of the part in kilograms. -->
 	<part name="airleak patch" mass=".2">
+		<description>Plastic and adhesive patch for airleaks.</description>
 	
 		<!-- List of entities that may required this part for maintenance. (optional) -->
 		<maintenance-entity-list>
@@ -26,8 +26,8 @@
 
 	<part name="co2 extinguisher" mass="20.0" />
 	
-	<!-- Rover wheels are made of steel and steel wire. -->
 	<part name="rover wheel" mass="50.0">
+		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
 		</maintenance-entity-list>
@@ -214,8 +214,9 @@
 	
 	<part name="bottle" mass=".1" />
 	
-	<!-- 1m x 2m x 1mm sheet of steel -->
-	<part name="steel sheet" mass="15.0" />
+	<part name="steel sheet" mass="15.0">
+		<description>1m x 2m x 1mm sheet of steel</description>
+	</part>
 	
 	<!-- 1m x 2m x 1mm sheet of iron -->
 	<part name="iron sheet" mass="15.0" />
@@ -256,15 +257,15 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Spandex inner EVA suit for counter pressure. -->
 	<part name="counter pressure suit" mass="1.0" >
+		<description>Spandex inner EVA suit for counter pressure.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Outer EVA suit with insulative liner. -->
 	<part name="coveralls" mass="2.0" >
+		<description>Outer EVA suit with insulative liner.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
@@ -276,22 +277,22 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- steel soled and tipped.  Fiberglass insulated. -->
 	<part name="eva boots" mass="4.0" >
+		<description>steel soled and tipped.  Fiberglass insulated.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- steel plate with fiberglass insulation. -->
 	<part name="eva pads" mass="2.0" >
+		<description>steel plate with fiberglass insulation.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- made with polyethylene and a steel frame. -->
 	<part name="eva backpack" mass="15.0" >
+		<description>made with polyethylene and a steel frame.</description>
 		<maintenance-entity-list>
 			<entity name="eva suit" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -315,11 +316,12 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Heavy steel frame -->
-	<part name="large vehicle frame" mass="5000.0" />
+	<part name="large vehicle frame" mass="5000.0">
+		<description>Heavy steel frame</description>
+	</part>
 	
-	<!-- Reinforced fiberglass panels. -->
 	<part name="rover chassis panel" mass="100.0" >
+		<description>Reinforced fiberglass panels.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="10" />
 		</maintenance-entity-list>
@@ -356,8 +358,8 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Made from polyethelene and reinforced fiberglass. -->
 	<part name="rover control panel" mass="100.0" >
+		<description>Made from polyethelene and reinforced fiberglass.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="1" />
 		</maintenance-entity-list>
@@ -441,11 +443,13 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Large steel bar used for construction. -->
-	<part name="steel truss" mass="50.0" />
+	<part name="steel truss" mass="50.0">
+		<description>Large steel bar used for construction.</description>
+	</part>
 	
-	<!-- A small, light steel bar used for construction. -->
-	<part name="steel post" mass="5.0" />
+	<part name="steel post" mass="5.0">
+		<description>A small, light steel bar used for construction.</description>
+	</part>
 	
 	<!-- Blade for a wind turbine. -->
 	<part name="wind turbine blade" mass="2.0" >
@@ -503,8 +507,8 @@
 	<!-- Should be used in conjunction with the crane boom. -->
 	<part name="drilling rig" mass="135.0" />
 	
-	<!-- Copper tube coil used to condense steam into liquid water. -->
 	<part name="condenser coil" mass="10.0" >
+		<description>Copper tube coil used to condense steam into liquid water.</description>
 		<maintenance-entity-list>
 			<entity name="areothermal power source" probability="10" max-number="1" />
 		</maintenance-entity-list>
