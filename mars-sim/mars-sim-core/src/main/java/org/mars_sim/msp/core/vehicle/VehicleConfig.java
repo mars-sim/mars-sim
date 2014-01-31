@@ -376,7 +376,7 @@ public class VehicleConfig implements Serializable {
 		Element vehicleElement = getVehicleElement(vehicleType);
 		Element descriptionElement = vehicleElement.getChild(DESCRIPTION);
 		if (descriptionElement != null) {
-			return descriptionElement.getValue();
+			return descriptionElement.getText();
 		}
 		return "no description available.";
 	}
