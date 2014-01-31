@@ -11,6 +11,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -70,6 +73,18 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create inventory label
         JLabel inventoryLabel = new JLabel("Inventory", JLabel.CENTER);
         inventoryLabelPanel.add(inventoryLabel);
+        
+        JButton btnUpdate = new JButton("↻");
+        btnUpdate.setToolTipText("update");
+        btnUpdate.addActionListener(
+        	new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					update();
+				}
+        	}
+        );
+        inventoryLabelPanel.add(btnUpdate);
         
         // Create inventory content panel
         JPanel inventoryContentPanel = new JPanel(new GridLayout(2, 1, 0, 0));
