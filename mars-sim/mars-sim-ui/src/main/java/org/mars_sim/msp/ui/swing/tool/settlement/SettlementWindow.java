@@ -25,7 +25,6 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -41,6 +40,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
@@ -51,29 +51,40 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
  */
 public class SettlementWindow extends ToolWindow {
 
-    // Tool name
-    public static final String NAME = "Settlement Map Tool";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Rotation change (radians per rotation button press).
-    private static final double ROTATION_CHANGE = Math.PI / 20D;
+	/** Tool name. */
+	public static final String NAME = "Settlement Map Tool";
 
-    // Zoom change.
-    private static final double ZOOM_CHANGE = 1D;
+	/** Rotation change (radians per rotation button press). */
+	private static final double ROTATION_CHANGE = Math.PI / 20D;
 
-    private JComboBoxMW settlementListBox; // Lists all settlements
-    private SettlementComboBoxModel settlementCBModel; // Combo box model.
-    private JLabel zoomLabel; // Label for Zoom box
-    private JSlider zoomSlider; // Slider for Zoom level
-    private SettlementMapPanel mapPane; // Map panel.
-    private int xLast; // Last X mouse drag position.
-    private int yLast; // Last Y mouse drag position.
-    private JPopupMenu labelsMenu; // Popup menu for label display options.
+	/** Zoom change. */
+	private static final double ZOOM_CHANGE = 1D;
 
-    /**
-     * Constructor
-     * @param desktop the main desktop panel.
-     */
-    public SettlementWindow(MainDesktopPane desktop) {
+	/** Lists all settlements. */
+	private JComboBoxMW<?> settlementListBox;
+	/** Combo box model. */
+	private SettlementComboBoxModel settlementCBModel;
+	/** Label for Zoom box. */
+	private JLabel zoomLabel;
+	/** Slider for Zoom level. */
+	private JSliderMW zoomSlider;
+	/** Map panel. */
+	private SettlementMapPanel mapPane;
+	/** Last X mouse drag position. */
+	private int xLast;
+	/** Last Y mouse drag position. */
+	private int yLast;
+	/** Popup menu for label display options. */
+	private JPopupMenu labelsMenu;
+
+	/**
+	 * Constructor.
+	 * @param desktop the main desktop panel.
+	 */
+	public SettlementWindow(MainDesktopPane desktop) {
 
         // Use ToolWindow constructor
         super(NAME, desktop);
@@ -145,7 +156,7 @@ public class SettlementWindow extends ToolWindow {
         zoomLabel = new JLabel("Zoom", JLabel.CENTER);
         zoomPane.add(zoomLabel, BorderLayout.NORTH);
 
-        zoomSlider = new JSlider(JSlider.HORIZONTAL, -10, 10, 0);
+        zoomSlider = new JSliderMW(JSlider.HORIZONTAL, -10, 10, 0);
         zoomSlider.setMajorTickSpacing(5);
         zoomSlider.setMinorTickSpacing(1);
         zoomSlider.setPaintTicks(true);

@@ -7,6 +7,29 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
@@ -17,27 +40,20 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.List;
-
 /** 
  * The InventoryTabPanel is a tab panel for displaying inventory information.
  */
 public class InventoryTabPanel extends TabPanel implements ListSelectionListener {
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
     private ResourceTableModel resourceTableModel;
     private EquipmentTableModel equipmentTableModel;
     private JTable equipmentTable;
     
     /**
      * Constructor
-     *
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
@@ -118,7 +134,10 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
      * TODO would be nice to see capacity as 3rd column in the inventory view.
      */
     private static class ResourceTableModel extends AbstractTableModel {
-        
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
         private Inventory inventory;
         private Map<Resource, Number> resources;
         private Map<Resource, Number> capacity;
@@ -212,7 +231,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             		newResources.put(resource, inventory.getItemResourceNum(resource));
             		newCapacity.put(resource, null);
             	}
-                
+
             	// Sort resources alphabetically by name.
                 Collections.sort(newResourceKeys);
             
@@ -229,77 +248,88 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         }
     }
 
-    /** 
-     * Internal class used as model for the equipment table.
-     */
-    private static class EquipmentTableModel extends AbstractTableModel {
+	/** 
+	 * Internal class used as model for the equipment table.
+	 */
+	private static class EquipmentTableModel extends AbstractTableModel {
 
-        Inventory inventory;
-        List<Unit> list;
-        Map<String,String> equipment;
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
-        private EquipmentTableModel(Inventory inventory) {
-            this.inventory = inventory;
-            // Sort equipment alphabetically by name.
-        	list = new ArrayList<Unit>();
-        	
-            equipment = new TreeMap<String,String>();
-            for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
-            	equipment.put(
-            		unit.getName(),
-                	unit.getInventory().isEmpty(true) ? "empty" : "filled"
-            	);
-            	list.add(unit);
-            }
-        	Collections.sort(list);
-        }
+		private Inventory inventory;
+		private List<Unit> list;
+		private Map<String,String> equipment;
 
-        public int getRowCount() {
-            return equipment.size();
-        }
+		/**
+		 * hidden constructor.
+		 * @param inventory {@link Inventory}
+		 */
+		private EquipmentTableModel(Inventory inventory) {
+			this.inventory = inventory;
+			// Sort equipment alphabetically by name.
+			list = new ArrayList<Unit>();
 
-        public int getColumnCount() {
-            return 2;
-        }
+			equipment = new TreeMap<String,String>();
+			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+				equipment.put(
+					unit.getName(),
+					yesNo(unit.getInventory().isEmpty(true))
+				);
+				list.add(unit);
+			}
+			Collections.sort(list);
+		}
 
-        public Class<?> getColumnClass(int columnIndex) {
-            Class<?> dataType = super.getColumnClass(columnIndex);
-            return dataType;
-        }
+		private String yesNo(boolean bool) {
+			return bool ? "yes" : "no";
+		}
 
-        public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "equipment";
-            else if (columnIndex == 1) return "total mass";
-            else return "unknown";
-        }
+		public int getRowCount() {
+			return equipment.size();
+		}
 
-        public Object getValueAt(int row, int column) {
-            if ((row >= 0) && (row < equipment.size())) {
-            	if (column == 0) return list.get(row);
-            	else if (column == 1) return equipment.get(list.get(row).getName());
-            }   
-            return "unknown";
-        }
+		public int getColumnCount() {
+			return 2;
+		}
 
-        public void update() {
-            List<Unit> newList = new ArrayList<Unit>();
-            Map<String,String> newMap = new TreeMap<String,String>();
-            for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
-            	newMap.put(
-            		unit.getName(),
-            		unit.getInventory().isEmpty(true) ? "empty" : "filled"
-            	);
-            	newList.add(unit);
-            };
+		public Class<?> getColumnClass(int columnIndex) {
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			return dataType;
+		}
 
-            // Sort equipment alphabetically by name.
-            Collections.sort(newList);
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0) return "equipment";
+			else if (columnIndex == 1) return "empty";
+			else return "unknown";
+		}
 
-            if (!list.equals(newList)) {
-            	list = newList;
-                equipment = newMap;
-                fireTableDataChanged();
-            }
-        }
-    } 
+		public Object getValueAt(int row, int column) {
+			if ((row >= 0) && (row < equipment.size())) {
+				if (column == 0) return list.get(row);
+				else if (column == 1) return equipment.get(list.get(row).getName());
+			}
+			return "unknown";
+		}
+
+		public void update() {
+			List<Unit> newList = new ArrayList<Unit>();
+			Map<String,String> newMap = new TreeMap<String,String>();
+			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
+				newMap.put(
+					unit.getName(),
+					yesNo(unit.getInventory().isEmpty(true))
+				);
+				newList.add(unit);
+			};
+
+			// Sort equipment alphabetically by name.
+			Collections.sort(newList);
+		
+			if (!list.equals(newList)) {
+				list = newList;
+				equipment = newMap;
+				fireTableDataChanged();
+			}
+		}
+	}
 }
