@@ -30,10 +30,15 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
  */
 public class HelpGenerator {
 
-	// Initialize logger for this class.
+	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 
-	private static final String DIR = "\\docs\\help\\";
+	/**
+	 * absolute path for creating help files with command
+	 * line argument -generateHelp only when needed.
+	 */
+	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
+//	private static final String DIR = "\\docs\\help\\";
 	private static final String SUFFIX = ".html";
 
 	private static final String VEHICLES = "vehicles";
@@ -64,6 +69,7 @@ public class HelpGenerator {
 	private static final void helpFileHeader(final StringBuffer s, final String title) {
 		StringBuffer header = new StringBuffer()
 		.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n")
+		.append("<!-- generated for mars-sim by st.pa. -->")
 		.append("<html>\n")
 		.append("\t<head>\n")
 		.append("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
@@ -101,7 +107,7 @@ public class HelpGenerator {
 
 	private static final void generateFile(final StringBuffer path, final StringBuffer content) {
 		try {
-			String absPath = new File(
+/*			String absPath = new File(
 				HelpGenerator
 				.class
 				.getClassLoader()
@@ -109,6 +115,8 @@ public class HelpGenerator {
 				.toURI()
 			).getAbsolutePath();
 			File file = new File(absPath + '/' + path.toString());
+*/
+			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
 			PrintWriter pw = new PrintWriter(file);
 			pw.write(content.toString());
 			pw.close();
