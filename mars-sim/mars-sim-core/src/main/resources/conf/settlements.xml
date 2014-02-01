@@ -601,8 +601,7 @@
 			<resource type="methane" amount="16000.0" />
 			<part-package name="package 1" number="1" />
 		</template>
-		
-		
+
         <template name="Alpha Basis" default-population="12">
             <building id="0" type="Lander Hab" x-location="0.0" y-location="0.0" facing="0.0"> 
                 <connection-list>
@@ -705,11 +704,11 @@
                 <resupply-mission name="Mars Direct Base resupply 3" arrival-time="668.0" />
             </resupply>
         </template>
-		
-	
+
+
 	</settlement-template-list>
 	
-	<!-- List of initial settlements in the simulation
+	<!-- List of initial settlements in the simulation -->
 	<initial-settlement-list>
 		
 		<settlement name="Alpha Base" template="Alpha Base (MD phase 4)">
@@ -723,15 +722,6 @@
 		</settlement>
 		
 	</initial-settlement-list>
-	-->
-    <initial-settlement-list>
-        
-        <settlement name="Alpha Basis" template="Alpha Basis">
-            <location longitude="20.0 E" latitude="40.0 N" />
-            <population number="12" />
-        </settlement>
-        
-    </initial-settlement-list>
 	
 	<!--  List of settlements that will arrive on Mars at a later time -->
 	<new-arriving-settlement-list>
