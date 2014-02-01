@@ -27,7 +27,10 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -36,7 +39,10 @@ import java.util.Iterator;
  */
 class StartingSettlementPanel extends WizardPanel {
 
-	// The wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
 	
 	// Data members.
@@ -45,10 +51,10 @@ class StartingSettlementPanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	StartingSettlementPanel(CreateMissionWizard wizard) {
+	StartingSettlementPanel(final CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
 		
@@ -70,40 +76,55 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(settlementPane);
 		
-        // Create scroll panel for settlement list.
-        JScrollPane settlementScrollPane = new JScrollPane();
-        settlementPane.add(settlementScrollPane, BorderLayout.CENTER);
-        
-        // Create the settlement table model.
-        settlementTableModel = new SettlementTableModel();
-        
-        // Create the settlement table.
-        settlementTable = new JTable(settlementTableModel);
-        settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
-        settlementTable.setRowSelectionAllowed(true);
-        settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        settlementTable.getSelectionModel().addListSelectionListener(
-        	new ListSelectionListener() {
-        		public void valueChanged(ListSelectionEvent e) {
-        			if (e.getValueIsAdjusting()) {
-        				int index = settlementTable.getSelectedRow();
-        				if (index > -1) {
-        					if (settlementTableModel.isFailureRow(index)) {
-        						errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
-        						getWizard().setButtons(false);
-        					}
-        					else {
-        						errorMessageLabel.setText(" ");
-        						getWizard().setButtons(true);
-        					}
-        				}
-        			}
-        		}
-        	});
-        settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
-        settlementScrollPane.setViewportView(settlementTable);
+		// Create scroll panel for settlement list.
+		JScrollPane settlementScrollPane = new JScrollPane();
+		settlementPane.add(settlementScrollPane, BorderLayout.CENTER);
 		
-        // Create the error message label.
+		// Create the settlement table model.
+		settlementTableModel = new SettlementTableModel();
+		
+		// Create the settlement table.
+		settlementTable = new JTable(settlementTableModel);
+		settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
+		settlementTable.setRowSelectionAllowed(true);
+		settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		settlementTable.getSelectionModel().addListSelectionListener(
+			new ListSelectionListener() {
+				public void valueChanged(ListSelectionEvent e) {
+					if (e.getValueIsAdjusting()) {
+						int index = settlementTable.getSelectedRow();
+						if (index > -1) {
+							if (settlementTableModel.isFailureRow(index)) {
+								errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
+								getWizard().setButtons(false);
+							}
+							else {
+								errorMessageLabel.setText(" ");
+								getWizard().setButtons(true);
+							}
+						}
+					}
+				}
+			}
+		);
+		// call it a click to next button when user double clicks the table
+		settlementTable.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						wizard.buttonClickedNext();
+					}
+				}
+			}
+		);
+		settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
+		settlementScrollPane.setViewportView(settlementTable);
+		
+			// Create the error message label.
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
