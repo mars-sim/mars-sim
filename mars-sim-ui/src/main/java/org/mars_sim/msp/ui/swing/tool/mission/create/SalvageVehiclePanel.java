@@ -118,7 +118,9 @@ public class SalvageVehiclePanel extends WizardPanel {
                         getWizard().setButtons(goodVehicles);
                     }
                 }
-            });
+            }
+        );
+        
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
         

@@ -19,7 +19,10 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -28,7 +31,10 @@ import java.util.Iterator;
  */
 class VehiclePanel extends WizardPanel {
 
-	// The wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
 	private final static String NAME = "Rover";
 	
 	// Data members.
@@ -37,10 +43,10 @@ class VehiclePanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	VehiclePanel(CreateMissionWizard wizard) {
+	VehiclePanel(final CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
 		
@@ -95,7 +101,22 @@ class VehiclePanel extends WizardPanel {
         				}
         			}
         		}
-        	});
+        	}
+        );
+		// call it a click to next button when user double clicks the table
+		vehicleTable.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						wizard.buttonClickedNext();
+					}
+				}
+			}
+		);
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
 		
@@ -150,7 +171,10 @@ class VehiclePanel extends WizardPanel {
 	 */
     private class VehicleTableModel extends UnitTableModel {
     	
-    	/**
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		/**
     	 * Constructor
     	 */
     	private VehicleTableModel() {

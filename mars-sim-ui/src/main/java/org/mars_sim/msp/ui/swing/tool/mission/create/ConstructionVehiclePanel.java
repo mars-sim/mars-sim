@@ -6,6 +6,28 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -15,21 +37,15 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A wizard panel for selecting the construction vehicles for a mission.
  */
 class ConstructionVehiclePanel extends WizardPanel {
 
-    // The wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
     private final static String NAME = "Construction Vehicles";
     
     // Data members.
@@ -43,7 +59,7 @@ class ConstructionVehiclePanel extends WizardPanel {
      * Constructor
      * @param wizard the create mission wizard.
      */
-    ConstructionVehiclePanel(CreateMissionWizard wizard) {
+    ConstructionVehiclePanel(final CreateMissionWizard wizard) {
         // User WizardPanel constructor.
         super(wizard);
         
@@ -114,7 +130,22 @@ class ConstructionVehiclePanel extends WizardPanel {
                         getWizard().setButtons(goodVehicles);
                     }
                 }
-            });
+            }
+        );
+		// call it a click to next button when user double clicks the table
+		vehicleTable.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						wizard.buttonClickedNext();
+					}
+				}
+			}
+		);
         vehicleTable.setPreferredScrollableViewportSize(vehicleTable.getPreferredSize());
         vehicleScrollPane.setViewportView(vehicleTable);
         

@@ -19,7 +19,9 @@ import java.util.List;
 /**
  * A dialog wizard for creating new missions.
  */
-public class CreateMissionWizard extends JDialog {
+public class CreateMissionWizard
+extends JDialog
+implements ActionListener {
 	
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,52 +67,19 @@ public class CreateMissionWizard extends JDialog {
 		
 		// Create prevous button.
 		prevButton = new JButton("Previous");
-		prevButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Go to previous wizard panel.
-						getCurrentWizardPanel().clearInfo();
-						displayPanelIndex--;
-						CardLayout layout = (CardLayout) infoPane.getLayout();
-						layout.show(infoPane, getCurrentWizardPanel().getPanelName());
-						nextButton.setEnabled(true);
-						if (displayPanelIndex == 0) prevButton.setEnabled(false);
-					}
-				});
+		prevButton.addActionListener(this);
 		prevButton.setEnabled(false);
 		bottomButtonPane.add(prevButton);
 		
 		// Create next button.
 		nextButton = new JButton("Next");
-		nextButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Go to next wizard panel.
-						if (getCurrentWizardPanel().commitChanges()) {
-							displayPanelIndex++;
-							setButtons(false);
-							CardLayout layout = (CardLayout) infoPane.getLayout();
-							WizardPanel currentPanel = getCurrentWizardPanel();
-							currentPanel.updatePanel();
-							layout.show(infoPane, currentPanel.getPanelName());
-						}
-					}
-				});
+		nextButton.addActionListener(this);
 		nextButton.setEnabled(false);
 		bottomButtonPane.add(nextButton);
 		
 		// Create final button.
 		finalButton = new JButton("Final");
-		finalButton.addActionListener(
-				new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						// Create mission and dispose this dialog.
-						if (getCurrentWizardPanel().commitChanges()) {
-							missionBean.createMission();
-							dispose();
-						}
-					}
-				});
+		finalButton.addActionListener(this);
 		finalButton.setEnabled(false);
 		bottomButtonPane.add(finalButton);
 		
@@ -265,6 +234,43 @@ public class CreateMissionWizard extends JDialog {
 		else {
 			nextButton.setEnabled(false);
 			finalButton.setEnabled(false);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if (source == prevButton) buttonClickedPrev();
+		else if (source == nextButton) buttonClickedNext();
+		else if (source == finalButton) buttonClickedFinal();
+	}
+
+	/** Go to previous wizard panel. */
+	public void buttonClickedPrev() {
+		getCurrentWizardPanel().clearInfo();
+		displayPanelIndex--;
+		CardLayout layout = (CardLayout) infoPane.getLayout();
+		layout.show(infoPane, getCurrentWizardPanel().getPanelName());
+		nextButton.setEnabled(true);
+		if (displayPanelIndex == 0) prevButton.setEnabled(false);
+	}
+
+	/** Go to next wizard panel. */
+	public void buttonClickedNext() {
+		if (getCurrentWizardPanel().commitChanges()) {
+			displayPanelIndex++;
+			setButtons(false);
+			CardLayout layout = (CardLayout) infoPane.getLayout();
+			WizardPanel currentPanel = getCurrentWizardPanel();
+			currentPanel.updatePanel();
+			layout.show(infoPane, currentPanel.getPanelName());
+		}
+	}
+
+	public void buttonClickedFinal() {
+		if (getCurrentWizardPanel().commitChanges()) {
+			missionBean.createMission();
+			dispose();
 		}
 	}
 }

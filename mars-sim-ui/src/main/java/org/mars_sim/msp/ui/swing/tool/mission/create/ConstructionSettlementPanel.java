@@ -19,7 +19,10 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -43,7 +46,7 @@ class ConstructionSettlementPanel extends WizardPanel {
      * Constructor.
      * @param wizard the create mission wizard.
      */
-    public ConstructionSettlementPanel(CreateMissionWizard wizard) {
+    public ConstructionSettlementPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
         
@@ -97,6 +100,20 @@ class ConstructionSettlementPanel extends WizardPanel {
                 }
             }
         );
+		// call it a click to next button when user double clicks the table
+		settlementTable.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						wizard.buttonClickedNext();
+					}
+				}
+			}
+		);
         settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
         settlementScrollPane.setViewportView(settlementTable);
         
