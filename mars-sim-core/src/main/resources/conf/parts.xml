@@ -2,37 +2,23 @@
 
 <!DOCTYPE part-list SYSTEM "conf/dtd/parts.dtd">
 
-<!-- List of all parts in the simulation.  -->
-<!-- Parts are used for maintenance, repair and manufacturing. -->
 <part-list>
-
-	<!-- mass - The mass of the part in kilograms. -->
 	<part name="airleak patch" mass=".2">
 		<description>Plastic and adhesive patch for airleaks.</description>
-	
-		<!-- List of entities that may required this part for maintenance. (optional) -->
 		<maintenance-entity-list>
-		
-			<!-- probability - The percentage probability that at least one of this part -->
-			<!--   will be needed for a given maintenance. -->
-			<!-- max-number - The maximum number of this part that could be needed for a -->
-			<!--   given maintenance. -->
 			<entity name="life support" probability="10" max-number="4" />
 			<entity name="rover" probability="10" max-number="2" />
 			<entity name="eva suit" probability="10" max-number="1" />
 			<entity name="farming" probability="10" max-number="4" />
 		</maintenance-entity-list>
 	</part>
-
 	<part name="co2 extinguisher" mass="20.0" />
-	
 	<part name="rover wheel" mass="50.0">
 		<description>Rover wheels are made of steel and steel wire.</description>
 		<maintenance-entity-list>
 			<entity name="rover" probability="5" max-number="6" />
 		</maintenance-entity-list>
 	</part>
-	
 	<part name="gasket" mass=".1">
 		<maintenance-entity-list>
 			<entity name="rover" probability="30" max-number="4" />
@@ -408,21 +394,26 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Attachment part for light utility vehicle. -->
-	<part name="pneumatic drill" mass="25.0" />
+	<part name="pneumatic drill" mass="25.0">
+		<description>Attachment part for light utility vehicle.</description>
+	</part>
 	
-	<!-- Attachment part for light utility vehicle. -->
-	<part name="backhoe" mass="35.0" />
+	<part name="backhoe" mass="35.0" >
+		<description>Attachment part for light utility vehicle.</description>
+	</part>
 	
-	<!-- Attachment part for light utility vehicle. -->
-	<part name="bulldozer blade" mass="40.0" />
+	<part name="bulldozer blade" mass="40.0">
+		<description>Attachment part for light utility vehicle.</description>
+	</part>
 	
-	<!-- Attachment part for light utility vehicle. -->
-	<part name="soil compactor" mass="100.0" />
-	
-	<!-- Attachment part for light utility vehicle. -->
-	<part name="crane boom" mass="75.0" />
-	
+	<part name="soil compactor" mass="100.0">
+		<description>Attachment part for light utility vehicle.</description>
+	</part>
+
+	<part name="crane boom" mass="75.0">
+		<description>Attachment part for light utility vehicle.</description>
+	</part>
+
 	<part name="small electric motor" mass="10.0" >
 		<maintenance-entity-list>
 			<entity name="light utility vehicle" probability="1" max-number="1" />
@@ -451,15 +442,15 @@
 		<description>A small, light steel bar used for construction.</description>
 	</part>
 	
-	<!-- Blade for a wind turbine. -->
 	<part name="wind turbine blade" mass="2.0" >
+		<description>Blade for a wind turbine.</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Turbine power generator. -->
 	<part name="turbine generator" mass="50.0" >
+		<description>Turbine power generator.</description>
 		<maintenance-entity-list>
 			<entity name="wind power source" probability="5" max-number="1" />
 			<entity name="solar thermal power source" probability="5" max-number="1" />
@@ -467,29 +458,38 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Solar photovoltaic panel. -->
 	<part name="solar panel" mass="10.0" >
+		<description>Solar photovoltaic panel.</description>
 		<maintenance-entity-list>
 			<entity name="solar power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Mirror for solar thermal power source. -->
 	<part name="solar parabolic mirror" mass="50.0" >
+		<description>Mirror for solar thermal power source.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- Long glass tube. -->
 	<part name="glass tube" mass="5.0" >
+		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability="10" max-number="1" />
 		</maintenance-entity-list>
 	</part>
-	
-	<!-- Construction brick (215mm x 102.5mm x 65mm) 2.86kg (UK Standard according to Wikipedia) -->
-	<part name="brick" mass="2.86" />
+
+	<part name="algae tank" mass="200.0">
+		<description>An array of glass tubes connected with pipes and held together by a metal frame.</description>
+<!-- 	<maintenance-entity-list>
+			<entity name="glass tube" probability="5" max-number="1" />
+		</maintenance-entity-list> -->
+	</part>
+
+	<part name="brick" mass="2.86">
+		<!-- (UK Standard according to Wikipedia) -->
+		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
+	</part>
 	
 	<!-- A 25 kg piece of salvaged steel scrap. -->
 	<part name="steel scrap" mass="25.0" />
@@ -500,12 +500,16 @@
 	<!-- A steel drill bit for drilling bore holes. -->
 	<part name="bore drill bit" mass="25.0" />
 	
-	<!-- A steel pipe for drilling and lining bore holes. -->
-	<part name="bore drill pipe" mass="50.0" />
+	<part name="bore drill pipe" mass="50.0">
+		<description>A steel pipe for drilling and lining bore holes.</description>
+	</part>
 	
-	<!-- A light utility vehicle attachment with a motor for supporting drilling. -->
-	<!-- Should be used in conjunction with the crane boom. -->
-	<part name="drilling rig" mass="135.0" />
+	<part name="drilling rig" mass="135.0">
+		<description>
+			A light utility vehicle attachment with a motor for supporting drilling.
+			Should be used in conjunction with the crane boom.
+		</description>
+	</part>
 	
 	<part name="condenser coil" mass="10.0" >
 		<description>Copper tube coil used to condense steam into liquid water.</description>

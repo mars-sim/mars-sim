@@ -15,6 +15,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.InventoryException;
@@ -71,6 +72,9 @@ public class GoodsManager implements Serializable {
 
     /** default serial id. */
 	private static final long serialVersionUID = 1L;
+
+	/** Initialized logger. */
+	private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
 
 	/** Unit update events. */
     public static final String GOODS_VALUE_EVENT = "goods values";
@@ -167,8 +171,13 @@ public class GoodsManager implements Serializable {
      * @throws Exception if error getting value.
      */
     public double getGoodValuePerItem(Good good) {
-        if (goodsValues.containsKey(good)) return goodsValues.get(good);
-        else throw new IllegalArgumentException("Good: " + good + " not valid.");
+//    	try {
+    		if (goodsValues.containsKey(good)) return goodsValues.get(good);
+    		else throw new IllegalArgumentException("Good: " + good + " not valid.");
+//    	} catch (Exception e) {
+//    		logger.log(Level.SEVERE,e.getMessage());
+//    		return 0;
+//    	}
     }
 
     public double getGoodValuePerItem(Good good, double supply) {

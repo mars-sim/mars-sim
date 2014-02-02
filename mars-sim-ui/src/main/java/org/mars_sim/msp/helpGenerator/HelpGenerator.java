@@ -33,12 +33,13 @@ public class HelpGenerator {
 	/** initialized logger for this class. */
 	private static Logger logger = Logger.getLogger(HelpGenerator.class.getName());
 
-	/**
+	/*
 	 * absolute path for creating help files with command
 	 * line argument -generateHelp only when needed.
-	 */
+	 *
 	private static final String ABSOLUTE_DIR = "X:/path/to/your/workspace/code/mars-sim/mars-sim-ui/src/main/resources/docs/help";
-//	private static final String DIR = "\\docs\\help\\";
+*/
+	private static final String DIR = "\\docs\\help\\";
 	private static final String SUFFIX = ".html";
 
 	private static final String VEHICLES = "vehicles";
@@ -107,7 +108,7 @@ public class HelpGenerator {
 
 	private static final void generateFile(final StringBuffer path, final StringBuffer content) {
 		try {
-/*			String absPath = new File(
+			String absPath = new File(
 				HelpGenerator
 				.class
 				.getClassLoader()
@@ -115,8 +116,7 @@ public class HelpGenerator {
 				.toURI()
 			).getAbsolutePath();
 			File file = new File(absPath + '/' + path.toString());
-*/
-			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
+//			File file = new File(ABSOLUTE_DIR + '/' + path.toString());
 			PrintWriter pw = new PrintWriter(file);
 			pw.write(content.toString());
 			pw.close();
@@ -600,6 +600,9 @@ public class HelpGenerator {
 			.append("<br/>")
 			.append(getLinkProcesses("back to processes overview"))
 			.append("</br>\n")
+			.append("<p>")
+			.append(info.getDescription())
+			.append("</p><br/>\n")
 			.append("<table>\n");
 			helpFileTableRow(content,new String [] {"required building tech level",Integer.toString(info.getTechLevelRequired())});
 			helpFileTableRow(content,new String [] {"required skill level",Integer.toString(info.getSkillLevelRequired())});

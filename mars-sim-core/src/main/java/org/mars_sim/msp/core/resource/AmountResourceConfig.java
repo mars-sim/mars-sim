@@ -9,12 +9,12 @@ package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,7 +34,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final String LIFE_SUPPORT = "life-support";
 	
 	// Data members.
-	private Set<AmountResource> resources = new HashSet<AmountResource>();
+	private Set<AmountResource> resources = new TreeSet<AmountResource>();
 	private Map<String,String> descriptions = new TreeMap<String,String>();
 
 	/**

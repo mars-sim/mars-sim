@@ -21,6 +21,7 @@ public class ManufactureProcessInfo implements Serializable {
 
 	// Data members
 	private String name;
+	private String description;
 	private int techLevelRequired;
 	private int skillLevelRequired;
 	private double workTimeRequired;
@@ -36,13 +37,25 @@ public class ManufactureProcessInfo implements Serializable {
 	public String getName() {
 		return name;
 	}
-	
+
+	public String getDescription() {
+		return description;
+	}
+
 	/**
 	 * Sets the process name.
 	 * @param name the name.
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Sets the process description.
+	 * @param description {@link String}
+	 */
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	/**

@@ -7,22 +7,44 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.construction.*;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import javax.swing.*;
+import javax.swing.DefaultListModel;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import java.awt.*;
-import java.util.*;
-import java.util.List;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel for selecting the mission's construction project information.
@@ -45,7 +67,7 @@ class ConstructionProjectPanel extends WizardPanel {
      * Constructor
      * @param wizard the create mission wizard.
      */
-    ConstructionProjectPanel(CreateMissionWizard wizard) {
+    ConstructionProjectPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
         
@@ -115,37 +137,53 @@ class ConstructionProjectPanel extends WizardPanel {
         populateProjectListModel();
         projectList = new JList(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        projectList.addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent arg0) {
-                materialsTableModel.update();
-                String selectedSite = (String) siteList.getSelectedValue();
-                ConstructionStageInfo stageInfo = (ConstructionStageInfo) projectList.getSelectedValue();
-                projectList.setToolTipText(getToolTipText(stageInfo));
-                if (stageInfo != null) {
-                    if (selectedSite.indexOf(" unfinished") >= 0) {
-                        getWizard().setButtons(true);
-                        errorMessageLabel.setText(" ");
-                    }
-                    else {
-                        try {
-                            if (hasEnoughConstructionMaterials(stageInfo)) {
-                                getWizard().setButtons(true);
-                                errorMessageLabel.setText(" ");
-                            }
-                            else {
-                                getWizard().setButtons(false);
-                                errorMessageLabel.setText("Not enough materials at settlement " +
-                                        "for construction project.");
-                            }
-                        }
-                        catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-                else errorMessageLabel.setText(" ");
-            }
-        });
+        projectList.addListSelectionListener(
+        	new ListSelectionListener() {
+	            public void valueChanged(ListSelectionEvent arg0) {
+	                materialsTableModel.update();
+	                String selectedSite = (String) siteList.getSelectedValue();
+	                ConstructionStageInfo stageInfo = (ConstructionStageInfo) projectList.getSelectedValue();
+	                projectList.setToolTipText(getToolTipText(stageInfo));
+	                if (stageInfo != null) {
+	                    if (selectedSite.indexOf(" unfinished") >= 0) {
+	                        getWizard().setButtons(true);
+	                        errorMessageLabel.setText(" ");
+	                    }
+	                    else {
+	                        try {
+	                            if (hasEnoughConstructionMaterials(stageInfo)) {
+	                                getWizard().setButtons(true);
+	                                errorMessageLabel.setText(" ");
+	                            }
+	                            else {
+	                                getWizard().setButtons(false);
+	                                errorMessageLabel.setText("Not enough materials at settlement " +
+	                                        "for construction project.");
+	                            }
+	                        }
+	                        catch (Exception e) {
+	                            e.printStackTrace();
+	                        }
+	                    }
+	                }
+	                else errorMessageLabel.setText(" ");
+	            }
+	        }
+        );
+		// call it a click to next button when user double clicks the table
+		projectList.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						wizard.buttonClickedNext();
+					}
+				}
+			}
+		);
         projectListScrollPane.setViewportView(projectList);
         
         // Create construction materials panel.

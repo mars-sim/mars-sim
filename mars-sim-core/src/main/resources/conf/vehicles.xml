@@ -85,7 +85,7 @@
 			<capacity resource="Methane" value="2000.0" />
 			<capacity resource="Oxygen" value="350.0" />
 			<capacity resource="Water" value="1400.0" />
-			<capacity resource="Food" value="525.0" />            
+			<capacity resource="Food" value="525.0" />
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
 	</vehicle>
@@ -101,11 +101,11 @@
 			<capacity resource="Methane" value="2000.0" />
 			<capacity resource="Oxygen" value="350.0" />
 			<capacity resource="Water" value="1400.0" />
-			<capacity resource="Food" value="525.0" />            
+			<capacity resource="Food" value="525.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
 	</vehicle>
-	
+
 	<!-- Light Utility Vehicle -->
 	<vehicle type="Light Utility Vehicle" width="1.7" length="2.55">
 		<description>A small, unpressurized, one crew utility vehicle with attachable parts.</description>
@@ -124,6 +124,52 @@
 		</part-attachment>
 	</vehicle>
 	
+	<!-- remote controlled prospecting rover -->
+	<vehicle type="rc prospector" width="1.5" length="2.5">
+		<description>used for automatic mineral prospecting</description>
+		<fuel-efficiency value="1.0" />
+		<base-speed value="12.0" />
+		<empty-mass value="250.0" />
+		<crew-size value="0" />
+		<cargo total-capacity="500.0">
+			<capacity resource="methane" value="100.0" />
+		</cargo>
+	</vehicle>
+<!--
+	<vehicle type="rc dirigible" width="5.0" length="15.0">
+		<description>
+			remote controlled lighter-than-air craft for use
+			in atmospheric research or as communications relay.
+			can only function in a certain range of temperature
+			and air pressure.
+		</description>
+	</vehicle>
+-->
+	<!-- low mars orbit atmosphere space craft -->
+	<vehicle type="sounding rocket" width="0.5" length="3.0" >
+		<description>
+			a small rocket for atmospheric research
+			or for delivering payloads to surface
+			locations by hard landing
+		</description>
+		<!-- <fuel name="hydrogen peroxide"/> -->
+		<fuel-efficiency value="1.0"/>
+		<base-speed value="10.0" />
+		<!-- <base-acceleration value="10.0" /> -->
+		<!-- empty-mass should equal the sum of mass of parts needed for construction -->
+		<empty-mass value="200.0"/>
+		<crew-size value="0"/>
+		<cargo total-capacity="500.0">
+			<!-- doubt you can fly a rocket on methane -->
+			<capacity resource="oxygen" value="150"/>
+			<capacity resource="hydrogen" value="150.0"/>
+		</cargo>
+		<part-attachment number-slots="1">
+			<part name="satellite dish"/>
+			<part name="algae tank"/>
+		</part-attachment>
+	</vehicle>
+
 	<!-- List of rover names -->
 	<rover-name-list>		
 

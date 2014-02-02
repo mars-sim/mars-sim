@@ -7,17 +7,20 @@
 
 package org.mars_sim.msp.core.manufacture;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 public class ManufactureConfig implements Serializable {
 
-    // Element names
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Element names
     private static final String PROCESS = "process";
     private static final String NAME = "name";
     private static final String TECH = "tech";
@@ -25,6 +28,7 @@ public class ManufactureConfig implements Serializable {
     private static final String WORK_TIME = "work-time";
     private static final String PROCESS_TIME = "process-time";
     private static final String POWER_REQUIRED = "power-required";
+    private static final String DESCRIPTION = "description";
     private static final String INPUTS = "inputs";
     private static final String OUTPUTS = "outputs";
     private static final String RESOURCE = "resource";
@@ -70,6 +74,7 @@ public class ManufactureConfig implements Serializable {
                 ManufactureProcessInfo process = new ManufactureProcessInfo();
                 manufactureProcessList.add(process);
                 String name = "";
+                String description = "";
 
                 name = processElement.getAttributeValue(NAME);
                 process.setName(name);
@@ -89,6 +94,12 @@ public class ManufactureConfig implements Serializable {
 
                 process.setPowerRequired(Double.parseDouble(processElement
                         .getAttributeValue(POWER_REQUIRED)));
+                
+                Element descriptElem = processElement.getChild(DESCRIPTION);
+                if (descriptElem != null) {
+                	description = descriptElem.getText();
+                }
+                process.setDescription(description);
 
                 Element inputs = processElement.getChild(INPUTS);
                 List<ManufactureProcessItem> inputList = new ArrayList<ManufactureProcessItem>();
