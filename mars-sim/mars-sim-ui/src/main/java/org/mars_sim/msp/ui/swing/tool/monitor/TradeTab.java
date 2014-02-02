@@ -22,9 +22,16 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
  */
 public class TradeTab extends TableTab implements UnitManagerListener {
 	
-	TradeTab() {
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * constructor.
+	 * @param window {@link MonitorWindow} the containing window.
+	 */
+	public TradeTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(new TradeTableModel(), true, false);
+		super(window, new TradeTableModel(), true, false);
 		
 		// Override default cell renderer for format double values.
 		table.setDefaultRenderer(Double.class, new NumberCellRenderer(2));

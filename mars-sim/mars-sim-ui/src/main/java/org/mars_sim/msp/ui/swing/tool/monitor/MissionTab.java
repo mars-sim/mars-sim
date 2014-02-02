@@ -25,9 +25,9 @@ public class MissionTab extends TableTab {
 	/**
 	 * Constructor.
 	 */
-	public MissionTab() {
+	public MissionTab(final MonitorWindow window) {
 		// Use TableTab constructor
-		super(new MissionTableModel(), true, true);
+		super(window, new MissionTableModel(), true, true);
 	}
 	
     /**

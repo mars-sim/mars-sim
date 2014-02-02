@@ -13,10 +13,17 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  */
 public class EventTab extends TableTab {
 
-	public EventTab(EventTableModel model) {
-		
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * constructor.
+	 * @param window {@link MonitorWindow} the containing window
+	 * @param model {@link EventTableModel}
+	 */
+	public EventTab(final MonitorWindow window, EventTableModel model) {
 		// Use TableTab constructor
-		super(model, true, false);
+		super(window, model, true, false);
 	}
 
 	void filterCategories(MainDesktopPane desktop) {

@@ -6,29 +6,43 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.UIManager;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
+
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * This class represents a table view displayed within the Monitor Window. It
  * displays the contents of a UnitTableModel in a JTable window. It supports
  * the selection and deletion of rows.
  */
-abstract class TableTab extends MonitorTab {
+abstract class TableTab
+extends MonitorTab {
 
-    /**
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * This class provides a fixed image icon that is drawn using a Graphics
      * object. It represents an arrow Icon that can be other ascending or
      * or descending.
@@ -138,7 +152,7 @@ abstract class TableTab extends MonitorTab {
      * @param mandatory Is this table view mandatory.
      * @param singleSelection Does this table only allow single selection?
      */
-    public TableTab(MonitorModel model, boolean mandatory, boolean singleSelection) {
+    public TableTab(final MonitorWindow window, MonitorModel model, boolean mandatory, boolean singleSelection) {
         super(model, mandatory, TABLEICON);
 
         // Can not create icons until UIManager is up and running
@@ -156,7 +170,6 @@ abstract class TableTab extends MonitorTab {
 
             // Create scrollable table window
             table = new JTable(sortedModel) {
-
             	/**
             	 * Overriding table change so that selections aren't cleared when rows are deleted.
             	 */
@@ -190,6 +203,20 @@ abstract class TableTab extends MonitorTab {
                     return getCellText(e);
                 };
             };
+    		// call it a click to display details button when user double clicks the table
+    		table.addMouseListener(
+    			new MouseListener() {
+    				public void mouseReleased(MouseEvent e) {}
+    				public void mousePressed(MouseEvent e) {}
+    				public void mouseExited(MouseEvent e) {}
+    				public void mouseEntered(MouseEvent e) {}
+    				public void mouseClicked(MouseEvent e) {
+    					if (e.getClickCount() == 2 && !e.isConsumed()) {
+    						window.displayDetails();
+    					}
+    				}
+    			}
+    		);
             sortedModel.addTableModelListener(table);
 
         	// Get the TableColumn header to display sorted column

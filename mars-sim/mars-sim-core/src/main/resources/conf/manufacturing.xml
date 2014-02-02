@@ -1899,7 +1899,10 @@
 		</outputs>
 	</process>
 
-	<process name="vehicle assembly rc prospector" tech="3" skill="3" work-time="1000" process-time="0" 
+	<process name="vehicle assembly rc prospector"
+			tech="3" skill="3"
+			work-time="1000"
+			process-time="0"
 			power-required="0.0">
 		<inputs>
 			<part name="small vehicle frame" number="1" />
