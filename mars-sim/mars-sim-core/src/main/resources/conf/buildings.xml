@@ -124,6 +124,7 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
+<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
 				<resource-storage resource="Ice" capacity="100.0" />
 				
@@ -357,7 +358,7 @@
 			<management population-support="25" />
 		</functions>
 	</building>
-	
+
 	<!-- A large greenhouse and botany lab. -->
 	<building name="Large Greenhouse" width="12.0" length="18.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
@@ -381,7 +382,31 @@
 			</storage>				
 		</functions>
 	</building>
-	
+
+	<!-- A large algae greenhouse and biology lab. -->
+	<building name="Large Algae Greenhouse" width="12.0" length="18.0">
+		<power-required base-power="10.0" base-power-down-power="0.0" />
+		<functions>
+			<farming crops="0" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
+			<life-support capacity="10" power-required="20.0" />
+			<research tech-level="2" capacity="2">
+				<research-speciality name="Biology" />
+			</research>
+			<resource-processing power-down-level=".5">
+				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
+					<input resource="Carbon Dioxide" rate="50.0" ambient="true" />
+					<output resource="Carbon Dioxide" rate="50.0" ambient="false" />
+				</process>
+			</resource-processing>
+			<storage>
+				<resource-storage resource="Water" capacity="1000.0" />
+				<resource-storage resource="Waste Water" capacity="1000.0" />
+				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
+				<resource-storage resource="Food" capacity="500.0" />
+			</storage>				
+		</functions>
+	</building>
+
 	<!-- A general scientific laboratory. -->
 	<building name="Laboratory" width="7.0" length="9.0">
 		<power-required base-power="30.0" base-power-down-power="10.0" />
@@ -666,6 +691,7 @@
 				<resource-storage resource="Waste Water" capacity="2500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="2500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
+<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="2500.0" />
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
@@ -778,6 +804,7 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
+<!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Methane" capacity="2000.0" />
 				<resource-storage resource="Food" capacity="2000.0" />
 			</storage>

@@ -42,8 +42,8 @@ import java.util.logging.Logger;
  */
 public class MasterClock implements Runnable, Serializable {
 
-    // Initialize logger.
-    private static Logger logger = Logger.getLogger(MasterClock.class.getName());
+	/** Initialized logger. */
+	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
     
     // Clock thread sleep time (milliseconds).
     private static long SLEEP_TIME = 10L;

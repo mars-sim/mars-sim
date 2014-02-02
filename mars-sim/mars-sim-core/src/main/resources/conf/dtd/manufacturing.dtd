@@ -1,11 +1,12 @@
 <!ELEMENT manufacturing-processes (process*, salvage*)>
-<!ELEMENT process (inputs, outputs)>
+<!ELEMENT process (description?, inputs, outputs)>
 <!ATTLIST process name CDATA #REQUIRED>
 <!ATTLIST process tech CDATA #REQUIRED>
 <!ATTLIST process skill CDATA #REQUIRED>
 <!ATTLIST process work-time CDATA #REQUIRED>
 <!ATTLIST process process-time CDATA #REQUIRED>
 <!ATTLIST process power-required CDATA #REQUIRED>
+<!ELEMENT description (#PCDATA)>
 <!ELEMENT inputs (resource*, part*)>
 <!ELEMENT outputs (resource*, part*, equipment*, vehicle*)>
 <!ELEMENT resource EMPTY>

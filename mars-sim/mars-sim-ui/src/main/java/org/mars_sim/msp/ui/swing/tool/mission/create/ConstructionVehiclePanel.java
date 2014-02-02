@@ -132,7 +132,7 @@ class ConstructionVehiclePanel extends WizardPanel {
                 }
             }
         );
-		// call it a click to next button when user double clicks the table
+		// call it a click to final button when user double clicks the table
 		vehicleTable.addMouseListener(
 			new MouseListener() {
 				public void mouseReleased(MouseEvent e) {}
@@ -141,7 +141,7 @@ class ConstructionVehiclePanel extends WizardPanel {
 				public void mouseEntered(MouseEvent e) {}
 				public void mouseClicked(MouseEvent e) {
 					if (e.getClickCount() == 2 && !e.isConsumed()) {
-						wizard.buttonClickedNext();
+						wizard.buttonClickedFinal();
 					}
 				}
 			}

@@ -7,30 +7,50 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-
 /**
  * A wizard panel to select mission members.
  */
-class MembersPanel extends WizardPanel {
+class MembersPanel
+extends WizardPanel
+implements ActionListener {
 
-	// The wizard panel name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The wizard panel name. */
 	private final static String NAME = "Members";
-	
+
 	// Data members.
 	private PeopleTableModel peopleTableModel;
 	private JTable peopleTable;
@@ -125,7 +145,22 @@ class MembersPanel extends WizardPanel {
         				errorMessageLabel.setText(" ");
         			}
         		}
-        	});
+        	}
+        );
+		// call it a click to add button when user double clicks the table
+		peopleTable.addMouseListener(
+			new MouseListener() {
+				public void mouseReleased(MouseEvent e) {}
+				public void mousePressed(MouseEvent e) {}
+				public void mouseExited(MouseEvent e) {}
+				public void mouseEntered(MouseEvent e) {}
+				public void mouseClicked(MouseEvent e) {
+					if (e.getClickCount() == 2 && !e.isConsumed()) {
+						addButtonClicked();
+					}
+				}
+			}
+		);
         peopleScrollPane.setViewportView(peopleTable);
 		
         // Create the message label.
@@ -145,18 +180,7 @@ class MembersPanel extends WizardPanel {
 		// Create the add button.
 		addButton = new JButton("Add Members");
 		addButton.setEnabled(false);
-		addButton.addActionListener(
-			new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					// Add the selected rows in the people table to the members table.
-					int[] selectedRows = peopleTable.getSelectedRows();
-					Collection<Person> people = new ConcurrentLinkedQueue<Person>();
-                    for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
-					peopleTableModel.removePeople(people);
-					membersTableModel.addPeople(people);
-					updateRoverCapacityLabel();
-				}
-			});
+		addButton.addActionListener(this);
 		buttonPane.add(addButton);
 		
 		// Create the remove button.
@@ -515,5 +539,22 @@ class MembersPanel extends WizardPanel {
     		
     		getWizard().setButtons(units.size() > 0);
     	}
+    }
+
+    public void actionPerformed(ActionEvent e) {
+    	Object source = e.getSource();
+    	if (source == addButton) {
+    		addButtonClicked();
+    	}
+	}
+
+    private final void addButtonClicked() {
+		// Add the selected rows in the people table to the members table.
+		int[] selectedRows = peopleTable.getSelectedRows();
+		Collection<Person> people = new ConcurrentLinkedQueue<Person>();
+		for (int selectedRow : selectedRows) people.add((Person) peopleTableModel.getUnit(selectedRow));
+		peopleTableModel.removePeople(people);
+		membersTableModel.addPeople(people);
+		updateRoverCapacityLabel();
     }
 }

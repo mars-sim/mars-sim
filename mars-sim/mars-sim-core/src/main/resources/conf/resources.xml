@@ -13,57 +13,57 @@
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
 	
 	<resource name="oxygen" phase="gas" life-support="true" />
-	<resource name="hydrogen" phase="gas" life-support="false" />
-	<resource name="methane" phase="gas" life-support="false" />
-	<resource name="carbon dioxide" phase="gas" life-support="false" />
-	<resource name="carbon monoxide" phase="gas" life-support="false" />
-	
-	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
-	<resource name="rock samples" phase="solid" life-support="false">Rock samples collected from explored sites.</resource>
-	<resource name="waste water" phase="liquid" life-support="false">Sewage water used as crop fertilizer.</resource>
-	<resource name="ice" phase="solid" life-support="false">Ice-rich permafrost soil</resource>
-	<resource name="regolith" phase="solid" life-support="false">Martian soil</resource>
+	<resource name="hydrogen" phase="gas" />
+	<resource name="methane" phase="gas" />
+	<resource name="carbon dioxide" phase="gas" />
+	<resource name="carbon monoxide" phase="gas" />
+<!-- <resource name="chlorine" phase="gas"/> -->
 
-	<resource name="iron oxide" phase="solid" life-support="false"/>
+	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
+	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
+	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>
+	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
+	<resource name="regolith" phase="solid">Martian soil</resource>
+
+	<resource name="iron oxide" phase="solid">also known as rust</resource>
 	
-	<resource name="carbon" phase="solid" life-support="false">Carbon powder</resource>
-	<resource name="sand" phase="solid" life-support="false">Martian soil with iron oxide removed. Used for making glass.</resource>
+	<resource name="carbon" phase="solid">Carbon powder</resource>
+	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
 	
-	<resource name="iron powder" phase="solid" life-support="false" />
-	<resource name="aluminum oxide" phase="solid" life-support="false" />
-	<resource name="ethylene" phase="gas" life-support="false" />
+	<resource name="iron powder" phase="solid" />
+	<resource name="aluminum oxide" phase="solid" />
+	<resource name="ethylene" phase="gas" />
 	
-	<resource name="polyethylene" phase="solid" life-support="false">Polyethylene pellets or flakes.</resource>
+	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
 	
-	<resource name="gypsum" phase="solid" life-support="false" />
-	<resource name="calcium carbonate" phase="solid" life-support="false" />
-	<resource name="lime" phase="solid" life-support="false" />
-	<resource name="styrene" phase="solid" life-support="false" />
-	<resource name="polyester resin" phase="liquid" life-support="false" />
+	<resource name="gypsum" phase="solid" />
+	<resource name="calcium carbonate" phase="solid" />
+	<resource name="lime" phase="solid" />
+	<resource name="styrene" phase="solid" />
+	<resource name="polyester resin" phase="liquid" />
 	
 	<!-- Mineral concentrations. -->
-	<resource name="hematite" phase="solid" life-support="false" />
-	<resource name="magnetite" phase="solid" life-support="false" />
-	<resource name="magnesite" phase="solid" life-support="false" />
-	<resource name="olivine" phase="solid" life-support="false" />
-	<resource name="goethite" phase="solid" life-support="false" />
-	<resource name="kamacite" phase="solid" life-support="false" />
-	<resource name="taenite" phase="solid" life-support="false" />
-	<resource name="chalcopyrite" phase="solid" life-support="false" />
-	<resource name="malachite" phase="solid" life-support="false" />
-	<resource name="sylvite" phase="solid" life-support="false" />
+	<resource name="hematite" phase="solid" />
+	<resource name="magnetite" phase="solid" />
+	<resource name="magnesite" phase="solid" />
+	<resource name="olivine" phase="solid" />
+	<resource name="goethite" phase="solid" />
+	<resource name="kamacite" phase="solid" />
+	<resource name="taenite" phase="solid" />
+	<resource name="chalcopyrite" phase="solid" />
+	<resource name="malachite" phase="solid" />
+	<resource name="sylvite" phase="solid" />
 
-	<resource name="nickel" phase="solid" life-support="false" />
-	<resource name="sulfur" phase="solid" life-support="false" />
-	<resource name="magnesium" phase="solid" life-support="false" />
-	<resource name="silicon" phase="solid" life-support="false" />
-	<resource name="copper" phase="solid" life-support="false" />
+	<resource name="nickel" phase="solid" />
+	<resource name="sulfur" phase="solid" />
+	<resource name="magnesium" phase="solid" />
+	<resource name="silicon" phase="solid" />
+	<resource name="copper" phase="solid" />
 	
-	<!-- Potassium hydroxide -->
-	<resource name="potash lye" phase="solid" life-support="false" />
+	<resource name="potash lye" phase="solid">Potassium hydroxide</resource>
 
-	<resource name="cement" phase="solid" life-support="false" />
-	<resource name="concrete" phase="solid" life-support="false" />
-	<resource name="mortar" phase="solid" life-support="false" />
+	<resource name="cement" phase="solid" />
+	<resource name="concrete" phase="solid" />
+	<resource name="mortar" phase="solid" />
 
 </resource-list>

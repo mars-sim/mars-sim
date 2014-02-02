@@ -2,4 +2,4 @@
 <!ELEMENT resource (#PCDATA)>
 <!ATTLIST resource name CDATA #REQUIRED>
 <!ATTLIST resource phase (solid|liquid|gas) #REQUIRED>
-<!ATTLIST resource life-support (true|false) #REQUIRED>
+<!ATTLIST resource life-support (true|false) "false">

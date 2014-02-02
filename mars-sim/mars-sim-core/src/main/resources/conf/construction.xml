@@ -469,7 +469,7 @@
 				<attachment-part name="crane boom" />
 			</vehicle>
 		</building>
-		
+
 		<building name="bunkhouse" width="5.0" length="5.0" constructable="true" salvagable="true" work-time="20.0" 
 		 skill-required="3" frame="small brick shed frame" >
 			<part name="steel pipe" number="3" />
@@ -767,6 +767,21 @@
 			<part name="plastic sheet" number="30" />
 			<part name="fiberglass" number="15" />
 			<part name="plastic pipe" number="15" />
+			<part name="valve" number="15" />
+			<part name="electrical wire" number="15" />
+			<part name="wire connector" number="15" />
+		</building>
+
+		<building name="large algae greenhouse" width="12.0" length="18.0" constructable="true" salvagable="false" 
+		 work-time="200.0" skill-required="4" frame="large greenhouse frame" >
+			<resource name="polyester resin" amount="15.0" />
+			<resource name="styrene" amount="3.0" />
+			<resource name="polyethylene" amount="30.0" />
+			<part name="aluminum sheet" number="9" />
+			<part name="plastic sheet" number="30" />
+			<part name="fiberglass" number="15" />
+			<part name="algae tank" number="5" />
+			<part name="plastic pipe" number="5" />
 			<part name="valve" number="15" />
 			<part name="electrical wire" number="15" />
 			<part name="wire connector" number="15" />
