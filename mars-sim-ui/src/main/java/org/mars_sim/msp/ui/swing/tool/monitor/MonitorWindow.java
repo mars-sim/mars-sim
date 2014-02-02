@@ -30,9 +30,12 @@ import java.util.Iterator;
  */
 public class MonitorWindow extends ToolWindow implements TableModelListener {
 
-	// Tool name
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Tool name. */
 	public static final String NAME = "Monitor Tool";
-	
+
     final private static int STATUSHEIGHT = 17;
 
     // Data members
@@ -114,11 +117,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         detailsButton = new JButton(ImageLoader.getIcon("ShowDetails"));
         detailsButton.setToolTipText("Open unit window for selected unit.");
-        detailsButton.addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent e) {
-                            displayDetails();
-                        }
-                    });
+        detailsButton.addActionListener(
+        	new ActionListener() {
+        		public void actionPerformed(ActionEvent e) {
+        			displayDetails();
+        		}
+        	}
+        );
         toolbar.add(detailsButton);
         
         missionButton = new JButton(ImageLoader.getIcon("Mission"));
@@ -169,13 +174,13 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
 
         // Add the default table tabs
         UnitManager unitManager = Simulation.instance().getUnitManager();
-        addTab(new UnitTab(new PersonTableModel(unitManager), true));
-        addTab(new UnitTab(new VehicleTableModel(unitManager), true));
-        addTab(new UnitTab(new SettlementTableModel(unitManager), true));
-        addTab(new MissionTab());
-        eventsTab = new EventTab(new EventTableModel(Simulation.instance().getEventManager()));
+        addTab(new UnitTab(this,new PersonTableModel(unitManager), true));
+        addTab(new UnitTab(this,new VehicleTableModel(unitManager), true));
+        addTab(new UnitTab(this,new SettlementTableModel(unitManager), true));
+        addTab(new MissionTab(this));
+        eventsTab = new EventTab(this,new EventTableModel(Simulation.instance().getEventManager()));
         addTab(eventsTab);
-        addTab(new TradeTab());
+        addTab(new TradeTab(this));
 
         tabsSection.setSelectedIndex(0);
         tabChanged();
@@ -201,7 +206,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
      */
     public void displayModel(UnitTableModel model) {
     	if (containsModel(model)) tabsSection.setSelectedIndex(getModelIndex(model));
-    	else addTab(new UnitTab(model, false));
+    	else addTab(new UnitTab(this,model, false));
     }
     
     /**
@@ -339,7 +344,7 @@ public class MonitorWindow extends ToolWindow implements TableModelListener {
         }
     }
 
-    private void displayDetails() {
+    public void displayDetails() {
         MonitorTab selected = getSelected();
         if (selected != null) {
             selected.displayDetails(desktop);
