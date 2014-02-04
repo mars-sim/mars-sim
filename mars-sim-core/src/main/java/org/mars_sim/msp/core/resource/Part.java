@@ -20,11 +20,12 @@ public class Part extends ItemResource {
     /**
      * Constructor.
      * @param name the name of the part.
+     * @param description {@link String}
      * @param mass the mass of the part (kg)
      */
-    public Part(String name, double mass) {
+    public Part(String name, String description, double mass) {
         // Use ItemResource constructor.
-        super(name, mass);
+        super(name,description,mass);
 
         maintenanceEntities = new ArrayList<MaintenanceEntity>();
     }

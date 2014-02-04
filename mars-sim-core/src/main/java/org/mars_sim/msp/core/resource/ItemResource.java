@@ -27,6 +27,7 @@ implements Resource, Serializable {
 
 	// Data members
 	private String name;
+	private String description;
 	private double massPerItem;
 	
 	/*
@@ -40,10 +41,12 @@ implements Resource, Serializable {
 	/**
 	 * Constructor.
 	 * @param name the name of the resource.
+	 * @param description {@link String}
 	 * @param massPerItem the mass (kg) of the resource per item.
 	 */
-	protected ItemResource(String name, double massPerItem) {
+	protected ItemResource(String name, String description, double massPerItem) {
 		this.name = name;
+		this.description = description;
 		this.massPerItem = massPerItem;
 	}
 
@@ -126,8 +129,12 @@ implements Resource, Serializable {
 		.getItemResourcesMap();
 	}
 
-    public static ItemResource createItemResource(String resourceName, double massPerItem) {
-        return new ItemResource(resourceName, massPerItem);
+    public static ItemResource createItemResource(
+    	String resourceName,
+    	String description,
+    	double massPerItem
+    ) {
+        return new ItemResource(resourceName,description,massPerItem);
     }
 
     private static class UnknownResourceName extends RuntimeException {
@@ -161,5 +168,9 @@ implements Resource, Serializable {
 	@Override
 	public final int compareTo(Resource o) {
 		return getName().compareToIgnoreCase(o.getName());
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

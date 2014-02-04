@@ -35,7 +35,6 @@ public class AmountResourceConfig implements Serializable {
 	
 	// Data members.
 	private Set<AmountResource> resources = new TreeSet<AmountResource>();
-	private Map<String,String> descriptions = new TreeMap<String,String>();
 
 	/**
 	 * Constructor
@@ -55,13 +54,12 @@ public class AmountResourceConfig implements Serializable {
 	private void loadAmountResources(Document amountResourceDoc) {
 		Element root = amountResourceDoc.getRootElement();
 		List<Element> resourceNodes = root.getChildren(RESOURCE);
-		descriptions.clear();
 		for (Element resourceElement : resourceNodes) {
 			String name = "";
 
 			// Get name.
 			name = resourceElement.getAttributeValue(NAME);
-			descriptions.put(name,resourceElement.getText());
+			String description = resourceElement.getText();
 
 			// Get phase.
 			String phaseString = resourceElement.getAttributeValue(PHASE);
@@ -71,16 +69,9 @@ public class AmountResourceConfig implements Serializable {
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
 
 			// Create new amount resource.
-			AmountResource resource = new AmountResource(name, phase, lifeSupport);
+			AmountResource resource = new AmountResource(name, description, phase, lifeSupport);
 			resources.add(resource);
 		}
-	}
-
-	public String getDescription(AmountResource resource) {
-		String description = descriptions.get(resource.getName());
-		if (description != null && description.length() > 0) {
-			return description;
-		} else return "no description available.";
 	}
 
 	/**

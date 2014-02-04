@@ -29,6 +29,7 @@ implements Resource, Serializable {
 
 	// Data members
 	private String name;
+	private String description;
 	private Phase phase;
 	private boolean lifeSupport;
 	private int hashcode = -1;
@@ -41,11 +42,18 @@ implements Resource, Serializable {
 	/**
 	 * Constructor with life support parameter.
 	 * @param name the resource's name
+	 * @param description {@link String}
 	 * @param phase the material phase of the resource.
 	 * @param lifeSupport true if life support resource.
 	 */
-	public AmountResource(String name, Phase phase, boolean lifeSupport) {
+	public AmountResource(
+		String name,
+		String description,
+		Phase phase,
+		boolean lifeSupport
+	) {
 		this.name = name;
+		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
 	}
@@ -65,6 +73,10 @@ implements Resource, Serializable {
 	 */
 	public Phase getPhase() {
 		return phase;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 
 	/**

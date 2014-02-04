@@ -35,8 +35,9 @@ public class UnloadVehicleTest extends TestCase {
 		AmountResource methane = AmountResource.findAmountResource("methane");
 
         String resourceName = "hammer";
+        String description = "a tool";
         double massPerItem = 1.4D;
-        ItemResource hammer = ItemResource.createItemResource(resourceName, massPerItem);
+        ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		Settlement settlement = new MockSettlement();
 		Inventory settlementInv = settlement.getInventory();
 		settlementInv.addAmountResourceTypeCapacity(oxygen, 100D);
