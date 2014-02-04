@@ -1,7 +1,9 @@
+# coding=utf-8
+
 # Mars Simulation Project
 # csv2xml.py
-# @version 3.06 2014-01-29
-# @author Lars Naesbye Christensen [lechimp]
+# @version 3.06 2014-02-04
+# @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.3 or later and the 'SearchResults.csv' file to be in the same
 # directory as the script file.
@@ -13,10 +15,16 @@
 
 from xml.dom.minidom import Document
 
+# Preferences - should maybe be cmd line parameters
+diameter_threshold = 50.0 #skip landmarks smaller than this size in km
+
 # Initialize types 
 xmldoc = Document()
 csvdata = []
+# in case we don't have a key line, assume defaults
 index_feature = 0
+index_target = 1
+index_diameter = 2
 index_lat = 3
 index_long = 4
 
@@ -45,32 +53,38 @@ csvlinelist = f.readlines() # fill a list with CSV lines
 for csvline in csvlinelist: 
 	if csvline == "\n":
 		print "Skipped empty line"  # ignore empty lines
-	elif "Dropped" in csvline:
-		print "Skipped dropped name" # ignore dropped names
 	elif "Feature_Name" in csvline:
 		print "Found key line, parsing..." # first line of CSV, names of keys
 		paramlist = csvline.split(",") # explode into a list of keys
 		index_feature = paramlist.index('Feature_Name')
+		index_diameter = paramlist.index('Diameter')
 		index_lat = paramlist.index('Center_Latitude')
 		index_long = paramlist.index('Center_Longitude')
+	elif "Dropped" in csvline:
+		print "Skipped dropped name" # ignore dropped (unapproved) names
+	elif "Mars" not in csvline:
+		print "Skipped non-Mars target" # ignore features not on Mars
 	else:
-		print "Data line, parsing..." #move data into XML DOM
-		valuelist = csvline.split(",") # make into a list of values
-		landmark = xmldoc.createElement("landmark")
+		print "Found data line, parsing..." #ready to move data into XML DOM
+		valuelist = csvline.split(",") # explode into a list of values
 		
-		namestring = valuelist[index_feature]
-		clean_string = namestring.replace('\"', '')
-		landmark.setAttribute("name", clean_string) # Feature_Name
+		if float(valuelist[index_diameter]) > float(diameter_threshold):
+			landmark = xmldoc.createElement("landmark")
 		
-		landmark.setAttribute("longitude", valuelist[index_long]+" E") # Center_Longitude
-		landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
-		landmarks.appendChild(landmark)
+			namestring = valuelist[index_feature]
+			clean_string = namestring.replace('\"', '')
+			landmark.setAttribute("name", clean_string) # Feature_Name
+		
+			landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
+			landmark.setAttribute("longitude", valuelist[index_long]+" E") # Center_Longitude
+			landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
+			landmarks.appendChild(landmark)
 
-# Add data for rovers and other artificial objects (from Google Mars and Wikipedia)
-rovercomment = xmldoc.createComment("Martian Landers and Rovers")
-landmarks.appendChild(rovercomment)
+# Add data for artificial objects (from Google Mars and Wikipedia)
+artobjcomment = xmldoc.createComment("Martian Landers and Rovers")
+landmarks.appendChild(artobjcomment)
 
-roverarray =[["Beagle 2 Lander", "90.0 E", "10.6 N"], 
+artobjarray =[["Beagle 2 Lander", "90.0 E", "10.6 N"], 
              ["Mars 2 Lander", "47.0 E", "45.0 S"],
              ["Mars 3 Lander", "158.0 W", "45.0 S"],
              ["Mars 6 Lander", "19.5 W", "23.9 S"],
@@ -83,11 +97,11 @@ roverarray =[["Beagle 2 Lander", "90.0 E", "10.6 N"],
              ["Viking Lander 1", "48.0 W", "22.5 N"],
              ["Viking Lander 2", "133.7 E", "47.9 N"]]
              
-for rover in roverarray: 
+for artobj in artobjarray: 
 	landmark = xmldoc.createElement("landmark")
-	landmark.setAttribute("name", rover[0]) 
-	landmark.setAttribute("longitude", rover[1]) 
-	landmark.setAttribute("latitude", rover[2]) 
+	landmark.setAttribute("name", artobj[0]) 
+	landmark.setAttribute("longitude", artobj[1]) 
+	landmark.setAttribute("latitude", artobj[2]) 
 	landmarks.appendChild(landmark)
 
 f.close() # close our CSV file stream nicely
