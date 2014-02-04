@@ -433,9 +433,9 @@ public class HelpGenerator {
 			// list of manufacturing processes with the current resource as output
 			List<ManufactureProcessInfo> output = ManufactureUtil
 			.getManufactureProcessesWithGivenOutput(name);
-			content.append("<p><u>manufacturing processes with ")
+			content.append("<p><u>how to make ")
 			.append(name)
-			.append(" as output:</u></p>\n");
+			.append(":</u></p>\n");
 			if (output.size() > 0) {
 				content.append("<ul>\n");
 				for (ManufactureProcessInfo info : output) {
@@ -448,9 +448,9 @@ public class HelpGenerator {
 			// list of manufacturing processes with the current resource as input
 			List<ManufactureProcessInfo> input = ManufactureUtil
 			.getManufactureProcessesWithGivenInput(name);
-			content.append("<p><u>manufacturing processes with ")
+			content.append("<p><u>what to do with ")
 			.append(name)
-			.append(" as input:</u></p>\n");
+			.append(":</u></p>\n");
 			if (input.size() > 0) {
 				content.append("<ul>\n");
 				for (ManufactureProcessInfo info : input) {
@@ -471,7 +471,7 @@ public class HelpGenerator {
 	 * generate help files with parts descriptions.
 	 */
 	private static final void generatePartsDescriptions() {
-		TreeMap<String,ItemResource> parts = ItemResource.getItemResourcesMap();
+		TreeMap<String,Part> parts = ItemResource.getItemResourcesMap();
 
 		// first: generate "parts.html" with a list of defined equipment parts
 		StringBuffer content = new StringBuffer()
@@ -489,8 +489,8 @@ public class HelpGenerator {
 		generateFile(getPathParts(),content);
 		
 		// second: loop over part types to generate a help file for each one
-		for (Entry<String,ItemResource> entry : parts.entrySet()) {
-			ItemResource part = entry.getValue();
+		for (Entry<String,Part> entry : parts.entrySet()) {
+			Part part = entry.getValue();
 			String name = entry.getKey();
 			content = new StringBuffer()
 			.append("<h2>part \"")

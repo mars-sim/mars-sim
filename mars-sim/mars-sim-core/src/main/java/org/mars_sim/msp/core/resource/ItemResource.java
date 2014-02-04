@@ -101,7 +101,7 @@ implements Resource, Serializable {
 	 */
 	public static ItemResource findItemResource(String name) {
 		ItemResource result = null;
-		Iterator<ItemResource> i = getItemResources().iterator();
+		Iterator<Part> i = getItemResources().iterator();
 		while (i.hasNext()) {
 			ItemResource resource = i.next();
 			if (resource.getName().equals(name)) result = resource;
@@ -114,15 +114,15 @@ implements Resource, Serializable {
 	 * Gets a ummutable collection of all the item resources.
 	 * @return collection of item resources.
 	 */
-	public static Set<ItemResource> getItemResources() {
-		Set<ItemResource> set = SimulationConfig
+	public static Set<Part> getItemResources() {
+		Set<Part> set = SimulationConfig
 		.instance()
 		.getPartConfiguration()
 		.getItemResources();
 		return Collections.unmodifiableSet(set);
 	}
 
-	public static TreeMap<String,ItemResource> getItemResourcesMap() {
+	public static TreeMap<String,Part> getItemResourcesMap() {
 		return SimulationConfig
 		.instance()
 		.getPartConfiguration()
