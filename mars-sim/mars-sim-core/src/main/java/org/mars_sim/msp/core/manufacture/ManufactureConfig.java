@@ -17,34 +17,34 @@ import org.jdom.Element;
 
 public class ManufactureConfig implements Serializable {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Element names
-    private static final String PROCESS = "process";
-    private static final String NAME = "name";
-    private static final String TECH = "tech";
-    private static final String SKILL = "skill";
-    private static final String WORK_TIME = "work-time";
-    private static final String PROCESS_TIME = "process-time";
-    private static final String POWER_REQUIRED = "power-required";
-    private static final String DESCRIPTION = "description";
-    private static final String INPUTS = "inputs";
-    private static final String OUTPUTS = "outputs";
-    private static final String RESOURCE = "resource";
-    private static final String AMOUNT = "amount";
-    private static final String PART = "part";
-    private static final String NUMBER = "number";
-    private static final String EQUIPMENT = "equipment";
-    private static final String VEHICLE = "vehicle";
-    private static final String SALVAGE = "salvage";
-    private static final String ITEM_NAME = "item-name";
-    private static final String TYPE = "type";
-    private static final String PART_SALVAGE = "part-salvage";
+	private static final String PROCESS = "process";
+	private static final String NAME = "name";
+	private static final String TECH = "tech";
+	private static final String SKILL = "skill";
+	private static final String WORK_TIME = "work-time";
+	private static final String PROCESS_TIME = "process-time";
+	private static final String POWER_REQUIRED = "power-required";
+	private static final String DESCRIPTION = "description";
+	private static final String INPUTS = "inputs";
+	private static final String OUTPUTS = "outputs";
+	private static final String RESOURCE = "resource";
+	private static final String AMOUNT = "amount";
+	private static final String PART = "part";
+	private static final String NUMBER = "number";
+	private static final String EQUIPMENT = "equipment";
+	private static final String VEHICLE = "vehicle";
+	private static final String SALVAGE = "salvage";
+	private static final String ITEM_NAME = "item-name";
+	private static final String TYPE = "type";
+	private static final String PART_SALVAGE = "part-salvage";
 
-    private Document manufactureDoc;
-    private List<ManufactureProcessInfo> manufactureProcessList;
-    private List<SalvageProcessInfo> salvageList;
+	private Document manufactureDoc;
+	private List<ManufactureProcessInfo> manufactureProcessList;
+	private List<SalvageProcessInfo> salvageList;
 
     /**
      * Constructor
