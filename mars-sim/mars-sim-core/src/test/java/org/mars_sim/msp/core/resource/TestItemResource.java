@@ -21,9 +21,9 @@ public class TestItemResource extends TestCase {
     public void setUp() throws Exception {
         SimulationConfig.loadConfig();
         
-        hammer = ItemResource.createItemResource("hammer", 1.4D);
-        socketWrench = ItemResource.createItemResource("socket wrench", .5D);
-        pipeWrench = ItemResource.createItemResource("pipe wrench", 2.5D);
+        hammer = ItemResource.createItemResource("hammer","a tool", 1.4D);
+        socketWrench = ItemResource.createItemResource("socket wrench","another tool", .5D);
+        pipeWrench = ItemResource.createItemResource("pipe wrench","and another tool", 2.5D);
         resources = ItemResource.getItemResources();
     }
     

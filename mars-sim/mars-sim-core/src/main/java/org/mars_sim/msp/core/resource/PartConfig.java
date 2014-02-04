@@ -35,7 +35,6 @@ public final class PartConfig implements Serializable {
 
 	// Data members.
 	private Set<ItemResource> itemResources = new HashSet<ItemResource>();
-	private TreeMap<String,String> descriptions = new TreeMap<String,String>();
 
     /**
      * Constructor
@@ -55,7 +54,6 @@ public final class PartConfig implements Serializable {
     private void loadItemResources(Document itemResourceDoc) {
         Element root = itemResourceDoc.getRootElement();
         List<Element> partNodes = root.getChildren(PART);
-        descriptions.clear();
         for (Element partElement : partNodes) {
             String name = "";
             String description = "";
@@ -68,14 +66,13 @@ public final class PartConfig implements Serializable {
             if (descriptElem != null) {
             	description = descriptElem.getText();
             }
-            descriptions.put(name,description);
 
             // Get mass.
             double mass = Double.parseDouble(partElement
                     .getAttributeValue(MASS));
 
             // Add part to item resources.
-            Part part = new Part(name, mass);
+            Part part = new Part(name, description, mass);
             itemResources.add(part);
 
             // Add maintenance entities for part.
@@ -103,13 +100,6 @@ public final class PartConfig implements Serializable {
 	 */
 	public Set<ItemResource> getItemResources() {
 		return itemResources;
-	}
-
-	public String getDescription(ItemResource resource) {
-		String description = descriptions.get(resource.getName());
-		if (description != null && description.length() > 0) {
-			return description;
-		} else return "no description available.";
 	}
 
 	/**

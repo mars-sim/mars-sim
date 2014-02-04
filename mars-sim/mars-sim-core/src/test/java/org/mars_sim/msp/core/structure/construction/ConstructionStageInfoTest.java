@@ -33,15 +33,15 @@ public class ConstructionStageInfoTest extends TestCase {
         super.setUp();
         
         Map<Part, Integer> parts = new HashMap<Part, Integer>(1);
-        parts.put(new Part("test part", 1D), 1);
+        parts.put(new Part("test part","test resource description", 1D), 1);
         
         Map<AmountResource, Double> resources = new HashMap<AmountResource, Double>(1);
-        resources.put(new AmountResource("test resource", Phase.SOLID, false), 1D);
+        resources.put(new AmountResource("test resource","test resource description", Phase.SOLID, false), 1D);
         
         List<ConstructionVehicleType> vehicles = 
             new ArrayList<ConstructionVehicleType>(1);
         List<Part> attachments = new ArrayList<Part>(1);
-        attachments.add(new Part("attachment part", 1D));
+        attachments.add(new Part("attachment part","test resource description", 1D));
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
                 attachments));
         
