@@ -24,7 +24,6 @@ import java.util.logging.Logger;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -100,7 +99,7 @@ public class TempSimulationConfigEditor extends JDialog {
         
         // Create combo box for editing template column in settlement table.
         TableColumn templateColumn = settlementTable.getColumnModel().getColumn(1);
-        JComboBox templateCB = new JComboBoxMW();
+        JComboBoxMW templateCB = new JComboBoxMW();
         SettlementConfig settlementConfig = config.getSettlementConfiguration();
         Iterator<SettlementTemplate> i = settlementConfig.getSettlementTemplates().iterator();
         while (i.hasNext()) {
