@@ -529,7 +529,7 @@ public class UnitManager implements Serializable {
         	}
 
         	// Create person and add to the unit manager.
-        	Person person = new Person(name, gender, "jorden",settlement); //TODO: read from file
+        	Person person = new Person(name, gender, "Earth",settlement); //TODO: read from file
         	addUnit(person);
         	relationshipManager.addInitialSettler(person, settlement);
 
