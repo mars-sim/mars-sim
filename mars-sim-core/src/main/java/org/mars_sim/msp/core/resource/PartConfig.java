@@ -20,22 +20,22 @@ import org.jdom.Element;
  */
 public final class PartConfig implements Serializable {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Element names
-    private static final String PART = "part";
-    private static final String DESCRIPTION = "description";
-    private static final String NAME = "name";
-    private static final String MASS = "mass";
-    private static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
-    private static final String ENTITY = "entity";
-    private static final String PROBABILITY = "probability";
-    private static final String MAX_NUMBER = "max-number";
-    
-    // Data members.
-    private Set<ItemResource> itemResources = new HashSet<ItemResource>();
-    private TreeMap<String,String> descriptions = new TreeMap<String,String>();
+	public static final String PART = "part";
+	public static final String DESCRIPTION = "description";
+	public static final String NAME = "name";
+	public static final String MASS = "mass";
+	public static final String MAINTENANCE_ENTITY_LIST = "maintenance-entity-list";
+	public static final String ENTITY = "entity";
+	public static final String PROBABILITY = "probability";
+	public static final String MAX_NUMBER = "max-number";
+
+	// Data members.
+	private Set<ItemResource> itemResources = new HashSet<ItemResource>();
+	private TreeMap<String,String> descriptions = new TreeMap<String,String>();
 
     /**
      * Constructor

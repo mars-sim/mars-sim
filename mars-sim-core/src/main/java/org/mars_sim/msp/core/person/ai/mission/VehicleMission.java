@@ -7,7 +7,20 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
@@ -22,49 +35,49 @@ import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /**
  * A mission that involves driving a vehicle along a series of navpoints.
  */
-public abstract class VehicleMission extends TravelMission implements
-        UnitListener {
+public abstract class VehicleMission
+extends TravelMission
+implements UnitListener {
 
-    private static Logger logger = Logger.getLogger(VehicleMission.class
-            .getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Mission event types
-    public static final String VEHICLE_EVENT = "vehicle";
-    public static final String OPERATOR_EVENT = "operator";
+	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
 
-    // Mission phases
-    public static final String EMBARKING = "Embarking";
-    public static final String TRAVELLING = "Travelling";
-    public static final String DISEMBARKING = "Disembarking";
+	// Mission event types
+	public static final String VEHICLE_EVENT = "vehicle";
+	public static final String OPERATOR_EVENT = "operator";
+
+	// Mission phases
+	public static final String EMBARKING = "Embarking";
+	public static final String TRAVELLING = "Travelling";
+	public static final String DISEMBARKING = "Disembarking";
 
     // Static members
 
-    // Buffer distance for determining fuel requirements.
-    private static final double BUFFER_DISTANCE = 50D;
+	/** Buffer distance for determining fuel requirements. */
+	private static final double BUFFER_DISTANCE = 50D;
 
-    // Modifier for number of parts needed for a trip.
-    private static final double PARTS_NUMBER_MODIFIER = 2D;
+	/** Modifier for number of parts needed for a trip. */
+	private static final double PARTS_NUMBER_MODIFIER = 2D;
 
     // Data members
     private Vehicle vehicle;
-    private VehicleOperator lastOperator; // The last operator of this vehicle in the mission.
-    protected boolean loadedFlag = false; // True if vehicle has been loaded.
-    private double startingTravelledDistance; // Vehicle travelled distance at start of mission.
+    /** The last operator of this vehicle in the mission. */
+    private VehicleOperator lastOperator;
+    /** True if vehicle has been loaded. */
+    protected boolean loadedFlag = false;
+    /** Vehicle travelled distance at start of mission. */
+    private double startingTravelledDistance;
 
     // Mission tasks tracked
-    private OperateVehicle operateVehicleTask; // The current operate vehicle task.
+    /** The current operate vehicle task. */
+    private OperateVehicle operateVehicleTask;
 
-    // Caches
+    /** Caches */
     protected Map<Class, Integer> equipmentNeededCache;
 
     /**
