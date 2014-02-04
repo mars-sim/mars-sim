@@ -11,7 +11,7 @@ public class TestItemResource extends TestCase {
     private ItemResource hammer;
     private ItemResource socketWrench;
     private ItemResource pipeWrench;
-    private Collection<ItemResource> resources;
+    private Collection<? extends ItemResource> resources;
 
     public TestItemResource() {
         super();

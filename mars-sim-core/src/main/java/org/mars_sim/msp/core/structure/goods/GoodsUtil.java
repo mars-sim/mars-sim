@@ -7,20 +7,22 @@
 
 package org.mars_sim.msp.core.structure.goods;
 
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.*;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.resource.ItemResource;
-import org.mars_sim.msp.core.resource.Resource;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.VehicleConfig;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.resource.ItemResource;
+import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Resource;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
 /**
  * Utility class for goods information.
@@ -145,7 +147,7 @@ public class GoodsUtil {
 	 * Populates the goods list with all item resources.
 	 */
 	private static void populateItemResources() {
-		Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
+		Iterator<Part> i = ItemResource.getItemResources().iterator();
 		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
 	}
 	

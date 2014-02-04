@@ -34,7 +34,7 @@ public final class PartConfig implements Serializable {
 	public static final String MAX_NUMBER = "max-number";
 
 	// Data members.
-	private Set<ItemResource> itemResources = new HashSet<ItemResource>();
+	private Set<Part> itemResources = new HashSet<Part>();
 
     /**
      * Constructor
@@ -98,7 +98,7 @@ public final class PartConfig implements Serializable {
 	 * Gets a collection of all item resources.
 	 * @return collection of item resources.
 	 */
-	public Set<ItemResource> getItemResources() {
+	public Set<Part> getItemResources() {
 		return itemResources;
 	}
 
@@ -107,9 +107,9 @@ public final class PartConfig implements Serializable {
 	 * item resources.
 	 * @return {@link TreeMap}<{@link String},{@link ItemResource}>
 	 */
-	public TreeMap<String,ItemResource> getItemResourcesMap() {
-		TreeMap<String,ItemResource> map = new TreeMap<String,ItemResource>();
-		for (ItemResource resource : itemResources) {
+	public TreeMap<String,Part> getItemResourcesMap() {
+		TreeMap<String,Part> map = new TreeMap<String,Part>();
+		for (Part resource : itemResources) {
 			map.put(resource.getName(),resource);
 		}
 		return map;

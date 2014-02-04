@@ -14,8 +14,11 @@ import java.util.*;
  */
 public class Part extends ItemResource {
 
-    // Domain members
-    private List<MaintenanceEntity> maintenanceEntities;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Domain members
+	private List<MaintenanceEntity> maintenanceEntities;
 
     /**
      * Constructor.
@@ -106,7 +109,7 @@ public class Part extends ItemResource {
     public static Set<Part> getParts() {
         Set<Part> result = new HashSet<Part>();
 
-        Iterator<ItemResource> i = ItemResource.getItemResources().iterator();
+        Iterator<Part> i = ItemResource.getItemResources().iterator();
         while (i.hasNext()) {
             ItemResource resource = i.next();
             if (resource instanceof Part) {
@@ -117,29 +120,48 @@ public class Part extends ItemResource {
         return result;
     }
 
-    /**
-     * A private inner class for holding maintenance entity information.
-     */
-    private static class MaintenanceEntity implements Serializable {
-
-        // Domain members
-        private String name;
-        private int probability;
-        private int maxNumber;
-
-        /**
-         * Constructor
-         * @param name name of the entity.
-         * @param probability the probability of this part being needed for maintenance.
-         * @param maxNumber the maximum number of this part needed for maintenance.
-         */
-        private MaintenanceEntity(String name, int probability, int maxNumber) {
-            if (name == null) {
-                throw new IllegalArgumentException("name is null");
-            }
-            this.name = name;
-            this.probability = probability;
-            this.maxNumber = maxNumber;
-        }
+    public final List<MaintenanceEntity> getMaintenanceEntities() {
+    	return this.maintenanceEntities;
     }
+
+	/**
+	 * A private inner class for holding maintenance entity information.
+	 */
+	public static class MaintenanceEntity implements Serializable {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		// Domain members
+		private String name;
+		private int probability;
+		private int maxNumber;
+		
+		/**
+		 * Constructor
+		 * @param name name of the entity.
+		 * @param probability the probability of this part being needed for maintenance.
+		 * @param maxNumber the maximum number of this part needed for maintenance.
+		 */
+		private MaintenanceEntity(String name, int probability, int maxNumber) {
+			if (name == null) {
+				throw new IllegalArgumentException("name is null");
+			}
+			this.name = name;
+			this.probability = probability;
+			this.maxNumber = maxNumber;
+		}
+
+		public int getProbability() {
+			return probability;
+		}
+
+		public int getMaxNumber() {
+			return maxNumber;
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
 }
