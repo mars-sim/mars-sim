@@ -10,7 +10,12 @@ package org.mars_sim.msp.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Storage for types of amount resource.
@@ -41,7 +46,7 @@ class AmountResourceTypeStorage implements Serializable {
         }
 
         if (amountResourceTypeCapacities == null) {
-            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
+            amountResourceTypeCapacities = new TreeMap<AmountResource, ResourceAmount>();
         }
 
         if (hasAmountResourceTypeCapacity(resource)) {
@@ -65,7 +70,7 @@ class AmountResourceTypeStorage implements Serializable {
         }
         
         if (amountResourceTypeCapacities == null) {
-            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
+            amountResourceTypeCapacities = new TreeMap<AmountResource, ResourceAmount>();
         }
         
         double existingCapacity = getAmountResourceTypeCapacity(resource);
@@ -246,7 +251,7 @@ class AmountResourceTypeStorage implements Serializable {
                 totalAmountCacheDirty = true;
 
                 if (amountResourceTypeStored == null) {
-                    amountResourceTypeStored = new HashMap<AmountResource, ResourceAmount>();
+                    amountResourceTypeStored = new TreeMap<AmountResource, ResourceAmount>();
                 }
 
                 ResourceAmount stored = getAmountResourceTypeStoredObject(resource);

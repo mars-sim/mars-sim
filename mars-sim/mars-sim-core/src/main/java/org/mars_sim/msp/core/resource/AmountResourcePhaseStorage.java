@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Storage for phases of amount resource.
@@ -48,7 +48,7 @@ class AmountResourcePhaseStorage implements Serializable {
         }
 
         if (amountResourcePhaseCapacities == null) {
-            amountResourcePhaseCapacities = new HashMap<Phase, Double>();
+            amountResourcePhaseCapacities = new TreeMap<Phase, Double>();
         }
 
         if (hasAmountResourcePhaseCapacity(phase)) {
@@ -224,7 +224,7 @@ class AmountResourcePhaseStorage implements Serializable {
                 totalStoredCacheDirty = true;
 
                 if (amountResourcePhaseStored == null) {
-                    amountResourcePhaseStored = new HashMap<Phase, StoredPhase>();
+                    amountResourcePhaseStored = new TreeMap<Phase, StoredPhase>();
                 }
 
                 StoredPhase stored = getAmountResourcePhaseStoredObject(resourcePhase);

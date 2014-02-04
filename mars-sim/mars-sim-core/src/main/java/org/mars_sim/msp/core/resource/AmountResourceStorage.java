@@ -10,7 +10,11 @@ package org.mars_sim.msp.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -64,7 +68,7 @@ public class AmountResourceStorage implements Serializable {
      */
     public Map<AmountResource, Double> getAmountResourceTypeCapacities() {
 
-        Map<AmountResource, Double> typeCapacities = new HashMap<AmountResource, Double>();
+        Map<AmountResource, Double> typeCapacities = new TreeMap<AmountResource, Double>();
 
         if (typeStorage != null) {
             Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
@@ -101,7 +105,7 @@ public class AmountResourceStorage implements Serializable {
      */
     public Map<Phase, Double> getAmountResourcePhaseCapacities() {
 
-        Map<Phase, Double> phaseCapacities = new HashMap<Phase, Double>();
+        Map<Phase, Double> phaseCapacities = new TreeMap<Phase, Double>();
 
         if (phaseStorage != null) {
             Iterator<Phase> i = Phase.getPhases().iterator();
