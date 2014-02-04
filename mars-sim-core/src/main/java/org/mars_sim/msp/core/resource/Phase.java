@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * A phase of an amount resource.
  */
-public final class Phase implements Serializable {
+public final class Phase implements Serializable,Comparable<Phase> {
 	
 	// List of all phases.
 	private final static Set<Phase> phases = new HashSet<Phase>(3);
@@ -36,6 +36,7 @@ public final class Phase implements Serializable {
 	 */
 	private Phase(String name) {
 		this.name = name;
+		this.hashcode = name.hashCode();
 		phases.add(this);
 	}
 	
@@ -88,9 +89,6 @@ public final class Phase implements Serializable {
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-	    if (hashcode == -1) {
-	        hashcode = name.hashCode();
-	    }
 		return hashcode;
 	}
 	
@@ -99,5 +97,10 @@ public final class Phase implements Serializable {
 	 */
 	public String toString() {
 		return name;
+	}
+
+	@Override
+	public int compareTo(Phase o) {
+		return name.compareTo(o.getName());
 	}
 }

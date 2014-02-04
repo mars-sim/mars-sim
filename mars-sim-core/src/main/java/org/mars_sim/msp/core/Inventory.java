@@ -11,12 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -34,52 +34,50 @@ import org.mars_sim.msp.core.resource.Phase;
  */
 public class Inventory implements Serializable {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-    // Unit events
-    public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
-    public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
-    public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
-    
-    /** Comparison to indicate a small but non-zero amount. */
-    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
-
-    // Data members
-    /** The unit that owns this inventory. */
-    private Unit owner;
-    /** Collection of units in inventory. */
-    private Collection<Unit> containedUnits = null;
-    /** Map of item resources. */
-    private Map<ItemResource, Integer> containedItemResources = null;
-    /** General mass capacity of inventory. */
-    private double generalCapacity = 0D;
-    /** Resource storage. */
-    private AmountResourceStorage resourceStorage = null;
-
-    // Cache capacity variables.
-    private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
-    private transient Map<AmountResource, Double> amountResourceStoredCache = null;
-    private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
-    private transient Set<AmountResource> allStoredAmountResourcesCache = null;
-    private transient boolean allStoredAmountResourcesCacheDirty = true;
-    private transient double totalAmountResourcesStoredCache;
-    private transient boolean totalAmountResourcesStoredCacheDirty = true;
-    private transient double itemResourceTotalMassCache;
-    private transient boolean itemResourceTotalMassCacheDirty = true;
-    private transient double unitTotalMassCache;
-    private transient boolean unitTotalMassCacheDirty = true;
-    private transient double totalInventoryMassCache;
-    private transient boolean totalInventoryMassCacheDirty = true;
-    
+	
+	// Unit events
+	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
+	public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
+	public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
+	
+	/** Comparison to indicate a small but non-zero amount. */
+	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+	
+	// Data members
+	/** The unit that owns this inventory. */
+	private Unit owner;
+	/** Collection of units in inventory. */
+	private Collection<Unit> containedUnits = null;
+	/** Map of item resources. */
+	private Map<ItemResource, Integer> containedItemResources = null;
+	/** General mass capacity of inventory. */
+	private double generalCapacity = 0D;
+	/** Resource storage. */
+	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
+	
+	// Cache capacity variables.
+	private transient Map<AmountResource, Double> amountResourceCapacityCache;
+	private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty;
+	private transient Map<AmountResource, Double> amountResourceStoredCache;
+	private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty;
+	private transient Set<AmountResource> allStoredAmountResourcesCache;
+	private transient boolean allStoredAmountResourcesCacheDirty = true;
+	private transient double totalAmountResourcesStoredCache;
+	private transient boolean totalAmountResourcesStoredCacheDirty = true;
+	private transient double itemResourceTotalMassCache;
+	private transient boolean itemResourceTotalMassCacheDirty = true;
+	private transient double unitTotalMassCache;
+	private transient boolean unitTotalMassCacheDirty = true;
+	private transient double totalInventoryMassCache;
+	private transient boolean totalInventoryMassCacheDirty = true;
 
     /** 
      * Constructor
      * @param owner the unit that owns this inventory
      */
     public Inventory(Unit owner) {
-
         // Set owning unit.
         this.owner = owner;
     }
@@ -94,12 +92,10 @@ public class Inventory implements Serializable {
 
         // Set capacity cache to dirty because capacity values are changing.
         setAmountResourceCapacityCacheDirty(resource);
-
         // Initialize resource storage if necessary.
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-        
         resourceStorage.addAmountResourceTypeCapacity(resource, capacity);
     }
     
@@ -113,12 +109,10 @@ public class Inventory implements Serializable {
         
         // Set capacity cache to dirty because capacity values are changing.
         setAmountResourceCapacityCacheDirty(resource);
-        
         // Initialize resource storage if necessary.
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-        
         resourceStorage.removeAmountResourceTypeCapacity(resource, capacity);
     }
 
@@ -128,15 +122,12 @@ public class Inventory implements Serializable {
      * @param capacity the capacity amount (kg).
      */
     public void addAmountResourcePhaseCapacity(Phase phase, double capacity) {
-        
         // Set capacity cache to all dirty because capacity values are changing.
         setAmountResourceCapacityCacheAllDirty();
-
         // Initialize resource storage if necessary.
         if (resourceStorage == null) {
             resourceStorage = new AmountResourceStorage();
         }
-        
         resourceStorage.addAmountResourcePhaseCapacity(phase, capacity);
     }
 
@@ -147,11 +138,9 @@ public class Inventory implements Serializable {
      * @return true if storage capacity.
      */
     public boolean hasAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
-
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
-
         return (getAmountResourceCapacityCacheValue(resource, allowDirty) > 0D);
     }
 
@@ -168,11 +157,9 @@ public class Inventory implements Serializable {
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
-
         if (amount < 0D) {
             throw new IllegalArgumentException("amount cannot be a negative value.");
         }
-
         return (getAmountResourceCapacityCacheValue(resource, allowDirty) >= amount);
     }
 
@@ -183,11 +170,11 @@ public class Inventory implements Serializable {
      * @return capacity amount (kg).
      */
     public double getAmountResourceCapacity(AmountResource resource, boolean allowDirty) {
-
+/*
         if (resource == null) {
             throw new IllegalArgumentException("resource cannot be null.");
         }
-
+*/
         return getAmountResourceCapacityCacheValue(resource, allowDirty);
     }
 
@@ -197,13 +184,12 @@ public class Inventory implements Serializable {
      * @param allowDirty will allow dirty (possibly out of date) results.
      * @return stored amount (kg).
      */
-    public double getAmountResourceStored(AmountResource resource, 
-            boolean allowDirty) {
-
+    public double getAmountResourceStored(AmountResource resource,boolean allowDirty) {
+/*
         if (resource == null) {
             throw new IllegalArgumentException("resource is null");
         }
-
+*/
         return getAmountResourceStoredCacheValue(resource, allowDirty);
     }
 
@@ -213,8 +199,7 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      */
     public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
-        
-        return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
+        return new TreeSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
     }
 
     /**
@@ -223,7 +208,6 @@ public class Inventory implements Serializable {
      * @return stored amount (kg).
      */
     private double getTotalAmountResourcesStored(boolean allowDirty) {
-
         return getTotalAmountResourcesStoredCache(allowDirty);
     }
 
@@ -243,8 +227,7 @@ public class Inventory implements Serializable {
             double capacity = getAmountResourceCapacity(resource, allowDirty);
             double stored = getAmountResourceStored(resource, allowDirty);
             result += capacity - stored;
-        }
-        else if (resourceStorage != null) {
+        } else if (resourceStorage != null) {
             result += resourceStorage.getAmountResourceRemainingCapacity(resource);
         }
 
@@ -412,8 +395,7 @@ public class Inventory implements Serializable {
                 if (owner != null) {
                     owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
                 }
-            }
-            else {
+            } else {
                 throw new IllegalStateException("Insufficiant stored amount to retrieve " + 
                         resource.getName() + ", stored: " + getAmountResourceStored(resource, false) + 
                         ", attempted: " + amount);
@@ -426,9 +408,7 @@ public class Inventory implements Serializable {
      * @param capacity amount capacity (kg).
      */
     public void addGeneralCapacity(double capacity) {
-
         generalCapacity += capacity;
-        
         // Mark amount resource capacity cache as dirty.
         setAmountResourceCapacityCacheAllDirty();
     }
@@ -438,7 +418,6 @@ public class Inventory implements Serializable {
      * @return amount capacity (kg).
      */
     public double getGeneralCapacity() {
-
         return generalCapacity;
     }
 
@@ -448,7 +427,6 @@ public class Inventory implements Serializable {
      * @return stored mass (kg).
      */
     public double getGeneralStoredMass(boolean allowDirty) {
-
         return getItemResourceTotalMass(allowDirty) + getUnitTotalMass(allowDirty);
     }
 
@@ -458,14 +436,11 @@ public class Inventory implements Serializable {
      * @return amount capacity (kg).
      */
     public double getRemainingGeneralCapacity(boolean allowDirty) {
-
         double result = generalCapacity - getGeneralStoredMass(allowDirty);
-        
         double containerUnitGeneralCapacityLimit = getContainerUnitGeneralCapacityLimit(allowDirty);
         if (result > containerUnitGeneralCapacityLimit) {
             result = containerUnitGeneralCapacityLimit;
         }
-        
         return result;
     }
 
@@ -475,15 +450,12 @@ public class Inventory implements Serializable {
      * @return true if has resource.
      */
     public boolean hasItemResource(ItemResource resource) {
-
         boolean result = false;
-
         if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
             if (containedItemResources.get(resource) > 0) {
                 result = true;
             }
-        } 
-        else if (containedUnits != null) {
+        } else if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
                 if (i.next().getInventory().hasItemResource(resource)) {
@@ -491,7 +463,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -501,13 +472,10 @@ public class Inventory implements Serializable {
      * @return number of resources.
      */
     public int getItemResourceNum(ItemResource resource) {
-
         int result = 0;
-
         if ((containedItemResources != null) && containedItemResources.containsKey(resource)) {
             result += containedItemResources.get(resource);
         }
-
         return result;
     }
 
@@ -516,16 +484,12 @@ public class Inventory implements Serializable {
      * @return set of item resources.
      */
     public Set<ItemResource> getAllItemResourcesStored() {
-
         Set<ItemResource> result = null;
-        
         if (containedItemResources != null) {
-            result = new HashSet<ItemResource>(containedItemResources.keySet());
+            result = containedItemResources.keySet();
+        } else {
+            result = new TreeSet<ItemResource>();
         }
-        else {
-            result = new HashSet<ItemResource>(0);
-        }
-        
         return result;
     }
 
@@ -535,7 +499,6 @@ public class Inventory implements Serializable {
      * @return the total mass (kg).
      */
     private double getItemResourceTotalMass(boolean allowDirty) {
-        
         return getItemResourceTotalMassCache(allowDirty);
     }
 
@@ -639,7 +602,6 @@ public class Inventory implements Serializable {
      * @return total mass (kg).
      */
     public double getUnitTotalMass(boolean allowDirty) {
-
         return getUnitTotalMassCache(allowDirty);
     }
 
@@ -648,16 +610,12 @@ public class Inventory implements Serializable {
      * @return Collection of all units
      */
     public Collection<Unit> getContainedUnits() {
-
         Collection<Unit> result = null;
-        
         if (containedUnits != null) {
             result = new ArrayList<Unit>(containedUnits);
-        }
-        else {
+        } else {
             result = new ArrayList<Unit>(0);
         }
-        
         return result; 
     }
 
@@ -667,13 +625,10 @@ public class Inventory implements Serializable {
      * @return true if unit is in storage.
      */
     public boolean containsUnit(Unit unit) {
-
         boolean result = false;
-        
         if (containedUnits != null) {
             result = containedUnits.contains(unit);
         }
-        
         return result;
     }
 
@@ -683,9 +638,7 @@ public class Inventory implements Serializable {
      * @return true if class of unit is in storage.
      */
     private boolean containsUnitClassLocal(Class<? extends Unit> unitClass) {
-
         boolean result = false;
-
         if (containedUnits != null) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -694,7 +647,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -704,14 +656,11 @@ public class Inventory implements Serializable {
      * @return if class of unit is in storage.
      */
     public boolean containsUnitClass(Class<? extends Unit> unitClass) {
-
         boolean result = false;
-
         // Check if unit of class is in inventory.
         if (containsUnitClassLocal(unitClass)) {
             result = true;
         }
-
         return result;
     }
 
@@ -721,9 +670,7 @@ public class Inventory implements Serializable {
      * @return the instance of the unit class or null if none.
      */
     public Unit findUnitOfClass(Class<? extends Unit> unitClass) {
-
         Unit result = null;
-
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -734,7 +681,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -744,9 +690,7 @@ public class Inventory implements Serializable {
      * @return collection of units or empty collection if none.
      */
     public Collection<Unit> findAllUnitsOfClass(Class<? extends Unit> unitClass) {
-
         Collection<Unit> result = new ConcurrentLinkedQueue<Unit>();
-
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -756,7 +700,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -766,9 +709,7 @@ public class Inventory implements Serializable {
      * @return number of units
      */
     public int findNumUnitsOfClass(Class<? extends Unit> unitClass) {
-
         int result = 0;
-
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -778,7 +719,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -790,9 +730,7 @@ public class Inventory implements Serializable {
      * @return number of empty units.
      */
     public int findNumEmptyUnitsOfClass(Class<? extends Unit> unitClass, boolean allowDirty) {
-
         int result = 0;
-
         if (containsUnitClass(unitClass)) {
             Iterator<Unit> i = containedUnits.iterator();
             while (i.hasNext()) {
@@ -805,7 +743,6 @@ public class Inventory implements Serializable {
                 }
             }
         }
-
         return result;
     }
 
@@ -816,28 +753,21 @@ public class Inventory implements Serializable {
      * @return true if unit can be added to inventory
      */
     public boolean canStoreUnit(Unit unit, boolean allowDirty) {
-
         boolean result = false;
-
         if (unit != null) {
-
             if (unit.getMass() <= getRemainingGeneralCapacity(allowDirty)) {
                 result = true;
             }
-
             if (unit == owner) {
                 result = false;
             }
-
             if (containsUnit(unit)) {
                 result = false;
             }
-
             if (unit.getInventory().containsUnit(owner)) {
                 result = false;
             }
         }
-
         return result;
     }
 
@@ -1015,9 +945,9 @@ public class Inventory implements Serializable {
     private synchronized void initializeAmountResourceCapacityCache() {
         
         Collection<AmountResource> resources = AmountResource.getAmountResources();
-        amountResourceCapacityCache = new HashMap<AmountResource, Double>(resources.size());
-        amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
-        
+        amountResourceCapacityCache = new TreeMap<AmountResource, Double>();
+        amountResourceCapacityCacheDirty = new TreeMap<AmountResource, Boolean>();
+
         Iterator<AmountResource> i = resources.iterator();
         while (i.hasNext()) {
             AmountResource resource = i.next();
@@ -1032,12 +962,12 @@ public class Inventory implements Serializable {
      * @return true if resource is dirty in cache.
      */
     private boolean isAmountResourceCapacityCacheDirty(AmountResource resource) {
-        
+
         // Initialize amount resource capacity cache if necessary.
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        
+
         return amountResourceCapacityCacheDirty.get(resource);
     }
     
@@ -1046,12 +976,12 @@ public class Inventory implements Serializable {
      * @param resource the dirty resource.
      */
     private void setAmountResourceCapacityCacheDirty(AmountResource resource) {
-        
+
         // Initialize amount resource capacity cache if necessary.
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        
+
         amountResourceCapacityCacheDirty.put(resource, true);
     }
     
@@ -1059,12 +989,12 @@ public class Inventory implements Serializable {
      * Sets all of the resources in the amount resource capacity cache to dirty.
      */
     private void setAmountResourceCapacityCacheAllDirty() {
-        
+
         // Initialize amount resource capacity cache if necessary.
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        
+
         Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
         while (i.hasNext()) {
             setAmountResourceCapacityCacheDirty(i.next());
@@ -1086,12 +1016,12 @@ public class Inventory implements Serializable {
      * @return capacity (kg) for the amount resource.
      */
     private double getAmountResourceCapacityCacheValue(AmountResource resource, boolean allowDirty) {
-        
+
         // Initialize amount resource capacity cache if necessary.
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        
+
         // Update amount resource capacity cache if it is dirty.
         if (isAmountResourceCapacityCacheDirty(resource) && !allowDirty) {
             updateAmountResourceCapacityCache(resource);
@@ -1110,7 +1040,7 @@ public class Inventory implements Serializable {
         if (amountResourceCapacityCache == null) {
             initializeAmountResourceCapacityCache();
         }
-        
+
         // Determine local resource capacity.
         double capacity = 0D;
         if (resourceStorage != null) {
@@ -1154,8 +1084,8 @@ public class Inventory implements Serializable {
     private synchronized void initializeAmountResourceStoredCache() {
         
         Collection<AmountResource> resources = AmountResource.getAmountResources();
-        amountResourceStoredCache = new HashMap<AmountResource, Double>(resources.size());
-        amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>(resources.size());
+        amountResourceStoredCache = new TreeMap<AmountResource, Double>();
+        amountResourceStoredCacheDirty = new TreeMap<AmountResource, Boolean>();
         
         Iterator<AmountResource> i = resources.iterator();
         while (i.hasNext()) {
@@ -1171,12 +1101,12 @@ public class Inventory implements Serializable {
      * @return true if resource is dirty in cache.
      */
     private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
-        
+
         // Initialize amount resource stored cache if necessary.
         if (amountResourceStoredCache == null) {
             initializeAmountResourceStoredCache();
         }
-        
+
         return amountResourceStoredCacheDirty.get(resource);
     }
     
@@ -1185,12 +1115,12 @@ public class Inventory implements Serializable {
      * @param resource the dirty resource.
      */
     private void setAmountResourceStoredCacheDirty(AmountResource resource) {
-        
+
         // Initialize amount resource stored cache if necessary.
         if (amountResourceStoredCache == null) {
             initializeAmountResourceStoredCache();
         }
-        
+
         amountResourceStoredCacheDirty.put(resource, true);
     }
     
@@ -1198,12 +1128,12 @@ public class Inventory implements Serializable {
      * Sets all of the resources in the amount resource stored cache to dirty.
      */
     private void setAmountResourceStoredCacheAllDirty() {
-        
+
         // Initialize amount resource stored cache if necessary.
         if (amountResourceStoredCache == null) {
             initializeAmountResourceStoredCache();
         }
-        
+
         Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
         while (i.hasNext()) {
             setAmountResourceStoredCacheDirty(i.next());
@@ -1224,15 +1154,15 @@ public class Inventory implements Serializable {
      * @param allowDirty true if cache value can be dirty.
      * @return stored amount (kg) for the amount resource.
      */
-    private double getAmountResourceStoredCacheValue(AmountResource resource, boolean allowDirty) {
-        
+    private double getAmountResourceStoredCacheValue(final AmountResource resource, final boolean allowDirty) {
+
         // Initialize amount resource stored cache if necessary.
         if (amountResourceStoredCache == null) {
             initializeAmountResourceStoredCache();
         }
-        
+
         // Update amount resource stored cache if it is dirty.
-        if (isAmountResourceStoredCacheDirty(resource) && !allowDirty) {
+        if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
             updateAmountResourceStoredCache(resource);
         }
         
@@ -1270,7 +1200,7 @@ public class Inventory implements Serializable {
      */
     private synchronized void initializeAllStoredAmountResourcesCache() {
         
-        allStoredAmountResourcesCache = new HashSet<AmountResource>();
+        allStoredAmountResourcesCache = new TreeSet<AmountResource>();
         allStoredAmountResourcesCacheDirty = true;
     }
     
@@ -1278,12 +1208,12 @@ public class Inventory implements Serializable {
      * Sets the all stored amount resources cache as dirty.
      */
     private void setAllStoredAmountResourcesCacheDirty() {
-        
-        // Update all stored amount resources cache if it hasn't been initialized.
-        if (allStoredAmountResourcesCache == null) {
-            initializeAllStoredAmountResourcesCache();
-        }
-        
+
+		// Update all stored amount resources cache if it hasn't been initialized.
+		if (allStoredAmountResourcesCache == null) {
+			initializeAllStoredAmountResourcesCache();
+		}
+
         allStoredAmountResourcesCacheDirty = true;
         
         // Mark owner unit's all stored amount resources stored as dirty, if any.
@@ -1301,7 +1231,7 @@ public class Inventory implements Serializable {
      * @return all stored amount resources cache value.
      */
     private Set<AmountResource> getAllStoredAmountResourcesCache(boolean allowDirty) {
-        
+
         // Update all stored amount resources cache if it hasn't been initialized.
         if (allStoredAmountResourcesCache == null) {
             initializeAllStoredAmountResourcesCache();
@@ -1319,7 +1249,7 @@ public class Inventory implements Serializable {
      */
     private void updateAllStoredAmountResourcesCache() {
 
-        Set<AmountResource> tempAllStored = new HashSet<AmountResource>();
+        Set<AmountResource> tempAllStored = new TreeSet<AmountResource>();
 
         if (resourceStorage != null) {
             tempAllStored.addAll(resourceStorage.getAllAmountResourcesStored(false));
@@ -1366,7 +1296,7 @@ public class Inventory implements Serializable {
     private double getTotalAmountResourcesStoredCache(boolean allowDirty) {
         
         // Update total amount resources stored cache if it is dirty.
-        if (totalAmountResourcesStoredCacheDirty && !allowDirty) {
+        if (!allowDirty && totalAmountResourcesStoredCacheDirty) {
             updateTotalAmountResourcesStoredCache();
         }
 
@@ -1458,7 +1388,7 @@ public class Inventory implements Serializable {
     private double getUnitTotalMassCache(boolean allowDirty) {
         
         // Update unit total mass cache if it is dirty.
-        if (unitTotalMassCacheDirty && !allowDirty) {
+        if (!allowDirty && unitTotalMassCacheDirty) {
             updateUnitTotalMassCache();
         }
         
@@ -1507,7 +1437,7 @@ public class Inventory implements Serializable {
     private double getTotalInventoryMassCache(boolean allowDirty) {
         
         // Update total inventory mass cache if it is dirty.
-        if (totalInventoryMassCacheDirty && !allowDirty) {
+        if (!allowDirty && totalInventoryMassCacheDirty) {
             updateTotalInventoryMassCache();
         }
         

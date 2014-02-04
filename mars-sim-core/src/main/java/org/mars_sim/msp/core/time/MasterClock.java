@@ -44,28 +44,40 @@ public class MasterClock implements Runnable, Serializable {
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
-    
-    // Clock thread sleep time (milliseconds).
-    private static long SLEEP_TIME = 10L;
 
-    // Data members
-    private MarsClock marsTime;   // Martian Clock
-    private MarsClock initialMarsTime; // Initial Martian time.
-    private EarthClock earthTime; // Earth Clock
-    private UpTimer uptimer; // Uptime Timer
-    private transient volatile boolean keepRunning;  // Runnable flag
-    private transient volatile boolean isPaused = false; // Pausing clock.
-    private volatile double timeRatio = 0D;     // Simulation/real-time ratio
-    private transient volatile boolean loadSimulation; // Flag for loading a new simulation.
-    private transient volatile boolean saveSimulation; // Flag for saving a simulation.
-    private transient volatile File file;            // The file to save or load the simulation.
-    private transient volatile boolean exitProgram;  // Flag for ending the simulation program.
-    private transient List<ClockListener> listeners; // Clock listeners.
-    private long totalPulses = 1;
-    private transient long elapsedlast;
-    private transient long elapsedMilliseconds;
+	/** Clock thread sleep time (milliseconds) --> 20Hz should be sufficient. */
+	private static long SLEEP_TIME = 50L;
 
-    static final long serialVersionUID = -1688463735489226494L;
+	// Data members
+	/** Martian Clock. */
+	private MarsClock marsTime;
+	/** Initial Martian time. */
+	private MarsClock initialMarsTime;
+	/** Earth Clock. */
+	private EarthClock earthTime;
+	/** Uptime Timer. */
+	private UpTimer uptimer;
+	/** Runnable flag. */
+	private transient volatile boolean keepRunning;
+	/** Pausing clock. */
+	private transient volatile boolean isPaused = false;
+	/** Simulation/real-time ratio. */
+	private volatile double timeRatio = 0D;
+	/** Flag for loading a new simulation. */
+	private transient volatile boolean loadSimulation;
+	/** Flag for saving a simulation. */
+	private transient volatile boolean saveSimulation;
+	/** The file to save or load the simulation. */
+	private transient volatile File file;
+	/** Flag for ending the simulation program. */
+	private transient volatile boolean exitProgram;
+	/** Clock listeners. */
+	private transient List<ClockListener> listeners;
+	private long totalPulses = 1;
+	private transient long elapsedlast;
+	private transient long elapsedMilliseconds;
+
+	static final long serialVersionUID = -1688463735489226494L;
 
     /**
      * Constructor

@@ -56,6 +56,7 @@ implements Resource, Serializable {
 		this.description = description;
 		this.phase = phase;
 		this.lifeSupport = lifeSupport;
+		this.hashcode = getName().hashCode() * phase.hashCode();
 	}
 
 	/**
@@ -161,9 +162,6 @@ implements Resource, Serializable {
 	 * Gets the hash code value.
 	 */
 	public int hashCode() {
-		if (hashcode == -1) {
-			hashcode = getName().hashCode() * phase.hashCode();
-		}
 		return hashcode;
 	}
 
