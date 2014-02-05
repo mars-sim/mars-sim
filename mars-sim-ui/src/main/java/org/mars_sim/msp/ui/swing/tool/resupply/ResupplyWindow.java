@@ -52,7 +52,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
 
         // Create main panel.
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
 
         // Create list panel.

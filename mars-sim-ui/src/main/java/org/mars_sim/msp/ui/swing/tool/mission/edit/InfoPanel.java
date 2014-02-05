@@ -27,7 +27,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
@@ -42,6 +41,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
@@ -116,7 +116,7 @@ public class InfoPanel extends JPanel {
 		
 		// Create the members panel.
 		JPanel membersPane = new JPanel(new BorderLayout());
-		membersPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		membersPane.setBorder(MainDesktopPane.newEmptyBorder());
 		membersPane.setAlignmentX(Component.LEFT_ALIGNMENT);
 		add(membersPane);
 		

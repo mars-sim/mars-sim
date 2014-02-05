@@ -53,12 +53,12 @@ public abstract class TabPanel extends JScrollPane {
         // Create top content panel
         topContentPanel = new JPanel();
         topContentPanel.setLayout(new BoxLayout(topContentPanel, BoxLayout.Y_AXIS));
-        topContentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        topContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(topContentPanel, BorderLayout.NORTH);
         
         // Create center content panel
         centerContentPanel = new JPanel(new BorderLayout(0, 0));
-        centerContentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
+        centerContentPanel.setBorder(MainDesktopPane.newEmptyBorder());
         viewPanel.add(centerContentPanel, BorderLayout.CENTER);
     }
     

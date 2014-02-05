@@ -312,6 +312,7 @@ public class HelpGenerator {
 		generateFile(getPathVehicles(),content);
 		
 		// second loop over vehicle types to generate a help file for each one
+		String[] cargoArray = new String[] {"hydrogen","methane","oxygen","water","food","rock samples","ice"};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
 			content = new StringBuffer()
@@ -342,7 +343,7 @@ public class HelpGenerator {
 			}
 			helpFileTableRow(content,new String[] {"base speed",Double.toString(config.getBaseSpeed(vehicle))});
 			helpFileTableRow(content,new String[] {"total cargo capacity",Double.toString(config.getTotalCapacity(vehicle))});
-			for (String cargo : new String[] {"methane","oxygen","water","food","rock samples","ice"}) {
+			for (String cargo : cargoArray) {
 				Double capacity = config.getCargoCapacity(vehicle,cargo);
 				if (capacity > 0.0) {
 					StringBuffer caption = new StringBuffer()

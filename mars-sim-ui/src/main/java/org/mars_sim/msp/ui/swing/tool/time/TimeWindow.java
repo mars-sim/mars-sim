@@ -136,7 +136,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create Martian time panel
         JPanel martianTimePane = new JPanel(new BorderLayout());
-        martianTimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        martianTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         mainPane.add(martianTimePane, "North");
 
         // Create Martian time header label
@@ -149,7 +149,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create Martian calendar panel
         JPanel martianCalendarPane = new JPanel(new FlowLayout());
-        martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        martianCalendarPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         mainPane.add(martianCalendarPane, "Center");
 
         // Create Martian calendar month panel
@@ -175,7 +175,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create Martian season panel
         JPanel marsSeasonPane = new JPanel(new BorderLayout());
-        marsSeasonPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        marsSeasonPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         southPane.add(marsSeasonPane, "North");
 
         // Create Martian season label
@@ -192,7 +192,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create Earth time panel
         JPanel earthTimePane = new JPanel(new BorderLayout());
-        earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        earthTimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         southPane.add(earthTimePane, "Center");
 
         // Create Earth time header label
@@ -205,11 +205,11 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create uptime panel
         JPanel uptimePane = new JPanel(new BorderLayout());
-        uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        uptimePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         simulationPane.add(uptimePane, "North");
 
         JPanel pulsespersecondPane = new JPanel(new BorderLayout());
-        pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        pulsespersecondPane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         uptimePane.add(pulsespersecondPane, "South");
 
         JPanel pausePane = new JPanel( new BorderLayout());
@@ -241,7 +241,7 @@ public class TimeWindow extends ToolWindow implements ClockListener {
 
         // Create uptime panel
         JPanel pulsePane = new JPanel(new BorderLayout());
-        pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5)));
+        pulsePane.setBorder(new CompoundBorder(new EtchedBorder(), MainDesktopPane.newEmptyBorder()));
         simulationPane.add(pulsePane, "South");
 
         // Create pulse header label

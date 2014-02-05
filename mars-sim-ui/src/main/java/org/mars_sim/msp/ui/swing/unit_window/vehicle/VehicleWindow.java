@@ -34,7 +34,7 @@ public class VehicleWindow extends UnitWindow {
         // Add tab panels
         addTabPanel(new NavigationTabPanel(vehicle, desktop));
         if (vehicle instanceof Crewable) addTabPanel(new CrewTabPanel(vehicle, desktop));
-        addTabPanel(new LocationTabPanel(vehicle, desktop));
+        addTopPanel(new LocationPanel(vehicle, desktop));
         addTabPanel(new InventoryTabPanel(vehicle, desktop));
         addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
         if (vehicle instanceof Rover) {

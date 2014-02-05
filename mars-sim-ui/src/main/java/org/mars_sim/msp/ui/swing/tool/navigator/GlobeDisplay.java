@@ -7,6 +7,23 @@
 
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.image.MemoryImageSource;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JComponent;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
@@ -15,53 +32,56 @@ import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.image.MemoryImageSource;
-import java.util.Iterator;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * The Globe Display class displays a graphical globe of Mars in the Navigator
  * tool.
  */
 class GlobeDisplay extends JComponent implements Runnable {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.GlobeDisplay";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.GlobeDisplay";
 
-    // Data members
-    private MarsGlobe marsSphere; // Real surface sphere object
-    private MarsGlobe topoSphere; // Topographical sphere object
-    private Coordinates centerCoords; // Spherical coordinates for globe center
-    private Thread showThread; // Refresh thread
-    private boolean topo; // True if in topographical mode, false if in real
-                          // surface mode
-    private boolean recreate; // True if globe needs to be regenerated
-    private int width; // width of the globe display component
-    private int height; // height of the globe display component
-    private boolean useUSGSMap; // True if USGS surface map is to be used
-    private int[] shadingArray; // Array used to generate day/night shading
-                                // image
-    private boolean showDayNightShading; // True if day/night shading is to be
-                                         // used
-    private boolean update; // True if globe should be updated.
-    private boolean keepRunning; // True if refresh thread should continue.
-    private static int dragx, dragy;
-    private static final double HALF_PI = (Math.PI / 2);
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
 
-    /**
-     * Constructor
-     * 
-     * @param navwin the navigator window.
-     * @param width the width of the globe display
-     * @param height the height of the globe display
-     */
-    public GlobeDisplay(final NavigatorWindow navwin, int width, int height) {
+	// Data members
+	/** Real surface sphere object. */
+	private MarsGlobe marsSphere;
+	/** Topographical sphere object. */
+	private MarsGlobe topoSphere;
+	/** Spherical coordinates for globe center. */
+	private Coordinates centerCoords;
+	/** Refresh thread. */
+	private Thread showThread;
+	/** <code>true</code> if in topographical mode, false if in real surface mode. */
+	private boolean topo;
+	/** <code>true</code> if globe needs to be regenerated */
+	private boolean recreate;
+	/** width of the globe display component. */
+	private int width;
+	/** height of the globe display component. */
+	private int height;
+	/** <code>true</code> if USGS surface map is to be used. */
+	private boolean useUSGSMap;
+	/** Array used to generate day/night shading image. */
+	private int[] shadingArray;
+	/** <code>true</code> if day/night shading is to be used. */
+	private boolean showDayNightShading;
+	/** <code>true</code> if globe should be updated. */
+	private boolean update;
+	/** <code>true</code> if refresh thread should continue. */
+	private boolean keepRunning;
+	private static int dragx, dragy;
+	private static final double HALF_PI = (Math.PI / 2);
+
+	/**
+	 * Constructor.
+	 * @param navwin the navigator window.
+	 * @param width the width of the globe display
+	 * @param height the height of the globe display
+	 */
+	public GlobeDisplay(final NavigatorWindow navwin, int width, int height) {
 
         // Initialize data members
         this.width = width;

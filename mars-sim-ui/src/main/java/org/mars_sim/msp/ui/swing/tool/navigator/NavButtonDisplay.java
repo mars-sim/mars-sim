@@ -23,21 +23,31 @@ import java.util.logging.Logger;
  * the globe and map.
  */
 public class NavButtonDisplay extends JComponent implements MouseListener {
-    
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.NavButtonDisplay";
-	
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
 
-    // Constant data members
-    static final double degree = Math.PI / 180D; // Circular degree unit
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private NavigatorWindow parentNavigator; // Parent NavigatorWindow
-    private int buttonLight; // Button currently lit, -1 otherwise
-    private Image navMain; // Unlit buttons image
-    private Coordinates centerCoords; // Current coordinates
-    private final Image[] lightUpButtons; // Lit button images
-    private final Rectangle[] hotSpots; // Regions encompassing images
+	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.NavButtonDisplay";
+
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+
+	// Constant data members
+	/** Circular degree unit. */
+	static final double degree = Math.PI / 180D;
+
+	// Data members
+	/** Parent NavigatorWindow. */
+	private NavigatorWindow parentNavigator;
+	/** Button currently lit, -1 otherwise. */
+	private int buttonLight;
+	/** Unlit buttons image. */
+	private Image navMain;
+	/** Current coordinates. */
+	private Coordinates centerCoords;
+	/** Lit button images. */
+	private final Image[] lightUpButtons;
+	/** Regions encompassing images. */
+	private final Rectangle[] hotSpots;
 
     /** Constructs a NavButtonDisplay object
      *  @param parentNavigator the navigator window pane

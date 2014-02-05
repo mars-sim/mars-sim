@@ -71,7 +71,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
         
         // Create override check box panel.
         JPanel overrideCheckboxPane = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        centerContentPanel.add(overrideCheckboxPane,BorderLayout.SOUTH);
+        topContentPanel.add(overrideCheckboxPane,BorderLayout.SOUTH);
         
         // Create override check box.
         overrideCheckbox = new JCheckBox("Override resource process toggling");

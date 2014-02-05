@@ -47,7 +47,7 @@ abstract class MonitorTab extends JPanel {
 
         // Create a panel
         setLayout(new BorderLayout());
-        setBorder(new EmptyBorder(5, 5, 5, 5));
+        setBorder(MainDesktopPane.newEmptyBorder());
     }
 
     /**

@@ -22,44 +22,57 @@ import java.awt.event.ActionListener;
 /** 
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationTabPanel extends TabPanel implements ActionListener {
-    
-    private JLabel latitudeLabel;
-    private JLabel longitudeLabel;
-    private Coordinates locationCache;
-    private JButton centerMapButton;
-    private JPanel locationLabelPanel;
-    private JButton locationButton;
-    private JLabel locationTextLabel;
-    
+public class LocationPanel extends JPanel implements ActionListener {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 123L;
+
+	private JPanel locationPanel;
+	private JLabel latitudeLabel;
+	private JLabel longitudeLabel;
+	private Coordinates locationCache;
+	private JButton centerMapButton;
+	private JPanel locationLabelPanel;
+	private JPanel locationCoordsPanel;
+	private JButton locationButton;
+	private JLabel locationTextLabel;
+	protected Unit unit;
+	protected MainDesktopPane desktop;
+
     /**
      * Constructor
      *
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public LocationTabPanel(Unit unit, MainDesktopPane desktop) { 
-        // Use the TabPanel constructor
-        super("Location", null, "Location", unit, desktop);
+    public LocationPanel(Unit unit, MainDesktopPane desktop) { 
+        this.unit = unit;
+        this.desktop = desktop;
         
         // Create location panel
-        JPanel locationPanel = new JPanel(new BorderLayout());
+        locationPanel = new JPanel(new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
-        topContentPanel.add(locationPanel);
+        this.add(locationPanel);
         
         // Create location label panel
-        locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         locationPanel.add(locationLabelPanel, BorderLayout.NORTH);
+
+        // Prepare location coordinates panel
+        locationCoordsPanel = new JPanel();
+        locationLabelPanel.add(locationCoordsPanel);
+        locationCoordsPanel.setLayout(new BorderLayout(0, 0));
         
         // Create center map button
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
-        centerMapButton.setToolTipText("Locate in Mars Navigator");
+        
+        centerMapButton.setToolTipText("Locate in Mars Navigator (center map on location)");
         locationLabelPanel.add(centerMapButton);
         
         // Create location label
-        JLabel locationLabel = new JLabel("Location: ", JLabel.CENTER);
+        JLabel locationLabel = new JLabel("@", JLabel.CENTER);
         locationLabelPanel.add(locationLabel);
         
         // Create location button
@@ -84,21 +97,27 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
             }
             addLocationTextLabel();
         }   
-        
-        // Prepare location coordinates panel
-        JPanel locationCoordsPanel = new JPanel(new GridLayout(2, 1, 0, 0));
-        locationPanel.add(locationCoordsPanel, "Center");
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
-        
-        // Prepare latitude label
-        latitudeLabel = new JLabel("Latitude: " + locationCache.getFormattedLatitudeString(), JLabel.LEFT);
-        locationCoordsPanel.add(latitudeLabel);
 
+        // Prepare latitude label
+        latitudeLabel = new JLabel(getLatitudeString());
+        latitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        locationCoordsPanel.add(latitudeLabel, BorderLayout.NORTH);
+        
         // Prepare longitude label
-        longitudeLabel = new JLabel("Longitude: " + locationCache.getFormattedLongitudeString(), JLabel.LEFT);
-        locationCoordsPanel.add(longitudeLabel);
+        longitudeLabel = new JLabel(getLongitudeString());
+        longitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
+    }
+
+    private String getLatitudeString() {
+    	return locationCache.getFormattedLatitudeString();
+    }
+
+    private String getLongitudeString() {
+    	return locationCache.getFormattedLongitudeString();
     }
     
     /** 
@@ -126,8 +145,8 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
         // If unit's location has changed, update location display.
         if (!locationCache.equals(unit.getCoordinates())) {
             locationCache.setCoords(unit.getCoordinates());
-            latitudeLabel.setText("Latitude: " + locationCache.getFormattedLatitudeString());
-            longitudeLabel.setText("Longitude: " + locationCache.getFormattedLongitudeString());
+            latitudeLabel.setText(getLatitudeString());
+            longitudeLabel.setText(getLongitudeString());
         }
         
         // Update location button or location text label as necessary.
@@ -153,7 +172,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
      */
     private void addLocationButton() {
         try {
-            Component lastComponent = locationLabelPanel.getComponent(2);
+            Component lastComponent = locationLabelPanel.getComponent(3);
             if (lastComponent == locationTextLabel) {
                 locationLabelPanel.remove(locationTextLabel);
                 locationLabelPanel.add(locationButton);
@@ -170,7 +189,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
      */
     private void addLocationTextLabel() {
         try {
-            Component lastComponent = locationLabelPanel.getComponent(2); 
+            Component lastComponent = locationLabelPanel.getComponent(3); 
             if (lastComponent == locationButton) {
                 locationLabelPanel.remove(locationButton);
                 locationLabelPanel.add(locationTextLabel);

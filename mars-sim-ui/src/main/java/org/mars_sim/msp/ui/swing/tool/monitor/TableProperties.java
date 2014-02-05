@@ -59,7 +59,7 @@ class TableProperties extends JInternalFrame {
         // Prepare content pane
         JPanel mainPane = new JPanel();
         mainPane.setLayout(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
 
         // Create column pane

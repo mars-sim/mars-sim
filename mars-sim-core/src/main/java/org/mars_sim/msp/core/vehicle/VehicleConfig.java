@@ -51,7 +51,26 @@ public class VehicleConfig implements Serializable {
 
 	private Document vehicleDoc;
 	private List<String> roverNames;
-	
+	private Map<String,VehicleDescription> map = null;
+
+	private class VehicleDescription implements Serializable {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		String description;
+		double width,length;
+		double fuelEff,baseSpeed,emptyMass;
+		int crewSize;
+		double totalCapacity;
+		Map<String,Double> cargoCapacity;
+		boolean hasSickbay,hasLab,hasAttachments;
+		int sickbayLevel,sickbayBeds;
+		int labLevel,attachmentSlots;
+		List<String> labSpecialties;
+		List<Part> attachments;
+	}
+
 	/**
 	 * Constructor.
 	 * @param vehicleDoc {@link Document} DOM document with vehicle configuration.
@@ -59,72 +78,121 @@ public class VehicleConfig implements Serializable {
 	public VehicleConfig(Document vehicleDoc) {
 		this.vehicleDoc = vehicleDoc;
 	}
-	
+
+	@SuppressWarnings("unchecked")
+	private void parse() {
+		// only parse when neccessary
+		if (map == null) {
+			map = new HashMap<String,VehicleDescription>();
+			Element root = vehicleDoc.getRootElement();
+			List<Element> vehicleNodes = root.getChildren(VEHICLE);
+			for (Element vehicleElement : vehicleNodes) {
+				String type = vehicleElement.getAttributeValue(TYPE).toLowerCase();
+				// vehicle description
+				VehicleDescription v = new VehicleDescription();
+				v.width = Double.parseDouble(vehicleElement.getAttributeValue(WIDTH));
+				v.length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
+				v.description = "no description available.";
+				if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
+					vehicleElement.getChildText(DESCRIPTION);
+				}
+				v.fuelEff = Double.parseDouble(vehicleElement.getChild(FUEL_EFFICIENCY).getAttributeValue(VALUE));
+				v.baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
+				v.emptyMass = Double.parseDouble(vehicleElement.getChild(EMPTY_MASS).getAttributeValue(VALUE));
+				v.crewSize = Integer.parseInt(vehicleElement.getChild(CREW_SIZE).getAttributeValue(VALUE));
+				// cargo capacities
+				Element cargoElement = vehicleElement.getChild(CARGO);
+				v.cargoCapacity = new HashMap<String,Double>();
+				if (cargoElement != null) {
+					double resourceCapacity = 0D;
+					List<Element> capacityList = cargoElement.getChildren(CAPACITY);
+					for (Element capacityElement : capacityList) {
+						resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
+						v.cargoCapacity.put(
+							capacityElement.getAttributeValue(RESOURCE).toLowerCase(),
+							resourceCapacity
+						);
+					}
+					v.totalCapacity = Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
+				} else v.totalCapacity = 0d;
+				// sickbay
+				v.sickbayBeds = 0;
+				v.sickbayLevel = -1;
+				v.hasSickbay = (vehicleElement.getChildren(SICKBAY).size() > 0);
+				if (v.hasSickbay) {
+					Element sickbayElement = vehicleElement.getChild(SICKBAY);
+					if (sickbayElement != null) {
+						v.sickbayLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
+						v.sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
+					}
+				};
+				// labs
+				v.labLevel = -1;
+				v.labSpecialties = new ArrayList<String>();
+				v.hasLab = (vehicleElement.getChildren(LAB).size() > 0);
+				if (v.hasLab) {
+					Element labElement = vehicleElement.getChild(LAB);
+					if (labElement != null) {
+						v.labLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
+						for (Object tech : labElement.getChildren(TECH_SPECIALITY)) {
+							v.labSpecialties.add(
+								(((Element) tech).getAttributeValue(VALUE)).toLowerCase()
+							);
+						}
+					}
+				}
+				// attachments
+				v.attachments = new ArrayList<Part>();
+				v.attachmentSlots = 0;
+				v.hasAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
+				if (v.hasAttachments) {
+					Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
+					v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
+					for (Object part : attachmentElement.getChildren(PART)) {
+						v.attachments.add(
+							(Part) Part.findItemResource(
+								(((Element) part).getAttributeValue(NAME)).toLowerCase()
+							)
+						);
+					}
+				}
+				// TODO
+				// and keep results for later use
+				map.put(type,v);
+			}
+		}
+	}
+
 	/**
 	 * Returns a set of all vehicle types.
 	 * @return set of vehicle types as strings.
 	 * @throws Exception if error retrieving vehicle types.
 	 */
-    @SuppressWarnings("unchecked")
 	public Set<String> getVehicleTypes() {
-		Element root = vehicleDoc.getRootElement();
-		List<Element> vehicleNodes = root.getChildren(VEHICLE);
-		Set<String> types = new HashSet<String>(vehicleNodes.size());
-		for (Element vehicleElement : vehicleNodes) {
-			types.add(vehicleElement.getAttributeValue(TYPE));
-		}
-		return types;
+		parse();
+		return map.keySet();
 	}
-	
+
 	/**
-	 * Gets a vehicle DOM element for a particular vehicle type.
-	 * @param vehicleType the vehicle type
-	 * @return vehicle element
-	 * @throws Exception if vehicle type could not be found.
+	 * Gets the vehicle's width.
+	 * @param vehicleType the vehicle type.
+	 * @return width (meters).
 	 */
-    @SuppressWarnings("unchecked")
-	private Element getVehicleElement(String vehicleType) {
-		Element result = null;
-		
-		Element root = vehicleDoc.getRootElement();
-		List<Element> vehicleNodes = root.getChildren(VEHICLE);
-		
-		for (Element vehicleElement : vehicleNodes) {
-			String type = vehicleElement.getAttributeValue(TYPE);
-			if (vehicleType.equalsIgnoreCase(type))
-				result = vehicleElement;
-		}
-		
-		if (result == null) throw new IllegalStateException("Vehicle type: " + vehicleType +
-			" could not be found in vehicles.xml.");
-		
-		return result;
+	public double getWidth(String vehicleType) {
+		parse();
+		return map.get(vehicleType).width;
 	}
-    
-    /**
-     * Gets the vehicle's width.
-     * @param vehicleType the vehicle type.
-     * @return width (meters).
-     */
-    public double getWidth(String vehicleType) {
-    	Element vehicleElement = getVehicleElement(vehicleType);
-    	String widthString = vehicleElement.getAttributeValue(WIDTH);
-    	double result = Double.parseDouble(widthString);
-    	return result;
-    }
-    
-    /**
-     * Gets the vehicle's length.
-     * @param vehicleType the vehicle type.
-     * @return length (meters).
-     */
-    public double getLength(String vehicleType) {
-    	Element vehicleElement = getVehicleElement(vehicleType);
-    	String lengthString = vehicleElement.getAttributeValue(LENGTH);
-    	double result = Double.parseDouble(lengthString);
-    	return result;
-    }
-	
+
+	/**
+	 * Gets the vehicle's length.
+	 * @param vehicleType the vehicle type.
+	 * @return length (meters).
+	 */
+	public double getLength(String vehicleType) {
+		parse();
+		return map.get(vehicleType).length;
+	}
+
 	/**
 	 * Gets the vehicle's fuel efficiency.
 	 * @param vehicleType the vehicle type
@@ -132,252 +200,156 @@ public class VehicleConfig implements Serializable {
 	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getFuelEfficiency(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element fuelEfficiencyElement = vehicleElement.getChild(FUEL_EFFICIENCY);
-		return Double.parseDouble(fuelEfficiencyElement.getAttributeValue(VALUE));
+		parse();
+		return map.get(vehicleType).fuelEff;
 	}
-	
+
 	/**
 	 * Gets the vehicle's base speed.
 	 * @param vehicleType the vehicle type
 	 * @return base speed in km/hr.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getBaseSpeed(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element baseSpeedElement = vehicleElement.getChild(BASE_SPEED);
-		return Double.parseDouble(baseSpeedElement.getAttributeValue(VALUE));
+		parse();
+		return map.get(vehicleType).baseSpeed;
 	}
-	
+
 	/**
 	 * Gets the vehicle's mass when empty.
 	 * @param vehicleType the vehicle type
 	 * @return empty mass in kg.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getEmptyMass(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element emptyMassElement = vehicleElement.getChild(EMPTY_MASS);
-		return Double.parseDouble(emptyMassElement.getAttributeValue(VALUE));
+		parse();
+		return map.get(vehicleType).emptyMass;
 	}
-	
+
 	/**
 	 * Gets the vehicle's maximum crew size.
 	 * @param vehicleType the vehicle type
 	 * @return crew size
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getCrewSize(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element crewSizeElement = vehicleElement.getChild(CREW_SIZE);
-		return Integer.parseInt(crewSizeElement.getAttributeValue(VALUE));
+		parse();
+		return map.get(vehicleType).crewSize;
 	}
 	
 	/**
 	 * Gets the vehicle's total cargo capacity.
 	 * @param vehicleType the vehicle type
 	 * @return total cargo capacity
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public double getTotalCapacity(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element cargoElement = vehicleElement.getChild(CARGO);
-		return Double.parseDouble(cargoElement.getAttributeValue(TOTAL_CAPACITY));
+		parse();
+		return map.get(vehicleType).totalCapacity;
 	}
 	
 	/**
 	 * Gets the vehicle's capacity for a resource.
 	 * @param vehicleType the vehicle type
 	 * @param resource the resource
-	 * @return vehicle capacity for resource
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
+	 * @return vehicle capacity for resource might be <code>null</code>
 	 */
-    @SuppressWarnings("unchecked")
-	public double getCargoCapacity(String vehicleType, String resource) {
-		
-		double resourceCapacity = 0D;
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element cargoElement = vehicleElement.getChild(CARGO);
-		List<Element> capacityList = cargoElement.getChildren(CAPACITY);
-		for (Element capacityElement : capacityList) {
-			if (resource.toLowerCase().equals(capacityElement.getAttributeValue(RESOURCE).toLowerCase())) 
-				resourceCapacity = Double.parseDouble(capacityElement.getAttributeValue(VALUE));
-		}
-		
-		return resourceCapacity;
+	public Double getCargoCapacity(String vehicleType, String resource) {
+		parse();
+		Double value = map.get(vehicleType).cargoCapacity.get(resource);
+		if (value == null) return 0d;
+		return value;
 	}
 	
 	/**
 	 * Checks if the vehicle has a sickbay.
 	 * @param vehicleType the vehicle type
 	 * @return true if sickbay
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public boolean hasSickbay(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		List<Element> sickbayNodes = vehicleElement.getChildren(SICKBAY);
-		return (sickbayNodes.size() > 0);
+		parse();
+		return map.get(vehicleType).hasSickbay;
 	}
 	
 	/**
 	 * Gets the vehicle's sickbay tech level.
 	 * @param vehicleType the vehicle type
 	 * @return tech level or -1 if no sickbay.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getSickbayTechLevel(String vehicleType) {
-		int sickbayTechLevel = -1;	
-		Element vehicleElement = getVehicleElement(vehicleType);
-	    Element sickbayElement = vehicleElement.getChild(SICKBAY);
-	    
-	    if(sickbayElement != null)
-		sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
-	
-		return sickbayTechLevel;
+		parse();
+		return map.get(vehicleType).sickbayLevel;
 	}
 	
 	/**
 	 * Gets the vehicle's sickbay bed number.
 	 * @param vehicleType the vehicle type
 	 * @return number of sickbay beds or -1 if no sickbay.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getSickbayBeds(String vehicleType) {
-		int sickbayBeds = -1;
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-	    Element sickbayElement = vehicleElement.getChild(SICKBAY);
-	    
-	    if(sickbayElement != null)
-		sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
-		
-		return sickbayBeds;
+		parse();
+		return map.get(vehicleType).sickbayBeds;
 	}
 	
 	/**
 	 * Checks if the vehicle has a lab.
 	 * @param vehicleType the vehicle type
 	 * @return true if lab
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public boolean hasLab(String vehicleType) {	
-		Element vehicleElement = getVehicleElement(vehicleType);
-		List<Element> labNodes = vehicleElement.getChildren(LAB);
-		return (labNodes.size() > 0);
+		parse();
+		return map.get(vehicleType).hasLab;
 	}	
 	
 	/**
 	 * Gets the vehicle's lab tech level.
 	 * @param vehicleType the vehicle type
 	 * @return lab tech level or -1 if no lab.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getLabTechLevel(String vehicleType) {
-		int labTechLevel = -1;
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element labElement = vehicleElement.getChild(LAB);
-		
-		if(labElement != null)
-		labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
-		
-		
-		return labTechLevel;
+		parse();
+		return map.get(vehicleType).labLevel;
 	}
 	
 	/**
 	 * Gets a list of the vehicle's lab tech specialities.
 	 * @param vehicleType the vehicle type
 	 * @return list of lab tech speciality strings.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public List<String> getLabTechSpecialities(String vehicleType) {
-		List<String> specialities = new ArrayList<String>();
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-		
-		Element labElement = vehicleElement.getChild(LAB);
-			
-		if(labElement != null) {
-			List<Element> techSpecialityNodes = labElement.getChildren(TECH_SPECIALITY);
-			for (Element techSpecialityElement : techSpecialityNodes) {
-				specialities.add(techSpecialityElement.getAttributeValue(VALUE));
-			}
-		}
-
-		
-		return specialities;
+		parse();
+		return map.get(vehicleType).labSpecialties;
 	}
 	
 	/**
 	 * Checks if a vehicle type has the ability to attach parts.
 	 * @param vehicleType the vehicle type
 	 * @return true if can attach parts.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public boolean hasPartAttachments(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		List<Element> partAttachmentNodes = vehicleElement.getChildren(PART_ATTACHMENT);
-		return (partAttachmentNodes.size() > 0);
+		parse();
+		return map.get(vehicleType).hasAttachments;
 	}
 	
 	/**
 	 * Gets the number of part attachment slots for a vehicle.
 	 * @param vehicleType the vehicle type.
 	 * @return number of part attachment slots.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
 	public int getPartAttachmentSlotNumber(String vehicleType) {
-		int result = 0;
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-			Element partAttachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
-			
-			if(partAttachmentElement != null)
-			result = Integer.parseInt(partAttachmentElement.getAttributeValue(NUMBER_SLOTS));
-		
-		return result;
+		parse();
+		return map.get(vehicleType).attachmentSlots;
 	}
 	
 	/**
 	 * Gets all of the parts that can be attached to a vehicle.
 	 * @param vehicleType the vehicle type
 	 * @return collection of parts that are attachable.
-	 * @throws Exception if vehicle type could not be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
 	public Collection<Part> getAttachableParts(String vehicleType) {
-		Collection<Part> result = new ArrayList<Part>();
-		
-		Element vehicleElement = getVehicleElement(vehicleType);
-
-	    Element partAttachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
-			
-		if(partAttachmentElement != null) {
-			List<Element> partNodes = partAttachmentElement.getChildren(PART);
-			
-			for (Element partElement : partNodes) {
-				String partName = partElement.getAttributeValue(NAME);
-				Part part = (Part) Part.findItemResource(partName);
-				result.add(part);
-			}
-		}
-
-		return result;
+		parse();
+		return map.get(vehicleType).attachments;
 	}
 
 	public String getDescription(String vehicleType) {
-		Element vehicleElement = getVehicleElement(vehicleType);
-		Element descriptionElement = vehicleElement.getChild(DESCRIPTION);
-		if (descriptionElement != null) {
-			return descriptionElement.getText();
-		}
-		return "no description available.";
+		parse();
+		return map.get(vehicleType).description;
 	}
 
 	/**
@@ -387,7 +359,6 @@ public class VehicleConfig implements Serializable {
 	 */
     @SuppressWarnings("unchecked")
 	public List<String> getRoverNameList() {
-		
 		if (roverNames == null) {
 			roverNames = new ArrayList<String>();
 			
@@ -399,7 +370,6 @@ public class VehicleConfig implements Serializable {
 				roverNames.add(vehicleNameElement.getAttributeValue(VALUE));
 			}
 		}
-		
 		return roverNames;
 	}
     

@@ -37,7 +37,10 @@ import java.util.logging.Logger;
  */
 public class BuildingManager implements Serializable {
 	
-    private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
     
 	// Unit update events.
 	public static final String ADD_BUILDING_EVENT = "add building";

@@ -99,7 +99,7 @@ public class SettlementWindow extends ToolWindow {
 
         // Create top widget pane
         JPanel widgetPane = new JPanel();
-        widgetPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        widgetPane.setBorder(MainDesktopPane.newEmptyBorder());
         mainPane.add(widgetPane, BorderLayout.NORTH);
 
         // Create bottom (map) pane

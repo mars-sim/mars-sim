@@ -21,6 +21,6 @@ public class MarsPanelBorder extends CompoundBorder {
      */
     public MarsPanelBorder() {
         // Use CompoundBorder constructor
-        super(new EtchedBorder(), new EmptyBorder(5, 5, 5, 5));
+        super(new EtchedBorder(), MainDesktopPane.newEmptyBorder());
     }
 }

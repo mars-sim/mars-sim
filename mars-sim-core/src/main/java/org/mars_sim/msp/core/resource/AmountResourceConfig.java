@@ -8,11 +8,11 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -22,9 +22,9 @@ import org.jdom.Element;
  */
 public class AmountResourceConfig implements Serializable {
 
-	/* default serial id. *
-	private static final long serialVersionUID = 1L;
-	*/
+	/** default serial id. */
+	private static final long serialVersionUID = 123L;
+
 	// Element names
 	private static final String RESOURCE = "resource";
 	private static final String NAME = "name";
@@ -32,7 +32,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final String LIFE_SUPPORT = "life-support";
 	
 	// Data members.
-	private Set<AmountResource> resources = new HashSet<AmountResource>();
+	private Set<AmountResource> resources = new TreeSet<AmountResource>();
 
 	/**
 	 * Constructor
@@ -84,7 +84,7 @@ public class AmountResourceConfig implements Serializable {
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
 	public Map<String,AmountResource> getAmountResourcesMap() {
-		Map<String,AmountResource> map = new HashMap<String,AmountResource>();
+		Map<String,AmountResource> map = new TreeMap<String,AmountResource>();
 		for (AmountResource resource : resources) {
 			map.put(resource.getName(),resource);
 		}

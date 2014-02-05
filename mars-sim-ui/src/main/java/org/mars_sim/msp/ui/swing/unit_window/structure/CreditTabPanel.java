@@ -60,7 +60,7 @@ public class CreditTabPanel extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		JScrollPane creditScrollPanel = new JScrollPane();
 		creditScrollPanel.setPreferredSize(new Dimension(220, 280));
-		topContentPanel.add(creditScrollPanel);         
+		centerContentPanel.add(creditScrollPanel);         
         
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

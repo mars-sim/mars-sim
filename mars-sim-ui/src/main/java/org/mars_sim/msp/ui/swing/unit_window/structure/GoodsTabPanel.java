@@ -56,7 +56,7 @@ public class GoodsTabPanel extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		JScrollPane goodsScrollPanel = new JScrollPane();
 		goodsScrollPanel.setPreferredSize(new Dimension(220, 280));
-		topContentPanel.add(goodsScrollPanel);         
+		centerContentPanel.add(goodsScrollPanel);         
         
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
