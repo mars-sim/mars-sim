@@ -11,12 +11,12 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.resource.Phase;
 public class Inventory implements Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 12L;
 	
 	// Unit events
 	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
@@ -199,7 +199,7 @@ public class Inventory implements Serializable {
      * @return set of amount resources.
      */
     public Set<AmountResource> getAllAmountResourcesStored(boolean allowDirty) {
-        return new TreeSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
+        return new HashSet<AmountResource>(getAllStoredAmountResourcesCache(allowDirty));
     }
 
     /**
@@ -488,7 +488,7 @@ public class Inventory implements Serializable {
         if (containedItemResources != null) {
             result = containedItemResources.keySet();
         } else {
-            result = new TreeSet<ItemResource>();
+            result = new HashSet<ItemResource>();
         }
         return result;
     }
@@ -945,8 +945,8 @@ public class Inventory implements Serializable {
     private synchronized void initializeAmountResourceCapacityCache() {
         
         Collection<AmountResource> resources = AmountResource.getAmountResources();
-        amountResourceCapacityCache = new TreeMap<AmountResource, Double>();
-        amountResourceCapacityCacheDirty = new TreeMap<AmountResource, Boolean>();
+        amountResourceCapacityCache = new HashMap<AmountResource, Double>();
+        amountResourceCapacityCacheDirty = new HashMap<AmountResource, Boolean>();
 
         Iterator<AmountResource> i = resources.iterator();
         while (i.hasNext()) {
@@ -1084,8 +1084,8 @@ public class Inventory implements Serializable {
     private synchronized void initializeAmountResourceStoredCache() {
         
         Collection<AmountResource> resources = AmountResource.getAmountResources();
-        amountResourceStoredCache = new TreeMap<AmountResource, Double>();
-        amountResourceStoredCacheDirty = new TreeMap<AmountResource, Boolean>();
+        amountResourceStoredCache = new HashMap<AmountResource, Double>();
+        amountResourceStoredCacheDirty = new HashMap<AmountResource, Boolean>();
         
         Iterator<AmountResource> i = resources.iterator();
         while (i.hasNext()) {
@@ -1200,7 +1200,7 @@ public class Inventory implements Serializable {
      */
     private synchronized void initializeAllStoredAmountResourcesCache() {
         
-        allStoredAmountResourcesCache = new TreeSet<AmountResource>();
+        allStoredAmountResourcesCache = new HashSet<AmountResource>();
         allStoredAmountResourcesCacheDirty = true;
     }
     
@@ -1249,7 +1249,7 @@ public class Inventory implements Serializable {
      */
     private void updateAllStoredAmountResourcesCache() {
 
-        Set<AmountResource> tempAllStored = new TreeSet<AmountResource>();
+        Set<AmountResource> tempAllStored = new HashSet<AmountResource>();
 
         if (resourceStorage != null) {
             tempAllStored.addAll(resourceStorage.getAllAmountResourcesStored(false));

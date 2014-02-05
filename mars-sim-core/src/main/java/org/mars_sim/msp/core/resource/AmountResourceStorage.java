@@ -10,11 +10,11 @@ package org.mars_sim.msp.core.resource;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 /**
@@ -22,7 +22,10 @@ import java.util.logging.Logger;
  */
 public class AmountResourceStorage implements Serializable {
 
-    private static Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(AmountResourceStorage.class.getName());
 
     // Domain members
     private AmountResourceTypeStorage typeStorage = null;
@@ -68,7 +71,7 @@ public class AmountResourceStorage implements Serializable {
      */
     public Map<AmountResource, Double> getAmountResourceTypeCapacities() {
 
-        Map<AmountResource, Double> typeCapacities = new TreeMap<AmountResource, Double>();
+        Map<AmountResource, Double> typeCapacities = new HashMap<AmountResource, Double>();
 
         if (typeStorage != null) {
             Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
@@ -105,12 +108,10 @@ public class AmountResourceStorage implements Serializable {
      */
     public Map<Phase, Double> getAmountResourcePhaseCapacities() {
 
-        Map<Phase, Double> phaseCapacities = new TreeMap<Phase, Double>();
+        Map<Phase, Double> phaseCapacities = new HashMap<Phase, Double>();
 
         if (phaseStorage != null) {
-            Iterator<Phase> i = Phase.getPhases().iterator();
-            while (i.hasNext()) {
-                Phase phase = i.next();
+            for (Phase phase : Phase.values()) {
                 double capacity = phaseStorage.getAmountResourcePhaseCapacity(phase);
                 if (capacity > 0D) {
                     phaseCapacities.put(phase, capacity);
@@ -214,9 +215,7 @@ public class AmountResourceStorage implements Serializable {
 
         // Add phase storage resources.
         if (phaseStorage != null) {
-            Iterator<Phase> i = Phase.getPhases().iterator();
-            while (i.hasNext()) {
-                Phase phase = i.next();
+            for (Phase phase : Phase.values()) {
                 if (phaseStorage.getAmountResourcePhaseStored(phase) > 0D) {
                     tempResources.add(phaseStorage.getAmountResourcePhaseType(phase));
                 }

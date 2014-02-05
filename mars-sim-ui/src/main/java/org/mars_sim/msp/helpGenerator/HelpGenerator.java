@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -382,7 +383,7 @@ public class HelpGenerator {
 	 * generate help files with resources descriptions.
 	 */
 	private static final void generateResourceDescriptions() {
-		TreeMap<String,AmountResource> resources = AmountResource.getAmountResourcesMap();
+		Map<String,AmountResource> resources = AmountResource.getAmountResourcesMap();
 
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
