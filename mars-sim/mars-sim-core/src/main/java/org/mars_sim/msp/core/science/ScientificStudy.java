@@ -6,11 +6,6 @@
  */
 package org.mars_sim.msp.core.science;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,6 +13,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A class representing a scientific study.
@@ -776,7 +776,9 @@ public class ScientificStudy implements Serializable, Comparable<ScientificStudy
         lastCollaborativeResearchWorkTime = null;
         collaborativeAchievementEarned.clear();
         collaborativeAchievementEarned = null;
-        listeners.clear();
+        if (listeners != null) {
+        	listeners.clear();
+        }
         listeners = null;
     }
 }
