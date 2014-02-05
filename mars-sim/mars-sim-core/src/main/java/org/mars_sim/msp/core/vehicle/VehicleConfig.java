@@ -22,6 +22,7 @@ public class VehicleConfig implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	// Element names
 	private static final String VEHICLE = "vehicle";
 	private static final String TYPE = "type";
@@ -80,7 +81,7 @@ public class VehicleConfig implements Serializable {
 				v.length = Double.parseDouble(vehicleElement.getAttributeValue(LENGTH));
 				v.description = "no description available.";
 				if (vehicleElement.getChildren(DESCRIPTION).size() > 0) {
-					vehicleElement.getChildText(DESCRIPTION);
+					v.description = vehicleElement.getChildText(DESCRIPTION);
 				}
 				v.fuelEff = Double.parseDouble(vehicleElement.getChild(FUEL_EFFICIENCY).getAttributeValue(VALUE));
 				v.baseSpeed = Double.parseDouble(vehicleElement.getChild(BASE_SPEED).getAttributeValue(VALUE));
@@ -105,12 +106,12 @@ public class VehicleConfig implements Serializable {
 
 				// sickbay
 				v.sickbayBeds = 0;
-				v.sickbayLevel = -1;
+				v.sickbayTechLevel = -1;
 				v.hasSickbay = (vehicleElement.getChildren(SICKBAY).size() > 0);
 				if (v.hasSickbay) {
 					Element sickbayElement = vehicleElement.getChild(SICKBAY);
 					if (sickbayElement != null) {
-						v.sickbayLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
+						v.sickbayTechLevel = Integer.parseInt(sickbayElement.getAttributeValue(TECH_LEVEL));
 						v.sickbayBeds = Integer.parseInt(sickbayElement.getAttributeValue(BEDS));
 					}
 				};
@@ -132,14 +133,14 @@ public class VehicleConfig implements Serializable {
 				}
 
 				// attachments
-				v.attachments = new ArrayList<Part>();
+				v.attachmableParts = new ArrayList<Part>();
 				v.attachmentSlots = 0;
-				v.hasAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
-				if (v.hasAttachments) {
+				v.hasPartAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
+				if (v.hasPartAttachments) {
 					Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
 					v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
 					for (Object part : attachmentElement.getChildren(PART)) {
-						v.attachments.add(
+						v.attachmableParts.add(
 							(Part) Part.findItemResource(
 								(((Element) part).getAttributeValue(NAME)).toLowerCase()
 							)
@@ -264,7 +265,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getSickbayTechLevel(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).sickbayLevel;
+		return map.get(vehicleType).sickbayTechLevel;
 	}
 
 	/**
@@ -314,7 +315,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public boolean hasPartAttachments(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).hasAttachments;
+		return map.get(vehicleType).hasPartAttachments;
 	}
 
 	/**
@@ -334,7 +335,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public Collection<Part> getAttachableParts(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).attachments;
+		return map.get(vehicleType).attachmableParts;
 	}
 
 	public String getDescription(String vehicleType) {
@@ -387,7 +388,7 @@ public class VehicleConfig implements Serializable {
 	public class VehicleDescription implements Serializable {
 
 		/** default serial id. */
-		private static final long serialVersionUID = 1L;
+		private static final long serialVersionUID = 12L;
 
 		private String description;
 		private double width,length;
@@ -395,11 +396,11 @@ public class VehicleConfig implements Serializable {
 		private int crewSize;
 		private double totalCapacity;
 		private Map<String,Double> cargoCapacity;
-		private boolean hasSickbay,hasLab,hasAttachments;
-		private int sickbayLevel,sickbayBeds;
+		private boolean hasSickbay,hasLab,hasPartAttachments;
+		private int sickbayTechLevel,sickbayBeds;
 		private int labTechLevel,attachmentSlots;
 		private List<String> labTechSpecialities;
-		private List<Part> attachments;
+		private List<Part> attachmableParts;
 
 		/**
 		 * get <code>0.0d</code> or capacity for given cargo.
@@ -457,13 +458,13 @@ public class VehicleConfig implements Serializable {
 		public final boolean hasLab() {
 			return hasLab;
 		}
-		/** @return the hasAttachments */
-		public final boolean hasAttachments() {
-			return hasAttachments;
+		/** @return the hasPartAttachments */
+		public final boolean hasPartAttachments() {
+			return hasPartAttachments;
 		}
-		/** @return the sickbayLevel */
-		public final int getSickbayLevel() {
-			return sickbayLevel;
+		/** @return the sickbayTechLevel */
+		public final int getSickbayTechLevel() {
+			return sickbayTechLevel;
 		}
 		/** @return the sickbayBeds */
 		public final int getSickbayBeds() {
@@ -481,9 +482,9 @@ public class VehicleConfig implements Serializable {
 		public final List<String> getLabTechSpecialities() {
 			return labTechSpecialities;
 		}
-		/** @return the attachments */
-		public final List<Part> getAttachments() {
-			return attachments;
+		/** @return the attachableParts */
+		public final List<Part> getAttachableParts() {
+			return attachmableParts;
 		}
 	}
 

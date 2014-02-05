@@ -81,6 +81,7 @@ public class AmountResourceConfig implements Serializable {
 	}
 
 	/**
+	 * an alphabetically ordered map of all resources.
 	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
 	public Map<String,AmountResource> getAmountResourcesMap() {

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -20,20 +21,23 @@ import java.util.TreeMap;
  */
 class AmountResourcePhaseStorage implements Serializable {
 
-    // Comparison to indicate a small but non-zero amount.
-    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
-    
-    // Data members
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Capacity for each phase of amount resource.
-    private Map<Phase, Double> amountResourcePhaseCapacities = null;
+	/** Comparison to indicate a small but non-zero amount. */
+	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
-    // Stored resources by phase.
-    private Map<Phase, StoredPhase> amountResourcePhaseStored = null;
+	// Data members
 
-    // The cache value for the total amount phase resources stored. (kg)
-    private transient double totalStoredCache = 0D;
-    private transient boolean totalStoredCacheDirty = true;
+	/** Capacity for each phase of amount resource. */
+	private Map<Phase, Double> amountResourcePhaseCapacities = null;
+
+	/** Stored resources by phase. */
+	private Map<Phase, StoredPhase> amountResourcePhaseStored = null;
+
+	// The cache value for the total amount phase resources stored. (kg)
+	private transient double totalStoredCache = 0D;
+	private transient boolean totalStoredCacheDirty = true;
 
     /**
      * Adds capacity for a resource phase.
@@ -48,7 +52,7 @@ class AmountResourcePhaseStorage implements Serializable {
         }
 
         if (amountResourcePhaseCapacities == null) {
-            amountResourcePhaseCapacities = new TreeMap<Phase, Double>();
+            amountResourcePhaseCapacities = new HashMap<Phase, Double>();
         }
 
         if (hasAmountResourcePhaseCapacity(phase)) {
@@ -224,7 +228,7 @@ class AmountResourcePhaseStorage implements Serializable {
                 totalStoredCacheDirty = true;
 
                 if (amountResourcePhaseStored == null) {
-                    amountResourcePhaseStored = new TreeMap<Phase, StoredPhase>();
+                    amountResourcePhaseStored = new HashMap<Phase, StoredPhase>();
                 }
 
                 StoredPhase stored = getAmountResourcePhaseStoredObject(resourcePhase);
