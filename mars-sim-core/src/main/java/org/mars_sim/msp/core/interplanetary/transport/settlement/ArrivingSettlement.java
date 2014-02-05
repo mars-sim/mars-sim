@@ -359,12 +359,12 @@ public class ArrivingSettlement implements Transportable, Serializable {
             int number = template.getVehicles().get(vehicleType);
             for (int x = 0; x < number; x++) {
                 Vehicle vehicle = null;
-                if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
                     String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
-                    vehicle = new LightUtilityVehicle(name, vehicleType, newSettlement);
+                    vehicle = new LightUtilityVehicle(name, vehicleType.toLowerCase(), newSettlement);
                 } else {
                     String name = unitManager.getNewName(UnitManager.VEHICLE, null, null);
-                    vehicle = new Rover(name, vehicleType, newSettlement);
+                    vehicle = new Rover(name, vehicleType.toLowerCase(), newSettlement);
                 }
                 unitManager.addUnit(vehicle);
             }

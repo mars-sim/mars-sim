@@ -58,11 +58,11 @@ public class Inventory implements Serializable {
 	private AmountResourceStorage resourceStorage = new AmountResourceStorage();
 	
 	// Cache capacity variables.
-	private transient Map<AmountResource, Double> amountResourceCapacityCache;
-	private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty;
-	private transient Map<AmountResource, Double> amountResourceStoredCache;
-	private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty;
-	private transient Set<AmountResource> allStoredAmountResourcesCache;
+	private transient Map<AmountResource, Double> amountResourceCapacityCache = null;
+	private transient Map<AmountResource, Boolean> amountResourceCapacityCacheDirty = null;
+	private transient Map<AmountResource, Double> amountResourceStoredCache = null;
+	private transient Map<AmountResource, Boolean> amountResourceStoredCacheDirty = null;
+	private transient Set<AmountResource> allStoredAmountResourcesCache = null;
 	private transient boolean allStoredAmountResourcesCacheDirty = true;
 	private transient double totalAmountResourcesStoredCache;
 	private transient boolean totalAmountResourcesStoredCacheDirty = true;
@@ -185,11 +185,11 @@ public class Inventory implements Serializable {
      * @return stored amount (kg).
      */
     public double getAmountResourceStored(AmountResource resource,boolean allowDirty) {
-/*
+
         if (resource == null) {
             throw new IllegalArgumentException("resource is null");
         }
-*/
+
         return getAmountResourceStoredCacheValue(resource, allowDirty);
     }
 
@@ -1507,9 +1507,9 @@ public class Inventory implements Serializable {
         if (amountResourceCapacityCacheDirty != null) amountResourceCapacityCacheDirty.clear();
         amountResourceCapacityCacheDirty = null;
         if (amountResourceStoredCache != null) amountResourceStoredCache.clear();
+        amountResourceStoredCache = null;
         if (amountResourceStoredCacheDirty != null) amountResourceStoredCacheDirty.clear();
         amountResourceStoredCacheDirty = null;
-        amountResourceStoredCache = null;
         if (allStoredAmountResourcesCache != null) allStoredAmountResourcesCache.clear();
         allStoredAmountResourcesCache = null;
     }
