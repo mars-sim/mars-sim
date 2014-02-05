@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
 /**
@@ -315,6 +316,7 @@ public class HelpGenerator {
 		String[] cargoArray = new String[] {"hydrogen","methane","oxygen","water","food","rock samples","ice"};
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 		for (String vehicle : vehicles) {
+			VehicleDescription v = config.getVehicleDescription(vehicle);
 			content = new StringBuffer()
 			.append("<h2>vehicle \"")
 			.append(vehicle)
@@ -324,11 +326,11 @@ public class HelpGenerator {
 			.append(getLinkVehicles("back to vehicles overview"))
 			.append("</p><br/>\n")
 			.append("<p>")
-			.append(config.getDescription(vehicle))
+			.append(v.getDescription())
 			.append("</p><br/>")
 			.append("<table>\n");
 
-			if (config.hasPartAttachments(vehicle)) {
+			if (v.hasPartAttachments()) {
 				StringBuffer parts = new StringBuffer().append("[");
 				Iterator<Part> iterator = config.getAttachableParts(vehicle).iterator();
 				while (iterator.hasNext()) {
@@ -339,12 +341,12 @@ public class HelpGenerator {
 					}
 				}
 				helpFileTableRow(content,new String[] {"attachable parts",parts.append("]").toString()});
-				helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(config.getPartAttachmentSlotNumber(vehicle))});
+				helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(v.getAttachmentSlots())});
 			}
-			helpFileTableRow(content,new String[] {"base speed",Double.toString(config.getBaseSpeed(vehicle))});
-			helpFileTableRow(content,new String[] {"total cargo capacity",Double.toString(config.getTotalCapacity(vehicle))});
+			helpFileTableRow(content,new String[] {"base speed",Double.toString(v.getBaseSpeed())});
+			helpFileTableRow(content,new String[] {"total cargo capacity",Double.toString(v.getTotalCapacity())});
 			for (String cargo : cargoArray) {
-				Double capacity = config.getCargoCapacity(vehicle,cargo);
+				Double capacity = v.getCargoCapacity(cargo);
 				if (capacity > 0.0) {
 					StringBuffer caption = new StringBuffer()
 					.append("cargo capacity for ")
@@ -358,19 +360,19 @@ public class HelpGenerator {
 					);
 				}
 			}
-			helpFileTableRow(content,new String[] {"crew size",Integer.toString(config.getCrewSize(vehicle))});
-			helpFileTableRow(content,new String[] {"empty mass",Double.toString(config.getEmptyMass(vehicle))});
-			helpFileTableRow(content,new String[] {"fuel efficiency",Double.toString(config.getFuelEfficiency(vehicle))});
-			if (config.hasLab(vehicle)) {
-				helpFileTableRow(content,new String[] {"lab tech level",Integer.toString(config.getLabTechLevel(vehicle))});
-				helpFileTableRow(content,new String[] {"lab specialties",config.getLabTechSpecialities(vehicle).toString()});
+			helpFileTableRow(content,new String[] {"crew size",Integer.toString(v.getCrewSize())});
+			helpFileTableRow(content,new String[] {"empty mass",Double.toString(v.getEmptyMass())});
+			helpFileTableRow(content,new String[] {"fuel efficiency",Double.toString(v.getFuelEff())});
+			if (v.hasLab()) {
+				helpFileTableRow(content,new String[] {"lab tech level",Integer.toString(v.getLabTechLevel())});
+				helpFileTableRow(content,new String[] {"lab specialties",v.getLabTechSpecialities().toString()});
 			}
-			if (config.hasSickbay(vehicle)) {
-				helpFileTableRow(content,new String[] {"sickbay tech level",Integer.toString(config.getSickbayTechLevel(vehicle))});
-				helpFileTableRow(content,new String[] {"sickbay beds",Integer.toString(config.getSickbayBeds(vehicle))});
+			if (v.hasSickbay()) {
+				helpFileTableRow(content,new String[] {"sickbay tech level",Integer.toString(v.getSickbayTechLevel())});
+				helpFileTableRow(content,new String[] {"sickbay beds",Integer.toString(v.getSickbayBeds())});
 			}
-			helpFileTableRow(content,new String[] {"width",Double.toString(config.getWidth(vehicle))});
-			helpFileTableRow(content,new String[] {"length",Double.toString(config.getLength(vehicle))});
+			helpFileTableRow(content,new String[] {"width",Double.toString(v.getWidth())});
+			helpFileTableRow(content,new String[] {"length",Double.toString(v.getLength())});
 			
 			content.append("</table>\n");
 			

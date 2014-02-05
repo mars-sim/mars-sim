@@ -56,7 +56,7 @@ public final class PartConfig implements Serializable {
         List<Element> partNodes = root.getChildren(PART);
         for (Element partElement : partNodes) {
             String name = "";
-            String description = "";
+            String description = "no description available.";
 
             // Get name.
             name = partElement.getAttributeValue(NAME);
