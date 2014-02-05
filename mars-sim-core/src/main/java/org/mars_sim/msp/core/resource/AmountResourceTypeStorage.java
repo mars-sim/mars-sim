@@ -11,28 +11,31 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * Storage for types of amount resource.
  */
 class AmountResourceTypeStorage implements Serializable {
 
-    // Data members
-    
-    // Capacity for each type of amount resource.
-    private Map<AmountResource, ResourceAmount> amountResourceTypeCapacities = null;
-    
-    // Stored resources by type.
-    private Map<AmountResource, ResourceAmount> amountResourceTypeStored = null;
-    
-    // Cache value for the total amount of resources stored.
-    private transient double totalAmountCache = 0D;
-    private transient boolean totalAmountCacheDirty = true;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+
+	/** Capacity for each type of amount resource. */
+	private Map<AmountResource, ResourceAmount> amountResourceTypeCapacities = null;
+
+	/** Stored resources by type. */
+	private Map<AmountResource, ResourceAmount> amountResourceTypeStored = null;
+
+	/** Cache value for the total amount of resources stored. */
+	private transient double totalAmountCache = 0D;
+	private transient boolean totalAmountCacheDirty = true;
 
     /**
      * Adds capacity for a resource type.
@@ -46,7 +49,7 @@ class AmountResourceTypeStorage implements Serializable {
         }
 
         if (amountResourceTypeCapacities == null) {
-            amountResourceTypeCapacities = new TreeMap<AmountResource, ResourceAmount>();
+            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
         }
 
         if (hasAmountResourceTypeCapacity(resource)) {
@@ -70,7 +73,7 @@ class AmountResourceTypeStorage implements Serializable {
         }
         
         if (amountResourceTypeCapacities == null) {
-            amountResourceTypeCapacities = new TreeMap<AmountResource, ResourceAmount>();
+            amountResourceTypeCapacities = new HashMap<AmountResource, ResourceAmount>();
         }
         
         double existingCapacity = getAmountResourceTypeCapacity(resource);
@@ -251,7 +254,7 @@ class AmountResourceTypeStorage implements Serializable {
                 totalAmountCacheDirty = true;
 
                 if (amountResourceTypeStored == null) {
-                    amountResourceTypeStored = new TreeMap<AmountResource, ResourceAmount>();
+                    amountResourceTypeStored = new HashMap<AmountResource, ResourceAmount>();
                 }
 
                 ResourceAmount stored = getAmountResourceTypeStoredObject(resource);

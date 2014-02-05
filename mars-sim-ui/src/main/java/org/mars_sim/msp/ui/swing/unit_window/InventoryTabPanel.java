@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -285,7 +284,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 			// Sort equipment alphabetically by name.
 			list = new ArrayList<Unit>();
 
-			equipment = new TreeMap<String,String>();
+			equipment = new HashMap<String,String>();
 			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
 				equipment.put(
 					unit.getName(),
@@ -329,7 +328,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
 
 		public void update() {
 			List<Unit> newList = new ArrayList<Unit>();
-			Map<String,String> newMap = new TreeMap<String,String>();
+			Map<String,String> newMap = new HashMap<String,String>();
 			for (Unit unit : inventory.findAllUnitsOfClass(Equipment.class)) {
 				newMap.put(
 					unit.getName(),
