@@ -6,6 +6,16 @@
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -31,20 +41,13 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /**
  * Resupply mission from Earth for a settlement.
  */
 public class Resupply implements Serializable, Transportable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Resupply.class.getName());
 	
@@ -307,7 +310,7 @@ public class Resupply implements Serializable, Transportable {
         while (vehicleI.hasNext()) {
             String vehicleType = vehicleI.next();
             Vehicle vehicle = null;
-            if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+            if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
                 String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
                 vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
             } else {
