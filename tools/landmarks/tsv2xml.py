@@ -3,7 +3,7 @@
 # Mars Simulation Project
 # Tab-separated landmark file importer script thingie
 # tsv2xml.py
-# @version 3.06 2014-02-04
+# @version 3.06 2014-02-05
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.3 or later and the 'SearchResults.tsv' file to be in the same
@@ -14,7 +14,7 @@
 
 # TODO: 
 # Insert doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd"> - doesn't seem to be necessary, though
-# Import more stuff
+# Parse into MSP's native format
 # Sort according to name or type
 
 from xml.dom.minidom import Document
@@ -84,8 +84,10 @@ for tsvline in tsvlinelist:
 			landmark.setAttribute("name", namestring) # Feature_Name
 		
 			landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
+
 			landmark.setAttribute("longitude", valuelist[index_long]+" E") # Center_Longitude
 			landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
+
 			landmark.setAttribute("approvaldate", valuelist[index_approval]) # Approval Date string
 			landmark.setAttribute("origin", valuelist[index_origin]) # Origin of name
 			landmarks.appendChild(landmark)
@@ -113,7 +115,10 @@ for artobj in artobjarray:
 	landmark.setAttribute("name", artobj[0]) 
 	landmark.setAttribute("longitude", artobj[1]) 
 	landmark.setAttribute("latitude", artobj[2]) 
-	landmark.setAttribute("diameter", artobj[3]) #absurd probably
+	landmark.setAttribute("diameter", artobj[3]) #absurd?
+	landmark.setAttribute("approvaldate", "N/A") #absurd?
+	landmark.setAttribute("origin", "N/A") #absurd?
+
 	landmarks.appendChild(landmark)
 
 f.close() # close our TSV file stream nicely
