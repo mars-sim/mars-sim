@@ -372,14 +372,17 @@ public class VehicleConfig implements Serializable {
 		}
 		return roverNames;
 	}
-    
+
     /**
-     * Prepare object for garbage collection.
+     * Prepare object for garbage collection. or simulation reboot.
      */
     public void destroy() {
         vehicleDoc = null;
+    	if (map != null) {
+    		map.clear();
+    		map = null;
+    	}
         if(roverNames != null){
-
             roverNames.clear();
             roverNames = null;
         }

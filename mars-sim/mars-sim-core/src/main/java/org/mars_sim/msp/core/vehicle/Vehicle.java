@@ -138,6 +138,7 @@ public abstract class Vehicle extends Unit implements Serializable,
         settlement.getInventory().storeUnit(this);
 
         // Initialize vehicle data
+        description = description.toLowerCase();
         setDescription(description);
         direction = new Direction(0);
 	    trail = new ArrayList<Coordinates>();
