@@ -8,13 +8,11 @@
 package org.mars_sim.msp.core.resource;
 
 import java.io.Serializable;
-import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.TreeSet;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -34,7 +32,7 @@ public class AmountResourceConfig implements Serializable {
 	private static final String LIFE_SUPPORT = "life-support";
 	
 	// Data members.
-	private Set<AmountResource> resources = new TreeSet<AmountResource>();
+	private Set<AmountResource> resources = new HashSet<AmountResource>();
 
 	/**
 	 * Constructor
@@ -62,8 +60,8 @@ public class AmountResourceConfig implements Serializable {
 			String description = resourceElement.getText();
 
 			// Get phase.
-			String phaseString = resourceElement.getAttributeValue(PHASE);
-			Phase phase = Phase.findPhase(phaseString);
+			String phaseString = resourceElement.getAttributeValue(PHASE).toUpperCase();
+			Phase phase = Phase.valueOf(phaseString);
 
 			// Get life support
 			Boolean lifeSupport = Boolean.parseBoolean(resourceElement.getAttributeValue(LIFE_SUPPORT));
@@ -83,13 +81,10 @@ public class AmountResourceConfig implements Serializable {
 	}
 
 	/**
-	 * gets an alphabetically sorted map if all amount resources.
-	 * since a {@link SortedMap} uses the standard {@link Comparator}
-	 * ({@see AmountResource#compareTo(Resource)})
-	 * @return {@link TreeMap}<{@link String},{@link AmountResource}>
+	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
-	public TreeMap<String,AmountResource> getAmountResourcesMap() {
-		TreeMap<String,AmountResource> map = new TreeMap<String,AmountResource>();
+	public Map<String,AmountResource> getAmountResourcesMap() {
+		Map<String,AmountResource> map = new HashMap<String,AmountResource>();
 		for (AmountResource resource : resources) {
 			map.put(resource.getName(),resource);
 		}

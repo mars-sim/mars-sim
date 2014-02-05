@@ -12,8 +12,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.mars_sim.msp.core.SimulationConfig;
 
@@ -25,7 +25,7 @@ public final class AmountResource
 implements Resource, Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 12L;
 
 	// Data members
 	private String name;
@@ -120,9 +120,9 @@ implements Resource, Serializable {
 	/**
 	 * gets a sorted map of all amount resources by calling
 	 * {@link AmountResourceConfig#getAmountResourcesMap()}.
-	 * @return {@link TreeMap}<{@link String},{@link AmountResource}>
+	 * @return {@link Map}<{@link String},{@link AmountResource}>
 	 */
-	public static TreeMap<String,AmountResource> getAmountResourcesMap() {
+	public static Map<String,AmountResource> getAmountResourcesMap() {
 		return SimulationConfig
 		.instance()
 		.getResourceConfiguration()

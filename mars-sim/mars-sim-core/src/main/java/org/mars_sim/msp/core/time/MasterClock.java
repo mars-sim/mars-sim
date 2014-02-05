@@ -45,8 +45,8 @@ public class MasterClock implements Runnable, Serializable {
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	/** Clock thread sleep time (milliseconds) --> 20Hz should be sufficient. */
-	private static long SLEEP_TIME = 50L;
+	/** Clock thread sleep time (milliseconds) --> 50Hz should be sufficient. */
+	private static long SLEEP_TIME = 20L;
 
 	// Data members
 	/** Martian Clock. */
