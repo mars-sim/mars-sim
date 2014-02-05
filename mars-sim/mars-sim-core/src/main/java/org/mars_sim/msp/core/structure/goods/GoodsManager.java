@@ -66,6 +66,7 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
+import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 
 /**
  * A manager for goods values at a settlement.
@@ -1611,70 +1612,71 @@ public class GoodsManager implements Serializable {
         double capacity = 0D;
 
         VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-        int crewCapacity = config.getCrewSize(vehicleType);
+        VehicleDescription v = config.getVehicleDescription(vehicleType);
+        int crewCapacity = v.getCrewSize();
 
         if (TRAVEL_TO_SETTLEMENT_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
             capacity *= crewCapacity / 8D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             capacity *= range / 2000D;
         }
         else if (EXPLORATION_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double cargoCapacity = config.getTotalCapacity(vehicleType);
+            double cargoCapacity = v.getTotalCapacity();
             if (cargoCapacity < 500D) capacity = 0D;
 
             boolean hasAreologyLab = false;
-            if (config.hasLab(vehicleType)) {
-                if (config.getLabTechSpecialities(vehicleType).contains("Areology")) hasAreologyLab = true;
+            if (v.hasLab()) {
+                if (v.getLabTechSpecialities().contains("Areology")) hasAreologyLab = true;
             }
             if (!hasAreologyLab) capacity /= 2D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
         else if (COLLECT_ICE_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double cargoCapacity = config.getTotalCapacity(vehicleType);
+            double cargoCapacity = v.getTotalCapacity();
             if (cargoCapacity < 1250D) capacity = 0D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
         else if (RESCUE_SALVAGE_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             capacity *= range / 2000D;
         }
         else if (TRADE_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double cargoCapacity = config.getTotalCapacity(vehicleType);
+            double cargoCapacity = v.getTotalCapacity();
             capacity *= cargoCapacity / 10000D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             capacity *= range / 2000D;
         }
         else if (COLLECT_REGOLITH_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double cargoCapacity = config.getTotalCapacity(vehicleType);
+            double cargoCapacity = v.getTotalCapacity();
             if (cargoCapacity < 1250D) capacity = 0D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
         else if (MINING_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
 
-            double cargoCapacity = config.getTotalCapacity(vehicleType);
+            double cargoCapacity = v.getTotalCapacity();
             if (cargoCapacity < 1000D) capacity = 0D;
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
         else if (CONSTRUCTION_MISSION.equals(missionType)) {
@@ -1683,31 +1685,31 @@ public class GoodsManager implements Serializable {
         else if (AREOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
             
-            if (config.hasLab(vehicleType)) {
-                if (config.getLabTechSpecialities(vehicleType).contains("Areology")) {
-                    capacity += config.getLabTechLevel(vehicleType);
+            if (v.hasLab()) {
+                if (v.getLabTechSpecialities().contains("Areology")) {
+                    capacity += v.getLabTechLevel();
                 }
                 else {
                     capacity /= 2D;
                 }
             }
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
         else if (BIOLOGY_STUDY_FIELD_MISSION.equals(missionType)) {
             if (crewCapacity >= 2) capacity = 1D;
             
-            if (config.hasLab(vehicleType)) {
-                if (config.getLabTechSpecialities(vehicleType).contains("Biology")) {
-                    capacity += config.getLabTechLevel(vehicleType);
+            if (v.hasLab()) {
+                if (v.getLabTechSpecialities().contains("Biology")) {
+                    capacity += v.getLabTechLevel();
                 }
                 else {
                     capacity /= 2D;
                 }
             }
 
-            double range = getVehicleRange(vehicleType);
+            double range = getVehicleRange(v);
             if (range == 0D) capacity = 0D;
         }
 
@@ -1716,41 +1718,40 @@ public class GoodsManager implements Serializable {
 
     /**
      * Gets the range of the vehicle type.
-     * @param vehicleType the vehicle type.
+     * @param v {@link VehicleDescription}.
      * @return range (km)
      * @throws Exception if error determining range.
      */
-    private double getVehicleRange(String vehicleType) {
+    private double getVehicleRange(VehicleDescription v) {
         double range = 0D;
 
-        VehicleConfig vehicleConfig = SimulationConfig.instance().getVehicleConfiguration();
-        double fuelCapacity = vehicleConfig.getCargoCapacity(vehicleType, "methane");
-        double fuelEfficiency = vehicleConfig.getFuelEfficiency(vehicleType);
+        double fuelCapacity = v.getCargoCapacity("methane");
+        double fuelEfficiency = v.getFuelEff();
         range = fuelCapacity * fuelEfficiency / 1.5D;
 
-        double baseSpeed = vehicleConfig.getBaseSpeed(vehicleType);
+        double baseSpeed = v.getBaseSpeed();
         double distancePerSol = baseSpeed / 2D / 60D / 60D / MarsClock.convertSecondsToMillisols(1D) * 1000D;
 
         PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-        int crewSize = vehicleConfig.getCrewSize(vehicleType);
+        int crewSize = v.getCrewSize();
 
         // Check food capacity as range limit.
         double foodConsumptionRate = personConfig.getFoodConsumptionRate();
-        double foodCapacity = vehicleConfig.getCargoCapacity(vehicleType, "food");
+        double foodCapacity = v.getCargoCapacity("food");
         double foodSols = foodCapacity / (foodConsumptionRate * crewSize);
         double foodRange = distancePerSol * foodSols / 3D;
         if (foodRange < range) range = foodRange;
 
         // Check water capacity as range limit.
         double waterConsumptionRate = personConfig.getWaterConsumptionRate();
-        double waterCapacity = vehicleConfig.getCargoCapacity(vehicleType, "water");
+        double waterCapacity = v.getCargoCapacity("water");
         double waterSols = waterCapacity / (waterConsumptionRate * crewSize);
         double waterRange = distancePerSol * waterSols / 3D;
         if (waterRange < range) range = waterRange;
 
         // Check oxygen capacity as range limit.
         double oxygenConsumptionRate = personConfig.getOxygenConsumptionRate();
-        double oxygenCapacity = vehicleConfig.getCargoCapacity(vehicleType, "oxygen");
+        double oxygenCapacity = v.getCargoCapacity("oxygen");
         double oxygenSols = oxygenCapacity / (oxygenConsumptionRate * crewSize);
         double oxygenRange = distancePerSol * oxygenSols / 3D;
         if (oxygenRange < range) range = oxygenRange;
