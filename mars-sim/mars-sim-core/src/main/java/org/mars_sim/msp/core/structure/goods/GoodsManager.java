@@ -1829,20 +1829,23 @@ public class GoodsManager implements Serializable {
         resourceProcessingCache.clear();
         resourceProcessingCache = null;
 
-        if(vehicleBuyValueCache != null){
+        if (vehicleBuyValueCache != null){
             vehicleBuyValueCache.clear();
             vehicleBuyValueCache = null;
         }
 
-        if(vehicleSellValueCache != null){
+        if (vehicleSellValueCache != null){
             vehicleSellValueCache.clear();
             vehicleSellValueCache = null;
         }
 
-        if(partsDemandCache != null){
+        if (partsDemandCache != null){
 
             partsDemandCache.clear();
             partsDemandCache = null;
         }
+        
+        // Destroy goods list in GoodsUtil.
+        GoodsUtil.destroyGoodsList();
     }
 }

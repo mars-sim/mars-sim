@@ -198,6 +198,12 @@ public class Simulation implements ClockListener, Serializable {
         }
     }
 
+    /**
+     * Reads a serialized simulation from a file.
+     * @param file the saved serialized simulation.
+     * @throws ClassNotFoundException if error reading serialized classes.
+     * @throws IOException if error reading from file.
+     */
     private void readFromFile(File file) throws ClassNotFoundException, IOException {
         
         ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
@@ -224,6 +230,8 @@ public class Simulation implements ClockListener, Serializable {
         
         // Initialize transient data.
         initializeTransientData();
+        
+        instance().initialSimulationCreated = true;
     }
 
     /**
