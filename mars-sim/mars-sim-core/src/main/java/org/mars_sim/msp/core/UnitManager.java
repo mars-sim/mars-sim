@@ -320,9 +320,9 @@ public class UnitManager implements Serializable {
                 while (j.hasNext()) {
                     String vehicleType = j.next();
                     int number = vehicleMap.get(vehicleType);
-
+                    vehicleType = vehicleType.toLowerCase();
                     for (int x = 0; x < number; x++) {
-                        if (LightUtilityVehicle.NAME.equals(vehicleType)) {
+                        if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
                             String name = getNewName(VEHICLE, "LUV", null);
                             addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
                         } else {

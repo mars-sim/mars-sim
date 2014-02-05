@@ -130,6 +130,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
     public void update() {
         resourceTableModel.update();
         equipmentTableModel.update();
+        equipmentTable.repaint();
     }
     
     /**

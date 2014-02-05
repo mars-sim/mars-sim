@@ -63,7 +63,7 @@ public class MissionWindow extends ToolWindow {
 		
 		// Create content panel.
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
         
         // Create the mission list panel.

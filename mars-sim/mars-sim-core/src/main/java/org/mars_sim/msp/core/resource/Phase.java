@@ -7,12 +7,11 @@
 
 package org.mars_sim.msp.core.resource;
 
-import java.io.Serializable;
 
 /**
  * A phase of an amount resource.
  */
-public enum Phase implements Serializable,Comparable<Phase> {
+public enum Phase {
 
 	GAS ("gas"),
 	LIQUID ("liquid"),

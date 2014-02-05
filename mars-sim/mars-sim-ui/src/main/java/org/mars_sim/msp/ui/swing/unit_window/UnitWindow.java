@@ -7,28 +7,37 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.BorderLayout;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfo;
 import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-
 /**
  * The UnitWindow is the base window for displaying units.
  */
 public abstract class UnitWindow extends JInternalFrame {
-    
-    // Data members
-    protected MainDesktopPane desktop; // Main window
-    protected Unit unit;               // Unit for this window
-    private Collection<TabPanel> tabPanels;      // The tab panels
-    private JTabbedPane centerPanel;   // The center panel
+
+	// Data members
+	/** Main window. */
+	protected MainDesktopPane desktop;
+	/** Unit for this window. */
+	protected Unit unit;
+	protected JPanel namePanel;
+	/** The tab panels. */
+	private Collection<TabPanel> tabPanels;
+	/** The center panel. */
+	private JTabbedPane centerPanel;
     
     /**
      * Constructor
@@ -49,19 +58,19 @@ public abstract class UnitWindow extends JInternalFrame {
         
         // Create main panel
         JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+//        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
         
         // Create name panel
-        JPanel namePanel = new JPanel(new BorderLayout(0, 0));
+        namePanel = new JPanel(new BorderLayout(0, 0));
         mainPane.add(namePanel, BorderLayout.NORTH);
 
         // Create name label
         UnitDisplayInfo displayInfo = UnitDisplayInfoFactory.getUnitDisplayInfo(unit);
-        JLabel nameLabel = new JLabel(unit.getName(), displayInfo.getButtonIcon(), JLabel.CENTER);
+        JLabel nameLabel = new JLabel(unit.getName(), displayInfo.getButtonIcon(), SwingConstants.CENTER);
         nameLabel.setVerticalTextPosition(JLabel.BOTTOM);
         nameLabel.setHorizontalTextPosition(JLabel.CENTER);
-        namePanel.add(nameLabel, BorderLayout.NORTH);
+        namePanel.add(nameLabel, BorderLayout.EAST);
         
         // Create description label if necessary.
         if (displayDescription) {
@@ -91,6 +100,10 @@ public abstract class UnitWindow extends JInternalFrame {
                 panel, panel.getTabToolTip());
         }
     }
+
+    protected final void addTopPanel(JPanel panel) {
+   		namePanel.add(panel,BorderLayout.CENTER);
+    }
      
     /**
      * Gets the unit for this window.
@@ -105,7 +118,6 @@ public abstract class UnitWindow extends JInternalFrame {
      * Updates this window.
      */
     public void update() {
-        
         // Update each of the tab panels.
         Iterator<TabPanel> i = tabPanels.iterator();
         while (i.hasNext()) i.next().update();

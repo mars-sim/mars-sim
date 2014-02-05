@@ -1932,7 +1932,7 @@
 		</outputs>
 	</process>
 	
-		<process name="steel post manufacturing" tech="2" skill="2" work-time="100" process-time="200" 
+	<process name="steel post manufacturing" tech="2" skill="2" work-time="100" process-time="200" 
 			power-required="10.0">
 		<inputs>
 			<part name="steel ingot" number="10" />

@@ -10,7 +10,11 @@ package org.mars_sim.msp.ui.swing.unit_window.equipment;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.*;
+import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.LocationPanel;
+import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 
 /**
@@ -32,7 +36,7 @@ public class EquipmentWindow extends UnitWindow {
         super(desktop, equipment, false);
         
         // Add tab panels
-        addTabPanel(new LocationTabPanel(equipment, desktop));
+        addTopPanel(new LocationPanel(equipment, desktop));
         addTabPanel(new InventoryTabPanel(equipment, desktop));
         if (equipment instanceof Malfunctionable) 
         	addTabPanel(new MaintenanceTabPanel(equipment, desktop));

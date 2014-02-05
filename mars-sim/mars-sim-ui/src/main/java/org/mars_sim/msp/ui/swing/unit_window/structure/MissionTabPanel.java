@@ -144,7 +144,7 @@ public class MissionTabPanel extends TabPanel {
         // Create bottom panel.
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         bottomPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(bottomPanel, BorderLayout.SOUTH);
+        topContentPanel.add(bottomPanel, BorderLayout.SOUTH);
         
         // Create override check box.
         overrideCheckbox = new JCheckBox("Override new mission creation");

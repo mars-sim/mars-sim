@@ -25,24 +25,32 @@ import java.util.logging.Logger;
  * coordinates.
  */
 public class MarsGlobe {
-    
-   private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.navigator.MarsGlobe";
-	
-   private static Logger logger = Logger.getLogger(CLASS_NAME);
 
-    // Constant data members
-    private final static int map_height = 150; // Height of map source image (pixels)
-    private final static int map_width = map_height * 2; // Width of map source image (pixels)
+	private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.tool.navigator.MarsGlobe";
 
-    // Data members
-    private Coordinates centerCoords; // Center position of globe
-    private Vector<Integer>[] sphereColor; // point colors in variably-sized vectors
-    // private String globeType; // "surface" or "topo"
-    private Image marsMap; // cylindrical map image
-    private Image globeImage; // finished image of sphere with transparency
-    private boolean imageDone; // true when image is done
-    private JComponent displayArea; // parent display area
+	private static Logger logger = Logger.getLogger(CLASS_NAME);
+
+	// Constant data members
+	/** Height of map source image (pixels). */
+	private final static int map_height = 150;
+	/** Width of map source image (pixels). */
+	private final static int map_width = map_height * 2;
+
+	// Data members
+	/** Center position of globe. */
+	private Coordinates centerCoords;
+	/** point colors in variably-sized vectors. */
+	private Vector<Integer>[] sphereColor;
+//	/** "surface" or "topo" */
+//	private String globeType;
+	/** cylindrical map image. */
+	private Image marsMap;
+	/** finished image of sphere with transparency. */
+	private Image globeImage;
+	/** true when image is done. */
+	private boolean imageDone;
+	/** parent display area. */
+	private JComponent displayArea;
 
     /** Constructs a MarsGlobe object
      *  @param globeType the type of globe: "surface" or "topo"

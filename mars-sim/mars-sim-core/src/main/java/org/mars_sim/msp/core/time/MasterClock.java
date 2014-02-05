@@ -42,6 +42,9 @@ import java.util.logging.Logger;
  */
 public class MasterClock implements Runnable, Serializable {
 
+	/** default serial id. */
+	static final long serialVersionUID = -1688463735489226495L;
+
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
@@ -76,8 +79,6 @@ public class MasterClock implements Runnable, Serializable {
 	private long totalPulses = 1;
 	private transient long elapsedlast;
 	private transient long elapsedMilliseconds;
-
-	static final long serialVersionUID = -1688463735489226494L;
 
     /**
      * Constructor

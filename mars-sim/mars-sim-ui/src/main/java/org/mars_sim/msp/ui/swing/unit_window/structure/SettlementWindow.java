@@ -11,7 +11,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
-import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.LocationPanel;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
@@ -32,7 +32,7 @@ public class SettlementWindow extends UnitWindow {
         Settlement settlement = (Settlement) unit;
         
         // Add tab panels
-        addTabPanel(new LocationTabPanel(settlement, desktop));
+        addTopPanel(new LocationPanel(settlement, desktop));
         addTabPanel(new PopulationTabPanel(settlement, desktop));
         addTabPanel(new AssociatedPeopleTabPanel(settlement, desktop));
         addTabPanel(new VehicleTabPanel(settlement, desktop));

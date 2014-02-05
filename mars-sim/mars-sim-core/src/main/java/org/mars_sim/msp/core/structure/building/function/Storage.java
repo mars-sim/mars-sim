@@ -24,7 +24,10 @@ import java.util.Map;
  */
 public class Storage extends Function implements Serializable {
 
-    public static final String NAME = "Storage";
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	public static final String NAME = "Storage";
 
     private Map<AmountResource, Double> storageCapacity;
 

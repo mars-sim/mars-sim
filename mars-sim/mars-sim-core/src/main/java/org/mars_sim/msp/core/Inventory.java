@@ -35,7 +35,7 @@ import org.mars_sim.msp.core.resource.Phase;
 public class Inventory implements Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 12L;
+	private static final long serialVersionUID = 123L;
 	
 	// Unit events
 	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
@@ -1103,7 +1103,7 @@ public class Inventory implements Serializable {
     private boolean isAmountResourceStoredCacheDirty(AmountResource resource) {
 
         // Initialize amount resource stored cache if necessary.
-        if (amountResourceStoredCache == null) {
+        if (amountResourceStoredCacheDirty == null) {
             initializeAmountResourceStoredCache();
         }
 

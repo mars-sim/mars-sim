@@ -142,7 +142,7 @@ public class NavigatorWindow extends ToolWindow implements ActionListener {
         // Prepare content pane
         JPanel mainPane = new JPanel();
         mainPane.setLayout(new BoxLayout(mainPane, BoxLayout.Y_AXIS));
-        mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+        mainPane.setBorder(MainDesktopPane.newEmptyBorder());
         setContentPane(mainPane);
 
         // Prepare top layout panes

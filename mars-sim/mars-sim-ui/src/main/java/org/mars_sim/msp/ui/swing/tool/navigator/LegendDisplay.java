@@ -21,12 +21,16 @@ import java.awt.*;
  */
 public class LegendDisplay extends JLabel {
 
-    // Data members
-    private ImageIcon legend; // Image icon
-    private Image colorImg;
-    private Image distanceImg;
-    private Image usgsDistanceImg;
-    private boolean useUSGSLegend;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	/** Image icon. */
+	private ImageIcon legend;
+	private Image colorImg;
+	private Image distanceImg;
+	private Image usgsDistanceImg;
+	private boolean useUSGSLegend;
 
     /** Constructs a LegendDisplay object */
     public LegendDisplay() {
