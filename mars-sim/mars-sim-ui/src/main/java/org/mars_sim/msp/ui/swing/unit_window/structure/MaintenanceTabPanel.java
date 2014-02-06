@@ -28,10 +28,10 @@ public class MaintenanceTabPanel extends TabPanel {
 
 	private Settlement settlement;
 	private List<Building> buildingsList;
-	private JScrollPane maintenanceScrollPanel;
+	private JScrollPane maintenanceScrollPane;
 	private JPanel maintenanceListPanel;
 	private List<Malfunction> malfunctionsList;
-	private JScrollPane malfunctionsScrollPanel;
+	private JScrollPane malfunctionsScrollPane;
 	private JPanel malfunctionsListPanel;
 	
     /**
@@ -58,15 +58,17 @@ public class MaintenanceTabPanel extends TabPanel {
         JLabel maintenanceLabel = new JLabel("Building Maintenance", JLabel.CENTER);
         maintenancePanel.add(maintenanceLabel, BorderLayout.NORTH);
         
-		// Create scroll panel for maintenance list panel.
-		maintenanceScrollPanel = new JScrollPane();
-		maintenanceScrollPanel.setPreferredSize(new Dimension(200, 75));
-		maintenancePanel.add(maintenanceScrollPanel, BorderLayout.CENTER);  
+		// Create scroll pane for maintenance list panel.
+		maintenanceScrollPane = new JScrollPane();
+        // increase vertical mousewheel scrolling speed for this one
+        maintenanceScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		maintenanceScrollPane.setPreferredSize(new Dimension(200, 75));
+		maintenancePanel.add(maintenanceScrollPane, BorderLayout.CENTER);  
 		
         // Prepare maintenance list panel.
         maintenanceListPanel = new JPanel(new GridLayout(0, 1, 0, 0));
         maintenanceListPanel.setBorder(new MarsPanelBorder());
-        maintenanceScrollPanel.setViewportView(maintenanceListPanel);
+        maintenanceScrollPane.setViewportView(maintenanceListPanel);
         populateMaintenanceList();
         
         // Create malfunctions panel.
@@ -78,14 +80,16 @@ public class MaintenanceTabPanel extends TabPanel {
         malfunctionsPanel.add(malfunctionsLabel, BorderLayout.NORTH);
         
 		// Create scroll panel for malfunctions list panel.
-        malfunctionsScrollPanel = new JScrollPane();
-		malfunctionsScrollPanel.setPreferredSize(new Dimension(200, 75));
-        malfunctionsPanel.add(malfunctionsScrollPanel, BorderLayout.CENTER);  
+        malfunctionsScrollPane = new JScrollPane();
+        // increase vertical mousewheel scrolling speed for this one
+        malfunctionsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		malfunctionsScrollPane.setPreferredSize(new Dimension(200, 75));
+        malfunctionsPanel.add(malfunctionsScrollPane, BorderLayout.CENTER);  
 		
         // Prepare malfunctions outer list panel.
         JPanel malfunctionsOuterListPanel = new JPanel(new BorderLayout(0, 0));
         malfunctionsOuterListPanel.setBorder(new MarsPanelBorder());
-        malfunctionsScrollPanel.setViewportView(malfunctionsOuterListPanel);
+        malfunctionsScrollPane.setViewportView(malfunctionsOuterListPanel);
         
         // Prepare malfunctions list panel.
         malfunctionsListPanel = new JPanel();
@@ -144,7 +148,7 @@ public class MaintenanceTabPanel extends TabPanel {
 		if (!tempBuildings.equals(buildingsList)) {
 			// Populate maintenance list.
 			populateMaintenanceList();
-			maintenanceScrollPanel.validate();
+			maintenanceScrollPane.validate();
 		}
 		else {
 			// Update all building maintenance panels.
@@ -165,7 +169,7 @@ public class MaintenanceTabPanel extends TabPanel {
 			// Populate malfunctions list.
 			populateMalfunctionsList();
 			malfunctionsListPanel.validate();
-			malfunctionsScrollPanel.validate();
+			malfunctionsScrollPane.validate();
 		}
 		else {
 			// Update all building malfunction panels.
