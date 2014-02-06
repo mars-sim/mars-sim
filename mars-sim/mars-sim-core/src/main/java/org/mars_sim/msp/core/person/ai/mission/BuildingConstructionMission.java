@@ -837,13 +837,13 @@ public class BuildingConstructionMission extends Mission implements Serializable
      */
     private void positionNewConstructionSite(ConstructionSite site, ConstructionStageInfo foundationStageInfo) {
         
+        boolean goodPosition = false;
+        
         // Determine preferred building type from foundation stage info.
         String buildingType = determinePreferredConstructedBuildingType(foundationStageInfo);
         if (buildingType != null) {
+            
             boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().hasLifeSupport(buildingType);
-        
-            boolean goodPosition = false;
-        
             if (hasLifeSupport) {
                 // Try to put building next to another inhabitable building.
                 List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
@@ -864,29 +864,29 @@ public class BuildingConstructionMission extends Mission implements Serializable
                     if (goodPosition) break;
                 }
             }
+        }
         
-            if (!goodPosition) {
-                // Try to put building next to another building.
-                // If not successful, try again 10m from each building and continue out at 10m increments 
-                // until a location is found.
-                BuildingManager buildingManager = settlement.getBuildingManager();
-                if (buildingManager.getBuildingNum() > 0) {
-                    for (int x = 10; !goodPosition; x+= 10) {
-                        List<Building> allBuildings = buildingManager.getBuildings();
-                        Collections.shuffle(allBuildings);
-                        Iterator<Building> i = allBuildings.iterator();
-                        while (i.hasNext()) {
-                            goodPosition = positionNextToBuilding(site, i.next(), (double) x);
-                            if (goodPosition) break;
-                        }
+        if (!goodPosition) {
+            // Try to put building next to another building.
+            // If not successful, try again 10m from each building and continue out at 10m increments 
+            // until a location is found.
+            BuildingManager buildingManager = settlement.getBuildingManager();
+            if (buildingManager.getBuildingNum() > 0) {
+                for (int x = 10; !goodPosition; x+= 10) {
+                    List<Building> allBuildings = buildingManager.getBuildings();
+                    Collections.shuffle(allBuildings);
+                    Iterator<Building> i = allBuildings.iterator();
+                    while (i.hasNext()) {
+                        goodPosition = positionNextToBuilding(site, i.next(), (double) x);
+                        if (goodPosition) break;
                     }
                 }
-                else {
-                    // If no buildings at settlement, position new construction site at 0,0 with random facing.
-                    site.setXLocation(0D);
-                    site.setYLocation(0D);
-                    site.setFacing(RandomUtil.getRandomDouble(360D));
-                }
+            }
+            else {
+                // If no buildings at settlement, position new construction site at 0,0 with random facing.
+                site.setXLocation(0D);
+                site.setYLocation(0D);
+                site.setFacing(RandomUtil.getRandomDouble(360D));
             }
         }
     }
