@@ -7,13 +7,14 @@
 
 package org.mars_sim.msp.core.person.medical;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PhysicalCondition;
 
 /**
  * This class represents a Health problem being suffered by a Person.
@@ -90,7 +91,7 @@ public class HealthProblem implements Serializable {
      */
     private void setState(int newState) {
     	state = newState;
-    	sufferer.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT, illness);
+    	sufferer.fireUnitUpdate(UnitEventType.ILLNESS_EVENT, illness);
 		// logger.info(getSufferer().getName() + " " + toString() + " setState(" + getStateString() + ")");
     }
     

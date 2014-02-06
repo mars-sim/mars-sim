@@ -22,23 +22,25 @@ import java.util.logging.Logger;
  * This class provides data members and methods common to all units.
  */
 public abstract class Unit implements Serializable, Comparable<Unit> {
-
-	// Unit event types
-	public static final String NAME_EVENT = "name";
-	public static final String DESCRIPTION_EVENT = "description";
-	public static final String MASS_EVENT = "mass";
-	public static final String LOCATION_EVENT = "location";
-	public static final String CONTAINER_UNIT_EVENT = "container unit";
 	
-    // Data members
-    private Coordinates location;     // Unit location coordinates
-    private String name;              // Unit name
-    private String description;       // Unit description
-    private double baseMass;          // The mass of the unit without inventory
-    private Inventory inventory;      // The unit's inventory
-    private Unit containerUnit;       // The unit containing this unit
-    private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
-    private static Logger logger = Logger.getLogger(Unit.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	/** Unit location coordinates. */
+	private Coordinates location;
+	/** Unit name. */
+	private String name;
+	/** Unit description. */
+	private String description;
+	/** The mass of the unit without inventory. */
+	private double baseMass;
+	/** The unit's inventory. */
+	private Inventory inventory;
+	/** The unit containing this unit. */
+	private Unit containerUnit;
+	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
+	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
     /** 
      * Constructor
@@ -82,7 +84,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     public final void setName(String name) {
     	this.name = name;
-    	fireUnitUpdate(NAME_EVENT, name);
+    	fireUnitUpdate(UnitEventType.NAME_EVENT, name);
     }
     
     /**
@@ -99,7 +101,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     protected final void setDescription(String description) {
     	this.description = description;
-    	fireUnitUpdate(DESCRIPTION_EVENT, description);
+    	fireUnitUpdate(UnitEventType.DESCRIPTION_EVENT, description);
     }
 
     /** 
@@ -118,7 +120,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 //    	if (location == null) location = new Coordinates(0D, 0D);
         location.setCoords(newLocation);
         inventory.setCoordinates(newLocation);
-        fireUnitUpdate(LOCATION_EVENT, newLocation);
+        fireUnitUpdate(UnitEventType.LOCATION_EVENT, newLocation);
     }
 
     /** 
@@ -170,7 +172,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     public void setContainerUnit(Unit containerUnit) {
         this.containerUnit = containerUnit;
-        fireUnitUpdate(CONTAINER_UNIT_EVENT, containerUnit);
+        fireUnitUpdate(UnitEventType.CONTAINER_UNIT_EVENT, containerUnit);
     }
 
     /** 
@@ -188,7 +190,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      */
     protected final void setBaseMass(double baseMass) {
     	this.baseMass = baseMass;
-    	fireUnitUpdate(MASS_EVENT);
+    	fireUnitUpdate(UnitEventType.MASS_EVENT);
     }
     
     /**
@@ -252,7 +254,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * Fire a unit update event.
      * @param updateType the update type.
      */
-    public final void fireUnitUpdate(String updateType) {
+    public final void fireUnitUpdate(UnitEventType updateType) {
     	fireUnitUpdate(updateType, null);
     }
     
@@ -261,7 +263,7 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
      * @param updateType the update type.
      * @param target the event target object or null if none.
      */
-    public final void fireUnitUpdate(String updateType, Object target) {
+    public final void fireUnitUpdate(UnitEventType updateType, Object target) {
     	if (listeners == null || listeners.size() < 1) {
 
             //listeners = Collections.synchronizedList(new ArrayList<UnitListener>());

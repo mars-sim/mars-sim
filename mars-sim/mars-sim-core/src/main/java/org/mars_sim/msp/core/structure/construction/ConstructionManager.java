@@ -7,6 +7,12 @@
 
 package org.mars_sim.msp.core.structure.construction;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -14,21 +20,11 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Manager for construction sites at a settlement.
  */
 public class ConstructionManager implements Serializable {
-    
-    //  Unit update events.
-    public static final String START_CONSTRUCTION_SITE_EVENT = "start construction site";
-    public static final String FINISH_BUILDING_EVENT = "finish building";
-    public static final String FINISH_SALVAGE_EVENT = "salvage building";
-    
+
     // Data members.
     private Settlement settlement;
     private List<ConstructionSite> sites; // The settlement's construction sites.
@@ -106,7 +102,7 @@ public class ConstructionManager implements Serializable {
     public ConstructionSite createNewConstructionSite() {
         ConstructionSite result = new ConstructionSite();
         sites.add(result);
-        settlement.fireUnitUpdate(START_CONSTRUCTION_SITE_EVENT, result);
+        settlement.fireUnitUpdate(UnitEventType.START_CONSTRUCTION_SITE_EVENT, result);
         return result;
     }
     

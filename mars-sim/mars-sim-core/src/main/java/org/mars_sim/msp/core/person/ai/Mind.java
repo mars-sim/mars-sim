@@ -7,8 +7,13 @@
 
 package org.mars_sim.msp.core.person.ai;
 
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -19,10 +24,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * The Mind class represents a person's mind. It keeps track of missions and 
  * tasks which the person is involved.
@@ -30,10 +31,6 @@ import java.util.logging.Logger;
 public class Mind implements Serializable {
 
     private static Logger logger = Logger.getLogger(Mind.class.getName());
-
-    // Unit events
-    public static final String JOB_EVENT = "job event";
-    public static final String MISSION_EVENT = "mission event";
 
     // Data members
     private Person person; // The person owning this mind.
@@ -180,7 +177,7 @@ public class Mind implements Serializable {
         jobLock = locked;
         if (!newJob.equals(job)) {
             job = newJob;
-            person.fireUnitUpdate(JOB_EVENT, newJob);
+            person.fireUnitUpdate(UnitEventType.JOB_EVENT, newJob);
         }
     }
 
@@ -215,7 +212,7 @@ public class Mind implements Serializable {
             mission = newMission;
             if (newMission != null)
                 newMission.addPerson(person);
-            person.fireUnitUpdate(MISSION_EVENT, newMission);
+            person.fireUnitUpdate(UnitEventType.MISSION_EVENT, newMission);
         }
     }
 

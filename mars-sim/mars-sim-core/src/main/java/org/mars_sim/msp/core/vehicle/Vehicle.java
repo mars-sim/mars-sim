@@ -7,7 +7,23 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.*;
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.Salvagable;
@@ -21,15 +37,6 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** The Vehicle class represents a generic vehicle. It keeps track of
  *  generic information about the vehicle. This class needs to be
  *  subclassed to represent a specific type of vehicle.
@@ -38,13 +45,6 @@ public abstract class Vehicle extends Unit implements Serializable,
         Malfunctionable, Salvagable, LocalBoundedObject {
 
     private static Logger logger = Logger.getLogger(Vehicle.class.getName());
-    
-	// Unit Event Types
-	public final static String STATUS_EVENT = "vehicle status";
-	public final static String SPEED_EVENT = "vehicle speed";
-	public final static String OPERATOR_EVENT = "vehicle operator";
-	public final static String EMERGENCY_BEACON_EVENT = "vehicle emergency beacon event";
-	public final static String RESERVED_EVENT = "vehicle reserved event";
 	
     // Vehicle Status Strings
     public final static String PARKED = "Parked";
@@ -255,7 +255,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     	
     	if (!status.equals(newStatus)) {
     		status = newStatus;
-    		fireUnitUpdate(STATUS_EVENT, newStatus);
+    		fireUnitUpdate(UnitEventType.STATUS_EVENT, newStatus);
     	}
     }
 
@@ -282,7 +282,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public void setReservedForMission(boolean reserved) {
     	if (isReservedMission != reserved) {
     		isReservedMission = reserved;
-    		fireUnitUpdate(RESERVED_EVENT);
+    		fireUnitUpdate(UnitEventType.RESERVED_EVENT);
     	}
     }
     
@@ -301,7 +301,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public void setReservedForMaintenance(boolean reserved) {
     	if (reservedForMaintenance != reserved) {
     		reservedForMaintenance = reserved;
-    		fireUnitUpdate(RESERVED_EVENT);
+    		fireUnitUpdate(UnitEventType.RESERVED_EVENT);
     	}
     }
     
@@ -337,7 +337,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public void setSpeed(double speed) {
     	if (speed < 0D) throw new IllegalArgumentException("Vehicle speed cannot be less than 0 km/hr: " + speed);
         this.speed = speed;
-        fireUnitUpdate(SPEED_EVENT);
+        fireUnitUpdate(UnitEventType.SPEED_EVENT);
     }
 
     /** 
@@ -438,7 +438,7 @@ public abstract class Vehicle extends Unit implements Serializable,
      */
     public void setOperator(VehicleOperator vehicleOperator) {
 	    this.vehicleOperator = vehicleOperator;
-	    fireUnitUpdate(OPERATOR_EVENT, vehicleOperator);
+	    fireUnitUpdate(UnitEventType.OPERATOR_EVENT, vehicleOperator);
     }
     
     /**
@@ -601,7 +601,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     public void setEmergencyBeacon(boolean isOn) {
     	if (emergencyBeacon != isOn) {
     		emergencyBeacon = isOn;
-    		fireUnitUpdate(EMERGENCY_BEACON_EVENT);
+    		fireUnitUpdate(UnitEventType.EMERGENCY_BEACON_EVENT);
     	}
     }
     

@@ -7,36 +7,30 @@
  
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
-import org.mars_sim.msp.core.structure.building.function.PowerStorage;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.time.MarsClock;
  
 /**
  * The PowerGrid class is a settlement's building power grid.
  */
 public class PowerGrid implements Serializable {
-    
+
     private static String CLASS_NAME = 
         "org.mars_sim.msp.simulation.structure.PowerGrid";
 	
     private static Logger logger = Logger.getLogger(CLASS_NAME);
-        
-	// Unit update events.
-	public static final String POWER_MODE_EVENT = "power mode";
-	public static final String GENERATED_POWER_EVENT = "generated power";
-    public static final String STORED_POWER_EVENT = "stored power";
-    public static final String STORED_POWER_CAPACITY_EVENT= "stored power capacity";
-	public static final String REQUIRED_POWER_EVENT = "required power";
-	public static final String POWER_VALUE_EVENT = "power value";
 	
     // Statc data members
     public static final String POWER_UP_MODE = "Power up";
@@ -81,7 +75,7 @@ public class PowerGrid implements Serializable {
     	if (!powerMode.equals(newPowerMode)) {
     		if (POWER_UP_MODE.equals(newPowerMode)) powerMode = POWER_UP_MODE;
     		else if (POWER_DOWN_MODE.equals(newPowerMode)) powerMode = POWER_DOWN_MODE;
-    		settlement.fireUnitUpdate(POWER_MODE_EVENT);
+    		settlement.fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
     	}
     }
     
@@ -100,7 +94,7 @@ public class PowerGrid implements Serializable {
     private void setGeneratedPower(double newGeneratedPower) {
     	if (powerGenerated != newGeneratedPower) {
     		powerGenerated = newGeneratedPower;
-    		settlement.fireUnitUpdate(GENERATED_POWER_EVENT);
+    		settlement.fireUnitUpdate(UnitEventType.GENERATED_POWER_EVENT);
     	}
     }
     
@@ -119,7 +113,7 @@ public class PowerGrid implements Serializable {
     public void setStoredPower(double newPowerStored) {
         if (powerStored != newPowerStored) {
             powerStored = newPowerStored;
-            settlement.fireUnitUpdate(STORED_POWER_EVENT);
+            settlement.fireUnitUpdate(UnitEventType.STORED_POWER_EVENT);
         }
     }
     
@@ -138,7 +132,7 @@ public class PowerGrid implements Serializable {
     public void setStoredPowerCapacity(double newPowerStorageCapacity) {
         if (powerStorageCapacity != newPowerStorageCapacity) {
             powerStorageCapacity = newPowerStorageCapacity;
-            settlement.fireUnitUpdate(STORED_POWER_CAPACITY_EVENT);
+            settlement.fireUnitUpdate(UnitEventType.STORED_POWER_CAPACITY_EVENT);
         }
     }
     
@@ -157,7 +151,7 @@ public class PowerGrid implements Serializable {
     private void setRequiredPower(double newRequiredPower) {
     	if (powerRequired != newRequiredPower) {
     		powerRequired = newRequiredPower;
-    		settlement.fireUnitUpdate(REQUIRED_POWER_EVENT);
+    		settlement.fireUnitUpdate(UnitEventType.REQUIRED_POWER_EVENT);
     	}
     }
     
@@ -448,7 +442,7 @@ public class PowerGrid implements Serializable {
         
     	if (newPowerValue != powerValue) {
     		powerValue = newPowerValue;
-    		settlement.fireUnitUpdate(POWER_VALUE_EVENT);
+    		settlement.fireUnitUpdate(UnitEventType.POWER_VALUE_EVENT);
     	}
     }
 

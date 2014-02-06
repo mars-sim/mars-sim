@@ -6,11 +6,24 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -24,18 +37,18 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.construction.*;
+import org.mars_sim.msp.core.structure.construction.ConstructionManager;
+import org.mars_sim.msp.core.structure.construction.ConstructionSite;
+import org.mars_sim.msp.core.structure.construction.ConstructionStage;
+import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
+import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
+import org.mars_sim.msp.core.structure.construction.ConstructionValues;
+import org.mars_sim.msp.core.structure.construction.ConstructionVehicleType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Mission for construction a stage for a settlement building.
@@ -555,7 +568,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
 
                 Building building = constructionSite.createBuilding(settlement.getBuildingManager());
                 settlement.getConstructionManager().removeConstructionSite(constructionSite);
-                settlement.fireUnitUpdate(ConstructionManager.FINISH_BUILDING_EVENT, building);
+                settlement.fireUnitUpdate(UnitEventType.FINISH_BUILDING_EVENT, building);
                 logger.log(Level.INFO, "New " + constructionSite.getBuildingName() + 
                         " building constructed at " + settlement.getName());
             }

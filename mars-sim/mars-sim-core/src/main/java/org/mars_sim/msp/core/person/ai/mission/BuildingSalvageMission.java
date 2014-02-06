@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -527,7 +528,7 @@ public class BuildingSalvageMission extends Mission implements Serializable {
                 settlement.getConstructionManager().removeConstructionSite(
                         constructionSite);
                 settlement.fireUnitUpdate(
-                        ConstructionManager.FINISH_SALVAGE_EVENT,
+                        UnitEventType.FINISH_SALVAGE_EVENT,
                         constructionSite);
                 logger.log(Level.INFO,
                         "Construction site completely salvaged at "

@@ -7,8 +7,16 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.SwingUtilities;
+import javax.swing.table.AbstractTableModel;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
@@ -16,17 +24,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-
-import javax.swing.*;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableModel;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public class TradeTableModel extends AbstractTableModel implements
 		UnitListener, MonitorModel, UnitManagerListener {
@@ -61,7 +59,7 @@ public class TradeTableModel extends AbstractTableModel implements
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType().equals(GoodsManager.GOODS_VALUE_EVENT)) {
+		if (event.getType().equals(UnitEventType.GOODS_VALUE_EVENT)) {
 			SwingUtilities.invokeLater(new TradeTableUpdater(event));
 		}
 	}

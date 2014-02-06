@@ -36,12 +36,7 @@ public class Inventory implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 123L;
-	
-	// Unit events
-	public static final String INVENTORY_STORING_UNIT_EVENT = "inventory storing unit";
-	public static final String INVENTORY_RETRIEVING_UNIT_EVENT = "inventory retrieving unit";
-	public static final String INVENTORY_RESOURCE_EVENT = "inventory resource event";
-	
+
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 	
@@ -312,7 +307,7 @@ public class Inventory implements Serializable {
 
                 // Fire inventory event.
                 if (owner != null) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
             } else {
                 throw new IllegalStateException("Insufficiant capacity to store " + resource.getName() + 
@@ -389,7 +384,7 @@ public class Inventory implements Serializable {
 
                 // Fire inventory event.
                 if (owner != null) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
             } else {
                 throw new IllegalStateException("Insufficiant stored amount to retrieve " + 
@@ -530,7 +525,7 @@ public class Inventory implements Serializable {
                 
                 // Fire inventory event.
                 if (owner != null) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
             } 
             else {
@@ -576,7 +571,7 @@ public class Inventory implements Serializable {
 
                 // Fire inventory event.
                 if (owner != null) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
 
                 if (remainingNum > 0) {
@@ -798,14 +793,14 @@ public class Inventory implements Serializable {
             // Update owner
             if (owner != null) {
                 unit.setCoordinates(owner.getCoordinates());
-                owner.fireUnitUpdate(INVENTORY_STORING_UNIT_EVENT, unit);
+                owner.fireUnitUpdate(UnitEventType.INVENTORY_STORING_UNIT_EVENT, unit);
                 for (AmountResource resource : unit.getInventory().getAllAmountResourcesStored(false)) {
                     updateAmountResourceCapacityCache(resource);
                     updateAmountResourceStoredCache(resource);
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                 }
                 for (ItemResource itemResource : unit.getInventory().getAllItemResourcesStored()) {
-                    owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, itemResource);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
                 }
             }
         } 
@@ -837,15 +832,15 @@ public class Inventory implements Serializable {
 
                 // Update owner
                 if (owner != null) {
-                    owner.fireUnitUpdate(INVENTORY_RETRIEVING_UNIT_EVENT, unit);
+                    owner.fireUnitUpdate(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT, unit);
 
                     for (AmountResource resource : unit.getInventory().getAllAmountResourcesStored(false)) {
                         updateAmountResourceCapacityCache(resource);
                         updateAmountResourceStoredCache(resource);
-                        owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, resource);
+                        owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, resource);
                     }
                     for (ItemResource itemResource : unit.getInventory().getAllItemResourcesStored()) {
-                        owner.fireUnitUpdate(INVENTORY_RESOURCE_EVENT, itemResource);
+                        owner.fireUnitUpdate(UnitEventType.INVENTORY_RESOURCE_EVENT, itemResource);
                     }
                 }
 

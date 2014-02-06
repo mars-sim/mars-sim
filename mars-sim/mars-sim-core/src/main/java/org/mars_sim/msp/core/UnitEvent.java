@@ -13,16 +13,21 @@ import java.util.EventObject;
  */
 public class UnitEvent extends EventObject {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Data members
-	private final String type; // The event type.
-	private final Object target; // The event target object, if any.
+	/** The event type. */
+	private final UnitEventType type;
+	/** The event target object, if any. */
+	private final Object target;
 	
 	/**
 	 * Constructor
 	 * @param source the object throwing the event.
 	 * @param type the type of event.
 	 */
-	public UnitEvent(Unit source, String type, Object target) {
+	public UnitEvent(Unit source, UnitEventType type, Object target) {
 		// Use EventObject constructor
 		super(source);
 		
@@ -34,7 +39,7 @@ public class UnitEvent extends EventObject {
 	 * Gets the type of event.
 	 * @return event type
 	 */
-	public String getType() {
+	public UnitEventType getType() {
 		return type;
 	}
 	
@@ -50,6 +55,6 @@ public class UnitEvent extends EventObject {
 	 * Override toString() method.
 	 */
 	public String toString() {
-		return type;
+		return type.getName();
 	}
 }

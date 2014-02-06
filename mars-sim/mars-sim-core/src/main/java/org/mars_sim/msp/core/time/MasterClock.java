@@ -43,13 +43,13 @@ import java.util.logging.Logger;
 public class MasterClock implements Runnable, Serializable {
 
 	/** default serial id. */
-	static final long serialVersionUID = -1688463735489226495L;
+	static final long serialVersionUID = -1688463735489226493L;
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(MasterClock.class.getName());
 
-	/** Clock thread sleep time (milliseconds) --> 50Hz should be sufficient. */
-	private static long SLEEP_TIME = 20L;
+	/** Clock thread sleep time (milliseconds) --> 25Hz should be sufficient. */
+	private static long SLEEP_TIME = 40L;
 
 	// Data members
 	/** Martian Clock. */
@@ -356,7 +356,7 @@ public class MasterClock implements Runnable, Serializable {
                 try {
                     cl.clockPulse(time);
                 } catch (Exception e) {
-                    throw new IllegalStateException("Error while firing clock pulse", e);
+            		throw new IllegalStateException("Error while firing clock pulse", e);
                 }
             }
         }

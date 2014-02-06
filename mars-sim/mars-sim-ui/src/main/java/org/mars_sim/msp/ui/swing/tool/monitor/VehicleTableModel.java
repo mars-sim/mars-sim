@@ -7,20 +7,38 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.*;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import javax.swing.*;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The VehicleTableModel that maintains a list of Vehicle objects.
@@ -275,22 +293,22 @@ public class VehicleTableModel extends UnitTableModel {
 		Unit unit = (Unit) event.getSource();
 		int unitIndex = getUnitIndex(unit);
 		Object target = event.getTarget();
-		String eventType = event.getType();
+		UnitEventType eventType = event.getType();
 
 		int columnNum = -1;
-		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-		else if (eventType.equals(Unit.LOCATION_EVENT)) columnNum = LOCATION;
-		else if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT) || 
-				eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+		if (eventType.equals(UnitEventType.NAME_EVENT)) columnNum = NAME;
+		else if (eventType.equals(UnitEventType.LOCATION_EVENT)) columnNum = LOCATION;
+		else if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT) || 
+				eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
 			if (target instanceof Person) columnNum = CREW;
 		}
-		else if (eventType.equals(Vehicle.OPERATOR_EVENT)) columnNum = DRIVER;
-		else if (eventType.equals(Vehicle.STATUS_EVENT)) columnNum = STATUS;
-		else if (eventType.equals(Vehicle.EMERGENCY_BEACON_EVENT)) columnNum = BEACON;
-		else if (eventType.equals(Vehicle.RESERVED_EVENT)) columnNum = RESERVED;
-		else if (eventType.equals(Vehicle.SPEED_EVENT)) columnNum = SPEED;
-		else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
-		else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
+		else if (eventType.equals(UnitEventType.OPERATOR_EVENT)) columnNum = DRIVER;
+		else if (eventType.equals(UnitEventType.STATUS_EVENT)) columnNum = STATUS;
+		else if (eventType.equals(UnitEventType.EMERGENCY_BEACON_EVENT)) columnNum = BEACON;
+		else if (eventType.equals(UnitEventType.RESERVED_EVENT)) columnNum = RESERVED;
+		else if (eventType.equals(UnitEventType.SPEED_EVENT)) columnNum = SPEED;
+		else if (eventType.equals(UnitEventType.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
+		else if (eventType.equals(UnitEventType.INVENTORY_RESOURCE_EVENT)) {
 			try {
 				int tempColumnNum = -1;
 				

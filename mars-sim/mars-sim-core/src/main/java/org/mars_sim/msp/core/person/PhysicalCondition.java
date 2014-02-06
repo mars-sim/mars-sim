@@ -21,16 +21,11 @@ import java.util.logging.Logger;
  * Persons health and physical characteristics.
  */
 public class PhysicalCondition implements Serializable {
-    
-    private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
 
-	// Unit events
-	public static final String FATIGUE_EVENT = "fatigue event";
-	public static final String HUNGER_EVENT = "hunger event";
-	public static final String STRESS_EVENT = "stress event";
-	public static final String PERFORMANCE_EVENT = "performance event";
-	public static final String ILLNESS_EVENT = "illness event";
-	public static final String DEATH_EVENT = "death event";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
 	
     // Life support minimum and maximum values.
     private static int MIN_VALUE = 0;
@@ -202,7 +197,7 @@ public class PhysicalCondition implements Serializable {
 		// Calculate performance and most serious illness.
         recalculate();
 
-        if (illnessEvent) person.fireUnitUpdate(ILLNESS_EVENT);
+        if (illnessEvent) person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
         
         return (!isDead());
     }
@@ -291,7 +286,7 @@ public class PhysicalCondition implements Serializable {
 
         if (newProblem) {
         	addMedicalComplaint(complaint);
-        	person.fireUnitUpdate(ILLNESS_EVENT);
+        	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
         }
         else {
             //Is the person suffering from the illness, if so recovery
@@ -299,7 +294,7 @@ public class PhysicalCondition implements Serializable {
             HealthProblem illness = problems.get(complaint);
             if (illness != null) {
             	illness.startRecovery();
-            	person.fireUnitUpdate(ILLNESS_EVENT);
+            	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
             }
         }
         return newProblem;
@@ -362,7 +357,7 @@ public class PhysicalCondition implements Serializable {
     private void setPerformanceFactor(double newPerformance) {
     	if (newPerformance != performance) {
     		performance = newPerformance;
-    		person.fireUnitUpdate(PERFORMANCE_EVENT);
+    		person.fireUnitUpdate(UnitEventType.PERFORMANCE_EVENT);
     	}
     }
 
@@ -381,7 +376,7 @@ public class PhysicalCondition implements Serializable {
     public void setFatigue(double newFatigue) {
     	if (fatigue != newFatigue) {
     		fatigue = newFatigue;
-    		person.fireUnitUpdate(FATIGUE_EVENT);
+    		person.fireUnitUpdate(UnitEventType.FATIGUE_EVENT);
     	}
     }
 
@@ -413,18 +408,18 @@ public class PhysicalCondition implements Serializable {
     		if (hunger > starvationTime) {
     			if (!problems.containsKey(starvation)) {
     				addMedicalComplaint(starvation);
-    	        	person.fireUnitUpdate(ILLNESS_EVENT);
+    	        	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
     			}
     		}
     		else if (hunger == 0D) {
                 HealthProblem illness = problems.get(starvation);
                 if (illness != null) {
                 	illness.startRecovery();
-                	person.fireUnitUpdate(ILLNESS_EVENT);
+                	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
     		}
     		
-    		person.fireUnitUpdate(HUNGER_EVENT);
+    		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
     	}
     }
     
@@ -445,7 +440,7 @@ public class PhysicalCondition implements Serializable {
     		stress = newStress;
     		if (stress > 100D) stress = 100D;
     		else if (stress < 0D) stress = 0D;
-    		person.fireUnitUpdate(STRESS_EVENT);
+    		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
     	}
     }
     
@@ -467,7 +462,7 @@ public class PhysicalCondition implements Serializable {
 					Complaint anxietyAttack = getMedicalManager().getComplaintByName(ANXIETY_ATTACK);
 					if (anxietyAttack != null) {
 						addMedicalComplaint(anxietyAttack);
-						person.fireUnitUpdate(ILLNESS_EVENT);
+						person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
 					        logger.info(person.getName() + " has an anxiety attack.");
 					}
 					else logger.log(Level.SEVERE,"Could not find 'Anxiety Attack' medical complaint in 'conf/medical.xml'");
@@ -499,7 +494,7 @@ public class PhysicalCondition implements Serializable {
 		Simulation.instance().getEventManager().registerNewEvent(event);
 		
 		// Throw unit event.
-		person.fireUnitUpdate(DEATH_EVENT);
+		person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
     }
     
     /**

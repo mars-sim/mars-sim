@@ -7,10 +7,22 @@
 
 package org.mars_sim.msp.core.malfunction;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -21,19 +33,12 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
-
 /**
  * The MalfunctionManager class manages the current malfunctions in a unit.
  */
 public class MalfunctionManager implements Serializable {
 	
     private static Logger logger = Logger.getLogger(MalfunctionManager.class.getName());
-
-    // Unit update events.
-    public static final String MALFUNCTION_EVENT = "malfunction";
     
     // Initial estimate for malfunctions per orbit for an entity.
     private static double ESTIMATED_MALFUNCTIONS_PER_ORBIT = 10D;
@@ -341,7 +346,7 @@ public class MalfunctionManager implements Serializable {
     		malfunctions.add(malfunction);
             
             try {
-            	getUnit().fireUnitUpdate(MALFUNCTION_EVENT, malfunction);
+            	getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, malfunction);
             }
             catch (Exception e) {
             	e.printStackTrace(System.err);
@@ -405,7 +410,7 @@ public class MalfunctionManager implements Serializable {
                 malfunctions.remove(item);
                 
                 try {
-                	getUnit().fireUnitUpdate(MALFUNCTION_EVENT, item);
+                	getUnit().fireUnitUpdate(UnitEventType.MALFUNCTION_EVENT, item);
                 }
                 catch (Exception e) {
                 	e.printStackTrace(System.err);
@@ -609,7 +614,7 @@ public class MalfunctionManager implements Serializable {
                     Person person = i2.next();
                     if (RandomUtil.lessThanRandPercent(probability)) {
                     	person.getPhysicalCondition().addMedicalComplaint(complaint);
-                    	person.fireUnitUpdate(PhysicalCondition.ILLNESS_EVENT);
+                    	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                     }
                 }
             }

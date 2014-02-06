@@ -7,21 +7,23 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
 
 /** 
  * The Task class is an abstract parent class for tasks that allow people to do various things.
@@ -29,13 +31,6 @@ import java.util.List;
  * tasks internally to accomplish things.
  */
 public abstract class Task implements Serializable, Comparable<Task> {
-
-    // Unit event types
-    public static final String TASK_NAME_EVENT = "task name";
-    public static final String TASK_DESC_EVENT = "task name";
-    public static final String TASK_PHASE_EVENT = "task name";
-    public static final String TASK_ENDED_EVENT = "task ended";
-    public static final String TASK_SUBTASK_EVENT = "subtask";
 
     private static final double JOB_STRESS_MODIFIER = .5D;
     private static final double SKILL_STRESS_MODIFIER = .1D;
@@ -94,7 +89,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
     public void endTask() {
 
         done = true;
-        person.fireUnitUpdate(TASK_ENDED_EVENT, this);
+        person.fireUnitUpdate(UnitEventType.TASK_ENDED_EVENT, this);
 
         // Create ending task historical event if needed.
         if (createEvents) {
@@ -138,7 +133,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
      */
     protected void setName(String name) {
         this.name = name;
-        person.fireUnitUpdate(TASK_NAME_EVENT, name);
+        person.fireUnitUpdate(UnitEventType.TASK_NAME_EVENT, name);
     }
 
     /** Returns a string that is a description of what the task is currently doing.
@@ -176,7 +171,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
      */
     protected void setDescription(String description) {
         this.description = description;
-        person.fireUnitUpdate(TASK_DESC_EVENT, description);
+        person.fireUnitUpdate(UnitEventType.TASK_DESC_EVENT, description);
     }
 
     /** Returns a boolean whether this task should generate events
@@ -216,7 +211,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
         }
         else if (phases.contains(newPhase)) {
             phase = newPhase;
-            person.fireUnitUpdate(TASK_PHASE_EVENT, newPhase);
+            person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
         }
         else {
             throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
@@ -251,7 +246,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
             if (subTask.done) {
                 subTask.destroy();
                 subTask = newSubTask;
-                person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
+                person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
             }
             else {
                 subTask.addSubTask(newSubTask);
@@ -259,7 +254,7 @@ public abstract class Task implements Serializable, Comparable<Task> {
         }
         else {
             subTask = newSubTask;
-            person.fireUnitUpdate(TASK_SUBTASK_EVENT, newSubTask);
+            person.fireUnitUpdate(UnitEventType.TASK_SUBTASK_EVENT, newSubTask);
         }
     }
 

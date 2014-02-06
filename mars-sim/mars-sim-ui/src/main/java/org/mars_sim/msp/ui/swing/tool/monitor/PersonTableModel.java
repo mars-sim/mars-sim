@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
@@ -392,23 +393,23 @@ public class PersonTableModel extends UnitTableModel {
      */
     private static class PersonTableUpdater implements Runnable {
 
-        static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
+        static final Map<UnitEventType, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
 
         static {
-            HashMap<String, Integer> m = new HashMap<String, Integer>();
-            m.put(Unit.NAME_EVENT, NAME);
-            m.put(Unit.LOCATION_EVENT, LOCATION);
-            m.put(PhysicalCondition.HUNGER_EVENT, HUNGER);
-            m.put(PhysicalCondition.FATIGUE_EVENT, FATIGUE);
-            m.put(PhysicalCondition.STRESS_EVENT, STRESS);
-            m.put(PhysicalCondition.PERFORMANCE_EVENT, PERFORMANCE);
-            m.put(Mind.JOB_EVENT, JOB);
-            m.put(TaskManager.TASK_EVENT, TASK);
-            m.put(Task.TASK_ENDED_EVENT, TASK);
-            m.put(Task.TASK_SUBTASK_EVENT, TASK);
-            m.put(Mind.MISSION_EVENT, MISSION);
-            m.put(PhysicalCondition.ILLNESS_EVENT, HEALTH);
-            m.put(PhysicalCondition.DEATH_EVENT, HEALTH);
+            HashMap<UnitEventType, Integer> m = new HashMap<UnitEventType, Integer>();
+            m.put(UnitEventType.NAME_EVENT, NAME);
+            m.put(UnitEventType.LOCATION_EVENT, LOCATION);
+            m.put(UnitEventType.HUNGER_EVENT, HUNGER);
+            m.put(UnitEventType.FATIGUE_EVENT, FATIGUE);
+            m.put(UnitEventType.STRESS_EVENT, STRESS);
+            m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
+            m.put(UnitEventType.JOB_EVENT, JOB);
+            m.put(UnitEventType.TASK_EVENT, TASK);
+            m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
+            m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
+            m.put(UnitEventType.MISSION_EVENT, MISSION);
+            m.put(UnitEventType.ILLNESS_EVENT, HEALTH);
+            m.put(UnitEventType.DEATH_EVENT, HEALTH);
             EVENT_COLUMN_MAPPING = Collections.unmodifiableMap(m);
         }
 
@@ -422,9 +423,9 @@ public class PersonTableModel extends UnitTableModel {
         }
 
     	public void run() {
-    		String eventType = event.getType();
+    		UnitEventType eventType = event.getType();
 
-            Integer column = EVENT_COLUMN_MAPPING.get(eventType);
+            Integer column = EVENT_COLUMN_MAPPING.get(eventType.getName());
 /*
             int columnNum = -1;
     		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
@@ -456,12 +457,12 @@ public class PersonTableModel extends UnitTableModel {
     	 * @param event the unit event.
     	 */
     	public void unitUpdate(UnitEvent event) {
-    		String eventType = event.getType();
+    		UnitEventType eventType = event.getType();
 
-    		if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT)) {
+    		if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT)) {
     			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
     		}
-    		else if (eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    		else if (eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
     			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
     		}
     	}
@@ -516,11 +517,11 @@ public class PersonTableModel extends UnitTableModel {
     	 * @param event the unit event.
     	 */
     	public void unitUpdate(UnitEvent event) {
-    		String eventType = event.getType();
-    		if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT)) {
+    		UnitEventType eventType = event.getType();
+    		if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT)) {
     			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
     		}
-    		else if (eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    		else if (eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
     			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
     		}
     	}
@@ -536,10 +537,10 @@ public class PersonTableModel extends UnitTableModel {
     	 * @param event the unit event.
     	 */
     	public void unitUpdate(UnitEvent event) {
-    		String eventType = event.getType();
-    		if (eventType.equals(Settlement.ADD_ASSOCIATED_PERSON_EVENT)) 
+    		UnitEventType eventType = event.getType();
+    		if (eventType.equals(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)) 
     			addUnit((Unit) event.getTarget());
-    		else if (eventType.equals(Settlement.REMOVE_ASSOCIATED_PERSON_EVENT))
+    		else if (eventType.equals(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT))
     			removeUnit((Unit) event.getTarget());
     	}
     }

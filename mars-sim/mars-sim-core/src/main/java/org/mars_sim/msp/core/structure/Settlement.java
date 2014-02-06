@@ -39,10 +39,6 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
 
     private static Logger logger = Logger.getLogger(Settlement.class.getName());
 
-    // Unit update events.
-    public static final String ADD_ASSOCIATED_PERSON_EVENT = "add associated person";
-    public static final String REMOVE_ASSOCIATED_PERSON_EVENT = "remove associated person";
-
     private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
     private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
 

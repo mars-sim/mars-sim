@@ -6,9 +6,15 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
@@ -16,20 +22,13 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
  
 /**
  * The Farming class is a building function for greenhouse farming.
  */
 public class Farming extends Function implements Serializable {
-        
-	// Unit update events
-	public static final String CROP_EVENT = "crop event";
 	
     public static final String NAME = "Farming";
     public static final double HARVEST_MULTIPLIER = 10D;
@@ -67,7 +66,7 @@ public class Farming extends Function implements Serializable {
     		Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
     				this, settlement, false);
     		crops.add(crop);
-    		building.getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
+    		building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
     	}
     }
     
@@ -248,7 +247,7 @@ public class Farming extends Function implements Serializable {
 			Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
 					this, settlement, true);
 			crops.add(crop);
-			getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(CROP_EVENT, crop);
+			getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
 		}
 	}
 	
