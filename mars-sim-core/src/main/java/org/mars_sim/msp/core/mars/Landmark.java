@@ -20,15 +20,17 @@ public class Landmark implements Serializable {
     // Data members
     private String landmarkName;    // Name of the landmark
     private Coordinates landmarkLocation;   // Location of the landmark
+    private int landmarkDiameter;   // Diameter of the landmark, rounded to int
 
     /** Constructs a landmark object with the given name at the given location.
      *  @param name name of the landmark
      *  @param location location of the landmark
      */
-    public Landmark(String name, Coordinates location) {
+    public Landmark(String name, Coordinates location, int diameter) {
 
         this.landmarkName = name;
         this.landmarkLocation = location;
+        this.landmarkDiameter = diameter;
     }
 
     /**
@@ -48,6 +50,14 @@ public class Landmark implements Serializable {
     }
 
     /**
+     *  Sets the landmark diameter.
+     *  @param landmarkLocation diameter of the landmark
+     */
+    public void setLandmarkDiameter(int diameter) {
+        this.landmarkDiameter = diameter;
+    }
+
+    /**
      *  Gets the landmark name.
      *  @return name of the landmark
      */
@@ -61,5 +71,13 @@ public class Landmark implements Serializable {
      */
     public Coordinates getLandmarkLocation() {
         return landmarkLocation;
+    }
+
+    /**
+     *  Gets the landmark diameter.
+     *  @return location of the landmark
+     */
+    public int getLandmarkDiameter() {
+        return landmarkDiameter;
     }
 }

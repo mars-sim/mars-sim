@@ -20,6 +20,7 @@
     		<xs:attribute name="name" type="xs:string"></xs:attribute>
     		<xs:attribute name="longitude" type="lm:angle"></xs:attribute>
     		<xs:attribute name="latitude" type="lm:angle"></xs:attribute>
+    		<xs:attribute name="diameter" type="xs:string"></xs:attribute>
     	</xs:complexType>
     </xs:element>
     
