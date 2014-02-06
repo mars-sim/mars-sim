@@ -171,7 +171,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getWidth(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).width;
+		return map.get(vehicleType.toLowerCase()).width;
 	}
 
 	/**
@@ -181,7 +181,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getLength(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).length;
+		return map.get(vehicleType.toLowerCase()).length;
 	}
 
 	/**
@@ -192,7 +192,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getFuelEfficiency(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).fuelEff;
+		return map.get(vehicleType.toLowerCase()).fuelEff;
 	}
 
 	/**
@@ -202,7 +202,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getBaseSpeed(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).baseSpeed;
+		return map.get(vehicleType.toLowerCase()).baseSpeed;
 	}
 
 	/**
@@ -212,7 +212,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getEmptyMass(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).emptyMass;
+		return map.get(vehicleType.toLowerCase()).emptyMass;
 	}
 
 	/**
@@ -222,7 +222,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getCrewSize(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).crewSize;
+		return map.get(vehicleType.toLowerCase()).crewSize;
 	}
 
 	/**
@@ -232,7 +232,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public double getTotalCapacity(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).totalCapacity;
+		return map.get(vehicleType.toLowerCase()).totalCapacity;
 	}
 
 	/**
@@ -243,7 +243,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public Double getCargoCapacity(String vehicleType, String resource) {
 		parseIfNeccessary();
-		Double value = map.get(vehicleType).cargoCapacity.get(resource);
+		Double value = map.get(vehicleType.toLowerCase()).cargoCapacity.get(resource);
 		if (value == null) return 0d;
 		return value;
 	}
@@ -255,7 +255,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public boolean hasSickbay(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).hasSickbay;
+		return map.get(vehicleType.toLowerCase()).hasSickbay;
 	}
 
 	/**
@@ -265,7 +265,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getSickbayTechLevel(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).sickbayTechLevel;
+		return map.get(vehicleType.toLowerCase()).sickbayTechLevel;
 	}
 
 	/**
@@ -275,7 +275,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getSickbayBeds(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).sickbayBeds;
+		return map.get(vehicleType.toLowerCase()).sickbayBeds;
 	}
 
 	/**
@@ -285,7 +285,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public boolean hasLab(String vehicleType) {	
 		parseIfNeccessary();
-		return map.get(vehicleType).hasLab;
+		return map.get(vehicleType.toLowerCase()).hasLab;
 	}	
 
 	/**
@@ -295,7 +295,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getLabTechLevel(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).labTechLevel;
+		return map.get(vehicleType.toLowerCase()).labTechLevel;
 	}
 
 	/**
@@ -305,7 +305,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public List<String> getLabTechSpecialities(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).labTechSpecialities;
+		return map.get(vehicleType.toLowerCase()).labTechSpecialities;
 	}
 
 	/**
@@ -315,7 +315,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public boolean hasPartAttachments(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).hasPartAttachments;
+		return map.get(vehicleType.toLowerCase()).hasPartAttachments;
 	}
 
 	/**
@@ -325,7 +325,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public int getPartAttachmentSlotNumber(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).attachmentSlots;
+		return map.get(vehicleType.toLowerCase()).attachmentSlots;
 	}
 
 	/**
@@ -335,17 +335,17 @@ public class VehicleConfig implements Serializable {
 	 */
 	public Collection<Part> getAttachableParts(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).attachmableParts;
+		return map.get(vehicleType.toLowerCase()).attachmableParts;
 	}
 
 	public String getDescription(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType).description;
+		return map.get(vehicleType.toLowerCase()).description;
 	}
 
 	public VehicleDescription getVehicleDescription(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType);
+		return map.get(vehicleType.toLowerCase());
 	}
 
 	/**
