@@ -377,23 +377,24 @@ public final class ManufactureUtil {
 	 * @return true if process inputs are available.
 	 * @throws Exception if error determining if process inputs are available.
 	 */
-	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv)
-			{
+	private static boolean areProcessInputsAvailable(ManufactureProcessInfo process, Inventory inv) {
 		boolean result = true;
 		
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
-		while (i.hasNext()) {
+		while (result && i.hasNext()) {
 			ManufactureProcessItem item = i.next();
-			if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+			if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
 				AmountResource resource = AmountResource.findAmountResource(item.getName());
-				if (inv.getAmountResourceStored(resource, false) < item.getAmount()) result = false;
+				result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
 			}
-			else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+			else if (ManufactureProcessItem.PART.equals(item.getType())) {
 				Part part = (Part) ItemResource.findItemResource(item.getName());
-				if (inv.getItemResourceNum(part) < (int) item.getAmount()) result = false;
-			}
-			else throw new IllegalStateException("Manufacture process input: " +
-					item.getType() + " not a valid type.");
+				result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
+			} else throw new IllegalStateException(
+				"Manufacture process input: " +
+				item.getType() +
+				" not a valid type."
+			);
 		}
 		
 		return result;

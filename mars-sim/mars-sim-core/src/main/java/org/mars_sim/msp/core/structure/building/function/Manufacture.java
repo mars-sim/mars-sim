@@ -37,6 +37,9 @@ import java.util.logging.Logger;
  */
 public class Manufacture extends Function implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	private static Logger logger = Logger.getLogger(Manufacture.class.getName());
 	
 	public static final String NAME = "Manufacture";
@@ -216,11 +219,11 @@ public class Manufacture extends Function implements Serializable {
 		Iterator<ManufactureProcessItem> i = process.getInfo().getInputList().iterator();
 		while (i.hasNext()) {
 		    ManufactureProcessItem item = i.next();
-		    if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+		    if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
 		        AmountResource resource = AmountResource.findAmountResource(item.getName());
 		        inv.retrieveAmountResource(resource, item.getAmount());
 		    }
-		    else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+		    else if (ManufactureProcessItem.PART.equals(item.getType())) {
 		        Part part = (Part) ItemResource.findItemResource(item.getName());
 		        inv.retrieveItemResources(part, (int) item.getAmount());
 		    }
@@ -408,7 +411,7 @@ public class Manufacture extends Function implements Serializable {
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
                 if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
-                    if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+                    if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
@@ -422,7 +425,7 @@ public class Manufacture extends Function implements Serializable {
                         }
                         inv.storeAmountResource(resource, amount, true);
                     }
-                    else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+                    else if (ManufactureProcessItem.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
@@ -430,7 +433,7 @@ public class Manufacture extends Function implements Serializable {
                         if (mass <= capacity)
                             inv.storeItemResources(part, (int) item.getAmount());
                     }
-                    else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+                    else if (ManufactureProcessItem.EQUIPMENT.equals(item.getType())) {
                         // Produce equipment.
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
@@ -440,7 +443,7 @@ public class Manufacture extends Function implements Serializable {
                             inv.storeUnit(equipment);
                         }
                     }
-                    else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+                    else if (ManufactureProcessItem.VEHICLE.equals(item.getType())) {
                         // Produce vehicles.
                         String vehicleType = item.getName();
                         int number = (int) item.getAmount();

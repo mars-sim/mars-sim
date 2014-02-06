@@ -1128,7 +1128,6 @@ public class Inventory implements Serializable {
         if (!allowDirty && isAmountResourceStoredCacheDirty(resource)) {
             updateAmountResourceStoredCache(resource);
         }
-        
         return amountResourceStoredCache.get(resource);
     }
 

@@ -144,20 +144,19 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
             desktop.openUnitWindow((Equipment) selectedEquipment, false);
     }
     
-    /** 
-     * Internal class used as model for the resource table.
-     * TODO would be nice to see capacity as 3rd column in the inventory view.
-     */
-    private static class ResourceTableModel extends AbstractTableModel {
+	/** 
+	 * Internal class used as model for the resource table.
+	 */
+	private static class ResourceTableModel extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-        private Inventory inventory;
-        private Map<Resource, Number> resources;
-        private Map<Resource, Number> capacity;
-        private List<Resource> keys;
-        private DecimalFormat decFormatter = new DecimalFormat("0.0");
+		private Inventory inventory;
+		private Map<Resource, Number> resources;
+		private Map<Resource, Number> capacity;
+		private List<Resource> keys;
+		private DecimalFormat decFormatter = new DecimalFormat("0.0");
         
         private ResourceTableModel(Inventory inventory) {
             this.inventory = inventory;
