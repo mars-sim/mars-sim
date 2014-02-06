@@ -381,13 +381,14 @@
 		</maintenance-entity-list>
 	</part>
 	
-	<!-- 1m x 2m x 1mm sheet of copper -->
-	<part name="copper sheet" mass="5.0" />
+	<part name="copper sheet" mass="5.0">
+		<description>1m x 2m x 1mm sheet of copper</description>
+	</part>
 	
 	<part name="copper wire" mass="1.0" />
 	
-	<!-- Ceramic, magnesium and wire heating element. -->
 	<part name="electric heating element" mass="1.0" >
+		<description>Ceramic, magnesium and wire heating element.</description>
 		<maintenance-entity-list>
 			<entity name="life support" probability="10" max-number="1" />
 			<entity name="rover" probability="5" max-number="1" />
@@ -476,14 +477,12 @@
 		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability="10" max-number="1" />
+			<entity name="large algae greenhouse" probability="5" max-number="1" />
 		</maintenance-entity-list>
 	</part>
 
 	<part name="algae tank" mass="200.0">
 		<description>An array of glass tubes connected with pipes and held together by a metal frame.</description>
-<!-- 	<maintenance-entity-list>
-			<entity name="glass tube" probability="5" max-number="1" />
-		</maintenance-entity-list> -->
 	</part>
 
 	<part name="brick" mass="2.86">
@@ -491,14 +490,17 @@
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>
 	</part>
 	
-	<!-- A 25 kg piece of salvaged steel scrap. -->
-	<part name="steel scrap" mass="25.0" />
+	<part name="steel scrap" mass="25.0">
+		<description>A 25 kg piece of salvaged steel scrap.</description>
+	</part>
 	
-	<!-- A 5 kg piece of salvaged aluminum scrap. -->
-	<part name="aluminum scrap" mass="5.0" />
+	<part name="aluminum scrap" mass="5.0">
+		<description>A 5 kg piece of salvaged aluminum scrap.</description>
+	</part>
 	
-	<!-- A steel drill bit for drilling bore holes. -->
-	<part name="bore drill bit" mass="25.0" />
+	<part name="bore drill bit" mass="25.0">
+		<description>A steel drill bit for drilling bore holes.</description>
+	</part>
 	
 	<part name="bore drill pipe" mass="50.0">
 		<description>A steel pipe for drilling and lining bore holes.</description>
