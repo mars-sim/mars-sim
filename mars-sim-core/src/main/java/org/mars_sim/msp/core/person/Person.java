@@ -7,7 +7,21 @@
 
 package org.mars_sim.msp.core.person;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.science.Science;
@@ -21,11 +35,6 @@ import org.mars_sim.msp.core.vehicle.Medical;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /**
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
@@ -33,9 +42,6 @@ import java.util.logging.Logger;
 public class Person extends Unit implements VehicleOperator, Serializable {
 
     private static transient Logger logger = Logger.getLogger(Person.class.getName());
-
-    // Unit update events
-    public final static String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
 
     /**
      * Status string used when Person resides in settlement
@@ -546,12 +552,12 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         if (associatedSettlement != newSettlement) {
             Settlement oldSettlement = associatedSettlement;
             associatedSettlement = newSettlement;
-            fireUnitUpdate(ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
+            fireUnitUpdate(UnitEventType.ASSOCIATED_SETTLEMENT_EVENT, associatedSettlement);
             if (oldSettlement != null) {
-                oldSettlement.fireUnitUpdate(Settlement.REMOVE_ASSOCIATED_PERSON_EVENT, this);
+                oldSettlement.fireUnitUpdate(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT, this);
             }
             if (newSettlement != null) {
-                newSettlement.fireUnitUpdate(Settlement.ADD_ASSOCIATED_PERSON_EVENT, this);
+                newSettlement.fireUnitUpdate(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT, this);
             }
         }
     }

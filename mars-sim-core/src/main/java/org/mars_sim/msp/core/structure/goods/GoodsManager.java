@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -79,9 +80,6 @@ public class GoodsManager implements Serializable {
 
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
-
-	/** Unit update events. */
-    public static final String GOODS_VALUE_EVENT = "goods values";
 
     // Mission types.
     private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
@@ -217,7 +215,7 @@ public class GoodsManager implements Serializable {
 
         Iterator<Good> i = goodsValues.keySet().iterator();
         while (i.hasNext()) updateGoodValue(i.next(), true);
-        settlement.fireUnitUpdate(GOODS_VALUE_EVENT);
+        settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT);
 
         initialized = true;
     }
@@ -231,7 +229,7 @@ public class GoodsManager implements Serializable {
     public void updateGoodValue(Good good, boolean collectiveUpdate) {
         if (good != null) {
             goodsValues.put(good, determineGoodValue(good, getNumberOfGoodForSettlement(good), false));
-            if (!collectiveUpdate) settlement.fireUnitUpdate(GOODS_VALUE_EVENT, good);
+            if (!collectiveUpdate) settlement.fireUnitUpdate(UnitEventType.GOODS_VALUE_EVENT, good);
         }
         else throw new IllegalArgumentException("Good is null.");
     }

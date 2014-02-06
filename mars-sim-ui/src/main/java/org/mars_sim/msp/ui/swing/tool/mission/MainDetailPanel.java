@@ -7,24 +7,12 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.UnitEvent;
-import org.mars_sim.msp.core.UnitListener;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
@@ -33,6 +21,47 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitListener;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.CollectIce;
+import org.mars_sim.msp.core.person.ai.mission.CollectRegolith;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * The tab panel for showing mission details.
@@ -531,11 +560,11 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	
     	public void run() {
     		// Update vehicle info in UI based on event type.
-    		String type = event.getType();
+    		UnitEventType type = event.getType();
     		Vehicle vehicle = (Vehicle) event.getSource();
-    		if (type.equals(Vehicle.STATUS_EVENT)) 
+    		if (type.equals(UnitEventType.STATUS_EVENT)) 
     			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
-    		else if (type.equals(Vehicle.SPEED_EVENT)) 
+    		else if (type.equals(UnitEventType.SPEED_EVENT)) 
     			speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
     	}
     }
@@ -638,12 +667,12 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	 * @param event the unit event.
     	 */
     	public void unitUpdate(UnitEvent event) {
-    		String type = event.getType();
+    		UnitEventType type = event.getType();
     		Person person = (Person) event.getSource();
     		int index = getIndex(members,person);
-    		if (type.equals(Unit.NAME_EVENT)) 
+    		if (type.equals(UnitEventType.NAME_EVENT)) 
     			SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
-    		else if (type.equals(Task.TASK_DESC_EVENT) || type.equals(TaskManager.TASK_EVENT)) 
+    		else if (type.equals(UnitEventType.TASK_DESC_EVENT) || type.equals(UnitEventType.TASK_EVENT)) 
     			SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
     	}
     	

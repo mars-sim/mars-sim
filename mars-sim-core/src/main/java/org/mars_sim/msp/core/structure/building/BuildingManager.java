@@ -7,17 +7,49 @@
  
 package org.mars_sim.msp.core.structure.building;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
-import org.mars_sim.msp.core.structure.building.function.*;
+import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
+import org.mars_sim.msp.core.structure.building.function.Communication;
+import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.Dining;
+import org.mars_sim.msp.core.structure.building.function.EVA;
+import org.mars_sim.msp.core.structure.building.function.EarthReturn;
+import org.mars_sim.msp.core.structure.building.function.Exercise;
+import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.structure.building.function.Management;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.structure.building.function.MedicalCare;
+import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.Recreation;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
@@ -25,12 +57,6 @@ import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The BuildingManager manages the settlement's buildings.
@@ -41,11 +67,7 @@ public class BuildingManager implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
-    
-	// Unit update events.
-	public static final String ADD_BUILDING_EVENT = "add building";
-	public static final String REMOVE_BUILDING_EVENT = "remove building";
-	
+
     // Data members
     private Settlement settlement; // The manager's settlement.
     private List<Building> buildings; // The settlement's buildings.
@@ -105,7 +127,7 @@ public class BuildingManager implements Serializable {
     public void addBuilding(Building newBuilding) {
         if (!buildings.contains(newBuilding)) {
         	buildings.add(newBuilding);
-        	settlement.fireUnitUpdate(ADD_BUILDING_EVENT, newBuilding);
+        	settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
         }
     }
     
@@ -121,7 +143,7 @@ public class BuildingManager implements Serializable {
             
             buildings.remove(oldBuilding);
             
-            settlement.fireUnitUpdate(REMOVE_BUILDING_EVENT, oldBuilding);
+            settlement.fireUnitUpdate(UnitEventType.REMOVE_BUILDING_EVENT, oldBuilding);
         }
     }
     

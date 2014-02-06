@@ -12,8 +12,8 @@ import java.awt.GridLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -92,7 +92,7 @@ public class CollectResourcesMissionCustomInfoPanel extends
 
     @Override
     public void unitUpdate(UnitEvent event) {
-        if (Inventory.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+        if (UnitEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
             if (resource.equals(event.getTarget())) {
                 updateCollectionValueLabel();   
             }

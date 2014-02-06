@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -782,10 +783,10 @@ implements UnitListener {
      * @param event the unit event.
      */
     public void unitUpdate(UnitEvent event) {
-        String type = event.getType();
-        if (type.equals(Unit.LOCATION_EVENT))
+    	UnitEventType type = event.getType();
+        if (type.equals(UnitEventType.LOCATION_EVENT))
             fireMissionUpdate(DISTANCE_EVENT);
-        else if (type.equals(Unit.NAME_EVENT))
+        else if (type.equals(UnitEventType.NAME_EVENT))
             fireMissionUpdate(VEHICLE_EVENT);
     }
 

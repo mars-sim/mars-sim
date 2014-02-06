@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Mind;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,6 +15,13 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.time.MarsClock;
 
 /** 
  * The TaskManager class keeps track of a person's current task and can randomly
@@ -32,9 +33,7 @@ import java.util.logging.Logger;
 public class TaskManager implements Serializable {
 
     private static Logger logger = Logger.getLogger(TaskManager.class.getName());
-    
-    // Unit event types
-    public static final String TASK_EVENT = "task";
+
     // Data members
     private Task currentTask; // The current task the person is doing.
     private Mind mind; // The mind of the person the task manager is responsible for.
@@ -168,7 +167,7 @@ public class TaskManager implements Serializable {
      */
     public void clearTask() {
         currentTask = null;
-        mind.getPerson().fireUnitUpdate(TASK_EVENT);
+        mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT);
     }
 
     /** Adds a task to the stack of tasks.
@@ -180,7 +179,7 @@ public class TaskManager implements Serializable {
         } else {
             currentTask = newTask;
         }
-        mind.getPerson().fireUnitUpdate(TASK_EVENT, newTask);
+        mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT, newTask);
     }
 
     /** 

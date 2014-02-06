@@ -6,20 +6,30 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
-import org.mars_sim.msp.core.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.swing.SwingUtilities;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEvent;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitManagerEvent;
+import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.malfunction.Malfunction;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import javax.swing.*;
-import java.util.*;
 
 /**
  * The SettlementTableModel that maintains a list of Settlement objects.
@@ -232,22 +242,22 @@ public class SettlementTableModel extends UnitTableModel {
         Unit unit = (Unit) event.getSource();
         int unitIndex = getUnitIndex(unit);
         Object target = event.getTarget();
-        String eventType = event.getType();
+        UnitEventType eventType = event.getType();
 
         int columnNum = -1;
-        if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
-        else if (eventType.equals(Inventory.INVENTORY_STORING_UNIT_EVENT) || 
-                eventType.equals(Inventory.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+        if (eventType.equals(UnitEventType.NAME_EVENT)) columnNum = NAME;
+        else if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT) || 
+                eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
             if (target instanceof Person) columnNum = POPULATION;
             else if (target instanceof Vehicle) columnNum = PARKED;
         }
-        else if (eventType.equals(PowerGrid.GENERATED_POWER_EVENT)) columnNum = POWER;
-        else if (eventType.equals(BuildingManager.ADD_BUILDING_EVENT)) {
+        else if (eventType.equals(UnitEventType.GENERATED_POWER_EVENT)) columnNum = POWER;
+        else if (eventType.equals(UnitEventType.ADD_BUILDING_EVENT)) {
             if (target instanceof Farming) columnNum = GREENHOUSES;
         }
-        else if (eventType.equals(Farming.CROP_EVENT)) columnNum = CROPS;
-        else if (eventType.equals(MalfunctionManager.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
-        else if (eventType.equals(Inventory.INVENTORY_RESOURCE_EVENT)) {
+        else if (eventType.equals(UnitEventType.CROP_EVENT)) columnNum = CROPS;
+        else if (eventType.equals(UnitEventType.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
+        else if (eventType.equals(UnitEventType.INVENTORY_RESOURCE_EVENT)) {
             try {
                 int tempColumnNum = -1;
 
