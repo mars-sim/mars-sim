@@ -15,7 +15,6 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
-import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -25,12 +24,9 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
-import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -459,10 +455,10 @@ public class PersonTableModel extends UnitTableModel {
     	public void unitUpdate(UnitEvent event) {
     		UnitEventType eventType = event.getType();
 
-    		if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT)) {
+    		if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
     			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
     		}
-    		else if (eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    		else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
     			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
     		}
     	}
@@ -518,10 +514,10 @@ public class PersonTableModel extends UnitTableModel {
     	 */
     	public void unitUpdate(UnitEvent event) {
     		UnitEventType eventType = event.getType();
-    		if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT)) {
+    		if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT) {
     			if (event.getTarget() instanceof Person) addUnit((Unit) event.getTarget());
     		}
-    		else if (eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+    		else if (eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
     			if (event.getTarget() instanceof Person) removeUnit((Unit) event.getTarget());
     		}
     	}
@@ -538,9 +534,9 @@ public class PersonTableModel extends UnitTableModel {
     	 */
     	public void unitUpdate(UnitEvent event) {
     		UnitEventType eventType = event.getType();
-    		if (eventType.equals(UnitEventType.ADD_ASSOCIATED_PERSON_EVENT)) 
+    		if (eventType == UnitEventType.ADD_ASSOCIATED_PERSON_EVENT) 
     			addUnit((Unit) event.getTarget());
-    		else if (eventType.equals(UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT))
+    		else if (eventType == UnitEventType.REMOVE_ASSOCIATED_PERSON_EVENT)
     			removeUnit((Unit) event.getTarget());
     	}
     }

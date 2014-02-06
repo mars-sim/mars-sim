@@ -296,19 +296,19 @@ public class VehicleTableModel extends UnitTableModel {
 		UnitEventType eventType = event.getType();
 
 		int columnNum = -1;
-		if (eventType.equals(UnitEventType.NAME_EVENT)) columnNum = NAME;
-		else if (eventType.equals(UnitEventType.LOCATION_EVENT)) columnNum = LOCATION;
-		else if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT) || 
-				eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+		if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
+		else if (eventType == UnitEventType.LOCATION_EVENT) columnNum = LOCATION;
+		else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
+				eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
 			if (target instanceof Person) columnNum = CREW;
 		}
-		else if (eventType.equals(UnitEventType.OPERATOR_EVENT)) columnNum = DRIVER;
-		else if (eventType.equals(UnitEventType.STATUS_EVENT)) columnNum = STATUS;
-		else if (eventType.equals(UnitEventType.EMERGENCY_BEACON_EVENT)) columnNum = BEACON;
-		else if (eventType.equals(UnitEventType.RESERVED_EVENT)) columnNum = RESERVED;
-		else if (eventType.equals(UnitEventType.SPEED_EVENT)) columnNum = SPEED;
-		else if (eventType.equals(UnitEventType.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
-		else if (eventType.equals(UnitEventType.INVENTORY_RESOURCE_EVENT)) {
+		else if (eventType == UnitEventType.OPERATOR_EVENT) columnNum = DRIVER;
+		else if (eventType == UnitEventType.STATUS_EVENT) columnNum = STATUS;
+		else if (eventType == UnitEventType.EMERGENCY_BEACON_EVENT) columnNum = BEACON;
+		else if (eventType == UnitEventType.RESERVED_EVENT) columnNum = RESERVED;
+		else if (eventType == UnitEventType.SPEED_EVENT) columnNum = SPEED;
+		else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
+		else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
 			try {
 				int tempColumnNum = -1;
 				

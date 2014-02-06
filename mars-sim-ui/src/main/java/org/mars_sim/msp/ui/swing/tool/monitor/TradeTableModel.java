@@ -59,7 +59,7 @@ public class TradeTableModel extends AbstractTableModel implements
 	 * @param event the unit event.
 	 */
 	public void unitUpdate(UnitEvent event) {
-		if (event.getType().equals(UnitEventType.GOODS_VALUE_EVENT)) {
+		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
 			SwingUtilities.invokeLater(new TradeTableUpdater(event));
 		}
 	}

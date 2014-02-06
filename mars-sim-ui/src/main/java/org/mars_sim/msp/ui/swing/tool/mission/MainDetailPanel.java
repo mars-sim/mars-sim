@@ -562,9 +562,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		// Update vehicle info in UI based on event type.
     		UnitEventType type = event.getType();
     		Vehicle vehicle = (Vehicle) event.getSource();
-    		if (type.equals(UnitEventType.STATUS_EVENT)) 
+    		if (type == UnitEventType.STATUS_EVENT) 
     			vehicleStatusLabel.setText("Vehicle Status: " + vehicle.getStatus());
-    		else if (type.equals(UnitEventType.SPEED_EVENT)) 
+    		else if (type == UnitEventType.SPEED_EVENT) 
     			speedLabel.setText("Vehicle Speed: " + formatter.format(vehicle.getSpeed()) + " km/h");
     	}
     }
@@ -670,9 +670,9 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		UnitEventType type = event.getType();
     		Person person = (Person) event.getSource();
     		int index = getIndex(members,person);
-    		if (type.equals(UnitEventType.NAME_EVENT)) 
+    		if (type == UnitEventType.NAME_EVENT) 
     			SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
-    		else if (type.equals(UnitEventType.TASK_DESC_EVENT) || type.equals(UnitEventType.TASK_EVENT)) 
+    		else if (type == UnitEventType.TASK_DESC_EVENT || type == UnitEventType.TASK_EVENT) 
     			SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
     	}
     	
