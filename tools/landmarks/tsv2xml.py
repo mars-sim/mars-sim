@@ -3,7 +3,7 @@
 # Mars Simulation Project
 # Tab-separated landmark file importer script thingie
 # tsv2xml.py
-# @version 3.06 2014-02-05
+# @version 3.06 2014-02-06
 # @author Lars Næsbye Christensen [lechimp]
 #
 # This script requires Python 2.3 or later and the 'SearchResults.tsv' file to be in the same
@@ -14,10 +14,11 @@
 
 # TODO: 
 # Insert doctype - <!DOCTYPE landmark-list SYSTEM "conf/dtd/landmarks.dtd"> - doesn't seem to be necessary, though
-# Parse into MSP's native format
+# Parse into MSP's native coordinate format
 # Sort according to name or type
 
 from xml.dom.minidom import Document
+from decimal import Decimal
 
 # Preferences - should maybe be cmd-line parameters
 diameter_threshold = 1000.0 #skip landmarks smaller than this size in km
@@ -84,9 +85,16 @@ for tsvline in tsvlinelist:
 			landmark.setAttribute("name", namestring) # Feature_Name
 		
 			landmark.setAttribute("diameter", valuelist[index_diameter]) # Diameter of feature
-
-			landmark.setAttribute("longitude", valuelist[index_long]+" E") # Center_Longitude
-			landmark.setAttribute("latitude", valuelist[index_lat]+" N") # Center_Latitude
+# Center_Longitude
+			if Decimal(valuelist[index_long]) > 180:
+				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])-180))+" W") 
+			else:
+				landmark.setAttribute("longitude", str((Decimal(valuelist[index_long])))+" E") 
+# Center_Latitude
+			if Decimal(valuelist[index_lat]) < 0:
+				landmark.setAttribute("latitude", str(abs(Decimal(valuelist[index_lat])))+" S")
+			else:
+				landmark.setAttribute("latitude", str(Decimal(valuelist[index_lat]))+" N")
 
 			landmark.setAttribute("approvaldate", valuelist[index_approval]) # Approval Date string
 			landmark.setAttribute("origin", valuelist[index_origin]) # Origin of name
