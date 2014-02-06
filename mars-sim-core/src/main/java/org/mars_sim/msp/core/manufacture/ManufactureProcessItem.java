@@ -14,6 +14,9 @@ import java.io.Serializable;
  */
 public class ManufactureProcessItem implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	public final static String AMOUNT_RESOURCE = "resource";
 	public final static String PART = "part";
 	public final static String EQUIPMENT = "equipment";
@@ -37,7 +40,7 @@ public class ManufactureProcessItem implements Serializable {
 	}
 	
 	public void setType(String type) {
-		this.type = type;
+		this.type = type.toLowerCase();
 	}
 	
 	public double getAmount() {
