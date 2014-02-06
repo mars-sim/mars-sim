@@ -18,7 +18,6 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
@@ -47,10 +46,6 @@ implements UnitListener {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
-
-	// Mission event types
-	public static final String VEHICLE_EVENT = "vehicle";
-	public static final String OPERATOR_EVENT = "operator";
 
 	// Mission phases
 	public static final String EMBARKING = "Embarking";
@@ -146,7 +141,7 @@ implements UnitListener {
                 startingTravelledDistance = vehicle.getTotalDistanceTraveled();
                 newVehicle.setReservedForMission(true);
                 vehicle.addUnitListener(this);
-                fireMissionUpdate(VEHICLE_EVENT);
+                fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
             }
             if (!usable)
                 throw new IllegalStateException(getPhase()
@@ -171,7 +166,7 @@ implements UnitListener {
             vehicle.setReservedForMission(false);
             vehicle.removeUnitListener(this);
             vehicle = null;
-            fireMissionUpdate(VEHICLE_EVENT);
+            fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
         }
     }
 
@@ -785,9 +780,9 @@ implements UnitListener {
     public void unitUpdate(UnitEvent event) {
     	UnitEventType type = event.getType();
         if (type == UnitEventType.LOCATION_EVENT)
-            fireMissionUpdate(DISTANCE_EVENT);
+            fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
         else if (type == UnitEventType.NAME_EVENT)
-            fireMissionUpdate(VEHICLE_EVENT);
+            fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
     }
 
     /**

@@ -7,28 +7,56 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.map.*;
-
-import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.ai.mission.Exploration;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
+import org.mars_sim.msp.core.person.ai.mission.MissionListener;
+import org.mars_sim.msp.core.person.ai.mission.NavPoint;
+import org.mars_sim.msp.core.person.ai.mission.TravelMission;
+import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.map.CannedMarsMap;
+import org.mars_sim.msp.ui.swing.tool.map.MapPanel;
+import org.mars_sim.msp.ui.swing.tool.map.MineralMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.NavpointMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.UnitIconMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.UnitLabelMapLayer;
+import org.mars_sim.msp.ui.swing.tool.map.VehicleTrailMapLayer;
+
 /**
  * Tab panel for displaying a mission's navpoints.
  */
-public class NavpointPanel extends JPanel implements ListSelectionListener,
-		MissionListener {
+public class NavpointPanel
+extends JPanel
+implements ListSelectionListener, MissionListener {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Private members.
 	private Mission currentMission;
@@ -231,8 +259,8 @@ public class NavpointPanel extends JPanel implements ListSelectionListener,
 	 * @param event the mission event.
 	 */
 	public void missionUpdate(MissionEvent event) {
-		String type = event.getType();
-		if (TravelMission.NAVPOINTS_EVENT.equals(type)) {
+		MissionEventType type = event.getType();
+		if (MissionEventType.NAVPOINTS_EVENT == type) {
 			// Update mission navpoints.
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {

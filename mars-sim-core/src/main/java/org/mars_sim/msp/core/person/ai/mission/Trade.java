@@ -6,6 +6,15 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -37,23 +46,12 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * A mission for trading between two settlements.
  */
 public class Trade extends RoverMission implements Serializable {
 
     private static Logger logger = Logger.getLogger(Trade.class.getName());
-    // Mission event types
-    public static final String BUY_LOAD_EVENT = "buy load";
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
     // Mission phases.
@@ -474,7 +472,7 @@ public class Trade extends RoverMission implements Serializable {
                     if (negotiationTask.isDone()) {
                         buyLoad = negotiationTask.getBuyLoad();
                         profit = estimateTradeProfit(buyLoad);
-                        fireMissionUpdate(BUY_LOAD_EVENT);
+                        fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
                         setPhaseEnded(true);
                     }
                 } else {
@@ -491,7 +489,7 @@ public class Trade extends RoverMission implements Serializable {
                         if (timeDiff > 1000D) {
                             buyLoad = new HashMap<Good, Integer>(0);
                             profit = 0D;
-                            fireMissionUpdate(BUY_LOAD_EVENT);
+                            fireMissionUpdate(MissionEventType.BUY_LOAD_EVENT);
                             setPhaseEnded(true);
                         }
                     }

@@ -17,6 +17,7 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
@@ -82,7 +83,7 @@ public class MissionListModel extends AbstractListModel<Mission> implements
 	 */
 	@Override
 	public void missionUpdate(MissionEvent event) {
-		if (event.getType().equals(Mission.DESCRIPTION_EVENT)) {
+		if (event.getType() == MissionEventType.DESCRIPTION_EVENT) {
 			int index = missions.indexOf(event.getSource());
 			if ((index > -1) && (index < missions.size())) {
 				SwingUtilities.invokeLater(new MissionListUpdater(

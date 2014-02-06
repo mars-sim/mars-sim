@@ -15,11 +15,11 @@ import javax.swing.table.AbstractTableModel;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 
@@ -189,16 +189,16 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			int column1 = -1;
 			int column2 = -1;
 			
-			String eventType = event.getType();
-			if (eventType.equals(Mission.NAME_EVENT)) column1 = TYPE;
-			else if (eventType.equals(Mission.DESCRIPTION_EVENT)) column1 = DESCRIPTION;
-			else if (eventType.equals(Mission.PHASE_EVENT)) column1 = PHASE;
-			else if (eventType.equals(Mission.ADD_MEMBER_EVENT) || 
-					eventType.equals(Mission.REMOVE_MEMBER_EVENT)) column1 = MEMBER_NUM;
-			else if (eventType.equals(TravelMission.NAVPOINTS_EVENT)) column1 = NAVPOINT_NUM;
-			else if (eventType.equals(VehicleMission.VEHICLE_EVENT)) column1 = VEHICLE;
-			else if (eventType.equals(RoverMission.STARTING_SETTLEMENT_EVENT)) column1 = STARTING_SETTLEMENT;
-			else if (eventType.equals(VehicleMission.DISTANCE_EVENT)) {
+			MissionEventType eventType = event.getType();
+			if (eventType == MissionEventType.NAME_EVENT) column1 = TYPE;
+			else if (eventType == MissionEventType.DESCRIPTION_EVENT) column1 = DESCRIPTION;
+			else if (eventType == MissionEventType.PHASE_EVENT) column1 = PHASE;
+			else if (eventType == MissionEventType.ADD_MEMBER_EVENT || 
+					eventType == MissionEventType.REMOVE_MEMBER_EVENT) column1 = MEMBER_NUM;
+			else if (eventType == MissionEventType.NAVPOINTS_EVENT) column1 = NAVPOINT_NUM;
+			else if (eventType == MissionEventType.VEHICLE_EVENT) column1 = VEHICLE;
+			else if (eventType == MissionEventType.STARTING_SETTLEMENT_EVENT) column1 = STARTING_SETTLEMENT;
+			else if (eventType == MissionEventType.DISTANCE_EVENT) {
 				column1 = TRAVELLED_DISTANCE;
 				column2 = REMAINING_DISTANCE;
 			}

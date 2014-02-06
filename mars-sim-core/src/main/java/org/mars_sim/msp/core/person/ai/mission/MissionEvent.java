@@ -12,22 +12,27 @@ import java.util.EventObject;
  * A mission change event.
  */
 public class MissionEvent extends EventObject {
-	
+
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
+
 	// Data members
-	private String type; // The event type.
-	private Object target; // The event target object or null if none.
+	/** The event type. */
+	private MissionEventType type;
+	/** The event target object or null if none. */
+	private Object target;
 	
 	/**
 	 * Constructor
 	 * @param source the object throwing the event.
-	 * @param type the event type.
+	 * @param addMemberEvent the event type.
 	 * @param target the event target object (or null if none)
 	 */
-	public MissionEvent(Mission source, String type, Object target) {
+	public MissionEvent(Mission source, MissionEventType addMemberEvent, Object target) {
 		// Use EventObject constructor.
 		super(source);
 		
-		this.type = type;
+		this.type = addMemberEvent;
 		this.target = target;
 	}
 	
@@ -35,7 +40,7 @@ public class MissionEvent extends EventObject {
 	 * Gets the event type.
 	 * @return event type.
 	 */
-	public String getType() {
+	public MissionEventType getType() {
 		return type;
 	}
 	

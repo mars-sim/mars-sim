@@ -7,6 +7,11 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.awt.geom.Point2D;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -35,20 +40,12 @@ import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
  */
 public abstract class RoverMission extends VehicleMission {
 
     private static Logger logger = Logger.getLogger(RoverMission.class.getName());
-    
-    // Mission event types
-    public static final String STARTING_SETTLEMENT_EVENT = "starting settlement";
 
     // Static members
     protected static final int MIN_PEOPLE = 2;
@@ -108,7 +105,7 @@ public abstract class RoverMission extends VehicleMission {
      */
     protected final void setStartingSettlement(Settlement startingSettlement) {
         this.startingSettlement = startingSettlement;
-        fireMissionUpdate(STARTING_SETTLEMENT_EVENT);
+        fireMissionUpdate(MissionEventType.STARTING_SETTLEMENT_EVENT);
     }
 
     /**
