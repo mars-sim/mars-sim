@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -474,9 +475,9 @@ public class PersonTableModel extends UnitTableModel {
     	 * @param event the mission event.
     	 */
     	public void missionUpdate(MissionEvent event) {
-    		String eventType = event.getType();
-    		if (eventType.equals(Mission.ADD_MEMBER_EVENT)) addUnit((Unit) event.getTarget());
-    		else if (eventType.equals(Mission.REMOVE_MEMBER_EVENT)) removeUnit((Unit) event.getTarget());
+    		MissionEventType eventType = event.getType();
+    		if (eventType == MissionEventType.ADD_MEMBER_EVENT) addUnit((Unit) event.getTarget());
+    		else if (eventType == MissionEventType.REMOVE_MEMBER_EVENT) removeUnit((Unit) event.getTarget());
     	}
     }
     

@@ -24,6 +24,7 @@ import javax.swing.SwingConstants;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 
 /**
  * A panel for displaying exploration mission information.
@@ -98,7 +99,7 @@ public class ExplorationCustomInfoPanel extends MissionCustomInfoPanel {
 
     @Override
     public void updateMissionEvent(MissionEvent e) {
-        if (Exploration.SITE_EXPLORATION_EVENT.equals(e.getType())) {
+        if (MissionEventType.SITE_EXPLORATION_EVENT == e.getType()) {
             Exploration mission = (Exploration) e.getSource();
             String siteName = (String) e.getTarget();
             double completion = mission.getExplorationSiteCompletion().get(siteName);

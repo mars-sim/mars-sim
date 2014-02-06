@@ -45,9 +45,6 @@ public class Exploration extends RoverMission implements Serializable {
 
     // Mission phases
     final public static String EXPLORE_SITE = "Exploring Site";
-    
-    // Mission events
-    public static final String SITE_EXPLORATION_EVENT = "explore site";
 
     // Number of specimen containers required for the mission.
     public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
@@ -389,7 +386,7 @@ public class Exploration extends RoverMission implements Serializable {
         if (completion > 1D) completion = 1D;
         else if (completion < 0D) completion = 0D;
         explorationSiteCompletion.put(getCurrentNavpoint().getDescription(), completion);
-        fireMissionUpdate(SITE_EXPLORATION_EVENT, getCurrentNavpoint().getDescription());
+        fireMissionUpdate(MissionEventType.SITE_EXPLORATION_EVENT, getCurrentNavpoint().getDescription());
 
         if (isEveryoneInRover()) {
 

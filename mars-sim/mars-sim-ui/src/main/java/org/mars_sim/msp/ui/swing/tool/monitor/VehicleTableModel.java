@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.MissionManagerListener;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
@@ -539,12 +540,14 @@ public class VehicleTableModel extends UnitTableModel {
     	 */
     	public void missionUpdate(MissionEvent event) {
     		Mission mission = (Mission) event.getSource();
-    		String eventType = event.getType();
+    		MissionEventType eventType = event.getType();
     		int columnNum = -1;
-    		if (eventType.equals(TravelMission.TRAVEL_STATUS_EVENT) || 
-    				eventType.equals(TravelMission.NAVPOINTS_EVENT)) columnNum = DESTINATION;
-    		else if (eventType.equals(TravelMission.DISTANCE_EVENT)) columnNum = DESTDIST;
-    		else if (eventType.equals(VehicleMission.VEHICLE_EVENT)) columnNum = MISSION;
+    		if (
+    			eventType == MissionEventType.TRAVEL_STATUS_EVENT || 
+    			eventType == MissionEventType.NAVPOINTS_EVENT
+    		) columnNum = DESTINATION;
+    		else if (eventType == MissionEventType.DISTANCE_EVENT) columnNum = DESTDIST;
+    		else if (eventType == MissionEventType.VEHICLE_EVENT) columnNum = MISSION;
     		
     		if (columnNum > -1) {
     		    if (mission instanceof VehicleMission) {

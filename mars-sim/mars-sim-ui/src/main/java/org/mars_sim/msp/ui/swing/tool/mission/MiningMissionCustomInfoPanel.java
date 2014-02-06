@@ -7,22 +7,31 @@
 
 package org.mars_sim.msp.ui.swing.tool.mission;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.NumberCellRenderer;
-
-import javax.swing.*;
-import javax.swing.table.AbstractTableModel;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.table.AbstractTableModel;
+
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 
 /**
  * A panel for displaying mining mission information.
@@ -133,8 +142,8 @@ public class MiningMissionCustomInfoPanel extends MissionCustomInfoPanel {
 
 	@Override
 	public void updateMissionEvent(MissionEvent e) {
-		if (e.getType().equals(Mining.EXCAVATE_MINERALS_EVENT) || 
-				e.getType().equals(Mining.COLLECT_MINERALS_EVENT))
+		if (e.getType() == MissionEventType.EXCAVATE_MINERALS_EVENT || 
+				e.getType() == MissionEventType.COLLECT_MINERALS_EVENT)
 			excavationTableModel.updateTable();
 	}
 	

@@ -7,24 +7,22 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A mission that involves traveling along a series of navpoints.
  */
 public abstract class TravelMission extends Mission {
 
-    // Mission event types
-    public static final String TRAVEL_STATUS_EVENT = "travel status";
-    public static final String NAVPOINTS_EVENT = "navpoints";
-    public static final String DISTANCE_EVENT = "distance";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Travel Mission status
+	// Travel Mission status
     public final static String AT_NAVPOINT = "At a navpoint";
     public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 
@@ -70,7 +68,7 @@ public abstract class TravelMission extends Mission {
     public final void addNavpoint(NavPoint navPoint) {
         if (navPoint != null) {
             navPoints.add(navPoint);
-            fireMissionUpdate(NAVPOINTS_EVENT);
+            fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
         } else
             throw new IllegalArgumentException("navPoint is null");
     }
@@ -84,7 +82,7 @@ public abstract class TravelMission extends Mission {
     protected final void setNavpoint(int index, NavPoint navPoint) {
         if ((navPoint != null) && (index >= 0)) {
             navPoints.set(index, navPoint);
-            fireMissionUpdate(NAVPOINTS_EVENT);
+            fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
         } else
             throw new IllegalArgumentException("navPoint is null");
     }
@@ -97,7 +95,7 @@ public abstract class TravelMission extends Mission {
         int numNavpoints = getNumberOfNavpoints();
         for (int x = index; x < numNavpoints; x++) {
             navPoints.remove(index);
-            fireMissionUpdate(NAVPOINTS_EVENT);
+            fireMissionUpdate(MissionEventType.NAVPOINTS_EVENT);
         }
     }
 
@@ -219,7 +217,7 @@ public abstract class TravelMission extends Mission {
      */
     private void setTravelStatus(String newTravelStatus) {
         travelStatus = newTravelStatus;
-        fireMissionUpdate(TRAVEL_STATUS_EVENT);
+        fireMissionUpdate(MissionEventType.TRAVEL_STATUS_EVENT);
     }
 
     /**

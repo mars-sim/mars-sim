@@ -30,32 +30,34 @@ import java.util.logging.Logger;
  */
 public abstract class Mission implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Mission.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Mission event types
-    public static final String NAME_EVENT = "name";
-    public static final String DESCRIPTION_EVENT = "description";
-    public static final String PHASE_EVENT = "phase";
-    public static final String PHASE_DESCRIPTION_EVENT = "phase description";
-    public static final String MIN_PEOPLE_EVENT = "minimum people";
-    public static final String ASSOCIATED_SETTLEMENT_EVENT = "associated settlement";
-    public static final String CAPACITY_EVENT = "capacity";
-    public static final String ADD_MEMBER_EVENT = "remove member";
-    public static final String REMOVE_MEMBER_EVENT = "add member";
-    public static final String END_MISSION_EVENT = "end mission";
+	private static Logger logger = Logger.getLogger(Mission.class.getName());
 
-    // Data members
-    private Collection<Person> people; // People in mission
-    private String name; // Name of mission
-    private String description; // Description of the mission
-    private int minPeople; // The minimum number of people for mission.
-    private boolean done; // True if mission is completed
-    private Collection<String> phases; // A collection of the mission's phases.
-    private String phase; // The current phase of the mission
-    private String phaseDescription; // The description of the current phase of operation.
-    private boolean phaseEnded; // Has the current phase ended?
-    private int missionCapacity; // The number of people that can be in the mission.
-    private transient List<MissionListener> listeners; // Mission listeners.
+	// Data members
+	/** People in mission. */
+	private Collection<Person> people;
+	/** Name of mission. */
+	private String name;
+	/** Description of the mission. */
+	private String description;
+	/** The minimum number of people for mission. */
+	private int minPeople;
+	/** True if mission is completed. */
+	private boolean done;
+	/** A collection of the mission's phases. */
+	private Collection<String> phases;
+	/** The current phase of the mission. */
+	private String phase;
+	/** The description of the current phase of operation. */
+	private String phaseDescription;
+	/** Has the current phase ended? */
+	private boolean phaseEnded;
+	/** The number of people that can be in the mission. */
+	private int missionCapacity;
+	/** Mission listeners. */
+	private transient List<MissionListener> listeners;
 
     /** 
      * Constructs a Mission object
@@ -120,21 +122,21 @@ public abstract class Mission implements Serializable {
      * Fire a mission update event.
      * @param updateType the update type.
      */
-    protected final void fireMissionUpdate(String updateType) {
+    protected final void fireMissionUpdate(MissionEventType updateType) {
         fireMissionUpdate(updateType, null);
     }
 
     /**
      * Fire a mission update event.
-     * @param updateType the update type.
+     * @param addMemberEvent the update type.
      * @param target the event target or null if none.
      */
-    protected final void fireMissionUpdate(String updateType, Object target) {
+    protected final void fireMissionUpdate(MissionEventType addMemberEvent, Object target) {
         if (listeners == null) listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
         synchronized(listeners) {
             Iterator<MissionListener> i = listeners.iterator();
             while (i.hasNext()) i.next().missionUpdate(
-                    new MissionEvent(this, updateType, target));
+                    new MissionEvent(this, addMemberEvent, target));
         }
     }
 
@@ -157,7 +159,7 @@ public abstract class Mission implements Serializable {
             HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.JOINING);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
-            fireMissionUpdate(ADD_MEMBER_EVENT, person);
+            fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, person);
 
             logger.finer(person.getName() + " added to mission: " + name);
         }
@@ -175,7 +177,7 @@ public abstract class Mission implements Serializable {
             HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.FINISH);
             Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
-            fireMissionUpdate(REMOVE_MEMBER_EVENT, person);
+            fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, person);
 
             if ((people.size() == 0) && !done) {
                 endMission("Not enough members.");
@@ -216,7 +218,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMinPeople(int minPeople) {
         this.minPeople = minPeople;
-        fireMissionUpdate(MIN_PEOPLE_EVENT, minPeople);
+        fireMissionUpdate(MissionEventType.MIN_PEOPLE_EVENT, minPeople);
     }
 
     /**
@@ -249,7 +251,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setName(String name) {
         this.name = name;
-        fireMissionUpdate(NAME_EVENT, name);
+        fireMissionUpdate(MissionEventType.NAME_EVENT, name);
     }
 
     /** 
@@ -267,7 +269,7 @@ public abstract class Mission implements Serializable {
     public final void setDescription(String description) {
         if (!this.description.equals(description)) {
             this.description = description;
-            fireMissionUpdate(DESCRIPTION_EVENT, description);
+            fireMissionUpdate(MissionEventType.DESCRIPTION_EVENT, description);
         }
     }
 
@@ -290,7 +292,7 @@ public abstract class Mission implements Serializable {
             phase = newPhase;
             setPhaseEnded(false);
             phaseDescription = null;
-            fireMissionUpdate(PHASE_EVENT, newPhase);
+            fireMissionUpdate(MissionEventType.PHASE_EVENT, newPhase);
         }
         else {
             throw new IllegalStateException(phase + " : newPhase: " + newPhase + " is not a valid phase for this mission.");
@@ -329,7 +331,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setPhaseDescription(String description) {
         phaseDescription = description;
-        fireMissionUpdate(PHASE_DESCRIPTION_EVENT, description);
+        fireMissionUpdate(MissionEventType.PHASE_DESCRIPTION_EVENT, description);
     }
 
     /** 
@@ -379,7 +381,7 @@ public abstract class Mission implements Serializable {
      */
     protected final void setMissionCapacity(int newCapacity) {
         missionCapacity = newCapacity;
-        fireMissionUpdate(CAPACITY_EVENT, newCapacity);
+        fireMissionUpdate(MissionEventType.CAPACITY_EVENT, newCapacity);
     }
 
     /** 
@@ -390,7 +392,7 @@ public abstract class Mission implements Serializable {
     public void endMission(String reason) {
         if (!done) {
             done = true;
-            fireMissionUpdate(END_MISSION_EVENT);
+            fireMissionUpdate(MissionEventType.END_MISSION_EVENT);
             Object p[] = people.toArray();
             for (Object aP : p) {
                 removePerson((Person) aP);

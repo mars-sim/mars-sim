@@ -7,6 +7,13 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
@@ -22,13 +29,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
  * The TravelToSettlement class is a mission to travel from one settlement to another randomly selected one within range
  * of an available rover.
@@ -40,9 +40,6 @@ public class TravelToSettlement extends RoverMission implements Serializable {
 
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
-
-    // Mission event types
-    public static final String DESTINATION_SETTLEMENT = "destination settlement";
 
     // Static members
     private static final double BASE_MISSION_WEIGHT = 1D;
@@ -287,7 +284,7 @@ public class TravelToSettlement extends RoverMission implements Serializable {
      */
     private void setDestinationSettlement(Settlement destinationSettlement) {
         this.destinationSettlement = destinationSettlement;
-        fireMissionUpdate(DESTINATION_SETTLEMENT);
+        fireMissionUpdate(MissionEventType.DESTINATION_SETTLEMENT);
     }
 
     /**

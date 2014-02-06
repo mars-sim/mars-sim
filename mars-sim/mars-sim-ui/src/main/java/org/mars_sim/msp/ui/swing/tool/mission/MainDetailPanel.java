@@ -52,10 +52,10 @@ import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
+import org.mars_sim.msp.core.person.ai.mission.MissionEventType;
 import org.mars_sim.msp.core.person.ai.mission.MissionListener;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
-import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -484,20 +484,20 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     	
     	public void run() {
     		Mission mission = (Mission) event.getSource();
-    		String type = event.getType();
+    		MissionEventType type = event.getType();
     		
     		// Update UI based on mission event type.
-    		if (type.equals(Mission.NAME_EVENT)) 
+    		if (type == MissionEventType.NAME_EVENT) 
     			typeLabel.setText("Type: " + mission.getName());
-    		else if (type.equals(Mission.DESCRIPTION_EVENT)) 
+    		else if (type == MissionEventType.DESCRIPTION_EVENT) 
     			descriptionLabel.setText("Description: " + mission.getDescription());
-    		else if (type.equals(Mission.PHASE_DESCRIPTION_EVENT)) {
+    		else if (type == MissionEventType.PHASE_DESCRIPTION_EVENT) {
                 String phaseText = mission.getPhaseDescription();
                 if (phaseText.length() > 40) phaseText = phaseText.substring(0, 40) + "...";
                 phaseLabel.setText("Phase: " + phaseText);
             }
-    		else if (type.equals(Mission.ADD_MEMBER_EVENT) || type.equals(Mission.REMOVE_MEMBER_EVENT) || 
-    				type.equals(Mission.MIN_PEOPLE_EVENT) || type.equals(Mission.CAPACITY_EVENT)) {
+    		else if (type == MissionEventType.ADD_MEMBER_EVENT || type == MissionEventType.REMOVE_MEMBER_EVENT || 
+    				type == MissionEventType.MIN_PEOPLE_EVENT || type == MissionEventType.CAPACITY_EVENT) {
     			int memberNum = mission.getPeopleNumber();
     			int minMembers = mission.getMinPeople();
     			String maxMembers = "";
@@ -511,7 +511,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     					" - Max: " + maxMembers + ")");
     			memberTableModel.updateMembers();
     		}
-    		else if (type.equals(VehicleMission.VEHICLE_EVENT)) {
+    		else if (type == MissionEventType.VEHICLE_EVENT) {
     			Vehicle vehicle = ((VehicleMission) mission).getVehicle();
     			if (vehicle != null) {
     				vehicleButton.setText(vehicle.getName());
@@ -529,7 +529,7 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     				currentVehicle = null;
     			}
     		}
-    		else if (type.equals(TravelMission.DISTANCE_EVENT)) {
+    		else if (type == MissionEventType.DISTANCE_EVENT) {
     			VehicleMission vehicleMission = (VehicleMission) mission;
     			try {
     				int distanceNextNav = (int) vehicleMission.getCurrentLegRemainingDistance();

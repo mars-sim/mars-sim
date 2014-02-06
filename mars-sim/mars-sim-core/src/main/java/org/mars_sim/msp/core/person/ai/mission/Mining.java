@@ -7,7 +7,18 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -30,29 +41,21 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Mission for mining mineral concentrations at an explored site.
  */
 public class Mining extends RoverMission {
 
-    private static Logger logger = Logger.getLogger(Mining.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(Mining.class.getName());
 
     // Default description.
     public static final String DEFAULT_DESCRIPTION = "Mining";
 
     // Mission phases
     final public static String MINING_SITE = "Mining Site";
-
-    // Mission event types
-    public static final String EXCAVATE_MINERALS_EVENT = "excavate minerals";
-    public static final String COLLECT_MINERALS_EVENT = "collect minerals";
 
     // Number of bags needed for mission.
     private static final int NUMBER_OF_BAGS = 20;
@@ -977,7 +980,7 @@ public class Mining extends RoverMission {
             totalExcavated += totalExcavatedMinerals.get(mineral);
         totalExcavatedMinerals.put(mineral, totalExcavated);
 
-        fireMissionUpdate(EXCAVATE_MINERALS_EVENT);
+        fireMissionUpdate(MissionEventType.EXCAVATE_MINERALS_EVENT);
     }
 
     /**
@@ -995,7 +998,7 @@ public class Mining extends RoverMission {
         else
             throw new IllegalStateException(mineral.getName() + " amount: "
                     + amount + " more than currently excavated.");
-        fireMissionUpdate(COLLECT_MINERALS_EVENT);
+        fireMissionUpdate(MissionEventType.COLLECT_MINERALS_EVENT);
     }
 
     @Override
