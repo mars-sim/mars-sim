@@ -52,6 +52,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -565,12 +566,14 @@ public class GoodsManager implements Serializable {
 
         ManufactureProcessItem resourceInput = null;
         Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
-        while (i.hasNext()) {
+        while ((resourceInput == null) && i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType()) && 
-                    resource.getName().equalsIgnoreCase(item.getName())) {
-                            resourceInput = item;
-                            break;
+            if (
+            	Type.AMOUNT_RESOURCE.equals(item.getType()) && 
+                resource.getName().equalsIgnoreCase(item.getName())
+            ) {
+            	resourceInput = item;
+            	break;
             }
         }
 
@@ -1072,8 +1075,12 @@ public class GoodsManager implements Serializable {
         Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
         while (i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType()) && 
-                    part.getName().equalsIgnoreCase(item.getName())) partInput = item;
+            if (
+            	Type.PART.equals(item.getType()) && 
+                part.getName().equalsIgnoreCase(item.getName())
+            ) {
+            	partInput = item;
+            }
             totalInputNum += item.getAmount();
         }
 

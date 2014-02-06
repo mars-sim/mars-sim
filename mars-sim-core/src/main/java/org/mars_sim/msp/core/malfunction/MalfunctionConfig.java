@@ -6,12 +6,17 @@
  */
 package org.mars_sim.msp.core.malfunction;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
-
-import java.io.Serializable;
-import java.util.*;
+import org.mars_sim.msp.core.resource.Type;
 
 /**
  * Provides configuration information about malfunctions.
@@ -133,7 +138,7 @@ public class MalfunctionConfig implements Serializable {
 
                             if (type.equals("life-support")) {
                                 lifeSupportEffects.put(effectName, changeRate);
-                            } else if (type.equals("resource")) {
+                            } else if (type.equals(Type.AMOUNT_RESOURCE.getName())) {
                                 AmountResource resource = AmountResource.findAmountResource(effectName);
                                 resourceEffects.put(resource, changeRate);
                             } else {

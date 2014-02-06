@@ -7,30 +7,48 @@
 
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.manufacture.*;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.manufacture.PartSalvage;
+import org.mars_sim.msp.core.manufacture.Salvagable;
+import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A building function for manufacturing.
@@ -207,28 +225,30 @@ public class Manufacture extends Function implements Serializable {
 	 * @throws BuildingException if error adding process.
 	 */
 	public void addProcess(ManufactureProcess process) {
-		if (process == null) throw new IllegalArgumentException("process is null");
-		
-		if (getTotalProcessNumber() >= concurrentProcesses) 
+		if (process == null) {
+			throw new IllegalArgumentException("process is null");
+		}
+		if (getTotalProcessNumber() >= concurrentProcesses) {
 		    throw new IllegalStateException("No space to add new manufacturing process.");
-		
+		}
 		processes.add(process);
 		
 		// Consume inputs.
 		Inventory inv = getBuilding().getInventory();
-		Iterator<ManufactureProcessItem> i = process.getInfo().getInputList().iterator();
-		while (i.hasNext()) {
-		    ManufactureProcessItem item = i.next();
-		    if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
+		for (ManufactureProcessItem item : process.getInfo().getInputList()) {
+		    if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
 		        AmountResource resource = AmountResource.findAmountResource(item.getName());
 		        inv.retrieveAmountResource(resource, item.getAmount());
 		    }
-		    else if (ManufactureProcessItem.PART.equals(item.getType())) {
+		    else if (Type.PART.equals(item.getType())) {
 		        Part part = (Part) ItemResource.findItemResource(item.getName());
 		        inv.retrieveItemResources(part, (int) item.getAmount());
 		    }
-		    else throw new IllegalStateException("Manufacture process input: " +
-		            item.getType() + " not a valid type.");
+		    else throw new IllegalStateException(
+		    	"Manufacture process input: " +
+		        item.getType() +
+		        " not a valid type."
+		    );
 
 		    // Recalculate settlement good value for input item.
 		    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
@@ -239,10 +259,12 @@ public class Manufacture extends Function implements Serializable {
 		// Log manufacturing process starting.
 		if (logger.isLoggable(Level.FINEST)) {
 			Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-			logger.finest(getBuilding() + " at " 
-						    + settlement
-						    + " starting manufacturing process: " 
-						    + process.getInfo().getName());
+			logger.finest(
+				getBuilding() + " at " 
+				+ settlement
+				+ " starting manufacturing process: " 
+				+ process.getInfo().getName()
+			);
 		}
 	}
 	
@@ -411,7 +433,7 @@ public class Manufacture extends Function implements Serializable {
             while (j.hasNext()) {
                 ManufactureProcessItem item = j.next();
                 if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
-                    if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
+                    if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
                         // Produce amount resources.
                         AmountResource resource = AmountResource.findAmountResource(item.getName());
                         double amount = item.getAmount();
@@ -425,15 +447,16 @@ public class Manufacture extends Function implements Serializable {
                         }
                         inv.storeAmountResource(resource, amount, true);
                     }
-                    else if (ManufactureProcessItem.PART.equals(item.getType())) {
+                    else if (Type.PART.equals(item.getType())) {
                         // Produce parts.
                         Part part = (Part) ItemResource.findItemResource(item.getName());
                         double mass = item.getAmount() * part.getMassPerItem();
                         double capacity = inv.getGeneralCapacity();
-                        if (mass <= capacity)
+                        if (mass <= capacity) {
                             inv.storeItemResources(part, (int) item.getAmount());
+                        }
                     }
-                    else if (ManufactureProcessItem.EQUIPMENT.equals(item.getType())) {
+                    else if (Type.EQUIPMENT.equals(item.getType())) {
                         // Produce equipment.
                         String equipmentType = item.getName();
                         int number = (int) item.getAmount();
@@ -443,7 +466,7 @@ public class Manufacture extends Function implements Serializable {
                             inv.storeUnit(equipment);
                         }
                     }
-                    else if (ManufactureProcessItem.VEHICLE.equals(item.getType())) {
+                    else if (Type.VEHICLE.equals(item.getType())) {
                         // Produce vehicles.
                         String vehicleType = item.getName();
                         int number = (int) item.getAmount();
