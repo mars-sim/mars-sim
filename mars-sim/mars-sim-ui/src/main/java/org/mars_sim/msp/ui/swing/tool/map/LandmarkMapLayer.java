@@ -23,7 +23,7 @@ public class LandmarkMapLayer implements MapLayer {
 	private int CIRCLE_DIAMETER = 10;
 	
 	// Blue color for surface map.
-	private Color SURFACE_COLOR = new Color(50, 50, 255);
+	private Color SURFACE_COLOR = new Color(96, 96, 255);
 	
 	// Gray color for surface map.
 	private Color TOPO_COLOR = new Color(50, 50, 50);

@@ -25,6 +25,7 @@ public class LandmarkConfig implements Serializable {
     private static final String NAME = "name";
     private static final String LATITUDE = "latitude";
     private static final String LONGITUDE = "longitude";
+    private static final String DIAMETER = "diameter";
 
     private Document landmarkDoc;
     private List<Landmark> landmarkList;
@@ -57,6 +58,10 @@ public class LandmarkConfig implements Serializable {
                 // Get landmark name.
                 name = landmark.getAttributeValue(NAME);
 
+                // Get diameter.
+                int diameter = 15;
+//                int diameter = Integer.parseInt(landmark.getAttributeValue(DIAMETER));
+
                 // Get latitude.
                 String latitude = landmark.getAttributeValue(LATITUDE);
 
@@ -67,7 +72,7 @@ public class LandmarkConfig implements Serializable {
                 Coordinates location = new Coordinates(latitude, longitude);
 
                 // Create landmark.
-                landmarkList.add(new Landmark(name, location));
+                landmarkList.add(new Landmark(name, location,diameter));
             }
         }
 
