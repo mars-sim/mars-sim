@@ -6,7 +6,7 @@
 # @version 3.06 2014-02-06
 # @author Lars Næsbye Christensen [lechimp]
 #
-# This script requires Python 2.3 or later and the 'SearchResults.tsv' file to be in the same
+# This script requires Python 2.4 or later and the 'SearchResults.tsv' file to be in the same
 # directory as the script file.
 # Generate TSV file at http://planetarynames.wr.usgs.gov/SearchResults?target=MARS
 # Scroll down and click 'TSV (tab separated values) for importing into other spread sheets', and save the file as SearchResults.tsv
