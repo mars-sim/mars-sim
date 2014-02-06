@@ -74,9 +74,7 @@ public enum UnitEventType {
 	STORED_POWER_EVENT				("stored power"),
 	STORED_POWER_CAPACITY_EVENT		("stored power capacity"),
 	REQUIRED_POWER_EVENT			("required power"),
-	POWER_VALUE_EVENT				("power value"),
-
-	;
+	POWER_VALUE_EVENT				("power value");
 
 	private String name;
 	
@@ -85,11 +83,6 @@ public enum UnitEventType {
 	}
 
 	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
 		return this.name;
 	}
 }

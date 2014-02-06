@@ -422,7 +422,7 @@ public class PersonTableModel extends UnitTableModel {
     	public void run() {
     		UnitEventType eventType = event.getType();
 
-            Integer column = EVENT_COLUMN_MAPPING.get(eventType.getName());
+            Integer column = EVENT_COLUMN_MAPPING.get(eventType);
 /*
             int columnNum = -1;
     		if (eventType.equals(Unit.NAME_EVENT)) columnNum = NAME;
