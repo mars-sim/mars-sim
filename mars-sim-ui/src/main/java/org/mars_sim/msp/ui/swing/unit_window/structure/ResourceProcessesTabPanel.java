@@ -61,8 +61,8 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		// Create scroll panel for the outer table panel.
 		processesScrollPane = new JScrollPane();
 		processesScrollPane.setPreferredSize(new Dimension(220, 280));
-        // increase vertical mousewheel scrolling speed for this one
-        processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		// increase vertical mousewheel scrolling speed for this one
+		processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
 		centerContentPanel.add(processesScrollPane,BorderLayout.CENTER);         
         
         // Prepare process list panel.

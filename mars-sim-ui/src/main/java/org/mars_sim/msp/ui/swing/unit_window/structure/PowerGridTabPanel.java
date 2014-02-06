@@ -116,14 +116,16 @@ public class PowerGridTabPanel extends TabPanel {
         powerInfoPanel.add(powerStoredLabel);
         
 		// Create scroll panel for the outer table panel.
-		JScrollPane powerScrollPanel = new JScrollPane();
-		powerScrollPanel.setPreferredSize(new Dimension(257, 230));
-		centerContentPanel.add(powerScrollPanel,BorderLayout.CENTER);         
+		JScrollPane powerScrollPane = new JScrollPane();
+		powerScrollPane.setPreferredSize(new Dimension(257, 230));
+        // increase vertical mousewheel scrolling speed for this one
+        powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);         
         
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         outerTablePanel.setBorder(new MarsPanelBorder());
-        powerScrollPanel.setViewportView(outerTablePanel);   
+        powerScrollPane.setViewportView(outerTablePanel);   
         
         // Prepare power table panel.
         JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
