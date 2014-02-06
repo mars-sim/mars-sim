@@ -7,6 +7,16 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
@@ -21,31 +31,27 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * A task for working on a manufacturing process to produce construction materials.
  */
-public class ManufactureConstructionMaterials extends Task implements
-        Serializable {
+public class ManufactureConstructionMaterials
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
 
     // Task phase
     private static final String MANUFACTURE = "Manufacture";
@@ -404,26 +410,25 @@ public class ManufactureConstructionMaterials extends Task implements
             ManufactureProcessInfo info) {
         boolean result = false;
 
-        if (constructionResources == null)
+        if (constructionResources == null) {
             determineConstructionResources();
-        if (constructionParts == null)
+        }
+        if (constructionParts == null) {
             determineConstructionParts();
-
+        }
         Iterator<ManufactureProcessItem> i = info.getOutputList().iterator();
-        while (i.hasNext()) {
+        while (!result && i.hasNext()) {
             ManufactureProcessItem item = i.next();
-            if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item
-                    .getType())) {
-                AmountResource resource = AmountResource
-                        .findAmountResource(item.getName());
-                if (constructionResources.contains(resource))
+            if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+                AmountResource resource = AmountResource.findAmountResource(item.getName());
+                if (constructionResources.contains(resource)) {
                     result = true;
-            } else if (ManufactureProcessItem.PART.equalsIgnoreCase(item
-                    .getType())) {
-                Part part = (Part) ItemResource
-                        .findItemResource(item.getName());
-                if (constructionParts.contains(part))
+                }
+            } else if (Type.PART.equals(item.getType())) {
+                Part part = (Part) ItemResource.findItemResource(item.getName());
+                if (constructionParts.contains(part)) {
                     result = true;
+                }
             }
         }
 

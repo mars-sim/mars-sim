@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.resource.Type;
 
 public class ManufactureConfig implements Serializable {
 
@@ -140,7 +141,7 @@ public class ManufactureConfig implements Serializable {
             List<Element> resourceNodes) {
         for (Element resourceElement : resourceNodes) {
             ManufactureProcessItem resourceItem = new ManufactureProcessItem();
-            resourceItem.setType(ManufactureProcessItem.AMOUNT_RESOURCE);
+            resourceItem.setType(Type.AMOUNT_RESOURCE);
             resourceItem.setName(resourceElement.getAttributeValue(NAME));
             resourceItem.setAmount(Double.parseDouble(resourceElement
                     .getAttributeValue(AMOUNT)));
@@ -158,7 +159,7 @@ public class ManufactureConfig implements Serializable {
             List<Element> partNodes) {
         for (Element partElement : partNodes) {
             ManufactureProcessItem partItem = new ManufactureProcessItem();
-            partItem.setType(ManufactureProcessItem.PART);
+            partItem.setType(Type.PART);
             partItem.setName(partElement.getAttributeValue(NAME));
             partItem.setAmount(Integer.parseInt(partElement
                     .getAttributeValue(NUMBER)));
@@ -176,7 +177,7 @@ public class ManufactureConfig implements Serializable {
             List<Element> equipmentNodes) {
         for (Element equipmentElement : equipmentNodes) {
             ManufactureProcessItem equipmentItem = new ManufactureProcessItem();
-            equipmentItem.setType(ManufactureProcessItem.EQUIPMENT);
+            equipmentItem.setType(Type.EQUIPMENT);
             equipmentItem.setName(equipmentElement.getAttributeValue(NAME));
             equipmentItem.setAmount(Integer.parseInt(equipmentElement
                     .getAttributeValue(NUMBER)));
@@ -194,7 +195,7 @@ public class ManufactureConfig implements Serializable {
             List<Element> vehicleNodes) {
         for (Element vehicleElement : vehicleNodes) {
             ManufactureProcessItem vehicleItem = new ManufactureProcessItem();
-            vehicleItem.setType(ManufactureProcessItem.VEHICLE);
+            vehicleItem.setType(Type.VEHICLE);
             vehicleItem.setName(vehicleElement.getAttributeValue(NAME));
             vehicleItem.setAmount(Integer.parseInt(vehicleElement
                     .getAttributeValue(NUMBER)));
@@ -227,8 +228,10 @@ public class ManufactureConfig implements Serializable {
 
                 salvage.setType(salvageElement.getAttributeValue(TYPE));
 
-                salvage.setTechLevelRequired(Integer.parseInt(salvageElement
-                        .getAttributeValue(TECH)));
+                salvage.setTechLevelRequired(
+                	Integer.parseInt(salvageElement
+                    .getAttributeValue(TECH))
+                );
 
                 salvage.setSkillLevelRequired(Integer.parseInt(salvageElement
                         .getAttributeValue(SKILL)));

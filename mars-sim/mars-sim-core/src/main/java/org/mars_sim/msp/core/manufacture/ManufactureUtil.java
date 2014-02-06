@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -294,22 +295,22 @@ public final class ManufactureUtil {
 		
 		GoodsManager manager = settlement.getGoodsManager();
 		
-		if (item.getType().equals(ManufactureProcessItem.AMOUNT_RESOURCE)) {
+		if (item.getType().equals(Type.AMOUNT_RESOURCE)) {
 			AmountResource resource = AmountResource.findAmountResource(item.getName());
 			Good good = GoodsUtil.getResourceGood(resource);
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
-		else if (item.getType().equals(ManufactureProcessItem.PART)) {
+		else if (item.getType().equals(Type.PART)) {
 			ItemResource resource = ItemResource.findItemResource(item.getName());
 			Good good = GoodsUtil.getResourceGood(resource);
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
-		else if (item.getType().equals(ManufactureProcessItem.EQUIPMENT)) {
+		else if (item.getType().equals(Type.EQUIPMENT)) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			Good good = GoodsUtil.getEquipmentGood(equipmentClass);
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
-		else if (item.getType().equals(ManufactureProcessItem.VEHICLE)) {
+		else if (item.getType().equals(Type.VEHICLE)) {
 			Good good = GoodsUtil.getVehicleGood(item.getName());
 			result = manager.getGoodValuePerItem(good) * item.getAmount();
 		}
@@ -383,11 +384,11 @@ public final class ManufactureUtil {
 		Iterator<ManufactureProcessItem> i = process.getInputList().iterator();
 		while (result && i.hasNext()) {
 			ManufactureProcessItem item = i.next();
-			if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) {
+			if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
 				AmountResource resource = AmountResource.findAmountResource(item.getName());
 				result = (inv.getAmountResourceStored(resource, false) >= item.getAmount());
 			}
-			else if (ManufactureProcessItem.PART.equals(item.getType())) {
+			else if (Type.PART.equals(item.getType())) {
 				Part part = (Part) ItemResource.findItemResource(item.getName());
 				result = (inv.getItemResourceNum(part) >= (int) item.getAmount());
 			} else throw new IllegalStateException(
@@ -487,19 +488,19 @@ public final class ManufactureUtil {
 	 */
 	public static Good getGood(ManufactureProcessItem item) {
 		Good result = null;
-		if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+		if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
 			AmountResource resource = AmountResource.findAmountResource(item.getName());
 			result = GoodsUtil.getResourceGood(resource);
 		}
-		else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+		else if (Type.PART.equals(item.getType())) {
 			Part part = (Part) ItemResource.findItemResource(item.getName());
 			result = GoodsUtil.getResourceGood(part);
 		}
-		else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+		else if (Type.EQUIPMENT.equals(item.getType())) {
 			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(item.getName());
 			result = GoodsUtil.getEquipmentGood(equipmentClass);
 		}
-		else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+		else if (Type.VEHICLE.equals(item.getType())) {
 			result = GoodsUtil.getVehicleGood(item.getName());
 		}
 		
@@ -515,22 +516,22 @@ public final class ManufactureUtil {
     public static double getMass(ManufactureProcessItem item) {
         double mass = 0D;
         
-        if (ManufactureProcessItem.AMOUNT_RESOURCE.equalsIgnoreCase(item.getType())) {
+        if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
             mass = item.getAmount();
         }
-        else if (ManufactureProcessItem.PART.equalsIgnoreCase(item.getType())) {
+        else if (Type.PART.equals(item.getType())) {
             Part part = (Part) ItemResource.findItemResource(item.getName());
             mass = item.getAmount() * part.getMassPerItem();
         }
-        else if (ManufactureProcessItem.EQUIPMENT.equalsIgnoreCase(item.getType())) {
+        else if (Type.EQUIPMENT.equals(item.getType())) {
             double equipmentMass = EquipmentFactory.getEquipmentMass(item.getName());
             mass = item.getAmount() * equipmentMass;
         }
-        else if (ManufactureProcessItem.VEHICLE.equalsIgnoreCase(item.getType())) {
+        else if (Type.VEHICLE.equals(item.getType())) {
             VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
             mass = item.getAmount() * config.getEmptyMass(item.getName());
         }
-        
+
         return mass;
     }
     

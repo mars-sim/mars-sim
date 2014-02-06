@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.manufacture;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.resource.Type;
+
 /**
  * A manufacturing process input or output item.
  */
@@ -17,14 +19,9 @@ public class ManufactureProcessItem implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public final static String AMOUNT_RESOURCE = "resource";
-	public final static String PART = "part";
-	public final static String EQUIPMENT = "equipment";
-	public final static String VEHICLE = "vehicle";
-	
 	// Data members
 	private String name;
-	private String type;
+	private Type type;
 	private double amount;
 	
 	public String getName() {
@@ -35,12 +32,12 @@ public class ManufactureProcessItem implements Serializable {
 		this.name = name;
 	}
 	
-	public String getType() {
+	public Type getType() {
 		return type;
 	}
 	
-	public void setType(String type) {
-		this.type = type.toLowerCase();
+	public void setType(Type type) {
+		this.type = type;
 	}
 	
 	public double getAmount() {

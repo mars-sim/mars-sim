@@ -6,18 +6,26 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.ui.swing.ImageLoader;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
+
+import javax.swing.BoundedRangeModel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
+import org.mars_sim.msp.core.resource.Type;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.ui.swing.ImageLoader;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A panel showing information about a manufacturing process.
@@ -189,10 +197,9 @@ public class ManufacturePanel extends JPanel {
      * @return amount string.
      */
     private static String getItemAmountString(ManufactureProcessItem item) {
-    	String result = "";
-    	if (ManufactureProcessItem.AMOUNT_RESOURCE.equals(item.getType())) 
-			result = item.getAmount() + " kg";
-		else result = Integer.toString((int) item.getAmount());
-    	return result;
+    	if (Type.AMOUNT_RESOURCE.equals(item.getType())) { 
+			return item.getAmount() + " kg";
+    	}
+		else return Integer.toString((int) item.getAmount());
     }
 }

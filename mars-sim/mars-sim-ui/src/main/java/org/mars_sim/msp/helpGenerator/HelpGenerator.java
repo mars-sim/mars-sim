@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 import org.mars_sim.msp.core.vehicle.VehicleConfig.VehicleDescription;
 import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
@@ -614,23 +615,10 @@ public class HelpGenerator {
 			.append("<p><u>process inputs:</u></p>\n")
 			.append("<table>\n");
 			for (ManufactureProcessItem input : info.getInputList()) {
-				String link = "";
-				String type = "";
 				String inputName = input.getName();
-				String inputType = input.getType();
-				if (inputType.equalsIgnoreCase(ManufactureProcessItem.AMOUNT_RESOURCE)) {
-					link = getLinkResource(inputName);
-					type = getLinkResources("resource");
-				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.EQUIPMENT)) {
-					link = getLinkEquipment(inputName);
-					type = getLinkEquipments("equipment");
-				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.PART)) {
-					link = getLinkPart(inputName);
-					type = getLinkParts("part");
-				} else if (inputType.equalsIgnoreCase(ManufactureProcessItem.VEHICLE)) {
-					link = getLinkVehicle(inputName);
-					type = getLinkVehicles("vehicle");
-				}
+				Type inputType = input.getType();
+				String link = getLink_ResourceType(inputType,inputName);
+				String type = getLink_ResourceLink(inputType);
 				helpFileTableRow(
 					content,
 					new String[] {
@@ -645,23 +633,10 @@ public class HelpGenerator {
 			.append("<p><u>process outputs:</u></p>\n")
 			.append("<table>\n");
 			for (ManufactureProcessItem output : info.getOutputList()) {
-				String link = "";
-				String type = "";
 				String outputName = output.getName();
-				String outputType = output.getType();
-				if (outputType.equalsIgnoreCase(ManufactureProcessItem.AMOUNT_RESOURCE)) {
-					link = getLinkResource(outputName);
-					type = getLinkResources("resource");
-				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.EQUIPMENT)) {
-					link = getLinkEquipment(outputName);
-					type = getLinkEquipments("equipment");
-				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.PART)) {
-					link = getLinkPart(outputName);
-					type = getLinkParts("part");
-				} else if (outputType.equalsIgnoreCase(ManufactureProcessItem.VEHICLE)) {
-					link = getLinkVehicle(outputName);
-					type = getLinkVehicles("vehicle");
-				}
+				Type outputType = output.getType();
+				String link = getLink_ResourceType(outputType,outputName);
+				String type = getLink_ResourceLink(outputType);
 				helpFileTableRow(
 					content,
 					new String[] {
@@ -678,6 +653,54 @@ public class HelpGenerator {
 			helpFileFooter(content);
 			generateFile(getPathProcess(name),content);
 		}
+	}
+
+	private static String getLink_ResourceType(Type type, String name) {
+		String link;
+		switch (type) {
+			case AMOUNT_RESOURCE : {
+				link = getLinkResource(name);
+				break;
+			}
+			case EQUIPMENT : {
+				link = getLinkEquipment(name);
+				break;
+			}
+			case PART : {
+				link = getLinkPart(name);
+				break;
+			}
+			case VEHICLE : {
+				link = getLinkVehicle(name);
+				break;
+			}
+			default : link = "";
+		}
+		return link;
+	}
+
+	private static String getLink_ResourceLink(Type type) {
+		String link;
+		switch (type) {
+			case AMOUNT_RESOURCE : {
+				link = getLinkResources("resource");
+				break;
+			}
+			case EQUIPMENT : {
+				link = getLinkEquipments("equipment");
+				break;
+			}
+			case PART : {
+				link = getLinkParts("part");
+				break;
+			}
+			case VEHICLE : {
+				link = getLinkVehicles("vehicle");
+				break;
+			}
+			default : link = "";
+		}
+		return link;
 	}
 
 	/**
