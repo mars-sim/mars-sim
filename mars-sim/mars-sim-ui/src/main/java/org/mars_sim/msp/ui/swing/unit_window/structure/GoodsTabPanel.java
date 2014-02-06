@@ -54,14 +54,16 @@ public class GoodsTabPanel extends TabPanel {
         goodsLabelPanel.add(goodsLabel);
         
 		// Create scroll panel for the outer table panel.
-		JScrollPane goodsScrollPanel = new JScrollPane();
-		goodsScrollPanel.setPreferredSize(new Dimension(220, 280));
-		centerContentPanel.add(goodsScrollPanel);         
+		JScrollPane goodsScrollPane = new JScrollPane();
+		goodsScrollPane.setPreferredSize(new Dimension(220, 280));
+        // increase vertical mousewheel scrolling speed for this one
+        goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		centerContentPanel.add(goodsScrollPane);         
         
         // Prepare outer table panel.
         JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         outerTablePanel.setBorder(new MarsPanelBorder());
-        goodsScrollPanel.setViewportView(outerTablePanel);   
+        goodsScrollPane.setViewportView(outerTablePanel);   
         
         // Prepare goods table panel.
         JPanel goodsTablePanel = new JPanel(new BorderLayout(0, 0));
