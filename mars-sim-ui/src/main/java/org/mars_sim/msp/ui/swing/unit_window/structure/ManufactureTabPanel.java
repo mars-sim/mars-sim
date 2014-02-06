@@ -47,6 +47,8 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.MouseWheelEvent;
 
 /**
  * A tab panel displaying settlement manufacturing information.
@@ -101,6 +103,8 @@ public class ManufactureTabPanel extends TabPanel {
         
 		// Create scroll panel for manufacture list pane.
         manufactureScrollPane = new JScrollPane();
+        // increase vertical mousewheel scrolling speed for this one
+        manufactureScrollPane.getVerticalScrollBar().setUnitIncrement(16);
         manufactureScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         manufactureScrollPane.setPreferredSize(new Dimension(220, 215));
         centerContentPanel.add(manufactureScrollPane);  

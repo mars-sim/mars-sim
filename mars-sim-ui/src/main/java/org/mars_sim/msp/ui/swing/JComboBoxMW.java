@@ -54,19 +54,21 @@ public class JComboBoxMW<T> extends JComboBox<T> implements MouseWheelListener {
 
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		boolean up = e.getWheelRotation() < 0;
-		int selected = this.getSelectedIndex();
-		selected = up ?
-			Math.max(
-				0,
-				selected - 1
-			)
-		:
-			Math.min(
-				selected + 1,
-				this.getItemCount() - 1
-			)
-		;
-		this.setSelectedIndex(selected);
+		if (getItemCount() > 0) {
+			boolean up = e.getWheelRotation() < 0;
+			int selected = this.getSelectedIndex();
+			selected = up ?
+				Math.max(
+					0,
+					selected - 1
+				)
+			:
+				Math.min(
+					selected + 1,
+					this.getItemCount() - 1
+				)
+			;
+			this.setSelectedIndex(selected);
+		}
 	}
 }

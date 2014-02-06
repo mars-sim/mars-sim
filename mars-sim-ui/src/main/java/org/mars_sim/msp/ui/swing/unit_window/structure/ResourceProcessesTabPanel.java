@@ -33,7 +33,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 
 	// Data members
 	private List<Building> processingBuildings;
-	private JScrollPane processesScrollPanel;
+	private JScrollPane processesScrollPane;
 	private JPanel processListPanel;
 	private JCheckBox overrideCheckbox;
 	
@@ -59,14 +59,16 @@ public class ResourceProcessesTabPanel extends TabPanel {
         resourceProcessesLabelPanel.add(resourceProcessesLabel);
         
 		// Create scroll panel for the outer table panel.
-		processesScrollPanel = new JScrollPane();
-		processesScrollPanel.setPreferredSize(new Dimension(220, 280));
-		centerContentPanel.add(processesScrollPanel,BorderLayout.CENTER);         
+		processesScrollPane = new JScrollPane();
+		processesScrollPane.setPreferredSize(new Dimension(220, 280));
+        // increase vertical mousewheel scrolling speed for this one
+        processesScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+		centerContentPanel.add(processesScrollPane,BorderLayout.CENTER);         
         
         // Prepare process list panel.
         processListPanel = new JPanel(new GridLayout(0, 1, 5, 2));
         processListPanel.setBorder(new MarsPanelBorder());
-        processesScrollPanel.setViewportView(processListPanel);
+        processesScrollPane.setViewportView(processListPanel);
         populateProcessList();
         
         // Create override check box panel.
@@ -121,7 +123,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 			// Populate process list.
 			processingBuildings = tempBuildings;
 			populateProcessList();
-			processesScrollPanel.validate();
+			processesScrollPane.validate();
 		}
 		else {
 			// Update process list.
