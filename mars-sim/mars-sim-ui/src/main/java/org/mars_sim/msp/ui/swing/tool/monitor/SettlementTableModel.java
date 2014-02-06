@@ -245,19 +245,19 @@ public class SettlementTableModel extends UnitTableModel {
         UnitEventType eventType = event.getType();
 
         int columnNum = -1;
-        if (eventType.equals(UnitEventType.NAME_EVENT)) columnNum = NAME;
-        else if (eventType.equals(UnitEventType.INVENTORY_STORING_UNIT_EVENT) || 
-                eventType.equals(UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT)) {
+        if (eventType == UnitEventType.NAME_EVENT) columnNum = NAME;
+        else if (eventType == UnitEventType.INVENTORY_STORING_UNIT_EVENT || 
+                eventType == UnitEventType.INVENTORY_RETRIEVING_UNIT_EVENT) {
             if (target instanceof Person) columnNum = POPULATION;
             else if (target instanceof Vehicle) columnNum = PARKED;
         }
-        else if (eventType.equals(UnitEventType.GENERATED_POWER_EVENT)) columnNum = POWER;
-        else if (eventType.equals(UnitEventType.ADD_BUILDING_EVENT)) {
+        else if (eventType == UnitEventType.GENERATED_POWER_EVENT) columnNum = POWER;
+        else if (eventType == UnitEventType.ADD_BUILDING_EVENT) {
             if (target instanceof Farming) columnNum = GREENHOUSES;
         }
-        else if (eventType.equals(UnitEventType.CROP_EVENT)) columnNum = CROPS;
-        else if (eventType.equals(UnitEventType.MALFUNCTION_EVENT)) columnNum = MALFUNCTION;
-        else if (eventType.equals(UnitEventType.INVENTORY_RESOURCE_EVENT)) {
+        else if (eventType == UnitEventType.CROP_EVENT) columnNum = CROPS;
+        else if (eventType == UnitEventType.MALFUNCTION_EVENT) columnNum = MALFUNCTION;
+        else if (eventType == UnitEventType.INVENTORY_RESOURCE_EVENT) {
             try {
                 int tempColumnNum = -1;
 

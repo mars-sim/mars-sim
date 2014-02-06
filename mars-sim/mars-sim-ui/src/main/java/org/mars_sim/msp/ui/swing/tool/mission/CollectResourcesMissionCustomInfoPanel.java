@@ -92,7 +92,7 @@ public class CollectResourcesMissionCustomInfoPanel extends
 
     @Override
     public void unitUpdate(UnitEvent event) {
-        if (UnitEventType.INVENTORY_RESOURCE_EVENT.equals(event.getType())) {
+        if (UnitEventType.INVENTORY_RESOURCE_EVENT == event.getType()) {
             if (resource.equals(event.getTarget())) {
                 updateCollectionValueLabel();   
             }

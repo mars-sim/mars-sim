@@ -784,9 +784,9 @@ implements UnitListener {
      */
     public void unitUpdate(UnitEvent event) {
     	UnitEventType type = event.getType();
-        if (type.equals(UnitEventType.LOCATION_EVENT))
+        if (type == UnitEventType.LOCATION_EVENT)
             fireMissionUpdate(DISTANCE_EVENT);
-        else if (type.equals(UnitEventType.NAME_EVENT))
+        else if (type == UnitEventType.NAME_EVENT)
             fireMissionUpdate(VEHICLE_EVENT);
     }
 
