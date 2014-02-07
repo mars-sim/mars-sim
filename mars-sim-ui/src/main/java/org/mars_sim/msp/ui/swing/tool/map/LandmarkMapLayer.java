@@ -20,7 +20,7 @@ import java.util.Iterator;
 public class LandmarkMapLayer implements MapLayer {
 
 	// Diameter of marking circle.
-	private int CIRCLE_DIAMETER = 10;
+	private int CIRCLE_DIAMETER = 10; //FIXME: make proportional to actual loaded diameter.
 	
 	// Blue color for surface map.
 	private Color SURFACE_COLOR = new Color(96, 96, 255);

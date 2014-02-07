@@ -59,8 +59,7 @@ public class LandmarkConfig implements Serializable {
                 name = landmark.getAttributeValue(NAME);
 
                 // Get diameter.
-                int diameter = 15;
-//                int diameter = Integer.parseInt(landmark.getAttributeValue(DIAMETER));
+                int diameter = (int) Float.parseFloat(landmark.getAttributeValue(DIAMETER));
 
                 // Get latitude.
                 String latitude = landmark.getAttributeValue(LATITUDE);
