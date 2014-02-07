@@ -3,3 +3,6 @@
 <!ATTLIST landmark name CDATA #REQUIRED>
 <!ATTLIST landmark longitude CDATA #REQUIRED>
 <!ATTLIST landmark latitude CDATA #REQUIRED>
+<!ATTLIST landmark approvaldate CDATA #REQUIRED>
+<!ATTLIST landmark diameter CDATA #REQUIRED>
+<!ATTLIST landmark origin CDATA #REQUIRED>

@@ -21,7 +21,7 @@ from xml.dom.minidom import Document
 from decimal import Decimal
 
 # Preferences - should maybe be cmd-line parameters
-diameter_threshold = 1000.0 #skip landmarks smaller than this size in km
+diameter_threshold = 750.0 #skip landmarks smaller than this size in km
 
 # Initialize types 
 xmldoc = Document()

@@ -7,98 +7,140 @@
 
 <!-- Landmarks to be displayed in the user interface. -->
 <landmark-list>
-	<!-- Mountains -->
-	<landmark name="Anseris Mons" longitude="86.6 E" latitude="30.1 S" />
-	<landmark name="Arsia Mons" longitude="121.1 W" latitude="8.4 S" />
-	<landmark name="Ascraeus Mons" longitude="104.5 W" latitude="11.9 N" />
-	<landmark name="Elysium Mons" longitude="146.9 E" latitude="25.0 N" /> 
-	<landmark name="Euripus Mons" longitude="105.0 E" latitude="45.1 S" />
-	<landmark name="Gonnus Mons" longitude="91.0 W" latitude="41.6 N" />
-	<landmark name="Horarum Mons" longitude="36.6 W" latitude="51.4 S" />
-	<landmark name="Labeatis Mons" longitude="76.2 W" latitude="37.8 N" />
-	<landmark name="Oceanidum Mons" longitude="41.3 W" latitude="55.2 S" />
-	<landmark name="Octantis Mons" longitude="42.9 W" latitude="55.6 S" />
-	<landmark name="Olympus Mons" longitude="134.0 W" latitude="18.6 N" />
-	<landmark name="Pavonis Mons" longitude="113.4 W" latitude="0.8 N" />
-	<landmark name="Peneus Mons" longitude="86.1 E" latitude="31.2 S" />
-	<landmark name="Peraea Mons" longitude="86.0 E" latitude="31.4 S" />
-	<landmark name="Pindus Mons" longitude="88.7 W" latitude="39.8 N" />
-	<landmark name="Tyrrhena Mons" longitude="101.1 E" latitude="24.4 S" />
-	
-	<!-- Small domical mountains or hills -->
-	<landmark name="Albor Tholus" longitude="150.4 E" latitude="19.0 N" />
-	<landmark name="Apollinaris Tholus" longitude="175.7 E" latitude="17.9 S" />
-	<landmark name="Australis Tholus" longitude="37.0 E" latitude="59.0 S" />
-	<landmark name="Ceraunius Tholus" longitude="97.4 W" latitude="24.2 N" />
-	<landmark name="Charitum Tholus" longitude="41.0 W" latitude="55.0 S" />
-	<landmark name="E. Mareotis Tholus" longitude="85.3 W" latitude="36.2 N" />
-	<landmark name="Hecates Tholus" longitude="150.2 E" latitude="32.4 N" />
-	<landmark name="Iaxartes Tholus" longitude="15.0 W" latitude="72.0 N" />
-	<landmark name="Issedon Tholus" longitude="95.0 W" latitude="36.3 N" />
-	<landmark name="Jovis Tholus" longitude="117.5 W" latitude="18.4 N" />
-	<landmark name="Kison Tholus" longitude="2.0 E" latitude="73.0 N" />
-	<landmark name="N. Mareotis Tholus" longitude="86.3 W" latitude="36.7 N" />
-	<landmark name="Ortygia Tholus" longitude="8.0 W" latitude="70.0 N" />
-	<landmark name="Scandia Tholi" longitude="162.0 W" latitude="74.0 N" />
-	<landmark name="Tharsis Tholus" longitude="90.8 W" latitude="13.5 N" />
-	<landmark name="Uranius Tholus" longitude="97.7 W" latitude="26.4 N" />
-	<landmark name="W. Mareotis Tholus" longitude="88.1 W" latitude="35.8 N" />
-	<landmark name="Zephyria Tholus" longitude="172.8 E" latitude="20.0 S" />
-	
-	<!-- Craters -->
-	<landmark name="Airy Crater" longitude="0.1 E" latitude="5.1 S" />
-	<landmark name="Huygens Crater" longitude="55.2 E" latitude="13.7 S" />
-	<landmark name="Schiaparelli Crater" longitude="16.4 E" latitude="2.3 S" />
-	<landmark name="Cassini Crater" longitude="31.8 E" latitude="24.0 N" />
-	<landmark name="Antoniadi Crater" longitude="60.8 E" latitude="21.8 N" />
-	<landmark name="Tikhonravov Crater" longitude="35.8 E" latitude="13.6 N" />
-	<landmark name="Koval'sky Crater" longitude="141.3 W" latitude="29.9 S" />
-	<landmark name="Herschel Crater" longitude="130.0 E" latitude="14.5 S" />
-	<landmark name="Newton Crater" longitude="158.0 W" latitude="40.6 S" />
-	<landmark name="Copernicus Crater" longitude="169.3 W" latitude="49.4 S" />
-	<landmark name="Schroeter Crater" longitude="56.0 E" latitude="1.9 S" />
-	<landmark name="Flaugergues Crater" longitude="19.3 E" latitude="17.0 S" />
-	<landmark name="Newcomb Crater" longitude="0.6 E" latitude="24.1 S" />
-	<landmark name="Vinogradov Crater" longitude="37.6 W" latitude="20.1 S" />
-	<landmark name="Secchi Crater" longitude="102.4 E" latitude="58.2 S" />
-	<landmark name="Kepler Crater" longitude="141.4 E" latitude="47.1 S" />
-	<landmark name="Lyot Crater" longitude="29.6 E" latitude="50.7 N" />
-	<landmark name="Galle Crater" longitude="30.9 W" latitude="51.0 S" />
-	<landmark name="Lowell Crater" longitude="81.3 W" latitude="52.3 S" />
-	<landmark name="Schmidt Crater" longitude="77.4 W" latitude="72.2 S" />
-	<landmark name="Kaiser Crater" longitude="19.4 E" latitude="46.5 S" />
-	<landmark name="Phillips Crater" longitude="45.2 W" latitude="66.5 S" />
-	<landmark name="Mutch Crater" longitude="55.1 W" latitude="0.7 N" />
-	<landmark name="Schoner Crater" longitude="50.5 E" latitude="20.3 N" />
-	<landmark name="Dawes Crater" longitude="38.0 E" latitude="9.2 S" />
-	<landmark name="Baldet Crater" longitude="65.5 E" latitude="23.1 N" />
-	<landmark name="Ptolemaeus Crater" longitude="157.4 W" latitude="46.3 S" />
-	<landmark name="Proctor Crater" longitude="30.0 E" latitude="47.5 S" />
-	<landmark name="Darwin Crater" longitude="19.0 W" latitude="57.3 S" />
-	<landmark name="Flammarion Crater" longitude="48.2 E" latitude="25.5 N" />
-	<landmark name="Stoney Crater" longitude="138.8 W" latitude="70.0 S" />
-	<landmark name="Wallace Crater" longitude="110.9 E" latitude="52.7 S" />
-	<landmark name="Terby Crater" longitude="74.2 E" latitude="28.4 S" />
-	<landmark name="Molesworth Crater" longitude="149.2 E" latitude="27.6 S" />
-	<landmark name="Green Crater" longitude="8.2 W" latitude="52.5 S" />
-	<landmark name="Mariner Crater" longitude="164.4 W" latitude="35.0 S" />
-	<landmark name="Denning Crater" longitude="33.4 E" latitude="17.6 S" />
-	<landmark name="Becquerel Crater" longitude="8.0 W" latitude="22.2 N" />
-	<landmark name="Henry Crater" longitude="23.3 E" latitude="11.0 N" />
-	<landmark name="Gusev Crater" longitude="175.4 E" latitude="14.5 S" />
-	<landmark name="Gale Crater" longitude="137.6 E" latitude="5.3 S" />
-	
-	<!-- Martian Landers (http://www.google.com/mars/) -->
-	<landmark name="Viking Lander 1" longitude="48.0 W" latitude="22.5 N" />
-	<landmark name="Viking Lander 2" longitude="133.7 E" latitude="47.9 N" />
-	<landmark name="Mars Pathfinder Rover" longitude="33.3 W" latitude="19.3 N" />
-	<landmark name="MER Spirit Rover" longitude="175.5 E" latitude="14.6 S" />
-	<landmark name="MER Opportunity Rover" longitude="5.5 W" latitude="2.0 S" />
-  	<landmark name="MSL Curiosity Rover" longitude="137.2 E" latitude="4.3 S"/>
-	<landmark name="Mars 2 Lander" longitude="47.0 E" latitude="45.0 S" />
-	<landmark name="Mars 3 Lander" longitude="158.0 W" latitude="45.0 S" />
-	<landmark name="Mars 6 Lander" longitude="19.5 W" latitude="23.9 S" />
-	<landmark name="Mars Polar Lander" longitude="164.7 E" latitude="76.7 S" />
-	<landmark name="Beagle 2 Lander" longitude="90.0 E" latitude="10.6 N" />
-	<landmark name="Phoenix Mars Lander" longitude="123.0 W" latitude="68.0 N" />
+  	<landmark approvaldate="1973" diameter="3362.97" latitude="49.76 N" longitude="159.26 W" name="Acidalia Planitia" origin="From classical albedo feature at 44N, 21W."/>
+  	<landmark approvaldate="1982" diameter="853" latitude="35.7 N" longitude="105.12 E" name="Adamas Labyrinthus" origin="Classical albedo feature name; &quot;A River of Diamonds&quot;; today's River Sarbarnarekha in India."/>
+  	<landmark approvaldate="1976" diameter="785.09" latitude="3.25 S" longitude="140.63 E" name="Aeolis Mensae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2006" diameter="852.81" latitude="1.14 S" longitude="144.76 E" name="Aeolis Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2072.02" latitude="49.39 N" longitude="73.18 W" name="Alba Fossae" origin="Classical albedo name."/>
+  	<landmark approvaldate="1973" diameter="2809.04" latitude="25.75 N" longitude="17.09 W" name="Amazonis Planitia" origin="Classical albedo feature name; home of the Amazons."/>
+  	<landmark approvaldate="2006" diameter="1330.5" latitude="16.23 N" longitude="114.52 E" name="Amenthes Cavi" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="850" latitude="9.07 N" longitude="102.68 E" name="Amenthes Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="3873.48" latitude="60.2 S" longitude="82.95 W" name="Aonia Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="4851.74" latitude="21.25 N" longitude="5.72 E" name="Arabia Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1952.65" latitude="55.9 N" longitude="42.44 W" name="Arcadia Dorsa" origin="Named for classical albedo feature at 45N, 120W."/>
+  	<landmark approvaldate="1973" diameter="1871.97" latitude="47.19 N" longitude="4.31 W" name="Arcadia Planitia" origin="From classical albedo feature at 45N, 120W."/>
+  	<landmark approvaldate="1973" diameter="1757.67" latitude="10.29 N" longitude="154.39 W" name="Ares Vallis" origin="Word for 'Mars' in Greek."/>
+  	<landmark approvaldate="2003" diameter="1370.64" latitude="72.49 S" longitude="118.33 W" name="Argentea Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="892.93" latitude="49.84 S" longitude="136.69 W" name="Argyre Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="810.61" latitude="6.53 S" longitude="109.22 W" name="Candor Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1471.56" latitude="8.27 S" longitude="137.93 W" name="Capri Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1166.63" latitude="27 N" longitude="69.85 W" name="Ceraunius Fossae" origin="Classical albedo feature name"/>
+  	<landmark approvaldate="1997" diameter="1235" latitude="11.28 N" longitude="166.37 E" name="Cerberus Fossae" origin="From albedo feature at 10n, 212W. Changed from Cerberus Rupes."/>
+  	<landmark approvaldate="1973" diameter="933.54" latitude="58.1 S" longitude="139.71 W" name="Charitum Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1542.44" latitude="28.43 N" longitude="139.69 W" name="Chryse Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2030.64" latitude="27.89 S" longitude="75.76 W" name="Claritas Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1991" diameter="952.87" latitude="25.04 S" longitude="74.74 W" name="Claritas Rupes" origin="From albedo feature at 25S, 110W."/>
+  	<landmark approvaldate="1973" diameter="958.31" latitude="13.37 S" longitude="119.26 W" name="Coprates Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1985" diameter="913.17" latitude="31.25 N" longitude="58.83 W" name="Cyane Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1985" diameter="1550.81" latitude="52.53 N" longitude="112.21 E" name="Cydnus Rupēs" origin="From albedo feature at 70N, 248W."/>
+  	<landmark approvaldate="1976" diameter="764.96" latitude="34.56 N" longitude="167.67 W" name="Cydonia Mensae" origin="From albedo feature at 50N, 355W."/>
+  	<landmark approvaldate="1982" diameter="1922.02" latitude="18.35 S" longitude="54.05 W" name="Daedalia Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="794" latitude="37.61 S" longitude="88.89 E" name="Dao Vallis" origin="Word for &quot;star&quot; in Thai."/>
+  	<landmark approvaldate="1973" diameter="919.17" latitude="45.11 N" longitude="23.92 E" name="Deuteronilus Mensae" origin="From albedo feature at 35N, 355W."/>
+  	<landmark approvaldate="1973" diameter="1044" latitude="24.08 N" longitude="146.14 E" name="Elysium Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="3000.79" latitude="2.98 N" longitude="154.74 E" name="Elysium Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1305.69" latitude="12.15 S" longitude="140.83 W" name="Eos Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1982" diameter="811.67" latitude="35.66 N" longitude="5.02 W" name="Erebus Montes" origin="From albedo feature at 26N, 182W."/>
+  	<landmark approvaldate="Sep 22, 2010" diameter="1062.13" latitude="38.15 S" longitude="122.21 E" name="Eridania Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="1017.66" latitude="52.61 S" longitude="141.79 E" name="Eridania Scopulus" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="Apr 30, 2007" diameter="772.89" latitude="81.87 N" longitude="2.59 E" name="Gemina Lingula" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2006" diameter="1000.36" latitude="80.39 N" longitude="26.1 E" name="Gemini Scopuli" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1982" diameter="777.78" latitude="30.58 N" longitude="129.97 E" name="Granicus Valles" origin="Ancient name for river in Turkey."/>
+  	<landmark approvaldate="1973" diameter="2299.16" latitude="42.43 S" longitude="70.5 E" name="Hellas Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1707.44" latitude="23.54 N" longitude="114.9 E" name="Hephaestus Rupēs" origin="Named for classical albedo feature at 20N, 240W."/>
+  	<landmark approvaldate="1991" diameter="818.25" latitude="22.8 S" longitude="113.16 E" name="Hesperia Dorsa" origin="Albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1601.73" latitude="21.42 S" longitude="109.89 E" name="Hesperia Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1985" diameter="974.4" latitude="38.17 N" longitude="135.91 E" name="Hrad Vallis" origin="Word for &quot;Mars&quot; in Armenian."/>
+  	<landmark approvaldate="2003" diameter="887.53" latitude="13.16 N" longitude="130.32 E" name="Hyblaeus Dorsa" origin="Named for albedo feature."/>
+  	<landmark approvaldate="1985" diameter="2115.45" latitude="48.09 S" longitude="54.84 W" name="Icaria Fossae" origin="From albedo feature at 44S, 130W."/>
+  	<landmark approvaldate="2003" diameter="1074.7" latitude="12.92 N" longitude="88.21 E" name="Isidis Dorsa" origin="Named for classical albedo feature at 25N, 270W."/>
+  	<landmark approvaldate="1973" diameter="1224.58" latitude="13.94 N" longitude="88.38 E" name="Isidis Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="839.91" latitude="7.29 S" longitude="95.61 W" name="Ius Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1580" latitude="25.14 N" longitude="117.12 W" name="Kasei Valles" origin="Word for &quot;Mars&quot; in Japanese."/>
+  	<landmark approvaldate="1985" diameter="1496.36" latitude="24.58 N" longitude="95.47 W" name="Labeatis Fossae" origin="Previously named feature at 30N, 75W; expanded coordinates."/>
+  	<landmark approvaldate="1979" diameter="1043.63" latitude="1.44 N" longitude="88.23 E" name="Libya Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1982" diameter="790" latitude="17.69 S" longitude="162.97 W" name="Loire Valles" origin="Modern river in France."/>
+  	<landmark approvaldate="1997" diameter="899.87" latitude="4.99 S" longitude="2.83 W" name="Lucus Planum" origin="Albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1817.66" latitude="10.79 N" longitude="114.49 W" name="Lunae Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="1350.61" latitude="28.14 N" longitude="35.53 W" name="Lycus Sulci" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="913.11" latitude="21.98 S" longitude="177.5 E" name="Ma'adim Vallis" origin="Word for &quot;Mars&quot; in Hebrew."/>
+  	<landmark approvaldate="1979" diameter="1515" latitude="10.23 N" longitude="121.62 W" name="Maja Valles" origin="Nepali word for &quot;Mars&quot;."/>
+  	<landmark approvaldate="1985" diameter="872.47" latitude="65.82 S" longitude="62.94 E" name="Malea Planum" origin="From albedo feature at 60S, 290W."/>
+  	<landmark approvaldate="1976" diameter="1020" latitude="40.65 N" longitude="17.94 E" name="Mamers Valles" origin="Word for &quot;Mars&quot; in Oscan."/>
+  	<landmark approvaldate="1973" diameter="900" latitude="11.32 S" longitude="28.61 W" name="Mangala Valles" origin="Word for &quot;Mars&quot; in Sanskrit."/>
+  	<landmark approvaldate="1973" diameter="1907.94" latitude="44.34 N" longitude="103.88 W" name="Mareotis Fossae" origin="From albedo feature at 32N, 96W."/>
+  	<landmark approvaldate="1979" diameter="2733.22" latitude="1.85 S" longitude="155.08 W" name="Margaritifer Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="Aug 20, 2007" diameter="1147.22" latitude="19.16 S" longitude="4.32 E" name="Marikh Vallis" origin="Malaysian word for Mars. "/>
+  	<landmark approvaldate="1973" diameter="1585.28" latitude="23.63 S" longitude="26.18 W" name="Memnonia Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1058.53" latitude="0.04 S" longitude="176.86 W" name="Meridiani Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="2176.23" latitude="9.19 N" longitude="119.42 E" name="Nepenthes Mensae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="Jul 1, 2009" diameter="1650.14" latitude="14.01 N" longitude="113.79 E" name="Nepenthes Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1142.58" latitude="37.57 S" longitude="136.79 W" name="Nereidum Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="901.48" latitude="31.72 N" longitude="124.15 W" name="Nilokeras Scopulus" origin="From albedo feature at 30N, 55W."/>
+  	<landmark approvaldate="1979" diameter="5519.45" latitude="50.41 S" longitude="174.84 W" name="Noachis Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1190.31" latitude="6.36 S" longitude="78.81 W" name="Noctis Labyrinthus" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1982" diameter="1425" latitude="6.62 S" longitude="77.11 E" name="Oenotria Scopuli" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="Mar 20, 2007" diameter="804.39" latitude="82.18 N" longitude="8.81 W" name="Olympia Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="Jul 25, 2007" diameter="1197.04" latitude="86.04 N" longitude="174.16 E" name="Olympia Rupēs" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1507.96" latitude="81.16 N" longitude="178.48 E" name="Olympia Undae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="1914.77" latitude="18.4 N" longitude="46.44 W" name="Olympus Rupes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1113.4" latitude="64.37 N" longitude="129.83 E" name="Panchaia Rupēs" origin="Named for classical albedo feature at 62N, 220W."/>
+  	<landmark approvaldate="2003" diameter="1027.32" latitude="73.67 S" longitude="84.93 W" name="Parva Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="2818.61" latitude="25.08 N" longitude="170.37 E" name="Phlegra Dorsa" origin="Named for classical albedo feature at 35N, 195W."/>
+  	<landmark approvaldate="1973" diameter="1350.65" latitude="40.4 N" longitude="163.71 E" name="Phlegra Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="1429.87" latitude="83.35 S" longitude="157.7 E" name="Planum Australe" origin="Classical albedo feature."/>
+  	<landmark approvaldate="2003" diameter="831.28" latitude="79.18 S" longitude="88.36 E" name="Promethei Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="1379.21" latitude="75.54 S" longitude="90.24 E" name="Promethei Rupes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="3244.3" latitude="64.37 S" longitude="97 E" name="Promethei Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1033.97" latitude="43.87 N" longitude="48.86 E" name="Protonilus Mensae" origin="From albedo feature at 42N, 315W."/>
+  	<landmark approvaldate="1979" diameter="1051.94" latitude="42.14 S" longitude="104.95 E" name="Reull Vallis" origin="Word for &quot;planet&quot; in Gaelic."/>
+  	<landmark approvaldate="1985" diameter="1416" latitude="11.21 N" longitude="113.91 W" name="Sacra Dorsa" origin="From albedo feature at 20N, 67W."/>
+  	<landmark approvaldate="1976" diameter="950" latitude="20.36 N" longitude="110 W" name="Sacra Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1985" diameter="1009.05" latitude="22.16 N" longitude="105.3 W" name="Sacra Sulci" origin="From albedo feature at 20N, 67W."/>
+  	<landmark approvaldate="1985" diameter="1521.68" latitude="65.47 N" longitude="40.87 W" name="Scandia Colles" origin="From albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1029" latitude="7.33 N" longitude="137.91 W" name="Shalbatana Vallis" origin="Word for &quot;Mars&quot; in Akkadian."/>
+  	<landmark approvaldate="1973" diameter="987.99" latitude="19.09 N" longitude="141.99 W" name="Simud Valles" origin="Word for &quot;Mars&quot; in Sumerian."/>
+  	<landmark approvaldate="1973" diameter="901.44" latitude="13.72 S" longitude="92.24 W" name="Sinai Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2731.21" latitude="35.57 S" longitude="17.26 W" name="Sirenum Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="1032.87" latitude="69.64 S" longitude="6.41 E" name="Sisyphi Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1976" diameter="779.5" latitude="22.88 S" longitude="100.26 W" name="Solis Dorsa" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1811.23" latitude="26.4 S" longitude="90.33 W" name="Solis Planum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1214.86" latitude="9.2 N" longitude="67.1 E" name="Syrtis Major Planum" origin="Albedo feature name; changed from Planitia to Planum."/>
+  	<landmark approvaldate="1991" diameter="794.34" latitude="35.93 N" longitude="84.32 W" name="Tantalus Fluctus" origin="Albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2361.86" latitude="49.83 N" longitude="83.91 W" name="Tantalus Fossae" origin="From albedo feature at 35N, 110W."/>
+  	<landmark approvaldate="1985" diameter="1672.69" latitude="21.24 N" longitude="175.19 E" name="Tartarus Colles" origin="From albedo feature at 2N, 183W."/>
+  	<landmark approvaldate="1985" diameter="1086.46" latitude="15.46 N" longitude="167.54 E" name="Tartarus Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2116.24" latitude="40.42 N" longitude="108.6 W" name="Tempe Fossae" origin="From albedo feature at 40N, 70W."/>
+  	<landmark approvaldate="1979" diameter="1954.94" latitude="38.69 N" longitude="109.39 W" name="Tempe Terra" origin="From albedo feature at 40N, 70W."/>
+  	<landmark approvaldate="1979" diameter="5855.87" latitude="32.68 S" longitude="147.75 E" name="Terra Cimmeria" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="4688.44" latitude="2.72 N" longitude="51.3 E" name="Terra Sabaea" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="3635.18" latitude="39.49 S" longitude="25.85 W" name="Terra Sirenum" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="2058.91" latitude="1.57 N" longitude="67.42 W" name="Tharsis Montes" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="996.18" latitude="47.75 S" longitude="88.95 W" name="Thaumasia Fossae" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1994" diameter="799.6" latitude="21.66 S" longitude="114.78 W" name="Thaumasia Planum" origin="Albedo feature at 30S, 75W."/>
+  	<landmark approvaldate="1982" diameter="838" latitude="4.32 S" longitude="96.96 W" name="Tithoniae Fossae" origin="Classical albedo name."/>
+  	<landmark approvaldate="1973" diameter="802.78" latitude="4.6 S" longitude="95.71 W" name="Tithonium Chasma" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="1720" latitude="16.23 N" longitude="145.14 W" name="Tiu Valles" origin="Word for &quot;Mars&quot; in old English (West Germanic)."/>
+  	<landmark approvaldate="1976" diameter="910.57" latitude="27 N" longitude="77.21 W" name="Tractus Catena" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1991" diameter="779.4" latitude="24.2 S" longitude="115.72 E" name="Tyrrhena Dorsa" origin="Albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="2470.14" latitude="11.9 S" longitude="88.84 E" name="Tyrrhena Terra" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1985" diameter="849.94" latitude="9.95 N" longitude="56.93 W" name="Ulysses Fossae" origin="From albedo feature name."/>
+  	<landmark approvaldate="1973" diameter="3560.45" latitude="46.74 N" longitude="117.52 E" name="Utopia Planitia" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="2003" diameter="2492.68" latitude="43.53 N" longitude="86.03 E" name="Utopia Rupēs" origin="Named for calssical albedo feature at 55N, 260W."/>
+  	<landmark approvaldate="1973" diameter="3761.28" latitude="14.01 S" longitude="121.41 W" name="Valles Marineris" origin="General name of the system of canyons honoring the scientific team of the Mariner 9 program."/>
+  	<landmark approvaldate="1973" diameter="2002.91" latitude="87.73 N" longitude="32.53 E" name="Vastitas Borealis" origin="Classical albedo feature name."/>
+  	<landmark approvaldate="1979" diameter="1867.65" latitude="1.6 N" longitude="131.95 W" name="Xanthe Terra" origin="Classical albedo feature name."/>
+  	<!--Artificial Objects-->
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="10.6 N" longitude="90.0 E" name="Beagle 2 Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="47.0 E" name="Mars 2 Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="45.0 S" longitude="158.0 W" name="Mars 3 Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="23.9 S" longitude="19.5 W" name="Mars 6 Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="19.3 N" longitude="33.3 W" name="Mars Pathfinder Rover" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="76.7 S" longitude="164.7 E" name="Mars Polar Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="4.3 S" longitude="137.2 E" name="MSL Curiosity Rover" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="14.57 S" longitude="175.47 E" name="MER Spirit Rover" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="1.95 S" longitude="5.53 W" name="MER Opportunity Rover" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="68.22 N" longitude="125.7 W" name="Phoenix Mars Lander" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="22.5 N" longitude="48.0 W" name="Viking Lander 1" origin="N/A"/>
+  	<landmark approvaldate="N/A" diameter="0.1" latitude="47.9 N" longitude="133.7 E" name="Viking Lander 2" origin="N/A"/>
 </landmark-list>
