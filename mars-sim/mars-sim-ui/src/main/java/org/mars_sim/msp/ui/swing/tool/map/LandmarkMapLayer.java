@@ -23,13 +23,13 @@ public class LandmarkMapLayer implements MapLayer {
 	private int CIRCLE_DIAMETER = 10; //FIXME: make proportional to actual loaded diameter.
 	
 	// Blue color for surface map.
-	private Color SURFACE_COLOR = new Color(96, 96, 255);
+	private Color SURFACE_COLOR = new Color(127, 127, 255);
 	
 	// Gray color for surface map.
 	private Color TOPO_COLOR = new Color(50, 50, 50);
 	
 	// Label font.
-	private Font MAP_LABEL_FONT = new Font("SansSerif", Font.PLAIN, 10);
+	private Font MAP_LABEL_FONT = new Font("Serif", Font.PLAIN, 12);
 	
 	// Horizontal offset for label.
 	private int LABEL_HORIZONTAL_OFFSET = 2;
