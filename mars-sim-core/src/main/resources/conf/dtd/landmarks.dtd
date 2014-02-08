@@ -6,3 +6,4 @@
 <!ATTLIST landmark approvaldate CDATA #REQUIRED>
 <!ATTLIST landmark diameter CDATA #REQUIRED>
 <!ATTLIST landmark origin CDATA #REQUIRED>
+<!ATTLIST landmark type CDATA #REQUIRED>
