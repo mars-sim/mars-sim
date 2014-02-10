@@ -8,27 +8,30 @@
  
 package org.mars_sim.msp.core.mars;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 
-import java.io.Serializable;
-
 /** Weather represents the weather on Mars */
 public class Weather implements Serializable {
-    
-    // Static data
-    // Sea level air pressure in atm.
-    private static final double SEA_LEVEL_AIR_PRESSURE = .009D;
-    // Sea level air density in kg/m^3.
-    private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
-    // Mar's gravitational acceleration at sea level in m/sec^2.
-    private static final double SEA_LEVEL_GRAVITY = 3.0D;
-    // exreme cold temperatures at Mars
-    private static final double EXTREME_COLD = -120D;
-    
-    /** Constructs a Weather object */
-    public Weather() {}
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Static data
+	/** Sea level air pressure in atm. */
+	private static final double SEA_LEVEL_AIR_PRESSURE = .009D;
+	/** Sea level air density in kg/m^3. */
+	private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
+	/** Mar's gravitational acceleration at sea level in m/sec^2. */
+	private static final double SEA_LEVEL_GRAVITY = 3.0D;
+	/** exreme cold temperatures at Mars. */
+	private static final double EXTREME_COLD = -120D;
+
+	/** Constructs a Weather object */
+	public Weather() {}
+
     /**
      * Gets the air pressure at a given location.
      * @return air pressure in atm.

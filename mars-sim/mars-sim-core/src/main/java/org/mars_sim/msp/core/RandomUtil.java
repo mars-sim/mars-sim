@@ -17,11 +17,12 @@ public final class RandomUtil {
 	
 	// Random generator.
 //	private final static Random random = new Random();
-/**
- *  MersenneTwisterFast provides a fast, much "more" random than the linear congruential
- *  of the java.util.Random 
- * */
+	/**
+	 * MersenneTwisterFast provides a fast, much "more" random than the linear congruential
+	 * of the java.util.Random 
+	 */
 	private final static MersenneTwisterFast random = new MersenneTwisterFast();
+
     /** Returns true if given number is less than a random percentage. 
      *  @param randomLimit the random percentage limit
      *  @return true if random percent is less than percentage limit

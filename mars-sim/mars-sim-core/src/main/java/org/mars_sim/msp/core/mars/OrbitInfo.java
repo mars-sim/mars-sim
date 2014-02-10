@@ -17,19 +17,32 @@ import java.io.Serializable;
  */
 public class OrbitInfo implements Serializable {
 
-    // Static data members
-    private static final double ORBIT_PERIOD = 59355072D; // Mars orbit period in seconds
-    private static final double ECCENTRICITY = .093D;     // Mars orbit eccentricity
-    // private static final double SEMIMAJOR_AXIS = 1.524D;  // Mars orbit semimajor axis in au
-    private static final double TILT=.4396D;              // Mars tilt in radians
-    private static final double SOLAR_DAY = 88775.244D;   // Mars solar day in seconds
-    private static final double ORBIT_AREA = 9.5340749D;  // The area of Mars' orbit in au squared
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private double orbitTime;  // The total time in the current orbit (in seconds) 
-    private double theta;   // The angle of Mars's position to the Sun (in radians)
-    private double radius;  // The distance from the Sun to Mars (in au).
-    private Coordinates sunDirection; // The point on the surface of Mars perpendicular to the Sun as Mars rotates.
+	// Static data members
+	/** Mars orbit period in seconds. */
+	private static final double ORBIT_PERIOD = 59355072D;
+	/** Mars orbit eccentricity. */
+	private static final double ECCENTRICITY = .093D;
+	// /** Mars orbit semimajor axis in au. */
+	// private static final double SEMIMAJOR_AXIS = 1.524D;
+	/** Mars tilt in radians. */
+	private static final double TILT = .4396D;
+	/** Mars solar day in seconds. */
+	private static final double SOLAR_DAY = 88775.244D;
+	/** The area of Mars' orbit in au squared. */
+	private static final double ORBIT_AREA = 9.5340749D;
+
+	// Data members
+	/** The total time in the current orbit (in seconds). */
+	private double orbitTime; 
+	/** The angle of Mars's position to the Sun (in radians). */
+	private double theta;
+	/** The distance from the Sun to Mars (in au). */
+	private double radius;
+	/** The point on the surface of Mars perpendicular to the Sun as Mars rotates. */
+	private Coordinates sunDirection;
 
     /** Constructs an OrbitInfo object */
     public OrbitInfo() {   
