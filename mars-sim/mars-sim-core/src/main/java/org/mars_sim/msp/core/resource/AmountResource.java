@@ -22,22 +22,32 @@ import org.mars_sim.msp.core.SimulationConfig;
  * measured in mass kg.
  */
 public final class AmountResource
-implements Resource, Serializable {
+extends ResourceAbstract
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
 
 	// Data members
-	private String name;
-	private String description;
 	private Phase phase;
 	private boolean lifeSupport;
 	private int hashcode = -1;
+	private String name;
+	private String description;
 
 	/**
-	 * Default private constructor.
+	 * Gets the resource's name.
+	 * @return name of resource.
 	 */
-	private AmountResource() {}
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
 
 	/**
 	 * Constructor with life support parameter.
@@ -60,24 +70,11 @@ implements Resource, Serializable {
 	}
 
 	/**
-	 * Gets the resource's name.
-	 * @return name of resource.
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
 	 * Gets the resources material phase.
 	 * @return phase value
 	 */
 	public Phase getPhase() {
 		return phase;
-	}
-
-	public String getDescription() {
-		return description;
 	}
 
 	/**
@@ -163,23 +160,5 @@ implements Resource, Serializable {
 	 */
 	public int hashCode() {
 		return hashcode;
-	}
-
-	/**
-	 * Returns the resource as a string.
-	 */
-	public String toString() {
-		return getName();
-	}
-
-	/**
-	 * Compares this object with the specified object for order.
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than, 
-	 * equal to, or greater than the specified object.
-	 */
-	@Override
-	public final int compareTo(Resource o) {
-		return getName().compareToIgnoreCase(o.getName());
 	}
 }

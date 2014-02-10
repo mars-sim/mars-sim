@@ -20,15 +20,30 @@ import org.mars_sim.msp.core.SimulationConfig;
  * such as simple tools and parts.
  */
 public class ItemResource
-implements Resource, Serializable {
+extends ResourceAbstract
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Data members
+	private double massPerItem;
 	private String name;
 	private String description;
-	private double massPerItem;
+
+	/**
+	 * Gets the resource's name.
+	 * @return name of resource.
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	@Override
+	public String getDescription() {
+		return description;
+	}
 	
 	/*
 	 * Default private constructor
@@ -48,15 +63,6 @@ implements Resource, Serializable {
 		this.name = name;
 		this.description = description;
 		this.massPerItem = massPerItem;
-	}
-
-	/**
-	 * Gets the resource's name.
-	 * @return name of resource.
-	 */
-	@Override
-	public String getName() {
-		return name;
 	}
 
 	/**
@@ -137,8 +143,11 @@ implements Resource, Serializable {
         return new ItemResource(resourceName,description,massPerItem);
     }
 
-    private static class UnknownResourceName extends RuntimeException {
-        private String name;
+	private static class UnknownResourceName extends RuntimeException {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private String name;
 
         public UnknownResourceName(String name) {
             super("Unknown resource name : " + name);
@@ -150,27 +159,4 @@ implements Resource, Serializable {
         }
 */
     }
-
-    /**
-	 * Returns the resource as a string.
-	 */
-	@Override
-	public String toString() {
-		return getName();
-	}
-
-	/**
-	 * Compares this object with the specified object for order.
-	 * @param o the Object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object is less than, 
-	 * equal to, or greater than the specified object.
-	 */
-	@Override
-	public final int compareTo(Resource o) {
-		return getName().compareToIgnoreCase(o.getName());
-	}
-
-	public String getDescription() {
-		return description;
-	}
 }
