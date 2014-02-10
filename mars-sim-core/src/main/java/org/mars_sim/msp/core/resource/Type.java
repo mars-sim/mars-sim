@@ -1,19 +1,20 @@
 package org.mars_sim.msp.core.resource;
 
 /**
- * to distinguish between items, vehicles, parts, resources
+ * to distinguish between items, vehicles, parts, resources.
  * @author stpa
  * 2014-02-06
  */
 public enum Type {
 
-	AMOUNT_RESOURCE ("resource"),
-	PART ("part"),
-	EQUIPMENT ("equipment"),
-	VEHICLE ("vehicle");
+	AMOUNT_RESOURCE		("resource"),
+	PART				("part"),
+	EQUIPMENT			("equipment"),
+	VEHICLE				("vehicle");
 
 	private String name;	
 
+	/** hidden constructor. */
 	private Type(String name) {
 		this.name = name;
 	}
@@ -22,6 +23,7 @@ public enum Type {
 		return this.name;
 	}
 
+	@Override
 	public String toString() {
 		return this.name;
 	}

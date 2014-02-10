@@ -39,7 +39,8 @@ public abstract class Unit implements Serializable, Comparable<Unit> {
 	private Inventory inventory;
 	/** The unit containing this unit. */
 	private Unit containerUnit;
-	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>()); // Unit listeners.
+	/** Unit listeners. */
+	private transient List<UnitListener> listeners;// = Collections.synchronizedList(new ArrayList<UnitListener>());
 	private static Logger logger = Logger.getLogger(Unit.class.getName());
 
     /** 

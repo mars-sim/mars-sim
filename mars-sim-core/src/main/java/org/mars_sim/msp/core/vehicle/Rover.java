@@ -21,21 +21,30 @@ import java.util.Iterator;
  * The Rover class represents the rover type of ground vehicle.  It
  * contains information about the rover.
  */
-public class Rover extends GroundVehicle implements Crewable, LifeSupport, Airlockable, Medical, Towing {
+public class Rover
+extends GroundVehicle
+implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 
-    // Static data members
-    private double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
-    private double NORMAL_TEMP = 25D; // Normal temperature (celsius)
-    
-    public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
-    
-    // Data members
-    private int crewCapacity = 0; // The rover's capacity for crewmembers.
-    private Airlock airlock; // The rover's airlock.
-	private Lab lab; // The rover's lab.
-	private SickBay sickbay; // The rover's sick bay.
-	private Vehicle towedVehicle; // The vehicle the rover is currently towing.
-	
+	// Static data members
+	/** Normal air pressure (atm.). */
+	private double NORMAL_AIR_PRESSURE = 1D;
+	/** Normal temperature (celsius). */
+	private double NORMAL_TEMP = 25D;
+
+	public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
+
+	// Data members
+	/** The rover's capacity for crewmembers. */
+	private int crewCapacity = 0;
+	/** The rover's airlock. */
+	private Airlock airlock;
+	/** The rover's lab. */
+	private Lab lab;
+	/** The rover's sick bay. */
+	private SickBay sickbay;
+	/** The vehicle the rover is currently towing. */
+	private Vehicle towedVehicle;
+
     /** 
      * Constructs a Rover object at a given settlement
      * @param name the name of the rover

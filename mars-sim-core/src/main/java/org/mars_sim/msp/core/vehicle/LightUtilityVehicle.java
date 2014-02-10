@@ -22,11 +22,12 @@ import java.util.Collection;
  */
 public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
-    // Vehicle name.
+    /** Vehicle name. */
     public static final String NAME = "Light Utility Vehicle";
 
     // Data members.
-    private int crewCapacity = 0; // The LightUtilityVehicle's capacity for crewmembers.
+    /** The LightUtilityVehicle's capacity for crewmembers. */
+    private int crewCapacity = 0;
     private Collection<Part> attachments = null;
     private int slotNumber  = 0;
 

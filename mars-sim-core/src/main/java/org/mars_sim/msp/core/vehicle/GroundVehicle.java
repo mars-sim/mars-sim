@@ -27,14 +27,17 @@ import java.util.List;
 */
 public abstract class GroundVehicle extends Vehicle implements Serializable {
 
-    // Ground Vehicle Status Strings
-    public final static String STUCK = "Stuck - using winch";
-	
-    // Data members
-    private double elevation; // Current elevation in km.
-    private double terrainHandlingCapability; // Ground vehicle's basic terrain handling capability.
-    private boolean isStuck; // True if vehicle is stuck.
-    
+	/** Ground Vehicle Status String. */
+	public final static String STUCK = "Stuck - using winch";
+
+	// Data members
+	/** Current elevation in km. */
+	private double elevation;
+	/** Ground vehicle's basic terrain handling capability. */
+	private double terrainHandlingCapability;
+	/** True if vehicle is stuck. */
+	private boolean isStuck;
+
     /** 
      * Constructs a GroundVehicle object at a given settlement
      * @param name name of the ground vehicle
