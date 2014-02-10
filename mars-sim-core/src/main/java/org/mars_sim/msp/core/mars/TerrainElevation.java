@@ -61,7 +61,7 @@ public class TerrainElevation {
         float saturation = hsb[1];
 
 		// Determine elevation in meters.
-		// Note: This code needs updating.
+		// TODO This code (calculate terrain elevation) needs updating.
         double elevation = 0D;
         if ((hue < .792F) && (hue > .033F)) elevation = (-13801.99D * hue) + 2500D;
         else elevation = (-21527.78D * saturation) + 19375D + 2500D;

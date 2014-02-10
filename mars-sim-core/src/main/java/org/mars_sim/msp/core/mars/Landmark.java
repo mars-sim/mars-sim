@@ -7,9 +7,9 @@
 
 package org.mars_sim.msp.core.mars;
 
-import org.mars_sim.msp.core.Coordinates;
-
 import java.io.Serializable;
+
+import org.mars_sim.msp.core.Coordinates;
 
 
 /** The Landmark class represents a surface landmark on virtual Mars.
@@ -17,10 +17,16 @@ import java.io.Serializable;
  */
 public class Landmark implements Serializable {
 
-    // Data members
-    private String landmarkName;    // Name of the landmark
-    private Coordinates landmarkLocation;   // Location of the landmark
-    private int landmarkDiameter;   // Diameter of the landmark, rounded to int
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	/** Name of the landmark. */
+	private String landmarkName;
+	/** Location of the landmark. */
+	private Coordinates landmarkLocation;
+	/** Diameter of the landmark, rounded to int. */
+	private int landmarkDiameter;
 
     /** Constructs a landmark object with the given name at the given location.
      *  @param name name of the landmark

@@ -6,6 +6,16 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.events.HistoricalEventManager;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -19,10 +29,6 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 
-import java.io.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
@@ -30,41 +36,57 @@ import java.util.logging.Logger;
  */
 public class Simulation implements ClockListener, Serializable {
 
-    /** DOCME: documentation is missing */
-    private static final long serialVersionUID = -631308653510974249L;
-    private static Logger logger = Logger.getLogger(Simulation.class.getName());
-    
-    // Version string.
-    public final static String VERSION = "3.06";
-    
-    // Default save file.
-    public final static String DEFAULT_FILE = "default.sim";
-    
-    // Save directory
-    public final static String DEFAULT_DIR = System.getProperty("user.home") + File.separator + 
-            ".mars-sim" + File.separator + "saved";
-    
-    // Singleton instance
-    private static final Simulation instance = new Simulation();
-    
-    // Transient data members (aren't stored in save file)
-    private transient HistoricalEventManager eventManager; // All historical info.
-    private transient Thread clockThread;
-    private static final boolean debug = logger.isLoggable(Level.FINE);
-    
-    // Intransient data members (stored in save file)
-    private Mars mars; // Planet Mars
-    private MalfunctionFactory malfunctionFactory; // The malfunction factory
-    private UnitManager unitManager; // Manager for all units in simulation.
-    private MissionManager missionManager; // Mission controller
-    private RelationshipManager relationshipManager; // Manages all personal relationships.
-    private MedicalManager medicalManager; // Medical complaints
-    private MasterClock masterClock; // Master clock for the simulation.
-    private CreditManager creditManager; // Manages trade credit between settlements.
-    private ScientificStudyManager scientificStudyManager; // Manages scientific studies.
-    private TransportManager transportManager; // Manages transportation of settlements and resupplies from Earth.
-    private boolean defaultLoad = false;
-    private boolean initialSimulationCreated = false;
+	/** default serial id. */
+	private static final long serialVersionUID = -631308653510974249L;
+
+	private static Logger logger = Logger.getLogger(Simulation.class.getName());
+
+	/** Version string. */
+	public final static String VERSION = "3.06";
+
+	/** Default save file. */
+	public final static String DEFAULT_FILE = "default.sim";
+
+	/** Save directory. */
+	public final static String DEFAULT_DIR =
+			System.getProperty("user.home") +
+			File.separator + 
+			".mars-sim" +
+			File.separator +
+			"saved";
+
+	/** Singleton instance. */
+	private static final Simulation instance = new Simulation();
+
+	// Transient data members (aren't stored in save file)
+	/** All historical info. */
+	private transient HistoricalEventManager eventManager;
+	private transient Thread clockThread;
+	private static final boolean debug = logger.isLoggable(Level.FINE);
+
+	// Intransient data members (stored in save file)
+	/** Planet Mars. */
+	private Mars mars;
+	/** The malfunction factory. */
+	private MalfunctionFactory malfunctionFactory;
+	/** Manager for all units in simulation. */
+	private UnitManager unitManager;
+	/** Mission controller. */
+	private MissionManager missionManager;
+	/** Manages all personal relationships. */
+	private RelationshipManager relationshipManager;
+	/** Medical complaints. */
+	private MedicalManager medicalManager;
+	/** Master clock for the simulation. */
+	private MasterClock masterClock;
+	/** Manages trade credit between settlements. */
+	private CreditManager creditManager;
+	/** Manages scientific studies. */
+	private ScientificStudyManager scientificStudyManager;
+	/** Manages transportation of settlements and resupplies from Earth. */
+	private TransportManager transportManager;
+	private boolean defaultLoad = false;
+	private boolean initialSimulationCreated = false;
 
     /**
      * Constructor
