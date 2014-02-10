@@ -20,14 +20,15 @@ import java.util.logging.Logger;
  * The JobManager class keeps track of the settler jobs in a simulation.
  */
 public final class JobManager implements Serializable {
-    
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.simulation.person.ai.job.JobManager";
-	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
-	
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(JobManager.class.getName());
+
 	// Data members
-	private static List<Job> jobs; // List of the jobs in the simulation. 
+	/** List of the jobs in the simulation. */
+	private static List<Job> jobs; 
 
 	/**
 	 * Private constructor for static utility class.

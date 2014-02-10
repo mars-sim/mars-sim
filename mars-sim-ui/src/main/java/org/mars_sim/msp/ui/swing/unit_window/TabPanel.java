@@ -7,23 +7,29 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.BorderLayout;
+
+import javax.swing.BoxLayout;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import java.awt.*;
-
 public abstract class TabPanel extends JScrollPane {
-    
-    protected String tabTitle;
-    protected Icon tabIcon;
-    protected String tabToolTip;
-    protected JPanel topContentPanel;
-    protected JPanel centerContentPanel;
-    protected Unit unit;
-    protected MainDesktopPane desktop;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	protected String tabTitle;
+	protected Icon tabIcon;
+	protected String tabToolTip;
+	protected JPanel topContentPanel;
+	protected JPanel centerContentPanel;
+	protected Unit unit;
+	protected MainDesktopPane desktop;
+
     /**
      * Constructor
      *

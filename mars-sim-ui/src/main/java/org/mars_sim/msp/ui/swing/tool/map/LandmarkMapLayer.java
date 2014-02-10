@@ -6,32 +6,34 @@
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.util.Iterator;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.Landmark;
-
-import java.awt.*;
-import java.util.Iterator;
 
 /**
  * The LandmarkMapLayer is a graphics layer to display landmarks.
  */
 public class LandmarkMapLayer implements MapLayer {
 
-	// Diameter of marking circle.
+	/** Diameter of marking circle. */
 	private int CIRCLE_DIAMETER = 10; //FIXME: make proportional to actual loaded diameter.
 	
-	// Blue color for surface map.
+	/** Blue color for surface map. */
 	private Color SURFACE_COLOR = new Color(127, 127, 255);
 	
-	// Gray color for surface map.
+	/** Gray color for surface map. */
 	private Color TOPO_COLOR = new Color(50, 50, 50);
 	
-	// Label font.
+	/** Label font. */
 	private Font MAP_LABEL_FONT = new Font("Serif", Font.PLAIN, 12);
 	
-	// Horizontal offset for label.
+	/** Horizontal offset for label. */
 	private int LABEL_HORIZONTAL_OFFSET = 2;
 	
 	/**

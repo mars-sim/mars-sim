@@ -56,12 +56,16 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for delivering emergency supplies from one settlement to another.
  */
-public class EmergencySupplyMission extends RoverMission implements
-        Serializable {
+public class EmergencySupplyMission
+extends RoverMission
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
     
-    // Default description.
+    /** Default description. */
     public static final String DEFAULT_DESCRIPTION = "Deliver Emergency Supplies";
     
     // Static members

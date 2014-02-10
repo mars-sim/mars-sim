@@ -6,6 +6,9 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -17,34 +20,33 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.logging.Logger;
-
 /** 
  * The Exploration class is a mission to travel in a rover to several
  * random locations around a settlement and collect ice.
  */
 public class CollectIce extends CollectResourcesMission {
 
-	private static Logger logger = Logger.getLogger(CollectIce.class.getName());
-	
-	// Default description.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+//	private static Logger logger = Logger.getLogger(CollectIce.class.getName());
+
+	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = "Ice Prospecting";
-	
-	// Amount of ice to be gathered at a given site (kg). 
+
+	/** Amount of ice to be gathered at a given site (kg). */
 	private static final double SITE_GOAL = 1000D;
-	
-	// Number of bags required for the mission. 
+
+	/** Number of bags required for the mission. */
 	public static final int REQUIRED_BAGS = 20;
-	
-	// Collection rate of ice during EVA (kg/millisol).
+
+	/** Collection rate of ice during EVA (kg/millisol). */
 	private static final double COLLECTION_RATE = 1D;
-	
-	// Number of collection sites.
+
+	/** Number of collection sites. */
 	private static final int NUM_SITES = 1;
-	
-	// Minimum number of people to do mission.
+
+	/** Minimum number of people to do mission. */
 	private final static int MIN_PEOPLE = 2;
 
 	/**

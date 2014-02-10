@@ -36,22 +36,26 @@ import java.util.logging.Logger;
  * Task for assisting a scientific study researcher.
  */
 public class AssistScientificStudyResearcher extends Task implements Serializable {
-    
-    private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
-    
-    // Task phase
-    private static final String ASSISTING = "Assisting Researcher";
 
-    //  Static members
-    private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // The improvement in relationship opinion of the assistant from the researcher per millisol.
-    private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
-    
-    // Data members
-    private ResearchScientificStudy researchTask;
-    private Person researcher;
-    
+	private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
+
+	/** Task phase. */
+	private static final String ASSISTING = "Assisting Researcher";
+
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D;
+
+	/** The improvement in relationship opinion of the assistant from the researcher per millisol. */
+	private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
+
+	// Data members
+	private ResearchScientificStudy researchTask;
+	private Person researcher;
+
     /**
      * Constructor
      * @param person the person performing the task.

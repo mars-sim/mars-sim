@@ -42,29 +42,38 @@ import java.util.logging.Logger;
 /**
  * A task for studying collected field samples (rocks, etc).
  */
-public class StudyFieldSamples extends Task implements 
-        ResearchScientificStudy, Serializable {
+public class StudyFieldSamples
+extends Task
+implements ResearchScientificStudy, Serializable {
 
-    private static Logger logger = Logger.getLogger(StudyFieldSamples.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // The stress modified per millisol.
-    private static final double STRESS_MODIFIER = -.1D; 
+	private static Logger logger = Logger.getLogger(StudyFieldSamples.class.getName());
 
-    // Task phase.
-    private static final String STUDYING_SAMPLES = "Studying Samples";
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D; 
+
+	/** Task phase. */
+	private static final String STUDYING_SAMPLES = "Studying Samples";
     
-    // Mass (kg) of field sample to study.
-    private static final double SAMPLE_MASS = 1D;
+	/** Mass (kg) of field sample to study. */
+	private static final double SAMPLE_MASS = 1D;
 
-    private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
-    
-    // Data members.
-    private ScientificStudy study; // The scientific study the person is researching for.
-    private Lab lab;         // The laboratory the person is working in.
-    private Science science;  // The science that is being researched.
-    private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
-    private Person researchAssistant; // The research assistant.
-    
+	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
+
+	// Data members.
+	/** The scientific study the person is researching for. */
+	private ScientificStudy study;
+	/** The laboratory the person is working in. */
+	private Lab lab;
+	/** The science that is being researched. */
+	private Science science;
+	/** The lab's associated malfunction manager. */
+	private MalfunctionManager malfunctions;
+	/** The research assistant. */
+	private Person researchAssistant;
+
     /**
      * Constructor
      * @param person the person performing the task.

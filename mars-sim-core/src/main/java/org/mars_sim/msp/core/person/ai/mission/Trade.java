@@ -49,36 +49,41 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission for trading between two settlements.
  */
-public class Trade extends RoverMission implements Serializable {
+public class Trade
+extends RoverMission
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Trade.class.getName());
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
-    // Mission phases.
-    public static final String TRADE_DISEMBARKING = "Trade Disembarking";
-    public static final String TRADE_NEGOTIATING = "Trade Negotiating";
-    public static final String UNLOAD_GOODS = "Unload Goods";
-    public static final String LOAD_GOODS = "Load Goods";
-    public static final String TRADE_EMBARKING = "Trade Embarking";
-    // Static members
-    static final int MAX_MEMBERS = 2;
-    private static final double MAX_STARTING_PROBABILITY = 10D;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Static cache for holding trade profit info.
-    private static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
-    private static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
+	private static Logger logger = Logger.getLogger(Trade.class.getName());
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
+	// Mission phases.
+	public static final String TRADE_DISEMBARKING = "Trade Disembarking";
+	public static final String TRADE_NEGOTIATING = "Trade Negotiating";
+	public static final String UNLOAD_GOODS = "Unload Goods";
+	public static final String LOAD_GOODS = "Load Goods";
+	public static final String TRADE_EMBARKING = "Trade Embarking";
+	// Static members
+	static final int MAX_MEMBERS = 2;
+	private static final double MAX_STARTING_PROBABILITY = 10D;
 
-    // Data members.
-    private Settlement tradingSettlement;
-    private Map<Good, Integer> sellLoad;
-    private Map<Good, Integer> buyLoad;
-    private double profit;
-    private Map<Good, Integer> desiredBuyLoad;
-    private double desiredProfit;
-    private boolean outbound;
-    private MarsClock startNegotiationTime;
-    private NegotiateTrade negotiationTask;
-    private boolean doNegotiation;
+	// Static cache for holding trade profit info.
+	private static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
+	private static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
+
+	// Data members.
+	private Settlement tradingSettlement;
+	private Map<Good, Integer> sellLoad;
+	private Map<Good, Integer> buyLoad;
+	private double profit;
+	private Map<Good, Integer> desiredBuyLoad;
+	private double desiredProfit;
+	private boolean outbound;
+	private MarsClock startNegotiationTime;
+	private NegotiateTrade negotiationTask;
+	private boolean doNegotiation;
 
     /**
      * Constructor.

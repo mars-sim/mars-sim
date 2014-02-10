@@ -18,12 +18,17 @@ import java.util.SimpleTimeZone;
 /** The EarthClock class keeps track of Earth Universal Time.
  *  It should be synchronized with the Mars clock. 
  */
-public class EarthClock implements Serializable/*extends GregorianCalendar implements Serializable*/ {
+public class EarthClock
+//extends GregorianCalendar
+implements Serializable {
 
-    private final GregorianCalendar cal;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private final SimpleDateFormat formatter;
+	private final GregorianCalendar cal;
+
+	// Data members
+	private final SimpleDateFormat formatter;
 
     /** 
      * Constructor

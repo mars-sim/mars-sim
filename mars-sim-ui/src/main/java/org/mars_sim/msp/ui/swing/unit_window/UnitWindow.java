@@ -10,7 +10,6 @@ package org.mars_sim.msp.ui.swing.unit_window;
 import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
@@ -28,6 +27,9 @@ import org.mars_sim.msp.ui.swing.unit_display_info.UnitDisplayInfoFactory;
  */
 public abstract class UnitWindow extends JInternalFrame {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Data members
 	/** Main window. */
 	protected MainDesktopPane desktop;
@@ -38,7 +40,7 @@ public abstract class UnitWindow extends JInternalFrame {
 	private Collection<TabPanel> tabPanels;
 	/** The center panel. */
 	private JTabbedPane centerPanel;
-    
+
     /**
      * Constructor
      *

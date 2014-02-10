@@ -1898,7 +1898,7 @@
 			<vehicle name="light utility vehicle" number="1" />
 		</outputs>
 	</process>
-
+<!--
 	<process name="vehicle assembly remote controlled prospector"
 			tech="3" skill="3"
 			work-time="1000"
@@ -1920,7 +1920,7 @@
 		<outputs>
 			<vehicle name="remote controlled prospector" number="1" />
 		</outputs>
-	</process>
+	</process>-->
 
 	<process name="steel truss manufacturing" tech="2" skill="2" work-time="200" process-time="300" 
 			power-required="10.0">

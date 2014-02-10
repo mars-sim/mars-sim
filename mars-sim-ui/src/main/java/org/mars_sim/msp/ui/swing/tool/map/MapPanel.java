@@ -25,12 +25,14 @@ import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Coordinates;
 
-public class MapPanel extends JPanel implements Runnable {
-    
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.map.MapPanel";
-	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+public class MapPanel
+extends JPanel
+implements Runnable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(MapPanel.class.getName());
 
 	// Data members.
 	private Map map;

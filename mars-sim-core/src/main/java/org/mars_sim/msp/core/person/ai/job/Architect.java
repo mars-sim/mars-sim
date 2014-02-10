@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -19,17 +21,17 @@ import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
 import org.mars_sim.msp.core.structure.Settlement;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
 /** 
  * The Architect class represents an architect job focusing on construction of buildings, settlement 
  * and other structures.
  */
 public class Architect extends Job implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Architect.class.getName());
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+//	private static Logger logger = Logger.getLogger(Architect.class.getName());
+
     /**
      * Constructor
      */

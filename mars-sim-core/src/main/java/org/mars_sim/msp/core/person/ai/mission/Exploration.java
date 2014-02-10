@@ -36,34 +36,44 @@ import java.util.logging.Logger;
  * The Exploration class is a mission to travel in a rover to several random locations around a settlement and collect
  * rock samples.
  */
-public class Exploration extends RoverMission implements Serializable {
+public class Exploration
+extends RoverMission
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Exploration.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Mineral Exploration";
+	private static Logger logger = Logger.getLogger(Exploration.class.getName());
 
-    // Mission phases
-    final public static String EXPLORE_SITE = "Exploring Site";
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Mineral Exploration";
 
-    // Number of specimen containers required for the mission.
-    public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
+	/** Mission phase. */
+	final public static String EXPLORE_SITE = "Exploring Site";
 
-    // Number of collection sites.
-    private static final int NUM_SITES = 5;
+	/** Number of specimen containers required for the mission. */
+	public static final int REQUIRED_SPECIMEN_CONTAINERS = 20;
 
-    // Amount of time to explore a site.
-    public final static double EXPLORING_SITE_TIME = 1000D;
+	/** Number of collection sites. */
+	private static final int NUM_SITES = 5;
 
-    // Maximum mineral concentration estimation diff from actual.
-    private final static double MINERAL_ESTIMATION_CEILING = 20D;
+	/** Amount of time to explore a site. */
+	public final static double EXPLORING_SITE_TIME = 1000D;
 
-    // Data members
-    private Map<String, Double> explorationSiteCompletion; // Map of exploration sites and their completion.
-    private MarsClock explorationSiteStartTime; // The start time at the current exploration site.
-    private ExploredLocation currentSite; // The current exploration site.
-    private List<ExploredLocation> exploredSites; // List of sites explored by this mission.
-    private boolean endExploringSite; // External flag for ending exploration at the current site.
+	/** Maximum mineral concentration estimation diff from actual. */
+	private final static double MINERAL_ESTIMATION_CEILING = 20D;
+
+	// Data members
+	/** Map of exploration sites and their completion. */
+	private Map<String, Double> explorationSiteCompletion;
+	/** The start time at the current exploration site. */
+	private MarsClock explorationSiteStartTime;
+	/** The current exploration site. */
+	private ExploredLocation currentSite;
+	/** List of sites explored by this mission. */
+	private List<ExploredLocation> exploredSites;
+	/** External flag for ending exploration at the current site. */
+	private boolean endExploringSite;
 
     /**
      * Constructor

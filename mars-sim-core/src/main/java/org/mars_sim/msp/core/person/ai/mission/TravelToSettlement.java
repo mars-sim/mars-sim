@@ -35,14 +35,16 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class TravelToSettlement extends RoverMission implements Serializable {
 
-    private static Logger logger = Logger.getLogger(TravelToSettlement.class
-            .getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
+	private static Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 
-    // Static members
-    private static final double BASE_MISSION_WEIGHT = 1D;
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
+
+	// Static members
+	private static final double BASE_MISSION_WEIGHT = 1D;
 
     private static final double RELATIONSHIP_MODIFIER = 10D;
 

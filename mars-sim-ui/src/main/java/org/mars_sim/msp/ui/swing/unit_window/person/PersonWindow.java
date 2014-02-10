@@ -16,9 +16,13 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The PersonWindow is the window for displaying a person.
  */
 public class PersonWindow extends UnitWindow {
-    
-    private boolean dead = false;  // Is person dead?
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Is person dead? */
+	private boolean dead = false;
+
     /**
      * Constructor
      *

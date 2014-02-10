@@ -7,7 +7,21 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
@@ -25,36 +39,46 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Logger;
-
 /**
  * The CollectResourcesMission class is a mission to travel in a rover to several random locations around a settlement
  * and collect resources of a given type.
  */
-public abstract class CollectResourcesMission extends RoverMission implements
-        Serializable {
+public abstract class CollectResourcesMission
+extends RoverMission
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Mission phases
-    final public static String COLLECT_RESOURCES = "Collecting Resources";
+	private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
 
-    // Estimated collection time multiplyer for EVA.
-    final public static double EVA_COLLECTION_OVERHEAD = 20D;
+	/** Mission phase. */
+	final public static String COLLECT_RESOURCES = "Collecting Resources";
 
-    // Data members
-    private AmountResource resourceType; // The type of resource to collect.
-    private double siteCollectedResources; // The amount of resources (kg) collected at a collection site.
-    private double collectingStart; // The starting amount of resources in a rover at a collection site.
-    private double siteResourceGoal; // The goal amount of resources to collect at a site (kg).
-    private double resourceCollectionRate; // The resource collection rate for a person (kg/millisol).
-    private Class containerType; // The type of container needed for the mission or null if none.
-    private int containerNum; // The number of containers needed for the mission.
-    private MarsClock collectionSiteStartTime; // The start time at the current collection site.
-    private boolean endCollectingSite; // External flag for ending collection at the current site.
-    private double totalResourceCollected; // The total amount (kg) of resource collected.
+	/** Estimated collection time multiplyer for EVA. */
+	final public static double EVA_COLLECTION_OVERHEAD = 20D;
+
+	// Data members
+	/** The type of resource to collect. */
+	private AmountResource resourceType;
+	/** The amount of resources (kg) collected at a collection site. */
+	private double siteCollectedResources;
+	/** The starting amount of resources in a rover at a collection site. */
+	private double collectingStart;
+	/** The goal amount of resources to collect at a site (kg). */
+	private double siteResourceGoal;
+	/** The resource collection rate for a person (kg/millisol). */
+	private double resourceCollectionRate;
+	/** The type of container needed for the mission or null if none. */
+	private Class containerType;
+	/** The number of containers needed for the mission. */
+	private int containerNum;
+	/** The start time at the current collection site. */
+	private MarsClock collectionSiteStartTime;
+	/** External flag for ending collection at the current site. */
+	private boolean endCollectingSite;
+	/** The total amount (kg) of resource collected. */
+	private double totalResourceCollected;
 
     /**
      * Constructor

@@ -6,6 +6,10 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Skill;
@@ -24,18 +28,16 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 /** 
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and 
  * vehicles.
  */
 public class Engineer extends Job implements Serializable {
-    
-    private static Logger logger = Logger.getLogger(Engineer.class.getName());
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+//	private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/**
 	 * Constructor

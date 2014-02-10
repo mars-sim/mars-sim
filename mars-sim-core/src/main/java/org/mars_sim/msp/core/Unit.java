@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * This class provides data members and methods common to all units.
  */
 public abstract class Unit implements Serializable, Comparable<Unit> {
-	
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 

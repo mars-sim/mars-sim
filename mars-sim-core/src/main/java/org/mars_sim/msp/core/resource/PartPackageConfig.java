@@ -6,11 +6,16 @@
  */
 package org.mars_sim.msp.core.resource;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import org.jdom.Document;
 import org.jdom.Element;
-
-import java.io.Serializable;
-import java.util.*;
 
 
 /**
@@ -18,6 +23,9 @@ import java.util.*;
  * Uses a JDOM document to get the information. 
  */
 public class PartPackageConfig implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Element names
 	private static final String PART_PACKAGE = "part-package";
@@ -105,7 +113,10 @@ public class PartPackageConfig implements Serializable {
 	 * Private inner class for storing part packages.
 	 */
 	private static class PartPackage implements Serializable {
-		
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
 		// Data members
 		private String name;
 		private Map<Part, Integer> parts;

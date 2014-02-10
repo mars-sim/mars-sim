@@ -7,23 +7,23 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 
 /** 
  * The Sleep class is a task for sleeping.
@@ -31,19 +31,26 @@ import java.util.logging.Logger;
  * Note: Sleeping reduces fatigue and stress.
  */
 class Sleep extends Task implements Serializable {
-	
-    private static Logger logger = Logger.getLogger(Sleep.class.getName());
-	
-	// Task phase
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+//	private static Logger logger = Logger.getLogger(Sleep.class.getName());
+
+	/** Task phase. */
 	private static final String SLEEPING = "Sleeping";
 
 	// Static members
-	private static final double STRESS_MODIFIER = -.3D; // The stress modified per millisol.
-	private static final double BASE_ALARM_TIME = 300D; // The base alarm time (millisols) at 0 degrees longitude.
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.3D;
+	/** The base alarm time (millisols) at 0 degrees longitude. */
+	private static final double BASE_ALARM_TIME = 300D;
 
     // Data members
-    private LivingAccommodations accommodations; // The living accommodations if any.
-    private double previousTime; // The previous time (millisols)
+    /** The living accommodations if any. */
+	private LivingAccommodations accommodations;
+    /** The previous time (millisols). */
+	private double previousTime;
 
     /** 
      * Constructor

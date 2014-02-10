@@ -21,10 +21,13 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The EquipmentWindow is the window for displaying a piece of equipment.
  */
 public class EquipmentWindow extends UnitWindow {
-    
-    // Data members
-    private boolean salvaged;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	private boolean salvaged;
+
     /**
      * Constructor
      *

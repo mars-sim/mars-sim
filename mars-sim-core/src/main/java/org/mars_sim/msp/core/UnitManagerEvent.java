@@ -8,8 +8,12 @@ package org.mars_sim.msp.core;
 
 import java.util.EventObject;
 
-public class UnitManagerEvent extends EventObject {
-	
+public class UnitManagerEvent
+extends EventObject {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// UnitManager event strings.
     public static final String ADD_UNIT = "add unit";
     public static final String REMOVE_UNIT = "remove unit";

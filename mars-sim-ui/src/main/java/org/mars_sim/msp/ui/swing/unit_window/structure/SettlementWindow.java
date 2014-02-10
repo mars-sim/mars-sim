@@ -18,8 +18,11 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
  * The SettlementWindow is the window for displaying a settlement.
  */
 public class SettlementWindow extends UnitWindow {
-    
-    /**
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Constructor
      *
      * @param desktop the main desktop panel.

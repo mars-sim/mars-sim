@@ -8,11 +8,13 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JComboBox;
 
 /**
- * a checkbox that is mousewheel-enabled.
+ * a combobox that is mousewheel-enabled.
  * @author stpa
  * 2014-01-29
  */
-public class JComboBoxMW<T> extends JComboBox<T> implements MouseWheelListener {
+public class JComboBoxMW<T>
+extends JComboBox<T>
+implements MouseWheelListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

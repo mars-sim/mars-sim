@@ -48,7 +48,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Mission for salvaging a construction stage at a building construction site.
  */
-public class BuildingSalvageMission extends Mission implements Serializable {
+public class BuildingSalvageMission
+extends Mission
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
