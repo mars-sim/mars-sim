@@ -6,14 +6,16 @@
  */
 package org.mars_sim.msp.core;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentSkipListSet;
+
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * This class gather general collection manipulation methods
@@ -161,7 +163,7 @@ public class CollectionUtils {
             String name) {
         Iterator<Settlement> i = collection.iterator();
         Settlement result = null;
-        while (i.hasNext()) {
+        while (result == null && i.hasNext()) {
             Settlement settlement = i.next();
             if (name.equals(settlement.getName()))
                 result = settlement;
@@ -169,10 +171,20 @@ public class CollectionUtils {
         return result;
     }
 
-    public synchronized static <T extends Unit> Collection<T> sortByName(
-            Collection<T> collection) {
-        ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
-
+	public synchronized static <T extends Unit> Collection<T> sortByName(
+		Collection<T> collection
+	) {
+		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<T>(
+			new Comparator<T>() {
+				@Override
+				public int compare(T o1, T o2) {
+					return o1.getName().compareToIgnoreCase(o2.getName());
+				}
+			}
+		);
+/*
+		// O(n²) ??
+		ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
         Iterator<T> outer = collection.iterator();
         while (outer.hasNext()) {
             outer.next();
@@ -190,16 +202,29 @@ public class CollectionUtils {
             }
             sorted.add(leastUnit);
         }
+*/
+		return sorted;
+	}
 
-        return sorted;
-    }
-
-    public synchronized static <T extends Unit> Collection<T> sortByProximity(
-            Collection<T> collection, Coordinates location) {
+	public synchronized static <T extends Unit> Collection<T> sortByProximity(
+		Collection<T> collection,
+		final Coordinates location
+	) {
+		ConcurrentSkipListSet<T> sorted = new ConcurrentSkipListSet<T>(
+			new Comparator<T>() {
+				@Override
+				public int compare(T o1, T o2) {
+					return Double.compare(
+						location.getDistance(o1.getCoordinates()),
+						location.getDistance(o2.getCoordinates())
+					);
+				}
+			}
+		);
+/*
+		// O(n²) ??
         ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();
-
         Iterator<T> outer = collection.iterator();
-
         while (outer.hasNext()) {
             outer.next();
             double closestDistance = Double.MAX_VALUE;
@@ -215,7 +240,7 @@ public class CollectionUtils {
             }
             sorted.add(closestUnit);
         }
-
-        return sorted;
-    }
+*/
+		return sorted;
+	}
 }
