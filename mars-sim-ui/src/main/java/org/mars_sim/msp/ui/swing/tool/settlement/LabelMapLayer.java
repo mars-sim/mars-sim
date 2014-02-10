@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LabelMapLayer.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -99,9 +99,7 @@ public class LabelMapLayer implements SettlementMapLayer {
         }
         
         // Draw all people labels.
-        if (mapPanel.isShowPersonLabels()) {
-            drawPersonLabels(g2d, settlement);
-        }
+        drawPersonLabels(g2d, settlement, mapPanel.isShowPersonLabels());
             
         // Restore original graphic transforms.
         g2d.setTransform(saveTransform);
@@ -204,22 +202,26 @@ public class LabelMapLayer implements SettlementMapLayer {
      * Draw labels for all people at the settlement.
      * @param g2d the graphics context.
      * @param settlement the settlement.
+     * @param showNonSelectedPeople true if showing non-selected person labels.
      */
-    private void drawPersonLabels(Graphics2D g2d, Settlement settlement) {
+    private void drawPersonLabels(Graphics2D g2d, Settlement settlement, 
+            boolean showNonSelectedPeople) {
         
     	List<Person> people = PersonMapLayer.getPeopleToDisplay(settlement);
     	Person selectedPerson = mapPanel.getSelectedPerson();
     	int offset = 8;
     	
     	// Draw all people except selected person.
-    	Iterator<Person> i = people.iterator();
-    	while (i.hasNext()) {
-    		Person person = i.next();
-    		
-    		if (!person.equals(selectedPerson)) {
-    			drawLabelRight(g2d, person.getName(), person.getXLocation(), person.getYLocation(), 
-    					PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, 0);
-    		}
+    	if (showNonSelectedPeople) {
+    	    Iterator<Person> i = people.iterator();
+    	    while (i.hasNext()) {
+    	        Person person = i.next();
+
+    	        if (!person.equals(selectedPerson)) {
+    	            drawLabelRight(g2d, person.getName(), person.getXLocation(), person.getYLocation(), 
+    	                    PERSON_LABEL_COLOR, PERSON_LABEL_OUTLINE_COLOR, offset, 0);
+    	        }
+    	    }
     	}
     	
     	// Draw selected person.
