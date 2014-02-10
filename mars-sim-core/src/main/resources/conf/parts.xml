@@ -477,14 +477,16 @@
 		<description>Long transparent glass tube.</description>
 		<maintenance-entity-list>
 			<entity name="solar thermal power source" probability="10" max-number="1" />
+<!--
 			<entity name="large algae greenhouse" probability="5" max-number="1" />
+-->
 		</maintenance-entity-list>
 	</part>
-
+<!--
 	<part name="algae tank" mass="200.0">
 		<description>An array of glass tubes connected with pipes and held together by a metal frame.</description>
 	</part>
-
+-->
 	<part name="brick" mass="2.86">
 		<!-- (UK Standard according to Wikipedia) -->
 		<description>Construction brick (215mm x 102.5mm x 65mm) 2.86kg</description>

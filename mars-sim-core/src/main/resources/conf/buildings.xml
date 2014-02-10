@@ -383,7 +383,7 @@
 		</functions>
 	</building>
 
-	<!-- A large algae greenhouse and biology lab. -->
+	<!-- A large algae greenhouse and biology lab.
 	<building name="Large Algae Greenhouse" width="12.0" length="18.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
@@ -406,7 +406,7 @@
 			</storage>				
 		</functions>
 	</building>
-
+	-->
 	<!-- A general scientific laboratory. -->
 	<building name="Laboratory" width="7.0" length="9.0">
 		<power-required base-power="30.0" base-power-down-power="10.0" />
