@@ -154,8 +154,10 @@ public class AmountResourceStorage implements Serializable {
             result = typeStorage.getAmountResourceTypeCapacity(resource);
         }
         if ((phaseStorage != null) && phaseStorage.hasAmountResourcePhaseCapacity(resource.getPhase())) {
-            if ((phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) || 
-                    phaseStorage.getAmountResourcePhaseType(resource.getPhase()).equals(resource)) {
+            if (
+            	(phaseStorage.getAmountResourcePhaseType(resource.getPhase()) == null) || 
+                phaseStorage.getAmountResourcePhaseType(resource.getPhase()).equals(resource)
+            ) {
                 result += phaseStorage.getAmountResourcePhaseCapacity(resource.getPhase());
             }
         }

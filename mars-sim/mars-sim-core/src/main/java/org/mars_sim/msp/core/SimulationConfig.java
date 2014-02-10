@@ -68,9 +68,9 @@ public class SimulationConfig implements Serializable {
 	public static final String PART_PACKAGE_FILE = "part_packages";
 	public static final String RESOURCE_FILE = "resources";
 	public static final String MANUFACTURE_FILE = "manufacturing";
-    public static final String CONSTRUCTION_FILE = "construction";
-    public static final String VALUE = "value";
-    
+	public static final String CONSTRUCTION_FILE = "construction";
+	public static final String VALUE = "value";
+
 	// Simulation element names.
 	private static final String TIME_CONFIGURATION = "time-configuration";
 	private static final String TIME_RATIO = "time-ratio";
@@ -81,14 +81,14 @@ public class SimulationConfig implements Serializable {
 	 * Static Members
 	 * ---------------------------------------------------------------------------------------------------- */
 
-	// Singleton instance
+	/** Singleton instance. */
 	private static SimulationConfig instance = new SimulationConfig();
 	
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
 	
-	// DOM documents
+	/** DOM documents. */
 	private Document simulationDoc;
 	
 	// Subset configuration classes

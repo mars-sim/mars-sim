@@ -164,29 +164,34 @@ import java.util.Random;
 // on the code, I strongly suggest looking at MersenneTwister.java first.
 // -- Sean
 
-public strictfp class MersenneTwisterFast implements Serializable, Cloneable
-    {
-    // Serialization
-    private static final long serialVersionUID = -8219700664442619525L;  // locked as of Version 15
-    
-    // Period parameters
-    private static final int N = 624;
-    private static final int M = 397;
-    private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant vector a
-    private static final int UPPER_MASK = 0x80000000; // most significant w-r bits
-    private static final int LOWER_MASK = 0x7fffffff; // least significant r bits
+public strictfp class MersenneTwisterFast
+implements Serializable, Cloneable {
+
+	/** Serialization id, locked as of Version 15. */
+	private static final long serialVersionUID = -8219700664442619525L;
+
+	// Period parameters
+	private static final int N = 624;
+	private static final int M = 397;
+	private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant vector a
+	/** most significant w-r bits. */
+	private static final int UPPER_MASK = 0x80000000;
+	/** least significant r bits. */
+	private static final int LOWER_MASK = 0x7fffffff;
 
 
-    // Tempering parameters
-    private static final int TEMPERING_MASK_B = 0x9d2c5680;
-    private static final int TEMPERING_MASK_C = 0xefc60000;
-    
-    private int mt[]; // the array for the state vector
-    private int mti; // mti==N+1 means mt[N] is not initialized
-    private int mag01[];
-    
-    // a good initial seed (of int size, though stored in a long)
-    //private static final long GOOD_SEED = 4357;
+	// Tempering parameters
+	private static final int TEMPERING_MASK_B = 0x9d2c5680;
+	private static final int TEMPERING_MASK_C = 0xefc60000;
+
+	/** the array for the state vector. */
+	private int mt[];
+	/** mti==N+1 means mt[N] is not initialized. */
+	private int mti;
+	private int mag01[];
+
+	///** a good initial seed (of int size, though stored in a long). */
+	//private static final long GOOD_SEED = 4357;
 
     private double __nextNextGaussian;
     private boolean __haveNextNextGaussian;
