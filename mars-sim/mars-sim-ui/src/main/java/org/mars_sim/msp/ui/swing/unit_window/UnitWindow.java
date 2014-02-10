@@ -101,8 +101,11 @@ public abstract class UnitWindow extends JInternalFrame {
         }
     }
 
-    protected final void addTopPanel(JPanel panel) {
-   		namePanel.add(panel,BorderLayout.CENTER);
+    protected final void addTopPanel(TabPanel panel) {
+        if (!tabPanels.contains(panel)) {
+            tabPanels.add(panel);
+            namePanel.add(panel,BorderLayout.CENTER);
+        }
     }
      
     /**
@@ -119,8 +122,9 @@ public abstract class UnitWindow extends JInternalFrame {
      */
     public void update() {
         // Update each of the tab panels.
-        Iterator<TabPanel> i = tabPanels.iterator();
-        while (i.hasNext()) i.next().update();
+        for (TabPanel tabPanel : tabPanels) {
+        	tabPanel.update();
+        }
     }
     
     /**

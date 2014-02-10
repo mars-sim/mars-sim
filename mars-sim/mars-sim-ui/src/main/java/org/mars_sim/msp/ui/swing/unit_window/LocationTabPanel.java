@@ -15,6 +15,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,37 +23,33 @@ import java.awt.event.ActionListener;
 /** 
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationPanel extends JPanel implements ActionListener {
+public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 123L;
+	private static final long serialVersionUID = 1L;
 
-	private JPanel locationPanel;
+	private JPanel locationCoordsPanel;
 	private JLabel latitudeLabel;
 	private JLabel longitudeLabel;
 	private Coordinates locationCache;
 	private JButton centerMapButton;
 	private JPanel locationLabelPanel;
-	private JPanel locationCoordsPanel;
 	private JButton locationButton;
 	private JLabel locationTextLabel;
-	protected Unit unit;
-	protected MainDesktopPane desktop;
 
     /**
-     * Constructor
-     *
+     * Constructor.
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
-    public LocationPanel(Unit unit, MainDesktopPane desktop) { 
-        this.unit = unit;
-        this.desktop = desktop;
+    public LocationTabPanel(Unit unit, MainDesktopPane desktop) { 
+        // Use the TabPanel constructor
+        super("Location", null, "Location", unit, desktop);
         
         // Create location panel
-        locationPanel = new JPanel(new BorderLayout(0,0));
+        JPanel locationPanel = new JPanel(new BorderLayout(0,0));
         locationPanel.setBorder(new MarsPanelBorder());
-        this.add(locationPanel);
+        topContentPanel.add(locationPanel);
         
         // Create location label panel
         locationLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -62,12 +59,11 @@ public class LocationPanel extends JPanel implements ActionListener {
         locationCoordsPanel = new JPanel();
         locationLabelPanel.add(locationCoordsPanel);
         locationCoordsPanel.setLayout(new BorderLayout(0, 0));
-        
+
         // Create center map button
         centerMapButton = new JButton(ImageLoader.getIcon("CenterMap"));
         centerMapButton.setMargin(new Insets(1, 1, 1, 1));
         centerMapButton.addActionListener(this);
-        
         centerMapButton.setToolTipText("Locate in Mars Navigator (center map on location)");
         locationLabelPanel.add(centerMapButton);
         
@@ -100,7 +96,7 @@ public class LocationPanel extends JPanel implements ActionListener {
 
         // Initialize location cache
         locationCache = new Coordinates(unit.getCoordinates());
-
+        
         // Prepare latitude label
         latitudeLabel = new JLabel(getLatitudeString());
         latitudeLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -112,13 +108,13 @@ public class LocationPanel extends JPanel implements ActionListener {
         locationCoordsPanel.add(longitudeLabel, BorderLayout.CENTER);
     }
 
-    private String getLatitudeString() {
-    	return locationCache.getFormattedLatitudeString();
-    }
+	private String getLatitudeString() {
+		return locationCache.getFormattedLatitudeString();
+	}
 
-    private String getLongitudeString() {
-    	return locationCache.getFormattedLongitudeString();
-    }
+	private String getLongitudeString() {
+		return locationCache.getFormattedLongitudeString();
+	}
     
     /** 
      * Action event occurs.

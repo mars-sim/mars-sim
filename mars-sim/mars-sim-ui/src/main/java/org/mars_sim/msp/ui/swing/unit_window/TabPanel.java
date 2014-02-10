@@ -45,7 +45,7 @@ public abstract class TabPanel extends JScrollPane {
         this.tabToolTip = tabToolTip;
         this.unit = unit;
         this.desktop = desktop;
-        
+
         // Create the view panel
         JPanel viewPanel = new JPanel(new BorderLayout(0, 0));
         setViewportView(viewPanel);

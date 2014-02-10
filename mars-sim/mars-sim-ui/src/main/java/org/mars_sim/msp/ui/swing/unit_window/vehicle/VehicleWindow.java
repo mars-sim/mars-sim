@@ -11,7 +11,11 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.unit_window.*;
+import org.mars_sim.msp.ui.swing.unit_window.InventoryTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.LocationTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.MaintenanceTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.SalvageTabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
 /**
  * The VehicleWindow is the window for displaying a vehicle.
@@ -34,7 +38,7 @@ public class VehicleWindow extends UnitWindow {
         // Add tab panels
         addTabPanel(new NavigationTabPanel(vehicle, desktop));
         if (vehicle instanceof Crewable) addTabPanel(new CrewTabPanel(vehicle, desktop));
-        addTopPanel(new LocationPanel(vehicle, desktop));
+        addTopPanel(new LocationTabPanel(vehicle, desktop));
         addTabPanel(new InventoryTabPanel(vehicle, desktop));
         addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
         if (vehicle instanceof Rover) {
