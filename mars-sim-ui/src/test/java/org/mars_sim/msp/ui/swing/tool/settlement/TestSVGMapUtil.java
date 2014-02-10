@@ -98,7 +98,7 @@ public class TestSVGMapUtil extends TestCase {
                 getVehicleTypes().iterator();
         while (i.hasNext()) {
             String vehicleType = i.next();
-            if (!vehicleType.equals("Light Utility Vehicle")) {
+            if (!vehicleType.equalsIgnoreCase("Light Utility Vehicle")) {
                 GraphicsNode svg = SVGMapUtil.getLoadingOverlaySVG(vehicleType);
                 assertNotNull(vehicleType + " does not have a loading overlay mapped to a SVG image.", svg);
             }
