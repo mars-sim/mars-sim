@@ -14,12 +14,15 @@ import java.io.Serializable;
  */
 public class Direction implements Cloneable, Serializable {
 
-    // Data members
-    private double direction; // Direction in radians
-    
-    // Static data members
-    private static double TWO_PI = 2 * Math.PI;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	private double direction; // Direction in radians
+
+	// Static data members
+	private static double TWO_PI = 2 * Math.PI;
+
     /** Constructs a Direction object 
      *  0 = North, clockwise
      *  @param direction direction in radians

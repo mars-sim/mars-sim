@@ -7,6 +7,14 @@
 
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
@@ -23,26 +31,23 @@ import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /** 
  * The RescueSalvageRover class is a mission to rescue the crew of a vehicle 
  * that has an emergency beacon on and tow the vehicle back, or to simply tow 
  * the vehicle back if the crew is already dead.
  */
-public class RescueSalvageVehicle extends RoverMission implements Serializable {
-	
-    private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
+public class RescueSalvageVehicle
+extends RoverMission
+implements Serializable {
 
-	// Default description.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
+
+	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
-	
+
 	// Static members
 	private static final int MISSION_MIN_MEMBERS = 2;
 	private static final int MISSION_MAX_MEMBERS = 3;

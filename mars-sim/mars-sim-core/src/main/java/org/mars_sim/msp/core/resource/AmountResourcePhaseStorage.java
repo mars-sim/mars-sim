@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Storage for phases of amount resource.
@@ -35,7 +34,7 @@ class AmountResourcePhaseStorage implements Serializable {
 	/** Stored resources by phase. */
 	private Map<Phase, StoredPhase> amountResourcePhaseStored = null;
 
-	// The cache value for the total amount phase resources stored. (kg)
+	/** The cache value for the total amount phase resources stored. (kg) */
 	private transient double totalStoredCache = 0D;
 	private transient boolean totalStoredCacheDirty = true;
 
@@ -283,11 +282,14 @@ class AmountResourcePhaseStorage implements Serializable {
         }
     }
 
-    /**
-     * Internal class for a stored phase.
-     */
-    private static class StoredPhase implements Serializable {
-        private AmountResource resource;
+	/**
+	 * Internal class for a stored phase.
+	 */
+	private static class StoredPhase implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		private AmountResource resource;
         private double amount;
 
         private StoredPhase(AmountResource resource, double amount) {

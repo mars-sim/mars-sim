@@ -1,5 +1,9 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
+/**
+ * @author stpa
+ * 2014-02-06
+ */
 public enum MissionEventType {
 
 	// from Mission.java
@@ -37,9 +41,7 @@ public enum MissionEventType {
 	BUY_LOAD_EVENT				("buy load"),
 
 	// from TravelToSettlement.java
-    DESTINATION_SETTLEMENT		("destination settlement"),
-
-	;
+    DESTINATION_SETTLEMENT		("destination settlement");
 
 	private String name;
 

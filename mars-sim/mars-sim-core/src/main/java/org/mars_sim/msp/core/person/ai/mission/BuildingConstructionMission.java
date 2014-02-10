@@ -53,13 +53,18 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Mission for construction a stage for a settlement building.
  */
-public class BuildingConstructionMission extends Mission implements Serializable {
+public class BuildingConstructionMission
+extends Mission
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
-    
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Construct Building";
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
+
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Construct Building";
+
     // Mission phases
     final public static String PREPARE_SITE_PHASE = "Prepare Site";
     final public static String CONSTRUCTION_PHASE = "Construction";
@@ -68,7 +73,7 @@ public class BuildingConstructionMission extends Mission implements Serializable
     private static final int MIN_PEOPLE = 3;
     private static final int MAX_PEOPLE = 10;
     
-    // Time (millisols) required to prepare construction site for stage.
+    /** Time (millisols) required to prepare construction site for stage. */
     private static final double SITE_PREPARE_TIME = 500D;
     
     // Data members

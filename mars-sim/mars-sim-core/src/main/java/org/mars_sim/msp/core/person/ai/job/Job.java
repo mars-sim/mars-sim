@@ -6,32 +6,39 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
  * The Job class represents a person's job.
  */
 public abstract class Job implements Serializable {
 
-	// Probability penalty for starting a non-job-related task.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_TASK_PENALTY = .01D;
 	
-	// Probability penalty for starting a non-job-related mission.
+	/** Probability penalty for starting a non-job-related mission. */
 	private static final double NON_JOB_MISSION_START_PENALTY = .01D;
 	
-	// Probability penalty for joining a non-job-related mission.
+	/** Probability penalty for joining a non-job-related mission. */
 	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
 
 	// Domain members
-	private String name; // Name of the job.
-	protected List<Class> jobTasks; // List of tasks related to the job.
-	protected List<Class> jobMissionStarts; // List of missions to be started by a person with this job.
-	protected List<Class> jobMissionJoins; // List of missions to be joined by a person with this job.
+	/** Name of the job. */
+	private String name;
+	/** List of tasks related to the job. */
+	protected List<Class> jobTasks;
+	/** List of missions to be started by a person with this job. */
+	protected List<Class> jobMissionStarts;
+	/** List of missions to be joined by a person with this job. */
+	protected List<Class> jobMissionJoins;
 
 	/**
 	 * Constructor

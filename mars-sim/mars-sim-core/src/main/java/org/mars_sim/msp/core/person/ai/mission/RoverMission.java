@@ -43,7 +43,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A mission that involves driving a rover vehicle along a series of navpoints.
  */
-public abstract class RoverMission extends VehicleMission {
+public abstract class RoverMission
+extends VehicleMission {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
     private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 

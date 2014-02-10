@@ -44,42 +44,43 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Mission for mining mineral concentrations at an explored site.
  */
-public class Mining extends RoverMission {
+public class Mining
+extends RoverMission {
 
     /** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	private static Logger logger = Logger.getLogger(Mining.class.getName());
 
-    // Default description.
-    public static final String DEFAULT_DESCRIPTION = "Mining";
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Mining";
 
-    // Mission phases
-    final public static String MINING_SITE = "Mining Site";
+	/** Mission phases */
+	final public static String MINING_SITE = "Mining Site";
 
-    // Number of bags needed for mission.
-    private static final int NUMBER_OF_BAGS = 20;
+	/** Number of bags needed for mission. */
+	private static final int NUMBER_OF_BAGS = 20;
 
-    // Base amount (kg) of a type of mineral at a site.
-    private static final double MINERAL_BASE_AMOUNT = 1000D;
+	/** Base amount (kg) of a type of mineral at a site. */
+	private static final double MINERAL_BASE_AMOUNT = 1000D;
 
-    // Amount of time(millisols) to spend at the mining site.
-    private static final double MINING_SITE_TIME = 3000D;
+	/** Amount of time(millisols) to spend at the mining site. */
+	private static final double MINING_SITE_TIME = 3000D;
 
-    // Minimum amount (kg) of an excavated mineral that can be collected.
-    private static final double MINIMUM_COLLECT_AMOUNT = 10D;
+	/** Minimum amount (kg) of an excavated mineral that can be collected. */
+	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
 
-    // Light utility vehicle attachment parts for mining.
-    public static final String PNEUMATIC_DRILL = "pneumatic drill";
-    public static final String BACKHOE = "backhoe";
+	// Light utility vehicle attachment parts for mining.
+	public static final String PNEUMATIC_DRILL = "pneumatic drill";
+	public static final String BACKHOE = "backhoe";
 
-    // Data members
-    private ExploredLocation miningSite;
-    private MarsClock miningSiteStartTime;
-    private boolean endMiningSite;
-    private Map<AmountResource, Double> excavatedMinerals;
-    private Map<AmountResource, Double> totalExcavatedMinerals;
-    private LightUtilityVehicle luv;
+	// Data members
+	private ExploredLocation miningSite;
+	private MarsClock miningSiteStartTime;
+	private boolean endMiningSite;
+	private Map<AmountResource, Double> excavatedMinerals;
+	private Map<AmountResource, Double> totalExcavatedMinerals;
+	private LightUtilityVehicle luv;
 
     /**
      * Constructor

@@ -17,25 +17,21 @@ import java.io.Serializable;
  */
 public class UpTimer implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = -4992839027918134952L;
 
-    /**
-     *
-     */
-    private static final long serialVersionUID = -4992839027918134952L;
-    /**
-     *
-     */
-    private transient long thiscall = System.currentTimeMillis();
-    private transient long lastcall = System.currentTimeMillis();
+	private transient long thiscall = System.currentTimeMillis();
+	private transient long lastcall = System.currentTimeMillis();
 
-    private static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
-    private long days, hours, minutes, seconds;
+	private static final int secspmin = 60, secsphour = 3600, secspday = 86400, secsperyear = 31536000;
+	private long days, hours, minutes, seconds;
 
-    // Data members
-    private long uptime = 1; //in case it gets divided by 0 right away
-    private long utsec = 0;
+	// Data members
+	/** in case it gets divided by 0 right away. */
+	private long uptime = 1;
+	private long utsec = 0;
 
-    private transient boolean paused = true;
+	private transient boolean paused = true;
 
     public UpTimer() {
         this.setPaused(false);

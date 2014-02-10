@@ -7,19 +7,29 @@
 
 package org.mars_sim.msp.core.person.ai.job;
 
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.structure.Settlement;
-
 import java.io.Serializable;
 import java.util.Iterator;
 
-public class Trader extends Job implements Serializable {
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
+import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
+import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
+import org.mars_sim.msp.core.person.ai.mission.Trade;
+import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.structure.Settlement;
 
-    private static double TRADING_RANGE = 1500D;
+public class Trader
+extends Job
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static double TRADING_RANGE = 1500D;
     private static double SETTLEMENT_MULTIPLIER = 3D;
     
 	/**

@@ -17,21 +17,27 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A mission that involves traveling along a series of navpoints.
  */
-public abstract class TravelMission extends Mission {
+public abstract class TravelMission
+extends Mission {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Travel Mission status
-    public final static String AT_NAVPOINT = "At a navpoint";
-    public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
+	public final static String AT_NAVPOINT = "At a navpoint";
+	public final static String TRAVEL_TO_NAVPOINT = "Traveling to navpoint";
 
-    // Data members
-    private List<NavPoint> navPoints = new ArrayList<NavPoint>(); // List of navpoints for the mission.
-    private int navIndex = 0; // The current navpoint index.
-    private String travelStatus; // The current traveling status of the mission.
-    private NavPoint lastStopNavpoint; // The last navpoint the mission stopped at.
-    private MarsClock legStartingTime; // The time the last leg of the mission started at.
+	// Data members
+	/** List of navpoints for the mission. */
+	private List<NavPoint> navPoints = new ArrayList<NavPoint>();
+	/** The current navpoint index. */
+	private int navIndex = 0;
+	/** The current traveling status of the mission. */
+	private String travelStatus;
+	/** The last navpoint the mission stopped at. */
+	private NavPoint lastStopNavpoint;
+	/** The time the last leg of the mission started at. */
+	private MarsClock legStartingTime;
 
     /**
      * Constructor (note: The constructor handles setting the initial nav point.)

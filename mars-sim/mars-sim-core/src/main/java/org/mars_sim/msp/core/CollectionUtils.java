@@ -23,7 +23,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class CollectionUtils {
 
     public synchronized static Collection<Equipment> getEquipment(
-            Collection<Unit> units) {
+        Collection<Unit> units
+    ) {
 
         ConcurrentLinkedQueue<Equipment> equipment = 
             new ConcurrentLinkedQueue<Equipment>();

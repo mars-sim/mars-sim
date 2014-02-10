@@ -7,6 +7,19 @@
 
 package org.mars_sim.msp.ui.swing.unit_window;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -14,19 +27,13 @@ import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-import javax.swing.*;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 /** 
  * The LocationTabPanel is a tab panel for location information.
  */
 public class LocationTabPanel extends TabPanel implements ActionListener {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 12L;
 
 	private JPanel locationCoordsPanel;
 	private JLabel latitudeLabel;

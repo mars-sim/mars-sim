@@ -15,8 +15,8 @@ import org.mars_sim.msp.core.mars.Mars;
  * Static class for map utilities. 
  */
 public class MapUtils {
-	private static final int MAP_OFFSET_X = 300;
-	private static final int MAP_OFFSET_Y = 300; //map's actual size is 900x900, but 300x300 is shown on the screen, 
+//	private static final int MAP_OFFSET_X = 300;
+//	private static final int MAP_OFFSET_Y = 300; //map's actual size is 900x900, but 300x300 is shown on the screen, 
 	//upper left corner of view window starts at 301,301
 	// see CannedMarsMap.createMapImageLarge()
 

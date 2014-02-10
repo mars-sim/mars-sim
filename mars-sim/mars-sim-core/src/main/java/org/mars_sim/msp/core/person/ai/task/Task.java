@@ -30,58 +30,80 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
  * A person's TaskManager keeps track of one current task for the person, but a task may use other
  * tasks internally to accomplish things.
  */
-public abstract class Task implements Serializable, Comparable<Task> {
+public abstract class Task
+implements Serializable, Comparable<Task> {
 
-    private static final double JOB_STRESS_MODIFIER = .5D;
-    private static final double SKILL_STRESS_MODIFIER = .1D;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private String name;            // The name of the task
-    protected Person person;          // The person performing the task.
-    private boolean done;             // True if task is finished
-    protected boolean hasDuration;    // True if task has a time duration.
-    private double duration;        // The time duration (in millisols) of the task.
-    private double timeCompleted;     // The current amount of time spent on the task (in millisols)
-    private String description;     // Description of the task
-    protected Task subTask;           // Sub-task of the current task
-    private String phase;             // Phase of task completion
-    protected double phaseTimeRequired;  // Amount of time required to complete current phase. (in millisols)
-    protected double phaseTimeCompleted; // Amount of time completed on the current phase. (in millisols)
-    protected boolean effortDriven;     // Is this task effort driven
-    private boolean createEvents;       // Task should create Historical events
-    protected double stressModifier;  // Stress modified by person performing task per millisol.
-    private Person teacher;           // The person teaching this task if any.
-    private Collection<String> phases;        // A collection of the task's phases.
+	private static final double JOB_STRESS_MODIFIER = .5D;
+	private static final double SKILL_STRESS_MODIFIER = .1D;
 
-    /** 
-     * Constructs a Task object.
-     * @param name the name of the task
-     * @param person the person performing the task
-     * @param effort Does this task require physical effort
-     * @param createEvents Does this task create events?
-     * @param stressModifier stress modified by person performing task per millisol.
-     * @param hasDuration Does the task have a time duration?
-     * @param duration the time duration (in millisols) of the task (or 0 if none)
-     * @throws Exception if task could not be constructed.
-     */
-    public Task(String name, Person person, boolean effort, boolean createEvents, 
-            double stressModifier, boolean hasDuration, double duration) {
-        this.name = name;
-        this.person = person;
-        this.createEvents = createEvents;
-        this.stressModifier = stressModifier;
-        this.hasDuration = hasDuration;
-        this.duration = duration;
+	// Data members
+	/** The name of the task. */
+	private String name;
+	/** The person performing the task. */
+	protected Person person;
+	/** True if task is finished. */
+	private boolean done;
+	/** True if task has a time duration. */
+	protected boolean hasDuration;
+	/** The time duration (in millisols) of the task. */
+	private double duration;
+	/** The current amount of time spent on the task (in millisols). */
+	private double timeCompleted;
+	/** Description of the task. */
+	private String description;
+	/** Sub-task of the current task. */
+	protected Task subTask;
+	/** Phase of task completion. */
+	private String phase;
+	/** Amount of time required to complete current phase. (in millisols) */
+	protected double phaseTimeRequired;
+	/** Amount of time completed on the current phase. (in millisols) */
+	protected double phaseTimeCompleted;
+	/** Is this task effort driven. */
+	protected boolean effortDriven;
+	/** Task should create Historical events. */
+	private boolean createEvents;
+	/** Stress modified by person performing task per millisol. */
+	protected double stressModifier;
+	/** The person teaching this task if any. */
+	private Person teacher;
+	/** A collection of the task's phases. */
+	private Collection<String> phases;
 
-        done = false;
-
-        timeCompleted = 0D;
-        description = name;
-        subTask = null;
-        phase = null;
-        effortDriven = effort;
-        phases = new ArrayList<String>();
-    }
+	/** 
+	 * Constructs a Task object.
+	 * @param name the name of the task
+	 * @param person the person performing the task
+	 * @param effort Does this task require physical effort
+	 * @param createEvents Does this task create events?
+	 * @param stressModifier stress modified by person performing task per millisol.
+	 * @param hasDuration Does the task have a time duration?
+	 * @param duration the time duration (in millisols) of the task (or 0 if none)
+	 * @throws Exception if task could not be constructed.
+	 */
+	public Task(
+		String name, Person person, boolean effort, boolean createEvents, 
+		double stressModifier, boolean hasDuration, double duration
+	) {
+		this.name = name;
+		this.person = person;
+		this.createEvents = createEvents;
+		this.stressModifier = stressModifier;
+		this.hasDuration = hasDuration;
+		this.duration = duration;
+	
+		done = false;
+	
+		timeCompleted = 0D;
+		description = name;
+		subTask = null;
+		phase = null;
+		effortDriven = effort;
+		phases = new ArrayList<String>();
+	}
 
     /**
      * Ends the task and performs any final actions.

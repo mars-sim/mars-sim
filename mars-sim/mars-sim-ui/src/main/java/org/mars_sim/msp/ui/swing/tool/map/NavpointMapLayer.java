@@ -6,6 +6,11 @@
  */
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import java.awt.Component;
+import java.awt.Graphics;
+
+import javax.swing.Icon;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
@@ -14,10 +19,6 @@ import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.NavPoint;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.ui.swing.ImageLoader;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.Iterator;
 
 /**
  * The NavpointMapLayer is a graphics layer to display mission navpoints.
@@ -80,9 +81,7 @@ public class NavpointMapLayer implements MapLayer {
     	}
     	else {
     		MissionManager manager = Simulation.instance().getMissionManager();
-    		Iterator i = manager.getMissions().iterator();
-    		while (i.hasNext()) {
-    			Mission mission = (Mission) i.next();
+    		for (Mission mission : manager.getMissions()) {
     			if (mission instanceof TravelMission) 
     				displayMission((TravelMission) mission, mapCenter, mapType, g);
     		}

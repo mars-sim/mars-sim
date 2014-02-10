@@ -6,6 +6,18 @@
  */
 package org.mars_sim.msp.core;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Person;
@@ -25,12 +37,6 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** The UnitManager class contains and manages all units in virtual
  *  Mars. It has methods for getting information about units. It is
  *  also responsible for creating all units on its construction.
@@ -39,23 +45,34 @@ import java.util.logging.Logger;
  */
 public class UnitManager implements Serializable {
 
-    private static Logger logger = Logger.getLogger(UnitManager.class.getName());
-    
-    // Static Data Members
-    public static final String SETTLEMENT = "settlement";
-    public static final String PERSON = "person";
-    public static final String VEHICLE = "vehicle";
-    public static final String EQUIPMENT = "equipment";
-    
-    // Data members
-    private Collection<Unit> units; // Collection of all units
-    private List<String> settlementNames; // List of possible settlement names
-    private List<String> vehicleNames; // List of possible vehicle names
-    private List<String> personMaleNames; // List of possible male person names
-    private List<String> personFemaleNames; // List of possible female person names
-    private transient List<UnitManagerListener> listeners; // List of unit manager listeners.
-    private Map<String, Integer> equipmentNumberMap; // Map of equipment types and their numbers.
-    private Map<String, Integer> vehicleNumberMap; // Map of vehicle types and their numbers.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(UnitManager.class.getName());
+
+	// Static Data Members
+	public static final String SETTLEMENT = "settlement";
+	public static final String PERSON = "person";
+	public static final String VEHICLE = "vehicle";
+	public static final String EQUIPMENT = "equipment";
+
+	// Data members
+	/** Collection of all units. */
+	private Collection<Unit> units;
+	/** List of possible settlement names. */
+	private List<String> settlementNames;
+	/** List of possible vehicle names. */
+	private List<String> vehicleNames;
+	/** List of possible male person names. */
+	private List<String> personMaleNames;
+	/** List of possible female person names. */
+	private List<String> personFemaleNames;
+	/** List of unit manager listeners. */
+	private transient List<UnitManagerListener> listeners;
+	/** Map of equipment types and their numbers. */
+	private Map<String, Integer> equipmentNumberMap;
+	/** Map of vehicle types and their numbers. */
+	private Map<String, Integer> vehicleNumberMap;
 
     /** 
      * Constructor

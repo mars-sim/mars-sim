@@ -7,24 +7,28 @@
 
 package org.mars_sim.msp.core.mars;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MineralMapConfig implements Serializable {
+import org.jdom.Document;
+import org.jdom.Element;
 
-    // Element names
-    private static final String MINERAL = "mineral";
-    private static final String NAME = "name";
-    private static final String FREQUENCY = "frequency";
-    private static final String LOCALE_LIST = "locale-list";
-    private static final String LOCALE = "locale";
+public class MineralMapConfig
+implements Serializable {
 
-    private Document mineralDoc;
-    private List<MineralType> mineralTypes;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Element names
+	private static final String MINERAL = "mineral";
+	private static final String NAME = "name";
+	private static final String FREQUENCY = "frequency";
+	private static final String LOCALE_LIST = "locale-list";
+	private static final String LOCALE = "locale";
+
+	private Document mineralDoc;
+	private List<MineralType> mineralTypes;
 
     /**
      * Constructor
@@ -89,7 +93,10 @@ public class MineralMapConfig implements Serializable {
 
     static class MineralType implements Serializable {
 
-        String name;
+    	/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		String name;
         String frequency;
         List<String> locales;
 

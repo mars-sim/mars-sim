@@ -7,14 +7,15 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
+import java.awt.Color;
+import java.awt.Graphics;
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.IntPoint;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  * The VehicleTrailMapLayer is a graphics layer to display vehicle trails.

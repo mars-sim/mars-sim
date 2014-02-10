@@ -6,20 +6,27 @@
  */
 package org.mars_sim.msp.core.person.ai.mission;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.structure.Settlement;
-
-import java.io.Serializable;
 
 /**
  * A navigation point for travel missions.
  */
-public class NavPoint implements Serializable {
-	
+public class NavPoint
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Data members.
-	private Coordinates location; // The location of the navpoint.
-	private Settlement settlement; // The settlement at this navpoint.
-	private String description; // The description of the navpoint.
+	/** The location of the navpoint. */
+	private Coordinates location;
+	/** The settlement at this navpoint. */
+	private Settlement settlement;
+	/** The description of the navpoint. */
+	private String description;
 
 	/**
 	 * Constructor with location.

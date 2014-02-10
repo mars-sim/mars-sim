@@ -124,7 +124,7 @@
 		</part-attachment>
 	</vehicle>
 	
-	<!-- remote controlled prospecting rover -->
+	<!-- remote controlled prospecting rover
 	<vehicle type="remore controlled prospector" width="1.5" length="2.5">
 		<description>used for automatic mineral prospecting</description>
 		<fuel-efficiency value="1.0" />
@@ -134,7 +134,7 @@
 		<cargo total-capacity="500.0">
 			<capacity resource="methane" value="100.0" />
 		</cargo>
-	</vehicle>
+	</vehicle>-->
 <!--
 	<vehicle type="rc dirigible" width="5.0" length="15.0">
 		<description>

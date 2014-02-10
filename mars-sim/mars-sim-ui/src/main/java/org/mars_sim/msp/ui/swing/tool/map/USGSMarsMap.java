@@ -7,10 +7,10 @@
 
 package org.mars_sim.msp.ui.swing.tool.map;
 
-import org.mars_sim.msp.core.Coordinates;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.MediaTracker;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -23,6 +23,10 @@ import java.net.URLConnection;
 import java.text.DecimalFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.Timer;
+
+import org.mars_sim.msp.core.Coordinates;
 
 /** 
  * Access the Mars maps provided by the The Unites States Geological
@@ -42,8 +46,10 @@ public class USGSMarsMap implements Map, ActionListener {
 	public static final String TYPE = "USGS map";
 	
 	public static final double HALF_MAP_ANGLE = .06106D;
-	public static final int MAP_HEIGHT = 11458; // Source map height in pixels (calculated).
-	public static final int MAP_WIDTH = 22916; // Source map width in pixels (calculated).
+	/** Source map height in pixels (calculated). */
+	public static final int MAP_HEIGHT = 11458;
+	/** Source map width in pixels (calculated). */
+	public static final int MAP_WIDTH = 22916;
 	public static final double PIXEL_RHO = (double) MAP_HEIGHT / Math.PI;
     
     public static final double HALF_MAP_ANGLE_DEG = 150D / 64D;
@@ -313,7 +319,7 @@ public class USGSMarsMap implements Map, ActionListener {
          * @param map the parent map class.
          */
         private PDSConnectionManager(URLConnection connection, USGSMarsMap map) {
-           
+
             this.connection = connection;
             this.map = map;
             
