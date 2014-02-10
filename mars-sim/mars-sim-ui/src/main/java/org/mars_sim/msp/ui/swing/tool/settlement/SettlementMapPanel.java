@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementMapPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-09
  * @author Scott Davis
  */
 
@@ -63,10 +63,10 @@ public class SettlementMapPanel extends JPanel implements ClockListener {
         rotation = 0D;
         scale = DEFAULT_SCALE;
         settlement = null;
-        showBuildingLabels = true;
-        showConstructionLabels = true;
-        showPersonLabels = true;
-        showVehicleLabels = true;
+        showBuildingLabels = false;
+        showConstructionLabels = false;
+        showPersonLabels = false;
+        showVehicleLabels = false;
         selectedPerson = new HashMap<Settlement, Person>();
         
         // Create map layers.

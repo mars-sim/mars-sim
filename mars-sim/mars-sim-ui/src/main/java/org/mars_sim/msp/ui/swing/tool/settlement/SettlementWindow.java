@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-09
  * @author Lars Naesbye Christensen
  */
 
@@ -29,7 +29,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
-import javax.swing.border.EmptyBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -239,9 +238,10 @@ public class SettlementWindow extends ToolWindow {
         labelsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 JButton button = (JButton) evt.getSource();
-                if (labelsMenu == null) labelsMenu = createLabelsMenu();
+                if (labelsMenu == null) {
+                    labelsMenu = createLabelsMenu();
+                }
                 labelsMenu.show(button, 0, button.getHeight());
-                //mapPane.setShowLabels(button.isSelected());
             }
         });
         buttonsPane.add(labelsButton);
