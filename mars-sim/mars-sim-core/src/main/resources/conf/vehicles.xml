@@ -125,7 +125,7 @@
 	</vehicle>
 	
 	<!-- remote controlled prospecting rover -->
-	<vehicle type="rc prospector" width="1.5" length="2.5">
+	<vehicle type="remore controlled prospector" width="1.5" length="2.5">
 		<description>used for automatic mineral prospecting</description>
 		<fuel-efficiency value="1.0" />
 		<base-speed value="12.0" />
@@ -145,22 +145,18 @@
 		</description>
 	</vehicle>
 -->
-	<!-- low mars orbit atmosphere space craft -->
+	<!-- low mars orbit atmosphere space craft
 	<vehicle type="sounding rocket" width="0.5" length="3.0" >
 		<description>
 			a small rocket for atmospheric research
 			or for delivering payloads to surface
 			locations by hard landing
 		</description>
-		<!-- <fuel name="hydrogen peroxide"/> -->
 		<fuel-efficiency value="1.0"/>
 		<base-speed value="10.0" />
-		<!-- <base-acceleration value="10.0" /> -->
-		<!-- empty-mass should equal the sum of mass of parts needed for construction -->
 		<empty-mass value="200.0"/>
 		<crew-size value="0"/>
 		<cargo total-capacity="500.0">
-			<!-- doubt you can fly a rocket on methane -->
 			<capacity resource="oxygen" value="150"/>
 			<capacity resource="hydrogen" value="150.0"/>
 		</cargo>
@@ -169,7 +165,7 @@
 			<part name="algae tank"/>
 		</part-attachment>
 	</vehicle>
-
+-->
 	<!-- List of rover names -->
 	<rover-name-list>		
 

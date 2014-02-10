@@ -1446,7 +1446,7 @@
 		</outputs>
 	</process>
 
-	<!-- values are not based on fact but pure conjecture -->
+	<!-- values are not based on fact but pure conjecture
 	<process name="algae tank manufacturing" tech="2" skill="2" work-time="200" process-time="200" power-required="5.0">
 		<inputs>
 			<resource name="water" amount="150.0" />
@@ -1458,7 +1458,7 @@
 		<outputs>
 			<part name="algae tank" number="1" />
 		</outputs>
-	</process>
+	</process>-->
 
 	<process name="explorer rover assembly" tech="4" skill="4" work-time="1000" process-time="0" 
 			power-required="0.0">
@@ -1899,7 +1899,7 @@
 		</outputs>
 	</process>
 
-	<process name="vehicle assembly rc prospector"
+	<process name="vehicle assembly remote controlled prospector"
 			tech="3" skill="3"
 			work-time="1000"
 			process-time="0"
@@ -1918,7 +1918,7 @@
 			<part name="satellite dish" number="1" />
 		</inputs>
 		<outputs>
-			<vehicle name="rc prospector" number="1" />
+			<vehicle name="remote controlled prospector" number="1" />
 		</outputs>
 	</process>
 
