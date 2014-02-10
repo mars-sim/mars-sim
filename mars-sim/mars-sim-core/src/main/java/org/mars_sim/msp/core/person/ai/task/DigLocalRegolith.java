@@ -452,7 +452,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         
         double regolithCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
-        if (regolithCollected > remainingPersonCapacity) {
+        if (regolithCollected >= remainingPersonCapacity) {
             regolithCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }

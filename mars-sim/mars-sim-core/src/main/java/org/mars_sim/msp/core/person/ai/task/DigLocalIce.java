@@ -460,7 +460,7 @@ public class DigLocalIce extends EVAOperation implements Serializable {
         
         double iceCollected = time * COLLECTION_RATE;
         boolean finishedCollecting = false;
-        if (iceCollected > remainingPersonCapacity) {
+        if (iceCollected >= remainingPersonCapacity) {
             iceCollected = remainingPersonCapacity;
             finishedCollecting = true;
         }
