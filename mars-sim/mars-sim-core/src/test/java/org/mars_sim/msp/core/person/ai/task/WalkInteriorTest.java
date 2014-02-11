@@ -33,7 +33,7 @@ public class WalkInteriorTest extends TestCase {
         settlement.getBuildingManager().addBuilding(building);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
-        WalkInterior walkTask = new WalkInterior(person, building, 0D, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
         
         assertEquals(0D, walkTask.determineDirection(0D, 5D), SMALL_DELTA);
         assertEquals((Math.PI / 2D), walkTask.determineDirection(-5D, 0D), SMALL_DELTA);
@@ -57,7 +57,7 @@ public class WalkInteriorTest extends TestCase {
         settlement.getBuildingManager().addBuilding(building);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
-        WalkInterior walkTask = new WalkInterior(person, building, 0D, 0D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
         
         // Walk North 5m.
         walkTask.walkInDirection(0D, 5D);
@@ -131,7 +131,7 @@ public class WalkInteriorTest extends TestCase {
         // Walking time (millisols) for 1m. distance.
         double walkingTimeMeter = .008110369D;
         
-        WalkInterior walkTask = new WalkInterior(person, building1, -11D, 1D);
+        WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building1, -11D, 1D);
         
         assertEquals(0D, walkTask.walkingPhase(walkingTimeMeter), SMALL_DELTA);
         

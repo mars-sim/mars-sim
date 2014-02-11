@@ -168,7 +168,7 @@ public class AssistScientificStudyResearcher extends Task implements Serializabl
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, researcherBuilding)) {
-            Task walkingTask = new WalkInterior(person, researcherBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, researcherBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

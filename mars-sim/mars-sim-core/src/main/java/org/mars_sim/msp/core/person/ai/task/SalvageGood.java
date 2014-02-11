@@ -163,7 +163,7 @@ public class SalvageGood extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, workshopBuilding)) {
-            Task walkingTask = new WalkInterior(person, workshopBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, workshopBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

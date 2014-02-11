@@ -193,7 +193,7 @@ public class LoadVehicleGarage extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, garageBuilding)) {
-            Task walkingTask = new WalkInterior(person, garageBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, garageBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

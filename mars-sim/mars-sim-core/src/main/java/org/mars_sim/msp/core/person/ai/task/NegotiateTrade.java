@@ -160,7 +160,7 @@ public class NegotiateTrade extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, sellerBuilding)) {
-            Task walkingTask = new WalkInterior(person, sellerBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, sellerBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

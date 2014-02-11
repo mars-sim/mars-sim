@@ -255,7 +255,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
         Building currentBuilding = BuildingManager.getBuilding(person);
 
         if (connectorManager.hasValidPath(currentBuilding, processBuilding)) {
-            Task walkingTask = new WalkInterior(person, processBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, processBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

@@ -191,7 +191,7 @@ public class ObserveAstronomicalObjects extends Task implements
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, observatoryBuilding)) {
-            Task walkingTask = new WalkInterior(person, observatoryBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, observatoryBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }
