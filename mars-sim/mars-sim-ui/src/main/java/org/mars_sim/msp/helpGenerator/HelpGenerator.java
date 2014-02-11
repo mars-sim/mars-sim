@@ -319,12 +319,12 @@ public class HelpGenerator {
 		for (String vehicle : vehicles) {
 			VehicleDescription v = config.getVehicleDescription(vehicle);
 			content = new StringBuffer()
-			.append("<h2>vehicle \"")
+			.append("<h2>Vehicle \"")
 			.append(vehicle)
 			.append("\"</h2>\n")
 			.append("</p></p>\n")
 			.append("<p>")
-			.append(getLinkVehicles("back to vehicles overview"))
+			.append(getLinkVehicles("Back to vehicles overview"))
 			.append("</p><br/>\n")
 			.append("<p>")
 			.append(v.getDescription())
@@ -391,8 +391,8 @@ public class HelpGenerator {
 
 		// first: generate "resources.html" with a list of defined resources
 		StringBuffer content = new StringBuffer()
-		.append("<h2>resources</h2>\n")
-		.append("<p>these are all the default resources:</p>\n")
+		.append("<h2>Resources</h2>\n")
+		.append("<p>These are all the default resources:</p>\n")
 		.append("<table>\n");
 
 		for (Entry<String,AmountResource> entry : resources.entrySet()) {
@@ -427,7 +427,7 @@ public class HelpGenerator {
 			.append("</h2>\n")
 			.append("<br/>\n")
 			.append("<p>")
-			.append(getLinkResources("back to resources overview"))
+			.append(getLinkResources("Back to resources overview"))
 			.append("</p><br/>\n")
 			.append("<p>")
 			.append(resource.getDescription())
@@ -480,8 +480,8 @@ public class HelpGenerator {
 
 		// first: generate "parts.html" with a list of defined equipment parts
 		StringBuffer content = new StringBuffer()
-		.append("<h2>parts</h2>\n")
-		.append("<p>these are all the default equipment parts:</p>\n")
+		.append("<h2>Parts</h2>\n")
+		.append("<p>These are all the default equipment parts:</p>\n")
 		.append("<ul>\n");
 		for (String part : parts.keySet()) {
 			content.append("\t<li>")
@@ -503,7 +503,7 @@ public class HelpGenerator {
 			.append("\"</h2>\n")
 			.append("</p><br/>\n")
 			.append("<p>")
-			.append(getLinkParts("back to parts overview"))
+			.append(getLinkParts("Back to parts overview"))
 			.append("</p><br/>\n")
 			.append("<p>mass per unit: ")
 			.append(Double.toString(part.getMassPerItem()))
@@ -565,8 +565,8 @@ public class HelpGenerator {
 			"<b>name</b>"
 		};
 		StringBuffer content = new StringBuffer()
-		.append("<h2>processes</h2>\n")
-		.append("<p>these are all the default manufacturing processes:</p>\n")
+		.append("<h2>Processes</h2>\n")
+		.append("<p>These are all the default manufacturing processes:</p>\n")
 		.append("<table>\n");
 		helpFileTableRow(content,header);
 		for (Entry<String,ManufactureProcessInfo> process : processes.entrySet()) {
@@ -595,11 +595,11 @@ public class HelpGenerator {
 			String name = process.getKey();
 			ManufactureProcessInfo info = process.getValue();
 			content = new StringBuffer()
-			.append("<h2>process \"")
+			.append("<h2>Process \"")
 			.append(name)
 			.append("\"</h2>\n")
 			.append("<br/>")
-			.append(getLinkProcesses("back to processes overview"))
+			.append(getLinkProcesses("Back to processes overview"))
 			.append("</br>\n")
 			.append("<p>")
 			.append(info.getDescription())
