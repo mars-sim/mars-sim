@@ -249,7 +249,7 @@ public class ToggleFuelPowerSource extends EVAOperation implements Serializable 
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, powerBuilding)) {
-            Task walkingTask = new WalkInterior(person, powerBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, powerBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

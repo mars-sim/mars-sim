@@ -293,7 +293,7 @@ public class Maintenance extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, maintenanceBuilding)) {
-            Task walkingTask = new WalkInterior(person, maintenanceBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, maintenanceBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

@@ -484,7 +484,7 @@ implements ResearchScientificStudy, Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, labBuilding)) {
-            Task walkingTask = new WalkInterior(person, labBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, labBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

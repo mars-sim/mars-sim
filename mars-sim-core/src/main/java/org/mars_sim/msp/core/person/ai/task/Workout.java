@@ -116,7 +116,7 @@ public class Workout extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, gymBuilding)) {
-            Task walkingTask = new WalkInterior(person, gymBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, gymBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

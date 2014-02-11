@@ -167,7 +167,7 @@ public class MedicalAssistance extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, medicalBuilding)) {
-            Task walkingTask = new WalkInterior(person, medicalBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, medicalBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

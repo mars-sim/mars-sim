@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
- * WalkInterior.java
- * @version 3.06 2014-01-29
+ * WalkSettlementInterior.java
+ * @version 3.06 2014-02-09
  * @author Scott Davis
  */
 
@@ -31,9 +31,9 @@ import org.mars_sim.msp.core.time.MarsClock;
  * (Ex: Between two connected inhabitable buildings or two locations in 
  * a single inhabitable building.)
  */
-public class WalkInterior extends Task implements Serializable {
+public class WalkSettlementInterior extends Task implements Serializable {
 
-    private static Logger logger = Logger.getLogger(WalkInterior.class.getName());
+    private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
     
     // Task phase
     private static final String WALKING = "Walking";
@@ -57,15 +57,15 @@ public class WalkInterior extends Task implements Serializable {
      * @param destinationXLocation the destination X location at the settlement.
      * @param destinationYLocation the destination Y location at the settlement.
      */
-    public WalkInterior(Person person, Building destinationBuilding, 
+    public WalkSettlementInterior(Person person, Building destinationBuilding, 
             double destinationXLocation, double destinationYLocation) {
-        super("Walking Interior", person, false, false, 0D, false, 0D);
+        super("Walking Settlement Interior", person, false, false, 0D, false, 0D);
         
         // Check that the person is currently inside the settlement.
         String location = person.getLocationSituation();
         if (!location.equals(Person.INSETTLEMENT)) {
             throw new IllegalStateException(
-                    "WalkInterior task started when person is not in settlement.");
+                    "WalkSettlementInterior task started when person is not in settlement.");
         }
         
         // Initialize data members.

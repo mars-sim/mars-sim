@@ -131,7 +131,7 @@ class Sleep extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, quartersBuilding)) {
-            Task walkingTask = new WalkInterior(person, quartersBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, quartersBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

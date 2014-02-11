@@ -122,7 +122,7 @@ public class PrescribeMedication extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, patientBuilding)) {
-            Task walkingTask = new WalkInterior(person, patientBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, patientBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

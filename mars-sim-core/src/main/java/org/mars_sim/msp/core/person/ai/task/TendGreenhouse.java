@@ -141,7 +141,7 @@ public class TendGreenhouse extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, greenhouseBuilding)) {
-            Task walkingTask = new WalkInterior(person, greenhouseBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, greenhouseBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

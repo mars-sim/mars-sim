@@ -326,7 +326,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, malfunctioningBuilding)) {
-            Task walkingTask = new WalkInterior(person, malfunctioningBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, malfunctioningBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

@@ -157,7 +157,7 @@ public class ManufactureGood extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, manufactureBuilding)) {
-            Task walkingTask = new WalkInterior(person, manufactureBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, manufactureBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

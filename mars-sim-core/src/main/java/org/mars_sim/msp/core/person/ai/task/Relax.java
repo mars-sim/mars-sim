@@ -110,7 +110,7 @@ class Relax extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
         
         if (connectorManager.hasValidPath(currentBuilding, recreationBuilding)) {
-            Task walkingTask = new WalkInterior(person, recreationBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, recreationBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

@@ -149,7 +149,7 @@ public class CookMeal extends Task implements Serializable {
         Building currentBuilding = BuildingManager.getBuilding(person);
 
         if (connectorManager.hasValidPath(currentBuilding, kitchenBuilding)) {
-            Task walkingTask = new WalkInterior(person, kitchenBuilding, settlementLoc.getX(), 
+            Task walkingTask = new WalkSettlementInterior(person, kitchenBuilding, settlementLoc.getX(), 
                     settlementLoc.getY());
             addSubTask(walkingTask);
         }

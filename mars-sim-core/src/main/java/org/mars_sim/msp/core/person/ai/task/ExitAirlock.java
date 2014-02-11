@@ -114,7 +114,7 @@ public class ExitAirlock extends Task implements Serializable {
                 Building currentBuilding = BuildingManager.getBuilding(person);
                 
                 if (connectorManager.hasValidPath(currentBuilding, building)) {
-                    Task walkingTask = new WalkInterior(person, building, newLocation.getX(), 
+                    Task walkingTask = new WalkSettlementInterior(person, building, newLocation.getX(), 
                             newLocation.getY());
                     addSubTask(walkingTask);
                 }
