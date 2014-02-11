@@ -233,7 +233,7 @@ public class SettlementWindow extends ToolWindow {
         buttonsPane.add(recenterButton);
 
         // Create labels button.
-        JButton labelsButton = new JButton("Labels");
+        JButton labelsButton = new JButton("Labels \u25BC");
         labelsButton.setToolTipText("Add/remove label overlays");
         labelsButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
