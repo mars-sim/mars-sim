@@ -24,8 +24,8 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel;
 
 /**
  * this can be run at development time to generate .html-files
- * for the in-game help tool.
- * 
+ * for the in-game help tool. or can be started with every
+ * run of the simulation.
  * @author stpa
  * 2014-01-29
  */
@@ -71,7 +71,7 @@ public class HelpGenerator {
 	private static final void helpFileHeader(final StringBuffer s, final String title) {
 		StringBuffer header = new StringBuffer()
 		.append("<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">\n")
-		.append("<!-- generated for mars-sim by st.pa. -->")
+		.append("<!-- generated for mars-sim by st.pa. -->\n")
 		.append("<html>\n")
 		.append("\t<head>\n")
 		.append("\t\t<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">\n")
