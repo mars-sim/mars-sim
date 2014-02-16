@@ -56,7 +56,13 @@ extends SphereIcosahedronMesh {
 			gl.glCallList(displaylist2);
 		}
 	}
-	
+
+	@Override
+	public final void close(GL2 gl) {
+		super.close(gl);
+		gl.glDeleteLists(displaylist2,1);
+	}
+
 	/** expects a four component color vector with r, g, b and alpha channels. */
 	public void setColor2(double[] color2) {
 		this.setParam(PARAM_COLOR2,color2);

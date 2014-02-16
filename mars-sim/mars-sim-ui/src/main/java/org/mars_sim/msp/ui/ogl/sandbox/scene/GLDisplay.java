@@ -269,7 +269,9 @@ public class GLDisplay {
 		 */
 		@Override
 		public void dispose(GLAutoDrawable arg0) {
-			// Auto-generated method stub
+			for (GLEventListener el : eventListeners) {
+				el.dispose(arg0);
+			}
 		}
 	}
 }

@@ -25,7 +25,7 @@ public interface SceneObjectInterface {
 	/** change values or internal states. */
 	public void update(long delta_tempo);
 	/** destroy the object and prepare for garbage collection. */
-	public void close();
+	public void close(GL2 gl);
 
 	public void addSubobject(SceneObjectInterface objekt);
 	public void removeSubobject(SceneObjectInterface objekt);

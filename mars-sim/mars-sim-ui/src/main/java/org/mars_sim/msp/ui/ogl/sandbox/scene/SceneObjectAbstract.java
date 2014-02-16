@@ -34,9 +34,9 @@ implements SceneObjectInterface {
 		postupdate(deltaTime);
 	}
 	
-	public void close() {
+	public void close(GL2 gl) {
 		for (SceneObjectInterface o : subObjects) {
-			o.close();
+			o.close(gl);
 		}
 	}
 	

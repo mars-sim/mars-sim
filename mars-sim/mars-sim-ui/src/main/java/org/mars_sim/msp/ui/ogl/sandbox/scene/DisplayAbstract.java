@@ -18,8 +18,8 @@ public abstract class DisplayAbstract implements GLEventListener {
 	protected final static double DELTA_WASD = 0.3;
 	protected final static double ZOOM_FACTOR = 1.15;
 
-	protected final static boolean SHOW_FRAME_COUNT = true;
-	protected final static boolean SHOW_UPDATE_COUNT = true;
+	protected final static boolean SHOW_FRAME_COUNT = false;
+	protected final static boolean SHOW_UPDATE_COUNT = false;
 	
 	protected long time;
 	protected long timeExecution;
@@ -117,7 +117,9 @@ public abstract class DisplayAbstract implements GLEventListener {
         gl.glLoadIdentity(); // Reset The ModalView Matrix
 	}
 
-	public void dispose(GLAutoDrawable arg0) {
+	public void dispose(GLAutoDrawable glDrawable) {
+		GL2 gl = glDrawable.getGL().getGL2();
+		scene.close(gl);
 	}
 	
 	public SceneGroup getScene() {
