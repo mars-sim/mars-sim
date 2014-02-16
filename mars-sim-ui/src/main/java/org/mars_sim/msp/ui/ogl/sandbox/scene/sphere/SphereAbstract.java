@@ -1,20 +1,25 @@
 package org.mars_sim.msp.ui.ogl.sandbox.scene.sphere;
 
-import org.mars_sim.msp.ui.ogl.sandbox.scene.SceneObjectAbstract;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.RotatingObjectAbstract;
 
 /**
  * an abstract sphere.
  * @author stpa
  */
 public abstract class SphereAbstract
-extends SceneObjectAbstract {
+extends RotatingObjectAbstract {
 
-	public SphereAbstract(double[] center, double[] rotation, double radius) {
-		super(center,rotation);
+	public SphereAbstract(
+		double[] center,
+		double[] rotation,
+		double[] deltaRotation,
+		double radius
+	) {
+		super(center,rotation, deltaRotation);
 		this.setRadius(radius);
 	}
 
-	public double getDiametro() {
+	public double getDiameter() {
 		return 2.0f * this.getRadius();
 	}
 	

@@ -13,6 +13,7 @@ extends SphereLongLatMesh {
 	/**
 	 * @param center {@link Double}[3]
 	 * @param rotation {@link Double}[3]
+	 * @param deltaRotation {@link Double}[3]
 	 * @param radius {@link Double}
 	 * @param longitud {@link Integer}
 	 * @param latitud {@link Integer}
@@ -22,13 +23,14 @@ extends SphereLongLatMesh {
 	public SphereLongLatSolid(
 		double[] center,
 		double[] rotation,
+		double[] deltaRotation,
 		double radius,
 		int longitud,
 		int latitud,
 		double[] color1,
 		double[] color2
 	) {
-		super(center, rotation, radius, longitud, latitud, color1);
+		super(center, rotation, deltaRotation, radius, longitud, latitud, color1);
 		setColor2(color2);
 	}
 

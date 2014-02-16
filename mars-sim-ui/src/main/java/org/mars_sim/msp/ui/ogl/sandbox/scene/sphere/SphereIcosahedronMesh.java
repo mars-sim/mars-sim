@@ -68,8 +68,15 @@ extends SphereAbstract {
 	 * @param recursions {@link Integer} should be in [0 .. 5]
 	 * @param color {@link Double}[] expects a four component color vector with r, g, b and alpha channels
 	 */
-	public SphereIcosahedronMesh(double[] center, double[] rotation, double radius, int recursions, double[] color) {
-		super(center, rotation, radius);
+	public SphereIcosahedronMesh(
+		double[] center,
+		double[] rotation,
+		double[] deltaRotation,
+		double radius,
+		int recursions,
+		double[] color
+	) {
+		super(center, rotation, deltaRotation, radius);
 		this.setColor(color);
 		this.setRecursion(recursions);
 	}
@@ -206,9 +213,13 @@ extends SphereAbstract {
 	@Override
 	public void prerender(GL2 gl) {
 		super.prerender(gl);
-		double radius = this.getRadius();
-		double[] color = this.getColor();
-		gl.glScaled(radius,radius,radius);
+		double diameter = this.getDiameter();
+		double color[] = this.getColor();
+		gl.glScaled(
+			diameter,
+			diameter,
+			diameter
+		);
 		gl.glColor4d(color[0],color[1],color[2],color[3]);
 		gl.glCallList(displaylist);
 	}

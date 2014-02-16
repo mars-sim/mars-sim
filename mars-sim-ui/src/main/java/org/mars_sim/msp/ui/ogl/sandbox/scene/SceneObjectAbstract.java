@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.media.opengl.GL2;
 
@@ -12,7 +13,7 @@ implements SceneObjectInterface {
 
 	protected List<SceneObjectInterface> subObjects = new ArrayList<SceneObjectInterface>();
 	protected Map<String,Object> parameters = new HashMap<String,Object>();
-	
+
 	public SceneObjectAbstract(double[] translation, double[] rotation) {
 		this.setTranslation(translation);
 		this.setRotation(rotation);
@@ -119,7 +120,15 @@ implements SceneObjectInterface {
 	public void setParam(String param, Object value) {
 		this.parameters.put(param,value);
 	}
-	
+
+	public Set<String> getParamKeys() {
+		return this.parameters.keySet();
+	}
+
+	public Map<String,Object> getParams() {
+		return this.parameters;
+	}
+
 	public Object getParam(String param) {
 		return this.parameters.get(param);
 	}
@@ -144,4 +153,11 @@ implements SceneObjectInterface {
 		return (Integer) this.parameters.get(param);
 	}
 
+	public SceneObjectInterface getSubobject(int i) {
+		return this.subObjects.get(i);
+	}
+
+	public List<SceneObjectInterface> getSubobjects() {
+		return this.subObjects;
+	}
 }

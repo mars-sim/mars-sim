@@ -14,12 +14,13 @@ extends SphereIcosahedronMesh {
 	public SphereIcosahedronSolid(
 		double[] center,
 		double[] rotation,
+		double[] deltaRotation,
 		double radius,
 		int recursion,
 		double[] color,
 		double[] color2
 	) {
-		super(center, rotation, radius, recursion, color);
+		super(center, rotation, deltaRotation, radius, recursion, color);
 		setColor2(color2);
 	}
 	
