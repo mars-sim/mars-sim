@@ -95,7 +95,13 @@ extends SphereLongLatMesh {
 			gl.glCallList(displaylist2);
 		}
 	}
-		
+
+	@Override
+	public final void close(GL2 gl) {
+		super.close(gl);
+		gl.glDeleteLists(displaylist2,1);
+	}
+
 	public void setColor2(double[] color2) {
 		this.setParam(PARAM_COLOR2,color2);
 		double[] color = this.getColor();

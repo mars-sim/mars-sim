@@ -212,6 +212,12 @@ extends SphereAbstract {
 		gl.glColor4d(color[0],color[1],color[2],color[3]);
 		gl.glCallList(displaylist);
 	}
+
+	@Override
+	public void close(GL2 gl) {
+		super.close(gl);
+		gl.glDeleteLists(displaylist,1);
+	}
 	
 	public int getRecursion() {
 		return this.getParamInt(PARAM_RECURSION);

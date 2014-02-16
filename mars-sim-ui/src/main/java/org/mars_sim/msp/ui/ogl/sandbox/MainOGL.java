@@ -13,8 +13,8 @@ import org.mars_sim.msp.ui.ogl.sandbox.scene.sphere.SphereTextured;
  */
 public class MainOGL {
 
-	private static final String MARS_TOPO = "jmars/jmars_MOLA_128ppd_shade_ne_-_1024_x_512.png";
-	private static final String MARS_GEO = "jmars/jmars_viking_geologic_map_skinner_et_al_2006_-_1024_x_512.png";
+	private static final String MARS_TOPO = "jmars/jmars_MOLA_128ppd_shade_ne_-_2048_x_1024.png";
+	private static final String MARS_GEO = "jmars/jmars_viking_geologic_map_skinner_et_al_2006_-_2048_x_1024.png";
 
 	/**
 	 * @param args

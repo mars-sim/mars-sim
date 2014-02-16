@@ -15,7 +15,19 @@ extends SceneObjectAbstract {
 		this.setDeltaRotation(deltaRotation);
 		this.setScale(scale);
 	}
-	
+
+	@Override
+	public void preinit(GL2 gl) {
+		System.out.println("beginning opengl scene initialization.");
+		super.preinit(gl);
+	}
+
+	@Override
+	public void postinit(GL2 gl) {
+		super.postinit(gl);
+		System.out.println("finished opengl scene initialization.");
+	}
+
 	@Override
 	public void prerender(GL2 gl) {
 		super.prerender(gl);

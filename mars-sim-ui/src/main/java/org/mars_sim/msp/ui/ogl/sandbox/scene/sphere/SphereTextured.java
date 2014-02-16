@@ -120,6 +120,13 @@ extends SphereAbstract {
 		gl.glCallList(displaylist);
 	}
 
+	@Override
+	public final void close(GL2 gl) {
+		super.close(gl);
+		gl.glDeleteLists(displaylist,1);
+		texture.destroy(gl);
+	}
+
 	public void setColor(double[] color) {
 		this.setParam(PARAM_COLOR,color);
 	}
