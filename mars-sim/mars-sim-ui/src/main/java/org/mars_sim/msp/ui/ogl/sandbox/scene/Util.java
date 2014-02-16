@@ -14,6 +14,13 @@ public class Util {
 	}
 
 	/**
+	 * @return a three component vector with ones.
+	 */
+	public static final double[] one3() {
+		return new double[] {1d,1d,1d};
+	}
+
+	/**
 	 * a random integer from the given range.
 	 * @param min {@link Integer}
 	 * @param max {@link Integer}

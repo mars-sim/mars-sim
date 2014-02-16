@@ -28,17 +28,19 @@ extends SphereAbstract {
 	/**
 	 * @param center {@link double}[] expects a three dimensional vector.
 	 * @param rotation {@link double}[] expects a three dimensional vector.
+	 * @param deltaRotation {@link double}[] expects a three dimensional vector.
 	 * @param radius {@link double} should be greater or equal zero
 	 * @param texture {@link String} path to a texture file
 	 */
 	public SphereTextured(
 		double[] center,
 		double[] rotation,
+		double[] deltaRotation,
 		double radius,
 		String texture,
 		double[] color
 	) {
-		super(center,rotation,radius);
+		super(center,rotation,deltaRotation,radius);
 		this.setTexture(texture);
 		this.setColor(color);
 		this.glu = new GLU();
@@ -101,12 +103,12 @@ extends SphereAbstract {
 	@Override
 	protected void prerender(GL2 gl) {
 		super.prerender(gl);
-		double radius = this.getRadius();
+		double diameter = this.getDiameter();
 		double color[] = this.getColor();
 		gl.glScaled(
-			radius,
-			radius,
-			radius
+			diameter,
+			diameter,
+			diameter
 		);
 		gl.glColor4d(
 			color[0],
@@ -121,7 +123,7 @@ extends SphereAbstract {
 	}
 
 	@Override
-	public final void close(GL2 gl) {
+	public void close(GL2 gl) {
 		super.close(gl);
 		gl.glDeleteLists(displaylist,1);
 		texture.destroy(gl);

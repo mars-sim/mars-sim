@@ -15,6 +15,7 @@ extends SphereAbstract {
 	 * {@link AbstraktaSfero#AbstraktaSfero(double[], double)}.
 	 * @param center {@link double}[] expects a three dimensional vector.
 	 * @param rotation {@link double}[] expects a three dimensional vector.
+	 * @param deltaRotation {@link double}[] expects a three dimensional vector.
 	 * @param radius {@link double} should be greater or equal zero
 	 * @param longitud {@link Integer} should be greater than one
 	 * @param latitud {@link Integer} should be greater than one
@@ -23,12 +24,13 @@ extends SphereAbstract {
 	public SphereLongLatMesh(
 		double[] center,
 		double[] rotation,
+		double[] deltaRotation,
 		double radius,
 		int longitud,
 		int latitud,
 		double[] color
 	) {
-		super(center,rotation,radius);
+		super(center,rotation,deltaRotation,radius);
 		this.setLongitude(longitud);
 		this.setLatitude(latitud);
 		this.setColor(color);
@@ -96,12 +98,12 @@ extends SphereAbstract {
 	@Override
 	protected void prerender(GL2 gl) {
 		super.prerender(gl);
-		double radius = this.getRadius();
+		double diameter = this.getDiameter();
 		double color[] = this.getColor();
 		gl.glScaled(
-			radius,
-			radius,
-			radius
+			diameter,
+			diameter,
+			diameter
 		);
 		gl.glColor4d(
 			color[0],
