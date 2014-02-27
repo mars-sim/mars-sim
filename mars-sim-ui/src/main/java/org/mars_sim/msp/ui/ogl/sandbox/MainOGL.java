@@ -1,8 +1,21 @@
 package org.mars_sim.msp.ui.ogl.sandbox;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mars_sim.msp.ui.ogl.sandbox.lsys.LSystem;
+import org.mars_sim.msp.ui.ogl.sandbox.lsys.LSystemFactory;
+import org.mars_sim.msp.ui.ogl.sandbox.lsys.Rule;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.GLDisplay;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.SceneGroup;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.Util;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.Simulation;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.SimulationContainer;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.force.edges.ForceSprings;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.force.nodes.ForceFriction;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.force.nodes.ForceNBodyOctreeSlow;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.tree.Tree;
+import org.mars_sim.msp.ui.ogl.sandbox.scene.sim.tree.edges.RendererEdgeLine;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.sphere.SphereIcosahedronSolid;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.sphere.SphereLongLatSolid;
 import org.mars_sim.msp.ui.ogl.sandbox.scene.sphere.SpherePlanet;
@@ -13,8 +26,8 @@ import org.mars_sim.msp.ui.ogl.sandbox.scene.sphere.SpherePlanet;
  */
 public class MainOGL {
 
-	private static final String MARS_TOPO = "jmars/jmars_MOLA_128ppd_shade_ne_-_2048_x_1024.png";
-	private static final String MARS_GEO = "jmars/jmars_viking_geologic_map_skinner_et_al_2006_-_2048_x_1024.png";
+	private static final String MARS_TOPO = "jmars/jmars_MOLA_128ppd_shade_ne_-_1024_x_512.png";
+	private static final String MARS_GEO = "jmars/jmars_viking_geologic_map_skinner_et_al_2006_-_1024_x_512.png";
 
 	/**
 	 * @param args
@@ -35,6 +48,7 @@ public class MainOGL {
 		);
 
 		spheres(scene,12,0.5d,2.5d);
+//		lsysSim(scene);
 
 		display.setScene(scene);
 
@@ -45,6 +59,44 @@ public class MainOGL {
 		glDisplay.addMouseWheelListener(input);
 
 		glDisplay.start();
+	}
+
+	private static void lsysSim(SceneGroup scene) {
+		// create a tree using l-systems
+		double[] delta = {90.0f,90.0f,90.0f};
+		List<Rule> rules = new ArrayList<Rule>();
+		rules.add(new Rule("F","F[+\\F+\\F+F].F[-F/-F]F",0.05f));
+		rules.add(new Rule("F","F[-/F-/F],F[+F\\+F]F",0.05f));
+		rules.add(new Rule("F","F[,F]",	          0.05f));
+//		rules.add(new Rule("+","+F+F+F+F+F+",0.1f));
+		rules.add(new Rule("FFF","[F]",1.50f));
+		String start = "F";
+		LSystem lsys = new LSystem(
+			start,
+			rules,
+			1024,
+			3200,
+			512
+		);
+		lsys.doIt();
+		LSystemFactory factory = new LSystemFactory(lsys);
+
+		Tree tree = factory.treeLSystem(false,delta);
+
+		Simulation simulation = new Simulation(tree,false);
+		simulation.addForce(new ForceNBodyOctreeSlow());
+		simulation.addForce(new ForceSprings());
+		simulation.addForce(new ForceFriction());
+		SimulationContainer sc = new SimulationContainer(
+			simulation,
+			Util.nul3(),
+			Util.nul3(),
+			Util.nul3(),
+			null,
+			new RendererEdgeLine()
+		);
+		simulation.setDeltaTime(5d);
+		scene.addSubobject(sc);
 	}
 
 	/**
@@ -73,8 +125,8 @@ public class MainOGL {
 					minRad + Math.random() * (maxRad - minRad),
 					Util.rnd(4,16),
 					Util.rnd(8,32),
-					Util.rnd31(0.2d),
-					Util.rnd31(0.2d,1.0d)
+					Util.rnd31(0.7d),
+					Util.rnd31(0.2d)
 				)
 			);
 		}

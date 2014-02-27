@@ -26,11 +26,12 @@ extends SphereAbstract {
 	protected int displaylist;
 
 	/**
+	 * constructor.
 	 * @param center {@link double}[] expects a three dimensional vector.
 	 * @param rotation {@link double}[] expects a three dimensional vector.
 	 * @param deltaRotation {@link double}[] expects a three dimensional vector.
 	 * @param radius {@link double} should be greater or equal zero
-	 * @param texture {@link String} path to a texture file
+	 * @param texture {@link String} path to a texture file. no checking is done, valid path is expected.
 	 */
 	public SphereTextured(
 		double[] center,

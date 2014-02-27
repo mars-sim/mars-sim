@@ -7,20 +7,23 @@ import javax.media.opengl.glu.GLU;
 
 public abstract class DisplayAbstract implements GLEventListener {
 
+	/** field of view in degrees. */
 	protected final static double FOV = 45.0;
+	/** distance of near clipping plane from camera. */
 	protected final static double NEAR_CLIPPING = 1.0;
+	/** distance of far clipping plane from camera. */
 	protected final static double FAR_CLIPPING = 10000.0;
-	
+
 	protected final static long INTERVAL_UPDATE_NANOSEC   = 20000000;
 	protected final static long INTERVAL_SHOW_FRAME_COUNT = 1000000000;
-	
+
 	protected final static boolean SMOOTH_LINES = false;
 	protected final static double DELTA_WASD = 0.3;
 	protected final static double ZOOM_FACTOR = 1.15;
 
 	protected final static boolean SHOW_FRAME_COUNT = false;
 	protected final static boolean SHOW_UPDATE_COUNT = false;
-	
+
 	protected long time;
 	protected long timeExecution;
 	protected long timeBeginning;
@@ -31,8 +34,10 @@ public abstract class DisplayAbstract implements GLEventListener {
 	protected int deltaFrames = 0;
 	protected SceneGroup scene;
 	protected GLU glu = new GLU();
-	
+
+	/** will print frame count to console every second if <code>true</code>. */
 	protected boolean showFrameCount = SHOW_FRAME_COUNT;
+	/** will print update count to console every second if <code>true</code>. */
 	protected boolean showUpdateCount = SHOW_UPDATE_COUNT;
 
 	public void init(GLAutoDrawable glDrawable) {

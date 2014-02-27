@@ -8,6 +8,9 @@ import java.util.Set;
 
 import javax.media.opengl.GL2;
 
+/**
+ * @author stpa
+ */
 public class SceneObjectAbstract
 implements SceneObjectInterface {
 
@@ -18,7 +21,7 @@ implements SceneObjectInterface {
 		this.setTranslation(translation);
 		this.setRotation(rotation);
 	}
-	
+
 	public void init(GL2 gl, long time) {
 		preinit(gl);
 		for (SceneObjectInterface subobjekto : subObjects) {
@@ -26,7 +29,7 @@ implements SceneObjectInterface {
 		}
 		postinit(gl);
 	}
-	
+
 	public void update(long deltaTime) {
 		preupdate(deltaTime);
 		for (SceneObjectInterface subobjekto : subObjects) {
@@ -34,21 +37,21 @@ implements SceneObjectInterface {
 		}
 		postupdate(deltaTime);
 	}
-	
+
 	public void close(GL2 gl) {
 		for (SceneObjectInterface o : subObjects) {
 			o.close(gl);
 		}
 	}
-	
+
 	public void addSubobject(SceneObjectInterface object) {
 		this.subObjects.add(object);
 	}
-	
+
 	public void removeSubobject(SceneObjectInterface object) {
 		this.subObjects.remove(object);
 	}
-	
+
 	public void render(GL2 gl) {
 		prerender(gl);
 		for (SceneObjectInterface subObject : subObjects) {
@@ -56,11 +59,7 @@ implements SceneObjectInterface {
 		}
 		postrender(gl);
 	}
-	
-	/**
-	 * ĉi tie la objekto povas puŝi la antaŭan matricon kaj pentri sin mem,
-	 * la transformoj do validu ankaŭ por ĉiuj subobjektoj.
-	 */
+
 	protected void prerender(GL2 gl) {
 		double[] translation = this.getTranslation();
 		double[] rotation = this.getRotation();
@@ -74,10 +73,7 @@ implements SceneObjectInterface {
 		gl.glRotated(rotation[1],0.0f,1.0f,0.0f);
 		gl.glRotated(rotation[2],0.0f,0.0f,1.0f);
 	}
-	
-	/**
-	 * ĉi tie la objekto povas popi/restaŭri la antaŭan matricon.
-	 */
+
 	protected void postrender(GL2 gl) {
 		gl.glPopMatrix();
 	}
@@ -92,11 +88,11 @@ implements SceneObjectInterface {
 	protected void postupdate(long deltaTime) {
 		// do nothing.
 	}
-	
+
 	protected void preinit(GL2 gl) {
 		// do nothing.
 	}
-	
+
 	protected void postinit(GL2 gl) {
 		// do nothing.
 	}
@@ -133,6 +129,10 @@ implements SceneObjectInterface {
 		return this.parameters.get(param);
 	}
 
+	public boolean getParamBoolean(String param) {
+		return (Boolean) this.parameters.get(param);
+	}
+
 	public String getParamString(String param) {
 		return (String) this.parameters.get(param);
 	}
@@ -140,11 +140,11 @@ implements SceneObjectInterface {
 	public double[] getParamDoubleArray(String param) {
 		return (double[]) this.parameters.get(param);
 	}
-	
+
 	public double getParamDouble(String param) {
 		return (Double) this.parameters.get(param);
 	}
-	
+
 	public float getParamFloat(String param) {
 		return (Float) this.parameters.get(param);
 	}

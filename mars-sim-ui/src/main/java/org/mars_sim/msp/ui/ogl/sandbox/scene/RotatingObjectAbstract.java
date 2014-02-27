@@ -12,11 +12,12 @@ extends SceneObjectAbstract {
 
 	@Override
 	protected void preupdate(long deltaTime) {
+		double factor = ((double) deltaTime * PLANCK_TIME) * PI180;
 		double[] rotation = this.getRotation();
 		double[] delta = this.getDeltaRotation();
-		rotation[0] += delta[0] * ((double) deltaTime * PLANCK_TIME) * PI180;
-		rotation[1] += delta[1] * ((double) deltaTime * PLANCK_TIME) * PI180;
-		rotation[2] += delta[2] * ((double) deltaTime * PLANCK_TIME) * PI180;
+		rotation[0] += delta[0] * factor;
+		rotation[1] += delta[1] * factor;
+		rotation[2] += delta[2] * factor;
 	}
 	
 	public void setDeltaRotation(double[] deltaRotation) {

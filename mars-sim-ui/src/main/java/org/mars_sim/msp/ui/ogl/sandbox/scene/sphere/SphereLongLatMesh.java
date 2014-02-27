@@ -52,7 +52,7 @@ extends SphereAbstract {
 					h * Math.cos(ys),
 					Math.cos(xs)
 				};
-				Util.normalize3(v);
+				Util.length3(v);
 				pix[i][j][0] = v[0];
 				pix[i][j][1] = v[1];
 				pix[i][j][2] = v[2];
