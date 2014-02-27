@@ -35,6 +35,11 @@ public interface SceneObjectInterface {
 	public static final String PARAM_TEXTURE = "texture";
 	public static final String PARAM_CAPTION = "caption";
 	public static final String PARAM_TEXT_ORIENTATION = "orientation";
+	public static final String PARAM_SHOW_MESH = "showMesh";
+	public static final String PARAM_NODE_RENDERER = "nodeRenderer";
+	public static final String PARAM_EDGE_RENDERER = "edgeRenderer";
+	public static final String PARAM_POINT1 = "p1";
+	public static final String PARAM_POINT2 = "p2";
 
 	/** initialization of drawable surface (recursively). */
 	public void init(GL2 gl,long tempo);
@@ -88,4 +93,5 @@ public interface SceneObjectInterface {
 	public float getParamFloat(String param);
 	/** calls {@link #getParam(String)} and casts its result to {@link Integer}. */
 	public int getParamInt(String param);
+	public boolean getParamBoolean(String param);
 }

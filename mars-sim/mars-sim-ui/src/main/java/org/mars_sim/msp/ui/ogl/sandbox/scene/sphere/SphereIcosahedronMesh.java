@@ -109,9 +109,9 @@ extends SphereAbstract {
 			double[] v01 = Util.add(v0,v1);	// calculate vertices for triangulation
 			double[] v12 = Util.add(v1,v2);
 			double[] v20 = Util.add(v2,v0);
-			Util.normalize3(v01);           // normalize vertices to unit sphere
-			Util.normalize3(v12);
-			Util.normalize3(v20);
+			Util.length3(v01);           // normalize vertices to unit sphere
+			Util.length3(v12);
+			Util.length3(v20);
 			subdivide(v0,  v01, v20, step - 1);	// recursion
 			subdivide(v1,  v12, v01, step - 1);
 			subdivide(v2,  v20, v12, step - 1);
@@ -157,9 +157,9 @@ extends SphereAbstract {
 	 * save mesh to file to be reused later.
 	 */
 	private void saveMesh(int recursion) {
-		String celdosiero = MESH_PATH + recursion + SUFFIX;
+		String targetPath = MESH_PATH + recursion + SUFFIX;
 		try {
-			BufferedWriter w = new BufferedWriter(new FileWriter(celdosiero));
+			BufferedWriter w = new BufferedWriter(new FileWriter(targetPath));
 			w.write(Integer.toString(triangles.size()));
 			w.newLine();
 			for (int i = 0; i < triangles.size(); i++) {
