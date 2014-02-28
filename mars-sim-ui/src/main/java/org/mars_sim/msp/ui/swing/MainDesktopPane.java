@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
@@ -58,26 +57,38 @@ import org.mars_sim.msp.ui.swing.unit_window.UnitWindowListener;
  * It contains all tool and unit windows, and is itself contained,
  * along with the tool bars, by the main window.
  */
-public class MainDesktopPane extends JDesktopPane implements ComponentListener {
+public class MainDesktopPane
+extends JDesktopPane
+implements ComponentListener {
 
-	private static String CLASS_NAME = MainDesktopPane.class.getName();
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(MainDesktopPane.class.getName());
 
 	// Data members
-	private final Collection<UnitWindow> unitWindows; // List of open or buttoned unit windows.
-	private final Collection<ToolWindow> toolWindows; // List of tool windows.
-	private final MainWindow mainWindow; // The main window frame.
-	private final ImageIcon backgroundImageIcon; // ImageIcon that contains the tiled background.
-	private final JLabel backgroundLabel; // Label that contains the tiled background.
-	private boolean firstDisplay; // True if this MainDesktopPane hasn't been displayed yet.
-	private final UpdateThread updateThread; // The desktop update thread.
-	private final AudioPlayer soundPlayer; // The sound player
-	private final AnnouncementWindow announcementWindow; // The desktop popup announcement window.
+	/** List of open or buttoned unit windows. */
+	private final Collection<UnitWindow> unitWindows;
+	/** List of tool windows. */
+	private final Collection<ToolWindow> toolWindows;
+	/** The main window frame. */
+	private final MainWindow mainWindow;
+	/** ImageIcon that contains the tiled background. */
+	private final ImageIcon backgroundImageIcon;
+	/** Label that contains the tiled background. */
+	private final JLabel backgroundLabel;
+	/** True if this MainDesktopPane hasn't been displayed yet. */
+	private boolean firstDisplay;
+	/* The desktop update thread. */
+	private final UpdateThread updateThread;
+	/** The sound player. */
+	private final AudioPlayer soundPlayer;
+	/** The desktop popup announcement window. */
+	private final AnnouncementWindow announcementWindow;
 
 	/** 
-	 * Constructor
-	 *
+	 * Constructor.
 	 * @param mainWindow the main outer window
 	 */
 	public MainDesktopPane(MainWindow mainWindow) {
@@ -130,10 +141,11 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		return mainWindow;
 	}
 
-	/** Create background tile when MainDesktopPane is first
-	 *  displayed. Recenter logoLabel on MainWindow and set
-	 *  backgroundLabel to the size of MainDesktopPane.
-	 *  @param e the component event
+	/**
+	 * Create background tile when MainDesktopPane is first
+	 * displayed. Recenter logoLabel on MainWindow and set
+	 * backgroundLabel to the size of MainDesktopPane.
+	 * @param e the component event
 	 */
 	@Override
 	public void componentResized(ComponentEvent e) {
@@ -142,7 +154,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		// The size of the background tile cannot be determined during construction
 		// since it requires the MainDesktopPane be displayed first.
 		if (firstDisplay) {
-			ImageIcon baseImageIcon = ImageLoader.getIcon("background");
+			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("MainDesktopPane.img.background")); //$NON-NLS-1$
 			Dimension screen_size =
 				Toolkit.getDefaultToolkit().getScreenSize();
 			Image backgroundImage =
@@ -258,12 +270,12 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 				result = window;
 			}
 		}
-
 		return result;
 	}
 
-	/** Displays a new Unit model in the monitor window
-	 *  @param model the new model to display
+	/**
+	 * Displays a new Unit model in the monitor window.
+	 * @param model the new model to display
 	 */
 	public void addModel(UnitTableModel model) {
 		((MonitorWindow) getToolWindow(MonitorWindow.NAME)).displayModel(model);
@@ -281,9 +293,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		openToolWindow(NavigatorWindow.NAME);
 	}
 
-	/** Return true if tool window is open
-	 *  @param toolName the name of the tool window
-	 *  @return true true if tool window is open
+	/**
+	 * Return true if tool window is open.
+	 * @param toolName the name of the tool window
+	 * @return true true if tool window is open
 	 */
 	public boolean isToolWindowOpen(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
@@ -294,8 +307,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		}
 	}
 
-	/** Opens a tool window if necessary
-	 *  @param toolName the name of the tool window
+	/**
+	 * Opens a tool window if necessary.
+	 * @param toolName the name of the tool window
 	 */
 	public void openToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
@@ -324,7 +338,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 				catch (Exception e) { logger.log(Level.SEVERE,e.toString()); }
 			}
 			window.show();
-			//bring to front if it overlaps with other windows
+			// bring to front if it overlaps with other windows
 			try {
 				window.setSelected(true);
 			} catch (PropertyVetoException e) {
@@ -333,8 +347,9 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		}
 	}
 
-	/** Closes a tool window if it is open
-	 *  @param toolName the name of the tool window
+	/**
+	 * Closes a tool window if it is open
+	 * @param toolName the name of the tool window
 	 */
 	public void closeToolWindow(String toolName) {
 		ToolWindow window = getToolWindow(toolName);
@@ -344,7 +359,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		}
 	}
 
-	/** 
+	/**
 	 * Creates and opens a window for a unit if it isn't 
 	 * already in existence and open.
 	 * @param unit the unit the window is for.
@@ -369,12 +384,10 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
 			try {
 				tempWindow.setIcon(false);
+			} catch (java.beans.PropertyVetoException e) {
+				logger.log(Level.SEVERE,Msg.getString("MainDesktopPane.log.problemReopening") + e); //$NON-NLS-1$
 			}
-			catch(java.beans.PropertyVetoException e) {
-				logger.log(Level.SEVERE,"Problem reopening " + e);
-			}
-		}
-		else {
+		} else {
 			// Create new window for unit.
 			tempWindow = UnitWindowFactory.getUnitWindow(unit, this);
 
@@ -406,8 +419,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		try {
 			tempWindow.setSelected(true);
 			tempWindow.moveToFront();
-		}
-		catch (java.beans.PropertyVetoException e) {}
+		} catch (java.beans.PropertyVetoException e) {}
 
 		// Play sound for window.
 		String soundFilePath = UnitDisplayInfoFactory.getUnitDisplayInfo(unit).getSound(unit);
@@ -514,9 +526,8 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 
 		// Give some time for the update thread to finish updating.
 		try {
-		    Thread.sleep(100L);
-		}
-		catch (InterruptedException e) {};
+			Thread.sleep(100L);
+		} catch (InterruptedException e) {};
 		
 		// Dispose unit windows
 		Iterator<UnitWindow> i1 = unitWindows.iterator();
@@ -551,24 +562,23 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	}
 
 	private Point getCenterLocation(JInternalFrame tempWindow) {
-	    
-	    Dimension desktop_size = getSize();
-        Dimension window_size = tempWindow.getSize();
 
-        int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
-        int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
+		Dimension desktop_size = getSize();
+		Dimension window_size = tempWindow.getSize();
 
-        // Make sure y position isn't < 0.
-        if (rY < 0) {
-            rY = 0;
-        }
+		int rX = (int) Math.round((desktop_size.width - window_size.width) / 2D);
+		int rY = (int) Math.round((desktop_size.height - window_size.height) / 2D);
 
-        return new Point(rX, rY);
+		// Make sure y position isn't < 0.
+		if (rY < 0) {
+			rY = 0;
+		}
+
+		return new Point(rX, rY);
 	}
 	
 	/** 
-	 * Gets a random location on the desktop for a given JInternalFrame.
-	 *
+	 * Gets a random location on the desktop for a given {@link JInternalFrame}.
 	 * @param tempWindow an internal window
 	 * @return random point on the desktop
 	 */
@@ -590,7 +600,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		return new Point(rX, rY);
 	}
 
-	/** 
+	/**
 	 * Internal class thread for update.
 	 */
 	private class UpdateThread extends Thread {
@@ -600,8 +610,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 		boolean run = false;
 
 		private UpdateThread(MainDesktopPane desktop) {
-			super("Desktop update thread");
-
+			super(Msg.getString("MainDesktopPane.thread.desktopUpdate")); //$NON-NLS-1$
 			this.desktop = desktop;
 		}
 
@@ -617,8 +626,7 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 				}   
 				try {
 					Thread.sleep(SLEEP_TIME);
-				} 
-				catch (InterruptedException e) {}
+				} catch (InterruptedException e) {}
 			}
 		}
 	}
@@ -673,20 +681,19 @@ public class MainDesktopPane extends JDesktopPane implements ComponentListener {
 	void openInitialWindows() {
 		UIConfig config = UIConfig.INSTANCE;
 		if (config.useUIDefault()) {
-		    
-		    // Open default windows on desktop.
-		    
-		    // Open mars navigator tool.
-		    openToolWindow(NavigatorWindow.NAME);
-		    // Move mars navigator tool to upper left corner of desktop.
-		    getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
-		    
-		    // Open user guide tool.
-		    openToolWindow(GuideWindow.NAME);
-		    GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL("/docs/help/tutorial1.html");
-		}
-		else {
+
+			// Open default windows on desktop.
+
+			// Open mars navigator tool.
+			openToolWindow(NavigatorWindow.NAME);
+			// Move mars navigator tool to upper left corner of desktop.
+			getToolWindow(NavigatorWindow.NAME).setLocation(0, 0);
+
+			// Open user guide tool.
+			openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide = (GuideWindow) getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+		} else {
 			// Open windows in Z-order.
 			List<String> windowNames = config.getInternalWindowNames();
 			int num = windowNames.size();

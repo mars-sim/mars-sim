@@ -39,19 +39,16 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  * Provides access to other simulation subset configuration classes.
  */
 public class SimulationConfig implements Serializable {
-    
-    /* ---------------------------------------------------------------------------------------------------- *
-	 * SUID
-	 * ---------------------------------------------------------------------------------------------------- */
 
-	private static final long serialVersionUID = 8571791274015892904L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constants
 	 * ---------------------------------------------------------------------------------------------------- */
-	
-    private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
-	
+
+	private static final Logger logger = Logger.getLogger(SimulationConfig.class.getName());
+
 	// Configuration files to load.
 	public static final String SIMULATION_FILE = "simulation";
 	public static final String PEOPLE_FILE = "people";
@@ -76,21 +73,21 @@ public class SimulationConfig implements Serializable {
 	private static final String TIME_RATIO = "time-ratio";
 	private static final String EARTH_START_DATE_TIME = "earth-start-date-time";
 	private static final String MARS_START_DATE_TIME = "mars-start-date-time";
-	
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Static Members
 	 * ---------------------------------------------------------------------------------------------------- */
 
 	/** Singleton instance. */
 	private static SimulationConfig instance = new SimulationConfig();
-	
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Members
 	 * ---------------------------------------------------------------------------------------------------- */
-	
+
 	/** DOM documents. */
 	private Document simulationDoc;
-	
+
 	// Subset configuration classes
 	private PartConfig partConfig;
 	private PartPackageConfig partPackageConfig;
@@ -106,19 +103,20 @@ public class SimulationConfig implements Serializable {
 	private SettlementConfig settlementConfig;
 	private ManufactureConfig manufactureConfig;
 	private ResupplyConfig resupplyConfig;
-    private ConstructionConfig constructionConfig;
-    
-    /* ---------------------------------------------------------------------------------------------------- *
+	private ConstructionConfig constructionConfig;
+
+	/* ---------------------------------------------------------------------------------------------------- *
 	 * Constructors
 	 * ---------------------------------------------------------------------------------------------------- */
 
+	/** hidden constructor. */
 	private SimulationConfig() {
 	}
-	
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Public Static Methods
 	 * ---------------------------------------------------------------------------------------------------- */
-	
+
 	/**
 	 * Gets a singleton instance of the simulation config.
 	 * @return SimulationConfig instance
@@ -126,30 +124,30 @@ public class SimulationConfig implements Serializable {
 	public static SimulationConfig instance() {
 		return instance;
 	}
-	
+
 	/**
-	 * Sets the singleton instance .
+	 * Sets the singleton instance.
 	 * @param instance the singleton instance.
 	 */
 	public static void setInstance(SimulationConfig instance) {
 		SimulationConfig.instance = instance;
 	}
-	
+
 	/**
 	 * Reloads all of the configuration files.
 	 * @throws Exception if error loading or parsing configuration files.
 	 */
 	public static void loadConfig() {
-	    if (instance.simulationDoc != null) {
-	        instance.destroyOldConfiguration();
-	    }
+		if (instance.simulationDoc != null) {
+			instance.destroyOldConfiguration();
+		}
 		instance.loadDefaultConfiguration();
 	}
-	
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Getter
 	 * ---------------------------------------------------------------------------------------------------- */
-	
+
 	/**
 	 * Gets the simulation time to real time ratio.
 	 * Example: 100.0 mean 100 simulation seconds per 1 real second.
@@ -157,51 +155,48 @@ public class SimulationConfig implements Serializable {
 	 * @throws Exception if ratio is not in configuration or is not valid.
 	 */
 	public double getSimulationTimeRatio() {
-		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element timeRatio = timeConfig.getChild(TIME_RATIO);
 		double ratio = Double.parseDouble(timeRatio.getAttributeValue(VALUE));
 		if (ratio < 0D) throw new IllegalStateException("Simulation time ratio must be positive number.");
 		else if (ratio == 0D) throw new IllegalStateException("Simulation time ratio cannot be zero.");
-		
+
 		return ratio;
 	}
-	
+
 	/**
 	 * Gets the Earth date/time for when the simulation starts.
 	 * @return date/time as string in "MM/dd/yyyy hh:mm:ss" format.
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getEarthStartDateTime() {
-		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element earthStartDate = timeConfig.getChild(EARTH_START_DATE_TIME);
 		String startDate = earthStartDate.getAttributeValue(VALUE);
 		if ((startDate == null) || startDate.trim().length() == 0)
 			throw new IllegalStateException("Earth start date time must not be blank.");
-			
+
 		return startDate;
 	}
-	
+
 	/**
 	 * Gets the Mars date/time for when the simulation starts.
 	 * @return date/time as string in "orbit-month-sol:millisol" format.
 	 * @throws Exception if value is null or empty.
 	 */
 	public String getMarsStartDateTime() {
-		
 		Element root = simulationDoc.getRootElement();
 		Element timeConfig = root.getChild(TIME_CONFIGURATION);
 		Element marsStartDate = timeConfig.getChild(MARS_START_DATE_TIME);
 		String startDate = marsStartDate.getAttributeValue(VALUE);
 		if ((startDate == null) || startDate.trim().length() == 0)
 			throw new IllegalStateException("Mars start date time must not be blank.");
-		
+
 		return startDate;
 	}
-	
+
 	/**
 	 * Gets the part config subset.
 	 * @return part config
@@ -209,7 +204,7 @@ public class SimulationConfig implements Serializable {
 	public PartConfig getPartConfiguration() {
 		return partConfig;
 	}
-	
+
 	/**
 	 * Gets the part package configuration.
 	 * @return part package config
@@ -217,7 +212,7 @@ public class SimulationConfig implements Serializable {
 	public PartPackageConfig getPartPackageConfiguration() {
 		return partPackageConfig;
 	}
-	
+
 	/**
 	 * Gets the resource config subset.
 	 * @return resource config
@@ -225,7 +220,7 @@ public class SimulationConfig implements Serializable {
 	public AmountResourceConfig getResourceConfiguration() {
 		return resourceConfig;
 	}
-	
+
 	/**
 	 * Gets the person config subset.
 	 * @return person config
@@ -233,7 +228,7 @@ public class SimulationConfig implements Serializable {
 	public PersonConfig getPersonConfiguration() {
 		return personConfig;
 	}
-	
+
 	/**
 	 * Gets the medical config subset.
 	 * @return medical config
@@ -241,7 +236,7 @@ public class SimulationConfig implements Serializable {
 	public MedicalConfig getMedicalConfiguration() {
 		return medicalConfig;
 	}
-	
+
 	/**
 	 * Gets the landmark config subset.
 	 * @return landmark config
@@ -249,7 +244,7 @@ public class SimulationConfig implements Serializable {
 	public LandmarkConfig getLandmarkConfiguration() {
 		return landmarkConfig;
 	}
-	
+
 	/**
 	 * Gets the mineral map config subset.
 	 * @return mineral map config
@@ -257,7 +252,7 @@ public class SimulationConfig implements Serializable {
 	public MineralMapConfig getMineralMapConfiguration() {
 		return mineralMapConfig;
 	}
-	
+
 	/**
 	 * Gets the malfunction config subset.
 	 * @return malfunction config
@@ -265,7 +260,7 @@ public class SimulationConfig implements Serializable {
 	public MalfunctionConfig getMalfunctionConfiguration() {
 		return malfunctionConfig;
 	}
-	
+
 	/**
 	 * Gets the crop config subset.
 	 * @return crop config
@@ -273,7 +268,7 @@ public class SimulationConfig implements Serializable {
 	public CropConfig getCropConfiguration() {
 		return cropConfig;
 	}
-	
+
 	/**
 	 * Gets the vehicle config subset.
 	 * @return vehicle config
@@ -281,7 +276,7 @@ public class SimulationConfig implements Serializable {
 	public VehicleConfig getVehicleConfiguration() {
 		return vehicleConfig;
 	}
-	
+
 	/**
 	 * Gets the building config subset.
 	 * @return building config
@@ -289,7 +284,7 @@ public class SimulationConfig implements Serializable {
 	public BuildingConfig getBuildingConfiguration() {
 		return buildingConfig;
 	}
-	
+
 	/**
 	 * Gets the resupply configuration.
 	 * @return resupply config
@@ -297,7 +292,7 @@ public class SimulationConfig implements Serializable {
 	public ResupplyConfig getResupplyConfiguration() {
 		return resupplyConfig;
 	}
-	
+
 	/**
 	 * Gets the settlement config subset.
 	 * @return settlement config
@@ -305,7 +300,7 @@ public class SimulationConfig implements Serializable {
 	public SettlementConfig getSettlementConfiguration() {
 		return settlementConfig;
 	}
-	
+
 	/**
 	 * Gets the manufacture config subset.
 	 * @return manufacture config
@@ -313,24 +308,24 @@ public class SimulationConfig implements Serializable {
 	public ManufactureConfig getManufactureConfiguration() {
 		return manufactureConfig;
 	}
-    
-    /**
-     * Gets the construction config subset.
-     * @return construction config
-     */
-    public ConstructionConfig getConstructionConfiguration() {
-        return constructionConfig;
-    }
-	
+
+	/**
+	 * Gets the construction config subset.
+	 * @return construction config
+	 */
+	public ConstructionConfig getConstructionConfiguration() {
+		return constructionConfig;
+	}
+
 	/* ---------------------------------------------------------------------------------------------------- *
 	 * Private Methods
 	 * ---------------------------------------------------------------------------------------------------- */
-    
-    private void loadDefaultConfiguration() {
-    	try {
+
+	private void loadDefaultConfiguration() {
+		try {
 			// Load simulation document
 			simulationDoc = parseXMLFileAsJDOMDocument(SIMULATION_FILE, true);
-		
+
 			// Load subset configuration classes.
 			resourceConfig = new AmountResourceConfig(parseXMLFileAsJDOMDocument(RESOURCE_FILE, true));
 			partConfig = new PartConfig(parseXMLFileAsJDOMDocument(PART_FILE, true));
@@ -346,54 +341,54 @@ public class SimulationConfig implements Serializable {
 			resupplyConfig = new ResupplyConfig(parseXMLFileAsJDOMDocument(RESUPPLY_FILE, true), partPackageConfig);
 			settlementConfig = new SettlementConfig(parseXMLFileAsJDOMDocument(SETTLEMENT_FILE, true), partPackageConfig);
 			manufactureConfig = new ManufactureConfig(parseXMLFileAsJDOMDocument(MANUFACTURE_FILE, true));
-            constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
+			constructionConfig = new ConstructionConfig(parseXMLFileAsJDOMDocument(CONSTRUCTION_FILE, true));
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,"Error creating simulation config: " + e.getMessage());
 			e.printStackTrace();
 		}
-    }
-    
-    /**
-     * Prepares all configuration objects for garbage collection.
-     */
-    private void destroyOldConfiguration() {
-        simulationDoc = null;
-        resourceConfig = null;
-        partConfig = null;
-        partPackageConfig.destroy();
-        personConfig.destroy();
-        medicalConfig.destroy();
-        landmarkConfig.destroy();
-        mineralMapConfig.destroy();
-        malfunctionConfig.destroy();
-        cropConfig.destroy();
-        vehicleConfig.destroy();
-        buildingConfig.destroy();
-        resupplyConfig.destroy();
-        settlementConfig.destroy();
-        manufactureConfig.destroy();
-        constructionConfig.destroy();
-    }
-	
+	}
+
 	/**
-     * Parses an XML file into a DOM document.
-     * @param filename the path of the file.
-     * @param useDTD true if the XML DTD should be used.
-     * @return DOM document
-     * @throws Exception if XML could not be parsed or file could not be found.
-     */
-    public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
-        InputStream stream = getInputStream(filename);
-        /* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
-        InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
-        SAXBuilder saxBuilder = new SAXBuilder(useDTD);
-        /* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
-        saxBuilder.setEntityResolver(new ClasspathEntityResolver());
-        Document result = saxBuilder.build(reader);
-        stream.close();
-        return result;
-    }
-    
+	 * Prepares all configuration objects for garbage collection.
+	 */
+	private void destroyOldConfiguration() {
+		simulationDoc = null;
+		resourceConfig = null;
+		partConfig = null;
+		partPackageConfig.destroy();
+		personConfig.destroy();
+		medicalConfig.destroy();
+		landmarkConfig.destroy();
+		mineralMapConfig.destroy();
+		malfunctionConfig.destroy();
+		cropConfig.destroy();
+		vehicleConfig.destroy();
+		buildingConfig.destroy();
+		resupplyConfig.destroy();
+		settlementConfig.destroy();
+		manufactureConfig.destroy();
+		constructionConfig.destroy();
+	}
+
+	/**
+	 * Parses an XML file into a DOM document.
+	 * @param filename the path of the file.
+	 * @param useDTD true if the XML DTD should be used.
+	 * @return DOM document
+	 * @throws Exception if XML could not be parsed or file could not be found.
+	 */
+	public static Document parseXMLFileAsJDOMDocument(String filename, boolean useDTD) throws IOException, JDOMException {
+		InputStream stream = getInputStream(filename);
+		/* bug 2909888: read the inputstream with a specific encoding instead of the system default. */
+		InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+		SAXBuilder saxBuilder = new SAXBuilder(useDTD);
+		/* [landrus, 26.11.09]: Use an entity resolver to load dtds from the classpath */
+		saxBuilder.setEntityResolver(new ClasspathEntityResolver());
+		Document result = saxBuilder.build(reader);
+		stream.close();
+		return result;
+	}
+
 	/**
 	 * Gets a configuration file as an input stream.
 	 * @param filename the filename of the configuration file.
@@ -405,7 +400,6 @@ public class SimulationConfig implements Serializable {
 		String fullPathName = "/conf/" + filename + ".xml";
 		InputStream stream = SimulationConfig.class.getResourceAsStream(fullPathName);
 		if (stream == null) throw new IOException(fullPathName + " failed to load");
-
 		return stream;
 	}
 }
