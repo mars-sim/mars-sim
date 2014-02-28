@@ -21,284 +21,313 @@ import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 import javax.swing.*;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
-/** The MainWindowMenu class is the menu for the main window.
+/**
+ * The MainWindowMenu class is the menu for the main window.
  */
-public class MainWindowMenu extends JMenuBar implements ActionListener, MenuListener {
+public class MainWindowMenu
+extends JMenuBar
+implements ActionListener, MenuListener {
 
-    // Data members
-    private MainWindow mainWindow;                // The main window frame
-    private JMenuItem newItem;                    // New menu item
-    private JMenuItem loadItem;                   // Load menu item
-    private JMenuItem saveItem;                   // Save menu item
-    private JMenuItem saveAsItem;                 // Save As menu item
-    private JMenuItem exitItem;                   // Exit menu item
-    private JCheckBoxMenuItem marsNavigatorItem;  // Mars navigator menu item
-    private JCheckBoxMenuItem searchToolItem;     // Search tool menu item
-    private JCheckBoxMenuItem timeToolItem;       // Time tool menu item
-    private JCheckBoxMenuItem monitorToolItem;    // Monitor tool menu item
-    private JCheckBoxMenuItem prefsToolItem;      // Prefs tool menu item
-    private JCheckBoxMenuItem missionToolItem;    // Mission tool menu item
-    private JCheckBoxMenuItem settlementToolItem; // Settlement tool menu item
-    private JCheckBoxMenuItem scienceToolItem;    // Science tool menu item
-    private JCheckBoxMenuItem resupplyToolItem;   // Resupply tool menu item
-    private JMenuItem aboutMspItem;       // About Mars Simulation Project menu item
-    private JMenuItem tutorialItem;       // Tutorial menu item
-    private JMenuItem guideItem;          // User Guide menu item
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** 
-     * Constructor
-     * @param mainWindow the main window pane
-     */
-    public MainWindowMenu(MainWindow mainWindow) {
+	// Data members
+	/** The main window frame. */
+	private MainWindow mainWindow;
+	/** New menu item. */
+	private JMenuItem newItem;
+	/** Load menu item. */
+	private JMenuItem loadItem;
+	/** Save menu item. */
+	private JMenuItem saveItem;
+	/** Save As menu item. */
+	private JMenuItem saveAsItem;
+	/** Exit menu item. */
+	private JMenuItem exitItem;
+	/** Mars navigator menu item. */
+	private JCheckBoxMenuItem marsNavigatorItem;
+	/** Search tool menu item. */
+	private JCheckBoxMenuItem searchToolItem;
+	/** Time tool menu item. */
+	private JCheckBoxMenuItem timeToolItem;
+	/** Monitor tool menu item. */
+	private JCheckBoxMenuItem monitorToolItem;
+	/** Prefs tool menu item. */
+	private JCheckBoxMenuItem prefsToolItem;
+	/** Mission tool menu item. */
+	private JCheckBoxMenuItem missionToolItem;
+	/** Settlement tool menu item. */
+	private JCheckBoxMenuItem settlementToolItem;
+	/** Science tool menu item. */
+	private JCheckBoxMenuItem scienceToolItem;
+	/** Resupply tool menu item. */
+	private JCheckBoxMenuItem resupplyToolItem;
+	/** About Mars Simulation Project menu item. */
+	private JMenuItem aboutMspItem;
+	/** Tutorial menu item. */
+	private JMenuItem tutorialItem;
+	/** User Guide menu item. */
+	private JMenuItem guideItem;
 
-        // Use JMenuBar constructor
-        super();
+	/** 
+	 * Constructor.
+	 * @param mainWindow the main window pane
+	 */
+	public MainWindowMenu(MainWindow mainWindow) {
 
-        // Initialize data members
-        this.mainWindow = mainWindow;
+		// Use JMenuBar constructor
+		super();
 
-        // Create file menu
-        JMenu fileMenu = new JMenu("File");
-        add(fileMenu);
+		// Initialize data members
+		this.mainWindow = mainWindow;
 
-        // Create new menu item
-        ImageIcon newicon = new ImageIcon(getClass().getResource("/images/New.png"));
-        newItem = new JMenuItem("New", newicon);
-        newItem.addActionListener(this);
-        newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
-        newItem.setToolTipText("Create new simulation");
-        fileMenu.add(newItem);
+		// Create file menu
+		JMenu fileMenu = new JMenu(Msg.getString("MainWindowMenu.file")); //$NON-NLS-1$
+		add(fileMenu);
 
-        // Create load menu item
-        ImageIcon loadicon = new ImageIcon(getClass().getResource("/images/Open.png"));
-        loadItem = new JMenuItem("Open...",loadicon);
-        loadItem.addActionListener(this);
-        loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
-        loadItem.setToolTipText("Open a saved simulation");
-        fileMenu.add(loadItem);
+		// Create new menu item
+		ImageIcon newicon = new ImageIcon(getClass().getResource(Msg.getString("img.new"))); //$NON-NLS-1$
+		newItem = new JMenuItem(Msg.getString("MainWindowMenu.new"), newicon); //$NON-NLS-1$
+		newItem.addActionListener(this);
+		newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
+		newItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.new")); //$NON-NLS-1$
+		fileMenu.add(newItem);
 
-        fileMenu.add(new JSeparator());
+		// Create load menu item
+		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
+		loadItem = new JMenuItem(Msg.getString("MainWindowMenu.open"),loadicon); //$NON-NLS-1$
+		loadItem.addActionListener(this);
+		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
+		loadItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.open")); //$NON-NLS-1$
+		fileMenu.add(loadItem);
 
-        // Create save menu item
-        ImageIcon saveicon = new ImageIcon(getClass().getResource("/images/Save.png"));
-        saveItem = new JMenuItem("Save", saveicon);
-        saveItem.addActionListener(this);
-        saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
-        saveItem.setToolTipText("Save the current simulation");
-        fileMenu.add(saveItem);
+		fileMenu.add(new JSeparator());
 
-        // Create save as menu item
-        ImageIcon saveasicon = new ImageIcon(getClass().getResource("/images/SaveAs.png"));
-        saveAsItem = new JMenuItem("Save As...", saveasicon);
-        saveAsItem.addActionListener(this);
-        saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
-        saveAsItem.setToolTipText("Save the current simulation under a new name");
-        fileMenu.add(saveAsItem);
+		// Create save menu item
+		ImageIcon saveicon = new ImageIcon(getClass().getResource(Msg.getString("img.save"))); //$NON-NLS-1$
+		saveItem = new JMenuItem(Msg.getString("MainWindowMenu.save"), saveicon); //$NON-NLS-1$
+		saveItem.addActionListener(this);
+		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
+		saveItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.save")); //$NON-NLS-1$
+		fileMenu.add(saveItem);
 
-        fileMenu.add(new JSeparator());
+		// Create save as menu item
+		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("img.saveAs"))); //$NON-NLS-1$
+		saveAsItem = new JMenuItem(Msg.getString("MainWindowMenu.saveAs"), saveasicon); //$NON-NLS-1$
+		saveAsItem.addActionListener(this);
+		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
+		saveAsItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.saveAs")); //$NON-NLS-1$
+		fileMenu.add(saveAsItem);
 
-        // Create exit menu item
-        ImageIcon exiticon = new ImageIcon(getClass().getResource("/images/Exit.png"));
-        exitItem = new JMenuItem("Exit", exiticon);
-        exitItem.addActionListener(this);
-        exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
-        exitItem.setToolTipText("Leave Mars Simulation Project");
-        fileMenu.add(exitItem);
+		fileMenu.add(new JSeparator());
 
-        // Create tools menu
-        JMenu toolsMenu = new JMenu("Tools");
-        toolsMenu.addMenuListener(this);
-        add(toolsMenu);
+		// Create exit menu item
+		ImageIcon exiticon = new ImageIcon(getClass().getResource(Msg.getString("img.exit"))); //$NON-NLS-1$
+		exitItem = new JMenuItem(Msg.getString("MainWindowMenu.exit"), exiticon); //$NON-NLS-1$
+		exitItem.addActionListener(this);
+		exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
+		exitItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.exit")); //$NON-NLS-1$
+		fileMenu.add(exitItem);
 
-        // Create Mars navigator menu item
-        ImageIcon marsnavigatoricon = new ImageIcon(getClass().getResource("/images/Planet.png"));
-        marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME, marsnavigatoricon);
-        marsNavigatorItem.addActionListener(this);
-        marsNavigatorItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false));
-        toolsMenu.add(marsNavigatorItem);
+		// Create tools menu
+		JMenu toolsMenu = new JMenu(Msg.getString("MainWindowMenu.tools")); //$NON-NLS-1$
+		toolsMenu.addMenuListener(this);
+		add(toolsMenu);
 
-        // Create search tool menu item
-        ImageIcon searchicon = new ImageIcon(getClass().getResource("/images/Find.png"));
-        searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME, searchicon);
-        searchToolItem.addActionListener(this);
-        searchToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false));
-        toolsMenu.add(searchToolItem);
+		// Create Mars navigator menu item
+		ImageIcon marsnavigatoricon = new ImageIcon(getClass().getResource(Msg.getString("img.planet"))); //$NON-NLS-1$
+		marsNavigatorItem = new JCheckBoxMenuItem(NavigatorWindow.NAME, marsnavigatoricon);
+		marsNavigatorItem.addActionListener(this);
+		marsNavigatorItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0, false));
+		toolsMenu.add(marsNavigatorItem);
 
-        // Create time tool menu item
-        ImageIcon timeicon = new ImageIcon(getClass().getResource("/images/Time.png"));
-        timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME, timeicon);
-        timeToolItem.addActionListener(this);
-        timeToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false));
-        toolsMenu.add(timeToolItem);
+		// Create search tool menu item
+		ImageIcon searchicon = new ImageIcon(getClass().getResource(Msg.getString("img.find"))); //$NON-NLS-1$
+		searchToolItem = new JCheckBoxMenuItem(SearchWindow.NAME, searchicon);
+		searchToolItem.addActionListener(this);
+		searchToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F2, 0, false));
+		toolsMenu.add(searchToolItem);
 
-        // Create monitor tool menu item
-        ImageIcon monitoricon = new ImageIcon(getClass().getResource("/images/Monitor.png"));
-        monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME, monitoricon);
-        monitorToolItem.addActionListener(this);
-        monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
-        toolsMenu.add(monitorToolItem);
+		// Create time tool menu item
+		ImageIcon timeicon = new ImageIcon(getClass().getResource(Msg.getString("img.time"))); //$NON-NLS-1$
+		timeToolItem = new JCheckBoxMenuItem(TimeWindow.NAME, timeicon);
+		timeToolItem.addActionListener(this);
+		timeToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0, false));
+		toolsMenu.add(timeToolItem);
 
-        // Create prefs tool menu item
-        ImageIcon prefsicon = new ImageIcon(getClass().getResource("/images/Preferences.png"));
-        prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME, prefsicon);
-        prefsToolItem.addActionListener(this);
-        prefsToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
-        toolsMenu.add(prefsToolItem);
-        
-        // Create mission tool menu item
-        ImageIcon missionicon = new ImageIcon(getClass().getResource("/images/Mission.png"));
-        missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
-        missionToolItem.addActionListener(this);
-        missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
-        toolsMenu.add(missionToolItem);
-        
-        // Create settlement map tool menu item
-        ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource("/images/SettlementMapTool.png"));
-        settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME, settlementtoolicon);
-        settlementToolItem.addActionListener(this);
-        settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
-        toolsMenu.add(settlementToolItem);
+		// Create monitor tool menu item
+		ImageIcon monitoricon = new ImageIcon(getClass().getResource(Msg.getString("img.monitor"))); //$NON-NLS-1$
+		monitorToolItem = new JCheckBoxMenuItem(MonitorWindow.NAME, monitoricon);
+		monitorToolItem.addActionListener(this);
+		monitorToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, 0, false));
+		toolsMenu.add(monitorToolItem);
 
-        // Create science tool menu item
-        ImageIcon scienceicon = new ImageIcon(getClass().getResource("/images/Science.png"));
-        scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME, scienceicon);
-        scienceToolItem.addActionListener(this);
-        scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
-        toolsMenu.add(scienceToolItem);
-          
-        // Create resupply tool menu item
-        ImageIcon resupplyicon = new ImageIcon(getClass().getResource("/images/Resupply.png"));
-        resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME, resupplyicon);
-        resupplyToolItem.addActionListener(this);
-        resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
-        toolsMenu.add(resupplyToolItem);
-        
-        // Create help menu
-        JMenu helpMenu = new JMenu("Help");
-        helpMenu.addMenuListener(this);
-        add(helpMenu);
+		// Create prefs tool menu item
+		ImageIcon prefsicon = new ImageIcon(getClass().getResource(Msg.getString("img.preferences"))); //$NON-NLS-1$
+		prefsToolItem = new JCheckBoxMenuItem(PreferencesWindow.NAME, prefsicon);
+		prefsToolItem.addActionListener(this);
+		prefsToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F5, 0, false));
+		toolsMenu.add(prefsToolItem);
 
-        // Create About Mars Simulation Project menu item
-        aboutMspItem = new JMenuItem("About");
-        aboutMspItem.addActionListener(this);
-        aboutMspItem.setToolTipText("Show credits for MSP");
-        helpMenu.add(aboutMspItem);
+		// Create mission tool menu item
+		ImageIcon missionicon = new ImageIcon(getClass().getResource(Msg.getString("img.mission"))); //$NON-NLS-1$
+		missionToolItem = new JCheckBoxMenuItem(MissionWindow.NAME, missionicon);
+		missionToolItem.addActionListener(this);
+		missionToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F6, 0, false));
+		toolsMenu.add(missionToolItem);
 
-        helpMenu.add(new JSeparator());
+		// Create settlement map tool menu item
+		ImageIcon settlementtoolicon = new ImageIcon(getClass().getResource(Msg.getString("img.settlementMapTool"))); //$NON-NLS-1$
+		settlementToolItem = new JCheckBoxMenuItem(SettlementWindow.NAME, settlementtoolicon);
+		settlementToolItem.addActionListener(this);
+		settlementToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F7, 0, false));
+		toolsMenu.add(settlementToolItem);
 
-        // Create Tutorial menu item
-        tutorialItem = new JMenuItem("Tutorial");
-        tutorialItem.addActionListener(this);
-        tutorialItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
-        tutorialItem.setToolTipText("Show the tutorial for beginners");
-        helpMenu.add(tutorialItem);
-        
-        // Create User Guide menu item
-        ImageIcon guideicon = new ImageIcon(getClass().getResource("/images/Guide.png"));
-        guideItem = new JMenuItem("User Guide", guideicon);
-        guideItem.addActionListener(this);
-        guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
-        guideItem.setToolTipText("Show the User Guide");
-        helpMenu.add(guideItem);
-    }
+		// Create science tool menu item
+		ImageIcon scienceicon = new ImageIcon(getClass().getResource(Msg.getString("img.science"))); //$NON-NLS-1$
+		scienceToolItem = new JCheckBoxMenuItem(ScienceWindow.NAME, scienceicon);
+		scienceToolItem.addActionListener(this);
+		scienceToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F8, 0, false));
+		toolsMenu.add(scienceToolItem);
 
-    // ActionListener method overriding
-    public void actionPerformed(ActionEvent event) {
-// This method always runs through an awful lot of if-then-else statements 
-// when it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
-        JMenuItem selectedItem = (JMenuItem) event.getSource();
+		// Create resupply tool menu item
+		ImageIcon resupplyicon = new ImageIcon(getClass().getResource(Msg.getString("img.resupply"))); //$NON-NLS-1$
+		resupplyToolItem = new JCheckBoxMenuItem(ResupplyWindow.NAME, resupplyicon);
+		resupplyToolItem.addActionListener(this);
+		resupplyToolItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F9, 0, false));
+		toolsMenu.add(resupplyToolItem);
 
-        if (selectedItem == exitItem) mainWindow.exitSimulation();
-        else if (selectedItem == newItem) mainWindow.newSimulation();
-        else if (selectedItem == saveItem) mainWindow.saveSimulation(true);
-        else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
-        else if (selectedItem == loadItem) mainWindow.loadSimulation();
+		// Create help menu
+		JMenu helpMenu = new JMenu(Msg.getString("MainWindowMenu.help")); //$NON-NLS-1$
+		helpMenu.addMenuListener(this);
+		add(helpMenu);
 
-        MainDesktopPane desktop = mainWindow.getDesktop();
-        
-        if (selectedItem == marsNavigatorItem) {
-            if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
-            else desktop.closeToolWindow(NavigatorWindow.NAME);
-        }
+		// Create About Mars Simulation Project menu item
+		aboutMspItem = new JMenuItem(Msg.getString("MainWindowMenu.about")); //$NON-NLS-1$
+		aboutMspItem.addActionListener(this);
+		aboutMspItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.about")); //$NON-NLS-1$
+		helpMenu.add(aboutMspItem);
 
-        if (selectedItem == searchToolItem) {
-            if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
-            else desktop.closeToolWindow(SearchWindow.NAME);
-        }
+		helpMenu.add(new JSeparator());
 
-        if (selectedItem == timeToolItem) {
-            if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
-            else desktop.closeToolWindow(TimeWindow.NAME);
-        }
+		// Create Tutorial menu item
+		tutorialItem = new JMenuItem(Msg.getString("MainWindowMenu.tutorial")); //$NON-NLS-1$
+		tutorialItem.addActionListener(this);
+		tutorialItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
+		tutorialItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.tutorial")); //$NON-NLS-1$
+		helpMenu.add(tutorialItem);
 
-        if (selectedItem == monitorToolItem) {
-            if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
-            else desktop.closeToolWindow(MonitorWindow.NAME);
-        }
-        
-        if (selectedItem == prefsToolItem) {
-            if (prefsToolItem.isSelected()) desktop.openToolWindow(PreferencesWindow.NAME);
-            else desktop.closeToolWindow(PreferencesWindow.NAME);
-        }
-        
-        if (selectedItem == missionToolItem) {
-            if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
-            else desktop.closeToolWindow(MissionWindow.NAME);
-        }
-        
-        if (selectedItem == settlementToolItem) {
-            if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
-            else desktop.closeToolWindow(SettlementWindow.NAME);
-        }
+		// Create User Guide menu item
+		ImageIcon guideicon = new ImageIcon(getClass().getResource(Msg.getString("img.guide"))); //$NON-NLS-1$
+		guideItem = new JMenuItem(Msg.getString("MainWindowMenu.guide"), guideicon); //$NON-NLS-1$
+		guideItem.addActionListener(this);
+		guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
+		guideItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.guide")); //$NON-NLS-1$
+		helpMenu.add(guideItem);
+	}
 
-        if (selectedItem == scienceToolItem) {
-            if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
-            else desktop.closeToolWindow(ScienceWindow.NAME);
-        }
-        
-        if (selectedItem == resupplyToolItem) {
-            if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
-            else desktop.closeToolWindow(ResupplyWindow.NAME);
-        }
+	/** ActionListener method overriding. */
+	@Override
+	public final void actionPerformed(ActionEvent event) {
+		// This method always runs through an awful lot of if-then-else statements 
+		// when it seems we could save cycles by using a switch-case statement [lechimp 22/09/10]
+		JMenuItem selectedItem = (JMenuItem) event.getSource();
 
-        if (selectedItem == aboutMspItem) {
-            desktop.openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide;
-            ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL("/docs/help/about.html");
-        }
+		if (selectedItem == exitItem) mainWindow.exitSimulation();
+		else if (selectedItem == newItem) mainWindow.newSimulation();
+		else if (selectedItem == saveItem) mainWindow.saveSimulation(true);
+		else if (selectedItem == saveAsItem) mainWindow.saveSimulation(false);
+		else if (selectedItem == loadItem) mainWindow.loadSimulation();
 
-        if (selectedItem == guideItem) {
-            desktop.openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide;
-            ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL("/docs/help/userguide.html");        }
-        
-        if (selectedItem == tutorialItem) {
-            desktop.openToolWindow(GuideWindow.NAME);
-            GuideWindow ourGuide;
-            ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
-            ourGuide.setURL("/docs/help/tutorial1.html");        }
-    }
+		MainDesktopPane desktop = mainWindow.getDesktop();
 
-    // MenuListener method overriding
-    public void menuSelected(MenuEvent event) {
-        MainDesktopPane desktop = mainWindow.getDesktop();
-        marsNavigatorItem.setSelected(desktop.isToolWindowOpen(NavigatorWindow.NAME));
-        searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
-        timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
-        monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
-        prefsToolItem.setSelected(desktop.isToolWindowOpen(PreferencesWindow.NAME));
-        missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
-        settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
-        scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
-        resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
-   }
+		if (selectedItem == marsNavigatorItem) {
+			if (marsNavigatorItem.isSelected()) desktop.openToolWindow(NavigatorWindow.NAME);
+			else desktop.closeToolWindow(NavigatorWindow.NAME);
+		}
 
-    public void menuCanceled(MenuEvent event) {}
-    public void menuDeselected(MenuEvent event) {}
+		if (selectedItem == searchToolItem) {
+			if (searchToolItem.isSelected()) desktop.openToolWindow(SearchWindow.NAME);
+			else desktop.closeToolWindow(SearchWindow.NAME);
+		}
+
+		if (selectedItem == timeToolItem) {
+			if (timeToolItem.isSelected()) desktop.openToolWindow(TimeWindow.NAME);
+			else desktop.closeToolWindow(TimeWindow.NAME);
+		}
+
+		if (selectedItem == monitorToolItem) {
+			if (monitorToolItem.isSelected()) desktop.openToolWindow(MonitorWindow.NAME);
+			else desktop.closeToolWindow(MonitorWindow.NAME);
+		}
+
+		if (selectedItem == prefsToolItem) {
+			if (prefsToolItem.isSelected()) desktop.openToolWindow(PreferencesWindow.NAME);
+			else desktop.closeToolWindow(PreferencesWindow.NAME);
+		}
+
+		if (selectedItem == missionToolItem) {
+			if (missionToolItem.isSelected()) desktop.openToolWindow(MissionWindow.NAME);
+			else desktop.closeToolWindow(MissionWindow.NAME);
+		}
+
+		if (selectedItem == settlementToolItem) {
+			if (settlementToolItem.isSelected()) desktop.openToolWindow(SettlementWindow.NAME);
+			else desktop.closeToolWindow(SettlementWindow.NAME);
+		}
+
+		if (selectedItem == scienceToolItem) {
+			if (scienceToolItem.isSelected()) desktop.openToolWindow(ScienceWindow.NAME);
+			else desktop.closeToolWindow(ScienceWindow.NAME);
+		}
+
+		if (selectedItem == resupplyToolItem) {
+			if (resupplyToolItem.isSelected()) desktop.openToolWindow(ResupplyWindow.NAME);
+			else desktop.closeToolWindow(ResupplyWindow.NAME);
+		}
+
+		if (selectedItem == aboutMspItem) {
+			desktop.openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide;
+			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(Msg.getString("doc.about")); //$NON-NLS-1$
+		}
+
+		if (selectedItem == guideItem) {
+			desktop.openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide;
+			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(Msg.getString("doc.guide")); //$NON-NLS-1$
+		}
+
+		if (selectedItem == tutorialItem) {
+			desktop.openToolWindow(GuideWindow.NAME);
+			GuideWindow ourGuide;
+			ourGuide = (GuideWindow)desktop.getToolWindow(GuideWindow.NAME);
+			ourGuide.setURL(Msg.getString("doc.tutorial")); //$NON-NLS-1$
+		}
+	}
+
+	/** MenuListener method overriding. */
+	@Override
+	public final void menuSelected(MenuEvent event) {
+		MainDesktopPane desktop = mainWindow.getDesktop();
+		marsNavigatorItem.setSelected(desktop.isToolWindowOpen(NavigatorWindow.NAME));
+		searchToolItem.setSelected(desktop.isToolWindowOpen(SearchWindow.NAME));
+		timeToolItem.setSelected(desktop.isToolWindowOpen(TimeWindow.NAME));
+		monitorToolItem.setSelected(desktop.isToolWindowOpen(MonitorWindow.NAME));
+		prefsToolItem.setSelected(desktop.isToolWindowOpen(PreferencesWindow.NAME));
+		missionToolItem.setSelected(desktop.isToolWindowOpen(MissionWindow.NAME));
+		settlementToolItem.setSelected(desktop.isToolWindowOpen(SettlementWindow.NAME));
+		scienceToolItem.setSelected(desktop.isToolWindowOpen(ScienceWindow.NAME));
+		resupplyToolItem.setSelected(desktop.isToolWindowOpen(ResupplyWindow.NAME));
+	}
+
+	public void menuCanceled(MenuEvent event) {}
+	public void menuDeselected(MenuEvent event) {}
 }

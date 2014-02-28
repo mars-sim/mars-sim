@@ -15,13 +15,13 @@ extends EventObject {
 	private static final long serialVersionUID = 1L;
 
 	// UnitManager event strings.
-    public static final String ADD_UNIT = "add unit";
-    public static final String REMOVE_UNIT = "remove unit";
-	
+	public static final String ADD_UNIT = Msg.getString("UnitManagerEvent.event.addUnit"); //$NON-NLS-1$
+	public static final String REMOVE_UNIT = Msg.getString("UnitManagerEvent.event.removeUnit"); //$NON-NLS-1$
+
 	// Data members
 	private String eventType;
 	private Unit unit;
-	
+
 	/**
 	 * Constructor
 	 * @param unitManager the unit manager throwing this event.
@@ -31,7 +31,7 @@ extends EventObject {
 	UnitManagerEvent(UnitManager unitManager, String eventType, Unit unit) {
 		// User EventObject constructor.
 		super(unitManager);
-		
+
 		this.eventType = eventType;
 		this.unit = unit;
 	}
@@ -43,7 +43,7 @@ extends EventObject {
 	public String getEventType() {
 		return eventType;
 	}
-	
+
 	/**
 	 * Gets the unit target of this event.
 	 * @return unit

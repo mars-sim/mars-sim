@@ -29,12 +29,12 @@ import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MasterClock;
 import org.mars_sim.msp.core.time.UpTimer;
 
-
 /**
  * The Simulation class is the primary singleton class in the MSP simulation.
  * It's capable of creating a new simulation or loading/saving an existing one.
  */
-public class Simulation implements ClockListener, Serializable {
+public class Simulation
+implements ClockListener, Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = -631308653510974249L;
@@ -42,18 +42,18 @@ public class Simulation implements ClockListener, Serializable {
 	private static Logger logger = Logger.getLogger(Simulation.class.getName());
 
 	/** Version string. */
-	public final static String VERSION = "3.06";
+	public final static String VERSION = Msg.getString("Simulation.version"); //$NON-NLS-1$
 
 	/** Default save file. */
-	public final static String DEFAULT_FILE = "default.sim";
+	public final static String DEFAULT_FILE = Msg.getString("Simulation.defaultFile"); //$NON-NLS-1$
 
 	/** Save directory. */
 	public final static String DEFAULT_DIR =
-			System.getProperty("user.home") +
+			System.getProperty("user.home") + //$NON-NLS-1$
 			File.separator + 
-			".mars-sim" +
+			Msg.getString("Simulation.defaultFolder") + //$NON-NLS-1$
 			File.separator +
-			"saved";
+			Msg.getString("Simulation.defaultDir"); //$NON-NLS-1$
 
 	/** Singleton instance. */
 	private static final Simulation instance = new Simulation();
@@ -88,297 +88,319 @@ public class Simulation implements ClockListener, Serializable {
 	private boolean defaultLoad = false;
 	private boolean initialSimulationCreated = false;
 
-    /**
-     * Constructor
-     */
-    private Simulation() {
+	/** constructor. */
+	private Simulation() {
+		initializeTransientData();
+	}
 
-        initializeTransientData();
-    }
+	/**
+	 * Gets a singleton instance of the simulation.
+	 * @return Simulation instance
+	 */
+	public static Simulation instance() {
+		return instance;
+	}
 
-    /**
-     * Gets a singleton instance of the simulation.
-     * @return Simulation instance
-     */
-    public static Simulation instance() {
-        return instance;
-    }
+	public static void stopSimulation() {
+		Simulation simulation = instance();
+		simulation.defaultLoad = false;
+		simulation.stop();
 
-    public static void stopSimulation() {
-        Simulation simulation = instance();
-        simulation.defaultLoad = false;
-        simulation.stop();
+		// Wait until current time pulse runs its course
+		// we have no idea how long it will take it to
+		// run its course. But this might be enough.
+		Thread.yield();
+	}
 
-        // Wait until current time pulse runs it course
-        // we have no idea how long it will take it to
-        // run its course. But this might be enough.
-        Thread.yield();
-    }
+	/**
+	 * Creates a new simulation instance.
+	 * @throws Exception if new simulation could not be created.
+	 */
+	public static void createNewSimulation() {
 
-    /**
-     * Creates a new simulation instance.
-     * @throws Exception if new simulation could not be created.
-     */
-    public static void createNewSimulation() {
+		logger.config(Msg.getString("Simulation.log.createNewSim")); //$NON-NLS-1$
 
-        logger.config("Creating new simulation");
-        
-        Simulation simulation = instance();
-        
-        // Destroy old simulation.
-        if (simulation.initialSimulationCreated) {
-            simulation.destroyOldSimulation();
-        }
-        
-        // Initialize intransient data members.
-        simulation.initializeIntransientData();
+		Simulation simulation = instance();
 
-        // Initialize transient data members.
-        simulation.initializeTransientData();
-        
-        simulation.initialSimulationCreated = true;
-    }
-    
-    /**
-     * Destroys the current simulation to prepare for creating or loading a new simulation.
-     */
-    private void destroyOldSimulation() {
-        
-        malfunctionFactory.destroy();
-        mars.destroy();
-        missionManager.destroy();
-        relationshipManager.destroy();
-        medicalManager.destroy();
-        masterClock.destroy();
-        unitManager.destroy();
-        creditManager.destroy();
-        scientificStudyManager.destroy();
-        relationshipManager.destroy();
-        eventManager.destroy();
-    }
+		// Destroy old simulation.
+		if (simulation.initialSimulationCreated) {
+			simulation.destroyOldSimulation();
+		}
 
-    /**
-     * Initialize transient data in the simulation.
-     * @throws Exception if transient data could not be loaded.
-     */
-    private void initializeTransientData() {
-        eventManager = new HistoricalEventManager();
-    }
+		// Initialize intransient data members.
+		simulation.initializeIntransientData();
 
-    /**
-     * Initialize intransient data in the simulation.
-     * @throws Exception if intransient data could not be loaded.
-     */
-    private void initializeIntransientData() {
-        malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
-        mars = new Mars();
-        missionManager = new MissionManager();
-        relationshipManager = new RelationshipManager();
-        medicalManager = new MedicalManager();
-        masterClock = new MasterClock();
-        unitManager = new UnitManager();
-        unitManager.constructInitialUnits();
-        creditManager = new CreditManager();
-        scientificStudyManager = new ScientificStudyManager();
-        transportManager = new TransportManager();
-    }
+		// Initialize transient data members.
+		simulation.initializeTransientData();
 
-    /**
-     * Loads a simulation instance from a save file.
-     * @param file the file to be loaded from.
-     * @throws Exception if simulation could not be loaded.
-     */
-    public void loadSimulation(final File file) {
-        File f = file;
+		simulation.initialSimulationCreated = true;
+	}
 
-        logger.config("Loading simulation from " + file);
+	/**
+	 * Destroys the current simulation to prepare for creating or loading a new simulation.
+	 */
+	private void destroyOldSimulation() {
 
-        Simulation simulation = instance();
-        simulation.stop();
+		malfunctionFactory.destroy();
+		mars.destroy();
+		missionManager.destroy();
+		relationshipManager.destroy();
+		medicalManager.destroy();
+		masterClock.destroy();
+		unitManager.destroy();
+		creditManager.destroy();
+		scientificStudyManager.destroy();
+		relationshipManager.destroy();
+		eventManager.destroy();
+	}
 
-        // Use default file path if file is null.
-        if (f == null) {
-            /* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
-            f = new File(DEFAULT_DIR, DEFAULT_FILE);
-            simulation.defaultLoad = true;
-        } 
-        else {
-            simulation.defaultLoad = false;
-        }
-        
-        if (f.exists() && f.canRead()) {
-            try {
-                simulation.readFromFile(f);
-            } catch (ClassNotFoundException ex) {
-                throw new IllegalStateException(ex);
-            } catch (IOException ex) {
-                throw new IllegalStateException(ex);
-            }
-        }
-        else{
-            throw new IllegalStateException("Load file: " + f.getPath() + " is not accessible");
-        }
-    }
+	/**
+	 * Initialize transient data in the simulation.
+	 * @throws Exception if transient data could not be loaded.
+	 */
+	private void initializeTransientData() {
+		eventManager = new HistoricalEventManager();
+	}
 
-    /**
-     * Reads a serialized simulation from a file.
-     * @param file the saved serialized simulation.
-     * @throws ClassNotFoundException if error reading serialized classes.
-     * @throws IOException if error reading from file.
-     */
-    private void readFromFile(File file) throws ClassNotFoundException, IOException {
-        
-        ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
-        
-        // Destroy old simulation.
-        if (instance().initialSimulationCreated) {
-            destroyOldSimulation();
-        }
-        
-        // Load intransient objects.
-        SimulationConfig.setInstance((SimulationConfig) p.readObject());
-        malfunctionFactory = (MalfunctionFactory) p.readObject();
-        mars = (Mars) p.readObject();
-        mars.initializeTransientData();
-        missionManager = (MissionManager) p.readObject();
-        relationshipManager = (RelationshipManager) p.readObject();
-        medicalManager = (MedicalManager) p.readObject();
-        scientificStudyManager = (ScientificStudyManager) p.readObject();
-        transportManager = (TransportManager) p.readObject();
-        creditManager = (CreditManager) p.readObject();
-        unitManager = (UnitManager) p.readObject();
-        masterClock = (MasterClock) p.readObject();
-        p.close();
-        
-        // Initialize transient data.
-        initializeTransientData();
-        
-        instance().initialSimulationCreated = true;
-    }
+	/**
+	 * Initialize intransient data in the simulation.
+	 * @throws Exception if intransient data could not be loaded.
+	 */
+	private void initializeIntransientData() {
+		malfunctionFactory = new MalfunctionFactory(SimulationConfig.instance().getMalfunctionConfiguration());
+		mars = new Mars();
+		missionManager = new MissionManager();
+		relationshipManager = new RelationshipManager();
+		medicalManager = new MedicalManager();
+		masterClock = new MasterClock();
+		unitManager = new UnitManager();
+		unitManager.constructInitialUnits();
+		creditManager = new CreditManager();
+		scientificStudyManager = new ScientificStudyManager();
+		transportManager = new TransportManager();
+	}
 
-    /**
-     * Saves a simulation instance to a save file.
-     * @param file the file to be saved to.
-     * @throws Exception if simulation could not be saved.
-     */
-    public void saveSimulation(File file) throws IOException {
-        logger.config("Saving simulation to " + file);
+	/**
+	 * Loads a simulation instance from a save file.
+	 * @param file the file to be loaded from.
+	 * @throws Exception if simulation could not be loaded.
+	 */
+	public void loadSimulation(final File file) {
+		File f = file;
 
-        Simulation simulation = instance();
-        simulation.stop();
+		logger.config(Msg.getString("Simulation.log.loadSimFrom") + file); //$NON-NLS-1$
 
-        // Use default file path if file is null.
+		Simulation simulation = instance();
+		simulation.stop();
+
+		// Use default file path if file is null.
+		if (f == null) {
+			/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. */
+			f = new File(DEFAULT_DIR, DEFAULT_FILE);
+			simulation.defaultLoad = true;
+		} 
+		else {
+			simulation.defaultLoad = false;
+		}
+
+		if (f.exists() && f.canRead()) {
+			try {
+				simulation.readFromFile(f);
+			} catch (ClassNotFoundException ex) {
+				throw new IllegalStateException(ex);
+			} catch (IOException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+		else{
+			throw new IllegalStateException(Msg.getString("Simulation.log.fileNotAccessible") + f.getPath() + " is not accessible"); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
+
+	/**
+	 * Reads a serialized simulation from a file.
+	 * @param file the saved serialized simulation.
+	 * @throws ClassNotFoundException if error reading serialized classes.
+	 * @throws IOException if error reading from file.
+	 */
+	private void readFromFile(File file) throws ClassNotFoundException, IOException {
+
+		ObjectInputStream p = new ObjectInputStream(new FileInputStream(file));
+
+		// Destroy old simulation.
+		if (instance().initialSimulationCreated) {
+			destroyOldSimulation();
+		}
+
+		// Load intransient objects.
+		SimulationConfig.setInstance((SimulationConfig) p.readObject());
+		malfunctionFactory = (MalfunctionFactory) p.readObject();
+		mars = (Mars) p.readObject();
+		mars.initializeTransientData();
+		missionManager = (MissionManager) p.readObject();
+		relationshipManager = (RelationshipManager) p.readObject();
+		medicalManager = (MedicalManager) p.readObject();
+		scientificStudyManager = (ScientificStudyManager) p.readObject();
+		transportManager = (TransportManager) p.readObject();
+		creditManager = (CreditManager) p.readObject();
+		unitManager = (UnitManager) p.readObject();
+		masterClock = (MasterClock) p.readObject();
+		p.close();
+
+		// Initialize transient data.
+		initializeTransientData();
+
+		instance().initialSimulationCreated = true;
+	}
+
+	/**
+	 * Saves a simulation instance to a save file.
+	 * @param file the file to be saved to.
+	 * @throws Exception if simulation could not be saved.
+	 */
+	public void saveSimulation(File file) throws IOException {
+		logger.config(Msg.getString("Simulation.log.saveSimTo") + file); //$NON-NLS-1$
+
+		Simulation simulation = instance();
+		simulation.stop();
+
+		// Use default file path if file is null.
 		/* [landrus, 27.11.09]: use the home dir instead of unknown relative paths. Also check if the dirs
-         * exist */
-        if (file == null) {
-            file = new File(DEFAULT_DIR, DEFAULT_FILE);
+		 * exist */
+		if (file == null) {
+			file = new File(DEFAULT_DIR, DEFAULT_FILE);
 
-            if (!file.getParentFile().exists()) {
-                file.getParentFile().mkdirs();
-            }
-        }
-        ObjectOutputStream p = null;
-        try{
-            p = new ObjectOutputStream(new FileOutputStream(file));
-            // Store the intransient objects.
-            p.writeObject(SimulationConfig.instance());
-            p.writeObject(malfunctionFactory);
-            p.writeObject(mars);
-            p.writeObject(missionManager);
-            p.writeObject(relationshipManager);
-            p.writeObject(medicalManager);
-            p.writeObject(scientificStudyManager);
-            p.writeObject(transportManager);
-            p.writeObject(creditManager);
-            p.writeObject(unitManager);
-            p.writeObject(masterClock);
+			if (!file.getParentFile().exists()) {
+				file.getParentFile().mkdirs();
+			}
+		}
+		ObjectOutputStream p = null;
+		try {
+			p = new ObjectOutputStream(new FileOutputStream(file));
+			// Store the intransient objects.
+			p.writeObject(SimulationConfig.instance());
+			p.writeObject(malfunctionFactory);
+			p.writeObject(mars);
+			p.writeObject(missionManager);
+			p.writeObject(relationshipManager);
+			p.writeObject(medicalManager);
+			p.writeObject(scientificStudyManager);
+			p.writeObject(transportManager);
+			p.writeObject(creditManager);
+			p.writeObject(unitManager);
+			p.writeObject(masterClock);
 
-            p.flush();
-            p.close();
-            p = null;
-        }catch(IOException e){
-            logger.log(Level.WARNING, "Could not save the simulation", e);
-            throw e;
-        }finally{
-            if(p != null){
-                p.close();
-            }
-        }
+			p.flush();
+			p.close();
+			p = null;
+		} catch (IOException e){
+			logger.log(Level.WARNING, Msg.getString("Simulation.log.saveError"), e); //$NON-NLS-1$
+			throw e;
+		} finally {
+			if (p != null) {
+				p.close();
+			}
+		}
 
-        simulation.start();
-    }
+		simulation.start();
+	}
 
-    /**
-     * Start the simulation.
-     */
-    public void start() {
-        if (clockThread == null) {
-            clockThread = new Thread(masterClock, "Master Clock");
-            masterClock.addClockListener(this);
-            clockThread.start();
-        }
-    }
+	/**
+	 * Start the simulation.
+	 */
+	public void start() {
+		if (clockThread == null) {
+			clockThread = new Thread(masterClock, Msg.getString("Simulation.thread.masterClock")); //$NON-NLS-1$
+			masterClock.addClockListener(this);
+			clockThread.start();
+		}
+	}
 
-    /**
-     * Stop the simulation.
-     */
-    public void stop() {
-        if (masterClock != null) {
-            masterClock.stop();
-            masterClock.removeClockListener(this);
-        }
-        clockThread = null;
-    }
+	/**
+	 * Stop the simulation.
+	 */
+	public void stop() {
+		if (masterClock != null) {
+			masterClock.stop();
+			masterClock.removeClockListener(this);
+		}
+		clockThread = null;
+	}
 
-    /**
-     * Clock pulse from master clock
-     * @param time amount of time passing (in millisols)
-     */
-    @Override
-    public void clockPulse(double time) {
-        final UpTimer ut = masterClock.getUpTimer();
+	/**
+	 * Clock pulse from master clock
+	 * @param time amount of time passing (in millisols)
+	 */
+	@Override
+	public void clockPulse(double time) {
+		final UpTimer ut = masterClock.getUpTimer();
 
-        ut.updateTime();
-        
-        if (debug) {
-            logger.fine(ut.getUptime()
-                    + " Master clock sending pulse to object: mars " + mars.toString());
-        }
-        mars.timePassing(time);
-        ut.updateTime();
-        
-        if (debug) {
-            logger.fine(masterClock.getUpTimer().getUptime()
-                    + " Master clock sending pulse to object: missionManager " + missionManager.toString());
-        }
-        missionManager.timePassing(time);
-        ut.updateTime();
-        
-        if (debug) {
-            logger.fine(masterClock.getUpTimer().getUptime()
-                    + " Master clock sending pulse to object: unitManager " + unitManager.toString());
-        }
-        unitManager.timePassing(time);
-        ut.updateTime();
-        
-        if (debug) {
-            logger.fine(masterClock.getUpTimer().getUptime()
-                    + " Master clock sending pulse to object: scientificStudyManager " + scientificStudyManager);
-        }
-        scientificStudyManager.updateStudies();
-        ut.updateTime();
-        
-        if (debug) {
-            logger.fine(masterClock.getUpTimer().getUptime()
-                    + " Master clock sending pulse to object: transportManager " + transportManager);
-        }
-        transportManager.timePassing(time);
-    }
-    
-    @Override
-    public void pauseChange(boolean isPaused) {
-        // Do nothing
-    }
+		ut.updateTime();
+
+		if (debug) {
+			logger.fine(
+				Msg.getString(
+					"Simulation.log.clockPulseMars", //$NON-NLS-1$
+					ut.getUptime(),
+					mars.toString()
+				)
+			);
+		}
+		mars.timePassing(time);
+		ut.updateTime();
+
+		if (debug) {
+			logger.fine(
+				Msg.getString(
+					"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+					masterClock.getUpTimer().getUptime(),
+					missionManager.toString()
+				)
+			);
+		}
+		missionManager.timePassing(time);
+		ut.updateTime();
+
+		if (debug) {
+			logger.fine(
+				Msg.getString(
+					"Simulation.log.clockPulseUnitManager", //$NON-NLS-1$
+					masterClock.getUpTimer().getUptime(),
+					unitManager.toString()
+				)
+			);
+		}
+		unitManager.timePassing(time);
+		ut.updateTime();
+
+		if (debug) {
+			logger.fine(
+				Msg.getString(
+					"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+					masterClock.getUpTimer().getUptime(),
+					scientificStudyManager.toString()
+				)
+			);
+		}
+		scientificStudyManager.updateStudies();
+		ut.updateTime();
+
+		if (debug) {
+			logger.fine(
+				Msg.getString(
+					"Simulation.log.clockPulseTransportManager", //$NON-NLS-1$
+					masterClock.getUpTimer().getUptime(),
+					transportManager.toString()
+				)
+			);
+		}
+		transportManager.timePassing(time);
+	}
+
+	@Override
+	public void pauseChange(boolean isPaused) {
+		// Do nothing
+	}
 
     /**
      * Get the planet Mars.

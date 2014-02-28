@@ -1,12 +1,15 @@
 package org.mars_sim.msp.core;
 
+/**
+ * @author stpa
+ */
 public enum UnitEventType {
 
 	// from Inventory.java
 	INVENTORY_STORING_UNIT_EVENT	("inventory storing unit"),
 	INVENTORY_RETRIEVING_UNIT_EVENT	("inventory retrieving unit"),
 	INVENTORY_RESOURCE_EVENT		("inventory resource event"),
-	
+
 	// from Unit.java
 	NAME_EVENT						("name"),
 	DESCRIPTION_EVENT				("description"),
@@ -77,7 +80,7 @@ public enum UnitEventType {
 	POWER_VALUE_EVENT				("power value");
 
 	private String name;
-	
+
 	private UnitEventType(String name) {
 		this.name = name;
 	}
