@@ -4,7 +4,6 @@
  * @version 3.06 2014-02-09
  * @author Lars Naesbye Christensen
  */
-
 package org.mars_sim.msp.ui.swing.tool.settlement;
 
 import java.awt.BorderLayout;
@@ -42,8 +41,8 @@ import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.Msg;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-
 
 /**
  * The SettlementWindow is a tool window that displays the Settlement Map Tool.
@@ -54,7 +53,7 @@ public class SettlementWindow extends ToolWindow {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = "Settlement Map Tool";
+	public static final String NAME = Msg.getString("SettlementWindow.title"); //$NON-NLS-1$
 
 	/** Rotation change (radians per rotation button press). */
 	private static final double ROTATION_CHANGE = Math.PI / 20D;
@@ -85,316 +84,321 @@ public class SettlementWindow extends ToolWindow {
 	 */
 	public SettlementWindow(MainDesktopPane desktop) {
 
-        // Use ToolWindow constructor
-        super(NAME, desktop);
+		// Use ToolWindow constructor
+		super(NAME, desktop);
 
-        // Set the tool window to be maximizable.
-        setMaximizable(true);
+		// Set the tool window to be maximizable.
+		setMaximizable(true);
 
-        // Create content pane
-        JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new MarsPanelBorder());
-        setContentPane(mainPane);
+		// Create content pane
+		JPanel mainPane = new JPanel(new BorderLayout());
+		mainPane.setBorder(new MarsPanelBorder());
+		setContentPane(mainPane);
 
-        // Create top widget pane
-        JPanel widgetPane = new JPanel();
-        widgetPane.setBorder(MainDesktopPane.newEmptyBorder());
-        mainPane.add(widgetPane, BorderLayout.NORTH);
+		// Create top widget pane
+		JPanel widgetPane = new JPanel();
+		widgetPane.setBorder(MainDesktopPane.newEmptyBorder());
+		mainPane.add(widgetPane, BorderLayout.NORTH);
 
-        // Create bottom (map) pane
-        mapPane = new SettlementMapPanel();
-        mapPane.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mousePressed(MouseEvent evt) {
-                // Set initial mouse drag position.
-                xLast = evt.getX();
-                yLast = evt.getY();
-            }
+		// Create bottom (map) pane
+		mapPane = new SettlementMapPanel();
+		mapPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent evt) {
+				// Set initial mouse drag position.
+				xLast = evt.getX();
+				yLast = evt.getY();
+			}
 
-            @Override
-            public void mouseClicked(MouseEvent evt) {
+			@Override
+			public void mouseClicked(MouseEvent evt) {
 
-                // Select person if clicked on.
-                mapPane.selectPersonAt(evt.getX(), evt.getY());
-            }
-        });
-        mapPane.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseDragged(MouseEvent evt) {
-                // Move map center based on mouse drag difference.
-                double xDiff = evt.getX() - xLast;
-                double yDiff = evt.getY() - yLast;
-                mapPane.moveCenter(xDiff, yDiff);
-                xLast = evt.getX();
-                yLast = evt.getY();
-            }
-        });
-        mainPane.add(mapPane, BorderLayout.CENTER);
+				// Select person if clicked on.
+				mapPane.selectPersonAt(evt.getX(), evt.getY());
+			}
+		});
+		mapPane.addMouseMotionListener(new MouseMotionAdapter() {
+			@Override
+			public void mouseDragged(MouseEvent evt) {
+				// Move map center based on mouse drag difference.
+				double xDiff = evt.getX() - xLast;
+				double yDiff = evt.getY() - yLast;
+				mapPane.moveCenter(xDiff, yDiff);
+				xLast = evt.getX();
+				yLast = evt.getY();
+			}
+		});
+		mainPane.add(mapPane, BorderLayout.CENTER);
 
-        settlementCBModel = new SettlementComboBoxModel();
-        settlementListBox = new JComboBoxMW(settlementCBModel);
-        settlementListBox.setToolTipText("Select settlement");
-        settlementListBox.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent event) {
-                // Set settlement to draw map for.
-                Settlement settlement = (Settlement) event.getItem();
-                mapPane.setSettlement(settlement);
-                // Note: should we recenter map each time we change settlements?
-            } 
-        });
-        widgetPane.add(settlementListBox);
+		settlementCBModel = new SettlementComboBoxModel();
+		settlementListBox = new JComboBoxMW(settlementCBModel);
+		settlementListBox.setToolTipText(Msg.getString("SettlementWindow.tooltip.selectSettlement")); //$NON-NLS-1$
+		settlementListBox.addItemListener(new ItemListener() {
+			@Override
+			public void itemStateChanged(ItemEvent event) {
+				// Set settlement to draw map for.
+				Settlement settlement = (Settlement) event.getItem();
+				mapPane.setSettlement(settlement);
+				// Note: should we recenter map each time we change settlements?
+			} 
+		});
+		widgetPane.add(settlementListBox);
 
-        if (settlementListBox.getModel().getSize() > 0) {
-            settlementListBox.setSelectedIndex(0);
-            mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
-        }
+		if (settlementListBox.getModel().getSize() > 0) {
+			settlementListBox.setSelectedIndex(0);
+			mapPane.setSettlement((Settlement) settlementListBox.getSelectedItem());
+		}
 
-        // Create zoom label and slider
-        JPanel zoomPane = new JPanel(new BorderLayout());
-        zoomLabel = new JLabel("Zoom", JLabel.CENTER);
-        zoomPane.add(zoomLabel, BorderLayout.NORTH);
+		// Create zoom label and slider
+		JPanel zoomPane = new JPanel(new BorderLayout());
+		zoomLabel = new JLabel(Msg.getString("SettlementWindow.zoom"), JLabel.CENTER); //$NON-NLS-1$
+		zoomPane.add(zoomLabel, BorderLayout.NORTH);
 
-        zoomSlider = new JSliderMW(JSlider.HORIZONTAL, -10, 10, 0);
-        zoomSlider.setMajorTickSpacing(5);
-        zoomSlider.setMinorTickSpacing(1);
-        zoomSlider.setPaintTicks(true);
-        zoomSlider.setPaintLabels(true);
-        zoomSlider.setToolTipText("Zoom view of settlement");
-        zoomSlider.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent arg0) {
-                // Change scale of map based on slider position.
-                int sliderValue = zoomSlider.getValue();
-                double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
-                double newScale = defaultScale;
-                if (sliderValue > 0) {
-                    newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
-                }
-                else if (sliderValue < 0) {
-                    newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
-                }
-                mapPane.setScale(newScale);
-            }
-        });
-        zoomPane.add(zoomSlider, BorderLayout.CENTER);
+		zoomSlider = new JSliderMW(JSlider.HORIZONTAL, -10, 10, 0);
+		zoomSlider.setMajorTickSpacing(5);
+		zoomSlider.setMinorTickSpacing(1);
+		zoomSlider.setPaintTicks(true);
+		zoomSlider.setPaintLabels(true);
+		zoomSlider.setToolTipText(Msg.getString("SettlementWindow.tooltip.zoom")); //$NON-NLS-1$
+		zoomSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent arg0) {
+				// Change scale of map based on slider position.
+				int sliderValue = zoomSlider.getValue();
+				double defaultScale = SettlementMapPanel.DEFAULT_SCALE;
+				double newScale = defaultScale;
+				if (sliderValue > 0) {
+					newScale += defaultScale * (double) sliderValue * ZOOM_CHANGE;
+				}
+				else if (sliderValue < 0) {
+					newScale = defaultScale / (1D + ((double) sliderValue * -1D * ZOOM_CHANGE));
+				}
+				mapPane.setScale(newScale);
+			}
+		});
+		zoomPane.add(zoomSlider, BorderLayout.CENTER);
 
-        // Add mouse wheel listener for zooming.
-        addMouseWheelListener(new MouseWheelListener() {
-            public void mouseWheelMoved(MouseWheelEvent evt) {
-                int numClicks = evt.getWheelRotation();
-                if (numClicks > 0) {
-                    // Move zoom slider down.
-                    if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
-                        zoomSlider.setValue(zoomSlider.getValue() - 1);
-                }
-                else if (numClicks < 0) {
-                    // Move zoom slider up.
-                    if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
-                        zoomSlider.setValue(zoomSlider.getValue() + 1);
-                }
-            }
-        });
+		// Add mouse wheel listener for zooming.
+		addMouseWheelListener(new MouseWheelListener() {
+			public void mouseWheelMoved(MouseWheelEvent evt) {
+				int numClicks = evt.getWheelRotation();
+				if (numClicks > 0) {
+					// Move zoom slider down.
+					if (zoomSlider.getValue() > zoomSlider.getMinimum()) 
+						zoomSlider.setValue(zoomSlider.getValue() - 1);
+				}
+				else if (numClicks < 0) {
+					// Move zoom slider up.
+					if (zoomSlider.getValue() < zoomSlider.getMaximum()) 
+						zoomSlider.setValue(zoomSlider.getValue() + 1);
+				}
+			}
+		});
 
-        widgetPane.add(zoomPane);
+		widgetPane.add(zoomPane);
 
-        // Create buttons panel.
-        JPanel buttonsPane = new JPanel();
-        widgetPane.add(buttonsPane);
+		// Create buttons panel.
+		JPanel buttonsPane = new JPanel();
+		widgetPane.add(buttonsPane);
 
-        // Create rotate clockwise button.
-        JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon("Clockwise"));
-        rotateClockwiseButton.setToolTipText("Rotate map clockwise");
-        rotateClockwiseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                mapPane.setRotation(mapPane.getRotation() + ROTATION_CHANGE);
-            }
-        });
-        buttonsPane.add(rotateClockwiseButton);
+		// Create rotate clockwise button.
+		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("SettlementWindow.img.clockwise"))); //$NON-NLS-1$
+		rotateClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.clockwise")); //$NON-NLS-1$
+		rotateClockwiseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				mapPane.setRotation(mapPane.getRotation() + ROTATION_CHANGE);
+			}
+		});
+		buttonsPane.add(rotateClockwiseButton);
 
-        // Create rotate counter-clockwise button.
-        JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon("CounterClockwise"));
-        rotateCounterClockwiseButton.setToolTipText("Rotate map counter-clockwise");
-        rotateCounterClockwiseButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
-            }
-        });
-        buttonsPane.add(rotateCounterClockwiseButton);
+		// Create rotate counter-clockwise button.
+		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("SettlementWindow.img.counterClockwise"))); //$NON-NLS-1$
+		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.counterClockwise")); //$NON-NLS-1$
+		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				mapPane.setRotation(mapPane.getRotation() - ROTATION_CHANGE);
+			}
+		});
+		buttonsPane.add(rotateCounterClockwiseButton);
 
-        // Create recenter button.
-        JButton recenterButton = new JButton("Recenter");
-        recenterButton.setToolTipText("Recenter view to center, normal zoom");
-        recenterButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                mapPane.reCenter();
-                zoomSlider.setValue(0);
-            }
-        });
-        buttonsPane.add(recenterButton);
+		// Create recenter button.
+		JButton recenterButton = new JButton(Msg.getString("SettlementWindow.button.recenter")); //$NON-NLS-1$
+		recenterButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.recenter")); //$NON-NLS-1$
+		recenterButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				mapPane.reCenter();
+				zoomSlider.setValue(0);
+			}
+		});
+		buttonsPane.add(recenterButton);
 
-        // Create labels button.
-        JButton labelsButton = new JButton("Labels \u25BC");
-        labelsButton.setToolTipText("Add/remove label overlays");
-        labelsButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                JButton button = (JButton) evt.getSource();
-                if (labelsMenu == null) {
-                    labelsMenu = createLabelsMenu();
-                }
-                labelsMenu.show(button, 0, button.getHeight());
-            }
-        });
-        buttonsPane.add(labelsButton);
+		// Create labels button.
+		JButton labelsButton = new JButton(Msg.getString("SettlementWindow.button.labels")); //$NON-NLS-1$
+		labelsButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.labels")); //$NON-NLS-1$
+		labelsButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				JButton button = (JButton) evt.getSource();
+				if (labelsMenu == null) {
+					labelsMenu = createLabelsMenu();
+				}
+				labelsMenu.show(button, 0, button.getHeight());
+			}
+		});
+		buttonsPane.add(labelsButton);
 
-        // Create open info button.
-        JButton openInfoButton = new JButton("Open Info");
-        openInfoButton.setToolTipText("Opens the Settlement Info Window");
-        openInfoButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent evt) {
-                Settlement settlement = mapPane.getSettlement();
-                if (settlement != null) {
-                    getDesktop().openUnitWindow(settlement, false);
-                }
-            }
-        });
-        buttonsPane.add(openInfoButton);
+		// Create open info button.
+		JButton openInfoButton = new JButton(Msg.getString("SettlementWindow.button.info")); //$NON-NLS-1$
+		openInfoButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.info")); //$NON-NLS-1$
+		openInfoButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				Settlement settlement = mapPane.getSettlement();
+				if (settlement != null) {
+					getDesktop().openUnitWindow(settlement, false);
+				}
+			}
+		});
+		buttonsPane.add(openInfoButton);
 
-        // Pack window.
-        pack();
-    }
+		// Pack window.
+		pack();
+	}
 
-    /**
-     * Create the labels popup menu.
-     * @return popup menu.
-     */
-    private JPopupMenu createLabelsMenu() {
-        JPopupMenu result = new JPopupMenu("Label Display Options:");
+	/**
+	 * Create the labels popup menu.
+	 * @return popup menu.
+	 */
+	private JPopupMenu createLabelsMenu() {
+		JPopupMenu result = new JPopupMenu(Msg.getString("SettlementWindow.menu.labelOptions")); //$NON-NLS-1$
 
-        // Create building label menu item.
-        JCheckBoxMenuItem buildingLabelMenuItem = new JCheckBoxMenuItem(
-                "Buildings", getMapPanel().isShowBuildingLabels());
-        buildingLabelMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                getMapPanel().setShowBuildingLabels(!getMapPanel().isShowBuildingLabels());
-            }
-        });
-        result.add(buildingLabelMenuItem);
+		// Create building label menu item.
+		JCheckBoxMenuItem buildingLabelMenuItem = new JCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.buildings"), getMapPanel().isShowBuildingLabels()); //$NON-NLS-1$
+		buildingLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				getMapPanel().setShowBuildingLabels(!getMapPanel().isShowBuildingLabels());
+			}
+		});
+		result.add(buildingLabelMenuItem);
 
-        // Create construction/salvage label menu item.
-        JCheckBoxMenuItem constructionLabelMenuItem = new JCheckBoxMenuItem(
-                "Construction Sites", getMapPanel().isShowConstructionLabels());
-        constructionLabelMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                getMapPanel().setShowConstructionLabels(!getMapPanel().isShowConstructionLabels());
-            }
-        });
-        result.add(constructionLabelMenuItem);
+		// Create construction/salvage label menu item.
+		JCheckBoxMenuItem constructionLabelMenuItem = new JCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.constructionSites"), getMapPanel().isShowConstructionLabels()); //$NON-NLS-1$
+		constructionLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				getMapPanel().setShowConstructionLabels(!getMapPanel().isShowConstructionLabels());
+			}
+		});
+		result.add(constructionLabelMenuItem);
 
-        // Create vehicle label menu item.
-        JCheckBoxMenuItem vehicleLabelMenuItem = new JCheckBoxMenuItem(
-                "Vehicles", getMapPanel().isShowVehicleLabels());
-        vehicleLabelMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                getMapPanel().setShowVehicleLabels(!getMapPanel().isShowVehicleLabels());
-            }
-        });
-        result.add(vehicleLabelMenuItem);
+		// Create vehicle label menu item.
+		JCheckBoxMenuItem vehicleLabelMenuItem = new JCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.vehicles"), getMapPanel().isShowVehicleLabels()); //$NON-NLS-1$
+		vehicleLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				getMapPanel().setShowVehicleLabels(!getMapPanel().isShowVehicleLabels());
+			}
+		});
+		result.add(vehicleLabelMenuItem);
 
-        // Create person label menu item.
-        JCheckBoxMenuItem personLabelMenuItem = new JCheckBoxMenuItem(
-                "People", getMapPanel().isShowPersonLabels());
-        personLabelMenuItem.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                getMapPanel().setShowPersonLabels(!getMapPanel().isShowPersonLabels());
-            }
-        });
-        result.add(personLabelMenuItem);
+		// Create person label menu item.
+		JCheckBoxMenuItem personLabelMenuItem = new JCheckBoxMenuItem(
+				Msg.getString("SettlementWindow.menu.people"), getMapPanel().isShowPersonLabels()); //$NON-NLS-1$
+		personLabelMenuItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				getMapPanel().setShowPersonLabels(!getMapPanel().isShowPersonLabels());
+			}
+		});
+		result.add(personLabelMenuItem);
 
-        result.pack();
+		result.pack();
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Gets the settlement map panel.
-     * @return the settlement map panel.
-     */
-    private SettlementMapPanel getMapPanel() {
-        return mapPane;
-    }
+	/**
+	 * Gets the settlement map panel.
+	 * @return the settlement map panel.
+	 */
+	private SettlementMapPanel getMapPanel() {
+		return mapPane;
+	}
 
-    /**
-     * Gets the main desktop panel for this tool.
-     * @return main desktop panel.
-     */
-    private MainDesktopPane getDesktop() {
-        return desktop;
-    }
+	/**
+	 * Gets the main desktop panel for this tool.
+	 * @return main desktop panel.
+	 */
+	private MainDesktopPane getDesktop() {
+		return desktop;
+	}
 
-    @Override
-    public void destroy() {
-        settlementCBModel.destroy();
-        mapPane.destroy();
-    }
+	@Override
+	public void destroy() {
+		settlementCBModel.destroy();
+		mapPane.destroy();
+	}
 
-    /**
-     * Inner class combo box model for settlements.
-     */
-    private class SettlementComboBoxModel extends DefaultComboBoxModel implements UnitManagerListener {
+	/**
+	 * Inner class combo box model for settlements.
+	 */
+	private class SettlementComboBoxModel
+	extends DefaultComboBoxModel<Object>
+	implements UnitManagerListener {
 
-        /**
-         * Constructor.
-         */
-        public SettlementComboBoxModel() {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 
-            // User DefaultComboBoxModel constructor.
-            super();
+		/**
+		 * Constructor.
+		 */
+		public SettlementComboBoxModel() {
 
-            // Initialize settlement list.
-            updateSettlements();
+			// User DefaultComboBoxModel constructor.
+			super();
 
-            // Add this as a unit manager listener.
-            UnitManager unitManager = Simulation.instance().getUnitManager();
-            unitManager.addUnitManagerListener(this);
-        }
+			// Initialize settlement list.
+			updateSettlements();
 
-        /**
-         * Update the list of settlements.
-         */
-        private void updateSettlements() {
+			// Add this as a unit manager listener.
+			UnitManager unitManager = Simulation.instance().getUnitManager();
+			unitManager.addUnitManagerListener(this);
+		}
 
-            Settlement selectedSettlement = (Settlement) getSelectedItem();
+		/**
+		 * Update the list of settlements.
+		 */
+		private void updateSettlements() {
 
-            removeAllElements();
+			Settlement selectedSettlement = (Settlement) getSelectedItem();
 
-            UnitManager unitManager = Simulation.instance().getUnitManager();
-            List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
-            Collections.sort(settlements);
+			removeAllElements();
 
-            Iterator<Settlement> i = settlements.iterator();
-            while (i.hasNext()) {
-                addElement(i.next());
-            }
+			UnitManager unitManager = Simulation.instance().getUnitManager();
+			List<Settlement> settlements = new ArrayList<Settlement>(unitManager.getSettlements());
+			Collections.sort(settlements);
 
-            if (selectedSettlement != null) {
-                setSelectedItem(selectedSettlement);
-            }
-        }
+			Iterator<Settlement> i = settlements.iterator();
+			while (i.hasNext()) {
+				addElement(i.next());
+			}
 
-        @Override
-        public void unitManagerUpdate(UnitManagerEvent event) {
-            if (event.getUnit() instanceof Settlement) {
-                updateSettlements();
-            }
-        }
+			if (selectedSettlement != null) {
+				setSelectedItem(selectedSettlement);
+			}
+		}
 
-        /**
-         * Prepare class for deletion.
-         */
-        public void destroy() {
-            removeAllElements();
-            UnitManager unitManager = Simulation.instance().getUnitManager();
-            unitManager.removeUnitManagerListener(this);
-        }
-    }
+		@Override
+		public void unitManagerUpdate(UnitManagerEvent event) {
+			if (event.getUnit() instanceof Settlement) {
+				updateSettlements();
+			}
+		}
+
+		/**
+		 * Prepare class for deletion.
+		 */
+		public void destroy() {
+			removeAllElements();
+			UnitManager unitManager = Simulation.instance().getUnitManager();
+			unitManager.removeUnitManagerListener(this);
+		}
+	}
 }
