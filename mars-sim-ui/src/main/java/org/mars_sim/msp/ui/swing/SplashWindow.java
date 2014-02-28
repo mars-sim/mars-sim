@@ -4,13 +4,18 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
 
-import org.mars_sim.msp.core.RandomUtil;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+
+import org.mars_sim.msp.core.RandomUtil;
 
 /**
  * The SplashWindow class is a splash screen shown when the project
@@ -18,66 +23,66 @@ import java.awt.*;
  */
 public class SplashWindow {
 
-//    private Window window;
-    private JFrame window;
+//	private Window window;
+	private JFrame window;
 
-    // Constant data member
-    private static String[] IMAGE_NAMES = {"SplashImage.png", "SplashImage2.jpg", "SplashImage3.jpg"};
+	// Constant data member
+	private static String[] IMAGE_NAMES = {"SplashImage.png", "SplashImage2.jpg", "SplashImage3.jpg"};
 
-    private Image splashImage;
-    private int width;
-    private int height;
+	private Image splashImage;
+	private int width;
+	private int height;
 
-    public SplashWindow() {
-        window = new JFrame() {
-            @Override
-            public void paint(Graphics g) {
-//                window.paint(g);
+	public SplashWindow() {
+		window = new JFrame() {
+			@Override
+			public void paint(Graphics g) {
+//				window.paint(g);
 
-                // Draw splash image
-                g.drawImage(splashImage, 0, 0, this);
-            }
-        };
-//        super(new Frame());
+				// Draw splash image
+				g.drawImage(splashImage, 0, 0, this);
+			}
+		};
+//		super(new Frame());
 
-        String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
-        splashImage = ImageLoader.getImage(imageName);
-        ImageIcon splashIcon = new ImageIcon(splashImage);
-        width = splashIcon.getIconWidth();
-        height = splashIcon.getIconHeight();
-        window.setSize(width, height);
+		String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
+		splashImage = ImageLoader.getImage(imageName);
+		ImageIcon splashIcon = new ImageIcon(splashImage);
+		width = splashIcon.getIconWidth();
+		height = splashIcon.getIconHeight();
+		window.setSize(width, height);
 
-        // Center the splash window on the screen.
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-        Dimension windowSize = new Dimension(width, height);
-        window.setLocation(((screenSize.width - windowSize.width) / 2),
-                ((screenSize.height - windowSize.height) / 2));
+		// Center the splash window on the screen.
+		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		Dimension windowSize = new Dimension(width, height);
+		window.setLocation(
+			((screenSize.width - windowSize.width) / 2),
+			((screenSize.height - windowSize.height) / 2)
+		);
 
-        window.setBackground(Color.black);
+		window.setBackground(Color.black);
 
-        window.setUndecorated(true);
-        // Display the splash window.
-        window.setVisible(true);
-    }
+		window.setUndecorated(true);
+		// Display the splash window.
+		window.setVisible(true);
+	}
 
-    public void show()
-    {
-        window.setVisible(true);
-    }
+	public void show() {
+		window.setVisible(true);
+	}
 
-    public void hide()
-    {
-        window.dispose();
-    }
+	public void hide() {
+		window.dispose();
+	}
 
-    public JFrame getJFrame() {
-        return window;
-    }
+	public JFrame getJFrame() {
+		return window;
+	}
 
-    //    public void paint(Graphics g) {
-//        window.paint(g);
+//	public void paint(Graphics g) {
+//		window.paint(g);
 //
-//        // Draw splash image
-//        g.drawImage(splashImage, 0, 0, this);
-//    }
+//		// Draw splash image
+//		g.drawImage(splashImage, 0, 0, this);
+//	}
 }
