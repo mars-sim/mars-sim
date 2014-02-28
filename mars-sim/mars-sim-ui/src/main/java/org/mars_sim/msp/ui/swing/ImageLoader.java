@@ -57,10 +57,16 @@ public class ImageLoader {
      * @return ImageIcon containing image of specified name.
      */
     public static ImageIcon getIcon(String imagename, String ext) {
-        String fullImageName = imagename + "." + ext;
+        String fullImageName = imagename.endsWith(ext) ?
+        	imagename :
+        	imagename + "." + ext
+        ;
         ImageIcon found = iconCache.get(fullImageName);
         if (found == null) {
-            String fileName = IMAGE_DIR + fullImageName;
+            String fileName = fullImageName.startsWith("/") ?
+            	fullImageName :
+            	IMAGE_DIR + fullImageName
+            ;
             /* [landrus, 26.11.09]: don't use the system classloader in a webstart env. */
             URL resource = ImageLoader.class.getResource(fileName);//ClassLoader.getSystemResource(fileName);
 

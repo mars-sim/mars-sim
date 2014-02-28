@@ -87,55 +87,55 @@ implements ActionListener, MenuListener {
 		this.mainWindow = mainWindow;
 
 		// Create file menu
-		JMenu fileMenu = new JMenu(Msg.getString("MainWindowMenu.file")); //$NON-NLS-1$
+		JMenu fileMenu = new JMenu(Msg.getString("mainMenu.file")); //$NON-NLS-1$
 		add(fileMenu);
 
 		// Create new menu item
 		ImageIcon newicon = new ImageIcon(getClass().getResource(Msg.getString("img.new"))); //$NON-NLS-1$
-		newItem = new JMenuItem(Msg.getString("MainWindowMenu.new"), newicon); //$NON-NLS-1$
+		newItem = new JMenuItem(Msg.getString("mainMenu.new"), newicon); //$NON-NLS-1$
 		newItem.addActionListener(this);
 		newItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK, false));
-		newItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.new")); //$NON-NLS-1$
+		newItem.setToolTipText(Msg.getString("mainMenu.tooltip.new")); //$NON-NLS-1$
 		fileMenu.add(newItem);
 
 		// Create load menu item
 		ImageIcon loadicon = new ImageIcon(getClass().getResource(Msg.getString("img.open"))); //$NON-NLS-1$
-		loadItem = new JMenuItem(Msg.getString("MainWindowMenu.open"),loadicon); //$NON-NLS-1$
+		loadItem = new JMenuItem(Msg.getString("mainMenu.open"),loadicon); //$NON-NLS-1$
 		loadItem.addActionListener(this);
 		loadItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK, false));
-		loadItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.open")); //$NON-NLS-1$
+		loadItem.setToolTipText(Msg.getString("mainMenu.tooltip.open")); //$NON-NLS-1$
 		fileMenu.add(loadItem);
 
 		fileMenu.add(new JSeparator());
 
 		// Create save menu item
 		ImageIcon saveicon = new ImageIcon(getClass().getResource(Msg.getString("img.save"))); //$NON-NLS-1$
-		saveItem = new JMenuItem(Msg.getString("MainWindowMenu.save"), saveicon); //$NON-NLS-1$
+		saveItem = new JMenuItem(Msg.getString("mainMenu.save"), saveicon); //$NON-NLS-1$
 		saveItem.addActionListener(this);
 		saveItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK, false));
-		saveItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.save")); //$NON-NLS-1$
+		saveItem.setToolTipText(Msg.getString("mainMenu.tooltip.save")); //$NON-NLS-1$
 		fileMenu.add(saveItem);
 
 		// Create save as menu item
 		ImageIcon saveasicon = new ImageIcon(getClass().getResource(Msg.getString("img.saveAs"))); //$NON-NLS-1$
-		saveAsItem = new JMenuItem(Msg.getString("MainWindowMenu.saveAs"), saveasicon); //$NON-NLS-1$
+		saveAsItem = new JMenuItem(Msg.getString("mainMenu.saveAs"), saveasicon); //$NON-NLS-1$
 		saveAsItem.addActionListener(this);
 		saveAsItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.SHIFT_DOWN_MASK | KeyEvent.CTRL_DOWN_MASK, false));
-		saveAsItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.saveAs")); //$NON-NLS-1$
+		saveAsItem.setToolTipText(Msg.getString("mainMenu.tooltip.saveAs")); //$NON-NLS-1$
 		fileMenu.add(saveAsItem);
 
 		fileMenu.add(new JSeparator());
 
 		// Create exit menu item
 		ImageIcon exiticon = new ImageIcon(getClass().getResource(Msg.getString("img.exit"))); //$NON-NLS-1$
-		exitItem = new JMenuItem(Msg.getString("MainWindowMenu.exit"), exiticon); //$NON-NLS-1$
+		exitItem = new JMenuItem(Msg.getString("mainMenu.exit"), exiticon); //$NON-NLS-1$
 		exitItem.addActionListener(this);
 		exitItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, KeyEvent.CTRL_DOWN_MASK, false));
-		exitItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.exit")); //$NON-NLS-1$
+		exitItem.setToolTipText(Msg.getString("mainMenu.tooltip.exit")); //$NON-NLS-1$
 		fileMenu.add(exitItem);
 
 		// Create tools menu
-		JMenu toolsMenu = new JMenu(Msg.getString("MainWindowMenu.tools")); //$NON-NLS-1$
+		JMenu toolsMenu = new JMenu(Msg.getString("mainMenu.tools")); //$NON-NLS-1$
 		toolsMenu.addMenuListener(this);
 		add(toolsMenu);
 
@@ -203,31 +203,31 @@ implements ActionListener, MenuListener {
 		toolsMenu.add(resupplyToolItem);
 
 		// Create help menu
-		JMenu helpMenu = new JMenu(Msg.getString("MainWindowMenu.help")); //$NON-NLS-1$
+		JMenu helpMenu = new JMenu(Msg.getString("mainMenu.help")); //$NON-NLS-1$
 		helpMenu.addMenuListener(this);
 		add(helpMenu);
 
 		// Create About Mars Simulation Project menu item
-		aboutMspItem = new JMenuItem(Msg.getString("MainWindowMenu.about")); //$NON-NLS-1$
+		aboutMspItem = new JMenuItem(Msg.getString("mainMenu.about")); //$NON-NLS-1$
 		aboutMspItem.addActionListener(this);
-		aboutMspItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.about")); //$NON-NLS-1$
+		aboutMspItem.setToolTipText(Msg.getString("mainMenu.tooltip.about")); //$NON-NLS-1$
 		helpMenu.add(aboutMspItem);
 
 		helpMenu.add(new JSeparator());
 
 		// Create Tutorial menu item
-		tutorialItem = new JMenuItem(Msg.getString("MainWindowMenu.tutorial")); //$NON-NLS-1$
+		tutorialItem = new JMenuItem(Msg.getString("mainMenu.tutorial")); //$NON-NLS-1$
 		tutorialItem.addActionListener(this);
 		tutorialItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK, false));
-		tutorialItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.tutorial")); //$NON-NLS-1$
+		tutorialItem.setToolTipText(Msg.getString("mainMenu.tooltip.tutorial")); //$NON-NLS-1$
 		helpMenu.add(tutorialItem);
 
 		// Create User Guide menu item
 		ImageIcon guideicon = new ImageIcon(getClass().getResource(Msg.getString("img.guide"))); //$NON-NLS-1$
-		guideItem = new JMenuItem(Msg.getString("MainWindowMenu.guide"), guideicon); //$NON-NLS-1$
+		guideItem = new JMenuItem(Msg.getString("mainMenu.guide"), guideicon); //$NON-NLS-1$
 		guideItem.addActionListener(this);
 		guideItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, KeyEvent.CTRL_DOWN_MASK, false));
-		guideItem.setToolTipText(Msg.getString("MainWindowMenu.tooltip.guide")); //$NON-NLS-1$
+		guideItem.setToolTipText(Msg.getString("mainMenu.tooltip.guide")); //$NON-NLS-1$
 		helpMenu.add(guideItem);
 	}
 

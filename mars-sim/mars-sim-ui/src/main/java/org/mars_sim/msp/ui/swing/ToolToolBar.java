@@ -4,8 +4,14 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Vector;
+
+import javax.swing.JToolBar;
+import javax.swing.border.BevelBorder;
 
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
@@ -18,28 +24,26 @@ import org.mars_sim.msp.ui.swing.tool.search.SearchWindow;
 import org.mars_sim.msp.ui.swing.tool.settlement.SettlementWindow;
 import org.mars_sim.msp.ui.swing.tool.time.TimeWindow;
 
-import javax.swing.*;
-import javax.swing.border.BevelBorder;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.Vector;
-
 /**
- * The ToolToolBar class is a UI toolbar for holding tool buttons. The should
- * only be one instance and is contained in the MainWindow instance.
+ * The ToolToolBar class is a UI toolbar for holding tool buttons. There should
+ * only be one instance and it is contained in the {@link MainWindow} instance.
  */
-public class ToolToolBar extends JToolBar implements ActionListener {
+public class ToolToolBar
+extends JToolBar
+implements ActionListener {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private Vector<ToolButton> toolButtons; // List of tool buttons
-	private MainWindow parentMainWindow; // Main window that contains this
-											// toolbar.
+	/** List of tool buttons. */
+	private Vector<ToolButton> toolButtons;
+	/** Main window that contains this toolbar. */
+	private MainWindow parentMainWindow;
 
 	/**
 	 * Constructs a ToolToolBar object
-	 * 
-	 * @param parentMainWindow
-	 *            the main window pane
+	 * @param parentMainWindow the main window pane
 	 */
 	public ToolToolBar(MainWindow parentMainWindow) {
 
@@ -51,7 +55,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		this.parentMainWindow = parentMainWindow;
 
 		// Set name
-		setName("Tool Toolbar");
+		setName(Msg.getString("ToolToolBar.toolbar")); //$NON-NLS-1$
 
 		// Fix tool bar
 		setFloatable(false);
@@ -67,7 +71,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	private void prepareToolButtons() {
 
 		// Add utilise buttons
-		ToolButton newButton = new ToolButton("New", "New");
+		ToolButton newButton = new ToolButton(Msg.getString("mainMenu.new"), Msg.getString("img.new")); //$NON-NLS-1$ //$NON-NLS-2$
 		newButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.newSimulation();
@@ -75,7 +79,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(newButton);
 
-		ToolButton openButton = new ToolButton("Open...", "Open");
+		ToolButton openButton = new ToolButton(Msg.getString("mainMenu.open"), Msg.getString("img.open")); //$NON-NLS-1$ //$NON-NLS-2$
 		openButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.loadSimulation();
@@ -83,7 +87,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(openButton);
 
-		ToolButton saveButton = new ToolButton("Save", "Save");
+		ToolButton saveButton = new ToolButton(Msg.getString("mainMenu.save"), Msg.getString("img.save")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.saveSimulation(true);
@@ -91,7 +95,7 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(saveButton);
 
-		ToolButton saveAsButton = new ToolButton("Save As...", "SaveAs");
+		ToolButton saveAsButton = new ToolButton(Msg.getString("mainMenu.saveAs"), Msg.getString("img.saveAs")); //$NON-NLS-1$ //$NON-NLS-2$
 		saveAsButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.saveSimulation(false);
@@ -99,75 +103,77 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 		});
 		add(saveAsButton);
 
-		ToolButton exitButton = new ToolButton("Exit", "Exit");
+		ToolButton exitButton = new ToolButton(Msg.getString("mainMenu.exit"), Msg.getString("img.exit")); //$NON-NLS-1$ //$NON-NLS-2$
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				parentMainWindow.exitSimulation();
 			};
 		});
 		add(exitButton);
-		
+
 		addSeparator();
 
 		// Add Mars navigator button
-		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, "Planet");
+		ToolButton navButton = new ToolButton(NavigatorWindow.NAME, Msg.getString("img.planet")); //$NON-NLS-1$
 		navButton.addActionListener(this);
 		add(navButton);
 		toolButtons.addElement(navButton);
 
 		// Add search tool button
-		ToolButton searchButton = new ToolButton(SearchWindow.NAME, "Find");
+		ToolButton searchButton = new ToolButton(SearchWindow.NAME, Msg.getString("img.find")); //$NON-NLS-1$
 		searchButton.addActionListener(this);
 		add(searchButton);
 		toolButtons.addElement(searchButton);
 
 		// Add time tool button
-		ToolButton timeButton = new ToolButton(TimeWindow.NAME, "Time");
+		ToolButton timeButton = new ToolButton(TimeWindow.NAME, Msg.getString("img.time")); //$NON-NLS-1$
 		timeButton.addActionListener(this);
 		add(timeButton);
 		toolButtons.addElement(timeButton);
 
 		// Add monitor tool button
-		ToolButton monitorButton = new ToolButton(MonitorWindow.NAME, "Monitor");
+		ToolButton monitorButton = new ToolButton(MonitorWindow.NAME, Msg.getString("img.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		add(monitorButton);
 		toolButtons.addElement(monitorButton);
 
 		// Add prefs tool button
-		ToolButton prefsButton = new ToolButton(PreferencesWindow.NAME,
-				"Preferences");
+		ToolButton prefsButton = new ToolButton(
+			PreferencesWindow.NAME,
+			Msg.getString("img.preferences") //$NON-NLS-1$
+		);
 		prefsButton.addActionListener(this);
 		add(prefsButton);
 		toolButtons.addElement(prefsButton);
 
 		// Add mission tool button
-		ToolButton missionButton = new ToolButton(MissionWindow.NAME, "Mission");
+		ToolButton missionButton = new ToolButton(MissionWindow.NAME, Msg.getString("img.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 		add(missionButton);
 		toolButtons.addElement(missionButton);
 
 		// Add settlement tool button
-		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, "SettlementMapTool");
+		ToolButton settlementButton = new ToolButton(SettlementWindow.NAME, Msg.getString("img.settlementMapTool")); //$NON-NLS-1$
 		settlementButton.addActionListener(this);
 		add(settlementButton);
 		toolButtons.addElement(settlementButton);
 
 		// Add science tool button
-		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, "Science");
+		ToolButton scienceButton = new ToolButton(ScienceWindow.NAME, Msg.getString("img.science")); //$NON-NLS-1$
 		scienceButton.addActionListener(this);
 		add(scienceButton);
 		toolButtons.addElement(scienceButton);
 
 		// Add resupply tool button
-		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, "Resupply");
+		ToolButton resupplyButton = new ToolButton(ResupplyWindow.NAME, Msg.getString("img.resupply")); //$NON-NLS-1$
 		resupplyButton.addActionListener(this);
 		add(resupplyButton);
 		toolButtons.addElement(resupplyButton);
-				
+
 		addSeparator();
 
 		// Add guide button
-		ToolButton guideButton = new ToolButton(GuideWindow.NAME, "Guide");
+		ToolButton guideButton = new ToolButton(GuideWindow.NAME, Msg.getString("img.guide")); //$NON-NLS-1$
 		guideButton.addActionListener(this);
 		add(guideButton);
 		toolButtons.addElement(guideButton);
@@ -175,10 +181,11 @@ public class ToolToolBar extends JToolBar implements ActionListener {
 	}
 
 	/** ActionListener method overriden */
+	@Override
 	public void actionPerformed(ActionEvent event) {
-
 		// show tool window on desktop
 		parentMainWindow.getDesktop().openToolWindow(
-				((ToolButton) event.getSource()).getToolName());
+			((ToolButton) event.getSource()).getToolName()
+		);
 	}
 }
