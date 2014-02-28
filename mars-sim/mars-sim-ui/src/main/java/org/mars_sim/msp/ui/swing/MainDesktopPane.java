@@ -154,7 +154,7 @@ implements ComponentListener {
 		// The size of the background tile cannot be determined during construction
 		// since it requires the MainDesktopPane be displayed first.
 		if (firstDisplay) {
-			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("MainDesktopPane.img.background")); //$NON-NLS-1$
+			ImageIcon baseImageIcon = ImageLoader.getIcon(Msg.getString("img.background")); //$NON-NLS-1$
 			Dimension screen_size =
 				Toolkit.getDefaultToolkit().getScreenSize();
 			Image backgroundImage =
