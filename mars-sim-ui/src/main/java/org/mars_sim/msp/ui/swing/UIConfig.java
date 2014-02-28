@@ -4,8 +4,23 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
+
+import java.awt.Dimension;
+import java.awt.Point;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.JInternalFrame;
 
 import org.apache.commons.io.IOUtils;
 import org.jdom.DocType;
@@ -19,37 +34,31 @@ import org.mars_sim.msp.ui.swing.sound.AudioPlayer;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.unit_window.UnitWindow;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /**
  * Static class for saving/loading user interface configuration data.
  */
 public class UIConfig {
 
-    private static String CLASS_NAME = "org.mars_sim.msp.ui.standard.UIConfig";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(UIConfig.class.getName());
 
-    private static Logger logger = Logger.getLogger(CLASS_NAME);
+	/** Singleton instance. */
+	public static final UIConfig INSTANCE = new UIConfig();
 
-    // Singleton instance.
-    public static final UIConfig INSTANCE = new UIConfig();
+	/** Internal window types. */
+	public static final String TOOL = "tool";
 
-    // Internal window types.
-    public static final String TOOL = "tool";
+	public static final String UNIT = "unit";
 
-    public static final String UNIT = "unit";
+	/** Config filename. */
+	private static final String DIRECTORY =
+		System.getProperty("user.home") +
+		File.separator + ".mars-sim" +
+		File.separator + "saved"
+	;
 
-    // Config filename.
-    private static final String DIRECTORY = System.getProperty("user.home") + File.separator + ".mars-sim" +
-    	File.separator + "saved";
+	private static final String FILE_NAME = "ui_settings.xml";
 
-    private static final String FILE_NAME = "ui_settings.xml";
-    
     private static final String FILE_NAME_DTD = "ui_settings.dtd";
  
     // UI config elements and attributes.
@@ -104,7 +113,6 @@ public class UIConfig {
 
     /**
      * Creates an XML document for the UI configuration and saves it to a file.
-     * 
      * @param window the main window.
      */
     public void saveFile(MainWindow window) {

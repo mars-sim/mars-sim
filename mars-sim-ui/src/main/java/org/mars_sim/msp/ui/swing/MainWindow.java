@@ -187,7 +187,7 @@ public class MainWindow {
 		JFileChooser chooser = new JFileChooser(Simulation.DEFAULT_DIR);
 		chooser.setDialogTitle(Msg.getString("MainWindow.dialogLoadSim")); //$NON-NLS-1$
 		if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION) {
-			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadSim")); //$NON-NLS-1$
+			desktop.openAnnouncementWindow(Msg.getString("MainWindow.loadingSim")); //$NON-NLS-1$
 			desktop.clearDesktop();
 			MasterClock clock = Simulation.instance().getMasterClock();
 			clock.loadSimulation(chooser.getSelectedFile());

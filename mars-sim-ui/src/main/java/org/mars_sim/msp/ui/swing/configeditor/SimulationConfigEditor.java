@@ -18,14 +18,21 @@
 
 package org.mars_sim.msp.ui.swing.configeditor;
 
-import org.mars_sim.msp.core.SimulationConfig;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import org.mars_sim.msp.core.SimulationConfig;
 
 /**
  * DOCME: documentation is missing
@@ -35,6 +42,9 @@ import java.lang.reflect.Modifier;
  *
  */
 public class SimulationConfigEditor extends JDialog {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	/* ---------------------------------------------------------------------- *
 	 * Constructors
