@@ -4,81 +4,85 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool;
 
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import javax.swing.JInternalFrame;
 
-import javax.swing.*;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /** 
  * The ToolWindow class is an abstract UI window for a tool.
  * Particular tool windows should be derived from this.
  */
-public abstract class ToolWindow extends JInternalFrame {
+public abstract class ToolWindow
+extends JInternalFrame {
 
-    // Data members
-    protected String name; // The name of the tool the window is for.
-    protected MainDesktopPane desktop; // The main desktop.
-    protected boolean opened;  // True if window is open.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** 
-     * Constructor 
-     *
-     * @param name the name of the tool
-     * @param desktop the main desktop.
-     */
-    public ToolWindow(String name, MainDesktopPane desktop) {
+	// Data members
+    /** The name of the tool the window is for. */
+	protected String name;
+    /** The main desktop. */
+	protected MainDesktopPane desktop;
+    /** True if window is open. */
+	protected boolean opened;
 
-        // use JInternalFrame constructor
-        super(name, 
-              true, // resizable
-              true, // closable
-              false, // maximizable
-              false); // iconifiable
+	/** 
+	 * Constructor .
+	 * @param name the name of the tool
+	 * @param desktop the main desktop.
+	 */
+	public ToolWindow(String name, MainDesktopPane desktop) {
 
-        // Initialize data members
-        this.name = name;
-        this.desktop = desktop;
-        opened = false;
-        
-        // Set internal frame listener
-        addInternalFrameListener(new ToolFrameListener());
-    }
+		// use JInternalFrame constructor
+		super(
+			name, 
+			true, // resizable
+			true, // closable
+			false, // maximizable
+			false // iconifiable
+		);
 
-    /** 
-     * Gets the tool name.
-     *
-     * @return tool name
-     */
-    public String getToolName() {
-        return name;
-    }
+		// Initialize data members
+		this.name = name;
+		this.desktop = desktop;
+		opened = false;
 
-    /** 
-     * Checks if the tool window has previously been opened.
-     *
-     * @return true if tool window has previously been opened.
-     */
-    public boolean wasOpened() {
-        return opened;
-    }
+		// Set internal frame listener
+		addInternalFrameListener(new ToolFrameListener());
+	}
 
-    /** 
-     * Sets if the window has previously been opened.
-     *
-     * @param opened true if previously opened.
-     */
-    public void setWasOpened(boolean opened) {
-        this.opened = opened;
-    }
-    
-    /**
-     * Update window.
-     */
-    public void update() {}
-    
-    /**
+	/** 
+	 * Gets the tool name.
+	 * @return tool name
+	 */
+	public String getToolName() {
+		return name;
+	}
+
+	/** 
+	 * Checks if the tool window has previously been opened.
+	 * @return true if tool window has previously been opened.
+	 */
+	public boolean wasOpened() {
+		return opened;
+	}
+
+	/** 
+	 * Sets if the window has previously been opened.
+	 * @param opened true if previously opened.
+	 */
+	public void setWasOpened(boolean opened) {
+		this.opened = opened;
+	}
+
+	/**
+	 * Update window.
+	 */
+	public void update() {}
+
+	/**
 	 * Prepares tool window for deletion.
 	 */
 	public void destroy() {}

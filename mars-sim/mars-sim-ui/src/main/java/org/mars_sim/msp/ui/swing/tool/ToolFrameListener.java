@@ -4,32 +4,40 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool;
 
-import javax.swing.*;
-import javax.swing.event.InternalFrameAdapter;
-import javax.swing.event.InternalFrameEvent;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.swing.JInternalFrame;
+import javax.swing.event.InternalFrameAdapter;
+import javax.swing.event.InternalFrameEvent;
+
+import org.mars_sim.msp.ui.swing.Msg;
 
 /** 
  * ToolFrameListener manages internal frame behaviors for tool windows.
  */
-public class ToolFrameListener extends InternalFrameAdapter {
-    
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.tool.ToolFrameListener";
-	
-    	private static Logger logger = Logger.getLogger(CLASS_NAME);
+public class ToolFrameListener
+extends InternalFrameAdapter {
 
-    /** open internal frame (overridden) */
-    public void internalFrameOpened(InternalFrameEvent e) {
-        JInternalFrame frame = (JInternalFrame) e.getSource();
-        try { frame.setClosed(false); } 
-        catch (java.beans.PropertyVetoException v) {
-            logger.log(Level.SEVERE,frame.getTitle() + " setClosed() is Vetoed!");
-        }
-    }
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ToolFrameListener.class.getName());
+
+	/** open internal frame (overridden) */
+	@Override
+	public void internalFrameOpened(InternalFrameEvent e) {
+		JInternalFrame frame = (JInternalFrame) e.getSource();
+		try { frame.setClosed(false); } 
+		catch (java.beans.PropertyVetoException v) {
+			logger.log(
+				Level.SEVERE,
+				Msg.getString(
+					"ToolFrameListener.log.veto", //$NON-NLS-1$
+					frame.getTitle()
+				)
+			);
+		}
+	}
 }
 
