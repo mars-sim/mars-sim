@@ -1,15 +1,42 @@
 package org.mars_sim.msp.ui.swing;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
+import java.util.ResourceBundle.Control;
 
+/**
+ * used to get internationizations of strings
+ * and other stuff from {@link ResourceBundle}-
+ * properties-files, like date or decimal formats,
+ * or image-icon-paths (think of red cross vs. crescent)
+ * @author stpa
+ */
 public class Msg {
 
+	/** location of the properties files in the project code base. */
 	private static final String BUNDLE_NAME = "org.mars_sim.msp.ui.swing.messages"; //$NON-NLS-1$
 
-	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
+	/**
+	 * the default resource bundle.<br/>
+	 * while translation is still ongoing, its safer to set a default locale,
+	 * otherwise users with other locales will see partial translations.<br/>
+	 * commas are in front to make it easier to comment those lines out.<br/>
+	 * in order to test translations, change the desired locale, e.g. "de", "eo".
+	 */
+	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(
+		BUNDLE_NAME
+		,new Locale("") //$NON-NLS-1$
+		,new UTF8Control()
+	);
 
 	/** hidden constructor. */
 	private Msg() {
@@ -119,5 +146,45 @@ public class Msg {
 	/** prints an error message to the console. */
 	public static final void handle(Exception e) {
 		System.err.println(e.getMessage());
+	}
+
+	/**
+	 * inner utility class to load properties files in unicode format.
+	 * @author stpa
+	 * @see http://stackoverflow.com/questions/4659929/how-to-use-utf-8-in-resource-properties-with-resourcebundle
+	 */
+	public static class UTF8Control extends Control {
+		@Override
+		public ResourceBundle newBundle
+		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
+				throws IllegalAccessException, InstantiationException, IOException
+				{
+			// The below is a copy of the default implementation.
+			String bundleName = toBundleName(baseName, locale);
+			String resourceName = toResourceName(bundleName, "properties");
+			ResourceBundle bundle = null;
+			InputStream stream = null;
+			if (reload) {
+				URL url = loader.getResource(resourceName);
+				if (url != null) {
+					URLConnection connection = url.openConnection();
+					if (connection != null) {
+						connection.setUseCaches(false);
+						stream = connection.getInputStream();
+					}
+				}
+			} else {
+				stream = loader.getResourceAsStream(resourceName);
+			}
+			if (stream != null) {
+				try {
+					// Only this line is changed to make it to read properties files as UTF-8.
+					bundle = new PropertyResourceBundle(new InputStreamReader(stream, "UTF-8"));
+				} finally {
+					stream.close();
+				}
+			}
+			return bundle;
+				}
 	}
 }
