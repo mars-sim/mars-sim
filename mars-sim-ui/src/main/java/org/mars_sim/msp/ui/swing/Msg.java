@@ -12,6 +12,8 @@ import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.ResourceBundle.Control;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * used to get internationizations of strings
@@ -21,6 +23,9 @@ import java.util.ResourceBundle.Control;
  * @author stpa
  */
 public class Msg {
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Msg.class.getName());
 
 	/** location of the properties files in the project code base. */
 	private static final String BUNDLE_NAME = "org.mars_sim.msp.ui.swing.messages"; //$NON-NLS-1$
@@ -42,11 +47,23 @@ public class Msg {
 	private Msg() {
 	}
 
+	/**
+	 * 
+	 * @param key {@link String} should comply with the format
+	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
+	 * @return {@link String} translation for given key to the current locale.
+	 */
 	public static String getString(String key) {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			return '!' + key + '!';
+			String msg = new StringBuffer()
+			.append("!!") //$NON-NLS-1$
+			.append(key)
+			.append("??") //$NON-NLS-1$
+			.toString();
+			logger.log(Level.WARNING,msg);
+			return msg;
 		}
 	}
 
@@ -60,7 +77,8 @@ public class Msg {
 		final String key,
 		final String param1
 	) {
-		return getString(key).replace("%1",param1);
+		return getString(key)
+		.replace("%1",param1);
 	}
 
 	/**
@@ -76,7 +94,9 @@ public class Msg {
 		final String param1,
 		final String param2
 	) {
-		return getString(key).replace("%1",param1).replace("%2",param2);
+		return getString(key)
+		.replace("%1",param1)
+		.replace("%2",param2);
 	}
 
 	public static boolean getBool(String key) {
@@ -120,9 +140,11 @@ public class Msg {
 		try {
 			String rest = RESOURCE_BUNDLE.getString(key);
 			if (
-				(rest != null) && 
-				(rest.startsWith("(") || rest.startsWith("{")) && 
-				(rest.endsWith(")") || rest.endsWith("}"))
+				rest != null && (
+					rest.startsWith("(") || rest.startsWith("{")
+				) && ( 
+					rest.endsWith(")") || rest.endsWith("}")
+				)
 			) {
 				rest = rest.substring(1,rest.length() - 1);
 				String[] parts = rest.split(",");
@@ -149,16 +171,21 @@ public class Msg {
 	}
 
 	/**
-	 * inner utility class to load properties files in unicode format.
+	 * inner utility class to load properties files in proper unicode format.
 	 * @author stpa
-	 * @see http://stackoverflow.com/questions/4659929/how-to-use-utf-8-in-resource-properties-with-resourcebundle
+	 * @see <a href="http://stackoverflow.com/questions/4659929/how-to-use-utf-8-in-resource-properties-with-resourcebundle">
+	 * Stackoverflow - How to Use UTF-8 in Resource Properties</a>
 	 */
-	public static class UTF8Control extends Control {
+	public static class UTF8Control
+	extends Control {
+
+		/* use utf-8 instead of default encoding to read files. */
 		@Override
-		public ResourceBundle newBundle
-		(String baseName, Locale locale, String format, ClassLoader loader, boolean reload)
-				throws IllegalAccessException, InstantiationException, IOException
-				{
+		public ResourceBundle newBundle (
+			String baseName, Locale locale,
+			String format, ClassLoader loader,
+			boolean reload
+		) throws IllegalAccessException, InstantiationException, IOException {
 			// The below is a copy of the default implementation.
 			String bundleName = toBundleName(baseName, locale);
 			String resourceName = toResourceName(bundleName, "properties");
@@ -185,6 +212,6 @@ public class Msg {
 				}
 			}
 			return bundle;
-				}
+		}
 	}
 }
