@@ -610,12 +610,12 @@ extends JDialog {
 					setError(Msg.getString("TempSimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLatitude = settlement.latitude.trim().toUpperCase();
-					if (!cleanLatitude.endsWith(Msg.getString("northShort")) && !cleanLatitude.endsWith(Msg.getString("southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) && !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(
 								"TempSimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
-								Msg.getString("northShort"), //$NON-NLS-1$
-								Msg.getString("southShort") //$NON-NLS-1$
+								Msg.getString("direction.northShort"), //$NON-NLS-1$
+								Msg.getString("direction.southShort") //$NON-NLS-1$
 							)
 						);
 					}
@@ -638,12 +638,12 @@ extends JDialog {
 					setError(Msg.getString("TempSimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLongitude = settlement.longitude.trim().toUpperCase();
-					if (!cleanLongitude.endsWith(Msg.getString("westShort")) && !cleanLongitude.endsWith(Msg.getString("eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) && !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(
 								"TempSimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
-								Msg.getString("eastShort"),
-								Msg.getString("westShort")
+								Msg.getString("direction.eastShort"),
+								Msg.getString("direction.westShort")
 							)
 						);
 					} else {
