@@ -201,7 +201,7 @@ public class SettlementWindow extends ToolWindow {
 		widgetPane.add(buttonsPane);
 
 		// Create rotate clockwise button.
-		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("SettlementWindow.img.clockwise"))); //$NON-NLS-1$
+		JButton rotateClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.clockwise"))); //$NON-NLS-1$
 		rotateClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.clockwise")); //$NON-NLS-1$
 		rotateClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -211,7 +211,7 @@ public class SettlementWindow extends ToolWindow {
 		buttonsPane.add(rotateClockwiseButton);
 
 		// Create rotate counter-clockwise button.
-		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("SettlementWindow.img.counterClockwise"))); //$NON-NLS-1$
+		JButton rotateCounterClockwiseButton = new JButton(ImageLoader.getIcon(Msg.getString("img.counterClockwise"))); //$NON-NLS-1$
 		rotateCounterClockwiseButton.setToolTipText(Msg.getString("SettlementWindow.tooltip.counterClockwise")); //$NON-NLS-1$
 		rotateCounterClockwiseButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
