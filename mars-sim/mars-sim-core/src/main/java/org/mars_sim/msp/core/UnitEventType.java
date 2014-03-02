@@ -86,6 +86,7 @@ public enum UnitEventType {
 	}
 
 	public String getName() {
+		// TODO change all names to i18n-keys for accessing messages.properties
 		return this.name;
 	}
 }
