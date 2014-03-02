@@ -37,24 +37,21 @@ import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleConfig;
 
-/** The UnitManager class contains and manages all units in virtual
- *  Mars. It has methods for getting information about units. It is
- *  also responsible for creating all units on its construction.
- *  There should be only one instance of this class and it should be
- *  constructed and owned by the virtual Mars object.
+/**
+ * The UnitManager class contains and manages all units in virtual
+ * Mars. It has methods for getting information about units. It is
+ * also responsible for creating all units on its construction.
+ * There should be only one instance of this class and it should be
+ * constructed and owned by the virtual Mars object.
  */
-public class UnitManager implements Serializable {
+public class UnitManager
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(UnitManager.class.getName());
-
-	// Static Data Members
-	public static final String SETTLEMENT = "settlement";
-	public static final String PERSON = "person";
-	public static final String VEHICLE = "vehicle";
-	public static final String EQUIPMENT = "equipment";
 
 	// Data members
 	/** Collection of all units. */
@@ -190,26 +187,26 @@ public class UnitManager implements Serializable {
 
 	/**
 	 * Gets a new name for a unit.
-	 * @param unitType the type of unit.
+	 * @param unitType {@link UnitType} the type of unit.
 	 * @param baseName the base name or null if none.
 	 * @param gender the gender of the person or null if not a person.
 	 * @return new name
 	 * @throws IllegalArgumentException if unitType is not valid.
 	 */
-	public String getNewName(String unitType, String baseName, String gender) {
+	public String getNewName(UnitType unitType, String baseName, String gender) {
 
 		List<String> initialNameList = null;
 		List<String> usedNames = new ArrayList<String>();
 		String unitName = "";
 
-		if (unitType.equals(SETTLEMENT)) {
+		if (unitType == UnitType.SETTLEMENT) {
 			initialNameList = settlementNames;
 			Iterator<Settlement> si = getSettlements().iterator();
 			while (si.hasNext()) {
 				usedNames.add(si.next().getName());
 			}
 			unitName = "Settlement";
-		} else if (unitType.equals(VEHICLE)) {
+		} else if (unitType == UnitType.VEHICLE) {
 			if (baseName != null) {
 				int number = 1;
 				if (vehicleNumberMap.containsKey(baseName)) {
@@ -225,7 +222,7 @@ public class UnitManager implements Serializable {
 				}
 				unitName = "Vehicle";
 			}
-		} else if (unitType.equals(PERSON)) {
+		} else if (unitType == UnitType.PERSON) {
 			if (Person.MALE.equals(gender)) {
 				initialNameList = personMaleNames;
 			} else if (Person.FEMALE.equals(gender)) {
@@ -238,7 +235,7 @@ public class UnitManager implements Serializable {
 				usedNames.add(pi.next().getName());
 			}
 			unitName = "Person";
-		} else if (unitType.equals(EQUIPMENT)) {
+		} else if (unitType == UnitType.EQUIPMENT) {
 			if (baseName != null) {
 				int number = 1;
 				if (equipmentNumberMap.containsKey(baseName)) {
@@ -283,7 +280,7 @@ public class UnitManager implements Serializable {
 				// Get settlement name
 				String name = config.getInitialSettlementName(x);
 				if (name.equals(SettlementConfig.RANDOM)) {
-					name = getNewName(SETTLEMENT, null, null);
+					name = getNewName(UnitType.SETTLEMENT, null, null);
 				}
 
 				// Get settlement template
@@ -340,10 +337,10 @@ public class UnitManager implements Serializable {
 					vehicleType = vehicleType.toLowerCase();
 					for (int x = 0; x < number; x++) {
 						if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-							String name = getNewName(VEHICLE, "LUV", null);
+							String name = getNewName(UnitType.VEHICLE, "LUV", null);
 							addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
 						} else {
-							String name = getNewName(VEHICLE, null, null);
+							String name = getNewName(UnitType.VEHICLE, null, null);
 							addUnit(new Rover(name, vehicleType, settlement));
 						}
 					}
@@ -374,7 +371,7 @@ public class UnitManager implements Serializable {
 					int number = (Integer) equipmentMap.get(type);
 					for (int x = 0; x < number; x++) {
 						Equipment equipment = EquipmentFactory.getEquipment(type, settlement.getCoordinates(), false);
-						equipment.setName(getNewName(EQUIPMENT, type, null));
+						equipment.setName(getNewName(UnitType.EQUIPMENT, type, null));
 						settlement.getInventory().storeUnit(equipment);
 						addUnit(equipment);
 					}
@@ -466,7 +463,7 @@ public class UnitManager implements Serializable {
 					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
 						gender = Person.MALE;
 					}
-					Person person = new Person(getNewName(PERSON, null, gender), gender, "Earth",settlement); //TODO: read from file
+					Person person = new Person(getNewName(UnitType.PERSON, null, gender), gender, "Earth",settlement); //TODO: read from file
 					addUnit(person);
 					relationshipManager.addInitialSettler(person, settlement);
 				}

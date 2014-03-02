@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -311,10 +312,10 @@ public class Resupply implements Serializable, Transportable {
             String vehicleType = vehicleI.next();
             Vehicle vehicle = null;
             if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
-                String name = unitManager.getNewName(UnitManager.VEHICLE, "LUV", null);
+                String name = unitManager.getNewName(UnitType.VEHICLE, "LUV", null);
                 vehicle = new LightUtilityVehicle(name, vehicleType, settlement);
             } else {
-                String name = unitManager.getNewName(UnitManager.VEHICLE, null, null);
+                String name = unitManager.getNewName(UnitType.VEHICLE, null, null);
                 vehicle = new Rover(name, vehicleType, settlement);
             }
             unitManager.addUnit(vehicle);
@@ -330,7 +331,7 @@ public class Resupply implements Serializable, Transportable {
             for (int x=0; x < number; x++) {
                 Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
                         settlement.getCoordinates(), false);
-                equipment.setName(unitManager.getNewName(UnitManager.EQUIPMENT, equipmentType, null));
+                equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
                 inv.storeUnit(equipment);
             }
         }
@@ -361,7 +362,7 @@ public class Resupply implements Serializable, Transportable {
             String gender = Person.FEMALE;
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations
-            String immigrantName = unitManager.getNewName(UnitManager.PERSON, null, gender);
+            String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender);
             Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
             unitManager.addUnit(immigrant);
             relationshipManager.addNewImmigrant(immigrant, immigrants);
