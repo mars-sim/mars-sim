@@ -11,7 +11,8 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 /**
  * This class represents a historical event table displayed within the Monitor Window. 
  */
-public class EventTab extends TableTab {
+public class EventTab
+extends TableTab {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;

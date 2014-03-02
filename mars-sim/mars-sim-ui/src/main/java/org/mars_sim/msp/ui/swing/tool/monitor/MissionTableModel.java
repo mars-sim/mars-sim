@@ -27,7 +27,7 @@ public class MissionTableModel
 extends AbstractTableModel
 implements MonitorModel, MissionManagerListener, MissionListener {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	// Column indexes
@@ -53,46 +53,46 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	private final static int COLUMNCOUNT = 9;
 	/** Names of Columns. */
 	private static String columnNames[];
-    /** Types of Columns. */
+	/** Types of Columns. */
 	private static Class<?> columnTypes[];
-	
-    private List<Mission> missionCache;
-    
-    public MissionTableModel() {
-    	columnNames = new String[COLUMNCOUNT];
-        columnTypes = new Class[COLUMNCOUNT];
-        columnNames[TYPE] = "Type";
-        columnTypes[TYPE] = String.class;
-        columnNames[DESCRIPTION] = "Description";
-        columnTypes[DESCRIPTION] = String.class;
-        columnNames[PHASE] = "Phase";
-        columnTypes[PHASE] = String.class; 
-        columnNames[STARTING_SETTLEMENT] = "Starting Settlement";
-        columnTypes[STARTING_SETTLEMENT] = String.class;
-        columnNames[VEHICLE] = "Vehicle";
-        columnTypes[VEHICLE] = String.class;
-        columnNames[MEMBER_NUM] = "Member Num.";
-        columnTypes[MEMBER_NUM] = Integer.class;
-        columnNames[NAVPOINT_NUM] = "Navpoint Num.";
-        columnTypes[NAVPOINT_NUM] = Integer.class;
-        columnNames[TRAVELLED_DISTANCE] = "Travelled Dist. (km)";
-        columnTypes[TRAVELLED_DISTANCE] = Integer.class;
-        columnNames[REMAINING_DISTANCE] = "Remaining Dist. (km)";
-        columnTypes[REMAINING_DISTANCE] = Integer.class;
-        
-        MissionManager manager = Simulation.instance().getMissionManager();
-        missionCache = manager.getMissions();
-        manager.addListener(this);
-        Iterator<Mission> i = missionCache.iterator();
-        while (i.hasNext()) i.next().addMissionListener(this);
-    }
-    
+
+	private List<Mission> missionCache;
+
+	public MissionTableModel() {
+		columnNames = new String[COLUMNCOUNT];
+		columnTypes = new Class[COLUMNCOUNT];
+		columnNames[TYPE] = "Type";
+		columnTypes[TYPE] = String.class;
+		columnNames[DESCRIPTION] = "Description";
+		columnTypes[DESCRIPTION] = String.class;
+		columnNames[PHASE] = "Phase";
+		columnTypes[PHASE] = String.class; 
+		columnNames[STARTING_SETTLEMENT] = "Starting Settlement";
+		columnTypes[STARTING_SETTLEMENT] = String.class;
+		columnNames[VEHICLE] = "Vehicle";
+		columnTypes[VEHICLE] = String.class;
+		columnNames[MEMBER_NUM] = "Member Num.";
+		columnTypes[MEMBER_NUM] = Integer.class;
+		columnNames[NAVPOINT_NUM] = "Navpoint Num.";
+		columnTypes[NAVPOINT_NUM] = Integer.class;
+		columnNames[TRAVELLED_DISTANCE] = "Travelled Dist. (km)";
+		columnTypes[TRAVELLED_DISTANCE] = Integer.class;
+		columnNames[REMAINING_DISTANCE] = "Remaining Dist. (km)";
+		columnTypes[REMAINING_DISTANCE] = Integer.class;
+
+		MissionManager manager = Simulation.instance().getMissionManager();
+		missionCache = manager.getMissions();
+		manager.addListener(this);
+		Iterator<Mission> i = missionCache.iterator();
+		while (i.hasNext()) i.next().addMissionListener(this);
+	}
+
 	/**
-     * Get the name of this model. The name will be a description helping
-     * the user understand the contents.
-     *
-     * @return Descriptive name.
-     */
+	 * Get the name of this model. The name will be a description helping
+	 * the user understand the contents.
+	 *
+	 * @return Descriptive name.
+	 */
 	public String getName() {
 		return "Missions";
 	}
@@ -105,7 +105,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		if (!missionCache.contains(mission)) {
 			missionCache.add(mission);
 			mission.addMissionListener(this);
-			
+
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
@@ -114,7 +114,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			});
 		}
 	}
-	
+
 	/**
 	 * Removes an old mission.
 	 * @param mission the old mission.
@@ -124,61 +124,61 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			int index = missionCache.indexOf(mission);
 			missionCache.remove(mission);
 			mission.removeMissionListener(this);
-			
+
 			// Inform listeners of new row
 			SwingUtilities.invokeLater(new MissionTableRowDeleter(index));
 		}
 	}
-	
-    /**
-     * Return the type of the column requested.
-     * @param columnIndex Index of column.
-     * @return Class of specified column.
-     */
-    public Class<?> getColumnClass(int columnIndex) {
-        if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
-            return columnTypes[columnIndex];
-        }
-        return Object.class;
-    }
-    
-    /**
-     * Return the name of the column requested.
-     * @param columnIndex Index of column.
-     * @return name of specified column.
-     */
-    public String getColumnName(int columnIndex) {
-        if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
-            return columnNames[columnIndex];
-        }
-        return "Unknown";
-    }
-	
+
 	/**
-     * Return the object at the specified row indexes.
-     * @param row Index of the row object.
-     * @return Object at the specified row.
-     */
+	 * Return the type of the column requested.
+	 * @param columnIndex Index of column.
+	 * @return Class of specified column.
+	 */
+	public Class<?> getColumnClass(int columnIndex) {
+		if ((columnIndex >= 0) && (columnIndex < columnTypes.length)) {
+			return columnTypes[columnIndex];
+		}
+		return Object.class;
+	}
+
+	/**
+	 * Return the name of the column requested.
+	 * @param columnIndex Index of column.
+	 * @return name of specified column.
+	 */
+	public String getColumnName(int columnIndex) {
+		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
+			return columnNames[columnIndex];
+		}
+		return "Unknown";
+	}
+
+	/**
+	 * Return the object at the specified row indexes.
+	 * @param row Index of the row object.
+	 * @return Object at the specified row.
+	 */
 	public Object getObject(int row) {
 		return missionCache.get(row);
 	}
 
 	/**
-     * Has this model got a natural order that the model conforms to. If this
-     * value is true, then it implies that the user should not be allowed to
-     * order.
-     */
+	 * Has this model got a natural order that the model conforms to. If this
+	 * value is true, then it implies that the user should not be allowed to
+	 * order.
+	 */
 	public boolean getOrdered() {
 		return false;
 	}
-	
-    /**
-     * Gets the model count string.
-     */
-    public String getCountString() {
-    	return missionCache.size() + " missions";
-    }
-	
+
+	/**
+	 * Gets the model count string.
+	 */
+	public String getCountString() {
+		return missionCache.size() + " missions";
+	}
+
 	/**
 	 * Catch mission update event.
 	 * @param event the mission event.
@@ -188,7 +188,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		if ((index > -1) && (index < missionCache.size())) {
 			int column1 = -1;
 			int column2 = -1;
-			
+
 			MissionEventType eventType = event.getType();
 			if (eventType == MissionEventType.NAME_EVENT) column1 = TYPE;
 			else if (eventType == MissionEventType.DESCRIPTION_EVENT) column1 = DESCRIPTION;
@@ -202,145 +202,145 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 				column1 = TRAVELLED_DISTANCE;
 				column2 = REMAINING_DISTANCE;
 			}
-			
+
 			if (column1 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column1));
 			if (column2 > -1) SwingUtilities.invokeLater(new MissionTableCellUpdater(index, column2));
 		}
 	}
 
 	public int getRowCount() {
-        return missionCache.size();
+		return missionCache.size();
 	}
 
-    /**
-     * Return the number of columns
-     * @return column count.
-     */
+	/**
+	 * Return the number of columns
+	 * @return column count.
+	 */
 	public int getColumnCount() {
 		return COLUMNCOUNT;
 	}
 
-    /**
-     * Return the value of a Cell
-     * @param rowIndex Row index of the cell.
-     * @param columnIndex Column index of the cell.
-     */
-    public Object getValueAt(int rowIndex, int columnIndex) {
+	/**
+	 * Return the value of a Cell
+	 * @param rowIndex Row index of the cell.
+	 * @param columnIndex Column index of the cell.
+	 */
+	public Object getValueAt(int rowIndex, int columnIndex) {
 		Object result = null;
-		
+
 		if (rowIndex < missionCache.size()) {
 			Mission mission = missionCache.get(rowIndex);
-			
+
 			switch (columnIndex) {
-			
-				case TYPE : {
-					result = mission.getName();
-				} break;
-				
-				case DESCRIPTION : {
-					result = mission.getDescription();
-				} break;
-				
-				case PHASE : {
-					result = mission.getPhaseDescription();
-				} break;
-				
-				case VEHICLE : {
-					result = "";
-					if (mission instanceof VehicleMission) {
-						VehicleMission vehicleMission = (VehicleMission) mission;
-						if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
-					}
-				} break;
-				
-				case STARTING_SETTLEMENT : {
-					result = "";
-					if (mission instanceof TravelMission) {
-						NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
-						if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
-							result = nav0.getSettlement().getName();
-						}
-					}
-				} break;
-				 
-				case MEMBER_NUM : {
-					result = mission.getPeopleNumber();
-				} break;
-				
-				case NAVPOINT_NUM : {
-					if (mission instanceof TravelMission) {
-						TravelMission travelMission = (TravelMission) mission;
-						result = travelMission.getNumberOfNavpoints();
-					}
-					else result = 0;
-				} break;
-				
-				case TRAVELLED_DISTANCE : {
-					if (mission instanceof TravelMission) {
-						TravelMission travelMission = (TravelMission) mission;
-						result = (int) travelMission.getTotalDistanceTravelled();
-					}
-					else result = 0;
-				} break;
-				
-				case REMAINING_DISTANCE : {
-					if (mission instanceof TravelMission) {
-						TravelMission travelMission = (TravelMission) mission;
-						try {
-							result = (int) travelMission.getTotalRemainingDistance();
-						}
-						catch (Exception e) {}
-					}
-					else result = 0;
+
+			case TYPE : {
+				result = mission.getName();
+			} break;
+
+			case DESCRIPTION : {
+				result = mission.getDescription();
+			} break;
+
+			case PHASE : {
+				result = mission.getPhaseDescription();
+			} break;
+
+			case VEHICLE : {
+				result = "";
+				if (mission instanceof VehicleMission) {
+					VehicleMission vehicleMission = (VehicleMission) mission;
+					if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
 				}
+			} break;
+
+			case STARTING_SETTLEMENT : {
+				result = "";
+				if (mission instanceof TravelMission) {
+					NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
+					if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
+						result = nav0.getSettlement().getName();
+					}
+				}
+			} break;
+
+			case MEMBER_NUM : {
+				result = mission.getPeopleNumber();
+			} break;
+
+			case NAVPOINT_NUM : {
+				if (mission instanceof TravelMission) {
+					TravelMission travelMission = (TravelMission) mission;
+					result = travelMission.getNumberOfNavpoints();
+				}
+				else result = 0;
+			} break;
+
+			case TRAVELLED_DISTANCE : {
+				if (mission instanceof TravelMission) {
+					TravelMission travelMission = (TravelMission) mission;
+					result = (int) travelMission.getTotalDistanceTravelled();
+				}
+				else result = 0;
+			} break;
+
+			case REMAINING_DISTANCE : {
+				if (mission instanceof TravelMission) {
+					TravelMission travelMission = (TravelMission) mission;
+					try {
+						result = (int) travelMission.getTotalRemainingDistance();
+					}
+					catch (Exception e) {}
+				}
+				else result = 0;
+			}
 			}
 		}
-		
+
 		return result;
 	}
-    
-    /**
-     * Prepares the model for deletion.
-     */
-    public void destroy() {
-        Object[] missions = missionCache.toArray();
-        for (int x = 0; x < missions.length; x++) {
-            removeMission((Mission) missions[x]);
-        }
-        
-        Simulation.instance().getMissionManager().removeListener(this);
-    	//missionCache = null;
-    }
-    
-    /**
-     * Inner class for updating mission table cell.
-     */
-    private class MissionTableCellUpdater implements Runnable {
-    	
-    	private int row;
-    	private int column;
-    	
-    	private MissionTableCellUpdater(int row, int column) {
-    		this.row = row;
-    		this.column = column;
-    	}
-    	
-    	public void run() {
-            if ((row < getRowCount()) && (column < getColumnCount()))
-                fireTableCellUpdated(row, column);
-    	}
-    }
-    
-    private class MissionTableRowDeleter implements Runnable {
-    	
-    	private int row;
-    	
-    	private MissionTableRowDeleter(int row) {
-    		this.row = row;
-    	}
-    	
-    	public void run() {
-            if (row < getRowCount()) fireTableRowsDeleted(row, row);
-    	}
-    }
+
+	/**
+	 * Prepares the model for deletion.
+	 */
+	public void destroy() {
+		Object[] missions = missionCache.toArray();
+		for (int x = 0; x < missions.length; x++) {
+			removeMission((Mission) missions[x]);
+		}
+
+		Simulation.instance().getMissionManager().removeListener(this);
+		//missionCache = null;
+	}
+
+	/**
+	 * Inner class for updating mission table cell.
+	 */
+	private class MissionTableCellUpdater implements Runnable {
+
+		private int row;
+		private int column;
+
+		private MissionTableCellUpdater(int row, int column) {
+			this.row = row;
+			this.column = column;
+		}
+
+		public void run() {
+			if ((row < getRowCount()) && (column < getColumnCount()))
+				fireTableCellUpdated(row, column);
+		}
+	}
+
+	private class MissionTableRowDeleter implements Runnable {
+
+		private int row;
+
+		private MissionTableRowDeleter(int row) {
+			this.row = row;
+		}
+
+		public void run() {
+			if (row < getRowCount()) fireTableRowsDeleted(row, row);
+		}
+	}
 }
