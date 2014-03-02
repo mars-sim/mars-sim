@@ -115,7 +115,12 @@ extends UnitTableModel {
 	 * @param unitManager Unit manager that holds settlements.
 	 */
 	public SettlementTableModel(UnitManager unitManager) {
-		super("All Settlements", " settlements", columnNames, columnTypes);
+		super(
+			"All Settlements",
+			"SettlementTableModel.countingSettlements", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
 
 		setSource(unitManager.getSettlements());
 		unitManagerListener = new LocalUnitManagerListener();
