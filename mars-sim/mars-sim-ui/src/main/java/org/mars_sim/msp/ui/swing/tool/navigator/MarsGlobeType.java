@@ -6,7 +6,7 @@ import org.mars_sim.msp.core.Msg;
  * @author stpa
  * 2014-03-02
  */
-public enum EnumMarsGlobeType {
+public enum MarsGlobeType {
 
 	SURFACE (Msg.getString("img.mars.surface")), //$NON-NLS-1$
 	TOPO (Msg.getString("img.mars.topo")); //$NON-NLS-1$
@@ -14,7 +14,7 @@ public enum EnumMarsGlobeType {
 	private String path;
 
 	/** hidden constructor. */
-	private EnumMarsGlobeType(String path) {
+	private MarsGlobeType(String path) {
 		this.path = path;
 	}
 

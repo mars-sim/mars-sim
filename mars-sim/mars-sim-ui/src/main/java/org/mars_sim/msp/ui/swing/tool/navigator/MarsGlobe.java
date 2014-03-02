@@ -59,7 +59,7 @@ public class MarsGlobe {
 	 * @param displayArea the display component for the globe
 	 */
 	@SuppressWarnings("unchecked")
-	public MarsGlobe (EnumMarsGlobeType globeType, JComponent displayArea) {
+	public MarsGlobe (MarsGlobeType globeType, JComponent displayArea) {
 
 		// Initialize Variables
 		// this.globeType = globeType;
