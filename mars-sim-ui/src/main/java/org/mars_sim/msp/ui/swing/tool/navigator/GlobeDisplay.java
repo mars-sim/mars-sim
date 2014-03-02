@@ -108,8 +108,8 @@ implements Runnable {
 		setMinimumSize(getPreferredSize());
 
 		// Construct sphere objects for both real and topographical modes
-		marsSphere = new MarsGlobe(EnumMarsGlobeType.SURFACE, this);
-		topoSphere = new MarsGlobe(EnumMarsGlobeType.TOPO, this);
+		marsSphere = new MarsGlobe(MarsGlobeType.SURFACE, this);
+		topoSphere = new MarsGlobe(MarsGlobeType.TOPO, this);
 
 		// Initialize global variables
 		centerCoords = new Coordinates(HALF_PI, 0D);
