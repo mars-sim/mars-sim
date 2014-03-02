@@ -12,6 +12,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -61,23 +62,23 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	public MissionTableModel() {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[TYPE] = "Type";
+		columnNames[TYPE] = Msg.getString("MissionTableModel.column.type"); //$NON-NLS-1$
 		columnTypes[TYPE] = String.class;
-		columnNames[DESCRIPTION] = "Description";
+		columnNames[DESCRIPTION] = Msg.getString("MissionTableModel.column.description"); //$NON-NLS-1$
 		columnTypes[DESCRIPTION] = String.class;
-		columnNames[PHASE] = "Phase";
+		columnNames[PHASE] = Msg.getString("MissionTableModel.column.phase"); //$NON-NLS-1$
 		columnTypes[PHASE] = String.class; 
-		columnNames[STARTING_SETTLEMENT] = "Starting Settlement";
+		columnNames[STARTING_SETTLEMENT] = Msg.getString("MissionTableModel.column.startingSettlement"); //$NON-NLS-1$
 		columnTypes[STARTING_SETTLEMENT] = String.class;
-		columnNames[VEHICLE] = "Vehicle";
+		columnNames[VEHICLE] = Msg.getString("MissionTableModel.column.vehicle"); //$NON-NLS-1$
 		columnTypes[VEHICLE] = String.class;
-		columnNames[MEMBER_NUM] = "Member Num.";
+		columnNames[MEMBER_NUM] = Msg.getString("MissionTableModel.column.members"); //$NON-NLS-1$
 		columnTypes[MEMBER_NUM] = Integer.class;
-		columnNames[NAVPOINT_NUM] = "Navpoint Num.";
+		columnNames[NAVPOINT_NUM] = Msg.getString("MissionTableModel.column.navpoints"); //$NON-NLS-1$
 		columnTypes[NAVPOINT_NUM] = Integer.class;
-		columnNames[TRAVELLED_DISTANCE] = "Travelled Dist. (km)";
+		columnNames[TRAVELLED_DISTANCE] = Msg.getString("MissionTableModel.column.distanceTravelled"); //$NON-NLS-1$
 		columnTypes[TRAVELLED_DISTANCE] = Integer.class;
-		columnNames[REMAINING_DISTANCE] = "Remaining Dist. (km)";
+		columnNames[REMAINING_DISTANCE] = Msg.getString("MissionTableModel.column.distanceRemaining"); //$NON-NLS-1$
 		columnTypes[REMAINING_DISTANCE] = Integer.class;
 
 		MissionManager manager = Simulation.instance().getMissionManager();
@@ -94,7 +95,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	 * @return Descriptive name.
 	 */
 	public String getName() {
-		return "Missions";
+		return Msg.getString("MissionTableModel.title"); //$NON-NLS-1$
 	}
 
 	/**
@@ -151,7 +152,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 		if ((columnIndex >= 0) && (columnIndex < columnNames.length)) {
 			return columnNames[columnIndex];
 		}
-		return "Unknown";
+		return Msg.getString("MissionTableModel.unknown"); //$NON-NLS-1$
 	}
 
 	/**
@@ -176,7 +177,10 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 	 * Gets the model count string.
 	 */
 	public String getCountString() {
-		return missionCache.size() + " missions";
+		return Msg.getString(
+			"MissionTableModel.numberOfMissions", //$NON-NLS-1$
+			Integer.toString(missionCache.size())
+		);
 	}
 
 	/**
@@ -246,7 +250,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			} break;
 
 			case VEHICLE : {
-				result = "";
+				result = ""; //$NON-NLS-1$
 				if (mission instanceof VehicleMission) {
 					VehicleMission vehicleMission = (VehicleMission) mission;
 					if (vehicleMission.getVehicle() != null) result = vehicleMission.getVehicle().getName();
@@ -254,7 +258,7 @@ implements MonitorModel, MissionManagerListener, MissionListener {
 			} break;
 
 			case STARTING_SETTLEMENT : {
-				result = "";
+				result = ""; //$NON-NLS-1$
 				if (mission instanceof TravelMission) {
 					NavPoint nav0 = ((TravelMission) mission).getNavpoint(0);
 					if ((nav0 != null) && nav0.isSettlementAtNavpoint()) {
