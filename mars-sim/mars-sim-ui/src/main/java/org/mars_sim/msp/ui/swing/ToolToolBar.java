@@ -13,6 +13,7 @@ import java.util.Vector;
 import javax.swing.JToolBar;
 import javax.swing.border.BevelBorder;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.tool.guide.GuideWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.MonitorWindow;

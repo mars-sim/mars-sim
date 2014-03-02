@@ -1,4 +1,4 @@
-package org.mars_sim.msp.ui.swing;
+package org.mars_sim.msp.core;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,12 +28,13 @@ public class Msg {
 	private static Logger logger = Logger.getLogger(Msg.class.getName());
 
 	/** location of the properties files in the project code base. */
-	private static final String BUNDLE_NAME = "org.mars_sim.msp.ui.swing.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "org.mars_sim.msp.core.messages"; //$NON-NLS-1$
 
 	/**
 	 * the default resource bundle.<br/>
-	 * while translation is still ongoing, its safer to set a default locale,
-	 * otherwise users with other locales will see partial translations.<br/>
+	 * while translation is still ongoing, it is safer to set a default locale,
+	 * otherwise users with other locales will see partial translations,
+	 * which can be very annoying.<br/>
 	 * commas are in front to make it easier to comment those lines out.<br/>
 	 * in order to test translations, change the desired locale, e.g. "de", "eo".
 	 */
@@ -48,7 +49,6 @@ public class Msg {
 	}
 
 	/**
-	 * 
 	 * @param key {@link String} should comply with the format
 	 * <code>"ClassName.categoryIfAny.keyForThisText"</code>
 	 * @return {@link String} translation for given key to the current locale.
