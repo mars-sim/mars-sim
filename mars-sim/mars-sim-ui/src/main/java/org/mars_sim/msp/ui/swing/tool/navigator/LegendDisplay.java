@@ -5,13 +5,15 @@
  * @author Scott Davis
  * @author Greg Whelan
  */
-
 package org.mars_sim.msp.ui.swing.tool.navigator;
 
-import org.mars_sim.msp.ui.swing.ImageLoader;
+import java.awt.Image;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.ImageLoader;
 
 /** 
  * The LegendDisplay class is a UI class that represents a map legend
@@ -19,7 +21,8 @@ import java.awt.*;
  * legend, or a color chart indicating elevation for the
  * topographical map.
  */
-public class LegendDisplay extends JLabel {
+public class LegendDisplay
+extends JLabel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -32,33 +35,33 @@ public class LegendDisplay extends JLabel {
 	private Image usgsDistanceImg;
 	private boolean useUSGSLegend;
 
-    /** Constructs a LegendDisplay object */
-    public LegendDisplay() {
-        colorImg = ImageLoader.getImage("Color_Legend.jpg");
-        distanceImg = ImageLoader.getImage("Map_Legend.jpg");
-        usgsDistanceImg = ImageLoader.getImage("USGSMap_Legend.png");
-        legend = new ImageIcon(distanceImg);
-        setIcon(legend);
-        useUSGSLegend = false;
-    }
+	/** Constructs a LegendDisplay object */
+	public LegendDisplay() {
+		colorImg = ImageLoader.getImage(Msg.getString("img.mars.colorLegend")); //$NON-NLS-1$
+		distanceImg = ImageLoader.getImage(Msg.getString("img.mars.mapLegend")); //$NON-NLS-1$
+		usgsDistanceImg = ImageLoader.getImage(Msg.getString("img.mars.usgsMapLegend")); //$NON-NLS-1$
+		legend = new ImageIcon(distanceImg);
+		setIcon(legend);
+		useUSGSLegend = false;
+	}
 
-    /** Change to topographical mode */
-    public void showColor() {
-        legend.setImage(colorImg);
-        repaint();
-    }
+	/** Change to topographical mode */
+	public void showColor() {
+		legend.setImage(colorImg);
+		repaint();
+	}
 
-    /** Change to distance mode and refresh canvas */
-    public void showMap() {
-    	if (useUSGSLegend) legend.setImage(usgsDistanceImg);
-        else legend.setImage(distanceImg);
-        repaint();
-    }
+	/** Change to distance mode and refresh canvas */
+	public void showMap() {
+		if (useUSGSLegend) legend.setImage(usgsDistanceImg);
+		else legend.setImage(distanceImg);
+		repaint();
+	}
 
-    /** Set USGS map legend mode
-     *  @param useUSGSLegend true if using USGS map legend
-     */
-    public void setUSGSMode(boolean useUSGSLegend) {
-    	this.useUSGSLegend = useUSGSLegend;
-   	}
+	/** Set USGS map legend mode
+	 *  @param useUSGSLegend true if using USGS map legend
+	 */
+	public void setUSGSMode(boolean useUSGSLegend) {
+		this.useUSGSLegend = useUSGSLegend;
+	}
 }

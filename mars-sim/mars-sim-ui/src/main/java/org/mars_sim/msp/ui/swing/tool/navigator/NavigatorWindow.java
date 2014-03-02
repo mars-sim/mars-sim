@@ -37,6 +37,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -73,7 +74,7 @@ implements ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = "Mars Navigator";
+	public static final String NAME = Msg.getString("NavigatorWindow.title"); //$NON-NLS-1$
 
 	// Data members
 	/** map navigation. */
@@ -127,9 +128,8 @@ implements ActionListener {
 	private MapLayer landmarkLayer;
 	private MapLayer exploredSiteLayer;
 
-
 	/**
-	 * Constructs a {@link NavigatorWindow} object, hence a constructor. 
+	 * Constructor. 
 	 * @param desktop {@link MainDesktopPane} the desktop pane
 	 */
 	public NavigatorWindow(MainDesktopPane desktop) {
@@ -227,8 +227,8 @@ implements ActionListener {
 		topoPane.add(optionsPane, BorderLayout.CENTER);
 
 		// Prepare options button.
-		optionsButton = new JButton("Map Options \u25BC");
-		optionsButton.setToolTipText("Options for displaying map.");
+		optionsButton = new JButton(Msg.getString("NavigatorWindow.button.mapOptions")); //$NON-NLS-1$
+		optionsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mapOptions")); //$NON-NLS-1$
 		optionsButton.addActionListener(
 			new ActionListener() {
 				public void actionPerformed(ActionEvent event) {
@@ -240,8 +240,8 @@ implements ActionListener {
 		optionsPane.add(optionsButton);
 
 		// Prepare minerals button.
-		mineralsButton = new JButton("Minerals \u25BC");
-		mineralsButton.setToolTipText("Options for displaying minerals on map.");
+		mineralsButton = new JButton(Msg.getString("NavigatorWindow.button.mineralOptions")); //$NON-NLS-1$
+		mineralsButton.setToolTipText(Msg.getString("NavigatorWindow.tooltip.mineralOptions")); //$NON-NLS-1$
 		mineralsButton.setEnabled(false);
 		mineralsButton.addActionListener(
 			new ActionListener() {
@@ -268,14 +268,17 @@ implements ActionListener {
 		mainPane.add(positionPane);
 
 		// Prepare latitude entry components
-		JLabel latLabel = new JLabel("Latitude: ");
+		JLabel latLabel = new JLabel(Msg.getString("NavigatorWindow.latitude")); //$NON-NLS-1$
 		latLabel.setAlignmentY(.5F);
 		positionPane.add(latLabel);
 
 		latText = new JTextField(5);
 		positionPane.add(latText);
 
-		String[] latStrings = { "\u00B0N", "\u00B0S" };
+		String[] latStrings = {
+			Msg.getString("direction.degreeSign") + Msg.getString("direction.northShort"), //$NON-NLS-1$ //$NON-NLS-2$
+			Msg.getString("direction.degreeSign") + Msg.getString("direction.southShort") //$NON-NLS-1$ //$NON-NLS-2$
+		};
 		latDir = new JComboBoxMW<Object>(latStrings);
 		latDir.setEditable(false);
 		latDir.setPreferredSize(new Dimension(50, -1));
@@ -286,14 +289,17 @@ implements ActionListener {
 		positionPane.add(Box.createHorizontalStrut(5));
 
 		// Prepare longitude entry components
-		JLabel longLabel = new JLabel("Longitude: ");
+		JLabel longLabel = new JLabel(Msg.getString("NavigatorWindow.longitude")); //$NON-NLS-1$
 		longLabel.setAlignmentY(.5F);
 		positionPane.add(longLabel);
 
 		longText = new JTextField(5);
 		positionPane.add(longText);
 
-		String[] longStrings = { "\u00B0E", "\u00B0W" };
+		String[] longStrings = {
+			Msg.getString("direction.degreeSign") + Msg.getString("direction.eastShort"), //$NON-NLS-1$ //$NON-NLS-2$
+			Msg.getString("direction.degreeSign") + Msg.getString("direction.westShort") //$NON-NLS-1$ //$NON-NLS-2$
+		};
 		longDir = new JComboBoxMW<Object>(longStrings);
 		longDir.setEditable(false);
 		longDir.setPreferredSize(new Dimension(50, -1));
@@ -304,7 +310,7 @@ implements ActionListener {
 		positionPane.add(Box.createHorizontalStrut(5));
 
 		// Prepare location entry submit button
-		goThere = new JButton("Go There");
+		goThere = new JButton(Msg.getString("NavigatorWindow.button.goThere")); //$NON-NLS-1$
 		goThere.addActionListener(this);
 		goThere.setAlignmentY(.5F);
 		positionPane.add(goThere);
@@ -346,10 +352,10 @@ implements ActionListener {
 
 				if ((latitude >= 0D) && (latitude <= 90D)) {
 					if ((longitude >= 0D) && (longitude <= 180)) {
-						if (latDirStr.equals("N")) latitude = 90D - latitude;
+						if (latDirStr.equals(Msg.getString("direction.northShort"))) latitude = 90D - latitude; //$NON-NLS-1$
 						else latitude += 90D;
 						if (longitude > 0D) {
-							if (longDirStr.equals("W")) longitude = 360D - longitude;
+							if (longDirStr.equals(Msg.getString("direction.westShort"))) longitude = 360D - longitude; //$NON-NLS-1$
 						}
 						double phi = Math.PI * (latitude / 180D);
 						double theta = (2 * Math.PI) * (longitude / 360D);
@@ -410,52 +416,52 @@ implements ActionListener {
 	 */
 	private void createOptionsMenu() {
 		// Create options menu.
-		optionsMenu = new JPopupMenu("Map Options");
+		optionsMenu = new JPopupMenu(Msg.getString("NavigatorWindow.menu.mapOptions")); //$NON-NLS-1$
 
 		// Create topographical map menu item.
-		topoItem = new JCheckBoxMenuItem("Topographical Mode", TopoMarsMap.TYPE.equals(map.getMapType()));
+		topoItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.topo"), TopoMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
 		topoItem.addActionListener(this);
 		optionsMenu.add(topoItem);
 
 		// Create unit label menu item.
-		unitLabelItem = new JCheckBoxMenuItem("Show Unit Labels", map.hasMapLayer(unitLabelLayer));
+		unitLabelItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showLabels"), map.hasMapLayer(unitLabelLayer)); //$NON-NLS-1$
 		unitLabelItem.addActionListener(this);
 		optionsMenu.add(unitLabelItem);
 
 		// Create day/night tracking menu item.
-		dayNightItem = new JCheckBoxMenuItem("Day/Night Tracking", map.hasMapLayer(shadingLayer));
+		dayNightItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.dayNightTracking"), map.hasMapLayer(shadingLayer)); //$NON-NLS-1$
 		dayNightItem.addActionListener(this);
 		optionsMenu.add(dayNightItem);
 
 		// Create USGS menu item.
-		usgsItem = new JCheckBoxMenuItem("8x Surface Map Zoom", USGSMarsMap.TYPE.equals(map.getMapType()));
+		usgsItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.zoom"), USGSMarsMap.TYPE.equals(map.getMapType())); //$NON-NLS-1$
 		usgsItem.addActionListener(this);
 		// Disabling this option due to problems with USGS Map-a-planet website.
 		usgsItem.setEnabled(false);
 		optionsMenu.add(usgsItem);
 
 		// Create vehicle trails menu item.
-		trailItem = new JCheckBoxMenuItem("Show Vehicle Trails", map.hasMapLayer(trailLayer));
+		trailItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showVehicleTrails"), map.hasMapLayer(trailLayer)); //$NON-NLS-1$
 		trailItem.addActionListener(this);
 		optionsMenu.add(trailItem);
 
 		// Create landmarks menu item.
-		landmarkItem = new JCheckBoxMenuItem("Show Landmarks", map.hasMapLayer(landmarkLayer));
+		landmarkItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showLandmarks"), map.hasMapLayer(landmarkLayer)); //$NON-NLS-1$
 		landmarkItem.addActionListener(this);
 		optionsMenu.add(landmarkItem);
 
 		// Create navpoints menu item.
-		navpointItem = new JCheckBoxMenuItem("Show Mission Navpoints", map.hasMapLayer(navpointLayer));
+		navpointItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showNavPoints"), map.hasMapLayer(navpointLayer)); //$NON-NLS-1$
 		navpointItem.addActionListener(this);
 		optionsMenu.add(navpointItem);
 
 		// Create explored site menu item.
-		exploredSiteItem = new JCheckBoxMenuItem("Show Explored Sites", map.hasMapLayer(exploredSiteLayer));
+		exploredSiteItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showExploredSites"), map.hasMapLayer(exploredSiteLayer)); //$NON-NLS-1$
 		exploredSiteItem.addActionListener(this);
 		optionsMenu.add(exploredSiteItem);
 
 		// Create minerals menu item.
-		mineralItem = new JCheckBoxMenuItem("Show Minerals", map.hasMapLayer(mineralLayer));
+		mineralItem = new JCheckBoxMenuItem(Msg.getString("NavigatorWindow.menu.map.showMinerals"), map.hasMapLayer(mineralLayer)); //$NON-NLS-1$
 		mineralItem.addActionListener(this);
 		optionsMenu.add(mineralItem);
 

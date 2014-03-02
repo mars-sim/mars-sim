@@ -171,7 +171,7 @@ public class UnitManager implements Serializable {
 			}
 
 			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEvent.ADD_UNIT, unit);
+			fireUnitManagerUpdate(UnitManagerEventType.ADD_UNIT, unit);
 		}
 	}
 
@@ -184,7 +184,7 @@ public class UnitManager implements Serializable {
 			units.remove(unit);
 
 			// Fire unit manager event.
-			fireUnitManagerUpdate(UnitManagerEvent.REMOVE_UNIT, unit);
+			fireUnitManagerUpdate(UnitManagerEventType.REMOVE_UNIT, unit);
 		}
 	}
 
@@ -776,7 +776,7 @@ public class UnitManager implements Serializable {
 	 * @param eventType the event type.
 	 * @param unit the unit causing the event.
 	 */
-	public final void fireUnitManagerUpdate(String eventType, Unit unit) {
+	public final void fireUnitManagerUpdate(UnitManagerEventType eventType, Unit unit) {
 		if (listeners == null) {
 			listeners = Collections.synchronizedList(new ArrayList<UnitManagerListener>());
 		}
