@@ -77,16 +77,16 @@ implements MouseListener {
 		this.parentNavigator = parentNavigator;
 
 		// Load Button Images
-		navMain = ImageLoader.getImage(Msg.getString("img.navMain")); //$NON-NLS-1$
-		lightUpButtons[0] = ImageLoader.getImage(Msg.getString("img.navMainPlus")); //$NON-NLS-1$
-		lightUpButtons[1] = ImageLoader.getImage(Msg.getString("img.navNorth")); //$NON-NLS-1$
-		lightUpButtons[2] = ImageLoader.getImage(Msg.getString("img.navSouth")); //$NON-NLS-1$
-		lightUpButtons[3] = ImageLoader.getImage(Msg.getString("img.navEast")); //$NON-NLS-1$
-		lightUpButtons[4] = ImageLoader.getImage(Msg.getString("img.navWest")); //$NON-NLS-1$
-		lightUpButtons[5] = ImageLoader.getImage(Msg.getString("img.navNorthPlus")); //$NON-NLS-1$
-		lightUpButtons[6] = ImageLoader.getImage(Msg.getString("img.navSouthPlus")); //$NON-NLS-1$
-		lightUpButtons[7] = ImageLoader.getImage(Msg.getString("img.navEastPlus")); //$NON-NLS-1$
-		lightUpButtons[8] = ImageLoader.getImage(Msg.getString("img.navWestPlus")); //$NON-NLS-1$
+		navMain = ImageLoader.getImage(Msg.getString("img.nav.main")); //$NON-NLS-1$
+		lightUpButtons[0] = ImageLoader.getImage(Msg.getString("img.nav.plus.main")); //$NON-NLS-1$
+		lightUpButtons[1] = ImageLoader.getImage(Msg.getString("img.nav.north")); //$NON-NLS-1$
+		lightUpButtons[2] = ImageLoader.getImage(Msg.getString("img.nav.south")); //$NON-NLS-1$
+		lightUpButtons[3] = ImageLoader.getImage(Msg.getString("img.nav.east")); //$NON-NLS-1$
+		lightUpButtons[4] = ImageLoader.getImage(Msg.getString("img.nav.west")); //$NON-NLS-1$
+		lightUpButtons[5] = ImageLoader.getImage(Msg.getString("img.nav.plus.north")); //$NON-NLS-1$
+		lightUpButtons[6] = ImageLoader.getImage(Msg.getString("img.nav.plus.south")); //$NON-NLS-1$
+		lightUpButtons[7] = ImageLoader.getImage(Msg.getString("img.nav.plus.east")); //$NON-NLS-1$
+		lightUpButtons[8] = ImageLoader.getImage(Msg.getString("img.nav.plus.west")); //$NON-NLS-1$
 
 		MediaTracker mtrack = new MediaTracker(this);
 

@@ -170,7 +170,7 @@ extends UnitTableModel {
 
 				case ROCK_SAMPLES : {
 					result = resourceMap.get(
-							AmountResource.findAmountResource("rock samples"));
+						AmountResource.findAmountResource("rock samples"));
 				} break;
 
 				case MALFUNCTION: {

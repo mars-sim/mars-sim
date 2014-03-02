@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.goods;
 
 import java.util.ArrayList;
@@ -29,188 +28,188 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  */
 public class GoodsUtil {
 
-    // Data members
-    private static List<Good> goodsList;
+	// Data members
+	private static List<Good> goodsList;
 
-    /**
-     * Private constructor for utility class.
-     */
-    private GoodsUtil() {}
+	/**
+	 * Private constructor for utility class.
+	 */
+	private GoodsUtil() {}
 
-    /**
-     * Gets a list of all goods in the simulation.
-     * @return list of goods
-     */
-    public static List<Good> getGoodsList() {
+	/**
+	 * Gets a list of all goods in the simulation.
+	 * @return list of goods
+	 */
+	public static List<Good> getGoodsList() {
 
-        if (goodsList == null) {
-            goodsList = new ArrayList<Good>();
-            populateGoodsList();
-        }
+		if (goodsList == null) {
+			goodsList = new ArrayList<Good>();
+			populateGoodsList();
+		}
 
-        return Collections.unmodifiableList(goodsList);
-    }
+		return Collections.unmodifiableList(goodsList);
+	}
 
-    /**
-     * Destroys the current goods list.
-     */
-    public static void destroyGoodsList() {
+	/**
+	 * Destroys the current goods list.
+	 */
+	public static void destroyGoodsList() {
 
-        if (goodsList != null) {
-            goodsList.clear();
-        }
+		if (goodsList != null) {
+			goodsList.clear();
+		}
 
-        goodsList = null;
-    }
+		goodsList = null;
+	}
 
-    /**
-     * Gets a good object for a given resource.
-     * @param resource the resource.
-     * @return good for the resource.
-     */
-    public static Good getResourceGood(Resource resource) {
-        if (resource == null) {
-            throw new IllegalArgumentException("resource cannot be null");
-        }
-        String category = null;
-        if (resource instanceof AmountResource) category = Good.AMOUNT_RESOURCE;
-        else if (resource instanceof ItemResource) category = Good.ITEM_RESOURCE;
-        return new Good(resource.getName(), resource, category);
-    }
+	/**
+	 * Gets a good object for a given resource.
+	 * @param resource the resource.
+	 * @return good for the resource.
+	 */
+	public static Good getResourceGood(Resource resource) {
+		if (resource == null) {
+			throw new IllegalArgumentException("resource cannot be null");
+		}
+		GoodType category = null;
+		if (resource instanceof AmountResource) category = GoodType.AMOUNT_RESOURCE;
+		else if (resource instanceof ItemResource) category = GoodType.ITEM_RESOURCE;
+		return new Good(resource.getName(), resource, category);
+	}
 
-    /**
-     * Gets a good object for a given equipment class.
-     * @param equipmentClass the equipment class.
-     * @return good for the resource class or null if none.
-     */
-    public static Good getEquipmentGood(Class<? extends Unit> equipmentClass) {
-        if (equipmentClass == null) {
-            throw new IllegalArgumentException("goodClass cannot be null");
-        }
-        Good result = null;
+	/**
+	 * Gets a good object for a given equipment class.
+	 * @param equipmentClass the equipment class.
+	 * @return good for the resource class or null if none.
+	 */
+	public static Good getEquipmentGood(Class<? extends Unit> equipmentClass) {
+		if (equipmentClass == null) {
+			throw new IllegalArgumentException("goodClass cannot be null");
+		}
+		Good result = null;
 
-        Iterator<Good> i = getGoodsList().iterator();
-        while (i.hasNext()) {
-            Good good = i.next();
-            if (good.getClassType() == equipmentClass)
-                result = new Good(good.getName(), equipmentClass, Good.EQUIPMENT);
-        }
+		Iterator<Good> i = getGoodsList().iterator();
+		while (i.hasNext()) {
+			Good good = i.next();
+			if (good.getClassType() == equipmentClass)
+				result = new Good(good.getName(), equipmentClass, GoodType.EQUIPMENT);
+		}
 
-        return result;
-    }
+		return result;
+	}
 
-    /**
-     * Gets a good object for the given vehicle type.
-     * @param vehicleType the vehicle type string.
-     * @return good for the vehicle type.
-     */
-    public static Good getVehicleGood(String vehicleType) {
-        if ((vehicleType == null) || vehicleType.trim().length() == 0) {
-            throw new IllegalArgumentException("vehicleType cannot be blank or null.");
-        }
-        Class<?> vehicleClass = Rover.class;
-        if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
-            vehicleClass = LightUtilityVehicle.class;
-        return new Good(vehicleType, vehicleClass, Good.VEHICLE);
+	/**
+	 * Gets a good object for the given vehicle type.
+	 * @param vehicleType the vehicle type string.
+	 * @return good for the vehicle type.
+	 */
+	public static Good getVehicleGood(String vehicleType) {
+		if ((vehicleType == null) || vehicleType.trim().length() == 0) {
+			throw new IllegalArgumentException("vehicleType cannot be blank or null.");
+		}
+		Class<?> vehicleClass = Rover.class;
+		if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType))
+			vehicleClass = LightUtilityVehicle.class;
+		return new Good(vehicleType, vehicleClass, GoodType.VEHICLE);
 
-    }
+	}
 
-    /**
-     * Checks if a good is valid in the simulation.
-     * @param good the good to check.
-     * @return true if good is valid.
-     */
-    public static boolean containsGood(Good good) {
-        if (good == null) {
-            throw new IllegalArgumentException("good cannot be null.");
-        }
-        return getGoodsList().contains(good);
-    }
+	/**
+	 * Checks if a good is valid in the simulation.
+	 * @param good the good to check.
+	 * @return true if good is valid.
+	 */
+	public static boolean containsGood(Good good) {
+		if (good == null) {
+			throw new IllegalArgumentException("good cannot be null.");
+		}
+		return getGoodsList().contains(good);
+	}
 
-    /**
-     * Populates the goods list with all goods.
-     */
-    private static void populateGoodsList() {
-        // Populate amount resources.
-        populateAmountResources();
+	/**
+	 * Populates the goods list with all goods.
+	 */
+	private static void populateGoodsList() {
+		// Populate amount resources.
+		populateAmountResources();
 
-        // Populate item resources.
-        populateItemResources();
+		// Populate item resources.
+		populateItemResources();
 
-        // Populate equipment.
-        populateEquipment();
+		// Populate equipment.
+		populateEquipment();
 
-        // Populate vehicles.
-        populateVehicles();
+		// Populate vehicles.
+		populateVehicles();
 
-        // Sort goods by name.
-        Collections.sort(goodsList);
-    }
+		// Sort goods by name.
+		Collections.sort(goodsList);
+	}
 
-    /**
-     * Populates the goods list with all amount resources.
-     */
-    private static void populateAmountResources() {
-        Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
-        while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
-    }
+	/**
+	 * Populates the goods list with all amount resources.
+	 */
+	private static void populateAmountResources() {
+		Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
+	}
 
-    /**
-     * Populates the goods list with all item resources.
-     */
-    private static void populateItemResources() {
-        Iterator<Part> i = ItemResource.getItemResources().iterator();
-        while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
-    }
+	/**
+	 * Populates the goods list with all item resources.
+	 */
+	private static void populateItemResources() {
+		Iterator<Part> i = ItemResource.getItemResources().iterator();
+		while (i.hasNext()) goodsList.add(getResourceGood(i.next()));
+	}
 
-    /**
-     * Populates the goods list with all equipment.
-     */
-    private static void populateEquipment() {
-        List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
-        Collections.sort(equipmentNames);
-        Iterator<String> i = equipmentNames.iterator();
-        while (i.hasNext()) {
-            String name = i.next();
-            Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
-            goodsList.add(new Good(name, equipmentClass, Good.EQUIPMENT));
-        }
-    }
+	/**
+	 * Populates the goods list with all equipment.
+	 */
+	private static void populateEquipment() {
+		List<String> equipmentNames = new ArrayList<String>(EquipmentFactory.getEquipmentNames());
+		Collections.sort(equipmentNames);
+		Iterator<String> i = equipmentNames.iterator();
+		while (i.hasNext()) {
+			String name = i.next();
+			Class<? extends Equipment> equipmentClass = EquipmentFactory.getEquipmentClass(name);
+			goodsList.add(new Good(name, equipmentClass, GoodType.EQUIPMENT));
+		}
+	}
 
-    /**
-     * Populates the goods list with all vehicles.
-     */
-    private static void populateVehicles() {
-        VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+	/**
+	 * Populates the goods list with all vehicles.
+	 */
+	private static void populateVehicles() {
+		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
 
-        try {
-            Iterator<String> i = config.getVehicleTypes().iterator();
-            while (i.hasNext()) goodsList.add(getVehicleGood(i.next()));
-        }
-        catch (Exception e) {
-            e.printStackTrace(System.err);
-        }
-    }
+		try {
+			Iterator<String> i = config.getVehicleTypes().iterator();
+			while (i.hasNext()) goodsList.add(getVehicleGood(i.next()));
+		}
+		catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
+	}
 
-    /**
-     * Gets the mass per item for a good.
-     * @param good the good to check.
-     * @return mass (kg) per item (or 1kg for amount resources).
-     * @throws Exception if error getting mass per item.
-     */
-    public static double getGoodMassPerItem(Good good) {
-        double result = 0D;
+	/**
+	 * Gets the mass per item for a good.
+	 * @param good the good to check.
+	 * @return mass (kg) per item (or 1kg for amount resources).
+	 * @throws Exception if error getting mass per item.
+	 */
+	public static double getGoodMassPerItem(Good good) {
+		double result = 0D;
 
-        if (Good.AMOUNT_RESOURCE.equals(good.getCategory())) result = 1D;
-        else if (Good.ITEM_RESOURCE.equals(good.getCategory())) 
-            result = ((ItemResource) good.getObject()).getMassPerItem();
-        else if (Good.EQUIPMENT.equals(good.getCategory())) 
-            result = EquipmentFactory.getEquipmentMass(good.getName());
-        else if (Good.VEHICLE.equals(good.getCategory())) {
-            VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
-            result = config.getEmptyMass(good.getName());
-        }
+		if (GoodType.AMOUNT_RESOURCE == good.getCategory()) result = 1D;
+		else if (GoodType.ITEM_RESOURCE == good.getCategory()) 
+			result = ((ItemResource) good.getObject()).getMassPerItem();
+		else if (GoodType.EQUIPMENT == good.getCategory()) 
+			result = EquipmentFactory.getEquipmentMass(good.getName());
+		else if (GoodType.VEHICLE == good.getCategory()) {
+			VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
+			result = config.getEmptyMass(good.getName());
+		}
 
-        return result;
-    }
+		return result;
+	}
 }
