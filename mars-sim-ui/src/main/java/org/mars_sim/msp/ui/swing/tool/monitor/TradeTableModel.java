@@ -13,6 +13,7 @@ import java.util.List;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
 import org.mars_sim.msp.core.UnitEventType;
@@ -24,6 +25,7 @@ import org.mars_sim.msp.core.UnitManagerListener;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.structure.goods.GoodType;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
 public class TradeTableModel
@@ -32,6 +34,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	// Data members
 	private List<Good> goodsList;
 	private List<Settlement> settlements;
@@ -61,6 +64,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 * Catch unit update event.
 	 * @param event the unit event.
 	 */
+	@Override
 	public void unitUpdate(UnitEvent event) {
 		if (event.getType() == UnitEventType.GOODS_VALUE_EVENT) {
 			SwingUtilities.invokeLater(new TradeTableUpdater(event));
@@ -70,6 +74,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		// Remove as listener for all settlements.
 		Iterator<Settlement> i = settlements.iterator();
@@ -82,6 +87,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	/**
 	 * Gets the model count string.
 	 */
+	@Override
 	public String getCountString() {
 		return goodsList.size() + " trade goods";
 	}
@@ -92,6 +98,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 	 *
 	 * @return Descriptive name.
 	 */
+	@Override
 	public String getName() {
 		return "Trade Goods";
 	}
@@ -145,7 +152,7 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 
 	public Object getValueAt(int rowIndex, int columnIndex) {
 		if (columnIndex == 0) return goodsList.get(rowIndex).getName();
-		else if (columnIndex == 1) return (getGoodCategory(goodsList.get(rowIndex)));
+		else if (columnIndex == 1) return (getGoodCategoryName(goodsList.get(rowIndex)));
 		else {
 			try {
 				Settlement settlement = settlements.get(columnIndex - 2);
@@ -159,16 +166,13 @@ implements UnitListener, MonitorModel, UnitManagerListener {
 		}
 	}
 
-	public String getGoodCategory(Good good) {
-		String result = good.getCategory();
-
-		if (result.equals("amount resource")) result = "resource";
-		else if (result.equals("item resource")) result = "part";
-		else if (result.equals("equipment")) {
-			if (Container.class.isAssignableFrom(good.getClassType())) result = "container";
+	/** gives back the internationalized name of a good's category. */
+	public String getGoodCategoryName(Good good) {
+		String key = good.getCategory().getMsgKey();
+		if (good.getCategory() == GoodType.EQUIPMENT) {
+			if (Container.class.isAssignableFrom(good.getClassType())) key = "GoodType.container"; //$NON-NLS-1$
 		}
-
-		return result;
+		return Msg.getString(key);
 	}
 
 	/**

@@ -4,81 +4,79 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.structure.goods;
 
 import java.io.Serializable;
 
+import org.mars_sim.msp.core.equipment.Equipment;
+
 /**
  * A meta class describing an economic good in the simulation.
  */
-public class Good implements Serializable, Comparable<Good> {
+public class Good
+implements Serializable, Comparable<Good> {
 
-	// Good categories.
-	public static final String AMOUNT_RESOURCE = "amount resource";
-	public static final String ITEM_RESOURCE = "item resource";
-	public static final String EQUIPMENT = "equipment";
-	public static final String VEHICLE = "vehicle";
-	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 	// Data members
 	private String name;
 	private Class classType;
 	private Object object;
-	private String category;
-	
+	private GoodType category;
+
 	/**
 	 * Constructor with object.
 	 * @param name the name of the good.
 	 * @param object the good's object if any.
 	 * @param category the good's category.
 	 */
-	Good(String name, Object object, String category) {
+	Good(String name, Object object, GoodType category) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
-			
+
 		if (object != null) {
 			this.object = object;
 			this.classType = object.getClass();
 		}
 		else throw new IllegalArgumentException("object cannot be null.");
-		
+
 		if (isValidCategory(category)) this.category = category;
 		else throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
-	
+
 	/**
 	 * Constructor with class.
 	 * @param name the name of the good.
 	 * @param classType the good's class.
-	 * @param category the good's category.
+	 * @param category {@link GoodType} the good's category.
 	 */
-	Good(String name, Class classType, String category) {
+	Good(String name, Class classType, GoodType category) {
 		if (name != null) this.name = name.trim().toLowerCase();
 		else throw new IllegalArgumentException("name cannot be null.");
-		
+
 		if (classType != null) this.classType = classType;
 		else throw new IllegalArgumentException("classType cannot be null.");
-		
+
 		if (isValidCategory(category)) this.category = category;
 		else throw new IllegalArgumentException("category: " + category + " not valid.");
 	}
-	
+
 	/**
 	 * Checks if a category string is valid.
-	 * @param category the category string to check.
+	 * @param category the category enum to check.
 	 * @return true if valid category.
 	 */
-	private static boolean isValidCategory(String category) {
+	private static boolean isValidCategory(GoodType category) {
 		boolean result = false;
-		
-		if (AMOUNT_RESOURCE.equals(category)) result = true;
-		else if (ITEM_RESOURCE.equals(category)) result = true;
-		else if (EQUIPMENT.equals(category)) result = true;
-		else if (VEHICLE.equals(category)) result = true;
-		
+
+		if (GoodType.AMOUNT_RESOURCE == category) result = true;
+		else if (GoodType.ITEM_RESOURCE == category) result = true;
+		else if (GoodType.EQUIPMENT == category) result = true;
+		else if (GoodType.VEHICLE == category) result = true;
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets the good's name.
 	 * @return name
@@ -86,15 +84,15 @@ public class Good implements Serializable, Comparable<Good> {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * Gets the good's class.
 	 * @return class
 	 */
-	public Class getClassType() {
+	public Class<? extends Equipment> getClassType() {
 		return classType;
 	}
-	
+
 	/**
 	 * Gets the good's object if any.
 	 * @return object or null if none.
@@ -102,15 +100,15 @@ public class Good implements Serializable, Comparable<Good> {
 	public Object getObject() {
 		return object;
 	}
-	
+
 	/**
-	 * Gets the good's category string.
+	 * Gets the good's category enum.
 	 * @return category.
 	 */
-	public String getCategory() {
+	public GoodType getCategory() {
 		return category;
 	}
-	
+
 	/**
 	 * Gets a string representation of the good.
 	 * @return string.
@@ -118,7 +116,7 @@ public class Good implements Serializable, Comparable<Good> {
 	public String toString() {
 		return name;
 	}
-	
+
 	/**
 	 * Checks if an object is equal to this object.
 	 * @param object the object to compare.
@@ -136,10 +134,10 @@ public class Good implements Serializable, Comparable<Good> {
 			if (!category.equals(good.category)) result = false;
 		}
 		else result = false;
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets the hash code value.
 	 */
@@ -149,7 +147,7 @@ public class Good implements Serializable, Comparable<Good> {
 		hashCode *= category.hashCode();
 		return hashCode;
 	}
-	
+
 	/**
 	 * Compares this object with the specified object for order.
 	 * @param o the Object to be compared.
