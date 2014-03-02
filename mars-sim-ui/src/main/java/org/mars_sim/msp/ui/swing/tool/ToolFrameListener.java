@@ -13,7 +13,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.event.InternalFrameAdapter;
 import javax.swing.event.InternalFrameEvent;
 
-import org.mars_sim.msp.ui.swing.Msg;
+import org.mars_sim.msp.core.Msg;
 
 /** 
  * ToolFrameListener manages internal frame behaviors for tool windows.

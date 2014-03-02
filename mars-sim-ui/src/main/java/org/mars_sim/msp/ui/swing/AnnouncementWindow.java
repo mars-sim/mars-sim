@@ -20,6 +20,7 @@ extends JInternalFrame {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	private JLabel announcementLabel;
 
 	/** 

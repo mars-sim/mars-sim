@@ -35,7 +35,7 @@ import javax.sound.sampled.LineEvent;
 import javax.sound.sampled.LineListener;
 import javax.sound.sampled.SourceDataLine;
 
-import org.mars_sim.msp.ui.swing.Msg;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.UIConfig;
 
 /**

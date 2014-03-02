@@ -27,159 +27,152 @@ import java.net.URL;
  * The GuideWindow is a tool window that displays the built-in User Guide,
  * About Box and Tutorial.
  */
-public class GuideWindow extends ToolWindow implements ActionListener, 
-        HyperlinkListener, ComponentListener {
+public class GuideWindow
+extends ToolWindow
+implements ActionListener, HyperlinkListener, ComponentListener {
 
-    // Tool name
-    public static final String NAME = "Help";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private JViewport viewPort; // The view port for the text pane
+	// Tool name
+	public static final String NAME = "Help";
 
-    private HTMLContentPane htmlPane; // our HTML content pane
+	// Data members
+	private JViewport viewPort; // The view port for the text pane
 
-    //private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
-    //        "help" + File.separator + "userguide.html");
-    /* [landrus, 27.11.09]: load the url in the contructor. */
-    private URL guideURL;
+	private HTMLContentPane htmlPane; // our HTML content pane
 
-    private JButton homeButton = new JButton("Home");
+	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
+	//        "help" + File.separator + "userguide.html");
+	/* [landrus, 27.11.09]: load the url in the contructor. */
+	private URL guideURL;
 
-    private JButton backButton = new JButton("Back");
+	private JButton homeButton = new JButton("Home");
+	private JButton backButton = new JButton("Back");
+	private JButton forwardButton = new JButton("Forward");
 
-    private JButton forwardButton = new JButton("Forward");
+	/**
+	 * Constructor.
+	 * @param desktop the desktop pane
+	 */
+	public GuideWindow(MainDesktopPane desktop) {
 
-    /**
-     * Constructs a TableWindow object
-     * 
-     * @param desktop the desktop pane
-     */
-    public GuideWindow(MainDesktopPane desktop) {
+		// Use TableWindow constructor
+		super(NAME, desktop);
+		/* [landrus, 27.11.09]: use classloader compliant paths */
+		guideURL = getClass().getResource("/docs/help/userguide.html");
+		// Create the main panel
+		JPanel mainPane = new JPanel(new BorderLayout());
+		mainPane.setBorder(new MarsPanelBorder());
+		setContentPane(mainPane);
 
-        // Use TableWindow constructor
-        super(NAME, desktop);
-        /* [landrus, 27.11.09]: use classloader compliant paths */
-        guideURL = getClass().getResource("/docs/help/userguide.html");
-        // Create the main panel
-        JPanel mainPane = new JPanel(new BorderLayout());
-        mainPane.setBorder(new MarsPanelBorder());
-        setContentPane(mainPane);
+		homeButton.setActionCommand("home");
+		homeButton.setToolTipText("Go to Home");
+		homeButton.addActionListener(this);
 
-        homeButton.setActionCommand("home");
-        homeButton.setToolTipText("Go to Home");
-        homeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                htmlPane.goToURL(guideURL);
-                updateButtons();
-            }
-        });
+		backButton.setActionCommand("back");
+		backButton.setToolTipText("Back");
+		backButton.addActionListener(this);
 
-        backButton.setActionCommand("back");
-        backButton.setToolTipText("Back");
-        backButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                htmlPane.back();
-                updateButtons();
-            }
-        });
+		forwardButton.setActionCommand("forward");
+		forwardButton.setToolTipText("Forward");
+		forwardButton.addActionListener(this);
 
-        forwardButton.setActionCommand("forward");
-        forwardButton.setToolTipText("Forward");
-        forwardButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                htmlPane.forward();
-                updateButtons();
-            }
-        });
+		// A toolbar to hold all our buttons
+		JPanel toolPanel = new JPanel();
+		toolPanel.add(homeButton);
+		toolPanel.add(backButton);
+		toolPanel.add(forwardButton);
 
-        // A toolbar to hold all our buttons
-        JPanel toolPanel = new JPanel();
-        toolPanel.add(homeButton);
-        toolPanel.add(backButton);
-        toolPanel.add(forwardButton);
+		htmlPane = new HTMLContentPane();
+		htmlPane.addHyperlinkListener(this);
+		htmlPane.goToURL(guideURL);
 
-        htmlPane = new HTMLContentPane();
-        htmlPane.addHyperlinkListener(this);
-        htmlPane.goToURL(guideURL);
+		htmlPane.setBackground(Color.lightGray);
+		htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
 
-        htmlPane.setBackground(Color.lightGray);
-        htmlPane.setBorder(new EmptyBorder(2, 2, 2, 2));
+		JScrollPane scrollPane = new JScrollPane(htmlPane);
+		scrollPane.setBorder(new MarsPanelBorder());
+		viewPort = scrollPane.getViewport();
+		viewPort.addComponentListener(this);
+		viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
 
-        JScrollPane scrollPane = new JScrollPane(htmlPane);
-        scrollPane.setBorder(new MarsPanelBorder());
-        viewPort = scrollPane.getViewport();
-        viewPort.addComponentListener(this);
-        viewPort.setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
+		mainPane.add(scrollPane);
+		mainPane.add(toolPanel, BorderLayout.NORTH);
 
-        mainPane.add(scrollPane);
-        mainPane.add(toolPanel, BorderLayout.NORTH);
+		// Have to define a starting size
+		setSize(new Dimension(575, 475));
 
-        // Have to define a starting size
-        setSize(new Dimension(575, 475));
+		// Allow the window to be resized by the user.
+		setResizable(true);
+		setMaximizable(true);
+		updateButtons();
 
-        // Allow the window to be resized by the user.
-        setResizable(true);
-        setMaximizable(true);
-        updateButtons();
+		// Show the window
+		setVisible(true);
+	}
 
-        // Show the window
-        setVisible(true);
+	/**
+	 * Handles a click on a link.
+	 * @param event the HyperlinkEvent
+	 */
+	public void hyperlinkUpdate(HyperlinkEvent event) {
+		if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+			htmlPane.goToURL(event.getURL());
+			updateButtons();
+		}
+	}
 
-    }
+	/**
+	 * Updates navigation buttons.
+	 */
+	public void updateButtons() {
+		homeButton.setEnabled(true);
+		backButton.setEnabled(!htmlPane.isFirst());
+		forwardButton.setEnabled(!htmlPane.isLast());
+	}
 
-    /**
-     * Handles a click on a link
-     * 
-     * @param event the HyperlinkEvent
-     */
-    public void hyperlinkUpdate(HyperlinkEvent event) {
-        if (event.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
-            htmlPane.goToURL(event.getURL());
-            updateButtons();
-        }
-    }
+	/**
+	 * Set a display URL .
+	 */
+	public void setURL(String fileloc) {
+		htmlPane.goToURL(getClass().getResource(fileloc));
+	}
 
-    /**
-     * Updates navigation buttons.
-     */
-    public void updateButtons() {
-        homeButton.setEnabled(true);
-        backButton.setEnabled(!htmlPane.isFirst());
-        forwardButton.setEnabled(!htmlPane.isLast());
-    }
+	// Implementing ActionListener method
+	public void actionPerformed(ActionEvent event) {
+		Object source = event.getSource();
+		if (source == this.homeButton) {
+			htmlPane.goToURL(guideURL);
+			updateButtons();
+		} else if (source == this.backButton) {
+			htmlPane.back();
+			updateButtons();
+		} else if (source == this.forwardButton) {
+			htmlPane.forward();
+			updateButtons();
+		}
+	}
 
-    /**
-     * Set a display URL .
-     */
-    public void setURL(String fileloc) {
-    	htmlPane.goToURL(getClass().getResource(fileloc));
+	// Implement ComponentListener interface.
+	// Make sure the text is scrolled to the top.
+	// Need to find a better way to do this <Scott>
+	public void componentResized(ComponentEvent e) {
+		viewPort.setViewPosition(new Point(0, 0));
+	}
 
-    }
+	public void componentMoved(ComponentEvent e) {
+	}
 
-    // Implementing ActionListener method
-    public void actionPerformed(ActionEvent event) {
-        dispose();
-    }
+	public void componentShown(ComponentEvent e) {
+	}
 
-    // Implement ComponentListener interface.
-    // Make sure the text is scrolled to the top.
-    // Need to find a better way to do this <Scott>
-    public void componentResized(ComponentEvent e) {
-        viewPort.setViewPosition(new Point(0, 0));
-    }
+	public void componentHidden(ComponentEvent e) {
+	}
 
-    public void componentMoved(ComponentEvent e) {
-    }
-
-    public void componentShown(ComponentEvent e) {
-    }
-
-    public void componentHidden(ComponentEvent e) {
-    }
-
-    /**
-     * Prepare tool window for deletion.
-     */
-    public void destroy() {
-    }
+	/**
+	 * Prepare tool window for deletion.
+	 */
+	public void destroy() {
+	}
 }
