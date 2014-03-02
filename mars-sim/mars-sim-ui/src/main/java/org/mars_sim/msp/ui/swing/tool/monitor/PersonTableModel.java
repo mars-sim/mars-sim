@@ -15,6 +15,7 @@ import java.util.Map;
 
 import javax.swing.SwingUtilities;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEvent;
@@ -81,38 +82,40 @@ public class PersonTableModel extends UnitTableModel {
 	static {
 		columnNames = new String[COLUMNCOUNT];
 		columnTypes = new Class[COLUMNCOUNT];
-		columnNames[NAME] = "Name";
+		columnNames[NAME] = Msg.getString("PersonTableModel.column.name"); //$NON-NLS-1$
 		columnTypes[NAME] = String.class;
-		columnNames[GENDER] = "Gender";
+		columnNames[GENDER] = Msg.getString("PersonTableModel.column.gender"); //$NON-NLS-1$
 		columnTypes[GENDER] = String.class;
-		columnNames[PERSONALITY] = "Personality";
+		columnNames[PERSONALITY] = Msg.getString("PersonTableModel.column.personality"); //$NON-NLS-1$
 		columnTypes[PERSONALITY] = String.class; 
-		columnNames[HUNGER] = "Hunger";
+		columnNames[HUNGER] = Msg.getString("PersonTableModel.column.hunger"); //$NON-NLS-1$
 		columnTypes[HUNGER] = Integer.class;
-		columnNames[FATIGUE] = "Fatigue";
+		columnNames[FATIGUE] = Msg.getString("PersonTableModel.column.fatigue"); //$NON-NLS-1$
 		columnTypes[FATIGUE] = Integer.class;
-		columnNames[STRESS] = "Stress %";
+		columnNames[STRESS] = Msg.getString("PersonTableModel.column.stress"); //$NON-NLS-1$
 		columnTypes[STRESS] = Integer.class;
-		columnNames[PERFORMANCE] = "Performance %";
+		columnNames[PERFORMANCE] = Msg.getString("PersonTableModel.column.performance"); //$NON-NLS-1$
 		columnTypes[PERFORMANCE] = Integer.class;
-		columnNames[LOCATION] = "Location";
+		columnNames[LOCATION] = Msg.getString("PersonTableModel.column.location"); //$NON-NLS-1$
 		columnTypes[LOCATION] = String.class;
-		columnNames[JOB] = "Job";
+		columnNames[JOB] = Msg.getString("PersonTableModel.column.job"); //$NON-NLS-1$
 		columnTypes[JOB] = String.class;
-		columnNames[MISSION] = "Mission";
+		columnNames[MISSION] = Msg.getString("PersonTableModel.column.mission"); //$NON-NLS-1$
 		columnTypes[MISSION] = String.class;
-		columnNames[TASK] = "Task";
+		columnNames[TASK] = Msg.getString("PersonTableModel.column.task"); //$NON-NLS-1$
 		columnTypes[TASK] = String.class;
-		columnNames[HEALTH] = "Health";
+		columnNames[HEALTH] = Msg.getString("PersonTableModel.column.health"); //$NON-NLS-1$
 		columnTypes[HEALTH] = String.class;
 	}
 
-	// Valid source types.
-	private static final String ALL_PEOPLE = "All People";
-	private static final String VEHICLE_CREW = "Vehicle Crew";
-	private static final String SETTLEMENT_INHABITANTS = "Settlement Inhabitants";
-	private static final String SETTLEMENT_ALL_ASSOCIATED_PEOPLE = "All People Associated with Settlement";
-	private static final String MISSION_PEOPLE = "Mission People";
+	/** inner enum with valid source types. */
+	private enum ValidSourceType {
+		ALL_PEOPLE,
+		VEHICLE_CREW,
+		SETTLEMENT_INHABITANTS,
+		SETTLEMENT_ALL_ASSOCIATED_PEOPLE,
+		MISSION_PEOPLE;
+	}
 
 	/*
     static final Map<String, Integer> EVENT_COLUMN_MAPPING;//= new HashMap<String, Integer>(12);
@@ -134,7 +137,8 @@ public class PersonTableModel extends UnitTableModel {
         }
 	 */
 
-	private String sourceType; // The type of source for the people table.
+	/** The type of source for the people table. */
+	private ValidSourceType sourceType;
 
 	// List sources.
 	private Crewable vehicle;
@@ -151,9 +155,14 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param unitManager Manager containing Person objects.
 	 */
 	public PersonTableModel(UnitManager unitManager) {
-		super("All People", " people", columnNames, columnTypes);
+		super(
+			Msg.getString("PersonTableModel.allPeople"), //$NON-NLS-1$
+			"PersonTableModel.countingPeople", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
 
-		sourceType = ALL_PEOPLE;
+		sourceType = ValidSourceType.ALL_PEOPLE;
 		setSource(unitManager.getPeople());
 		unitManagerListener = new LocalUnitManagerListener();
 		unitManager.addUnitManagerListener(unitManagerListener);
@@ -165,10 +174,17 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param vehicle Monitored vehicle Person objects.
 	 */
 	public PersonTableModel(Crewable vehicle) {
-		super(((Unit) vehicle).getName() + " - People", " people",
-				columnNames, columnTypes);
+		super(
+			Msg.getString(
+				"PersonTableModel.namePeople", //$NON-NLS-1$
+				((Unit) vehicle).getName()
+			),
+			"PersonTableModel.countingPeople", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
 
-		sourceType = VEHICLE_CREW;
+		sourceType = ValidSourceType.VEHICLE_CREW;
 		this.vehicle = vehicle;
 		setSource(vehicle.getCrew());
 		crewListener = new LocalCrewListener();
@@ -182,18 +198,35 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param allAssociated Are all people associated with this settlement to be displayed?
 	 */
 	public PersonTableModel(Settlement settlement, boolean allAssociated) {
-		super(settlement.getName() + (allAssociated ? " - All Associated People" : " - People"), 
-				(allAssociated ? " associated people" : " residents"), columnNames, columnTypes);
+		super(
+			(
+				allAssociated ?
+				Msg.getString(
+					"PersonTableModel.nameAssociatedPeople", //$NON-NLS-1$
+					settlement.getName()
+				) :
+				Msg.getString(
+					"PersonTableModel.namePeople", //$NON-NLS-1$
+					settlement.getName()
+				)
+			),(
+				allAssociated ?
+				"PersonTableModel.countingAssociatedPeople" : //$NON-NLS-1$
+				"PersonTableModel.countingResidents" //$NON-NLS-1$
+			),
+			columnNames,
+			columnTypes
+		);
 
 		this.settlement = settlement;
 		if (allAssociated) {
-			sourceType = SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
+			sourceType = ValidSourceType.SETTLEMENT_ALL_ASSOCIATED_PEOPLE;
 			setSource(settlement.getAllAssociatedPeople());
 			settlementListener = new AssociatedSettlementListener();
 			settlement.addUnitListener(settlementListener);
 		}
 		else {
-			sourceType = SETTLEMENT_INHABITANTS;
+			sourceType = ValidSourceType.SETTLEMENT_INHABITANTS;
 			setSource(settlement.getInhabitants());
 			settlementListener = new InhabitantSettlementListener();
 			settlement.addUnitListener(settlementListener);
@@ -206,10 +239,17 @@ public class PersonTableModel extends UnitTableModel {
 	 * @param mission Monitored mission Person objects.
 	 */
 	public PersonTableModel(Mission mission) {
-		super(mission.getName() + " - People", " mission members",
-				columnNames, columnTypes);
+		super(
+			Msg.getString(
+				"PersonTableModel.namePeople", //$NON-NLS-1$
+				mission.getName()
+			),
+			"PersonTableModel.countingMissionMembers", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
 
-		sourceType = MISSION_PEOPLE;
+		sourceType = ValidSourceType.MISSION_PEOPLE;
 		this.mission = mission;
 		setSource(mission.getPeople());
 		missionListener = new LocalMissionListener();
@@ -352,17 +392,17 @@ public class PersonTableModel extends UnitTableModel {
 	public void destroy() {
 		super.destroy();
 
-		if (sourceType.equals(ALL_PEOPLE)) {
+		if (sourceType == ValidSourceType.ALL_PEOPLE) {
 			UnitManager unitManager = Simulation.instance().getUnitManager();
 			unitManager.removeUnitManagerListener(unitManagerListener);
 			unitManagerListener = null;
 		}
-		else if (sourceType.equals(VEHICLE_CREW)) {
+		else if (sourceType == ValidSourceType.VEHICLE_CREW) {
 			((Unit) vehicle).removeUnitListener(crewListener);
 			crewListener = null;
 			vehicle = null;
 		}
-		else if (sourceType.equals(MISSION_PEOPLE)) {
+		else if (sourceType == ValidSourceType.MISSION_PEOPLE) {
 			mission.removeMissionListener(missionListener);
 			missionListener = null;
 			mission = null;
@@ -439,7 +479,7 @@ public class PersonTableModel extends UnitTableModel {
 			else if (eventType.equals(Mind.MISSION_EVENT)) columnNum = MISSION;
 			else if (eventType.equals(PhysicalCondition.ILLNESS_EVENT) ||
 			eventType.equals(PhysicalCondition.DEATH_EVENT)) columnNum = HEALTH;
-			*/
+			 */
 			if (column != null && column> -1) {
 				Unit unit = (Unit) event.getSource();
 				tableModel.fireTableCellUpdated(tableModel.getUnitIndex(unit), column);

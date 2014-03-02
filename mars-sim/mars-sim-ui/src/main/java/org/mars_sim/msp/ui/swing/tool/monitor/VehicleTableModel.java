@@ -138,7 +138,12 @@ extends UnitTableModel {
 	 * @param unitManager Proxy manager contains displayable Vehicles.
 	 */
 	public VehicleTableModel(UnitManager unitManager) {
-		super("All Vehicles", " vehicles", columnNames, columnTypes);
+		super(
+			"All Vehicles",
+			"VehicleTableModel.countingVehicles", //$NON-NLS-1$
+			columnNames,
+			columnTypes
+		);
 
 		setSource(unitManager.getVehicles());
 		unitManagerListener = new LocalUnitManagerListener();

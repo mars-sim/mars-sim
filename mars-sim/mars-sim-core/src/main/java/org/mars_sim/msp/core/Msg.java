@@ -68,7 +68,7 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurances of "%1" with the given parameter.
+	 * replaces all occurances of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @return {@link String}
@@ -78,12 +78,12 @@ public class Msg {
 		final String param1
 	) {
 		return getString(key)
-		.replace("%1",param1);
+		.replace("{0}",param1);
 	}
 
 	/**
-	 * replaces all occurances of "%1" with the given parameter.
-	 * replaces all occurances of "%2" with the given second parameter.
+	 * replaces all occurances of "{0}" with the given parameter.
+	 * replaces all occurances of "{1}" with the given second parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @param param2 {@link String}
@@ -95,8 +95,8 @@ public class Msg {
 		final String param2
 	) {
 		return getString(key)
-		.replace("%1",param1)
-		.replace("%2",param2);
+		.replace("{0}",param1)
+		.replace("{1}",param2);
 	}
 
 	public static boolean getBool(String key) {
