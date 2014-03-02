@@ -7,21 +7,29 @@
 
 package org.mars_sim.msp.ui.swing.tool.guide;
 
-import org.mars_sim.msp.ui.swing.HTMLContentPane;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
-import org.mars_sim.msp.ui.swing.tool.ToolWindow;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.HyperlinkEvent;
-import javax.swing.event.HyperlinkListener;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.net.URL;
+
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JViewport;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
+
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.ui.swing.HTMLContentPane;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 
 /**
  * The GuideWindow is a tool window that displays the built-in User Guide,
@@ -35,7 +43,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	private static final long serialVersionUID = 1L;
 
 	// Tool name
-	public static final String NAME = "Help";
+	public static final String NAME = Msg.getString("GuideWindow.title"); //$NON-NLS-1$
 
 	// Data members
 	private JViewport viewPort; // The view port for the text pane
@@ -47,9 +55,9 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 	/* [landrus, 27.11.09]: load the url in the contructor. */
 	private URL guideURL;
 
-	private JButton homeButton = new JButton("Home");
-	private JButton backButton = new JButton("Back");
-	private JButton forwardButton = new JButton("Forward");
+	private JButton homeButton = new JButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
+	private JButton backButton = new JButton(Msg.getString("GuideWindow.button.back")); //$NON-NLS-1$
+	private JButton forwardButton = new JButton(Msg.getString("GuideWindow.button.forward")); //$NON-NLS-1$
 
 	/**
 	 * Constructor.
@@ -60,22 +68,19 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		// Use TableWindow constructor
 		super(NAME, desktop);
 		/* [landrus, 27.11.09]: use classloader compliant paths */
-		guideURL = getClass().getResource("/docs/help/userguide.html");
+		guideURL = getClass().getResource(Msg.getString("doc.guide")); //$NON-NLS-1$
 		// Create the main panel
 		JPanel mainPane = new JPanel(new BorderLayout());
 		mainPane.setBorder(new MarsPanelBorder());
 		setContentPane(mainPane);
 
-		homeButton.setActionCommand("home");
-		homeButton.setToolTipText("Go to Home");
+		homeButton.setToolTipText(Msg.getString("GuideWindow.tooltip.home")); //$NON-NLS-1$
 		homeButton.addActionListener(this);
 
-		backButton.setActionCommand("back");
-		backButton.setToolTipText("Back");
+		backButton.setToolTipText(Msg.getString("GuideWindow.tooltip.back")); //$NON-NLS-1$
 		backButton.addActionListener(this);
 
-		forwardButton.setActionCommand("forward");
-		forwardButton.setToolTipText("Forward");
+		forwardButton.setToolTipText(Msg.getString("GuideWindow.tooltip.forward")); //$NON-NLS-1$
 		forwardButton.addActionListener(this);
 
 		// A toolbar to hold all our buttons
