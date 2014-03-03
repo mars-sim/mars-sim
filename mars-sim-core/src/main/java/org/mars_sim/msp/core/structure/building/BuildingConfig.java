@@ -6,12 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building;
 
-import org.jdom.DataConversionException;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.function.*;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -21,12 +15,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.jdom.DataConversionException;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
+import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
+import org.mars_sim.msp.core.structure.building.function.PowerSource;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
+import org.mars_sim.msp.core.structure.building.function.SolarPowerSource;
+import org.mars_sim.msp.core.structure.building.function.SolarThermalPowerSource;
+import org.mars_sim.msp.core.structure.building.function.StandardPowerSource;
+import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
 
 /**
  * Provides configuration information about settlement buildings.
  * Uses a DOM document to get the information. 
  */
-public class BuildingConfig implements Serializable {
+public class BuildingConfig
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Element and attribute names
 	private static final String BUILDING = "building";
@@ -704,7 +714,7 @@ public class BuildingConfig implements Serializable {
 	    Element buildingElement = getBuildingElement(buildingName);
         Element functionsElement = buildingElement.getChild(FUNCTIONS);
         Element groundVehicleMaintenanceElement = functionsElement.getChild(GROUND_VEHICLE_MAINTENANCE);
-        List parkingLocations = groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION);
+        List<?> parkingLocations = groundVehicleMaintenanceElement.getChildren(PARKING_LOCATION);
         if ((parkingIndex >= 0) && (parkingIndex < parkingLocations.size())) {
             Element parkingLocation = (Element) parkingLocations.get(parkingIndex);
             try {

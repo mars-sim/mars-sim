@@ -31,9 +31,9 @@ implements Serializable, Comparable<Unit> {
 	// Data members
 	/** Unit location coordinates. */
 	private Coordinates location;
-	/** Unit name. */
+	/** TODO Unit name needs to be internationalized. */
 	private String name;
-	/** Unit description. */
+	/** TODO Unit description needs to be internationalized. */
 	private String description;
 	/** The mass of the unit without inventory. */
 	private double baseMass;
@@ -230,11 +230,11 @@ implements Serializable, Comparable<Unit> {
 			try {
 				throw new IllegalStateException(
 					Msg.getString(
-						"Unit.log.alreadyContainsListener",
+						"Unit.log.alreadyContainsListener", //$NON-NLS-1$
 						newListener.getClass().getName(),
 						newListener.toString()
 					)
-				); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				);
 			} 
 			catch (Exception e){
 				e.printStackTrace();
