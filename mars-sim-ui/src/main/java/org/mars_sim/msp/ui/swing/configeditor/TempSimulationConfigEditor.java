@@ -385,7 +385,7 @@ extends JDialog {
 	private String determineNewSettlementLatitude() {
 		double phi = Coordinates.getRandomLatitude();
 		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
-		int degreeIndex = formattedLatitude.indexOf('\u00BA');
+		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 		return
 			formattedLatitude.substring(0, degreeIndex) +
 			formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length())
@@ -399,7 +399,7 @@ extends JDialog {
 	private String determineNewSettlementLongitude() {
 		double theta = Coordinates.getRandomLongitude();
 		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
-		int degreeIndex = formattedLongitude.indexOf('\u00BA');
+		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 		return
 			formattedLongitude.substring(0, degreeIndex) +
 			formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length())
@@ -642,8 +642,8 @@ extends JDialog {
 						setError(
 							Msg.getString(
 								"TempSimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
-								Msg.getString("direction.eastShort"),
-								Msg.getString("direction.westShort")
+								Msg.getString("direction.eastShort"), //$NON-NLS-1$
+								Msg.getString("direction.westShort") //$NON-NLS-1$
 							)
 						);
 					} else {
