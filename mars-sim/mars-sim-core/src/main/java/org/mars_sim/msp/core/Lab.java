@@ -12,7 +12,8 @@ import java.io.Serializable;
  * The Lab interface represents a unit that can perform the function
  * of a research laboratory.
  */
-public interface Lab extends Serializable{
+public interface Lab
+extends Serializable{
 
 	/** 
 	 * Gets the laboratory size.
