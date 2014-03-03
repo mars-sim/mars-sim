@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.equipment;
 
 import org.mars_sim.msp.core.resource.Phase;
@@ -19,7 +18,7 @@ public interface Container {
 	 * @return resource phase.
 	 */
 	public Phase getContainingResourcePhase();
-	
+
 	/**
 	 * Gets the total capacity of resource that this container can hold.
 	 * @return total capacity (kg).

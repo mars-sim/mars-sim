@@ -1,6 +1,5 @@
 package org.mars_sim.msp.core;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
