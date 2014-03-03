@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing;
 
 import javax.swing.*;
@@ -24,13 +23,13 @@ extends JInternalFrame {
 	private JLabel announcementLabel;
 
 	/** 
-	 * Constructor 
+	 * Constructor .
 	 * @param desktop the main desktop pane.
 	 */
 	public AnnouncementWindow(MainDesktopPane desktop) {
 
 		// Use JDialog constructor
-		super("", false, false, false, false);
+		super("", false, false, false, false); //$NON-NLS-1$
 
 		// Create the main panel
 		JPanel mainPane = new JPanel();
@@ -38,7 +37,7 @@ extends JInternalFrame {
 		mainPane.setBorder(new EmptyBorder(10, 20, 10, 20));
 		setContentPane(mainPane);
 
-		announcementLabel = new JLabel("", JLabel.CENTER);
+		announcementLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
 		announcementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.add(announcementLabel, BorderLayout.CENTER);
 	}

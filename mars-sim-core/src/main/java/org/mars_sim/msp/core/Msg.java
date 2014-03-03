@@ -40,7 +40,7 @@ public class Msg {
 	 */
 	private static final ResourceBundle RESOURCE_BUNDLE = ResourceBundle.getBundle(
 		BUNDLE_NAME
-		,new Locale("de") //$NON-NLS-1$
+		,new Locale("") //$NON-NLS-1$
 		,new UTF8Control()
 	);
 
