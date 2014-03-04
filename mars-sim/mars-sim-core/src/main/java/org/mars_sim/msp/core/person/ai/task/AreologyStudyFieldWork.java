@@ -4,8 +4,12 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -13,23 +17,23 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.vehicle.Rover;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A task for the EVA operation of performing areology field work at a research site 
  * for a scientific study.
  */
-public class AreologyStudyFieldWork extends EVAOperation implements Serializable {
+public class AreologyStudyFieldWork
+extends EVAOperation
+implements Serializable {
 
-    // Task phases
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Task phases should be enums
     private static final String WALK_TO_SITE = "Walk to Site";
     private static final String FIELD_WORK = "Performing Field Work";
     private static final String WALK_TO_ROVER = "Walk to Rover";
@@ -44,7 +48,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
     private double enterAirlockYLoc;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @param leadResearcher the researcher leading the field work.
      * @param study the scientific study the field work is for.
@@ -302,7 +306,7 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
         
         // If phase is performing field work, add experience to areology skill.
         if (FIELD_WORK.equals(getPhase())) {
@@ -310,23 +314,23 @@ public class AreologyStudyFieldWork extends EVAOperation implements Serializable
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
-        results.add(Skill.AREOLOGY);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.AREOLOGY);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
     }
 

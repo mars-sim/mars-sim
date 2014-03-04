@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.resource.ItemResource;
@@ -55,12 +55,13 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
 
-	/** Default description. */
+	/** TODO Default description should be internationalized. */
 	public static final String DEFAULT_DESCRIPTION = "Salvage Building";
 
-	// Mission phases
+	// TODO Mission phases should be enums
 	final public static String PREPARE_SITE_PHASE = "Prepare Site";
 	final public static String SALVAGE_PHASE = "Salvage";
 
@@ -108,8 +109,7 @@ implements Serializable {
             recruitPeopleForMission(startingPerson);
 
             // Determine construction site and stage.
-            int constructionSkill = startingPerson.getMind().getSkillManager()
-                    .getEffectiveSkillLevel(Skill.CONSTRUCTION);
+            int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
             ConstructionManager manager = settlement.getConstructionManager();
             SalvageValues values = manager.getSalvageValues();
             double existingSitesProfit = values
@@ -331,8 +331,7 @@ implements Serializable {
 
             if (reservableLUV && enoughPeople && !constructionOverride && !firstMonth) {
                 try {
-                    int constructionSkill = person.getMind().getSkillManager()
-                            .getEffectiveSkillLevel(Skill.CONSTRUCTION);
+                    int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     SalvageValues values = settlement.getConstructionManager()
                             .getSalvageValues();
                     double salvageProfit = values
@@ -745,8 +744,7 @@ implements Serializable {
         double totalSkill = 0D;
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
-            int constructionSkill = i.next().getMind().getSkillManager()
-                    .getSkillLevel(Skill.CONSTRUCTION);
+            int constructionSkill = i.next().getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
             totalSkill += constructionSkill;
         }
         double averageSkill = totalSkill / getPeopleNumber();

@@ -6,31 +6,38 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.Lab;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
+
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
  
 /**
  * The Research class is a building function for research.
  */
-public class Research extends Function implements Lab, Serializable {
+public class Research
+extends Function
+implements Lab, Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	public static final String NAME = "Research";
 
 	private int techLevel;
 	private int researcherCapacity;
-	private List<String> researchSpecialities;
+	private List<ScienceType> researchSpecialities;
 	private int researcherNum;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param building the building this function is for.
 	 * @throws BuildingException if function could not be constructed.
 	 */
@@ -59,16 +66,13 @@ public class Research extends Function implements Lab, Serializable {
         double result = 0D;
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        List<String> specialities = config.getResearchSpecialities(buildingName);
+        List<ScienceType> specialities = config.getResearchSpecialities(buildingName);
         
-        Iterator<String> i = specialities.iterator();
-        while (i.hasNext()) {
-            String speciality = i.next();
-            
+        for (ScienceType speciality : specialities) {
             double researchDemand = 0D;
             Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
             while (j.hasNext()) 
-                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality);
+                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality.getSkill());
         
             double researchSupply = 0D;
             boolean removedBuilding = false;
@@ -84,7 +88,7 @@ public class Research extends Function implements Lab, Serializable {
                     int labSize = researchFunction.researcherCapacity;
                     double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
                     for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
-                        String researchSpeciality = researchFunction.getTechSpecialities()[x];
+                        ScienceType researchSpeciality = researchFunction.getTechSpecialities()[x];
                         if (speciality.equals(researchSpeciality)) {
                             researchSupply += techLevel * labSize * wearModifier;
                         }
@@ -122,26 +126,18 @@ public class Research extends Function implements Lab, Serializable {
 	
 	/**
 	 * Gets an array of the building's research tech specialities.
-	 * @return array of specialities as strings.
+	 * @return array of specialities.
 	 */
-	public String[] getTechSpecialities() {
-		String[] result = new String[researchSpecialities.size()];
-		for (int x=0; x < researchSpecialities.size(); x++)
-			result[x] = researchSpecialities.get(x);
-		return result;
+	public ScienceType[] getTechSpecialities() {
+		return researchSpecialities.toArray(new ScienceType[] {});
 	}
 	
 	/**
 	 * Checks to see if the laboratory has a given tech speciality.
 	 * @return true if lab has tech speciality
 	 */
-	public boolean hasSpeciality(String speciality) {
-		boolean result = false;
-		Iterator<String> i = researchSpecialities.iterator();
-		while (i.hasNext()) {
-			if (i.next().equalsIgnoreCase(speciality)) result = true;
-		}
-		return result;
+	public boolean hasSpeciality(ScienceType speciality) {
+		return researchSpecialities.contains(speciality);
 	}
 	
 	/**

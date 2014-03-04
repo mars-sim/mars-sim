@@ -28,21 +28,33 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The Mind class represents a person's mind. It keeps track of missions and 
  * tasks which the person is involved.
  */
-public class Mind implements Serializable {
+public class Mind
+implements Serializable {
 
+	/** default serial id.*/
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(Mind.class.getName());
 
     // Data members
-    private Person person; // The person owning this mind.
-    private TaskManager taskManager; // The person's task manager.
-    private Mission mission; // The person's current mission (if any).
-    private Job job; // The person's job.
-    private boolean jobLock; // Is the job locked so another can't be chosen?
-    private PersonalityType personality; // The person's personality.
-    private SkillManager skillManager; // The person's skill manager.
+    /** The person owning this mind. */
+    private Person person;
+    /** The person's task manager. */
+    private TaskManager taskManager;
+    /** The person's current mission (if any). */
+    private Mission mission;
+    /** The person's job. */
+    private Job job;
+    /** Is the job locked so another can't be chosen? */
+    private boolean jobLock;
+    /** The person's personality. */
+    private PersonalityType personality;
+    /** The person's skill manager. */
+    private SkillManager skillManager;
 
     /**
-     * Constructor
+     * Constructor.
      * @param person the person owning this mind
      * @throws Exception if mind could not be created.
      */

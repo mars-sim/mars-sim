@@ -9,21 +9,25 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Yoga extends Task implements Serializable {
+public class Yoga
+extends Task
+implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     // Task phase
     private static final String DOING_YOGA = "Doing Yoga";
 
-    // The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.7D;
 
+    /** constructor. */
     public Yoga(Person person) {
         super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(30D));
@@ -55,8 +59,8 @@ public class Yoga extends Task implements Serializable {
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(0);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
 

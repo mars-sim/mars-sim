@@ -7,20 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.Coordinates;
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.mission.Mining;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
-import org.mars_sim.msp.core.vehicle.Rover;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,26 +15,47 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.Mining;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
+import org.mars_sim.msp.core.vehicle.Rover;
+
 /**
  * Task for mining minerals at a site.
  */
-public class MineSite extends EVAOperation implements Serializable {
+public class MineSite
+extends EVAOperation
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(MineSite.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(MineSite.class.getName());
     
-	// Task phases
+	// TODO Task phases should be an enum
     private static final String WALK_TO_SITE = "Walk to Site";
 	private static final String MINING = "Mining";
 	private static final String WALK_TO_ROVER = "Walk to Rover";
 	
-	// Excavation rates (kg/millisol)
+	/** Excavation rates (kg/millisol). */
 	private static final double HAND_EXCAVATION_RATE = .1D;
+	/** Excavation rates (kg/millisol). */
 	private static final double LUV_EXCAVATION_RATE = 1D;
 	
-	// Time limit for mining (millisol)
+	/** Time limit for mining (millisol). */
 	private static final double MINING_TIME_LIMIT = 100D;
 	
-	// The base chance of an accident while operating LUV per millisol.
+	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
 	
 	// Data members
@@ -361,7 +368,7 @@ public class MineSite extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		manager.addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is mining, add experience to areology skill.
 		if (MINING.equals(getPhase())) {
@@ -369,7 +376,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double areologyExperience = time / 10D;
 			areologyExperience += areologyExperience * experienceAptitudeModifier;
-			manager.addExperience(Skill.AREOLOGY, areologyExperience);
+			manager.addExperience(SkillType.AREOLOGY, areologyExperience);
 			
 			// If person is driving the light utility vehicle, add experience to driving skill.
 			// 1 base experience point per 10 millisols of mining time spent.
@@ -377,17 +384,17 @@ public class MineSite extends EVAOperation implements Serializable {
 			if (operatingLUV) {
 				double drivingExperience = time / 10D;
 				drivingExperience += drivingExperience * experienceAptitudeModifier;
-				manager.addExperience(Skill.DRIVING, drivingExperience);
+				manager.addExperience(SkillType.DRIVING, drivingExperience);
 			}
 		}
 	}
 
 	@Override
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(3);
-		results.add(Skill.EVA_OPERATIONS);
-		results.add(Skill.AREOLOGY);
-		if (operatingLUV) results.add(Skill.DRIVING);
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(3);
+		results.add(SkillType.EVA_OPERATIONS);
+		results.add(SkillType.AREOLOGY);
+		if (operatingLUV) results.add(SkillType.DRIVING);
 		return results;
 	}
 
@@ -396,10 +403,10 @@ public class MineSite extends EVAOperation implements Serializable {
 		int result = 0;
 		
 		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-		int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
 		if (operatingLUV) {
-			int drivingSkill = manager.getEffectiveSkillLevel(Skill.DRIVING);
+			int drivingSkill = manager.getEffectiveSkillLevel(SkillType.DRIVING);
 			result = (int) Math.round((double)(EVAOperationsSkill + areologySkill + drivingSkill) / 3D); 
 		}
 		else result = (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
@@ -441,7 +448,7 @@ public class MineSite extends EVAOperation implements Serializable {
 			double chance = BASE_LUV_ACCIDENT_CHANCE;
 			
 			// Driving skill modification.
-			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
             

@@ -6,28 +6,35 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScienceUtil;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
+
 /**
  * A task for proposing a new scientific study.
  */
-public class ProposeScientificStudy extends Task implements Serializable {
+public class ProposeScientificStudy
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
     
     // The stress modified per millisol.
     private static final double STRESS_MODIFIER = 0D;
@@ -51,10 +58,10 @@ public class ProposeScientificStudy extends Task implements Serializable {
         if (study == null) {
             // Create new scientific study.
             Job job = person.getMind().getJob();
-            Science science = ScienceUtil.getAssociatedScience(job);
+            ScienceType science = ScienceType.getJobScience(job);
             if (science != null) {
-                String skillName = ScienceUtil.getAssociatedSkill(science);
-                int level = person.getMind().getSkillManager().getSkillLevel(skillName);
+                SkillType skill = science.getSkill();
+                int level = person.getMind().getSkillManager().getSkillLevel(skill);
                 study = manager.createScientificStudy(person, science, level);
             }
             else {
@@ -89,8 +96,8 @@ public class ProposeScientificStudy extends Task implements Serializable {
                 
                 // Increase probability if person's current job is related to study's science.
                 Job job = person.getMind().getJob();
-                Science science = study.getScience();
-                if ((job != null) && science.equals(ScienceUtil.getAssociatedScience(job))) result = 50D;
+                ScienceType science = study.getScience();
+                if ((job != null) && science == ScienceType.getJobScience(job)) result = 50D;
                 else result = 10D;
             }
         }
@@ -99,7 +106,7 @@ public class ProposeScientificStudy extends Task implements Serializable {
             // Probability of starting a new scientific study.
             
             // Check if scientist job.
-            if (ScienceUtil.isScienceJob(person.getMind().getJob())) result = 1D;
+            if (ScienceType.isScienceJob(person.getMind().getJob())) result = 1D;
             
             // Modify if researcher is already collaborating in studies.
             int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
@@ -152,22 +159,20 @@ public class ProposeScientificStudy extends Task implements Serializable {
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         
-        String skillName = ScienceUtil.getAssociatedSkill(study.getScience());
-        person.getMind().getSkillManager().addExperience(skillName, newPoints);
+        person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints);
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> skills = new ArrayList<String>(1);
-        skills.add(ScienceUtil.getAssociatedSkill(study.getScience()));
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> skills = new ArrayList<SkillType>(1);
+        skills.add(study.getScience().getSkill());
         return skills;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        String skillName = ScienceUtil.getAssociatedSkill(study.getScience());
-        return manager.getEffectiveSkillLevel(skillName);
+        return manager.getEffectiveSkillLevel(study.getScience().getSkill());
     }
 
     @Override

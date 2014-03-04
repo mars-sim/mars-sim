@@ -6,22 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Cooking;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,20 +15,44 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Cooking;
+
 /** 
  * The TendGreenhouse class is a task for cooking meals in a building
  * with the Cooking function.
  * This is an effort driven task.
  */
-public class CookMeal extends Task implements Serializable {
+public class CookMeal
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(CookMeal.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
+
+    // TODO Task phase should be an enum
     private static final String COOKING = "Cooking";
 
     // Static members
-    private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.1D;
 
     // Starting meal times (millisol) for 0 degrees longitude.
     private static final double BREAKFAST_START = 300D;
@@ -55,7 +63,8 @@ public class CookMeal extends Task implements Serializable {
     private static final double MEALTIME_DURATION = 100D;
 
     // Data members
-    private Cooking kitchen; // The kitchen the person is cooking at.
+    /** The kitchen the person is cooking at. */
+    private Cooking kitchen;
 
     /**
      * Constructor
@@ -232,7 +241,7 @@ public class CookMeal extends Task implements Serializable {
                 NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.COOKING, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.COOKING, newPoints);
     }
 
     /**
@@ -252,7 +261,7 @@ public class CookMeal extends Task implements Serializable {
         double chance = .001D;
 
         // Cooking skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -348,8 +357,7 @@ public class CookMeal extends Task implements Serializable {
      * @return list of kitchen buildings
      * @throws BuildingException if error
      */
-    private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) 
-    {
+    private static List<Building> getKitchensNeedingCooks(List<Building> kitchenBuildings) {
         List<Building> result = new ArrayList<Building>();
 
         if (kitchenBuildings != null) {
@@ -364,23 +372,16 @@ public class CookMeal extends Task implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.COOKING);
+        return manager.getEffectiveSkillLevel(SkillType.COOKING);
     }
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        results.add(Skill.COOKING);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.COOKING);
         return results;
     }
 

@@ -34,7 +34,7 @@ public final class JobManager implements Serializable {
 	 * Private constructor for static utility class.
 	 */
 	private JobManager() {}
-	
+
 	/**
 	 * Initialize job list.
 	 */
@@ -48,15 +48,15 @@ public final class JobManager implements Serializable {
 		jobs.add(new Chef());
 		jobs.add(new Trader());
 		jobs.add(new Technician());
-        jobs.add(new Architect());
-        jobs.add(new Biologist());
-        jobs.add(new Astronomer());
-        jobs.add(new Chemist());
-        jobs.add(new Physicist());
-        jobs.add(new Mathematician());
-        jobs.add(new Meteorologist());
+		jobs.add(new Architect());
+		jobs.add(new Biologist());
+		jobs.add(new Astronomer());
+		jobs.add(new Chemist());
+		jobs.add(new Physicist());
+		jobs.add(new Mathematician());
+		jobs.add(new Meteorologist());
 	}
-	
+
 	/**
 	 * Gets a list of available jobs in the simulation.
 	 * @return list of jobs
@@ -65,11 +65,12 @@ public final class JobManager implements Serializable {
 		if (jobs == null) loadJobs();
 		return new ArrayList<Job>(jobs);
 	}
-	
+
 	/**
 	 * Gets a job from a job name.
 	 * @param jobName the name of the job.
 	 * @return job or null if job with name not found.
+	 * @deprecated don't use localized strings
 	 */
 	public static Job getJob(String jobName) {
 		Job result = null;
@@ -80,7 +81,7 @@ public final class JobManager implements Serializable {
 		}
 		return result;
 	}
-	
+
 	/**
 	 * Gets the need for a job at a settlement minus the capability of the inhabitants
 	 * performing that job there.
@@ -90,17 +91,17 @@ public final class JobManager implements Serializable {
 	 */
 	public static double getRemainingSettlementNeed(Settlement settlement, Job job) {
 		double result = job.getSettlementNeed(settlement);
-		
+
 		// Check all people associated with the settlement.
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (person.getMind().getJob() == job) result-= job.getCapability(person);
 		}
-		
+
 		return result;
 	}
-	
+
 	/**
 	 * Gets a new job for the person.
 	 * Might be the person's current job.
@@ -108,16 +109,16 @@ public final class JobManager implements Serializable {
 	 * @return the new job.
 	 */
 	public static Job getNewJob(Person person) {
-		
+
 		Job originalJob = person.getMind().getJob();
-		
+
 		// Determine person's associated settlement.
 		Settlement settlement = null;
 		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
 			settlement = person.getSettlement();
 		else if (person.getMind().hasActiveMission()) 
 			settlement = person.getMind().getMission().getAssociatedSettlement();
-			
+
 		// Find new job for person.
 		Job newJob = null;
 		double newJobProspect = Integer.MIN_VALUE;					
@@ -131,20 +132,20 @@ public final class JobManager implements Serializable {
 					newJobProspect = jobProspect;
 				}
 			}
-			
+
 			if(logger.isLoggable(Level.FINEST)) {
-			    if ((newJob != null) && (newJob != originalJob)) 
-			 	logger.finest(person.getName() + " changed jobs to " + newJob.getName());
-			 else logger.finest(person.getName() + " keeping old job of " + originalJob.getName());
-			    
+				if ((newJob != null) && (newJob != originalJob)) 
+					logger.finest(person.getName() + " changed jobs to " + newJob.getName());
+				else logger.finest(person.getName() + " keeping old job of " + originalJob.getName());
+
 			}
-			
+
 		}
 		else newJob = originalJob;
-		
+
 		return newJob;
 	}
-	
+
 	/**
 	 * Get the job prospect value for a person and a particular job at a settlement.
 	 * @param person the person to check for
@@ -160,7 +161,7 @@ public final class JobManager implements Serializable {
 		if ((job == person.getMind().getJob()) && isHomeSettlement) remainingNeed+= jobCapability;
 		return (jobCapability + 1D) * remainingNeed;
 	}
-	
+
 	/**
 	 * Gets the best job prospect value for a person at a settlement.
 	 * @param person the person to check for

@@ -19,6 +19,7 @@ import org.jdom.DataConversionException;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.AreothermalPowerSource;
 import org.mars_sim.msp.core.structure.building.function.FuelPowerSource;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
@@ -295,19 +296,25 @@ implements Serializable {
 	/**
 	 * Gets a list of research specialities for the building's lab.
 	 * @param buildingName the name of the building
-	 * @return list of research specialities as strings.
+	 * @return list of research specialities as {@link ScienceType}.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
     @SuppressWarnings("unchecked")
-	public List<String> getResearchSpecialities(String buildingName) {
-		List<String> result = new ArrayList<String>();
+	public List<ScienceType> getResearchSpecialities(String buildingName) {
+		List<ScienceType> result = new ArrayList<ScienceType>();
 		Element buildingElement = getBuildingElement(buildingName);
 		Element functionsElement = buildingElement.getChild(FUNCTIONS);
 		Element researchElement = functionsElement.getChild(RESEARCH);
 		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALITY);
 		
 		for (Element researchSpecialityElement : researchSpecialities ) {
-			result.add(researchSpecialityElement.getAttributeValue(NAME));
+			String value = researchSpecialityElement.getAttributeValue(NAME);
+			result.add(
+				ScienceType.valueOf(
+					ScienceType.class,
+					value.toUpperCase().replace(" ","_") // take care that entries in buildings.xml conform to enum values of {@link ScienceType}
+				)
+			);
 		}
 		return result;
 	}

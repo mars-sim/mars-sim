@@ -7,6 +7,17 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -18,8 +29,8 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -27,35 +38,37 @@ import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenanc
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /** 
  * The MaintainGroundVehicleGarage class is a task for performing
  * preventive maintenance on ground vehicles outside a settlement.
  */
-public class MaintainGroundVehicleEVA extends EVAOperation implements Serializable {
-	
+public class MaintainGroundVehicleEVA
+extends EVAOperation
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
 	
-    // Phase names
+    // TODO Phase names should be an enum.
     private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
  
     // Data members.
-    private GroundVehicle vehicle; // Vehicle to be maintained.
-    private Airlock airlock; // Airlock to be used for EVA.
+    /** Vehicle to be maintained. */
+    private GroundVehicle vehicle;
+    /** Airlock to be used for EVA. */
+    private Airlock airlock;
     private double maintenanceXLoc;
     private double maintenanceYLoc;
     private double enterAirlockXLoc;
     private double enterAirlockYLoc;
     
 	/** 
-	 * Constructor
+	 * Constructor.
 	 * @param person the person to perform the task
 	 * @throws Exception if error constructing task.
 	 */
@@ -243,7 +256,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is maintain vehicle, add experience to mechanics skill.
 		if (MAINTAIN_VEHICLE.equals(getPhase())) {
@@ -251,7 +264,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
 		}
 	}
    
@@ -417,7 +430,7 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -514,26 +527,19 @@ public class MaintainGroundVehicleEVA extends EVAOperation implements Serializab
 		return result;
     }
     
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
+	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
 	}
 	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(2);
-		results.add(Skill.EVA_OPERATIONS);
-		results.add(Skill.MECHANICS);
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(2);
+		results.add(SkillType.EVA_OPERATIONS);
+		results.add(SkillType.MECHANICS);
 		return results;
 	}
 	

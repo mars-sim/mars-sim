@@ -7,6 +7,12 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -16,41 +22,45 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /** 
  * The CollectResources class is a task for collecting resources at a site with an EVA from a rover.
  */
-public class CollectResources extends EVAOperation implements Serializable {
+public class CollectResources
+extends EVAOperation
+implements Serializable {
 
-    // Task phases
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+	// TODO Task phases should be enums.
     private static final String WALK_TO_SITE = "Walk to Site";
     private static final String COLLECT_RESOURCES = "Collecting Resources";
     private static final String WALK_TO_ROVER = "Walk to Rover";
 
     // Data members
-    protected Rover rover; // Rover used.
-    protected double collectionRate; // Collection rate for resource (kg/millisol)
-    protected double targettedAmount; // Targeted amount of resource to collect at site. (kg)
-    protected double startingCargo; // Amount of resource already in rover cargo at start of task. (kg)
-    protected AmountResource resourceType; // The resource type 
-    protected Class containerType; // The container type to use to collect resource.
+    /** Rover used. */
+    protected Rover rover;
+    /** Collection rate for resource (kg/millisol). */
+    protected double collectionRate;
+    /** Targeted amount of resource to collect at site. (kg) */
+    protected double targettedAmount;
+    /** Amount of resource already in rover cargo at start of task. (kg) */
+    protected double startingCargo;
+    /** The resource type. */
+    protected AmountResource resourceType;
+    /** The container type to use to collect resource. */
+    protected Class containerType;
     private double collectionSiteXLoc;
     private double collectionSiteYLoc;
     private double enterAirlockXLoc;
     private double enterAirlockYLoc;
 
     /**
-     * Constructor
+     * Constructor.
      * @param taskName The name of the task.
      * @param person The person performing the task.
      * @param rover The rover used in the task.
@@ -177,7 +187,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
         // If phase is collect resource, add experience to areology skill.
         if (COLLECT_RESOURCES.equals(getPhase())) {
@@ -185,7 +195,7 @@ public class CollectResources extends EVAOperation implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
     }
 
@@ -357,7 +367,7 @@ public class CollectResources extends EVAOperation implements Serializable {
         double samplesCollected = time * collectionRate;
 
         // Modify collection rate by "Areology" skill.
-        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
+        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
         if (areologySkill == 0) {
             samplesCollected /= 2D;
         }
@@ -477,20 +487,20 @@ public class CollectResources extends EVAOperation implements Serializable {
      */
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
     }
 
     /**
      * Gets a list of the skills associated with this task.
      * May be empty list if no associated skills.
-     * @return list of skills as strings
+     * @return list of skills
      */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
-        results.add(Skill.AREOLOGY);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.AREOLOGY);
         return results;
     }
 

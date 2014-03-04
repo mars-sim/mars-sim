@@ -19,32 +19,39 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 
 /** 
  * A task for consolidating the resources stored in local containers.
  */
-public class ConsolidateContainers extends Task implements Serializable {
+public class ConsolidateContainers
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
-    
-    // Task phase
-    private static final String CONSOLIDATING = "Consolidating Containers";
-    
-    // The stress modified per millisol.
-    private static final double STRESS_MODIFIER = -.1D;
-    
-    // The amount of resources (kg) one person of average strength can load per millisol.
-    private static double LOAD_RATE = 20D;
-    
-    // Time (millisols) duration.
-    private static final double DURATION = 30D;
-    
-    // Data members.
-    private Inventory topInventory = null;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
+
+	// TODO Task phase should be an enum
+	private static final String CONSOLIDATING = "Consolidating Containers";
+
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D;
+
+	/** The amount of resources (kg) one person of average strength can load per millisol. */
+	private static double LOAD_RATE = 20D;
+
+	/** Time (millisols) duration. */
+	private static final double DURATION = 30D;
+
+	// Data members.
+	private Inventory topInventory = null;
+
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error constructing task.
      */
@@ -253,8 +260,8 @@ public class ConsolidateContainers extends Task implements Serializable {
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        return new ArrayList<String>(0);
+    public List<SkillType> getAssociatedSkills() {
+        return new ArrayList<SkillType>(0);
     }
 
     @Override

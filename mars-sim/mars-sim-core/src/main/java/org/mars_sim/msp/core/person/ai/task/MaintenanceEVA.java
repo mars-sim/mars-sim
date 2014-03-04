@@ -7,6 +7,16 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -19,8 +29,8 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,35 +38,35 @@ import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** 
  * The Maintenance class is a task for performing
  * preventive maintenance on malfunctionable entities outdoors.
  */
 public class MaintenanceEVA extends EVAOperation implements Serializable {
 	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintenanceEVA.class.getName());
 	
-	// Task phase
+	// TODO Task phases should be an enum.
 	private static final String WALK_TO_MAINTENANCE = "Walk to Maintenance";
 	private static final String MAINTAIN = "Maintenance";
 	private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 	
 	// Data members
-	private Malfunctionable entity; // Entity to be maintained.
-	private Airlock airlock; // Airlock to be used for EVA.
+	/** Entity to be maintained. */
+	private Malfunctionable entity;
+	/** Airlock to be used for EVA. */
+	private Airlock airlock;
 	private double maintenanceXLoc;
     private double maintenanceYLoc;
     private double enterAirlockXLoc;
     private double enterAirlockYLoc;
 	
 	/** 
-	 * Constructor
+	 * Constructor.
 	 * @param person the person to perform the task
 	 * @throws Exception if error constructing task.
 	 */
@@ -264,7 +274,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		
 		// If phase is maintenance, add experience to mechanics skill.
 		if (MAINTAIN.equals(getPhase())) {
@@ -272,7 +282,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
 		}
 	}
 	
@@ -373,7 +383,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
         
 		// Determine effective work time based on "Mechanic" skill.
 		double workTime = time;
-		int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+		int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		if (mechanicSkill == 0) workTime /= 2;
 		if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -437,7 +447,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		double chance = .001D;
 
 		// Mechanic skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		if (skill <= 3) chance *= (4 - skill);
 		else chance /= (skill - 2);
 
@@ -501,26 +511,19 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		return result;
 	}
 
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
+	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 		return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
 	}
 
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(2);
-		results.add(Skill.EVA_OPERATIONS);
-		results.add(Skill.MECHANICS);
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(2);
+		results.add(SkillType.EVA_OPERATIONS);
+		results.add(SkillType.MECHANICS);
 		return results;
 	}
 	

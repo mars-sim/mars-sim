@@ -6,6 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -14,8 +20,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,30 +34,34 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /** 
  * The ToggleResourceProcess class is an EVA task for toggling a particular
  * automated resource process on or off.
  * This is an effort driven task.
  */
-public class ToggleResourceProcess extends EVAOperation implements Serializable {
+public class ToggleResourceProcess
+extends EVAOperation
+implements Serializable {
 
-    // Task phase
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Task phase should be an enum.
     private static final String WALK_OUTSIDE_TO_BUILDING = "Walk Outside to Building";
     private static final String TOGGLE_PROCESS = "toggle process";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
     // Data members
-    private boolean isEVA; // True if toggling process is EVA operation.
-    private Airlock airlock; // Airlock to be used for EVA.
-    private ResourceProcess process; // The resource process to toggle.
-    private Building building; // The building the resource process is in.
-    private boolean toggleOn; // True if process is to be turned on, false if turned off.
+    /** True if toggling process is EVA operation. */
+    private boolean isEVA;
+    /** Airlock to be used for EVA. */
+    private Airlock airlock;
+    /** The resource process to toggle. */
+    private ResourceProcess process;
+    /** The building the resource process is in. */
+    private Building building;
+    /** True if process is to be turned on, false if turned off. */
+    private boolean toggleOn;
     private double toggleXLoc;
     private double toggleYLoc;
     private double enterAirlockXLoc;
@@ -425,7 +435,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             double evaExperience = time / 100D;
             evaExperience += evaExperience * experienceAptitudeModifier;
             evaExperience *= getTeachingExperienceModifier();
-            person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
         }
 
         // If phase is toggle process, add experience to mechanics skill.
@@ -434,7 +444,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double mechanicsExperience = time / 100D;
             mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
         }
     }
 
@@ -442,10 +452,10 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
      * @see org.mars_sim.msp.simulation.person.ai.task.Task#getAssociatedSkills()
      */
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> result = new ArrayList<String>(2);
-        result.add(Skill.MECHANICS);
-        if (isEVA) result.add(Skill.EVA_OPERATIONS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> result = new ArrayList<SkillType>(2);
+        result.add(SkillType.MECHANICS);
+        if (isEVA) result.add(SkillType.EVA_OPERATIONS);
         return result;
     }
 
@@ -455,8 +465,8 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
         if (isEVA) return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
         else return (mechanicsSkill);
     }
@@ -666,7 +676,7 @@ public class ToggleResourceProcess extends EVAOperation implements Serializable 
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 

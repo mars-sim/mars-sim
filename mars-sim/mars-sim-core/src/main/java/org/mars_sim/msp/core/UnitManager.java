@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
@@ -72,9 +73,9 @@ implements Serializable {
 	private Map<String, Integer> vehicleNumberMap;
 
 	/** 
-	 * Constructor
+	 * Constructor.
 	 */
-	UnitManager() {
+	public UnitManager() {
 
 		// Initialize unit collection
 		units = new ConcurrentLinkedQueue<Unit>();
@@ -578,7 +579,19 @@ implements Serializable {
 				while (i.hasNext()) {
 					String skillName = i.next();
 					int level = (Integer) skillMap.get(skillName);
-					person.getMind().getSkillManager().addNewSkill(new Skill(skillName, level));
+					person
+					.getMind()
+					.getSkillManager()
+					.addNewSkill(
+						new Skill(
+							SkillType.valueOf(
+								skillName
+								.toUpperCase() // due to i18n, the keys from xml must equal the enum values, which are all upper case
+								.replace(" ","_") // same reason
+							),
+							level
+						)
+					);
 				}
 			}
 		}

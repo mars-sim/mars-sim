@@ -7,6 +7,12 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -17,29 +23,28 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mining;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.vehicle.Rover;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * Task for collecting minerals that have been mined at a site.
  */
-public class CollectMinedMinerals extends EVAOperation implements Serializable {
+public class CollectMinedMinerals
+extends EVAOperation
+implements Serializable {
 
-    // Task phases
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Task phases should be enums
     private static final String WALK_TO_SITE = "Walk to Site";
     private static final String COLLECT_MINERALS = "Collecting Minerals";
     private static final String WALK_TO_ROVER = "Walk to Rover";
     
-    // Rate of mineral collection (kg/millisol)
+    /** Rate of mineral collection (kg/millisol). */
     private static final double MINERAL_COLLECTION_RATE = 10D;
 
     // Data members
@@ -284,7 +289,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         double mineralsCollected = time * MINERAL_COLLECTION_RATE;
 
         // Modify collection rate by "Areology" skill.
-        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.AREOLOGY);
+        int areologySkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
         if (areologySkill == 0) mineralsCollected /= 2D;
         if (areologySkill > 1) mineralsCollected += mineralsCollected * (.2D * areologySkill);
 
@@ -395,7 +400,7 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
         // If phase is collect minerals, add experience to areology skill.
         if (COLLECT_MINERALS.equals(getPhase())) {
@@ -403,23 +408,23 @@ public class CollectMinedMinerals extends EVAOperation implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
-        results.add(Skill.AREOLOGY);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.AREOLOGY);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
     }
 

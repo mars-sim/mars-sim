@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -270,8 +270,7 @@ public final class ManufactureUtil {
             }
             
             // Modify total parts good value by item wear and salvager skill.
-            int skill = salvager.getMind().getSkillManager().getEffectiveSkillLevel(
-                    Skill.MATERIALS_SCIENCE);
+            int skill = salvager.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
             double valueModifier = .25D + (wearConditionModifier * .25D) + ((double) skill * .05D);
             totalPartsGoodValue *= valueModifier;
             

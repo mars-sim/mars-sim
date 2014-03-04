@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
 import org.mars_sim.msp.core.person.ai.task.TendGreenhouse;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.Farming;
@@ -86,7 +87,7 @@ implements Serializable {
 		
 		double result = 0D;
 		
-		int botanySkill = person.getMind().getSkillManager().getSkillLevel(Skill.BOTANY);
+		int botanySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.BOTANY);
 		result = botanySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
@@ -114,7 +115,7 @@ implements Serializable {
 		while (i.hasNext()) {
 		    Building building = i.next();
 		    Research lab = (Research) building.getFunction(Research.NAME);
-		    if (lab.hasSpeciality(Skill.BOTANY)) 
+		    if (lab.hasSpeciality(ScienceType.BOTANY)) 
 		        result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
 		}
 

@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
@@ -64,7 +64,7 @@ implements Serializable {
 		
 		double result = 0D;
 		
-		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(Skill.COOKING);
+		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
 		result = cookingSkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();

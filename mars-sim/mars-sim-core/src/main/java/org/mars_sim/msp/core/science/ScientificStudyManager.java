@@ -6,23 +6,28 @@
  */
 package org.mars_sim.msp.core.science;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.time.MarsClock;
+
 /**
  * A class that keeps track of all scientific studies in the simulation.
  */
-public class ScientificStudyManager implements Serializable {
+public class ScientificStudyManager
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ScientificStudyManager.class.getName());
     
     // Data members
     private List<ScientificStudy> studies;
@@ -41,7 +46,7 @@ public class ScientificStudyManager implements Serializable {
      * @param difficultyLevel the difficulty level of the study.
      * @return the created study.
      */
-    public ScientificStudy createScientificStudy(Person researcher, Science science, 
+    public ScientificStudy createScientificStudy(Person researcher, ScienceType science, 
             int difficultyLevel) {
         if (researcher == null) throw new IllegalArgumentException("Researcher cannot be null");
         if (science == null) throw new IllegalArgumentException("Science cannot be null");

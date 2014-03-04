@@ -6,6 +6,12 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -14,29 +20,28 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 /**
  * Task for constructing a building construction site stage.
  */
-public class ConstructBuilding extends EVAOperation implements Serializable {
+public class ConstructBuilding
+extends EVAOperation
+implements Serializable {
 
-    // Logger
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+    /* default logger.
     private static Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+    */
     
-    // Task phases
+	// TODO Task phases should be enums
     private static final String WALK_TO_SITE = "Walk to Site";
     private static final String CONSTRUCTION = "Construction";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
@@ -368,16 +373,16 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int constructionSkill = manager.getEffectiveSkillLevel(Skill.CONSTRUCTION);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int constructionSkill = manager.getEffectiveSkillLevel(SkillType.CONSTRUCTION);
         return (int) Math.round((double)(EVAOperationsSkill + constructionSkill) / 2D); 
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
-        results.add(Skill.CONSTRUCTION);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.CONSTRUCTION);
         return results;
     }
 
@@ -395,7 +400,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        manager.addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        manager.addExperience(SkillType.EVA_OPERATIONS, evaExperience);
         
         // If phase is construction, add experience to construction skill.
         if (CONSTRUCTION.equals(getPhase())) {
@@ -403,7 +408,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double constructionExperience = time / 10D;
             constructionExperience += constructionExperience * experienceAptitudeModifier;
-            manager.addExperience(Skill.CONSTRUCTION, constructionExperience);
+            manager.addExperience(SkillType.CONSTRUCTION, constructionExperience);
             
             // If person is driving the light utility vehicle, add experience to driving skill.
             // 1 base experience point per 10 millisols of mining time spent.
@@ -411,7 +416,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             if (operatingLUV) {
                 double drivingExperience = time / 10D;
                 drivingExperience += drivingExperience * experienceAptitudeModifier;
-                manager.addExperience(Skill.DRIVING, drivingExperience);
+                manager.addExperience(SkillType.DRIVING, drivingExperience);
             }
         }
     }
@@ -425,7 +430,7 @@ public class ConstructBuilding extends EVAOperation implements Serializable {
             double chance = BASE_LUV_ACCIDENT_CHANCE;
             
             // Driving skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
             

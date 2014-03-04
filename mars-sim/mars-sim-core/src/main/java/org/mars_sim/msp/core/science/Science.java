@@ -6,106 +6,114 @@
  */
 package org.mars_sim.msp.core.science;
 
-import org.mars_sim.msp.core.person.ai.job.Job;
-
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.mars_sim.msp.core.person.ai.job.Job;
 
 /**
  * A class representing a field of science.
  */
-public class Science implements Serializable, Comparable {
+public class Science
+implements Serializable, Comparable<Object> {
 
-    // Static science field names.
-    public static final String AREOLOGY = "Areology";
-    public static final String ASTRONOMY = "Astronomy";
-    public static final String BIOLOGY = "Biology";
-    public static final String BOTANY = "Botany";
-    public static final String CHEMISTRY = "Chemistry";
-    public static final String MATHEMATICS = "Mathematics";
-    public static final String MEDICINE = "Medicine";
-    public static final String METEOROLOGY = "Meteorology";
-    public static final String PHYSICS = "Physics";
-    
-    
-    // Data members.
-    private String name;
-    private Job[] jobs;
-    private Science[] collaborativeSciences;
-    
-    /**
-     * Constructor
-     * @param name the name of the field of science.
-     * @param jobs jobs associated with the field.
-     */
-    Science(String name, Job[] jobs) {
-        this.name = name;
-        this.jobs = jobs;
-    }
-    
-    /**
-     * Set the sciences that can collaborate on research with this field of science.
-     * @param collaborativeSciences sciences that can collaborate.
-     */
-    void setCollaborativeSciences(Science[] collaborativeSciences) {
-        this.collaborativeSciences = collaborativeSciences;
-    }
-    
-    /**
-     * Gets the sciences that can collaborate on research with this field of science.
-     * @return sciences.
-     */
-    Science[] getCollaborativeSciences() {
-        return collaborativeSciences.clone();
-    }
-    
-    /**
-     * Gets the name of the field of science.
-     * @return name.
-     */
-    public String getName() {
-        return name;
-    }
-    
-    /**
-     * Gets the jobs associated with this field of science.
-     * @return jobs.
-     */
-    Job[] getJobs() {
-        return jobs.clone();
-    }
-    
-    /**
-     * Compares this object with the specified object for order.
-     * @param o the Object to be compared.
-     * @return a negative integer, zero, or a positive integer as this object is less than, 
-     * equal to, or greater than the specified object.
-     */
-    public int compareTo(Object o) {
-        if (o instanceof Science) return name.compareTo(((Science) o).name);
-        else return 0;
-    }
-    
-    /**
-     * Checks if an object is equal to this object.
-     * @return true if equal
-     */
-    public boolean equals(Object object) {
-        if (object instanceof Science) {
-            Science otherObject = (Science) object;
-            if (name.equals(otherObject.name)) return true;
-        }
-        return false;
-    }
-    
-    /**
-     * Gets the hash code value.
-     */
-    public int hashCode() {
-        return (name.hashCode());
-    }
-    
-    @Override
-    public String toString() {
-        return name;
-    }
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members.
+	private ScienceType type;
+	private List<Job> jobs = new ArrayList<Job>();
+	private List<ScienceType> collaborativeSciences = new ArrayList<ScienceType>();
+
+	/**
+	 * Constructor.
+	 * @param type {@link ScienceType} the name of the field of science.
+	 * @param job job associated with the field.
+	 */
+	public Science(ScienceType type, Job job) {
+		this.type = type;
+		this.jobs.add(job);
+	}
+
+	/**
+	 * Constructor.
+	 * @param type {@link ScienceType} the name of the field of science.
+	 * @param jobs jobs associated with the field.
+	 */
+	public Science(ScienceType type, Job[] jobs) {
+		this.type = type;
+		for (Job job : jobs) {
+			this.jobs.add(job);
+		}
+	}
+
+	/**
+	 * set the sciences that can collaborate on research with this field of science.
+	 * @param collaborativeScience sciences that can collaborate.
+	 */
+	void setCollaborativeSciences(Science[] collaborativeSciences) {
+		for (Science science : collaborativeSciences) {
+			this.collaborativeSciences.add(science.getType());
+		}
+	}
+
+	/**
+	 * Gets the sciences that can collaborate on research with this field of science.
+	 * @return sciences.
+	 */
+	public List<ScienceType> getCollaborativeSciences() {
+		return collaborativeSciences;
+	}
+
+	/**
+	 * Gets the type of the field of science.
+	 * @return type.
+	 */
+	public ScienceType getType() {
+		return type;
+	}
+
+	/**
+	 * Gets the jobs associated with this field of science.
+	 * @return jobs.
+	 */
+	public final List<Job> getJobs() {
+		return jobs;
+	}
+
+	/**
+	 * Compares this object with the specified object for order.
+	 * @param o the Object to be compared.
+	 * @return a negative integer, zero, or a positive integer as this object is less than, 
+	 * equal to, or greater than the specified object.
+	 */
+	public int compareTo(Object o) {
+		if (o instanceof Science) return type.compareTo(((Science) o).type);
+		else return 0;
+	}
+
+	/**
+	 * Checks if an object is equal to this object.
+	 * @return true if equal
+	 */
+	public boolean equals(Object object) {
+		if (object instanceof Science) {
+			Science otherObject = (Science) object;
+			if (type.equals(otherObject.type)) return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Gets the hash code value.
+	 */
+	public int hashCode() {
+		return (type.hashCode());
+	}
+
+	@Override
+	public String toString() {
+		return type.getName();
+	}
 }

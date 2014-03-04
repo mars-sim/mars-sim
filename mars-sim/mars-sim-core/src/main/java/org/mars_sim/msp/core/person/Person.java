@@ -14,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
@@ -24,7 +23,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.ai.Mind;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
-import org.mars_sim.msp.core.science.Science;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -39,10 +38,16 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
  * The Person class represents a person on Mars. It keeps track of everything
  * related to that person and provides information about him/her.
  */
-public class Person extends Unit implements VehicleOperator, Serializable {
+public class Person
+extends Unit
+implements VehicleOperator, Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/* default logger.
     private static transient Logger logger = Logger.getLogger(Person.class.getName());
-
+	*/
     /**
      * Status string used when Person resides in settlement
      */
@@ -63,28 +68,38 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      */
     public final static String BURIED = "Buried";
 
+    // TODO a person's gender should be an enum
     public final static String MALE = "male";
     public final static String FEMALE = "female";
 
-    // The base carrying capacity (kg) of a person.
+    /** The base carrying capacity (kg) of a person. */
     private final static double BASE_CAPACITY = 60D;
 
     // Data members
-    private NaturalAttributeManager attributes; // Manager for Person's natural
-                                                // attributes
-    private Mind mind; // Person's mind
-    private PhysicalCondition health; // Person's physical
-    private boolean isBuried; // True if person is dead and buried.
-    private String gender; // The gender of the person (male or female).
-    private int height; // The height of the person (in cm).
-    private String birthplace; // The birthplace of the person.
-    private EarthClock birthTimeStamp; // The birth time of the person.
-    private Settlement associatedSettlement; // The settlement the person is
-                                             // currently associated with.
-    private Map<Science, Double> scientificAchievement; // The person's achievement in
-                                                        // scientific fields.
-    private double xLoc; // Settlement X location (meters) from settlement center.
-    private double yLoc; // Settlement Y location (meters) from settlement center.
+    /** Manager for Person's natural attributes. */
+    private NaturalAttributeManager attributes;
+    /** Person's mind. */
+    private Mind mind;
+    /** Person's physical condition. */
+    private PhysicalCondition health;
+    /** True if person is dead and buried. */
+    private boolean isBuried;
+    /** The gender of the person (male or female). */
+    private String gender;
+    /** The height of the person (in cm). */
+    private int height;
+    /** The birthplace of the person. */
+    private String birthplace;
+    /** The birth time of the person. */
+    private EarthClock birthTimeStamp;
+    /** The settlement the person is currently associated with. */
+    private Settlement associatedSettlement;
+    /** The person's achievement in scientific fields. */
+    private Map<ScienceType, Double> scientificAchievement;
+    /** Settlement X location (meters) from settlement center. */
+    private double xLoc;
+    /** Settlement Y location (meters) from settlement center. */
+    private double yLoc;
 
     /**
      * Constructs a Person object at a given settlement
@@ -110,7 +125,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
         mind = new Mind(this);
         isBuried = false;
         health = new PhysicalCondition(this);
-        scientificAchievement = new HashMap<Science, Double>(0);
+        scientificAchievement = new HashMap<ScienceType, Double>(0);
 
         // Set base mass of person from 58 to 76, peaking at 67.
         setBaseMass(56D + (RandomUtil.getRandomInt(100)
@@ -568,7 +583,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * @param science the scientific field.
      * @return achievement credit.
      */
-    public double getScientificAchievement(Science science) {
+    public double getScientificAchievement(ScienceType science) {
         double result = 0D;
 
         if (scientificAchievement.containsKey(science)) {
@@ -600,7 +615,7 @@ public class Person extends Unit implements VehicleOperator, Serializable {
      * @param achievementCredit the achievement credit.
      * @param science the scientific field.
      */
-    public void addScientificAchievement(double achievementCredit, Science science) {
+    public void addScientificAchievement(double achievementCredit, ScienceType science) {
         if (scientificAchievement.containsKey(science)) {
             achievementCredit += scientificAchievement.get(science);
         }

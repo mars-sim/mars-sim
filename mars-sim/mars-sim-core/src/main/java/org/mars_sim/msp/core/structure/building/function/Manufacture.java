@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.manufacture.PartSalvage;
 import org.mars_sim.msp.core.manufacture.Salvagable;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -110,7 +110,7 @@ implements Serializable {
 		double demand = 0D;
 		Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
 		while (i.hasNext()) {
-			demand += i.next().getMind().getSkillManager().getSkillLevel(Skill.MATERIALS_SCIENCE);
+			demand += i.next().getMind().getSkillManager().getSkillLevel(SkillType.MATERIALS_SCIENCE);
 		}
 
 		double supply = 0D;

@@ -7,7 +7,19 @@
 
 package org.mars_sim.msp.core.structure;
 
-import org.mars_sim.msp.core.*;
+import java.awt.geom.Point2D;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.CollectionUtils;
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -16,7 +28,7 @@ import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.science.Science;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
@@ -26,39 +38,57 @@ import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.util.*;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /**
  * The Settlement class represents a settlement unit on virtual Mars. It contains information related to the state of
  * the settlement.
  */
-public class Settlement extends Structure implements org.mars_sim.msp.core.LifeSupport {
+public class Settlement
+extends Structure
+implements LifeSupport {
 
-    private static Logger logger = Logger.getLogger(Settlement.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static final double NORMAL_AIR_PRESSURE = 1D; // Normal air pressure (atm.)
-    private static final double NORMAL_TEMP = 25D; // Normal temperature (celsius)
+	/* default logger.
+	private static Logger logger = Logger.getLogger(Settlement.class.getName());
+	*/
 
-    private static final double MAINTENANCE_TIME = 1000D; // Amount of time (millisols) required for periodic
-                                                          // maintenance.
+    /** Normal air pressure (atm.) */
+    private static final double NORMAL_AIR_PRESSURE = 1D;
+    /** Normal temperature (celsius) */
+    private static final double NORMAL_TEMP = 25D;
+
+    /* Amount of time (millisols) required for periodic maintenance.
+    private static final double MAINTENANCE_TIME = 1000D;
+    */
 
     // Data members
-    protected BuildingManager buildingManager; // The settlement's building manager.
-    protected BuildingConnectorManager buildingConnectorManager; // The settlement's building connector manager.
-    protected GoodsManager goodsManager; // The settlement's goods manager.
-    protected ConstructionManager constructionManager; // The settlement's construction manager.
-    protected PowerGrid powerGrid; // The settlement's building power grid.
-    private String template; // The settlement template name.
-    private boolean missionCreationOverride; // Override flag for mission creation at settlement.
-    private boolean manufactureOverride; // Override flag for manufacturing at settlement.
-    private boolean resourceProcessOverride; // Override flag for resource process at settlement.
-    private boolean constructionOverride; // Override flag for construction/salvage mission creation at settlement.
-    private Map<Science, Double> scientificAchievement; // The settlement's achievement in scientific fields.
-    private double zeroPopulationTime;  // Amount of time (millisols) that the settlement has had zero population.
-    private int initialPopulation; // The initial population of the settlement.
+    /** The settlement's building manager. */
+    protected BuildingManager buildingManager;
+    /** The settlement's building connector manager. */
+    protected BuildingConnectorManager buildingConnectorManager;
+    /** The settlement's goods manager. */
+    protected GoodsManager goodsManager;
+    /** The settlement's construction manager. */
+    protected ConstructionManager constructionManager;
+    /** The settlement's building power grid. */
+    protected PowerGrid powerGrid;
+    /** The settlement template name. */
+    private String template;
+    /** Override flag for mission creation at settlement. */
+    private boolean missionCreationOverride;
+    /** Override flag for manufacturing at settlement. */
+    private boolean manufactureOverride;
+    /** Override flag for resource process at settlement. */
+    private boolean resourceProcessOverride;
+    /** Override flag for construction/salvage mission creation at settlement. */
+    private boolean constructionOverride;
+    /** The settlement's achievement in scientific fields. */
+    private Map<ScienceType, Double> scientificAchievement;
+    /** Amount of time (millisols) that the settlement has had zero population. */
+    private double zeroPopulationTime;
+    /** The initial population of the settlement. */
+    private int initialPopulation;
 
     /**
      * Constructor for subclass extension.
@@ -102,7 +132,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
         powerGrid = new PowerGrid(this);
 
         // Initialize scientific achievement.
-        scientificAchievement = new HashMap<Science, Double>(0);
+        scientificAchievement = new HashMap<ScienceType, Double>(0);
         
         // Initialize the initial population.
         initialPopulation = populationNumber;
@@ -592,7 +622,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
      * @param science the scientific field.
      * @return achievement credit.
      */
-    public double getScientificAchievement(Science science) {
+    public double getScientificAchievement(ScienceType science) {
         double result = 0D;
 
         if (scientificAchievement.containsKey(science))
@@ -620,8 +650,7 @@ public class Settlement extends Structure implements org.mars_sim.msp.core.LifeS
      * @param achievementCredit the achievement credit.
      * @param science the scientific field.
      */
-    public void addScientificAchievement(double achievementCredit,
-            Science science) {
+    public void addScientificAchievement(double achievementCredit, ScienceType science) {
         if (scientificAchievement.containsKey(science))
             achievementCredit += scientificAchievement.get(science);
 

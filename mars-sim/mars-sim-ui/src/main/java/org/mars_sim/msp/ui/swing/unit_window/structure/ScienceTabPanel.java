@@ -27,8 +27,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -42,7 +41,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /**
  * A tab panel displaying a settlement's scientific studies and achievements.
  */
-public class ScienceTabPanel extends TabPanel {
+public class ScienceTabPanel
+extends TabPanel {
 
     /** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -316,14 +316,14 @@ public class ScienceTabPanel extends TabPanel {
 		
 		// Data members.
         private Settlement settlement;
-        private List<Science> sciences;
-        
+        private List<ScienceType> sciences;
+
+        /** hidden constructor. */
         private AchievementTableModel(Settlement settlement) {
             // Use AbstractTableModel constructor.
             super();
-            
             this.settlement = settlement;
-            sciences = ScienceUtil.getAllSciences();
+            sciences = ScienceType.valuesList();
         }
         
         /**
@@ -370,7 +370,7 @@ public class ScienceTabPanel extends TabPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             Object result = null;
             if ((rowIndex >= 0) && (rowIndex < sciences.size())) {
-                Science science = sciences.get(rowIndex);
+                ScienceType science = sciences.get(rowIndex);
                 if (columnIndex == 0) result = science.getName();
                 else if (columnIndex == 1) {
                     result = settlement.getScientificAchievement(science);

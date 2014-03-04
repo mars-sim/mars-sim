@@ -6,26 +6,39 @@
  */
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
-import org.mars_sim.msp.core.CollectionUtils;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.ui.swing.MarsPanelBorder;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.util.Iterator;
 
-import javax.swing.*;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
+
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A wizard panel to select a lead researcher the science mission.
  */
-public class LeadResearcherPanel extends WizardPanel {
+public class LeadResearcherPanel
+extends WizardPanel {
 
-    // The wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// The wizard panel name.
     private final static String NAME = "Lead Researcher";
     
     // Data members.
@@ -132,10 +145,14 @@ public class LeadResearcherPanel extends WizardPanel {
     /**
      * Table model for scientific researchers.
      */
-    private class ResearcherTableModel extends UnitTableModel {
+    private class ResearcherTableModel
+    extends UnitTableModel {
         
-        /**
-         * Constructor
+        /** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		/**
+         * Constructor.
          */
         private ResearcherTableModel() {
             // Use UnitTableModel constructor.
@@ -191,8 +208,8 @@ public class LeadResearcherPanel extends WizardPanel {
          * @param person the person.
          * @return field of science or null if none.
          */
-        private Science getResearchScience(Person person) {
-            Science result = null;
+        private ScienceType getResearchScience(Person person) {
+        	ScienceType result = null;
             
             ScientificStudy study = getWizard().getMissionData().getStudy();
             if (study.getPrimaryResearcher().equals(person)) {
@@ -232,8 +249,8 @@ public class LeadResearcherPanel extends WizardPanel {
                 Person person = (Person) getUnit(row);
                 
                 if (column == 1) {
-                    Science researchScience = getResearchScience(person);
-                    Science studyScience = getWizard().getMissionData().getStudy().getScience();
+                    ScienceType researchScience = getResearchScience(person);
+                    ScienceType studyScience = getWizard().getMissionData().getStudy().getScience();
                     if (!studyScience.equals(researchScience)) result = true;
                 }
                 if (column == 2) {
@@ -243,11 +260,11 @@ public class LeadResearcherPanel extends WizardPanel {
             
             return result;
         }
-        
-        /**
+
+        /*
          * Adds researchers to the table.
          * @param people the collection of researchers to add.
-         */
+         *
         void addResearchers(Collection<Person> researchers) {
             Iterator<Person> i = researchers.iterator();
             while (i.hasNext()) {
@@ -257,11 +274,11 @@ public class LeadResearcherPanel extends WizardPanel {
             units = CollectionUtils.sortByName(units);
             fireTableDataChanged();
         }
-        
-        /**
+        */
+        /*
          * Removes researchers from the table.
          * @param researchers the collection of researchers to remove.
-         */
+         *
         void removeResearchers(Collection<Person> researchers) {
             Iterator<Person> i = researchers.iterator();
             while (i.hasNext()) {
@@ -270,5 +287,6 @@ public class LeadResearcherPanel extends WizardPanel {
             }
             fireTableDataChanged();
         }
+        */
     }
 }

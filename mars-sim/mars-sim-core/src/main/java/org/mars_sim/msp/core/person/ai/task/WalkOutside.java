@@ -26,16 +26,21 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A subtask for walking between locations outside of a settlement or vehicle.
  */
-public class WalkOutside extends Task implements Serializable {
+public class WalkOutside
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
     
     // Task phase
     private static final String WALKING = "Walking";
@@ -45,13 +50,13 @@ public class WalkOutside extends Task implements Serializable {
     private static final double MAX_WALKING_SPEED = 5D; // Km / hr.
     private static final double VERY_SMALL_DISTANCE = .00001D;
     
-    // The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = .5D;
     
-    // The base chance of an accident per millisol.
+    /** The base chance of an accident per millisol. */
     public static final double BASE_ACCIDENT_CHANCE = .001;
     
-    // Obstacle avoidance path neighbor distance (meters).
+    /** Obstacle avoidance path neighbor distance (meters). */
     public static final double NEIGHBOR_DISTANCE = 7D;
     
     // Data members
@@ -694,7 +699,7 @@ public class WalkOutside extends Task implements Serializable {
             double chance = BASE_ACCIDENT_CHANCE;
 
             // EVA operations skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
 
@@ -711,14 +716,14 @@ public class WalkOutside extends Task implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         return EVAOperationsSkill; 
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
         return results;
     }
 
@@ -735,6 +740,6 @@ public class WalkOutside extends Task implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 }

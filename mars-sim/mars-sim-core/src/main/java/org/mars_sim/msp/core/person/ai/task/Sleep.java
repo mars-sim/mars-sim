@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -259,21 +260,14 @@ class Sleep extends Task implements Serializable {
 		return modifiedAlarmTime;
 	}
 	
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
+	@Override
 	public int getEffectiveSkillLevel() {
 		return 0;	
 	}
 	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(0);
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(0);
 		return results;
 	}
 	

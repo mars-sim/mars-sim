@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -474,9 +475,9 @@ implements Serializable, Comparable<Task> {
     /**
      * Gets a list of the skills associated with this task.
      * May be empty list if no associated skills.
-     * @return list of skills as strings
+     * @return list of skills
      */
-    public abstract List<String> getAssociatedSkills();
+    public abstract List<SkillType> getAssociatedSkills();
 
     /**
      * Checks if someone is teaching this task to the person performing it.

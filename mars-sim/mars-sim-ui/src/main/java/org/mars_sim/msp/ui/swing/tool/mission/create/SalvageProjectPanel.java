@@ -29,7 +29,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -38,7 +38,8 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
-public class SalvageProjectPanel extends WizardPanel {
+public class SalvageProjectPanel
+extends WizardPanel {
 
     /** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -292,7 +293,7 @@ public class SalvageProjectPanel extends WizardPanel {
                     double totalSkill = 0D;
                     Iterator<Person> i = getWizard().getMissionData().getMembers().iterator();
                     while (i.hasNext()) {
-                        int constructionSkill = i.next().getMind().getSkillManager().getSkillLevel(Skill.CONSTRUCTION);
+                        int constructionSkill = i.next().getMind().getSkillManager().getSkillLevel(SkillType.CONSTRUCTION);
                         totalSkill += constructionSkill;
                     }
                     int memberNum = getWizard().getMissionData().getMembers().size();
