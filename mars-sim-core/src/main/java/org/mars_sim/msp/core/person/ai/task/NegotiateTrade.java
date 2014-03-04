@@ -7,22 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
-import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.goods.CreditManager;
-import org.mars_sim.msp.core.structure.goods.Good;
-import org.mars_sim.msp.core.vehicle.Rover;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -31,17 +15,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
+import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.goods.CreditManager;
+import org.mars_sim.msp.core.structure.goods.Good;
+import org.mars_sim.msp.core.vehicle.Rover;
+
 /**
  * Task to perform a trade negotiation between the buyer and seller for a Trade mission.
  */
-public class NegotiateTrade extends Task implements Serializable {
+public class NegotiateTrade
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
+	private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
+
+    // TODO Task phase should be an enum.
     private static final String NEGOTIATING = "Negotiating";
-    private static final double DURATION = 50D; // The predetermined duration of task in millisols
-    private static final double STRESS_MODIFIER = 0D; // The stress modified per millisol.
+
+    /** The predetermined duration of task in millisols. */
+    private static final double DURATION = 50D;
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = 0D;
 
     // Data members.
     private Map<Good, Integer> buyLoad;
@@ -53,7 +62,7 @@ public class NegotiateTrade extends Task implements Serializable {
     private Person sellingTrader;
 
     /**
-     * Constructor
+     * Constructor.
      * @param sellingSettlement the selling settlement.
      * @param buyingSettlement the buying settlement.
      * @param rover the rover to transport the goods.
@@ -193,8 +202,8 @@ public class NegotiateTrade extends Task implements Serializable {
         modifier -= buyerAttributes.getAttribute(NaturalAttributeManager.ATTRACTIVENESS) / 1000D;
 
         // Modify by 10% for each skill level in trading for buyer and seller.
-        modifier += buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
-        modifier -= sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING) / 10D;
+        modifier += buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
+        modifier -= sellingTrader.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
 
         // Modify by 10% for the relationship between the buyer and seller.
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
@@ -230,27 +239,20 @@ public class NegotiateTrade extends Task implements Serializable {
                 NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        trader.getMind().getSkillManager().addExperience(Skill.TRADING, newPoints);
+        trader.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);
     }
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> skills = new ArrayList<String>(1);
-        skills.add(Skill.TRADING);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> skills = new ArrayList<SkillType>(1);
+        skills.add(SkillType.TRADING);
         return skills;
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.TRADING);
+        return manager.getEffectiveSkillLevel(SkillType.TRADING);
     }
 
     /**

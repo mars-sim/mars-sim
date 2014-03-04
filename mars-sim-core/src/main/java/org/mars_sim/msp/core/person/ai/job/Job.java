@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.science.Science;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 

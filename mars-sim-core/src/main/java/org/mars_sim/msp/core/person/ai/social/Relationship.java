@@ -7,32 +7,35 @@
 
 package org.mars_sim.msp.core.person.ai.social;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-
-import java.io.Serializable;
+import org.mars_sim.msp.core.science.ScienceType;
 
 /**
  * The Relationship class represents a social relationship between
  * two people.
  */
-public class Relationship implements Serializable {
+public class Relationship
+implements Serializable {
 
-	// Types of starting relationships.
-    // First impression if for meeting a new person.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Types of starting relationships should be an enum.
+    /** First impression if for meeting a new person. */
 	public static final String FIRST_IMPRESSION = "First Impression";
     
-    // Existing relationship is for meeting a person who is already known.
+    /** Existing relationship is for meeting a person who is already known. */
 	public static final String EXISTING_RELATIONSHIP = "Existing Relationship";
     
-    // Communication meeting is for meeting a new person remotely (email, etc).
+    /** Communication meeting is for meeting a new person remotely (email, etc). */
     public static final String COMMUNICATION_MEETING = "Communication Meeting";
 	
-	// Relationship modifier for settlers since they are trained to get along with each other.
+	/** Relationship modifier for settlers since they are trained to get along with each other. */
 	private static final double SETTLER_MODIFIER = 20D;
 
 	// Data members
@@ -164,7 +167,7 @@ public class Relationship implements Serializable {
         result += impressionee.getTotalScientificAchievement() / 10D;
         
         // If impressioner is a scientist, modify based on impressionee's achievement in scientific field.
-        Science science = ScienceUtil.getAssociatedScience(impressioner.getMind().getJob());
+        ScienceType science = ScienceType.getJobScience(impressioner.getMind().getJob());
         result += impressionee.getScientificAchievement(science);
         
 		// Modify as settlers are trained to try to get along with each other.
@@ -209,7 +212,7 @@ public class Relationship implements Serializable {
         result += target.getTotalScientificAchievement() / 10D;
         
         // If impressioner is a scientist, modify based on target's achievement in scientific field.
-        Science science = ScienceUtil.getAssociatedScience(target.getMind().getJob());
+        ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
         result += target.getScientificAchievement(science);
         
 		// Modify as settlers are trained to try to get along with each other.
@@ -234,7 +237,7 @@ public class Relationship implements Serializable {
         result += target.getTotalScientificAchievement() / 10D;
         
         // If impressioner is a scientist, modify based on target's achievement in scientific field.
-        Science science = ScienceUtil.getAssociatedScience(target.getMind().getJob());
+        ScienceType science = ScienceType.getJobScience(target.getMind().getJob());
         result += target.getScientificAchievement(science);
         
         return result;

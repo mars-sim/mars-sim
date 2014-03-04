@@ -7,22 +7,31 @@
 
 package org.mars_sim.msp.core.vehicle;
 
-import org.mars_sim.msp.core.Lab;
-
 import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.science.ScienceType;
+
 /** 
  * The MobileLaboratory class represents the research laboratory in a vehicle.
  */
-public class MobileLaboratory implements Lab, Serializable {
+public class MobileLaboratory
+implements Lab, Serializable {
 
-    // Data members
-    private int laboratorySize; // Number of researchers supportable at any given time. 
-    private int technologyLevel; // How advanced the laboratories are (units defined later)
-    private List<String> techSpecialities; // What fields of science the laboratories specialize in.
-    private int researcherNum; // The number of people currently doing research in laboratory.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+    /** Number of researchers supportable at any given time. */
+	private int laboratorySize; 
+    /** How advanced the laboratories are (units defined later). */
+	private int technologyLevel;
+    /** What fields of science the laboratories specialize in. */
+	private List<String> techSpecialities;
+    /** The number of people currently doing research in laboratory. */
+	private int researcherNum;
 
     /** 
      * Constructor for parameter values. 
@@ -58,26 +67,18 @@ public class MobileLaboratory implements Lab, Serializable {
     }
 
     /** 
-     * Gets the lab's science specialities as an array of Strings 
-     * @return the lab's science specialities as an array of Strings
+     * Gets the lab's science specialities as an array.
+     * @return the lab's science specialities as an array.
      */
-    public String[] getTechSpecialities() {
-        String[] result = new String[techSpecialities.size()];
-        Iterator<String> i = techSpecialities.iterator();
-        int count = 0;
-        while (i.hasNext()) {
-            result[count] = i.next();
-            count ++;
-        }
-        
-        return result;
+    public ScienceType[] getTechSpecialities() {
+        return techSpecialities.toArray(new ScienceType[] {});
     }
 
     /**
      * Checks to see if the laboratory has a given tech speciality.
      * @return true if lab has tech speciality
      */
-    public boolean hasSpeciality(String speciality) {
+    public boolean hasSpeciality(ScienceType speciality) {
         boolean result = false;
         Iterator<String> i = techSpecialities.iterator();
         while (i.hasNext()) {

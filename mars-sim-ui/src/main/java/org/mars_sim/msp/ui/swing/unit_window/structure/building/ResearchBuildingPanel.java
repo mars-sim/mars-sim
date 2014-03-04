@@ -6,11 +6,13 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 
@@ -18,14 +20,21 @@ import java.awt.*;
  * The ResearchBuildingPanel class is a building function panel representing 
  * the research info of a settlement building.
  */
-public class ResearchBuildingPanel extends BuildingFunctionPanel {
+public class ResearchBuildingPanel
+extends BuildingFunctionPanel {
     
-    // Data members
-    private Research lab; // The research building.
-    private JLabel researchersLabel; // The number of researchers label.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	/** The research building. */
+    private Research lab;
+    /** The number of researchers label. */
+    private JLabel researchersLabel;
     
     // Data cache
-    private int researchersCache;  // The number of researchers cache.
+    /** The number of researchers cache. */
+    private int researchersCache;
     
     /**
      * Constructor
@@ -67,7 +76,7 @@ public class ResearchBuildingPanel extends BuildingFunctionPanel {
         labelPanel.add(specialitiesLabel);
         
         // Get the research specialities of the building.
-        String[] specialities = lab.getTechSpecialities();
+        ScienceType[] specialities = lab.getTechSpecialities();
         
         // Prepare specialitiesListPanel
         JPanel specialitiesListPanel = new JPanel(new GridLayout(specialities.length, 1, 0, 0));
@@ -76,8 +85,8 @@ public class ResearchBuildingPanel extends BuildingFunctionPanel {
         
         // For each speciality, add speciality name panel.
 
-        for (String speciality : specialities) {
-            JLabel specialityLabel = new JLabel(speciality, JLabel.CENTER);
+        for (ScienceType speciality : specialities) {
+            JLabel specialityLabel = new JLabel(speciality.getName(), JLabel.CENTER);
             specialitiesListPanel.add(specialityLabel);
         }
     }

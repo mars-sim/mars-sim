@@ -4,8 +4,11 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -14,25 +17,27 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  *  The Drive Ground Vehicle class is a task for driving a ground vehicle to a destination.
  */
-public class DriveGroundVehicle extends OperateVehicle implements Serializable {
+public class DriveGroundVehicle
+extends OperateVehicle
+implements Serializable {
 
-    // Task phases
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Task phases should be an enum
     public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
     public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
-    
-	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+
+    /** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
 
     // Side directions.
     private final static int NONE = 0;
@@ -43,7 +48,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
     private int sideDirection = NONE;
 
     /** 
-     * Default Constructor
+     * Default Constructor.
      * @param person the person to perform the task
      * @param vehicle the vehicle to be driven
      * @param destination location to be driven to
@@ -371,7 +376,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 */
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.DRIVING);
+		return manager.getEffectiveSkillLevel(SkillType.DRIVING);
 	}
 	
 	/**
@@ -379,9 +384,9 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 	 * May be empty list if no associated skills.
 	 * @return list of skills as strings
 	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.DRIVING);
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(1);
+		results.add(SkillType.DRIVING);
 		return results;
 	}
 	
@@ -400,7 +405,7 @@ public class DriveGroundVehicle extends OperateVehicle implements Serializable {
 		double phaseModifier = 1D;
 		if (AVOID_OBSTACLE.equals(getPhase())) phaseModifier = 4D;
 		newPoints *= phaseModifier;
-        person.getMind().getSkillManager().addExperience(Skill.DRIVING, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.DRIVING, newPoints);
 	}
 	
     /**

@@ -4,8 +4,14 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
@@ -15,38 +21,39 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
-
 /** 
  * The EnterAirlock class is a task for entering a airlock from an EVA operation. 
  */
-public class EnterAirlock extends Task implements Serializable {
+public class EnterAirlock
+extends Task
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
 
-    // Task phase
+    // TODO Task phase should be an enum
     private static final String ENTERING_AIRLOCK = "Entering Airlock from Outside";
 
     // Static members
-    private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .5D;
 
     // Data members
-    private Airlock airlock; // The airlock to be used.
+    /** The airlock to be used. */
+    private Airlock airlock;
 
     /** 
-     * Constructor
+     * Constructor.
      * @param person the person to perform the task
      * @param airlock to be used.
      * @throws Exception if error constructing task.
@@ -285,7 +292,7 @@ public class EnterAirlock extends Task implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 
     /**
@@ -356,23 +363,16 @@ public class EnterAirlock extends Task implements Serializable {
         }
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+        return manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
     }
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        results.add(Skill.EVA_OPERATIONS);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.EVA_OPERATIONS);
         return results;
     }
 

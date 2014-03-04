@@ -6,27 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.Lab;
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Research;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,28 +15,59 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
 /**
  * A task for performing mathematical modeling in a laboratory for a scientific study.
  */
-public class PerformMathematicalModeling extends Task implements 
-        ResearchScientificStudy, Serializable {
+public class PerformMathematicalModeling
+extends Task
+implements ResearchScientificStudy, Serializable {
 
-    private static Logger logger = Logger.getLogger(PerformMathematicalModeling.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(PerformMathematicalModeling.class.getName());
     
-    // The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D; 
 
-    // Task phase.
+    // TODO Task phase should be an enum.
     private static final String MODELING = "Modeling";
 
     // Data members.
-    private ScientificStudy study; // The scientific study the person is modeling for.
-    private Lab lab;               // The laboratory the person is working in.
-    private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
-    private Person researchAssistant; // The research assistant.
+    /** The scientific study the person is modeling for. */
+    private ScientificStudy study;
+    /** The laboratory the person is working in. */
+    private Lab lab;
+    /** The lab's associated malfunction manager. */
+    private MalfunctionManager malfunctions;
+    /** The research assistant. */
+    private Person researchAssistant;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error creating task.
      */
@@ -96,14 +106,14 @@ public class PerformMathematicalModeling extends Task implements
     public static double getProbability(Person person) {
         double result = 0D;
         
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
+        ScienceType mathematics = ScienceType.MATHEMATICS;
         
         // Add probability for researcher's primary study (if any).
         ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
         if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
             if (!primaryStudy.isPrimaryResearchCompleted()) {
-                if (mathematicsScience.equals(primaryStudy.getScience())) {
+                if (mathematics == primaryStudy.getScience()) {
                     try {
                         Lab lab = getLocalLab(person);
                         if (lab != null) {
@@ -115,8 +125,8 @@ public class PerformMathematicalModeling extends Task implements
                             // If researcher's current job isn't related to study science, divide by two.
                             Job job = person.getMind().getJob();
                             if (job != null) {
-                                Science jobScience = ScienceUtil.getAssociatedScience(job);
-                                if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
+                                ScienceType jobScience = ScienceType.getJobScience(job);
+                                if (primaryStudy.getScience() != jobScience) primaryResult /= 2D;
                             }
                     
                             result += primaryResult;
@@ -135,8 +145,8 @@ public class PerformMathematicalModeling extends Task implements
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                 if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                    Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                    if (mathematicsScience.equals(collabScience)) {
+                    ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                    if (mathematics == collabScience) {
                         try {
                             Lab lab = getLocalLab(person);
                             if (lab != null) {
@@ -148,8 +158,8 @@ public class PerformMathematicalModeling extends Task implements
                                 // If researcher's current job isn't related to study science, divide by two.
                                 Job job = person.getMind().getJob();
                                 if (job != null) {
-                                    Science jobScience = ScienceUtil.getAssociatedScience(job);
-                                    if (!collabScience.equals(jobScience)) collabResult /= 2D;
+                                    ScienceType jobScience = ScienceType.getJobScience(job);
+                                    if (collabScience != jobScience) collabResult /= 2D;
                                 }
                         
                                 result += collabResult;
@@ -202,7 +212,7 @@ public class PerformMathematicalModeling extends Task implements
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
         
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
+        ScienceType mathematics = ScienceType.MATHEMATICS;
         
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
         
@@ -212,7 +222,7 @@ public class PerformMathematicalModeling extends Task implements
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
                     !primaryStudy.isPrimaryResearchCompleted()) {
-                if (mathematicsScience.equals(primaryStudy.getScience())) {
+                if (mathematics == primaryStudy.getScience()) {
                     // Primary study added twice to double chance of random selection.
                     possibleStudies.add(primaryStudy);
                     possibleStudies.add(primaryStudy);
@@ -226,8 +236,8 @@ public class PerformMathematicalModeling extends Task implements
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
-                Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                if (mathematicsScience.equals(collabScience)) {
+                ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                if (mathematics == collabScience) {
                     possibleStudies.add(collabStudy);
                 }
             }
@@ -315,13 +325,13 @@ public class PerformMathematicalModeling extends Task implements
                 {
         List<Building> result = new ArrayList<Building>();
         
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
+        ScienceType mathematicsScience = ScienceType.MATHEMATICS;
         
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpeciality(mathematicsScience.getName())) result.add(building);
+            if (lab.hasSpeciality(mathematicsScience)) result.add(building);
         }
         
         return result;
@@ -337,14 +347,14 @@ public class PerformMathematicalModeling extends Task implements
         
         Lab result = null;
         
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
+        ScienceType mathematicsScience = ScienceType.MATHEMATICS;
         
         if (vehicle instanceof Rover) {
             Rover rover = (Rover) vehicle;
             if (rover.hasLab()) {
                 Lab lab = rover.getLab();
                 boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-                boolean speciality = lab.hasSpeciality(mathematicsScience.getName());
+                boolean speciality = lab.hasSpeciality(mathematicsScience);
                 boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
                 if (availableSpace && speciality && !malfunction) result = lab;
             }
@@ -417,26 +427,20 @@ public class PerformMathematicalModeling extends Task implements
             NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
-        String mathematicsSkill = ScienceUtil.getAssociatedSkill(mathematicsScience);
-        person.getMind().getSkillManager().addExperience(mathematicsSkill, newPoints);
+        person.getMind().getSkillManager().addExperience(ScienceType.MATHEMATICS.getSkill(), newPoints);
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
-        String mathematicsSkill = ScienceUtil.getAssociatedSkill(mathematicsScience);
-        results.add(mathematicsSkill);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MATHEMATICS);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
-        String mathematicsSkill = ScienceUtil.getAssociatedSkill(mathematicsScience);
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(mathematicsSkill);
+        return manager.getEffectiveSkillLevel(SkillType.MATHEMATICS);
     }
     
     /**
@@ -458,8 +462,7 @@ public class PerformMathematicalModeling extends Task implements
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
             SkillManager manager = researchAssistant.getMind().getSkillManager();
-            Science mathematicsScience = ScienceUtil.getScience(Science.MATHEMATICS);
-            int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(mathematicsScience));
+            int assistantSkill = manager.getEffectiveSkillLevel(SkillType.MATHEMATICS);
             if (mathematicsSkill > 0) modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
         }
         
@@ -558,8 +561,8 @@ public class PerformMathematicalModeling extends Task implements
      * Gets the scientific field that is being researched for the study.
      * @return scientific field.
      */
-    public Science getResearchScience() {
-        return ScienceUtil.getScience(Science.MATHEMATICS);
+    public ScienceType getResearchScience() {
+        return ScienceType.MATHEMATICS;
     }
     
     /**

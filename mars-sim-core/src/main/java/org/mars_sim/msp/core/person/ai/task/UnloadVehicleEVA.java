@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.InventoryException;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
@@ -26,8 +27,8 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -43,22 +44,30 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The UnloadVehicleEVA class is a task for unloading fuel and supplies from a vehicle 
  * when the vehicle is outside.
  */
-public class UnloadVehicleEVA extends EVAOperation implements Serializable {
+public class UnloadVehicleEVA
+extends EVAOperation
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
+	private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
+
+    // TODO Task phase should be an enum
     private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String UNLOADING = "Unloading";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
-    // The amount of resources (kg) one person of average strength can unload per millisol.
+    /** The amount of resources (kg) one person of average strength can unload per millisol. */
     private static double UNLOAD_RATE = 20D;
 
     // Data members
-    private Vehicle vehicle;  // The vehicle that needs to be unloaded.
-    private Settlement settlement; // The settlement the person is unloading to.
-    private Airlock airlock; // Airlock to be used for EVA.
+    /** The vehicle that needs to be unloaded. */
+    private Vehicle vehicle;
+    /** The settlement the person is unloading to. */
+    private Settlement settlement;
+    /** Airlock to be used for EVA. */
+    private Airlock airlock;
     private double unloadingXLoc;
     private double unloadingYLoc;
     private double enterAirlockXLoc;
@@ -621,14 +630,14 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         return EVAOperationsSkill; 
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
         return results;
     }
 
@@ -645,7 +654,7 @@ public class UnloadVehicleEVA extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
 
     @Override

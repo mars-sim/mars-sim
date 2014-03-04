@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -30,15 +31,22 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A task for returning a light utility vehicle (LUV) to a rover or settlement
  * when a person finds themselves operating one.
  */
-public class ReturnLightUtilityVehicle extends Task implements Serializable {
+public class ReturnLightUtilityVehicle
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
     
     // Task phase
     private static final String RETURN_LUV = "Returning Light Utility Vehicle";
 
     // Static members
-    private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .5D;
     
     // Data members.
     LightUtilityVehicle luv = null;
@@ -242,8 +250,8 @@ public class ReturnLightUtilityVehicle extends Task implements Serializable {
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        return new ArrayList<String>(0);
+    public List<SkillType> getAssociatedSkills() {
+        return new ArrayList<SkillType>(0);
     }
 
     @Override

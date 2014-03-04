@@ -32,8 +32,8 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -49,29 +49,42 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The LoadVehicleEVA class is a task for loading a vehicle with fuel and supplies 
  * when the vehicle is outside.
  */
-public class LoadVehicleEVA extends EVAOperation implements Serializable {
+public class LoadVehicleEVA
+extends EVAOperation
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
     
-    // Comparison to indicate a small but non-zero amount.
+    /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
     
-    // Task phase
+    // TODO Task phase should be an enum
     private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String LOADING = "Loading";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
-    // The amount of resources (kg) one person of average strength can load per millisol.
+    /** The amount of resources (kg) one person of average strength can load per millisol. */
     private static double LOAD_RATE = 20D;
 
     // Data members
-    private Vehicle vehicle;  // The vehicle that needs to be loaded.
-    private Settlement settlement; // The person's settlement.
-    private Map<Resource, Number> requiredResources; // Resources required to load.
-    private Map<Resource, Number> optionalResources; // Resources desired to load but not required.
-    private Map<Class, Integer> requiredEquipment; // Equipment required to load.
-    private Map<Class, Integer> optionalEquipment; // Equipment desired to load but not required.
-    private Airlock airlock; // Airlock to be used for EVA.
+    /** The vehicle that needs to be loaded. */
+    private Vehicle vehicle;
+    /** The person's settlement. */
+    private Settlement settlement;
+    /** Resources required to load. */
+    private Map<Resource, Number> requiredResources;
+    /** Resources desired to load but not required. */
+    private Map<Resource, Number> optionalResources;
+    /** Equipment required to load. */
+    private Map<Class, Integer> requiredEquipment;
+    /** Equipment desired to load but not required. */
+    private Map<Class, Integer> optionalEquipment;
+    /** Airlock to be used for EVA. */
+    private Airlock airlock;
     private double loadingXLoc;
     private double loadingYLoc;
     private double enterAirlockXLoc;
@@ -1351,14 +1364,14 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         return EVAOperationsSkill; 
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
         return results;
     }
 
@@ -1375,7 +1388,7 @@ public class LoadVehicleEVA extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
     }
     
     @Override

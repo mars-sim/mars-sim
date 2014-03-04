@@ -4,45 +4,60 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.logging.Logger;
-
 /** 
  * The EVAOperation class is an abstract task that involves an extra vehicular activity. 
  */
-public abstract class EVAOperation extends Task implements Serializable {
+public abstract class EVAOperation
+extends Task
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default serial id. */
     private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
     
-    // Task phase names
+    // TODO Task phase names should be an enum
     protected static final String EXIT_AIRLOCK = "Exit Airlock";
     protected static final String ENTER_AIRLOCK = "Enter Airlock";
     
 	// Static members
-	private static final double STRESS_MODIFIER = .5D; // The stress modified per millisol.
-	public static final double BASE_ACCIDENT_CHANCE = .001; // The base chance of an accident per millisol.
+	/** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .5D;
+	/** The base chance of an accident per millisol. */
+    public static final double BASE_ACCIDENT_CHANCE = .001;
     
     // Data members
-    protected boolean exitedAirlock;  // Person has exited the airlock.
-    protected boolean enteredAirlock; // Person has entered the airlock.
-    private boolean endEVA;           // Flag for ending EVA operation externally. 
-    protected Unit containerUnit;        // The unit that is being exited for EVA.
+    /** Person has exited the airlock. */
+    protected boolean exitedAirlock;
+    /** Person has entered the airlock. */
+    protected boolean enteredAirlock;
+    /** Flag for ending EVA operation externally. */
+    private boolean endEVA; 
+    /** The unit that is being exited for EVA. */
+    protected Unit containerUnit;
 	
     /** 
-     * Constructor
+     * Constructor.
      * @param name the name of the task
      * @param person the person to perform the task
      * @throws Exception if task could not be constructed.
@@ -222,7 +237,7 @@ public abstract class EVAOperation extends Task implements Serializable {
             double chance = BASE_ACCIDENT_CHANCE;
 
             // EVA operations skill modification.
-            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
+            int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
             if (skill <= 3) chance *= (4 - skill);
             else chance /= (skill - 2);
 

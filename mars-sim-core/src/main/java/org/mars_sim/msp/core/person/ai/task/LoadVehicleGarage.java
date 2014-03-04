@@ -7,6 +7,17 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -19,6 +30,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
@@ -32,41 +44,48 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** 
  * The LoadVehicleGarage class is a task for loading a vehicle with fuel and supplies 
  * in a vehicle maintenance garage.
  */
-public class LoadVehicleGarage extends Task implements Serializable {
+public class LoadVehicleGarage
+extends Task
+implements Serializable {
     
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
 	
-    // Comparison to indicate a small but non-zero amount.
+    /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 	
-	// Task phase
+	// TODO Task phase should be an enum.
 	private static final String LOADING = "Loading";
 	
-	private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
 
-    // The amount of resources (kg) one person of average strength can load per millisol.
+    /** The amount of resources (kg) one person of average strength can load per millisol. */
     private static double LOAD_RATE = 20D;
     
-    // The duration of the loading task (millisols).
+    /** The duration of the loading task (millisols). */
     private static double DURATION = 50D;
 
     // Data members
-    private Vehicle vehicle;  // The vehicle that needs to be loaded.
-    private Settlement settlement; // The person's settlement.
-    private Map<Resource, Number> requiredResources; // Resources required to load.
-    private Map<Resource, Number> optionalResources; // Resources desired to load but not required.
-    private Map<Class, Integer> requiredEquipment; // Equipment required to load.
-    private Map<Class, Integer> optionalEquipment; // Equipment desired to load but not required.
+    /** The vehicle that needs to be loaded. */
+    private Vehicle vehicle;
+    /** The person's settlement. */
+    private Settlement settlement;
+    /** Resources required to load. */
+    private Map<Resource, Number> requiredResources;
+    /** Resources desired to load but not required. */
+    private Map<Resource, Number> optionalResources;
+    /** Equipment required to load. */
+    private Map<Class, Integer> requiredEquipment;
+    /** Equipment desired to load but not required. */
+    private Map<Class, Integer> optionalEquipment;
     
     /**
      * Constructor
@@ -1157,10 +1176,10 @@ public class LoadVehicleGarage extends Task implements Serializable {
 	/**
 	 * Gets a list of the skills associated with this task.
 	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
+	 * @return list of skills
 	 */
-	public List<String> getAssociatedSkills() {
-		return new ArrayList<String>(0);
+	public List<SkillType> getAssociatedSkills() {
+		return new ArrayList<SkillType>(0);
 	}
 	
 	@Override

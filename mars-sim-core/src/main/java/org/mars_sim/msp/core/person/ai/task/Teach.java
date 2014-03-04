@@ -6,10 +6,19 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -18,36 +27,35 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
-
 /**
  * This is a task for teaching a student a task.
  */
-public class Teach extends Task implements Serializable {
+public class Teach
+extends Task
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/* default logger.
     private static Logger logger = Logger.getLogger(Teach.class.getName());
+    */
 
     // Task phase
     private static final String TEACHING = "Teaching";
 
     // Static members
-    private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.1D;
 
-    // The improvement in relationship opinion of the teacher from the student per millisol.
+    /** The improvement in relationship opinion of the teacher from the student per millisol. */
     private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
     private Person student;
     private Task teachingTask;
 
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error constructing task.
      */
@@ -301,15 +309,12 @@ public class Teach extends Task implements Serializable {
             boolean possibleStudent = false;
             Task task = student.getMind().getTaskManager().getTask();
             if (task != null) {
-                Iterator<String> j = task.getAssociatedSkills().iterator();
+                Iterator<SkillType> j = task.getAssociatedSkills().iterator();
                 while (j.hasNext()) {
-                    String taskSkillName = j.next();
-                    int studentSkill = student.getMind().getSkillManager()
-                            .getSkillLevel(taskSkillName);
-                    int teacherSkill = teacher.getMind().getSkillManager()
-                            .getSkillLevel(taskSkillName);
-                    if ((teacherSkill >= (studentSkill + 1))
-                            && !task.hasTeacher())
+                    SkillType taskSkill = j.next();
+                    int studentSkill = student.getMind().getSkillManager().getSkillLevel(taskSkill);
+                    int teacherSkill = teacher.getMind().getSkillManager().getSkillLevel(taskSkill);
+                    if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher())
                         possibleStudent = true;
                 }
                 if (possibleStudent)
@@ -350,20 +355,14 @@ public class Teach extends Task implements Serializable {
         return people;
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         return 0;
     }
 
-    /**
-     * Gets a list of the skills associated with this task. May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(0);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
     

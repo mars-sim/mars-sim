@@ -28,8 +28,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -42,7 +41,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
-public class ScienceTabPanel extends TabPanel {
+public class ScienceTabPanel
+extends TabPanel {
 
     /** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -314,21 +314,22 @@ public class ScienceTabPanel extends TabPanel {
     /**
      * Inner class for achievement table model.
      */
-    private static class AchievementTableModel extends AbstractTableModel {
+    private static class AchievementTableModel
+    extends AbstractTableModel {
         
         /** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		// Data members.
         private Person person;
-        private List<Science> sciences;
+        private List<ScienceType> sciences;
         
         private AchievementTableModel(Person person) {
             // Use AbstractTableModel constructor.
             super();
             
             this.person = person;
-            sciences = ScienceUtil.getAllSciences();
+            sciences = ScienceType.valuesList();
         }
         
         /**
@@ -375,7 +376,7 @@ public class ScienceTabPanel extends TabPanel {
         public Object getValueAt(int rowIndex, int columnIndex) {
             Object result = null;
             if ((rowIndex >= 0) && (rowIndex < sciences.size())) {
-                Science science = sciences.get(rowIndex);
+                ScienceType science = sciences.get(rowIndex);
                 if (columnIndex == 0) result = science.getName();
                 else if (columnIndex == 1) {
                     result = person.getScientificAchievement(science);

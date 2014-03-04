@@ -13,137 +13,139 @@ import org.mars_sim.msp.core.person.Person;
 import java.io.Serializable;
 import java.util.Hashtable;
 
-/** The SkillManager class manages skills for a given person.
- *  Each person has one skill manager.
+/**
+ * The SkillManager class manages skills for a given person.
+ * Each person has one skill manager.
  */
-public class SkillManager implements Serializable {
+public class SkillManager
+implements Serializable {
 
-    // Data members
-    private Person person; // The person owning the SkillManager
-    private Hashtable<String, Skill> skills; // A list of the person's skills keyed by name.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+	// Data members
+	/** The person owning the SkillManager. */
+	private Person person;
+	/** A list of the person's skills keyed by name. */
+	private Hashtable<SkillType, Skill> skills;
 
-    /** Constructs a new SkillManager object */
-    SkillManager(Person person) {
-        this.person = person;
-        skills = new Hashtable<String, Skill>();
+	/** Constructor. */
+	public SkillManager(Person person) {
+		this.person = person;
+		skills = new Hashtable<SkillType, Skill>();
 
-        // Add starting skills randomly for person.
-        String[] startingSkills = { Skill.DRIVING, Skill.BOTANY, Skill.MECHANICS,
-                                    Skill.EVA_OPERATIONS, Skill.AREOLOGY, Skill.MEDICAL, 
-                                    Skill.COOKING, Skill.TRADING, Skill.MATERIALS_SCIENCE, 
-                                    Skill.CONSTRUCTION, Skill.BIOLOGY, Skill.ASTRONOMY,
-                                    Skill.CHEMISTRY, Skill.PHYSICS, Skill.MATHEMATICS,
-                                    Skill.METEOROLOGY };
+		// Add starting skills randomly for person.
+		for (SkillType startingSkill : SkillType.values()) {
+			int skillLevel = getInitialSkillLevel(0, 50);
+			// int skillLevel = 1;
+			Skill newSkill = new Skill(startingSkill);
+			newSkill.setLevel(skillLevel);
+			addNewSkill(newSkill);
+		}
+	}
 
-        for (String startingSkill : startingSkills) {
-            int skillLevel = getInitialSkillLevel(0, 50);
-            // int skillLevel = 1;
-            Skill newSkill = new Skill(startingSkill);
-            newSkill.setLevel(skillLevel);
-            addNewSkill(newSkill);
-        }
-    }
+	/**
+	 * Returns an initial skill level.
+	 * @param level lowest possible skill level
+	 * @param chance the chance that the skill will be greater
+	 * @return the initial skill level
+	 */
+	private int getInitialSkillLevel(int level, int chance) {
+		if (RandomUtil.lessThanRandPercent(chance))
+			return getInitialSkillLevel(level + 1, chance / 2);
+		else return level;
+	}
 
-    /** Returns an initial skill level.
-     *  @param level lowest possible skill level
-     *  @param chance the chance that the skill will be greater
-     *  @return the initial skill level
-     */
-    private int getInitialSkillLevel(int level, int chance) {
-        if (RandomUtil.lessThanRandPercent(chance))
-            return getInitialSkillLevel(level + 1, chance / 2);
-        else return level;
-    }
+	/**
+	 * Returns the number of skills.
+	 * @return the number of skills
+	 */
+	public int getSkillNum() {
+		return skills.size();
+	}
 
-    /** Returns the number of skills.
-     *  @return the number of skills
-     */
-    public int getSkillNum() {
-        return skills.size();
-    }
+	/**
+	 * Returns an array of the skills.
+	 * @return an array of the skills
+	 */
+	public SkillType[] getKeys() {
+		return skills.keySet().toArray(new SkillType[] {});
+	}
 
-    /** Returns an array of the skill names as strings.
-     *  @return an array of the skill names
-     */
-    public String[] getKeys() {
-        Object[] tempArray = skills.keySet().toArray();
-        String[] keyArray = new String[tempArray.length];
-        for (int x = 0; x < tempArray.length; x++)
-            keyArray[x] = (String) tempArray[x];
+	/**
+	 * Returns true if the SkillManager has the named skill, false otherwise.
+	 * @param skill {@link SkillType} the skill's name
+	 * @return true if the manager has the named skill
+	 */
+	public boolean hasSkill(SkillType skill) {
+		return skills.containsKey(skill);
+	}
 
-        return keyArray;
-    }
+	/**
+	 * Returns the integer skill level from a named skill if it exists in the SkillManager.
+	 * Returns 0 otherwise.
+	 * @param skill {@link SkillType}
+	 * @return {@link Integer} >= 0
+	 */
+	public int getSkillLevel(SkillType skill) {
+		int result = 0;
+		if (skills.containsKey(skill)) {
+			result = skills.get(skill).getLevel();
+		}
+		return result;
+	}
 
-    /** Returns true if the SkillManager has the named skill, false otherwise.
-     *  @param skillName the skill's name
-     *  @return true if the manager has the named skill
-     */
-    public boolean hasSkill(String skillName) {
-        return skills.containsKey(skillName);
-    }
+	/**
+	 * Returns the effective integer skill level from a named skill
+	 * based on additional modifiers such as fatigue.
+	 * @param skillType the skill's type
+	 * @return the skill's effective level
+	 */
+	public int getEffectiveSkillLevel(SkillType skillType) {
+		int skill = getSkillLevel(skillType);
 
-    /** Returns the integer skill level from a named skill if it exists in the SkillManager.
-     *  Returns 0 otherwise.
-     *  @param skillName the skill's name
-     *  @return the skill's level
-     */
-    public int getSkillLevel(String skillName) {
-        int result = 0;
-        if (skills.containsKey(skillName))
-            result = skills.get(skillName).getLevel();
+		// Modify for fatigue
+		// - 1 skill level for every 1000 points of fatigue.
+		double performance = person.getPerformanceRating();
+		int result = (int)Math.round(performance * skill);
+		return result;
+	}
 
-        return result;
-    }
+	/**
+	 * Adds a new skill to the SkillManager and indexes it under its name.
+	 * @param newSkill the skill to be added
+	 */
+	public void addNewSkill(Skill newSkill) {
+		SkillType skillType = newSkill.getSkill();
+		if (hasSkill(skillType)) skills.get(skillType).setLevel(newSkill.getLevel());
+		else skills.put(skillType, newSkill);
+	}
 
-    /** Returns the effective integer skill level from a named skill
-     *  based on additional modifiers such as fatigue.
-     *  @param skillName the skill's name
-     *  @return the skill's effective level
-     */
-    public int getEffectiveSkillLevel(String skillName) {
-        int skill = getSkillLevel(skillName);
+	/**
+	 * Adds given experience points to a named skill if it exists in the SkillManager.
+	 * If it doesn't exist, create a skill of that name in the SkillManager and add the experience points to it.
+	 * @param skillType {@link SkillType} the skill's type
+	 * @param experiencePoints the experience points to be added
+	 */
+	public void addExperience(SkillType skillType, double experiencePoints) {
 
-        // Modify for fatigue
-        // - 1 skill level for every 1000 points of fatigue.
-        double performance = person.getPerformanceRating();
-        int result = (int)Math.round(performance * skill);
-        return result;
-    }
+		// int initialSkill = getSkillLevel(skillName);
 
-    /** Adds a new skill to the SkillManager and indexes it under its name.
-     *  @param newSkill the skill to be added
-     */
-    public void addNewSkill(Skill newSkill) {
-        String skillName = newSkill.getName();
-        if (hasSkill(skillName)) skills.get(skillName).setLevel(newSkill.getLevel());
-        else skills.put(newSkill.getName(), newSkill);
-    }
+		if (hasSkill(skillType)) skills.get(skillType).addExperience(experiencePoints);
+		else {
+			addNewSkill(new Skill(skillType));
+			addExperience(skillType, experiencePoints);
+		}
 
-    /** Adds given experience points to a named skill if it exists in the SkillManager.
-     *  If it doesn't exist, create a skill of that name in the SkillManager and add the experience points to it.
-     *  @param skillName the skill's name
-     *  @param experiencePoints the experience points to be added
-     */
-    public void addExperience(String skillName, double experiencePoints) {
-    	
-    	// int initialSkill = getSkillLevel(skillName);
-    	
-        if (hasSkill(skillName)) skills.get(skillName).addExperience(experiencePoints);
-        else {
-            addNewSkill(new Skill(skillName));
-            addExperience(skillName, experiencePoints);
-        }
-        
-        // int finalSkill = getSkillLevel(skillName);
-        // if (finalSkill > initialSkill) logger.info(person.getName() + " improved " + skillName + " skill to " + finalSkill);
-    }
+		// int finalSkill = getSkillLevel(skillName);
+		// if (finalSkill > initialSkill) logger.info(person.getName() + " improved " + skillName + " skill to " + finalSkill);
+	}
 
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        person = null;
-        skills.clear();
-        skills = null;
-    }
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		person = null;
+		skills.clear();
+		skills = null;
+	}
 }

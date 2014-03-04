@@ -6,6 +6,13 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -14,8 +21,8 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -28,13 +35,6 @@ import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerSource;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Logger;
 
 /** 
  * The ToggleFuelPowerSource class is an EVA task for toggling a particular
@@ -421,7 +421,7 @@ implements Serializable {
 			double evaExperience = time / 100D;
 			evaExperience += evaExperience * experienceAptitudeModifier;
 			evaExperience *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 		}
 
 		// If phase is toggle power source, add experience to mechanics skill.
@@ -430,7 +430,7 @@ implements Serializable {
 			// Experience points adjusted by person's "Experience Aptitude" attribute.
 			double mechanicsExperience = time / 100D;
 			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(Skill.MECHANICS, mechanicsExperience);
+			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
 		}
 	}
 
@@ -438,10 +438,10 @@ implements Serializable {
 	 * @see org.mars_sim.msp.simulation.person.ai.task.Task#getAssociatedSkills()
 	 */
 	@Override
-	public List<String> getAssociatedSkills() {
-		List<String> result = new ArrayList<String>(2);
-		result.add(Skill.MECHANICS);
-		if (isEVA) result.add(Skill.EVA_OPERATIONS);
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> result = new ArrayList<SkillType>(2);
+		result.add(SkillType.MECHANICS);
+		if (isEVA) result.add(SkillType.EVA_OPERATIONS);
 		return result;
 	}
 
@@ -451,8 +451,8 @@ implements Serializable {
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 		if (isEVA) return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
 		else return (mechanicsSkill);
 	}
@@ -660,7 +660,7 @@ implements Serializable {
 		double chance = .001D;
 
 		// Mechanic skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
 		if (skill <= 3) {
 			chance *= (4 - skill);
 		}

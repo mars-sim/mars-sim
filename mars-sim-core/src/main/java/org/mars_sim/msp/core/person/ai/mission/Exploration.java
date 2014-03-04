@@ -4,10 +4,24 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.mission;
 
-import org.mars_sim.msp.core.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
@@ -16,7 +30,7 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -26,11 +40,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * The Exploration class is a mission to travel in a rover to several random locations around a settlement and collect
@@ -43,6 +52,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(Exploration.class.getName());
 
 	/** Default description. */
@@ -76,7 +86,7 @@ implements Serializable {
 	private boolean endExploringSite;
 
     /**
-     * Constructor
+     * Constructor.
      * @param startingPerson the person starting the mission.
      * @throws MissionException if problem constructing mission.
      */
@@ -107,8 +117,7 @@ implements Serializable {
             // Determine exploration sites
             try {
                 if (hasVehicle()) {
-                    int skill = startingPerson.getMind().getSkillManager()
-                            .getEffectiveSkillLevel(Skill.AREOLOGY);
+                    int skill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
                     determineExplorationSites(getVehicle().getRange(),
                             getTotalTripTimeLimit(getRover(),
                                     getPeopleNumber(), true), NUM_SITES, skill);

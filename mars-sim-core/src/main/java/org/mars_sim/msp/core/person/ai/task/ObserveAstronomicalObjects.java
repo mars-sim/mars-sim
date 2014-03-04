@@ -6,24 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,27 +14,54 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+
 /**
  * A task for observing the night sky with an astronomical observatory.
  */
-public class ObserveAstronomicalObjects extends Task implements 
-        ResearchScientificStudy, Serializable {
+public class ObserveAstronomicalObjects
+extends Task
+implements ResearchScientificStudy, Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
 
-    //  The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D; 
     
     // Task phase.
     private static final String OBSERVING = "Observing";
     
     // Data members.
-    private ScientificStudy study; // The scientific study the person is researching for.
-    private AstronomicalObservation observatory; // The observatory the person is using.
-    private Person researchAssistant; // The research assistant.
+    /** The scientific study the person is researching for. */
+    private ScientificStudy study;
+    /** The observatory the person is using. */
+    private AstronomicalObservation observatory;
+    /** The research assistant. */
+    private Person researchAssistant;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
@@ -100,14 +109,14 @@ public class ObserveAstronomicalObjects extends Task implements
             double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
             if (sunlight == 0D) {
                 
-                Science astronomy = ScienceUtil.getScience(Science.ASTRONOMY);
+                ScienceType astronomy = ScienceType.ASTRONOMY;
                 
                 // Add probability for researcher's primary study (if any).
                 ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                 ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
                 if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
                     if (!primaryStudy.isPrimaryResearchCompleted()) {
-                        if (astronomy.equals(primaryStudy.getScience())) {
+                        if (astronomy == primaryStudy.getScience()) {
                             try {
                                 double primaryResult = 100D;
                             
@@ -117,8 +126,8 @@ public class ObserveAstronomicalObjects extends Task implements
                                 // If researcher's current job isn't related to astronomy, divide by two.
                                 Job job = person.getMind().getJob();
                                 if (job != null) {
-                                    Science jobScience = ScienceUtil.getAssociatedScience(job);
-                                    if (!astronomy.equals(jobScience)) primaryResult /= 2D;
+                                    ScienceType jobScience = ScienceType.getJobScience(job);
+                                    if (astronomy != jobScience) primaryResult /= 2D;
                                 }
                         
                                 result += primaryResult;
@@ -136,7 +145,7 @@ public class ObserveAstronomicalObjects extends Task implements
                     ScientificStudy collabStudy = i.next();
                     if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                         if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                            if (astronomy.equals(collabStudy.getCollaborativeResearchers().get(person))) {
+                            if (astronomy == collabStudy.getCollaborativeResearchers().get(person)) {
                                 try {
                                     double collabResult = 50D;
                                 
@@ -146,8 +155,8 @@ public class ObserveAstronomicalObjects extends Task implements
                                     // If researcher's current job isn't related to astronomy, divide by two.
                                     Job job = person.getMind().getJob();
                                     if (job != null) {
-                                        Science jobScience = ScienceUtil.getAssociatedScience(job);
-                                        if (!astronomy.equals(jobScience)) collabResult /= 2D;
+                                        ScienceType jobScience = ScienceType.getJobScience(job);
+                                        if (astronomy != jobScience) collabResult /= 2D;
                                     }
                                 
                                     result += collabResult;
@@ -278,7 +287,7 @@ public class ObserveAstronomicalObjects extends Task implements
     private ScientificStudy determineStudy() {
         ScientificStudy result = null;
         
-        Science astronomy = ScienceUtil.getScience(Science.ASTRONOMY);
+        ScienceType astronomy = ScienceType.ASTRONOMY;
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
         
         // Add primary study if in research phase.
@@ -287,7 +296,7 @@ public class ObserveAstronomicalObjects extends Task implements
         if (primaryStudy != null) {
             if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
                     !primaryStudy.isPrimaryResearchCompleted()) {
-                if (astronomy.equals(primaryStudy.getScience())) {
+                if (astronomy == primaryStudy.getScience()) {
                     // Primary study added twice to double chance of random selection.
                     possibleStudies.add(primaryStudy);
                     possibleStudies.add(primaryStudy);
@@ -301,7 +310,7 @@ public class ObserveAstronomicalObjects extends Task implements
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
-                if (astronomy.equals(collabStudy.getCollaborativeResearchers().get(person)))
+                if (astronomy == collabStudy.getCollaborativeResearchers().get(person))
                     possibleStudies.add(collabStudy);
             }
         }
@@ -325,26 +334,22 @@ public class ObserveAstronomicalObjects extends Task implements
             NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
-        String astronomySkill = ScienceUtil.getAssociatedSkill(astronomyScience);
+        ScienceType astronomyScience = ScienceType.ASTRONOMY;
+        SkillType astronomySkill = astronomyScience.getSkill();
         person.getMind().getSkillManager().addExperience(astronomySkill, newPoints);
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
-        String astronomySkill = ScienceUtil.getAssociatedSkill(astronomyScience);
-        results.add(astronomySkill);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.ASTRONOMY);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
-        String astronomySkill = ScienceUtil.getAssociatedSkill(astronomyScience);
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(astronomySkill);
+        return manager.getEffectiveSkillLevel(SkillType.ASTRONOMY);
     }
 
     @Override
@@ -419,8 +424,7 @@ public class ObserveAstronomicalObjects extends Task implements
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
             SkillManager manager = researchAssistant.getMind().getSkillManager();
-            Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
-            int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(astronomyScience));
+            int assistantSkill = manager.getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
             if (astronomySkill > 0) observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);
         }
         
@@ -436,9 +440,7 @@ public class ObserveAstronomicalObjects extends Task implements
         double chance = .001D;
 
         // Astronomy skill modification.
-        Science astronomyScience = ScienceUtil.getScience(Science.ASTRONOMY);
-        String astronomySkill = ScienceUtil.getAssociatedSkill(astronomyScience);
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(astronomySkill);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -477,8 +479,8 @@ public class ObserveAstronomicalObjects extends Task implements
      * Gets the scientific field that is being researched for the study.
      * @return scientific field.
      */
-    public Science getResearchScience() {
-        return ScienceUtil.getScience(Science.ASTRONOMY);
+    public ScienceType getResearchScience() {
+        return ScienceType.ASTRONOMY;
     }
     
     /**

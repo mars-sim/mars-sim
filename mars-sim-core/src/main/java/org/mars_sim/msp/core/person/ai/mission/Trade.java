@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
 import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
@@ -63,7 +63,7 @@ implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
 
-	// Mission phases.
+	// TODO Mission phases should be enums.
 	public static final String TRADE_DISEMBARKING = "Trade Disembarking";
 	public static final String TRADE_NEGOTIATING = "Trade Negotiating";
 	public static final String UNLOAD_GOODS = "Unload Goods";
@@ -973,7 +973,7 @@ implements Serializable {
 		Iterator<Person> i = getPeople().iterator();
 		while (i.hasNext()) {
 			Person person = i.next();
-			int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING);
+			int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 			if (tradeSkill > bestTradeSkill) {
 				bestTradeSkill = tradeSkill;
 				bestTrader = person;
@@ -995,7 +995,7 @@ implements Serializable {
 		while (i.hasNext()) {
 			Person person = i.next();
 			if (!getPeople().contains(person)) {
-				int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.TRADING);
+				int tradeSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING);
 				if (tradeSkill > bestTradeSkill) {
 					bestTradeSkill = tradeSkill;
 					bestTrader = person;

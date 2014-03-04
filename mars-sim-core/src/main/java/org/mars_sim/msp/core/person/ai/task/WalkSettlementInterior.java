@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -31,10 +32,16 @@ import org.mars_sim.msp.core.time.MarsClock;
  * (Ex: Between two connected inhabitable buildings or two locations in 
  * a single inhabitable building.)
  */
-public class WalkSettlementInterior extends Task implements Serializable {
+public class WalkSettlementInterior
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
-    
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
+
     // Task phase
     private static final String WALKING = "Walking";
     
@@ -322,8 +329,8 @@ public class WalkSettlementInterior extends Task implements Serializable {
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(0);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
 

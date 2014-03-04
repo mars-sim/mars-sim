@@ -6,19 +6,6 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.task.CookMeal;
-import org.mars_sim.msp.core.person.ai.task.Task;
-import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,16 +13,36 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.task.CookMeal;
+import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.time.MarsClock;
+
 /**
  * The Cooking class is a building function for cooking meals.
  */
-public class Cooking extends Function implements Serializable {
-	
+public class Cooking
+extends Function
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(Cooking.class.getName());
 
 	public static final String NAME = "Cooking";
 	
-	// The base amount of work time (cooking skill 0) to produce a cooked meal.
+	/** The base amount of work time (cooking skill 0) to produce a cooked meal. */
 	public static final double COOKED_MEAL_WORK_REQUIRED = 20D;
 
 	// Data members
@@ -147,7 +154,7 @@ public class Cooking extends Function implements Serializable {
 					Person person = i.next();
 					Task task = person.getMind().getTaskManager().getTask();
 					if (task instanceof CookMeal) {
-						int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.COOKING);
+						int cookingSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.COOKING);
 						if (cookingSkill > result) result = cookingSkill;
 					}
 				}

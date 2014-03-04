@@ -21,14 +21,15 @@ import javax.swing.JProgressBar;
 
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.science.Science;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
 /**
  * A panel that displays study researcher information.
  */
-class ResearcherPanel extends JPanel {
+class ResearcherPanel
+extends JPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -145,7 +146,7 @@ class ResearcherPanel extends JPanel {
 			}
 			else {
 				titleLabel.setText(Msg.getString("ResearcherPanel.collaborativeResearcher")); //$NON-NLS-1$
-				Science collabScience = study.getCollaborativeResearchers().get(researcher);
+				ScienceType collabScience = study.getCollaborativeResearchers().get(researcher);
 				scienceLabel.setText(Msg.getString("ResearcherPanel.scientificField", collabScience.getName())); //$NON-NLS-1$
 			}
 

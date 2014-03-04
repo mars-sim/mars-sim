@@ -9,88 +9,113 @@ package org.mars_sim.msp.core.person.ai;
 
 import java.io.Serializable;
 
-/** The Skill class represents a single skill that a person has.
- *  The skill must have a name unique among the person's collection of skills.
+/**
+ * The Skill class represents a single skill that a person has.
+ * The skill must have a name unique among the person's collection of skills.
  */
-public class Skill implements Serializable {
+public class Skill
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Skills
+	/** @deprecated */
 	public static final String DRIVING = "Driving";
+	/** @deprecated */
 	public static final String BOTANY = "Botany";
+	/** @deprecated */
 	public static final String MECHANICS = "Mechanics";
+	/** @deprecated */
 	public static final String EVA_OPERATIONS = "EVA Operations";
+	/** @deprecated */
 	public static final String AREOLOGY = "Areology";
+	/** @deprecated */
 	public static final String MEDICAL = "Medicine";
+	/** @deprecated */
 	public static final String COOKING = "Cooking";
+	/** @deprecated */
 	public static final String TRADING = "Trading";
+	/** @deprecated */
 	public static final String MATERIALS_SCIENCE = "Materials Science";
-    public static final String CONSTRUCTION = "Construction";
-    public static final String BIOLOGY = "Biology";
-    public static final String ASTRONOMY = "Astronomy";
-    public static final String CHEMISTRY = "Chemistry";
-    public static final String PHYSICS = "Physics";
-    public static final String MATHEMATICS = "Mathematics";
-    public static final String METEOROLOGY = "Meteorology";
+	/** @deprecated */
+	public static final String CONSTRUCTION = "Construction";
+	/** @deprecated */
+	public static final String BIOLOGY = "Biology";
+	/** @deprecated */
+	public static final String ASTRONOMY = "Astronomy";
+	/** @deprecated */
+	public static final String CHEMISTRY = "Chemistry";
+	/** @deprecated */
+	public static final String PHYSICS = "Physics";
+	/** @deprecated */
+	public static final String MATHEMATICS = "Mathematics";
+	/** @deprecated */
+	public static final String METEOROLOGY = "Meteorology";
 
-    // Data members
-    private int level; // The skill level (0 to infinity)
-    private double experiencePoints; // The experience points towards the next skill level.
-    private double neededExperiencePoints; // The experience points needed to reach the next skill level.
-    private String name; // The unique (for each person) name of the skill.
+	// Data members
+	/** The skill level (0 to infinity). */
+	private int level;
+	/** The experience points towards the next skill level. */
+	private double experiencePoints;
+	/** The experience points needed to reach the next skill level. */
+	private double neededExperiencePoints;
+	/** The unique (for each person) skill. */
+	private SkillType skill;
 
-    /** 
-     * Constructs a Skill object 
-     * @param name the skill's name
-     */
-    public Skill(String name) {
-        this.name = name;
-        level = 0;
-        experiencePoints = 0D;
-        neededExperiencePoints = 25D;
-    }
-    
-    /**
-     * Constructor with level.
-     * @param name the skill's name.
-     * @param level the skill's initial level.
-     */
-    public Skill(String name, int level) {
-    	this(name);
-    	setLevel(level);
-    }
+	/** 
+	 * Constructor. 
+	 * @param skill {@link SkillType}
+	 */
+	public Skill(SkillType skill) {
+		this.skill = skill;
+		level = 0;
+		experiencePoints = 0D;
+		neededExperiencePoints = 25D;
+	}
 
-    /** Returns the name of the skill. 
-     *  @return the skill's name
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Constructor with level.
+	 * @param skill {@link SkillType} the skill's name.
+	 * @param level the skill's initial level.
+	 */
+	public Skill(SkillType skill, int level) {
+		this(skill);
+		setLevel(level);
+	}
 
-    /** Returns the level of the skill. 
-     *  @return the skill's level
-     */
-    public int getLevel() {
-        return level;
-    }
+	/** Returns the name of the skill. 
+	 *  @return the skill's name
+	 */
+	public SkillType getSkill() {
+		return skill;
+	}
 
-    /** Sets the level of the skill. 
-     *  @param newLevel the new level of the skill
-     */
-    void setLevel(int newLevel) {
-        level = newLevel;
-        experiencePoints = 0;
-        neededExperiencePoints = 25D * Math.pow(2D, newLevel);
-    }
+	/** Returns the level of the skill. 
+	 *  @return the skill's level
+	 */
+	public int getLevel() {
+		return level;
+	}
 
-    /** Adds to the experience points of the skill. 
-     *  @param newPoints the experience points to be added
-     */
-    void addExperience(double newPoints) {
-        experiencePoints += newPoints;
-        if (experiencePoints >= neededExperiencePoints) {
-            experiencePoints -= neededExperiencePoints;
-            neededExperiencePoints *= 2D;
-            level++;
-        }
-    }
+	/** Sets the level of the skill. 
+	 *  @param newLevel the new level of the skill
+	 */
+	void setLevel(int newLevel) {
+		level = newLevel;
+		experiencePoints = 0;
+		neededExperiencePoints = 25D * Math.pow(2D, newLevel);
+	}
+
+	/** Adds to the experience points of the skill. 
+	 *  @param newPoints the experience points to be added
+	 */
+	void addExperience(double newPoints) {
+		experiencePoints += newPoints;
+		if (experiencePoints >= neededExperiencePoints) {
+			experiencePoints -= neededExperiencePoints;
+			neededExperiencePoints *= 2D;
+			level++;
+		}
+	}
 }

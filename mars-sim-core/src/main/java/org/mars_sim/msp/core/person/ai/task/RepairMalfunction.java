@@ -4,8 +4,15 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
@@ -18,31 +25,34 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
  */
-public class RepairMalfunction extends Task implements Repair, Serializable {
+public class RepairMalfunction
+extends Task
+implements Repair, Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Task phase
 	private static final String REPAIRING = "Repairing";
 	
 	// Static members
-	private static final double STRESS_MODIFIER = .3D; // The stress modified per millisol.
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .3D;
 
     // Data members
-    private Malfunctionable entity; // Entity being repaired.
+    /** Entity being repaired. */
+	private Malfunctionable entity;
 
     /**
      * Constructor
@@ -198,7 +208,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -259,7 +269,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
 	}
 
     /**
@@ -271,7 +281,7 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -336,27 +346,20 @@ public class RepairMalfunction extends Task implements Repair, Serializable {
                     settlementLoc.getY());
         }
     }
-    
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
-	public int getEffectiveSkillLevel() {
+
+	@Override
+    public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.MECHANICS);
+		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
 	}  
 	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.MECHANICS);
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(1);
+		results.add(SkillType.MECHANICS);
 		return results;
 	}
-	
+
 	@Override
 	public void destroy() {
 	    super.destroy();

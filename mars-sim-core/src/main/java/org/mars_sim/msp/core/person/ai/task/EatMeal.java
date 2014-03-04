@@ -4,8 +4,14 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -15,42 +21,45 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.Dining;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-/** The EatMeal class is a task for eating a meal.
- *  The duration of the task is 40 millisols.
+/**
+ * The EatMeal class is a task for eating a meal.
+ * The duration of the task is 40 millisols.
  *
- *  Note: Eating a meal reduces hunger to 0.
+ * Note: Eating a meal reduces hunger to 0.
  */
-class EatMeal extends Task implements Serializable {
+class EatMeal
+extends Task
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/* default logger.
     private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+    */
 
-    // Task phase
+    // TODO Task phase should be an enum
     private static final String EATING = "Eating";
 
     // Static members
-    private static final double STRESS_MODIFIER = -.2D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.2D;
 
     private CookedMeal meal;
 
     /** 
-     * Constructs a EatMeal object
+     * Constructs a EatMeal object.
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
@@ -267,21 +276,14 @@ class EatMeal extends Task implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         return 0;
     }
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(0);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
 

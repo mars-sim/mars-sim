@@ -23,8 +23,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -33,11 +32,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * The TravelToSettlement class is a mission to travel from one settlement to another randomly selected one within range
  * of an available rover.
  */
-public class TravelToSettlement extends RoverMission implements Serializable {
+public class TravelToSettlement
+extends RoverMission
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(TravelToSettlement.class.getName());
 
 	/** Default description. */
@@ -408,18 +410,13 @@ public class TravelToSettlement extends RoverMission implements Serializable {
                 .getTotalScientificAchievement() - startingSettlement
                 .getTotalScientificAchievement()) / 10D;
         double jobScienceAchievementFactor = 0D;
-        Science jobScience = ScienceUtil.getAssociatedScience(person.getMind()
-                .getJob());
+        ScienceType jobScience = ScienceType.getJobScience(person.getMind().getJob());
         if (jobScience != null) {
-            double startingJobScienceAchievement = startingSettlement
-                    .getScientificAchievement(jobScience);
-            double destinationJobScienceAchievement = destinationSettlement
-                    .getScientificAchievement(jobScience);
-            jobScienceAchievementFactor = destinationJobScienceAchievement
-                    - startingJobScienceAchievement;
+            double startingJobScienceAchievement = startingSettlement.getScientificAchievement(jobScience);
+            double destinationJobScienceAchievement = destinationSettlement.getScientificAchievement(jobScience);
+            jobScienceAchievementFactor = destinationJobScienceAchievement - startingJobScienceAchievement;
         }
-        double scienceAchievementFactor = totalScienceAchievementFactor
-                + jobScienceAchievementFactor;
+        double scienceAchievementFactor = totalScienceAchievementFactor + jobScienceAchievementFactor;
 
         if (destinationCrowding < RoverMission.MIN_PEOPLE) {
             return 0;

@@ -4,8 +4,15 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
+
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
@@ -19,41 +26,41 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /** 
  * The DigLocalRegolith class is a task for performing
  * collecting regolith outside a settlement.
  */
-public class DigLocalRegolith extends EVAOperation implements Serializable {
+public class DigLocalRegolith
+extends EVAOperation
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
     
-    // Phase name
+    // TODO Phase name should be an enum
     private static final String WALK_TO_SITE = "Walk to Dig Site";
     private static final String COLLECT_REGOLITH = "Collecting Regolith";
     private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
     
-    //  Collection rate of regolith during EVA (kg/millisol).
+    /** Collection rate of regolith during EVA (kg/millisol). */
     private static final double COLLECTION_RATE = 20D;
     
     // Domain members
-    private Airlock airlock; // Airlock to be used for EVA.
-    private Bag bag; // Bag for collecting regolith.
+    /** Airlock to be used for EVA. */
+    private Airlock airlock;
+    /** Bag for collecting regolith. */
+    private Bag bag;
     private Settlement settlement;
     private double diggingXLocation;
     private double diggingYLocation;
@@ -61,7 +68,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
     private double enterAirlockYLoc;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error constructing the task.
      */
@@ -223,7 +230,7 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
         
         // If phase is collect regolith, add experience to areology skill.
         if (COLLECT_REGOLITH.equals(getPhase())) {
@@ -231,23 +238,23 @@ public class DigLocalRegolith extends EVAOperation implements Serializable {
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double areologyExperience = time / 10D;
             areologyExperience += areologyExperience * experienceAptitudeModifier;
-            person.getMind().getSkillManager().addExperience(Skill.AREOLOGY, areologyExperience);
+            person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(2);
-        results.add(Skill.EVA_OPERATIONS);
-        results.add(Skill.AREOLOGY);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.AREOLOGY);
         return results; 
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        int EVAOperationsSkill = manager.getEffectiveSkillLevel(Skill.EVA_OPERATIONS);
-        int areologySkill = manager.getEffectiveSkillLevel(Skill.AREOLOGY);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
     }
     

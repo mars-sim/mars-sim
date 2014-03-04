@@ -6,27 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.Lab;
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.malfunction.MalfunctionManager;
-import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Research;
-import org.mars_sim.msp.core.vehicle.Rover;
-import org.mars_sim.msp.core.vehicle.Vehicle;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -36,26 +15,58 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.malfunction.MalfunctionManager;
+import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.vehicle.Rover;
+import org.mars_sim.msp.core.vehicle.Vehicle;
+
 /**
  * A task for performing research for a scientific study in a laboratory.
  */
-public class PerformLaboratoryResearch extends Task implements 
-        ResearchScientificStudy, Serializable {
+public class PerformLaboratoryResearch
+extends Task
+implements ResearchScientificStudy, Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryResearch.class.getName());
     
-    // The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.1D; 
     
-    // Task phase.
+    // TODO Task phase should be an enum.
     private static final String RESEARCHING = "Researching";
     
     // Data members.
-    private ScientificStudy study; // The scientific study the person is researching for.
-    private Lab lab;         // The laboratory the person is working in.
-    private Science science;  // The science that is being researched.
-    private MalfunctionManager malfunctions; // The lab's associated malfunction manager.
-    private Person researchAssistant; // The research assistant.
+    /** The scientific study the person is researching for. */
+    private ScientificStudy study;
+    /** The laboratory the person is working in. */
+    private Lab lab;
+    /** The science that is being researched. */
+    private ScienceType science;
+    /** The lab's associated malfunction manager. */
+    private MalfunctionManager malfunctions;
+    /** The research assistant. */
+    private Person researchAssistant;
     
     /**
      * Constructor
@@ -124,7 +135,7 @@ public class PerformLaboratoryResearch extends Task implements
                         // If researcher's current job isn't related to study science, divide by two.
                         Job job = person.getMind().getJob();
                         if (job != null) {
-                            Science jobScience = ScienceUtil.getAssociatedScience(job);
+                            ScienceType jobScience = ScienceType.getJobScience(job);
                             if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
                         }
                     
@@ -144,7 +155,7 @@ public class PerformLaboratoryResearch extends Task implements
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
                 if (!collabStudy.isCollaborativeResearchCompleted(person)) {
                     try {
-                        Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
                     
                         Lab lab = getLocalLab(person, collabScience);
                         if (lab != null) {
@@ -156,7 +167,7 @@ public class PerformLaboratoryResearch extends Task implements
                             // If researcher's current job isn't related to study science, divide by two.
                             Job job = person.getMind().getJob();
                             if (job != null) {
-                                Science jobScience = ScienceUtil.getAssociatedScience(job);
+                                ScienceType jobScience = ScienceType.getJobScience(job);
                                 if (!collabScience.equals(jobScience)) collabResult /= 2D;
                             }
                         
@@ -237,7 +248,7 @@ public class PerformLaboratoryResearch extends Task implements
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
                 
                 // Check that a lab is available for collaborative study science.
-                Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
                 
                 Lab lab = getLocalLab(person, collabScience);
                 if (lab != null) {
@@ -262,8 +273,8 @@ public class PerformLaboratoryResearch extends Task implements
      * @param study the scientific study.
      * @return the field of science or null if researcher is not involved with study.
      */
-    private static Science getScience(Person researcher, ScientificStudy study) {
-        Science result = null;
+    private static ScienceType getScience(Person researcher, ScientificStudy study) {
+        ScienceType result = null;
         
         if (study.getPrimaryResearcher().equals(researcher)) {
             result = study.getScience();
@@ -282,7 +293,7 @@ public class PerformLaboratoryResearch extends Task implements
      * @return laboratory found or null if none.
      * @throws Exception if error getting a lab.
      */
-    private static Lab getLocalLab(Person person, Science science) {
+    private static Lab getLocalLab(Person person, ScienceType science) {
         Lab result = null;
         
         String location = person.getLocationSituation();
@@ -298,7 +309,7 @@ public class PerformLaboratoryResearch extends Task implements
      * @param science the science to research.
      * @return a valid research lab.
      */
-    private static Lab getSettlementLab(Person person, Science science) {
+    private static Lab getSettlementLab(Person person, ScienceType science) {
         Lab result = null;
         
         BuildingManager manager = person.getSettlement().getBuildingManager();
@@ -347,7 +358,7 @@ public class PerformLaboratoryResearch extends Task implements
      * @return research buildings with science speciality.
      * @throws BuildingException if building list contains buildings without research function.
      */
-    private static List<Building> getSettlementLabsWithSpeciality(Science science, List<Building> buildingList) 
+    private static List<Building> getSettlementLabsWithSpeciality(ScienceType science, List<Building> buildingList) 
             {
         List<Building> result = new ArrayList<Building>();
         
@@ -355,7 +366,7 @@ public class PerformLaboratoryResearch extends Task implements
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpeciality(science.getName())) result.add(building);
+            if (lab.hasSpeciality(science)) result.add(building);
         }
         
         return result;
@@ -368,7 +379,7 @@ public class PerformLaboratoryResearch extends Task implements
      * @param science the science to research.
      * @return available lab
      */
-    private static Lab getVehicleLab(Vehicle vehicle, Science science) {
+    private static Lab getVehicleLab(Vehicle vehicle, ScienceType science) {
         
         Lab result = null;
         
@@ -377,7 +388,7 @@ public class PerformLaboratoryResearch extends Task implements
             if (rover.hasLab()) {
                 Lab lab = rover.getLab();
                 boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-                boolean speciality = lab.hasSpeciality(science.getName());
+                boolean speciality = lab.hasSpeciality(science);
                 boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
                 if (availableSpace && speciality && !malfunction) result = lab;
             }
@@ -450,7 +461,7 @@ public class PerformLaboratoryResearch extends Task implements
             NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        String scienceSkill = ScienceUtil.getAssociatedSkill(science);
+        SkillType scienceSkill = science.getSkill();
         person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
     }
     
@@ -473,7 +484,7 @@ public class PerformLaboratoryResearch extends Task implements
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
             SkillManager manager = researchAssistant.getMind().getSkillManager();
-            int assistantSkill = manager.getEffectiveSkillLevel(ScienceUtil.getAssociatedSkill(science));
+            int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
             if (scienceSkill > 0) researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
         }
         
@@ -481,18 +492,16 @@ public class PerformLaboratoryResearch extends Task implements
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        String scienceSkill = ScienceUtil.getAssociatedSkill(science);
-        results.add(scienceSkill);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(science.getSkill());
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        String scienceSkill = ScienceUtil.getAssociatedSkill(science);
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(scienceSkill);
+        return manager.getEffectiveSkillLevel(science.getSkill());
     }
 
     @Override
@@ -550,7 +559,7 @@ public class PerformLaboratoryResearch extends Task implements
         double chance = .001D;
 
         // Science skill modification.
-        String scienceSkill = ScienceUtil.getAssociatedSkill(science);
+        SkillType scienceSkill = science.getSkill();
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(scienceSkill);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
@@ -588,7 +597,7 @@ public class PerformLaboratoryResearch extends Task implements
      * Gets the scientific field that is being researched for the study.
      * @return scientific field.
      */
-    public Science getResearchScience() {
+    public ScienceType getResearchScience() {
         return science;
     }
     

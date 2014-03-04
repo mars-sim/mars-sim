@@ -6,20 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Crop;
-import org.mars_sim.msp.core.structure.building.function.Farming;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,22 +15,43 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Crop;
+import org.mars_sim.msp.core.structure.building.function.Farming;
+
 /** 
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
-	
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
 	
 	// Task phase
 	private static final String TENDING = "Tending";
 
 	// Static members
-	private static final double STRESS_MODIFIER = -.1D; // The stress modified per millisol.
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D;
 
     // Data members
-    private Farming greenhouse; // The greenhouse the person is tending.
+	/** The greenhouse the person is tending. */
+    private Farming greenhouse;
 
     /**
      * Constructor
@@ -209,7 +216,7 @@ public class TendGreenhouse extends Task implements Serializable {
         	NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.BOTANY, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.BOTANY, newPoints);
 	}
 
     /**
@@ -316,31 +323,23 @@ public class TendGreenhouse extends Task implements Serializable {
         
         return result;
     }
-    
-	/**
-	 * Gets the effective skill level a person has at this task.
-	 * @return effective skill level
-	 */
+
+	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(Skill.BOTANY);
-	}  
-	
-	/**
-	 * Gets a list of the skills associated with this task.
-	 * May be empty list if no associated skills.
-	 * @return list of skills as strings
-	 */
-	public List<String> getAssociatedSkills() {
-		List<String> results = new ArrayList<String>(1);
-		results.add(Skill.BOTANY);
+		return manager.getEffectiveSkillLevel(SkillType.BOTANY);
+	}
+
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(1);
+		results.add(SkillType.BOTANY);
 		return results;
 	}
-	
+
 	@Override
 	public void destroy() {
 	    super.destroy();
-	    
 	    greenhouse = null;
 	}
 }

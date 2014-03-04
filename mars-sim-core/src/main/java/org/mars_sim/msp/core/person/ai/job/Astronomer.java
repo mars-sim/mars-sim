@@ -11,7 +11,7 @@ import java.util.Iterator;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -77,7 +78,7 @@ public class Astronomer extends Job implements Serializable {
     public double getCapability(Person person) {
         double result = 0D;
         
-        int astronomySkill = person.getMind().getSkillManager().getSkillLevel(Skill.ASTRONOMY);
+        int astronomySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
         result = astronomySkill;
         
         NaturalAttributeManager attributes = person.getNaturalAttributeManager();
@@ -100,7 +101,7 @@ public class Astronomer extends Job implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpeciality(Skill.ASTRONOMY)) 
+            if (lab.hasSpeciality(ScienceType.ASTRONOMY)) 
                 result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
         }
 

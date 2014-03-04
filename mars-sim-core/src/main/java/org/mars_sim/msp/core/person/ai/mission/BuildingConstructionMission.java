@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -65,7 +65,7 @@ implements Serializable {
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = "Construct Building";
 
-    // Mission phases
+    // TODO Mission phases should be enums
     final public static String PREPARE_SITE_PHASE = "Prepare Site";
     final public static String CONSTRUCTION_PHASE = "Construction";
     
@@ -108,8 +108,7 @@ implements Serializable {
             recruitPeopleForMission(startingPerson);
             
             // Determine construction site and stage.
-            int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(
-                    Skill.CONSTRUCTION);
+            int constructionSkill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
             ConstructionManager manager = settlement.getConstructionManager();
             ConstructionValues values = manager.getConstructionValues();
             double existingSitesProfit = values.getAllConstructionSitesProfit(constructionSkill);
@@ -343,8 +342,7 @@ implements Serializable {
             if (reservableLUV && enoughPeople && !constructionOverride) {
                 
                 try {
-                    int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(
-                            Skill.CONSTRUCTION);
+                    int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
                     if (hasAnyNewSiteConstructionMaterials(constructionSkill, settlement)) {
                         ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                         double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);

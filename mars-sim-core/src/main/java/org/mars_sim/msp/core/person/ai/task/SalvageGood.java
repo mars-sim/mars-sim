@@ -6,25 +6,6 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.manufacture.SalvageProcess;
-import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.time.MarsClock;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -34,26 +15,55 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.manufacture.SalvageProcess;
+import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.time.MarsClock;
+
 /**
  * A task for salvaging a malfunctionable piece of equipment back down
  * into parts.
  */
-public class SalvageGood extends Task implements Serializable {
+public class SalvageGood
+extends Task
+implements Serializable {
     
-    private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
     
     // Task phase
     private static final String SALVAGE = "Salvage";
     
     // Static members
-    private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .1D;
     
     // Data members
-    private Manufacture workshop; // The manufacturing workshop the person is using.
-    private SalvageProcess process; // The salvage process.
+    /** The manufacturing workshop the person is using. */
+    private Manufacture workshop;
+    /** The salvage process. */
+    private SalvageProcess process;
     
     /** 
-     * Constructor
+     * Constructor.
      * @param person the person to perform the task
      * @throws Exception if error constructing task.
      */
@@ -121,7 +131,7 @@ public class SalvageGood extends Task implements Serializable {
                 // If manufacturing building has salvage process requiring work, add
                 // modifier.
                 SkillManager skillManager = person.getMind().getSkillManager();
-                int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
                 if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
                     result += 10D;
                 }
@@ -185,20 +195,20 @@ public class SalvageGood extends Task implements Serializable {
                 NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.MATERIALS_SCIENCE, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        results.add(Skill.MATERIALS_SCIENCE);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MATERIALS_SCIENCE);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
     }
 
     @Override
@@ -294,7 +304,7 @@ public class SalvageGood extends Task implements Serializable {
         Building result = null;
         
         SkillManager skillManager = person.getMind().getSkillManager();
-        int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
         
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
@@ -431,7 +441,7 @@ public class SalvageGood extends Task implements Serializable {
 
         double highestProcessValue = 0D;
 
-        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();

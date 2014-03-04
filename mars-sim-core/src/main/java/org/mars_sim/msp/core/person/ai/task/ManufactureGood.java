@@ -7,22 +7,6 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.manufacture.ManufactureProcess;
-import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
-import org.mars_sim.msp.core.manufacture.ManufactureUtil;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-import org.mars_sim.msp.core.structure.building.function.Manufacture;
-
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,23 +16,46 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.manufacture.ManufactureProcess;
+import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
+import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+
 /**
  * A task for working on a manufacturing process.
  */
-public class ManufactureGood extends Task implements Serializable {
+public class ManufactureGood
+extends Task
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
 
-    // Task phase
+    // TODO Task phase should be an enum.
     private static final String MANUFACTURE = "Manufacture";
 
     // Static members
-    private static final double STRESS_MODIFIER = .1D; // The stress modified
-                                                          // per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .1D;
 
     // Data members
-    private Manufacture workshop; // The manufacturing workshop the person is
-                                   // using.
+    /** The manufacturing workshop the person is using. */
+    private Manufacture workshop;
 
     /**
      * Constructor
@@ -115,7 +122,7 @@ public class ManufactureGood extends Task implements Serializable {
                 // If manufacturing building has process requiring work, add
                 // modifier.
                 SkillManager skillManager = person.getMind().getSkillManager();
-                int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
                 if (hasProcessRequiringWork(manufacturingBuilding, skill)) {
                     result += 10D;
                 }
@@ -182,7 +189,7 @@ public class ManufactureGood extends Task implements Serializable {
             while (i.hasNext()) {
                 Person tempPerson = i.next();
                 SkillManager skillManager = tempPerson.getMind().getSkillManager();
-                int skill = skillManager.getSkillLevel(Skill.MATERIALS_SCIENCE);
+                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
                 if (skill > highestSkillLevel) {
                     highestSkillLevel = skill;
                 }
@@ -220,7 +227,7 @@ public class ManufactureGood extends Task implements Serializable {
         Building result = null;
 
         SkillManager skillManager = person.getMind().getSkillManager();
-        int skill = skillManager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
@@ -364,7 +371,7 @@ public class ManufactureGood extends Task implements Serializable {
 
         double highestProcessValue = 0D;
 
-        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
@@ -396,20 +403,20 @@ public class ManufactureGood extends Task implements Serializable {
                 NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.MATERIALS_SCIENCE, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
     }
 
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        results.add(Skill.MATERIALS_SCIENCE);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MATERIALS_SCIENCE);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.MATERIALS_SCIENCE);
+        return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
     }
 
     @Override

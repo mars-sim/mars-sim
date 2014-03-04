@@ -7,6 +7,16 @@
 
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -16,8 +26,8 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -26,27 +36,29 @@ import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorMana
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.awt.geom.Point2D;
-import java.io.Serializable;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-/** The Maintenance class is a task for performing
- *  preventive maintenance on vehicles, settlements and equipment.
+/**
+ * The Maintenance class is a task for performing
+ * preventive maintenance on vehicles, settlements and equipment.
  */
-public class Maintenance extends Task implements Serializable {
+public class Maintenance
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Maintenance.class.getName());
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(Maintenance.class.getName());
 
     // Task phase
     private static final String MAINTAIN = "Maintain";
 
     // Static members
-    private static final double STRESS_MODIFIER = .1D; // The stress modified per millisol.
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .1D;
 
     // Data members
-    private Malfunctionable entity; // Entity to be maintained.
+    /** Entity to be maintained. */
+    private Malfunctionable entity;
 
     /** 
      * Constructor
@@ -204,7 +216,7 @@ public class Maintenance extends Task implements Serializable {
                 NaturalAttributeManager.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(Skill.MECHANICS, newPoints);
+        person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
     }
 
     /**
@@ -216,7 +228,7 @@ public class Maintenance extends Task implements Serializable {
         double chance = .001D;
 
         // Mechanic skill modification.
-        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(Skill.MECHANICS);
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (skill <= 3) chance *= (4 - skill);
         else chance /= (skill - 2);
 
@@ -383,23 +395,16 @@ public class Maintenance extends Task implements Serializable {
         return result;
     }
 
-    /**
-     * Gets the effective skill level a person has at this task.
-     * @return effective skill level
-     */
+    @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(Skill.MECHANICS);
+        return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }   
 
-    /**
-     * Gets a list of the skills associated with this task.
-     * May be empty list if no associated skills.
-     * @return list of skills as strings
-     */
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        results.add(Skill.MECHANICS);
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MECHANICS);
         return results;
     } 
 

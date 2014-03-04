@@ -10,6 +10,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -48,11 +49,11 @@ public class ScientificStudyUtil {
                     !study.hasResearcherBeenInvited(person)) {
                 Job job = person.getMind().getJob();
                 if (job != null) {
-                    Science jobScience = ScienceUtil.getAssociatedScience(job);
+                    ScienceType jobScience = ScienceType.getJobScience(job);
                     if (jobScience != null) {
                         if (jobScience.equals(study.getScience())) available = true;
                         else {
-                            if (ScienceUtil.isCollaborativeScience(study.getScience(), jobScience)) 
+                            if (ScienceType.isCollaborativeScience(study.getScience(), jobScience)) 
                                 available = true;
                         }
                     }
@@ -89,9 +90,9 @@ public class ScientificStudyUtil {
             double collaboratorModifier = 10D;
             
             // Modify based on collaborative researcher skill in their science.
-            Science collaborativeScience = study.getCollaborativeResearchers().get(researcher);
-            String skillName = ScienceUtil.getAssociatedSkill(collaborativeScience);
-            int skillLevel = researcher.getMind().getSkillManager().getSkillLevel(skillName);
+            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(researcher);
+            SkillType skill = collaborativeScience.getSkill();
+            int skillLevel = researcher.getMind().getSkillManager().getSkillLevel(skill);
             collaboratorModifier *= (double) skillLevel / (double) study.getDifficultyLevel();
             
             // Modify based on researcher's academic aptitude attribute.
@@ -117,7 +118,7 @@ public class ScientificStudyUtil {
     static void provideCompletionAchievements(ScientificStudy study) {
         
         double baseAchievement = study.getDifficultyLevel();
-        Science primaryScience = study.getScience();
+        ScienceType primaryScience = study.getScience();
         
         // Add achievement credit to primary researcher.
         Person primaryResearcher = study.getPrimaryResearcher();
@@ -134,7 +135,7 @@ public class ScientificStudyUtil {
         Iterator<Person> i = study.getCollaborativeResearchers().keySet().iterator();
         while (i.hasNext()) {
             Person researcher = i.next();
-            Science collaborativeScience = study.getCollaborativeResearchers().get(researcher);
+            ScienceType collaborativeScience = study.getCollaborativeResearchers().get(researcher);
             researcher.addScientificAchievement(collaborativeAchievement, collaborativeScience);
             study.setCollaborativeResearcherEarnedScientificAchievement(researcher, collaborativeAchievement);
             modifyScientistRelationshipsFromAchievement(researcher, collaborativeScience, collaborativeAchievement);
@@ -153,13 +154,13 @@ public class ScientificStudyUtil {
      * @param achievement the new achievement credit.
      */
     private static void modifyScientistRelationshipsFromAchievement(Person researcher, 
-            Science science, double achievement) {
+            ScienceType science, double achievement) {
         
         RelationshipManager manager = Simulation.instance().getRelationshipManager();
         Iterator<Person> i = manager.getAllKnownPeople(researcher).iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            if (science.equals(ScienceUtil.getAssociatedScience(person.getMind().getJob()))) {
+            if (science == ScienceType.getJobScience(person.getMind().getJob())) {
                 Relationship relationship = manager.getRelationship(researcher, person);
                 if (relationship != null) {
                     double currentOpinion = relationship.getPersonOpinion(person);

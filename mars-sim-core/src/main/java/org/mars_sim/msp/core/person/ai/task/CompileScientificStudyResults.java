@@ -6,41 +6,48 @@
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.SkillManager;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.science.Science;
-import org.mars_sim.msp.core.science.ScienceUtil;
-import org.mars_sim.msp.core.science.ScientificStudy;
-import org.mars_sim.msp.core.science.ScientificStudyManager;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.science.ScienceType;
+import org.mars_sim.msp.core.science.ScientificStudy;
+import org.mars_sim.msp.core.science.ScientificStudyManager;
+
 /**
  * A task for compiling research data for a scientific study.
  */
-public class CompileScientificStudyResults extends Task implements Serializable {
+public class CompileScientificStudyResults
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
+    /** default serial id.*/
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
     
-    // The stress modified per millisol.
+    /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = 0D;
     
-    // Task phase.
+    /** TODO Task phase should be an enum. */
     private static final String COMPILING_PHASE = "Compiling Study Data";
     
     // Data members
-    private ScientificStudy study; // The scientific study to compile.
+    /** The scientific study to compile. */
+    private ScientificStudy study;
     
     /**
-     * Constructor
+     * Constructor.
      * @param person the person performing the task.
      * @throws Exception if error constructing the class.
      */
@@ -83,7 +90,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
                     // If researcher's current job isn't related to study science, divide by two.
                     Job job = person.getMind().getJob();
                     if (job != null) {
-                        Science jobScience = ScienceUtil.getAssociatedScience(job);
+                        ScienceType jobScience = ScienceType.getJobScience(job);
                         if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
                     }
                     
@@ -102,14 +109,14 @@ public class CompileScientificStudyResults extends Task implements Serializable 
             if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())) {
                 if (!collabStudy.isCollaborativePaperCompleted(person)) {
                     try {
-                        Science collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
                     
                         double collabResult = 25D;
                         
                         // If researcher's current job isn't related to study science, divide by two.
                         Job job = person.getMind().getJob();
                         if (job != null) {
-                            Science jobScience = ScienceUtil.getAssociatedScience(job);
+                            ScienceType jobScience = ScienceType.getJobScience(job);
                             if (!collabScience.equals(jobScience)) collabResult /= 2D;
                         }
                         
@@ -177,8 +184,8 @@ public class CompileScientificStudyResults extends Task implements Serializable 
      * Gets the field of science that the researcher is involved with in a study.
      * @return the field of science or null if researcher is not involved with study.
      */
-    private Science getScience() {
-        Science result = null;
+    private ScienceType getScience() {
+        ScienceType result = null;
         
         if (study.getPrimaryResearcher().equals(person)) {
             result = study.getScience();
@@ -200,7 +207,7 @@ public class CompileScientificStudyResults extends Task implements Serializable 
             NaturalAttributeManager.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
-        String scienceSkill = ScienceUtil.getAssociatedSkill(getScience());
+        SkillType scienceSkill = getScience().getSkill();
         person.getMind().getSkillManager().addExperience(scienceSkill, newPoints);
     }
 
@@ -220,16 +227,16 @@ public class CompileScientificStudyResults extends Task implements Serializable 
     }
     
     @Override
-    public List<String> getAssociatedSkills() {
-        List<String> results = new ArrayList<String>(1);
-        String scienceSkill = ScienceUtil.getAssociatedSkill(getScience());
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        SkillType scienceSkill = getScience().getSkill();
         results.add(scienceSkill);
         return results;
     }
 
     @Override
     public int getEffectiveSkillLevel() {
-        String scienceSkill = ScienceUtil.getAssociatedSkill(getScience());
+    	SkillType scienceSkill = getScience().getSkill();
         SkillManager manager = person.getMind().getSkillManager();
         return manager.getEffectiveSkillLevel(scienceSkill);
     }

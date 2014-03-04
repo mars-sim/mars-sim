@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.ai.Skill;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.person.ai.task.PrescribeMedication;
 import org.mars_sim.msp.core.person.ai.task.ProposeScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.ResearchScientificStudy;
 import org.mars_sim.msp.core.person.ai.task.RespondToStudyInvitation;
+import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
@@ -88,7 +89,7 @@ implements Serializable {
 		
 		double result = 0D;
 		
-		int areologySkill = person.getMind().getSkillManager().getSkillLevel(Skill.MEDICAL);
+		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MEDICINE);
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
@@ -119,7 +120,7 @@ implements Serializable {
 		while (i.hasNext()) {
 		    Building building = i.next();
 		    Research lab = (Research) building.getFunction(Research.NAME);
-		    if (lab.hasSpeciality(Skill.MEDICAL)) 
+		    if (lab.hasSpeciality(ScienceType.MEDICINE)) 
 		        result += ((double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D);
 		}		
 		
