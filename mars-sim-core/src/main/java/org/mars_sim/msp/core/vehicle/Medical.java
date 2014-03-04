@@ -12,10 +12,9 @@ package org.mars_sim.msp.core.vehicle;
  */
 public interface Medical {
 
-    /**
-     * Gets the vehicle's sick bay.
-     * 
-     * @return Sickbay
-     */
-    public SickBay getSickBay();
+	/**
+	 * Gets the vehicle's sick bay.
+	 * @return Sickbay
+	 */
+	public SickBay getSickBay();
 }

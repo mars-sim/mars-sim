@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
@@ -67,8 +66,8 @@ extends TabPanel {
 		// Create skill table
 		JTable skillTable = new JTable(skillTableModel);
 		skillTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-		skillTable.getColumnModel().getColumn(0).setPreferredWidth(120);
-		skillTable.getColumnModel().getColumn(1).setPreferredWidth(50);
+		skillTable.getColumnModel().getColumn(0).setPreferredWidth(50);
+		skillTable.getColumnModel().getColumn(1).setPreferredWidth(120);
 		skillTable.setCellSelectionEnabled(false);
 		skillTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
 		skillScrollPanel.setViewportView(skillTable);
@@ -117,21 +116,21 @@ extends TabPanel {
 		}
 
 		public Class<?> getColumnClass(int columnIndex) {
-			Class dataType = super.getColumnClass(columnIndex);
-			if (columnIndex == 0) dataType = String.class;
-			if (columnIndex == 1) dataType = Integer.class;
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 1) dataType = String.class;
+			if (columnIndex == 0) dataType = Integer.class;
 			return dataType;
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Skill";
-			else if (columnIndex == 1) return "Level";
+			if (columnIndex == 1) return "Skill";
+			else if (columnIndex == 0) return "Level";
 			else return "unknown";
 		}
 
 		public Object getValueAt(int row, int column) {
-			if (column == 0) return skillNames.get(row);
-			else if (column == 1) return skills.get(skillNames.get(row));
+			if (column == 1) return skillNames.get(row);
+			else if (column == 0) return skills.get(skillNames.get(row));
 			else return "unknown";
 		}
 

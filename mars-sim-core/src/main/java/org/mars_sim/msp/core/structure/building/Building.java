@@ -166,7 +166,6 @@ LocalBoundedObject, InsidePathLocation {
 	 * Empty constructor.
 	 */
 	protected Building() {
-
 	}
 
 	/**

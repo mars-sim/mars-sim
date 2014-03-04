@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.MockSettlement;
@@ -21,11 +22,13 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public class UnloadVehicleTest extends TestCase {
-    @Override
-    public void setUp() throws Exception {
-        SimulationConfig.loadConfig();
-    }
+public class UnloadVehicleTest
+extends TestCase {
+
+	@Override
+	public void setUp() throws Exception {
+		SimulationConfig.loadConfig();
+	}
 
     public void testUnloadingPhase() throws Exception {
 		
@@ -61,7 +64,7 @@ public class UnloadVehicleTest extends TestCase {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
 		
-		Person person = new Person("test person", Person.MALE, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);

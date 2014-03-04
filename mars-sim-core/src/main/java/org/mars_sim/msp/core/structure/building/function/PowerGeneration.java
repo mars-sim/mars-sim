@@ -197,7 +197,7 @@ implements Serializable {
 		result[0] = getName();
 
 		for (int x = 0; x < powerSources.size(); x++)
-			result[x + 1] = powerSources.get(x).getType();
+			result[x + 1] = powerSources.get(x).getType().getString();
 
 		return result;
 	}

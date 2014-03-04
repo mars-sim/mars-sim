@@ -6,6 +6,8 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -13,23 +15,24 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
-import java.io.Serializable;
-
 /**
  * A power source that gives a supply of power proportional 
  * to the level of sunlight it receives.
  */
-public class SolarPowerSource extends PowerSource implements Serializable {
+public class SolarPowerSource
+extends PowerSource
+implements Serializable {
 
-	private final static String TYPE = "Solar Power Source";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor
-     * @param maxPower the maximum generated power (kW).
-     */
+	/**
+	 * Constructor.
+	 * @param maxPower the maximum generated power (kW).
+	 */
 	public SolarPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(TYPE, maxPower);
+		super(PowerSourceType.SOLAR, maxPower);
 	}
 
 	/**
@@ -45,8 +48,8 @@ public class SolarPowerSource extends PowerSource implements Serializable {
 		return sunlight * getMaxPower();
 	}
 
-    @Override
-    public double getAveragePower(Settlement settlement) {
-        return getMaxPower() / 2D;
-    }
+	@Override
+	public double getAveragePower(Settlement settlement) {
+		return getMaxPower() / 2D;
+	}
 }

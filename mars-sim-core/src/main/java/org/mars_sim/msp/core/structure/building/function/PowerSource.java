@@ -21,7 +21,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private String type;
+	private PowerSourceType type;
 	private double maxPower;
 
 	/**
@@ -29,7 +29,7 @@ implements Serializable {
 	 * @param type the type of power source.
 	 * @param maxPower the max power generated.
 	 */
-	public PowerSource(String type, double maxPower) {
+	public PowerSource(PowerSourceType type, double maxPower) {
 		this.type = type;
 		this.maxPower = maxPower;
 	}
@@ -38,7 +38,7 @@ implements Serializable {
 	 * Gets the type of power source.
 	 * @return type
 	 */
-	public String getType() {
+	public PowerSourceType getType() {
 		return type;
 	}
 
