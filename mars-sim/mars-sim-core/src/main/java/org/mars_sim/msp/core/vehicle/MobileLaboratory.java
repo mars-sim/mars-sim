@@ -29,7 +29,7 @@ implements Lab, Serializable {
     /** How advanced the laboratories are (units defined later). */
 	private int technologyLevel;
     /** What fields of science the laboratories specialize in. */
-	private List<String> techSpecialities;
+	private List<ScienceType> techSpecialities;
     /** The number of people currently doing research in laboratory. */
 	private int researcherNum;
 
@@ -39,7 +39,7 @@ implements Lab, Serializable {
      * @param techlevel how advanced the laboratories are (units defined later)
      * @param techFocus the names of the technologies the labs are focused on
      */
-    MobileLaboratory(int size, int techLevel, List<String> techSpecialities) {
+    MobileLaboratory(int size, int techLevel, List<ScienceType> techSpecialities) {
 
         // Initialize data members.
         this.laboratorySize = size;
@@ -80,9 +80,9 @@ implements Lab, Serializable {
      */
     public boolean hasSpeciality(ScienceType speciality) {
         boolean result = false;
-        Iterator<String> i = techSpecialities.iterator();
-        while (i.hasNext()) {
-            if (speciality.equals(i.next())) result = true;
+        Iterator<ScienceType> i = techSpecialities.iterator();
+        while (!result && i.hasNext()) {
+            if (speciality == i.next()) result = true;
         }
 
         return result;
