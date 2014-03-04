@@ -8,6 +8,7 @@ package org.mars_sim.msp.core.structure;
 
 import org.jdom.Document;
 import org.jdom.Element;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyMissionTemplate;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -22,8 +23,12 @@ import java.util.*;
  * Provides configuration information about settlements.
  * Uses a DOM document to get the information. 
  */
-public class SettlementConfig implements Serializable {
-	
+public class SettlementConfig
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 2L;
+
 	// Element names
 	private static final String SETTLEMENT_TEMPLATE_LIST = 	"settlement-template-list";
 	private static final String TEMPLATE = "template";
@@ -60,18 +65,18 @@ public class SettlementConfig implements Serializable {
 	private static final String PART_PACKAGE = "part-package";
 	private static final String NEW_ARRIVING_SETTLEMENT_LIST = "new-arriving-settlement-list";
 	private static final String ARRIVING_SETTLEMENT = "arriving-settlement";
-	
+
 	// Random value indicator.
 	public static final String RANDOM = "random";
-	
+
 	// Data members
 	private Collection<SettlementTemplate> settlementTemplates;
 	private List<InitialSettlement> initialSettlements;
 	private List<NewArrivingSettlement> newArrivingSettlements;
 	private List<String> settlementNames;
-	
+
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param settlementDoc DOM document with settlement configuration.
 	 * @param partPackageConfig the part package configuration.
 	 * @throws Exception if error reading XML document.
@@ -267,11 +272,21 @@ public class SettlementConfig implements Serializable {
 				
 				String longitudeString = locationElement.getAttributeValue(LONGITUDE);
 				if (longitudeString.equals(RANDOM)) initialSettlement.randomLongitude = true;
-				else initialSettlement.longitude = longitudeString;
+				else {
+					// take care to internationalize the coordinates
+					longitudeString = longitudeString.replace("E",Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
+					longitudeString = longitudeString.replace("W",Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
+					initialSettlement.longitude = longitudeString;
+				}
 				
 				String latitudeString = locationElement.getAttributeValue(LATITUDE);
 				if (latitudeString.equals(RANDOM)) initialSettlement.randomLatitude = true;
-				else initialSettlement.latitude = latitudeString;
+				else {
+					// take care to internationalize the coordinates
+					latitudeString = latitudeString.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
+					latitudeString = latitudeString.replace("S",Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+					initialSettlement.latitude = latitudeString;
+				}
 			}
 			else {
 				initialSettlement.randomLongitude = true;
@@ -506,7 +521,7 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the longitude of an initial settlement, 
+	 * Gets the internationalized longitude of an initial settlement, 
 	 * or 'random' if the longitude is to be randomly determined.
 	 * @param index the index of the initial settlement.
 	 * @return longitude of the settlement as a string. Example: '0.0 W'
@@ -521,7 +536,7 @@ public class SettlementConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets the latitude of an initial settlement, 
+	 * Gets the internationalized latitude of an initial settlement, 
 	 * or 'random' if the longitude is to be randomly determined.
 	 * @param index the index of the initial settlement.
 	 * @return latitude of the settlement as a string. Example: '0.0 N'
@@ -576,6 +591,13 @@ public class SettlementConfig implements Serializable {
 	    settlement.name = name;
 	    settlement.template = template;
 	    settlement.populationNumber = populationNum;
+	    
+		// take care to internationalize the coordinates
+		latitude = latitude.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
+		latitude = latitude.replace("S",Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+		longitude = longitude.replace("E",Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
+		longitude = longitude.replace("W",Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
+	    
 	    settlement.latitude = latitude;
 	    settlement.longitude = longitude;
 	    initialSettlements.add(settlement);
@@ -600,7 +622,10 @@ public class SettlementConfig implements Serializable {
 	/**
 	 * Private inner class for holding a initial settlement info.
 	 */
-	private static class InitialSettlement implements Serializable {
+	private static class InitialSettlement
+	implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 		private String name;
 		private boolean randomName = false;
 		private String template;
@@ -614,7 +639,10 @@ public class SettlementConfig implements Serializable {
 	/**
 	 * Private inner class for holding a new arriving settlement info.
 	 */
-	private static class NewArrivingSettlement implements Serializable {
+	private static class NewArrivingSettlement
+	implements Serializable {
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
 		private String name;
 		private boolean randomName = false;
 		private String template;

@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.mars;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -62,10 +63,16 @@ public class LandmarkConfig implements Serializable {
                 int diameter = (int) Float.parseFloat(landmark.getAttributeValue(DIAMETER));
 
                 // Get latitude.
-                String latitude = landmark.getAttributeValue(LATITUDE);
+                String latitude = landmark.getAttributeValue(LATITUDE).toUpperCase();
 
                 // Get longitude.
-                String longitude = landmark.getAttributeValue(LONGITUDE);
+                String longitude = landmark.getAttributeValue(LONGITUDE).toUpperCase();
+
+    			// take care to internationalize the coordinates
+    			latitude = latitude.replace("N",Msg.getString("direction.northShort")); //$NON-NLS-1$ //$NON-NLS-2$
+    			latitude = latitude.replace("S",Msg.getString("direction.southShort")); //$NON-NLS-1$ //$NON-NLS-2$
+    			longitude = longitude.replace("E",Msg.getString("direction.eastShort")); //$NON-NLS-1$ //$NON-NLS-2$
+    			longitude = longitude.replace("W",Msg.getString("direction.westShort")); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // Create location coordinate.
                 Coordinates location = new Coordinates(latitude, longitude);

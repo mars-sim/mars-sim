@@ -17,9 +17,9 @@ import org.mars_sim.msp.core.mars.Mars;
  * spherical coordinates. It provides some useful methods involving
  * those coordinates, as well as some static methods for general
  * coordinate calculations.<br/>
- * THETA is longitute in (0-2PI) radians<br/>
- * PHI is latitude in (-PI - PI) radians (although only 0-PI) makes any sense for the renderer<br/>
- * RHO rho diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0<br/>
+ * {@link #theta} is longitute in (0-2PI) radians.<br/>
+ * {@link #phi} is latitude in (-PI - PI) radians (although only 0-PI) makes any sense for the renderer.<br/>
+ * {@link #rho} rho diameter of planet (in km) or 2* MARS_RADIUS_KM = 3393.0<br/>
  */
 public class Coordinates
 implements Serializable {
@@ -31,11 +31,11 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Coordinates.class.getName());
 	 */
 
-	// stored for efficiency.
-	private static final String shortNorth = Msg.getString("direction.northShort");
-	private static final String shortEast = Msg.getString("direction.eastShort");
-	private static final String shortSouth = Msg.getString("direction.southShort");
-	private static final String shortWest = Msg.getString("direction.westShort");
+	// stored for efficiency but not serialized.
+	private static final transient String shortNorth = Msg.getString("direction.northShort");
+	private static final transient String shortEast = Msg.getString("direction.eastShort");
+	private static final transient String shortSouth = Msg.getString("direction.southShort");
+	private static final transient String shortWest = Msg.getString("direction.westShort");
 
 	// Data members
 	/** Phi value of coordinates PHI is latitude in (-PI - PI) radians (although only 0-PI) seem to be legal values. */
@@ -76,6 +76,8 @@ implements Serializable {
 
 	/**
 	 * Constructor with a latitude and longitude string.
+	 * Expects direction abbreviations according to current locale,
+	 * so for english NESW, for german NOSW, french NESO, etc.
 	 * @param latitude String representing latitude value. ex. "25.344 N"
 	 * @param longitude String representing longitude value. ex. "63.5532 W"
 	 * @throws Exception if latitude or longitude strings are invalid.
@@ -342,17 +344,16 @@ implements Serializable {
 	 */
 	public static String getFormattedLongitudeString(double theta) {
 		double degrees;
-		char direction;
+		String direction = "";
 
 		degrees = 0D;
-		direction = ' ';
 
 		if ((theta < Math.PI) && (theta >= 0D)) {
 			degrees = Math.toDegrees(theta);
-			direction = 'E';
+			direction = Msg.getString("direction.eastShort"); //$NON-NLS-1$
 		} else if (theta >= Math.PI) {
 			degrees = Math.toDegrees((Math.PI * 2D) - theta);
-			direction = 'W';
+			direction = Msg.getString("direction.westShort"); //$NON-NLS-1$;
 		}
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
@@ -381,17 +382,16 @@ implements Serializable {
 
 		double degrees;
 		double piHalf = Math.PI / 2.0;
-		char direction;
+		String direction = "";
 
 		degrees = 0D;
-		direction = ' ';
 
 		if (phi <= piHalf) {
 			degrees = ((piHalf - phi) / piHalf) * 90D;
-			direction = 'N';
+			direction = Msg.getString("direction.northShort"); //$NON-NLS-1$
 		} else if (phi > piHalf) {
 			degrees = ((phi - piHalf) / piHalf) * 90D;
-			direction = 'S';
+			direction = Msg.getString("direction.southShort"); //$NON-NLS-1$
 		}
 
 		DecimalFormat formatter = new DecimalFormat(Msg.getString("direction.decimalFormat")); //$NON-NLS-1$
