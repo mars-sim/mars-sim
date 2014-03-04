@@ -25,6 +25,9 @@ public class Rover
 extends GroundVehicle
 implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Static data members
 	/** Normal air pressure (atm.). */
 	private double NORMAL_AIR_PRESSURE = 1D;

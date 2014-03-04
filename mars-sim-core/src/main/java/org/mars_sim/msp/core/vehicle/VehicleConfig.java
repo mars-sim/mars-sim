@@ -6,12 +6,18 @@
  */
 package org.mars_sim.msp.core.vehicle;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.mars_sim.msp.core.resource.Part;
-
-import java.io.Serializable;
-import java.util.*;
+import org.mars_sim.msp.core.science.ScienceType;
 
 
 /**
@@ -118,7 +124,7 @@ public class VehicleConfig implements Serializable {
 
 				// labs
 				v.labTechLevel = -1;
-				v.labTechSpecialities = new ArrayList<String>();
+				v.labTechSpecialities = new ArrayList<ScienceType>();
 				v.hasLab = (vehicleElement.getChildren(LAB).size() > 0);
 				if (v.hasLab) {
 					Element labElement = vehicleElement.getChild(LAB);
@@ -126,7 +132,11 @@ public class VehicleConfig implements Serializable {
 						v.labTechLevel = Integer.parseInt(labElement.getAttributeValue(TECH_LEVEL));
 						for (Object tech : labElement.getChildren(TECH_SPECIALITY)) {
 							v.labTechSpecialities.add(
-								(((Element) tech).getAttributeValue(VALUE)).toLowerCase()
+								ScienceType.valueOf(
+									(((Element) tech).getAttributeValue(VALUE))
+									.toUpperCase() // make sure the value from xml config conforms with enum values
+									.replace(" ","_")
+								)
 							);
 						}
 					}
@@ -303,7 +313,7 @@ public class VehicleConfig implements Serializable {
 	 * @param vehicleType the vehicle type
 	 * @return list of lab tech speciality strings.
 	 */
-	public List<String> getLabTechSpecialities(String vehicleType) {
+	public List<ScienceType> getLabTechSpecialities(String vehicleType) {
 		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase()).labTechSpecialities;
 	}
@@ -399,7 +409,7 @@ public class VehicleConfig implements Serializable {
 		private boolean hasSickbay,hasLab,hasPartAttachments;
 		private int sickbayTechLevel,sickbayBeds;
 		private int labTechLevel,attachmentSlots;
-		private List<String> labTechSpecialities;
+		private List<ScienceType> labTechSpecialities;
 		private List<Part> attachmableParts;
 
 		/**
@@ -479,7 +489,7 @@ public class VehicleConfig implements Serializable {
 			return attachmentSlots;
 		}
 		/** @return the labTechSpecialities */
-		public final List<String> getLabTechSpecialities() {
+		public final List<ScienceType> getLabTechSpecialities() {
 			return labTechSpecialities;
 		}
 		/** @return the attachableParts */
