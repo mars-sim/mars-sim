@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
@@ -34,12 +35,8 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PowerGrid.class.getName());
 
-	// Statc data members
-	public static final String POWER_UP_MODE = "Power up";
-	public static final String POWER_DOWN_MODE = "Power down";
-
 	// Data members
-	private String powerMode;
+	private PowerMode powerMode;
 	private double powerGenerated;
 	private double powerStored;
 	private double powerStorageCapacity;
@@ -53,7 +50,7 @@ implements Serializable {
 	 */
 	public PowerGrid(Settlement settlement) {
 		this.settlement = settlement;
-		powerMode = POWER_UP_MODE;
+		powerMode = PowerMode.POWER_UP;
 		powerGenerated = 0D;
 		powerStored = 0D;
 		powerStorageCapacity = 0D;
@@ -63,9 +60,9 @@ implements Serializable {
 
 	/**
 	 * Gets the power grid mode.
-	 * @return power grid mode string.
+	 * @return power grid mode
 	 */
-	public String getPowerMode() {
+	public PowerMode getPowerMode() {
 		return powerMode;
 	}
 
@@ -73,10 +70,10 @@ implements Serializable {
 	 * Sets the power grid mode.
 	 * @param newPowerMode the new power grid mode.
 	 */
-	public void setPowerMode(String newPowerMode) {
-		if (!powerMode.equals(newPowerMode)) {
-			if (POWER_UP_MODE.equals(newPowerMode)) powerMode = POWER_UP_MODE;
-			else if (POWER_DOWN_MODE.equals(newPowerMode)) powerMode = POWER_DOWN_MODE;
+	public void setPowerMode(PowerMode newPowerMode) {
+		if (powerMode != newPowerMode) {
+			if (PowerMode.POWER_UP == newPowerMode) powerMode = PowerMode.POWER_UP;
+			else if (PowerMode.POWER_DOWN == newPowerMode) powerMode = PowerMode.POWER_DOWN;
 			settlement.fireUnitUpdate(UnitEventType.POWER_MODE_EVENT);
 		}
 	}
@@ -173,7 +170,12 @@ implements Serializable {
 	public void timePassing(double time) {
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.fine(settlement.getName() + " power situation: ");
+			logger.fine(
+				Msg.getString(
+					"PowerGrid.log.settlementPowerSituation",
+					settlement.getName()
+				)
+			);
 		}
 
 		// update the total power generated in the grid.
@@ -212,7 +214,7 @@ implements Serializable {
 
 			// Reduce each building's power mode to low power until 
 			// required power reduction is met.
-			if (!powerMode.equals(POWER_DOWN_MODE)) {
+			if (powerMode != PowerMode.POWER_DOWN) {
 				Iterator<Building> iLowPower = buildings.iterator();
 				while (iLowPower.hasNext() && (neededPower > 0D)) {
 					Building building = iLowPower.next();
@@ -276,7 +278,12 @@ implements Serializable {
 		setGeneratedPower(tempPowerGenerated);
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.fine("Total power generated: " + powerGenerated);
+			logger.fine(
+				Msg.getString(
+					"PowerGrid.log.totalPowerGenerated", //$NON-NLS-1$
+					Double.toString(powerGenerated)
+				)
+			);
 		}
 	}
 
@@ -296,7 +303,12 @@ implements Serializable {
 		setStoredPower(tempPowerStored);
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.fine("Total power stored: " + powerStored);
+			logger.fine(
+				Msg.getString(
+					"PowerGrid.log.totalPowerStored", //$NON-NLS-1$
+					Double.toString(powerStored)
+				)
+			);
 		}
 	}
 
@@ -306,7 +318,7 @@ implements Serializable {
 	 */
 	private void updateTotalRequiredPower() {
 		double tempPowerRequired = 0D;
-		boolean powerUp = powerMode.equals(POWER_UP_MODE);
+		boolean powerUp = powerMode == PowerMode.POWER_UP;
 		BuildingManager manager = settlement.getBuildingManager();
 		List<Building> buildings = manager.getBuildings();
 		Iterator<Building> iUsed = buildings.iterator();
@@ -316,8 +328,13 @@ implements Serializable {
 				building.setPowerMode(PowerMode.FULL_POWER);
 				tempPowerRequired += building.getFullPowerRequired();
 				if(logger.isLoggable(Level.FINE)) {
-					logger.fine(building.getName() + " full power used: " + 
-							building.getFullPowerRequired());
+					logger.fine(
+						Msg.getString(
+							"PowerGrid.log.buildingFullPowerUsed", //$NON-NLS-1$
+							building.getName(),
+							Double.toString(building.getFullPowerRequired())
+						)
+					);
 				}
 			}
 			else {
@@ -325,15 +342,25 @@ implements Serializable {
 				tempPowerRequired += building.getPoweredDownPowerRequired();
 
 				if(logger.isLoggable(Level.FINE)) {
-					logger.fine(building.getName() + " power down power used: " + 
-							building.getPoweredDownPowerRequired());
+					logger.fine(
+						Msg.getString(
+							"PowerGrid.log.buildingPowerDownPowerUsed", //$NON-NLS-1$
+							building.getName(),
+							Double.toString(building.getPoweredDownPowerRequired())
+						)
+					);
 				}
 			}
 		}
 		setRequiredPower(tempPowerRequired);
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.fine("Total power required: " + powerRequired);
+			logger.fine(
+				Msg.getString(
+					"PowerGrid.log.totalPowerRequired", //$NON-NLS-1$
+					Double.toString(powerRequired)
+				)
+			);
 		}
 	}
 
@@ -353,7 +380,12 @@ implements Serializable {
 		setStoredPowerCapacity(tempPowerStorageCapacity);
 
 		if(logger.isLoggable(Level.FINE)) {
-			logger.fine("Total power storage capacity: " + powerStorageCapacity);
+			logger.fine(
+				Msg.getString(
+					"PowerGrid.log.totalPowerStorageCapacity", //$NON-NLS-1$
+					Double.toString(powerStorageCapacity)
+				)
+			);
 		}
 	}
 

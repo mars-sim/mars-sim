@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 
 import java.util.HashMap;
 import java.util.Map;
+
 import junit.framework.TestCase;
 
 import org.mars_sim.msp.core.Inventory;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
@@ -44,7 +46,7 @@ public class LoadVehicleTest extends TestCase {
 	 */
 	public void testLoadingPhase() throws Exception {
 		Settlement settlement = new MockSettlement();
-		Person person = new Person("test person", Person.MALE, "Earth", settlement);
+		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);

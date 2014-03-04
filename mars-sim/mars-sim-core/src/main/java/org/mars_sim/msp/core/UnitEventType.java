@@ -5,6 +5,9 @@ package org.mars_sim.msp.core;
  */
 public enum UnitEventType {
 
+	// from Crewable.java but was never used
+	CREW_CAPACITY_EVENT				("crew capacity event"),
+
 	// from Inventory.java
 	INVENTORY_STORING_UNIT_EVENT	("inventory storing unit"),
 	INVENTORY_RETRIEVING_UNIT_EVENT	("inventory retrieving unit"),

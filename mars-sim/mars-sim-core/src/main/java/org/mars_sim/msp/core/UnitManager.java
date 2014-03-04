@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.Skill;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -117,10 +118,10 @@ implements Serializable {
 			Iterator<String> i = personNames.iterator();
 			while (i.hasNext()) {
 				String name = i.next();
-				String gender = personConfig.getPersonGender(name);
-				if (gender.equals(Person.MALE)) {
+				PersonGender gender = personConfig.getPersonGender(name);
+				if (gender == PersonGender.MALE) {
 					personMaleNames.add(name);
-				} else if (gender.equals(Person.FEMALE)) {
+				} else if (gender == PersonGender.FEMALE) {
 					personFemaleNames.add(name);
 				}
 			}
@@ -194,7 +195,7 @@ implements Serializable {
 	 * @return new name
 	 * @throws IllegalArgumentException if unitType is not valid.
 	 */
-	public String getNewName(UnitType unitType, String baseName, String gender) {
+	public String getNewName(UnitType unitType, String baseName, PersonGender gender) {
 
 		List<String> initialNameList = null;
 		List<String> usedNames = new ArrayList<String>();
@@ -224,9 +225,9 @@ implements Serializable {
 				unitName = "Vehicle";
 			}
 		} else if (unitType == UnitType.PERSON) {
-			if (Person.MALE.equals(gender)) {
+			if (PersonGender.MALE == gender) {
 				initialNameList = personMaleNames;
-			} else if (Person.FEMALE.equals(gender)) {
+			} else if (PersonGender.FEMALE == gender) {
 				initialNameList = personFemaleNames;
 			} else {
 				throw new IllegalArgumentException("Improper gender for person unitType: " + gender);
@@ -460,9 +461,9 @@ implements Serializable {
 				Settlement settlement = i.next();
 
 				while (settlement.getCurrentPopulationNum() < settlement.getInitialPopulation()) {
-					String gender = Person.FEMALE;
+					PersonGender gender = PersonGender.FEMALE;
 					if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-						gender = Person.MALE;
+						gender = PersonGender.MALE;
 					}
 					Person person = new Person(getNewName(UnitType.PERSON, null, gender), gender, "Earth",settlement); //TODO: read from file
 					addUnit(person);
@@ -492,11 +493,11 @@ implements Serializable {
 			}
 
 			// Get person's gender or randomly determine it if not configured.
-			String gender = personConfig.getConfiguredPersonGender(x);
+			PersonGender gender = personConfig.getConfiguredPersonGender(x);
 			if (gender == null) {
-				gender = Person.FEMALE;
+				gender = PersonGender.FEMALE;
 				if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) {
-					gender = Person.MALE;
+					gender = PersonGender.MALE;
 				}
 			}
 

@@ -51,7 +51,7 @@ public class GeneralTabPanel extends TabPanel {
 		infoPanel.add(genderNameLabel);
 
 		// Prepare gender label
-		String gender = person.getGender().substring(0, 1).toUpperCase() + person.getGender().substring(1);
+		String gender = person.getGender().getName();
 		JLabel genderLabel = new JLabel(gender, JLabel.RIGHT);
 		infoPanel.add(genderLabel);
 

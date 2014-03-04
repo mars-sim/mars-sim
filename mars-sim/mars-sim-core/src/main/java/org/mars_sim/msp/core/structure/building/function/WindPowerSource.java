@@ -6,10 +6,10 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import java.io.Serializable;
 
 /**
  * A wind turbine power source.
@@ -21,15 +21,13 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private final static String TYPE = "Wind Power Source";
-
 	/**
 	 * Constructor.
 	 * @param maxPower the maximum generated power.
 	 */
 	public WindPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(TYPE, maxPower);
+		super(PowerSourceType.WIND, maxPower);
 	}
 
 	@Override

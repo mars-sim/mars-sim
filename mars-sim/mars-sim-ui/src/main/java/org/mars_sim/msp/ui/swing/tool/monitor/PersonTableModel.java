@@ -39,7 +39,8 @@ import org.mars_sim.msp.core.vehicle.Crewable;
  * the source of the list is the Unit Manager.
  * It maps key attributes of the Person into Columns.
  */
-public class PersonTableModel extends UnitTableModel {
+public class PersonTableModel
+extends UnitTableModel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -314,8 +315,7 @@ public class PersonTableModel extends UnitTableModel {
 			} break;
 
 			case GENDER : {
-				String genderStr = person.getGender().substring(0, 1).toUpperCase() +
-						person.getGender().substring(1);
+				String genderStr = person.getGender().getName();
 				result = genderStr;
 			} break;
 

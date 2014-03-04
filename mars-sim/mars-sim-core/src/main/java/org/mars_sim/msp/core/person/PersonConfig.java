@@ -6,24 +6,25 @@
  */
 package org.mars_sim.msp.core.person;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
-
+import org.jdom.Document;
+import org.jdom.Element;
 
 /**
  * Provides configuration information about people units.
  * Uses a JDOM document to get the information. 
  */
-public class PersonConfig implements Serializable {
+public class PersonConfig
+implements Serializable {
 	
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	// Element names
 	private static final String PERSON_NAME_LIST = "person-name-list";
 	private static final String PERSON_NAME = "person-name";
@@ -102,15 +103,15 @@ public class PersonConfig implements Serializable {
 	 * @throws Exception if person names could not be found.
 	 */
     @SuppressWarnings("unchecked")
-	public String getPersonGender(String name) {
-		String result = "unknown";
+	public PersonGender getPersonGender(String name) {
+    	PersonGender result = PersonGender.UNKNOWN;
 		
 		Element root = personDoc.getRootElement();
 		Element personNameList = root.getChild(PERSON_NAME_LIST);
 		List<Element> personNames = personNameList.getChildren(PERSON_NAME);
 		for (Element nameElement : personNames ) {
 			String personName = nameElement.getAttributeValue(VALUE);
-			if (personName.equals(name)) result = nameElement.getAttributeValue(GENDER);
+			if (personName.equals(name)) result = PersonGender.valueOfIgnoreCase(nameElement.getAttributeValue(GENDER));
 		}
 		
 		return result;
@@ -293,11 +294,11 @@ public class PersonConfig implements Serializable {
 	/**
 	 * Gets the configured person's gender.
 	 * @param index the person's index.
-	 * @return "male", "female" or null if not found.
+	 * @return {@link PersonGender} or null if not found.
 	 * @throws Exception if error in XML parsing.
 	 */
-	public String getConfiguredPersonGender(int index) {
-		return getValueAsString(index,GENDER);
+	public PersonGender getConfiguredPersonGender(int index) {
+		return PersonGender.valueOfIgnoreCase(getValueAsString(index,GENDER));
 	}
 	
 	/**

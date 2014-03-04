@@ -6,21 +6,24 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-
-import java.io.Serializable;
 
 /**
  * A power source that gives a constant supply of power.
  */
-public class StandardPowerSource extends PowerSource implements Serializable {
+public class StandardPowerSource
+extends PowerSource
+implements Serializable {
 
-	private final static String TYPE = "Standard Power Source";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	public StandardPowerSource(double maxPower) {
 		// Call PowerSource constructor.
-		super(TYPE, maxPower);
+		super(PowerSourceType.STANDARD, maxPower);
 	}
 
 	/**
@@ -32,8 +35,8 @@ public class StandardPowerSource extends PowerSource implements Serializable {
 		return getMaxPower();
 	}
 
-    
-    public double getAveragePower(Settlement settlement) {
-        return getMaxPower();
-    }
+
+	public double getAveragePower(Settlement settlement) {
+		return getMaxPower();
+	}
 }

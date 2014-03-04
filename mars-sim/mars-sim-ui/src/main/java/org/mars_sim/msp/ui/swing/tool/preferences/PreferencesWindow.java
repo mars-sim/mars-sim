@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.preferences;
 
 import java.awt.BorderLayout;
@@ -18,6 +17,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.ui.swing.JSliderMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MainWindow;
@@ -29,20 +29,22 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
  * The PreferencesWindow is a tool window that allows the user to adjust general
  * aspects of the simulation and interface.
  */
-public class PreferencesWindow extends ToolWindow {
+public class PreferencesWindow
+extends ToolWindow
+implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** Tool name. */
-	public static final String NAME = "Preferences Tool";
+	public static final String NAME = Msg.getString("PreferencesWindow.title"); //$NON-NLS-1$
 
 	// Data members
 	private AudioPlayer soundPlayer;
-	private JCheckBox muteCheck;
 	private JSliderMW volumeSlider;
-	private JCheckBox toolToolBarCheck;
-	private JCheckBox unitToolBarCheck;
+	private JCheckBox checkMute;
+	private JCheckBox checkToolToolBar;
+	private JCheckBox checkUnitToolBar;
 
 	/**
 	 * Constructor
@@ -70,7 +72,7 @@ public class PreferencesWindow extends ToolWindow {
 		mainPane.add(audioPane, BorderLayout.NORTH);
 
 		// Create audio label.
-		JLabel volumeLabel = new JLabel("Volume", JLabel.CENTER);
+		JLabel volumeLabel = new JLabel(Msg.getString("PreferencesWindow.volume"), JLabel.CENTER); //$NON-NLS-1$
 		audioPane.add(volumeLabel, BorderLayout.NORTH);
 
 		// Create volume slider.
@@ -79,7 +81,7 @@ public class PreferencesWindow extends ToolWindow {
 		volumeSlider = new JSliderMW(JSlider.HORIZONTAL, 0, 10, intVolume);
 		volumeSlider.setMajorTickSpacing(1);
 		volumeSlider.setPaintTicks(true);
-		volumeSlider.setToolTipText("Adjust the volume of sound output.");
+		volumeSlider.setToolTipText(Msg.getString("PreferencesWindow.tooltip.volume")); //$NON-NLS-1$
 		volumeSlider.setEnabled(!soundPlayer.isMute());
 		volumeSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
@@ -90,16 +92,10 @@ public class PreferencesWindow extends ToolWindow {
 		audioPane.add(volumeSlider, BorderLayout.SOUTH);
 
 		// Create mute checkbox.
-		muteCheck = new JCheckBox("Mute", soundPlayer.isMute());
-		muteCheck.setToolTipText("Mute all sound output.");
-		muteCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				soundPlayer.setMute(muteCheck.isSelected());
-				volumeSlider.setEnabled(!soundPlayer.isMute());
-				;
-			}
-		});
-		audioPane.add(muteCheck);
+		checkMute = new JCheckBox(Msg.getString("PreferencesWindow.mute"), soundPlayer.isMute()); //$NON-NLS-1$
+		checkMute.setToolTipText(Msg.getString("PreferencesWindow.tooltip.mute")); //$NON-NLS-1$
+		checkMute.addActionListener(this);
+		audioPane.add(checkMute);
 
 		// Create UI panel.
 		JPanel uiPane = new JPanel(new BorderLayout());
@@ -110,30 +106,20 @@ public class PreferencesWindow extends ToolWindow {
 
 		// Create Unit Toolbar Visibility checkbox.
 		boolean unitToolBarVisible = theMainwindow.getUnitToolBar().isVisible();
-		unitToolBarCheck = new JCheckBox("Show Unit Toolbar",
+		checkUnitToolBar = new JCheckBox(Msg.getString("PreferencesWindow.showUnitToolbar"), //$NON-NLS-1$
 				unitToolBarVisible);
-		unitToolBarCheck.setToolTipText("Show the Unit Bar at the bottom.");
-		unitToolBarCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				theMainwindow.getUnitToolBar().setVisible(
-						unitToolBarCheck.isSelected());
-			}
-		});
+		checkUnitToolBar.setToolTipText(Msg.getString("PreferencesWindow.tooltip.showUnitToolbar")); //$NON-NLS-1$
+		checkUnitToolBar.addActionListener(this);
 
-		uiPane.add(unitToolBarCheck, BorderLayout.CENTER);
+		uiPane.add(checkUnitToolBar, BorderLayout.CENTER);
 
 		// Create Toolbar Visibility checkbox.
 		boolean toolToolBarVisible = theMainwindow.getToolToolBar().isVisible();
-		toolToolBarCheck = new JCheckBox("Show Toolbar", toolToolBarVisible);
-		toolToolBarCheck.setToolTipText("Show the Tool Bar at the top.");
-		toolToolBarCheck.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				theMainwindow.getToolToolBar().setVisible(
-						toolToolBarCheck.isSelected());
-			}
-		});
+		checkToolToolBar = new JCheckBox(Msg.getString("PreferencesWindow.showToolbar"), toolToolBarVisible); //$NON-NLS-1$
+		checkToolToolBar.setToolTipText(Msg.getString("PreferencesWindow.tooltip.showToolbar")); //$NON-NLS-1$
+		checkToolToolBar.addActionListener(this);
 
-		uiPane.add(toolToolBarCheck, BorderLayout.SOUTH);
+		uiPane.add(checkToolToolBar, BorderLayout.SOUTH);
 
 		// Pack window
 		pack();
@@ -145,5 +131,18 @@ public class PreferencesWindow extends ToolWindow {
 	public void destroy() {
 		soundPlayer.cleanAudioPlayer();
 		soundPlayer = null;
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		Object source = e.getSource();
+		if (source == this.checkToolToolBar) {
+			desktop.getMainWindow().getToolToolBar().setVisible(checkToolToolBar.isSelected());
+		} else if (source == checkUnitToolBar) {
+			desktop.getMainWindow().getUnitToolBar().setVisible(checkUnitToolBar.isSelected());
+		} else if (source == checkMute) {
+			soundPlayer.setMute(checkMute.isSelected());
+			volumeSlider.setEnabled(!soundPlayer.isMute());
+		}
 	}
 }

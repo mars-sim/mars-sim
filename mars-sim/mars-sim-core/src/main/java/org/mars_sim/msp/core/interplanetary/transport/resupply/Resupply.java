@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -45,7 +46,8 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * Resupply mission from Earth for a settlement.
  */
-public class Resupply implements Serializable, Transportable {
+public class Resupply
+implements Serializable, Transportable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -65,7 +67,7 @@ public class Resupply implements Serializable, Transportable {
 	private Map<Part, Integer> newParts;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param arrivalDate the arrival date of the supplies. 
 	 * @param settlement the settlement receiving the supplies.
 	 */
@@ -359,8 +361,8 @@ public class Resupply implements Serializable, Transportable {
         RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();
         for (int x = 0; x < getNewImmigrantNum(); x++) {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
-            String gender = Person.FEMALE;
-            if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = Person.MALE;
+            PersonGender gender = PersonGender.FEMALE;
+            if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
             String birthplace = "Earth"; //TODO: randomize from list of countries/federations
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender);
             Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file

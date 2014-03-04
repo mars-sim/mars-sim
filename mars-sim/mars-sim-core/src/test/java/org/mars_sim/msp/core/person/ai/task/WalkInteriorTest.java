@@ -1,14 +1,15 @@
 package org.mars_sim.msp.core.person.ai.task;
 
+import junit.framework.TestCase;
+
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
-
-import junit.framework.TestCase;
 
 /**
  * A unit test suite for the WalkInterior task class.
@@ -23,7 +24,7 @@ public class WalkInteriorTest extends TestCase {
     public void testDetermineDirection() {
         
         Settlement settlement = new MockSettlement();
-        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         
@@ -47,7 +48,7 @@ public class WalkInteriorTest extends TestCase {
     public void testWalkInDirection() {
         
         Settlement settlement = new MockSettlement();
-        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         
@@ -123,7 +124,7 @@ public class WalkInteriorTest extends TestCase {
         connectorManager.addBuildingConnection(new BuildingConnector(building0, -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1, -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));
         
-        Person person = new Person("test person", Person.MALE, "Earth", settlement);
+        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);

@@ -55,7 +55,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 
 		// Set Apache Batik library system property so that it doesn't output: 
 		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
-		System.setProperty("org.apache.batik.warn_destination", "false");
+		System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	@Override
