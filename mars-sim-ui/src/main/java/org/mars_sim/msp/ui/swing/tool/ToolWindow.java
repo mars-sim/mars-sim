@@ -21,15 +21,15 @@ extends JInternalFrame {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-    /** The name of the tool the window is for. */
+	/** The name of the tool the window is for. */
 	protected String name;
-    /** The main desktop. */
+	/** The main desktop. */
 	protected MainDesktopPane desktop;
-    /** True if window is open. */
+	/** True if window is open. */
 	protected boolean opened;
 
 	/** 
-	 * Constructor .
+	 * Constructor.
 	 * @param name the name of the tool
 	 * @param desktop the main desktop.
 	 */

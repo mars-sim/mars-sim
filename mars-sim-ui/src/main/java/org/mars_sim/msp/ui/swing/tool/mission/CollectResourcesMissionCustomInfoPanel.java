@@ -128,7 +128,7 @@ implements UnitListener {
 		// Update collection value label.
 		collectionValueLabel.setText(
 			Msg.getString(
-				"CollectResourcesMissionCustomInfoPanel.3", //$NON-NLS-1$
+				"CollectResourcesMissionCustomInfoPanel.kilograms", //$NON-NLS-1$
 				Integer.toString((int) resourceAmount)
 			)
 		);

@@ -183,6 +183,7 @@ public class CollectionUtils {
 				}
 			}
 		);
+		sorted.addAll(collection);
 /*
 		// O(n²) ??
 		ConcurrentLinkedQueue<T> sorted = new ConcurrentLinkedQueue<T>();

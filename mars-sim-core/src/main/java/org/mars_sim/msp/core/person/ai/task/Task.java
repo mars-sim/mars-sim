@@ -84,6 +84,7 @@ implements Serializable, Comparable<Task> {
 	 * @param hasDuration Does the task have a time duration?
 	 * @param duration the time duration (in millisols) of the task (or 0 if none)
 	 * @throws Exception if task could not be constructed.
+	 * @deprecated use enum instead of localized string names
 	 */
 	public Task(
 		String name, Person person, boolean effort, boolean createEvents, 
@@ -227,6 +228,7 @@ implements Serializable, Comparable<Task> {
      * Sets the task's current phase.
      * @param newPhase the phase to set the a task at.
      * @throws Exception if newPhase is not in the task's collection of phases.
+     * @deprecated use enum instead of localized strings
      */
     protected void setPhase(String newPhase) {
         if (newPhase == null) {
@@ -244,6 +246,7 @@ implements Serializable, Comparable<Task> {
     /**
      * Adds a phase to the task's collection of phases.
      * @param newPhase the new phase to add.
+     * @deprecated use enum instead of localized strings
      */
     protected void addPhase(String newPhase) {
         if (newPhase == null) {
