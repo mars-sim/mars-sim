@@ -7,24 +7,28 @@
 
 package org.mars_sim.msp.core.person.ai;
 
-import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
-import org.mars_sim.msp.core.person.PhysicalCondition;
-
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonConfig;
+import org.mars_sim.msp.core.person.PhysicalCondition;
+
 /**
  * The MBTI (Myers-Briggs Type Indicator) personality type for the person.
  */
-public class PersonalityType implements Serializable {
+public class PersonalityType
+implements Serializable {
 
-	// Personality types
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Personality types should be enums
 	private static final String ISTP = "ISTP";
 	private static final String ISTJ = "ISTJ";
 	private static final String ISFP = "ISFP";

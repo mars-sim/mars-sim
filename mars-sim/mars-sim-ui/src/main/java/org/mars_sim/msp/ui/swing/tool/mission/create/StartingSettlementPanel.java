@@ -44,12 +44,12 @@ class StartingSettlementPanel extends WizardPanel {
 
 	/** The wizard panel name. */
 	private final static String NAME = "Starting Settlement";
-	
+
 	// Data members.
 	private SettlementTableModel settlementTableModel;
 	private JTable settlementTable;
 	private JLabel errorMessageLabel;
-	
+
 	/**
 	 * Constructor.
 	 * @param wizard the create mission wizard.
@@ -57,80 +57,80 @@ class StartingSettlementPanel extends WizardPanel {
 	StartingSettlementPanel(final CreateMissionWizard wizard) {
 		// Use WizardPanel constructor.
 		super(wizard);
-		
+
 		// Set the layout.
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-		
+
 		// Set the border.
 		setBorder(new MarsPanelBorder());
-		
+
 		// Create the select settlement label.
 		JLabel selectSettlementLabel = new JLabel("Select a starting settlement.", JLabel.CENTER);
 		selectSettlementLabel.setFont(selectSettlementLabel.getFont().deriveFont(Font.BOLD));
 		selectSettlementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(selectSettlementLabel);
-		
+
 		// Create the settlement panel.
 		JPanel settlementPane = new JPanel(new BorderLayout(0, 0));
 		settlementPane.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
 		settlementPane.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(settlementPane);
-		
+
 		// Create scroll panel for settlement list.
 		JScrollPane settlementScrollPane = new JScrollPane();
 		settlementPane.add(settlementScrollPane, BorderLayout.CENTER);
-		
+
 		// Create the settlement table model.
 		settlementTableModel = new SettlementTableModel();
-		
+
 		// Create the settlement table.
 		settlementTable = new JTable(settlementTableModel);
 		settlementTable.setDefaultRenderer(Object.class, new UnitTableCellRenderer(settlementTableModel));
 		settlementTable.setRowSelectionAllowed(true);
 		settlementTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		settlementTable.getSelectionModel().addListSelectionListener(
-			new ListSelectionListener() {
-				public void valueChanged(ListSelectionEvent e) {
-					if (e.getValueIsAdjusting()) {
-						int index = settlementTable.getSelectedRow();
-						if (index > -1) {
-							if (settlementTableModel.isFailureRow(index)) {
-								errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
-								getWizard().setButtons(false);
-							}
-							else {
-								errorMessageLabel.setText(" ");
-								getWizard().setButtons(true);
+				new ListSelectionListener() {
+					public void valueChanged(ListSelectionEvent e) {
+						if (e.getValueIsAdjusting()) {
+							int index = settlementTable.getSelectedRow();
+							if (index > -1) {
+								if (settlementTableModel.isFailureRow(index)) {
+									errorMessageLabel.setText("Settlement cannot start the mission (see red cells).");
+									getWizard().setButtons(false);
+								}
+								else {
+									errorMessageLabel.setText(" ");
+									getWizard().setButtons(true);
+								}
 							}
 						}
 					}
 				}
-			}
-		);
+				);
 		// call it a click to next button when user double clicks the table
 		settlementTable.addMouseListener(
-			new MouseListener() {
-				public void mouseReleased(MouseEvent e) {}
-				public void mousePressed(MouseEvent e) {}
-				public void mouseExited(MouseEvent e) {}
-				public void mouseEntered(MouseEvent e) {}
-				public void mouseClicked(MouseEvent e) {
-					if (e.getClickCount() == 2 && !e.isConsumed()) {
-						wizard.buttonClickedNext();
+				new MouseListener() {
+					public void mouseReleased(MouseEvent e) {}
+					public void mousePressed(MouseEvent e) {}
+					public void mouseExited(MouseEvent e) {}
+					public void mouseEntered(MouseEvent e) {}
+					public void mouseClicked(MouseEvent e) {
+						if (e.getClickCount() == 2 && !e.isConsumed()) {
+							wizard.buttonClickedNext();
+						}
 					}
 				}
-			}
-		);
+				);
 		settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
 		settlementScrollPane.setViewportView(settlementTable);
-		
-			// Create the error message label.
+
+		// Create the error message label.
 		errorMessageLabel = new JLabel(" ", JLabel.CENTER);
 		errorMessageLabel.setForeground(Color.RED);
 		errorMessageLabel.setFont(errorMessageLabel.getFont().deriveFont(Font.BOLD));
 		errorMessageLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		add(errorMessageLabel);
-		
+
 		// Add a vertical glue.
 		add(Box.createVerticalGlue());
 	}
@@ -161,7 +161,7 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementTable.clearSelection();
 		errorMessageLabel.setText(" ");
 	}
-	
+
 	/**
 	 * Updates the wizard panel information.
 	 */
@@ -169,199 +169,203 @@ class StartingSettlementPanel extends WizardPanel {
 		settlementTableModel.updateTable();
 		settlementTable.setPreferredScrollableViewportSize(settlementTable.getPreferredSize());
 	}
-	
+
 	/**
 	 * A table model for settlements.
 	 */
-    private class SettlementTableModel extends UnitTableModel {
-    	
-    	/**
-    	 * Constructor
-    	 */
-    	private SettlementTableModel() {
-    		// Use UnitTableModel constructor.
-    		super();
-    		
-    		// Add all settlements to table sorted by name.
-    		UnitManager manager = Simulation.instance().getUnitManager();
-    		Collection<Settlement> settlements = CollectionUtils.sortByName(manager.getSettlements());
-    		Iterator<Settlement> i = settlements.iterator();
-    		while (i.hasNext()) units.add(i.next());
-    		
-    		// Add columns.
-    		columns.add("Name");
-    		columns.add("Pop.");
-    		columns.add("Rovers");
-    		columns.add("Oxygen");
-    		columns.add("Water");
-    		columns.add("Food");
-    		columns.add("Methane");
-    		columns.add("EVA Suits");
-    	}
-    	
-    	/**
-    	 * Returns the value for the cell at columnIndex and rowIndex.
-    	 * @param row the row whose value is to be queried
-    	 * @param column the column whose value is to be queried
-    	 * @return the value Object at the specified cell
-    	 */
-    	public Object getValueAt(int row, int column) {
-    		Object result = "unknown";
-    		
-            if (row < units.size()) {
-            	try {
-            		Settlement settlement = (Settlement) getUnit(row);
-            		Inventory inv = settlement.getInventory();
-            		if (column == 0) 
-            			result = settlement.getName();
-            		else if (column == 1) 
-            			result = settlement.getCurrentPopulationNum();
-            		else if (column == 2) 
-            			result = inv.findNumUnitsOfClass(Rover.class);
-            		if (column == 3) {
-            			AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-            			result = (int) inv.getAmountResourceStored(oxygen, false);
-            		}
-            		else if (column == 4) {
-            			AmountResource water = AmountResource.findAmountResource("water");
-            			result = (int) inv.getAmountResourceStored(water, false);
-            		}
-            		else if (column == 5) {
-            			AmountResource food = AmountResource.findAmountResource("food");
-            			result = (int) inv.getAmountResourceStored(food, false);
-            		}
-            		else if (column == 6) {
-            			AmountResource methane = AmountResource.findAmountResource("methane");
-            			result = (int) inv.getAmountResourceStored(methane, false);
-            		}
-            		else if (column == 7) 
-            			result = inv.findNumUnitsOfClass(EVASuit.class);
-            		
-            		String type = getWizard().getMissionData().getType();
-            		
-            		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-            			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true);
-            		}
-            		else if (type.equals(MissionDataBean.ICE_MISSION) || 
-            						type.equals(MissionDataBean.REGOLITH_MISSION)) {
-            			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
-            		}
-            		else if (type.equals(MissionDataBean.MINING_MISSION)) {
-            			if (column == 8)
-            				result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
-            			else if (column == 9)
-            				result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
-            			else if (column == 10) {
-            				Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-            				result = inv.getItemResourceNum(pneumaticDrill);
-            			}
-            			else if (column == 11) {
-            				Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-            				result = inv.getItemResourceNum(backhoe);
-            			}
-            		}
-            	}
-            	catch (Exception e) {}
-            }
-            
-            return result;
-        }
-    	
-    	/**
-    	 * Updates the table data.
-    	 */
-    	void updateTable() {
-    		if (columns.size() > 8) {
-    			for (int x = 0; x < (columns.size() - 8); x++) columns.remove(8);
-    		}
-    		String type = getWizard().getMissionData().getType();
-    		if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
-    		else if (type.equals(MissionDataBean.ICE_MISSION) || 
-    				type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
-    		else if (type.equals(MissionDataBean.MINING_MISSION)) {
-    			columns.add("Bags");
-    			columns.add("Light Utility Vehicles");
-    			columns.add("Pneumatic Drills");
-    			columns.add("Backhoes");
-    		}
-    		fireTableStructureChanged();
-    	}
-    	
-    	/**
-    	 * Checks if a table cell is a failure cell.
-    	 * @param row the table row.
-    	 * @param column the table column.
-    	 * @return true if cell is a failure cell.
-    	 */
-    	boolean isFailureCell(int row, int column) {
-    		boolean result = false;
-    		Settlement settlement = (Settlement) getUnit(row);
-    		Inventory inv = settlement.getInventory();
-    		
-    		try {
-    			if (column == 1) {
-    				if (settlement.getCurrentPopulationNum() == 0) result = true;
-    			}
-    			else if (column == 2) {
-    				if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
-    			}
-    			else if (column == 3) {
-    				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
-    				if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
-    			}
-    			else if (column == 4) {
-    				AmountResource water = AmountResource.findAmountResource("water");
-    				if (inv.getAmountResourceStored(water, false) < 100D) result = true;
-    			}
-    			else if (column == 5) {
-    				AmountResource food = AmountResource.findAmountResource("food");
-    				if (inv.getAmountResourceStored(food, false) < 100D) result = true;
-    			}
-    			else if (column == 6) {
-    				AmountResource methane = AmountResource.findAmountResource("methane");
-    				if (inv.getAmountResourceStored(methane, false) < 100D) result = true;
-    			}
-    			else if (column == 7) {
-    				if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
-    			}
-    			
-    			String type = getWizard().getMissionData().getType();
-    			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
-    				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) < 
-    							Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
-    				}
-    			}
-    			else if (type.equals(MissionDataBean.ICE_MISSION) || 
+	private class SettlementTableModel
+	extends UnitTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * Constructor.
+		 */
+		private SettlementTableModel() {
+			// Use UnitTableModel constructor.
+			super();
+
+			// Add all settlements to table sorted by name.
+			UnitManager manager = Simulation.instance().getUnitManager();
+			Collection<Settlement> settlements = CollectionUtils.sortByName(manager.getSettlements());
+			Iterator<Settlement> i = settlements.iterator();
+			while (i.hasNext()) units.add(i.next());
+
+			// Add columns.
+			columns.add("Name");
+			columns.add("Pop.");
+			columns.add("Rovers");
+			columns.add("Oxygen");
+			columns.add("Water");
+			columns.add("Food");
+			columns.add("Methane");
+			columns.add("EVA Suits");
+		}
+
+		/**
+		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * @param row the row whose value is to be queried
+		 * @param column the column whose value is to be queried
+		 * @return the value Object at the specified cell
+		 */
+		public Object getValueAt(int row, int column) {
+			Object result = "unknown";
+
+			if (row < units.size()) {
+				try {
+					Settlement settlement = (Settlement) getUnit(row);
+					Inventory inv = settlement.getInventory();
+					if (column == 0) 
+						result = settlement.getName();
+					else if (column == 1) 
+						result = settlement.getCurrentPopulationNum();
+					else if (column == 2) 
+						result = inv.findNumUnitsOfClass(Rover.class);
+					if (column == 3) {
+						AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+						result = (int) inv.getAmountResourceStored(oxygen, false);
+					}
+					else if (column == 4) {
+						AmountResource water = AmountResource.findAmountResource("water");
+						result = (int) inv.getAmountResourceStored(water, false);
+					}
+					else if (column == 5) {
+						AmountResource food = AmountResource.findAmountResource("food");
+						result = (int) inv.getAmountResourceStored(food, false);
+					}
+					else if (column == 6) {
+						AmountResource methane = AmountResource.findAmountResource("methane");
+						result = (int) inv.getAmountResourceStored(methane, false);
+					}
+					else if (column == 7) 
+						result = inv.findNumUnitsOfClass(EVASuit.class);
+
+					String type = getWizard().getMissionData().getType();
+
+					if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+						if (column == 8)
+							result = inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true);
+					}
+					else if (type.equals(MissionDataBean.ICE_MISSION) || 
+							type.equals(MissionDataBean.REGOLITH_MISSION)) {
+						if (column == 8)
+							result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
+					}
+					else if (type.equals(MissionDataBean.MINING_MISSION)) {
+						if (column == 8)
+							result = inv.findNumEmptyUnitsOfClass(Bag.class, true);
+						else if (column == 9)
+							result = inv.findNumUnitsOfClass(LightUtilityVehicle.class);
+						else if (column == 10) {
+							Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+							result = inv.getItemResourceNum(pneumaticDrill);
+						}
+						else if (column == 11) {
+							Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+							result = inv.getItemResourceNum(backhoe);
+						}
+					}
+				}
+				catch (Exception e) {}
+			}
+
+			return result;
+		}
+
+		/**
+		 * Updates the table data.
+		 */
+		void updateTable() {
+			if (columns.size() > 8) {
+				for (int x = 0; x < (columns.size() - 8); x++) columns.remove(8);
+			}
+			String type = getWizard().getMissionData().getType();
+			if (type.equals(MissionDataBean.EXPLORATION_MISSION)) columns.add("Specimen Containers");
+			else if (type.equals(MissionDataBean.ICE_MISSION) || 
+					type.equals(MissionDataBean.REGOLITH_MISSION)) columns.add("Bags");
+			else if (type.equals(MissionDataBean.MINING_MISSION)) {
+				columns.add("Bags");
+				columns.add("Light Utility Vehicles");
+				columns.add("Pneumatic Drills");
+				columns.add("Backhoes");
+			}
+			fireTableStructureChanged();
+		}
+
+		/**
+		 * Checks if a table cell is a failure cell.
+		 * @param row the table row.
+		 * @param column the table column.
+		 * @return true if cell is a failure cell.
+		 */
+		boolean isFailureCell(int row, int column) {
+			boolean result = false;
+			Settlement settlement = (Settlement) getUnit(row);
+			Inventory inv = settlement.getInventory();
+
+			try {
+				if (column == 1) {
+					if (settlement.getCurrentPopulationNum() == 0) result = true;
+				}
+				else if (column == 2) {
+					if (inv.findNumUnitsOfClass(Rover.class) == 0) result = true;
+				}
+				else if (column == 3) {
+					AmountResource oxygen = AmountResource.findAmountResource("oxygen");
+					if (inv.getAmountResourceStored(oxygen, false) < 100D) result = true;
+				}
+				else if (column == 4) {
+					AmountResource water = AmountResource.findAmountResource("water");
+					if (inv.getAmountResourceStored(water, false) < 100D) result = true;
+				}
+				else if (column == 5) {
+					AmountResource food = AmountResource.findAmountResource("food");
+					if (inv.getAmountResourceStored(food, false) < 100D) result = true;
+				}
+				else if (column == 6) {
+					AmountResource methane = AmountResource.findAmountResource("methane");
+					if (inv.getAmountResourceStored(methane, false) < 100D) result = true;
+				}
+				else if (column == 7) {
+					if (inv.findNumUnitsOfClass(EVASuit.class) == 0) result = true;
+				}
+
+				String type = getWizard().getMissionData().getType();
+				if (type.equals(MissionDataBean.EXPLORATION_MISSION)) {
+					if (column == 8) {
+						if (inv.findNumEmptyUnitsOfClass(SpecimenContainer.class, true) < 
+								Exploration.REQUIRED_SPECIMEN_CONTAINERS) result = true;
+					}
+				}
+				else if (type.equals(MissionDataBean.ICE_MISSION) || 
 						type.equals(MissionDataBean.REGOLITH_MISSION)) {
-    				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
-    							CollectIce.REQUIRED_BAGS) result = true;
-    				}
-    			}
-    			else if (type.equals(MissionDataBean.MINING_MISSION)) {
-    				if (column == 8) {
-    					if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
-    							CollectIce.REQUIRED_BAGS) result = true;
-    				}
-    				if (column == 9) {
-    					if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
-    				}
-    				else if (column == 10) {
-    					Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
-        				if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
-    				}
-    				else if (column == 11) {
-    					Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
-        				if (inv.getItemResourceNum(backhoe) == 0) result = true;
-    				}
-    			}
-    		}
-    		catch (Exception e) {}
-    		
-    		return result;
-    	}
-    }
+					if (column == 8) {
+						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
+								CollectIce.REQUIRED_BAGS) result = true;
+					}
+				}
+				else if (type.equals(MissionDataBean.MINING_MISSION)) {
+					if (column == 8) {
+						if (inv.findNumEmptyUnitsOfClass(Bag.class, true) < 
+								CollectIce.REQUIRED_BAGS) result = true;
+					}
+					if (column == 9) {
+						if (inv.findNumUnitsOfClass(LightUtilityVehicle.class) == 0) result = true;
+					}
+					else if (column == 10) {
+						Part pneumaticDrill = (Part) Part.findItemResource(Mining.PNEUMATIC_DRILL);
+						if (inv.getItemResourceNum(pneumaticDrill) == 0) result = true;
+					}
+					else if (column == 11) {
+						Part backhoe = (Part) Part.findItemResource(Mining.BACKHOE);
+						if (inv.getItemResourceNum(backhoe) == 0) result = true;
+					}
+				}
+			}
+			catch (Exception e) {}
+
+			return result;
+		}
+	}
 }
