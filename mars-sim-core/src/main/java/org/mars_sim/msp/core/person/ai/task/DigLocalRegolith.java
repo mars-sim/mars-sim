@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -38,20 +38,18 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
  * The DigLocalRegolith class is a task for performing
  * collecting regolith outside a settlement.
  */
-public class DigLocalRegolith
-extends EVAOperation
+public class DigLocalRegolith 
+extends EVAOperation 
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
+    private static final long serialVersionUID = 1L;
     
-    // TODO Phase name should be an enum
-    private static final String WALK_TO_SITE = "Walk to Dig Site";
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
+    
+    // Phase name
     private static final String COLLECT_REGOLITH = "Collecting Regolith";
-    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
     
     /** Collection rate of regolith during EVA (kg/millisol). */
     private static final double COLLECTION_RATE = 20D;
@@ -62,19 +60,14 @@ implements Serializable {
     /** Bag for collecting regolith. */
     private Bag bag;
     private Settlement settlement;
-    private double diggingXLocation;
-    private double diggingYLocation;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
     
     /**
-     * Constructor.
+     * Constructor
      * @param person the person performing the task.
-     * @throws Exception if error constructing the task.
      */
     public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super("Digging local regolith", person);
+        super("Digging local regolith", person, false, 0D);
         
         settlement = person.getSettlement();
         
@@ -86,18 +79,21 @@ implements Serializable {
         
         // Determine digging location.
         Point2D.Double diggingLoc = determineDiggingLocation();
-        diggingXLocation = diggingLoc.getX();
-        diggingYLocation = diggingLoc.getY();
+        setOutsideSiteLocation(diggingLoc.getX(), diggingLoc.getY());
         
-        // Determine location for reentering airlock.
-        Point2D enterAirlockLoc = determineAirlockEnteringLocation();
-        enterAirlockXLoc = enterAirlockLoc.getX();
-        enterAirlockYLoc = enterAirlockLoc.getY();
+        // Take bags for collecting regolith.
+        if (!hasBags()) {
+            takeBag();
+            
+            // If bags are not available, end task.
+            if (!hasBags()) {
+                logger.fine(person.getName() + " not able to find bag to collect regolith.");
+                endTask();
+            }
+        }
         
         // Add task phases
-        addPhase(WALK_TO_SITE);
         addPhase(COLLECT_REGOLITH);
-        addPhase(WALK_TO_AIRLOCK);
         
         logger.finest(person.getName() + " starting DigLocalRegolith task.");
     }
@@ -162,56 +158,60 @@ implements Serializable {
     }
     
     /**
-     * Determine location outside building airlock.
-     * @return location.
+     * Checks if the person is carrying any bags.
+     * @return true if carrying bags.
      */
-    private Point2D determineAirlockEnteringLocation() {
-        
-        Point2D result = null;
-        
-        // Move the person to a random location outside the airlock entity.
-        if (airlock.getEntity() instanceof LocalBoundedObject) {
-            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double newLocation = null;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 20) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                        boundedLocalPoint.getY(), entityBounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
+    private boolean hasBags() {
+        return person.getInventory().containsUnitClass(Bag.class);
+    }
+
+    /**
+     * Takes the most full bag from the rover.
+     */
+    private void takeBag() {
+        Bag emptyBag = null;
+        Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
+        while (i.hasNext() && (emptyBag == null)) {
+            Bag foundBag = (Bag) i.next();
+            if (foundBag.getInventory().isEmpty(false)) {
+                emptyBag = foundBag;
             }
-            
-            result = newLocation;
         }
         
-        return result;
+        if (emptyBag != null) {
+            if (person.getInventory().canStoreUnit(emptyBag, false)) {
+                settlement.getInventory().retrieveUnit(emptyBag);
+                person.getInventory().storeUnit(emptyBag);
+                bag = emptyBag;
+            }
+            else {
+                logger.severe(person.getName() + " unable to carry empty bag");
+            }
+        }
+        else {
+            logger.severe("Unable to find empty bag in settlement inventory");
+        }
+    }
+    
+    @Override
+    protected String getOutsideSitePhase() {
+        return COLLECT_REGOLITH;
     }
     
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-            return exitEVA(time);
-        }
-        else if (WALK_TO_SITE.equals(getPhase())) {
-            return walkToDigSitePhase(time);
-        }
         else if (COLLECT_REGOLITH.equals(getPhase())) {
             return collectRegolith(time);
-        }
-        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
-            return walkToAirlock(time);
-        }
-        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-            return enterEVA(time);
         }
         else {
             return time;
@@ -259,62 +259,6 @@ implements Serializable {
     }
     
     /**
-     * Perform the exit airlock phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error exiting the airlock.
-     */
-    private double exitEVA(double time) {
-        
-        try {
-            time = exitAirlock(time, airlock);
-        
-            // Add experience points
-            addExperience(time);
-        }
-        catch (Exception e) {
-            // Person unable to exit airlock.
-            endTask();
-        }
-        
-        if (exitedAirlock) {
-            // Take bag.
-            if (bag == null) {
-                Bag emptyBag = null;
-                Iterator<Unit> i = settlement.getInventory().findAllUnitsOfClass(Bag.class).iterator();
-                while (i.hasNext() && (emptyBag == null)) {
-                    Bag foundBag = (Bag) i.next();
-                    if (foundBag.getInventory().isEmpty(false)) {
-                        emptyBag = foundBag;
-                    }
-                }
-                
-                if (emptyBag != null) {
-                    if (person.getInventory().canStoreUnit(emptyBag, false)) {
-                        settlement.getInventory().retrieveUnit(emptyBag);
-                        person.getInventory().storeUnit(emptyBag);
-                        bag = emptyBag;
-                    }
-                    else {
-                        logger.severe(person.getName() + " unable to carry empty bag");
-                    }
-                }
-                else {
-                    logger.severe("Unable to find empty bag in settlement inventory");
-                }
-            }
-            
-            if (bag != null) {
-                setPhase(WALK_TO_SITE);
-            }
-            else {
-                setPhase(ENTER_AIRLOCK);
-            }
-        }
-        return time;
-    }
-    
-    /**
      * Determine location for digging regolith.
      * @return digging X and Y location outside settlement.
      */
@@ -344,95 +288,32 @@ implements Serializable {
         return newLocation;
     }
     
-    /**
-     * Perform the walk to dig site phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToDigSitePhase(double time) {
+    @Override
+    public void endTask() {
         
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_AIRLOCK);
-            return time;
-        }
-        
-        // If not at construction site location, create walk outside subtask.
-        if ((person.getXLocation() != diggingXLocation) || (person.getYLocation() != diggingYLocation)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    diggingXLocation, diggingYLocation, false);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(COLLECT_REGOLITH);
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToAirlock(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the enter airlock phase of the task.
-     * @param time amount of time to perform the phase
-     * @return time remaining after performing the phase
-     * @throws Exception if error entering airlock.
-     */
-    private double enterEVA(double time) {
-        time = enterAirlock(time, airlock);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (enteredAirlock) {
-            if (bag != null) {
-                AmountResource regolithResource = AmountResource.findAmountResource("regolith");
-                double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource, false);
-                double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
-                        regolithResource, false, false);
-                
-                // Try to store regolith in settlement.
-                if (collectedAmount < settlementCap) {
-                    bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
-                    settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
-                }
-
-                // Store bag.
-                person.getInventory().retrieveUnit(bag);
-                settlement.getInventory().storeUnit(bag);
-                
-                // Recalculate settlement good value for output item.
-                GoodsManager goodsManager = settlement.getGoodsManager();
-                goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithResource), false);
+        // Unload bag to rover's inventory.
+        if (bag != null) {
+            AmountResource regolithResource = AmountResource.findAmountResource("regolith");
+            double collectedAmount = bag.getInventory().getAmountResourceStored(regolithResource, false);
+            double settlementCap = settlement.getInventory().getAmountResourceRemainingCapacity(
+                    regolithResource, false, false);
+            
+            // Try to store regolith in settlement.
+            if (collectedAmount < settlementCap) {
+                bag.getInventory().retrieveAmountResource(regolithResource, collectedAmount);
+                settlement.getInventory().storeAmountResource(regolithResource, collectedAmount, false);
             }
-            endTask();
+
+            // Store bag.
+            person.getInventory().retrieveUnit(bag);
+            settlement.getInventory().storeUnit(bag);
+            
+            // Recalculate settlement good value for output item.
+            GoodsManager goodsManager = settlement.getGoodsManager();
+            goodsManager.updateGoodValue(GoodsUtil.getResourceGood(regolithResource), false);
         }
-        return time;
+        
+        super.endTask();
     }
     
     /**
@@ -449,7 +330,7 @@ implements Serializable {
         // Check if there is reason to cut the collection phase short and return
         // to the airlock.
         if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_AIRLOCK);
+            setPhase(WALK_BACK_INSIDE);
             return time;
         }
         
@@ -467,7 +348,7 @@ implements Serializable {
         person.getInventory().storeAmountResource(regolith, regolithCollected, true);
         
         if (finishedCollecting) {
-            setPhase(WALK_TO_AIRLOCK);
+            setPhase(WALK_BACK_INSIDE);
         }
         
         // Add experience points

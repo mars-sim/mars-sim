@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MineSite.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 
@@ -37,23 +37,18 @@ extends EVAOperation
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(MineSite.class.getName());
+    private static final long serialVersionUID = 1L;
     
-	// TODO Task phases should be an enum
-    private static final String WALK_TO_SITE = "Walk to Site";
+	/** default logger. */
+    private static Logger logger = Logger.getLogger(MineSite.class.getName());
+    
+    // TODO Task phases should be an enum
 	private static final String MINING = "Mining";
-	private static final String WALK_TO_ROVER = "Walk to Rover";
 	
 	/** Excavation rates (kg/millisol). */
 	private static final double HAND_EXCAVATION_RATE = .1D;
 	/** Excavation rates (kg/millisol). */
 	private static final double LUV_EXCAVATION_RATE = 1D;
-	
-	/** Time limit for mining (millisol). */
-	private static final double MINING_TIME_LIMIT = 100D;
 	
 	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -63,11 +58,6 @@ implements Serializable {
 	private Rover rover;
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
-	private double miningTime;
-	private double miningSiteXLoc;
-    private double miningSiteYLoc;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
 	
 	/**
 	 * Constructor
@@ -75,13 +65,12 @@ implements Serializable {
 	 * @param site the explored site to mine.
 	 * @param rover the rover used for the EVA operation.
 	 * @param luv the light utility vehicle used for mining.
-	 * @throws Exception if error creating task.
 	 */
 	public MineSite(Person person, Coordinates site, Rover rover, 
 			LightUtilityVehicle luv) {
 		
 		// Use EVAOperation parent constructor.
-		super("Mine Site", person);
+		super("Mine Site", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 		
 		// Initialize data members.
 		this.site = site;
@@ -91,18 +80,10 @@ implements Serializable {
 		
         // Determine location for mining site.
         Point2D miningSiteLoc = determineMiningSiteLocation();
-        miningSiteXLoc = miningSiteLoc.getX();
-        miningSiteYLoc = miningSiteLoc.getY();
-        
-        // Determine location for reentering rover airlock.
-        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
-        enterAirlockXLoc = enterAirlockLoc.getX();
-        enterAirlockYLoc = enterAirlockLoc.getY();
+        setOutsideSiteLocation(miningSiteLoc.getX(), miningSiteLoc.getY());
 		
 		// Add task phase
-        addPhase(WALK_TO_SITE);
 		addPhase(MINING);
-		addPhase(WALK_TO_ROVER);
 	}
 	
     /**
@@ -131,19 +112,6 @@ implements Serializable {
 
         return newLocation;
     }
-    
-    /**
-     * Determine location for returning to rover airlock.
-     * @return X and Y location outside rover.
-     */
-    private Point2D determineRoverAirlockEnteringLocation() {
-        
-        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
-        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                vehicleLoc.getY(), rover);
-        
-        return newLocation;
-    }
 	
 	/**
 	 * Checks if a person can mine a site.
@@ -168,106 +136,27 @@ implements Serializable {
 	
 		return (exitable && (sunlight || darkRegion) && !medical);
 	}
-	
-	/**
-	 * Perform the exit rover phase of the task.
-	 * @param time the time to perform this phase (in millisols)
-	 * @return the time remaining after performing this phase (in millisols)
-	 * @throws Exception if error exiting rover.
-	 */
-	private double exitRoverPhase(double time) {
-		
-		try {
-			time = exitAirlock(time, rover.getAirlock());
-		
-			// Add experience points
-			addExperience(time);
-		}
-		catch (Exception e) {
-			// Person unable to exit airlock.
-			endTask();
-		}
-		
-		if (exitedAirlock) {
-		    setPhase(WALK_TO_SITE);
-		}
-
-		return time;
-	}
-	
-	/**
-	 * Perform the enter rover phase of the task.
-	 * @param time the time to perform this phase (in millisols)
-	 * @return the time remaining after performing this phase (in millisols)
-	 * @throws Exception if error entering rover.
-	 */
-	private double enterRoverPhase(double time) {
-
-		time = enterAirlock(time, rover.getAirlock());
-
-        // Add experience points
-        addExperience(time);
-        
-        if (enteredAirlock) {
-        	endTask();
-        	return time;
-        }
-        
-		return 0D;
-	}
-	
-    /**
-     * Perform the walk to mining site phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToMiningSitePhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_ROVER);
-            return time;
-        }
-        
-        // If not at mining site location, create walk outside subtask.
-        if ((person.getXLocation() != miningSiteXLoc) || (person.getYLocation() != miningSiteYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    miningSiteXLoc, miningSiteYLoc, false);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(MINING);
-        }
-        
-        return time;
-    }
     
-    /**
-     * Perform the walk to rover airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToRoverAirlockPhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside rover airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
+	@Override
+    protected String getOutsideSitePhase() {
+        return MINING;
     }
+	
+	@Override
+	protected double performMappedPhase(double time) {
+	    
+	    time = super.performMappedPhase(time);
+	    
+	    if (getPhase() == null) {
+	        throw new IllegalArgumentException("Task phase is null");
+	    }
+	    else if (MINING.equals(getPhase())) {
+	        return miningPhase(time);
+	    }
+	    else {
+	        return time;
+	    }
+	}
 	
 	/**
 	 * Perform the mining phase of the task.
@@ -280,19 +169,16 @@ implements Serializable {
 		// Check for an accident during the EVA operation.
 		checkForAccident(time);
 		
-		// Add mining time.
-		miningTime += time;
-		
 		// Check if there is reason to cut the mining phase short and return
 		// to the rover.
-		if (shouldEndEVAOperation() || (miningTime >= MINING_TIME_LIMIT)) {
+		if (shouldEndEVAOperation() || addTimeOnSite(time)) {
 			// End operating light utility vehicle.
 			if (luv.getInventory().containsUnit(person)) { 
 				luv.getInventory().retrieveUnit(person);
 				luv.setOperator(null);
 				operatingLUV = false;
 			}
-			setPhase(WALK_TO_ROVER);
+			setPhase(WALK_BACK_INSIDE);
 			return time;
 		}
 		
@@ -394,7 +280,9 @@ implements Serializable {
 		List<SkillType> results = new ArrayList<SkillType>(3);
 		results.add(SkillType.EVA_OPERATIONS);
 		results.add(SkillType.AREOLOGY);
-		if (operatingLUV) results.add(SkillType.DRIVING);
+		if (operatingLUV) {
+		    results.add(SkillType.DRIVING);
+		}
 		return results;
 	}
 
@@ -409,34 +297,11 @@ implements Serializable {
 			int drivingSkill = manager.getEffectiveSkillLevel(SkillType.DRIVING);
 			result = (int) Math.round((double)(EVAOperationsSkill + areologySkill + drivingSkill) / 3D); 
 		}
-		else result = (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
+		else {
+		    result = (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D);
+		}
 		
 		return result;
-	}
-
-	@Override
-	protected double performMappedPhase(double time) {
-    	if (getPhase() == null) {
-    	    throw new IllegalArgumentException("Task phase is null");
-    	}
-    	else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-    	    return exitRoverPhase(time);
-    	}
-    	else if (WALK_TO_SITE.equals(getPhase())) {
-            return walkToMiningSitePhase(time);
-        }
-    	else if (MINING.equals(getPhase())) {
-    	    return miningPhase(time);
-    	}
-    	else if (WALK_TO_ROVER.equals(getPhase())) {
-            return walkToRoverAirlockPhase(time);
-        }
-    	else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-    	    return enterRoverPhase(time);
-    	}
-    	else {
-    	    return time;
-    	}
 	}
 
 	@Override
@@ -449,14 +314,19 @@ implements Serializable {
 			
 			// Driving skill modification.
 			int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-            if (skill <= 3) chance *= (4 - skill);
-            else chance /= (skill - 2);
+            if (skill <= 3) {
+                chance *= (4 - skill);
+            }
+            else {
+                chance /= (skill - 2);
+            }
             
             // Modify based on the LUV's wear condition.
             chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
             
-            if (RandomUtil.lessThanRandPercent(chance * time))
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
     	    	luv.getMalfunctionManager().accident();
+            }
 		}
     }
 	
@@ -465,8 +335,9 @@ implements Serializable {
         boolean result = super.shouldEndEVAOperation();
         
         // If operating LUV, check if LUV has malfunction.
-        if (operatingLUV && luv.getMalfunctionManager().hasMalfunction())
+        if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {
         	result = true;
+        }
 	
         return result;
     }

@@ -1,26 +1,30 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Airlockable;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -37,8 +41,8 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
     
     // TODO Task phase names should be an enum
-    protected static final String EXIT_AIRLOCK = "Exit Airlock";
-    protected static final String ENTER_AIRLOCK = "Enter Airlock";
+    protected static final String WALK_TO_OUTSIDE_SITE = "Walk to Outside Site";
+    protected static final String WALK_BACK_INSIDE = "Walk Back Inside";
     
 	// Static members
 	/** The stress modified per millisol. */
@@ -47,93 +51,177 @@ implements Serializable {
     public static final double BASE_ACCIDENT_CHANCE = .001;
     
     // Data members
-    /** Person has exited the airlock. */
-    protected boolean exitedAirlock;
-    /** Person has entered the airlock. */
-    protected boolean enteredAirlock;
     /** Flag for ending EVA operation externally. */
-    private boolean endEVA; 
-    /** The unit that is being exited for EVA. */
-    protected Unit containerUnit;
+    private boolean endEVA;
+    private boolean hasSiteDuration;
+    private double siteDuration;
+    private double timeOnSite;
+    private LocalBoundedObject interiorObject;
+    private double returnInsideXLoc;
+    private double returnInsideYLoc;
+    private double outsideSiteXLoc;
+    private double outsideSiteYLoc;
 	
     /** 
      * Constructor.
      * @param name the name of the task
      * @param person the person to perform the task
-     * @throws Exception if task could not be constructed.
      */
-    public EVAOperation(String name, Person person) { 
+    public EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration) { 
         super(name, person, true, false, STRESS_MODIFIER, false, 0D);
         
         // Initialize data members
-        exitedAirlock = false;
-        enteredAirlock = false;
-        containerUnit = person.getTopContainerUnit();
+        this.hasSiteDuration = hasSiteDuration;
+        this.siteDuration = siteDuration;
+        timeOnSite = 0D;
+        
+        // Check if person is in a settlement or a rover.
+        if (Person.INSETTLEMENT.equals(person.getLocationSituation())) {
+            interiorObject = BuildingManager.getBuilding(person);
+            if (interiorObject == null) {
+                throw new IllegalStateException(person.getName() + " not in building.");
+            }
+        }
+        else if (Person.INVEHICLE.equals(person.getLocationSituation())) {
+            if (person.getVehicle() instanceof Rover) {
+                interiorObject = (Rover) person.getVehicle();
+            }
+            else {
+                throw new IllegalStateException(person.getName() + " not in a rover vehicle: " + 
+                        person.getVehicle());
+            }
+        }
+        else {
+            throw new IllegalStateException(person.getName() + 
+                    " not in a value location situation to start EVA task: " + 
+                    person.getLocationSituation());
+        }
+        
+        // Set return location.
+        if (interiorObject != null) {
+            Point2D returnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+            Point2D adjustedReturnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(returnInsideLoc.getX(), 
+                    returnInsideLoc.getY(), interiorObject);
+            returnInsideXLoc = adjustedReturnInsideLoc.getX();
+            returnInsideYLoc = adjustedReturnInsideLoc.getY();
+        }
         
         // Add task phases.
-        addPhase(EXIT_AIRLOCK);
-        addPhase(ENTER_AIRLOCK);
+        addPhase(WALK_TO_OUTSIDE_SITE);
+        addPhase(WALK_BACK_INSIDE);
         
         // Set initial phase.
-        setPhase(EXIT_AIRLOCK);
+        setPhase(WALK_TO_OUTSIDE_SITE);
     }
     
+    /**
+     * Check if EVA should end.
+     */
     public void endEVA() {
     	endEVA = true;
     }
-
+    
     /**
-     * Perform the exit airlock phase of the task.
-     *
-     * @param time the time to perform this phase (in millisols)
-     * @param airlock the airlock
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if person cannot exit through the airlock.
+     * Add time at EVA site.
+     * @param time the time to add (millisols).
+     * @return true if site phase should end.
      */
-    protected double exitAirlock(double time, Airlock airlock) {
-
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-            exitedAirlock = true;
-            return time;
+    protected boolean addTimeOnSite(double time) {
+        
+        boolean result = false;
+        
+        timeOnSite += time;
+        
+        if (hasSiteDuration && (timeOnSite >= siteDuration)) {
+            result = true;
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets the phase string for the outside site phase.
+     * @return phase string.
+     */
+    protected abstract String getOutsideSitePhase();
+    
+    /**
+     * Set the outside side local location.
+     * @param xLoc the X location.
+     * @param yLoc the Y location.
+     */
+    protected void setOutsideSiteLocation(double xLoc, double yLoc) {
+        outsideSiteXLoc = xLoc;
+        outsideSiteYLoc = yLoc;
+    }
+    
+    @Override
+    protected double performMappedPhase(double time) {
+        
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (WALK_TO_OUTSIDE_SITE.equals(getPhase())) {
+            return walkToOutsideSitePhase(time);
+        }
+        else if (WALK_BACK_INSIDE.equals(getPhase())) {
+            return walkBackInsidePhase(time);
         }
         else {
-            if (ExitAirlock.canExitAirlock(person, airlock)) {
-                addSubTask(new ExitAirlock(person, airlock));
-                return 0D;
-            }
-            else {
-                endTask();
-                throw new IllegalStateException(person.getName() + " unable to exit airlock of " + 
-                        airlock.getEntityName());
-            }
+            return time;
         }
     }
-
+    
     /**
-     * Perform the enter airlock phase of the task.
-     *
-     * @param time the time to perform this phase (in millisols)
-     * @param airlock the airlock
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if person cannot enter the airlock.
+     * Perform the walk to outside site phase.
+     * @param time the time to perform the phase.
+     * @return remaining time after performing the phase.
      */
-    protected double enterAirlock(double time, Airlock airlock) {
-
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-            if (EnterAirlock.canEnterAirlock(person, airlock)) {
-                addSubTask(new EnterAirlock(person, airlock));
-                return 0D;
+    private double walkToOutsideSitePhase(double time) {
+        
+        // If not at field work site location, create walk outside subtask.
+        if (!Person.OUTSIDE.equals(person.getLocationSituation()) || 
+                (person.getXLocation() != outsideSiteXLoc) || (person.getYLocation() != outsideSiteYLoc)) {
+            if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
+                Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
+                addSubTask(walkingTask);
             }
             else {
+                logger.severe(person.getName() + " cannot walk to outside site.");
                 endTask();
-                throw new IllegalStateException(person.getName() + " unable to enter airlock of " + 
-                        airlock.getEntityName());
             }
         }
         else {
-            enteredAirlock = true;
-            return time;
+            setPhase(getOutsideSitePhase());
         }
+        
+        return time;
+    }
+    
+    /**
+     * Perform the walk back inside phase.
+     * @param time the time to perform the phase.
+     * @return remaining time after performing the phase.
+     */
+    private double walkBackInsidePhase(double time) {
+        
+        // If not at field work site location, create walk outside subtask.
+        if (Person.OUTSIDE.equals(person.getLocationSituation()) || 
+                (person.getXLocation() != returnInsideXLoc) || (person.getYLocation() != returnInsideYLoc)) {
+            if (Walk.canWalkAllSteps(person, returnInsideXLoc, returnInsideYLoc, interiorObject)) {
+                Task walkingTask = new Walk(person, returnInsideXLoc, returnInsideYLoc, interiorObject);
+                addSubTask(walkingTask);
+            }
+            else {
+                logger.severe(person.getName() + " cannot walk back to inside location.");
+                endTask();
+            }
+        }
+        else {
+            endTask();
+        }
+        
+        return time;
     }
 
     /**
@@ -293,6 +381,6 @@ implements Serializable {
     public void destroy() {
         super.destroy();
         
-        containerUnit = null;
+        interiorObject = null;
     }
 }

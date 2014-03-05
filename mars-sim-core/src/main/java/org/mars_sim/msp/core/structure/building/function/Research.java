@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -17,29 +17,25 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
-import org.mars_sim.msp.core.structure.building.BuildingException;
  
 /**
  * The Research class is a building function for research.
  */
-public class Research
-extends Function
-implements Lab, Serializable {
+public class Research extends Function implements Lab, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	public static final String NAME = "Research";
 
 	private int techLevel;
 	private int researcherCapacity;
-	private List<ScienceType> researchSpecialities;
+	private List<ScienceType> researchSpecialties;
 	private int researcherNum;
 	
 	/**
 	 * Constructor.
 	 * @param building the building this function is for.
-	 * @throws BuildingException if function could not be constructed.
 	 */
 	public Research(Building building) {
 		// Use Function constructor
@@ -49,7 +45,7 @@ implements Lab, Serializable {
 			
 		techLevel = config.getResearchTechLevel(building.getName());
 		researcherCapacity = config.getResearchCapacity(building.getName());
-		researchSpecialities = config.getResearchSpecialities(building.getName());
+		researchSpecialties = config.getResearchSpecialties(building.getName());
 	}
     
     /**
@@ -58,7 +54,6 @@ implements Lab, Serializable {
      * @param newBuilding true if adding a new building.
      * @param settlement the settlement.
      * @return value (VP) of building function.
-     * @throws Exception if error getting function value.
      */
     public static double getFunctionValue(String buildingName, boolean newBuilding,
             Settlement settlement) {
@@ -66,13 +61,13 @@ implements Lab, Serializable {
         double result = 0D;
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        List<ScienceType> specialities = config.getResearchSpecialities(buildingName);
+        List<ScienceType> specialties = config.getResearchSpecialties(buildingName);
         
-        for (ScienceType speciality : specialities) {
+        for (ScienceType specialty : specialties) {
             double researchDemand = 0D;
             Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
             while (j.hasNext()) 
-                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(speciality.getSkill());
+                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
         
             double researchSupply = 0D;
             boolean removedBuilding = false;
@@ -87,9 +82,9 @@ implements Lab, Serializable {
                     int techLevel = researchFunction.techLevel;
                     int labSize = researchFunction.researcherCapacity;
                     double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                    for (int x = 0; x < researchFunction.getTechSpecialities().length; x++) {
-                        ScienceType researchSpeciality = researchFunction.getTechSpecialities()[x];
-                        if (speciality.equals(researchSpeciality)) {
+                    for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
+                        ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
+                        if (specialty.equals(researchSpecialty)) {
                             researchSupply += techLevel * labSize * wearModifier;
                         }
                     }
@@ -125,19 +120,19 @@ implements Lab, Serializable {
 	}
 	
 	/**
-	 * Gets an array of the building's research tech specialities.
-	 * @return array of specialities.
+	 * Gets an array of the building's research tech specialties.
+	 * @return array of specialties.
 	 */
-	public ScienceType[] getTechSpecialities() {
-		return researchSpecialities.toArray(new ScienceType[] {});
+	public ScienceType[] getTechSpecialties() {
+	    return researchSpecialties.toArray(new ScienceType[] {});
 	}
 	
 	/**
-	 * Checks to see if the laboratory has a given tech speciality.
-	 * @return true if lab has tech speciality
+	 * Checks to see if the laboratory has a given tech specialty.
+	 * @return true if lab has tech specialty
 	 */
-	public boolean hasSpeciality(ScienceType speciality) {
-		return researchSpecialities.contains(speciality);
+	public boolean hasSpecialty(ScienceType specialty) {
+	    return researchSpecialties.contains(specialty);
 	}
 	
 	/**
@@ -199,7 +194,7 @@ implements Lab, Serializable {
 	public void destroy() {
 	    super.destroy();
 	    
-	    researchSpecialities.clear();
-	    researchSpecialities = null;
+	    researchSpecialties.clear();
+	    researchSpecialties = null;
 	}
 }

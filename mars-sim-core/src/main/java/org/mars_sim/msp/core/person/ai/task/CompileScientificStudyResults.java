@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,13 +26,13 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
 /**
  * A task for compiling research data for a scientific study.
  */
-public class CompileScientificStudyResults
-extends Task
+public class CompileScientificStudyResults 
+extends Task 
 implements Serializable {
 
-    /** default serial id.*/
-	private static final long serialVersionUID = 1L;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
     
@@ -220,8 +220,12 @@ implements Serializable {
         // Determine effective compilation time based on the science skill.
         double compilationTime = time;
         int scienceSkill = getEffectiveSkillLevel();
-        if (scienceSkill == 0) compilationTime /= 2D;
-        if (scienceSkill > 1) compilationTime += compilationTime * (.2D * scienceSkill);
+        if (scienceSkill == 0) {
+            compilationTime /= 2D;
+        }
+        if (scienceSkill > 1) {
+            compilationTime += compilationTime * (.2D * scienceSkill);
+        }
         
         return compilationTime;
     }
@@ -243,9 +247,15 @@ implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (COMPILING_PHASE.equals(getPhase())) return compilingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (COMPILING_PHASE.equals(getPhase())) {
+            return compilingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
     
     /**
@@ -257,7 +267,9 @@ implements Serializable {
     private double compilingPhase(double time) {
         
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
         
         // Check if data results compilation in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
@@ -268,12 +280,18 @@ implements Serializable {
             if (study.isCollaborativePaperCompleted(person)) endTask();
         }
         
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
         
         // Add paper work time to study.
         double compilingTime = getEffectiveCompilationTime(time);
-        if (isPrimary) study.addPrimaryPaperWorkTime(compilingTime);
-        else study.addCollaborativePaperWorkTime(person, compilingTime);
+        if (isPrimary) {
+            study.addPrimaryPaperWorkTime(compilingTime);
+        }
+        else {
+            study.addCollaborativePaperWorkTime(person, compilingTime);
+        }
         
         // Add experience
         addExperience(time);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -17,11 +17,9 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -54,18 +52,16 @@ extends EVAOperation
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
     
     /** Comparison to indicate a small but non-zero amount. */
     private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
     
     // TODO Task phase should be an enum
-    private static final String WALK_TO_VEHICLE = "Walk to Vehicle";
     private static final String LOADING = "Loading";
-    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
 
     /** The amount of resources (kg) one person of average strength can load per millisol. */
     private static double LOAD_RATE = 20D;
@@ -83,12 +79,6 @@ implements Serializable {
     private Map<Class, Integer> requiredEquipment;
     /** Equipment desired to load but not required. */
     private Map<Class, Integer> optionalEquipment;
-    /** Airlock to be used for EVA. */
-    private Airlock airlock;
-    private double loadingXLoc;
-    private double loadingYLoc;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
     
     /**
      * Constructor
@@ -96,7 +86,7 @@ implements Serializable {
      */
     public LoadVehicleEVA(Person person) {
         // Use Task constructor
-        super("Loading vehicle EVA", person);
+        super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         VehicleMission mission = getMissionNeedingLoading();
         if (mission != null) {
@@ -118,27 +108,11 @@ implements Serializable {
             else {
                 // Determine location for loading.
                 Point2D loadingLoc = determineLoadingLocation();
-                loadingXLoc = loadingLoc.getX();
-                loadingYLoc = loadingLoc.getY();
-            }
-            
-            // Get an available airlock.
-            airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
-                    vehicle.getYLocation());
-            if (airlock == null) {
-                endTask();
-            }
-            else {
-                // Determine location for reentering building airlock.
-                Point2D enterAirlockLoc = determineAirlockEnteringLocation();
-                enterAirlockXLoc = enterAirlockLoc.getX();
-                enterAirlockYLoc = enterAirlockLoc.getY();
+                setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
             }
             
             // Initialize task phase
-            addPhase(WALK_TO_VEHICLE);
             addPhase(LOADING);
-            addPhase(WALK_TO_AIRLOCK);
         }
         else {
             endTask();
@@ -158,7 +132,7 @@ implements Serializable {
             Map<Resource, Number> optionalResources, Map<Class, Integer> requiredEquipment, 
             Map<Class, Integer> optionalEquipment) {
         // Use Task constructor.
-        super("Loading vehicle EVA", person);
+        super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         setDescription("Loading " + vehicle.getName());
         this.vehicle = vehicle;
@@ -180,26 +154,10 @@ implements Serializable {
         
         // Determine location for loading.
         Point2D loadingLoc = determineLoadingLocation();
-        loadingXLoc = loadingLoc.getX();
-        loadingYLoc = loadingLoc.getY();
-        
-        // Get an available airlock.
-        airlock = getClosestWalkableAvailableAirlock(person, vehicle.getXLocation(), 
-                vehicle.getYLocation());
-        if (airlock == null) {
-            endTask();
-        }
-        else {
-            // Determine location for reentering building airlock.
-            Point2D enterAirlockLoc = determineAirlockEnteringLocation();
-            enterAirlockXLoc = enterAirlockLoc.getX();
-            enterAirlockYLoc = enterAirlockLoc.getY();
-        }
+        setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
         
         // Initialize task phase
-        addPhase(WALK_TO_VEHICLE);
         addPhase(LOADING);
-        addPhase(WALK_TO_AIRLOCK);
     }
     
     /** 
@@ -333,135 +291,26 @@ implements Serializable {
         
         return newLocation;
     }
-    
-    /**
-     * Determine location outside building airlock.
-     * @return location.
-     */
-    private Point2D determineAirlockEnteringLocation() {
-        
-        Point2D result = null;
-        
-        // Move the person to a random location outside the airlock entity.
-        if (airlock.getEntity() instanceof LocalBoundedObject) {
-            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double newLocation = null;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 20) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                        boundedLocalPoint.getY(), entityBounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
-            }
-            
-            result = newLocation;
-        }
-        
-        return result;
+
+    @Override
+    protected String getOutsideSitePhase() {
+        return LOADING;
     }
     
     @Override
     protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-            return exitEVAPhase(time);
-        }
-        else if (WALK_TO_VEHICLE.equals(getPhase())) {
-            return walkToVehiclePhase(time);
         }
         else if (LOADING.equals(getPhase())) {
             return loadingPhase(time);
         }
-        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
-            return walkToAirlockPhase(time);
-        }
-        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-            return enterEVAPhase(time);
-        }
         else {
             return time;
         }
-    }
-    
-    /**
-     * Perform the exit airlock phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error exiting the airlock.
-     */
-    private double exitEVAPhase(double time) {
-        
-        try {
-            time = exitAirlock(time, airlock);
-        
-            // Add experience points
-            addExperience(time);
-        }
-        catch (Exception e) {
-            // Person unable to exit airlock.
-            endTask();
-        }
-        
-        if (exitedAirlock) {
-            setPhase(WALK_TO_VEHICLE);
-        }
-        return time;
-    }
-    
-    /**
-     * Perform the walk to vehicle loading location phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToVehiclePhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_AIRLOCK);
-            return time;
-        }
-        
-        // If not at vehicle loading location, create walk outside subtask.
-        if ((person.getXLocation() != loadingXLoc) || (person.getYLocation() != loadingYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    loadingXLoc, loadingYLoc, false);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(LOADING);
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToAirlockPhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
     }
     
     /**
@@ -479,9 +328,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
         
-        // Check if person should end EVA operation.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_AIRLOCK);
+        // Check if site duration has ended or there is reason to cut the loading 
+        // phase short and return to the rover.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+            setPhase(WALK_BACK_INSIDE);
             return time;
         }
         
@@ -518,7 +368,7 @@ implements Serializable {
         
         if (isFullyLoaded(requiredResources, optionalResources, requiredEquipment, 
                 optionalEquipment, vehicle, settlement)) {
-            setPhase(WALK_TO_AIRLOCK);
+            setPhase(WALK_BACK_INSIDE);
         }
         
         return 0D;
@@ -1341,25 +1191,6 @@ implements Serializable {
         
         return sufficientSupplies;
     }
-    
-    /**
-     * Perform the enter airlock phase of the task.
-     * @param time amount of time to perform the phase
-     * @return time remaining after performing the phase
-     * @throws Exception if error entering airlock.
-     */
-    private double enterEVAPhase(double time) {
-        time = enterAirlock(time, airlock);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (enteredAirlock) {
-            endTask();
-        }
-        
-        return time;
-    }
 
     @Override
     public int getEffectiveSkillLevel() {
@@ -1417,7 +1248,5 @@ implements Serializable {
             optionalEquipment.clear();
         }
         optionalEquipment = null;
-        
-        airlock = null;
     }
 }

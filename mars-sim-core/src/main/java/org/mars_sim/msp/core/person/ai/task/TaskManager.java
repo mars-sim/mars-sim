@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-21
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -66,36 +66,36 @@ public class TaskManager implements Serializable {
         availableTasks[8] = MedicalAssistance.class;
         availableTasks[9] = RepairMalfunction.class;
         availableTasks[10] = RepairEVAMalfunction.class;
-        availableTasks[11] = EnterAirlock.class;
-        availableTasks[12] = Workout.class;
-        availableTasks[13] = Teach.class;
-        availableTasks[14] = CookMeal.class;
-        availableTasks[15] = MaintenanceEVA.class;
-        availableTasks[16] = LoadVehicleGarage.class;
-        availableTasks[17] = UnloadVehicleGarage.class;
-        availableTasks[18] = ToggleResourceProcess.class;
-        availableTasks[19] = ManufactureGood.class;
-        availableTasks[20] = ToggleFuelPowerSource.class;
-        availableTasks[21] = DigLocalRegolith.class;
-        availableTasks[22] = PrescribeMedication.class;
-        availableTasks[23] = ProposeScientificStudy.class;
-        availableTasks[24] = InviteStudyCollaborator.class;
-        availableTasks[25] = RespondToStudyInvitation.class;
-        availableTasks[26] = PerformLaboratoryResearch.class;
-        availableTasks[27] = ObserveAstronomicalObjects.class;
-        availableTasks[28] = StudyFieldSamples.class;
-        availableTasks[29] = PerformLaboratoryExperiment.class;
-        availableTasks[30] = PerformMathematicalModeling.class;
-        availableTasks[31] = CompileScientificStudyResults.class;
-        availableTasks[32] = PeerReviewStudyPaper.class;
-        availableTasks[33] = AssistScientificStudyResearcher.class;
-        availableTasks[34] = SalvageGood.class;
-        availableTasks[35] = ManufactureConstructionMaterials.class;
-        availableTasks[36] = ReturnLightUtilityVehicle.class;
-        availableTasks[37] = LoadVehicleEVA.class;
-        availableTasks[38] = UnloadVehicleEVA.class;
-        availableTasks[39] = DigLocalIce.class;
-        availableTasks[40] = ConsolidateContainers.class;
+        availableTasks[11] = Workout.class;
+        availableTasks[12] = Teach.class;
+        availableTasks[13] = CookMeal.class;
+        availableTasks[14] = MaintenanceEVA.class;
+        availableTasks[15] = LoadVehicleGarage.class;
+        availableTasks[16] = UnloadVehicleGarage.class;
+        availableTasks[17] = ToggleResourceProcess.class;
+        availableTasks[18] = ManufactureGood.class;
+        availableTasks[19] = ToggleFuelPowerSource.class;
+        availableTasks[20] = DigLocalRegolith.class;
+        availableTasks[21] = PrescribeMedication.class;
+        availableTasks[22] = ProposeScientificStudy.class;
+        availableTasks[23] = InviteStudyCollaborator.class;
+        availableTasks[24] = RespondToStudyInvitation.class;
+        availableTasks[25] = PerformLaboratoryResearch.class;
+        availableTasks[26] = ObserveAstronomicalObjects.class;
+        availableTasks[27] = StudyFieldSamples.class;
+        availableTasks[28] = PerformLaboratoryExperiment.class;
+        availableTasks[29] = PerformMathematicalModeling.class;
+        availableTasks[30] = CompileScientificStudyResults.class;
+        availableTasks[31] = PeerReviewStudyPaper.class;
+        availableTasks[32] = AssistScientificStudyResearcher.class;
+        availableTasks[33] = SalvageGood.class;
+        availableTasks[34] = ManufactureConstructionMaterials.class;
+        availableTasks[35] = ReturnLightUtilityVehicle.class;
+        availableTasks[36] = LoadVehicleEVA.class;
+        availableTasks[37] = UnloadVehicleEVA.class;
+        availableTasks[38] = DigLocalIce.class;
+        availableTasks[39] = ConsolidateContainers.class;
+        availableTasks[40] = Walk.class;
 
         // Initialize cache values.
         timeCache = null;

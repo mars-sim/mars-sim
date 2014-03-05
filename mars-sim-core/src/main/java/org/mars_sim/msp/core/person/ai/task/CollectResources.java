@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -35,11 +36,12 @@ extends EVAOperation
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+    
+    private static Logger logger = Logger.getLogger(CollectResources.class.getName());
+    
 	// TODO Task phases should be enums.
-    private static final String WALK_TO_SITE = "Walk to Site";
     private static final String COLLECT_RESOURCES = "Collecting Resources";
-    private static final String WALK_TO_ROVER = "Walk to Rover";
 
     // Data members
     /** Rover used. */
@@ -54,10 +56,6 @@ implements Serializable {
     protected AmountResource resourceType;
     /** The container type to use to collect resource. */
     protected Class containerType;
-    private double collectionSiteXLoc;
-    private double collectionSiteYLoc;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
 
     /**
      * Constructor.
@@ -69,13 +67,12 @@ implements Serializable {
      * @param targettedAmount The amount (kg) desired to collect.
      * @param startingCargo The starting amount (kg) of resource in the rover cargo.
      * @param containerType the type of container to use to collect resource.
-     * @throws Exception if error constructing this task.
      */
     public CollectResources(String taskName, Person person, Rover rover, AmountResource resourceType, 
             double collectionRate, double targettedAmount, double startingCargo, Class containerType) {
 
         // Use EVAOperation parent constructor.
-        super(taskName, person);
+        super(taskName, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
         // Initialize data members.
         this.rover = rover;
@@ -87,18 +84,21 @@ implements Serializable {
 
         // Determine location for collection site.
         Point2D collectionSiteLoc = determineCollectionSiteLocation();
-        collectionSiteXLoc = collectionSiteLoc.getX();
-        collectionSiteYLoc = collectionSiteLoc.getY();
+        setOutsideSiteLocation(collectionSiteLoc.getX(), collectionSiteLoc.getY());
         
-        // Determine location for reentering rover airlock.
-        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
-        enterAirlockXLoc = enterAirlockLoc.getX();
-        enterAirlockYLoc = enterAirlockLoc.getY();
+        // Take container for collecting resource.
+        if (!hasContainers()) {
+            takeContainer();
+            
+            // If container is not available, end task.
+            if (!hasContainers()) {
+                logger.fine(person.getName() + " not able to find container to collect resources.");
+                endTask();
+            }
+        }
         
         // Add task phases
-        addPhase(WALK_TO_SITE);
         addPhase(COLLECT_RESOURCES);
-        addPhase(WALK_TO_ROVER);
     }
     
     /**
@@ -128,43 +128,25 @@ implements Serializable {
         return newLocation;
     }
     
-    /**
-     * Determine location for returning to rover airlock.
-     * @return X and Y location outside rover.
-     */
-    private Point2D determineRoverAirlockEnteringLocation() {
-        
-        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
-        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                vehicleLoc.getY(), rover);
-        
-        return newLocation;
+    @Override
+    protected String getOutsideSitePhase() {
+        return COLLECT_RESOURCES;
     }
 
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-            return exitRover(time);
-        }
-        else if (WALK_TO_SITE.equals(getPhase())) {
-            return walkToCollectionSitePhase(time);
-        }
         else if (COLLECT_RESOURCES.equals(getPhase())) {
             return collectResources(time);
-        }
-        else if (WALK_TO_ROVER.equals(getPhase())) {
-            return walkToRoverAirlock(time);
-        }
-        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-            return enterRover(time);
         }
         else {
             return time;
@@ -197,42 +179,6 @@ implements Serializable {
             areologyExperience += areologyExperience * experienceAptitudeModifier;
             person.getMind().getSkillManager().addExperience(SkillType.AREOLOGY, areologyExperience);
         }
-    }
-
-    /**
-     * Perform the exit rover phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error exiting rover.
-     */
-    private double exitRover(double time) {
-
-        try {
-            time = exitAirlock(time, rover.getAirlock());
-
-            // Add experience points
-            addExperience(time);
-        }
-        catch (Exception e) {
-            // Person unable to exit airlock.
-            endTask();
-        }
-
-        if (exitedAirlock) {
-            // Take container for collecting resource.
-            if (!hasContainers()) {
-                takeContainer();
-            }
-
-            if (hasContainers()) {
-                // Set task phase to walk to collecting site.
-                setPhase(WALK_TO_SITE);
-            }
-            else {
-                setPhase(ENTER_AIRLOCK);
-            }
-        }
-        return time;
     }
 
     /**
@@ -282,59 +228,6 @@ implements Serializable {
 
         return result;
     }
-
-    /**
-     * Perform the walk to mining collection site phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToCollectionSitePhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_ROVER);
-            return time;
-        }
-        
-        // If not at resource collection site location, create walk outside subtask.
-        if ((person.getXLocation() != collectionSiteXLoc) || (person.getYLocation() != collectionSiteYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    collectionSiteXLoc, collectionSiteYLoc, false);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(COLLECT_RESOURCES);
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to rover airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToRoverAirlock(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside rover airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
-    }
     
     /**
      * Perform the collect resources phase of the task.
@@ -347,10 +240,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
 
-        // Check if there is reason to cut the collection phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
+        // Check if site duration has ended or there is reason to cut the collect 
+        // resources phase short and return to the rover.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+            setPhase(WALK_BACK_INSIDE);
             return time;
         }
 
@@ -394,43 +287,27 @@ implements Serializable {
             if (sampleLimit >= 0D) {
                 person.getInventory().storeAmountResource(resourceType, sampleLimit, true);
             }
-            setPhase(WALK_TO_ROVER);
+            setPhase(WALK_BACK_INSIDE);
             return time - (sampleLimit / collectionRate);
         }
     }
-
-    /**
-     * Perform the enter rover phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error entering rover.
-     */
-    private double enterRover(double time) {
-
-        time = enterAirlock(time, rover.getAirlock());
-
-        // Add experience points
-        addExperience(time);
-
-        if (enteredAirlock) {
-            Inventory pInv = person.getInventory();
-
-            if (pInv.containsUnitClass(containerType)) {
-                // Load containers in rover.
-                Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
-                while (i.hasNext()) {
-                    Unit container = i.next();
-                    pInv.retrieveUnit(container);
-                    rover.getInventory().storeUnit(container);
-                }
-            }
-            else {
-                endTask();
-                return time;
+    
+    @Override
+    public void endTask() {
+        
+        // Unload containers to rover's inventory.
+        Inventory pInv = person.getInventory();
+        if (pInv.containsUnitClass(containerType)) {
+            // Load containers in rover.
+            Iterator<Unit> i = pInv.findAllUnitsOfClass(containerType).iterator();
+            while (i.hasNext()) {
+                Unit container = i.next();
+                pInv.retrieveUnit(container);
+                rover.getInventory().storeUnit(container);
             }
         }
-
-        return 0D;
+        
+        super.endTask();
     }
 
     /**

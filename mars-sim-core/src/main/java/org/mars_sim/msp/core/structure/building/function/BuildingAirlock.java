@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-02
  * @author Scott Davis
  */
 
@@ -23,10 +23,16 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
  */
 public class BuildingAirlock extends Airlock {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     private static Logger logger = Logger.getLogger(BuildingAirlock.class.getName());
 
     // Data members.
     private Building building; // The building this airlock is for.
+    private Point2D airlockInsidePos;
+    private Point2D airlockInteriorPos;
+    private Point2D airlockExteriorPos;
 
     /**
      * Constructor
@@ -41,8 +47,28 @@ public class BuildingAirlock extends Airlock {
         super(capacity);
 
         this.building = building;
-
-        if (building == null) throw new IllegalArgumentException("building is null.");
+        
+        if (building == null) {
+            throw new IllegalArgumentException("building is null.");
+        }
+        
+        // Determine airlock interior position.
+        // TODO Replace with configured airlock interior position.
+        Point2D relativeInteriorPos = LocalAreaUtil.getRandomInteriorLocation(building);
+        airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(relativeInteriorPos.getX(), 
+                relativeInteriorPos.getY(), building);
+        
+        // Determine airlock exterior position.
+        // TODO Replace with configured airlock exterior position.
+        Point2D relativeExteriorPos = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+        airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(relativeExteriorPos.getX(), 
+                relativeExteriorPos.getY(), building);
+        
+        // Determine airlock inside position.
+        // TODO Replace with configured airlock inside position.
+        Point2D relativeAirlockInsidePos = LocalAreaUtil.getRandomInteriorLocation(building);
+        airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(relativeAirlockInsidePos.getX(), 
+                relativeAirlockInsidePos.getY(), building);
     }
 
     /**
@@ -59,7 +85,7 @@ public class BuildingAirlock extends Airlock {
         // Check if person is entering airlock from inside.
         if (result && inside) {
             // Add person to the building.
-            BuildingManager.addPersonToBuildingRandomLocation(person, building);
+            BuildingManager.addPersonToBuildingSameLocation(person, building);
         }
 
         return result;
@@ -78,20 +104,13 @@ public class BuildingAirlock extends Airlock {
 
             if (PRESSURIZED.equals(getState())) {
                 // Exit person to inside building.
-                BuildingManager.addPersonToBuildingRandomLocation(person, building);
+                BuildingManager.addPersonToBuildingSameLocation(person, building);
                 inv.storeUnit(person);
             }
             else if (DEPRESSURIZED.equals(getState())) {
                 // Exit person to outside building.
                 BuildingManager.removePersonFromBuilding(person, building);
                 inv.retrieveUnit(person);
-                
-                // Move person to a random exterior location to the building.
-                Point2D.Double buildingLoc = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                        buildingLoc.getY(), building);
-                person.setXLocation(settlementLoc.getX());
-                person.setYLocation(settlementLoc.getY());
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());
@@ -122,5 +141,20 @@ public class BuildingAirlock extends Airlock {
     @Override
     public Object getEntity() {
         return building;
+    }
+
+    @Override
+    public Point2D getAvailableInteriorPosition() {
+        return airlockInteriorPos;
+    }
+
+    @Override
+    public Point2D getAvailableExteriorPosition() {
+        return airlockExteriorPos;
+    }
+
+    @Override
+    public Point2D getAvailableAirlockPosition() {
+        return airlockInsidePos;
     }
 }

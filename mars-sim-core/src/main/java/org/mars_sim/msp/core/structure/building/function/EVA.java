@@ -27,22 +27,29 @@ public class EVA extends Function implements Serializable {
 	/**
 	 * Constructor
 	 * @param building the building this function is for.
-	 * @throws BuildingException if function cannot be constructed.
 	 */
 	public EVA(Building building) {
 		// Use Function constructor.
 		super(NAME, building);
 		
-//		try {
-			BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-			
-			// Add a building airlock.
-			int airlockCapacity = config.getAirlockCapacity(building.getName());
-			airlock = new BuildingAirlock(building, airlockCapacity);
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("EVA.constructor: " + e.getMessage());
-//		}
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+
+		// Add a building airlock.
+		int airlockCapacity = config.getAirlockCapacity(building.getName());
+		airlock = new BuildingAirlock(building, airlockCapacity);
+	}
+	
+	/**
+	 * Constructor with airlock parameter.
+	 * @param building the building this function is for.
+	 * @param airlock the building airlock.
+	 */
+	public EVA(Building building, BuildingAirlock airlock) {
+	    // Use Function constructor.
+	    super(NAME, building);
+	    
+	    // Add building airlock
+	    this.airlock = airlock;
 	}
     
     /**

@@ -184,14 +184,14 @@
     <xs:element name="research">
    		<xs:complexType>
    			<xs:sequence>
-   				<xs:element ref="bld:research-speciality" maxOccurs="unbounded"></xs:element>
+   				<xs:element ref="bld:research-specialty" maxOccurs="unbounded"></xs:element>
    			</xs:sequence>
    			<xs:attribute name="tech-level" type="xs:integer"></xs:attribute>
    			<xs:attribute name="capacity" type="xs:integer"></xs:attribute>
    		</xs:complexType>
     </xs:element>
     
-    <xs:element name="research-speciality">
+    <xs:element name="research-specialty">
    		<xs:complexType>
    			<xs:attribute name="name" type="xs:string"></xs:attribute>
    		</xs:complexType>

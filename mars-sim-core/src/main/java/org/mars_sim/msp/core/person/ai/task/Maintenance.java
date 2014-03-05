@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 
@@ -31,12 +31,10 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-/**
+/** 
  * The Maintenance class is a task for performing
  * preventive maintenance on vehicles, settlements and equipment.
  */
@@ -45,9 +43,9 @@ extends Task
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = Logger.getLogger(Maintenance.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    private static Logger logger = Logger.getLogger(Maintenance.class.getName());
 
     // Task phase
     private static final String MAINTAIN = "Maintain";
@@ -63,7 +61,6 @@ implements Serializable {
     /** 
      * Constructor
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public Maintenance(Person person) {
         super("Performing Maintenance", person, true, false, STRESS_MODIFIER, 
@@ -85,10 +82,11 @@ implements Serializable {
         setPhase(MAINTAIN);
     }
 
-    /** Returns the weighted probability that a person might perform this task.
-     *  It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     *  @param person the person to perform the task
-     *  @return the weighted probability that a person might perform this task
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
      */
     public static double getProbability(Person person) {
         double result = 0D;
@@ -109,7 +107,9 @@ implements Serializable {
                 boolean minTime = (effectiveTime >= 1000D);
                 if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
                     double entityProb = effectiveTime / 1000D;
-                    if (entityProb > 100D) entityProb = 100D;
+                    if (entityProb > 100D) {
+                        entityProb = 100D;
+                    }
                     result += entityProb;
                 }
             }
@@ -123,48 +123,62 @@ implements Serializable {
 
         // Job modifier.
         Job job = person.getMind().getJob();
-        if (job != null) result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
+        }
 
         return result;
     }
 
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time (millisol) the phase is to be performed.
-     * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (MAINTAIN.equals(getPhase())) return maintainPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (MAINTAIN.equals(getPhase())) {
+            return maintainPhase(time);
+        }
+        else {
+            return time;
+        }
     }
 
     /**
      * Performs the maintain phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double maintainPhase(double time) {
         MalfunctionManager manager = entity.getMalfunctionManager();
 
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
 
         // Check if maintenance has already been completed.
-        if (manager.getEffectiveTimeSinceLastMaintenance() < 1000D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() < 1000D) {
+            endTask();
+        }
 
         // If equipment has malfunction, end task.
-        if (manager.hasMalfunction()) endTask();
+        if (manager.hasMalfunction()) {
+            endTask();
+        }
 
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
         int mechanicSkill = getEffectiveSkillLevel();
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        if (mechanicSkill == 0) {
+            workTime /= 2;
+        }
+        if (mechanicSkill > 1) {
+            workTime += workTime * (.2D * mechanicSkill);
+        }
 
         // Add repair parts if necessary.
         boolean repairParts = false;
@@ -195,7 +209,9 @@ implements Serializable {
         addExperience(time);
 
         // If maintenance is complete, task is done.
-        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+            endTask();
+        }
 
         // Check if an accident happens during maintenance.
         checkForAccident(time);
@@ -203,10 +219,7 @@ implements Serializable {
         return 0D;
     }
 
-    /**
-     * Adds experience to the person's skills used in this task.
-     * @param time the amount of time (ms) the person performed this task.
-     */
+    @Override
     protected void addExperience(double time) {
         // Add experience to "Mechanics" skill
         // (1 base experience point per 100 millisols of work)
@@ -229,8 +242,12 @@ implements Serializable {
 
         // Mechanic skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (skill <= 3) chance *= (4 - skill);
-        else chance /= (skill - 2);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
         // Modify based on the entity's wear condition.
         chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
@@ -255,7 +272,6 @@ implements Serializable {
     /**
      * Gets a random malfunctionable to perform maintenance on.
      * @return malfunctionable or null.
-     * @throws Exception if error finding malfunctionable.
      */
     private Malfunctionable getMaintenanceMalfunctionable() {
         Malfunctionable result = null;
@@ -300,19 +316,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), maintenanceBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, maintenanceBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, maintenanceBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                maintenanceBuilding)) {
+            
+            // Add subtask for walking to maintenance building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    maintenanceBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to maintenance building.
-            BuildingManager.addPersonToBuilding(person, maintenanceBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to maintenance building " + 
+                    maintenanceBuilding.getName());
+            endTask();
         }
     }
 
@@ -325,7 +339,9 @@ implements Serializable {
         boolean result = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(LifeSupport.NAME)) result = true;
+            if (building.hasFunction(LifeSupport.NAME)) {
+                result = true;
+            }
         }
         return result;
     }

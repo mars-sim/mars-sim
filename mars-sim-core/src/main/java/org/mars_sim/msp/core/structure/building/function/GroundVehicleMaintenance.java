@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -26,7 +26,6 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
     /**
      * Constructor
      * @param building the building the function is for.
-     * @throws BuildingException if error in construction.
      */
     public GroundVehicleMaintenance(Building building) {
         // Call VehicleMaintenance constructor.
@@ -40,6 +39,24 @@ public class GroundVehicleMaintenance extends VehicleMaintenance implements Seri
         for (int x = 0; x < parkingLocationNum; x++) {
             Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getName(), x);
             addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
+        }
+    }
+    
+    /**
+     * Constructor
+     * @param building the building the function is for.
+     * @param vehicleCapacity the number of vehicles that can be parked.
+     * @param parkingLocations the parking locations.
+     */
+    public GroundVehicleMaintenance(Building building, int vehicleCapacity, 
+            Point2D[] parkingLocations) {
+        // Call VehicleMaintenance constructor.
+        super(NAME, building);
+
+        this.vehicleCapacity = vehicleCapacity;
+        
+        for (int x = 0; x < parkingLocations.length; x++) {
+            addParkingLocation(parkingLocations[x].getX(), parkingLocations[x].getY());
         }
     }
     

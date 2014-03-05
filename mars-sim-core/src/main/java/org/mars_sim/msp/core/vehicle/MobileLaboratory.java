@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MobileLaboratory.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 
@@ -17,21 +17,20 @@ import org.mars_sim.msp.core.science.ScienceType;
 /** 
  * The MobileLaboratory class represents the research laboratory in a vehicle.
  */
-public class MobileLaboratory
-implements Lab, Serializable {
+public class MobileLaboratory implements Lab, Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// Data members
+    private static final long serialVersionUID = 1L;
+    
+    // Data members
     /** Number of researchers supportable at any given time. */
-	private int laboratorySize; 
+    private int laboratorySize; 
     /** How advanced the laboratories are (units defined later). */
-	private int technologyLevel;
+    private int technologyLevel;
     /** What fields of science the laboratories specialize in. */
-	private List<ScienceType> techSpecialities;
+    private List<ScienceType> techSpecialties;
     /** The number of people currently doing research in laboratory. */
-	private int researcherNum;
+    private int researcherNum;
 
     /** 
      * Constructor for parameter values. 
@@ -39,12 +38,12 @@ implements Lab, Serializable {
      * @param techlevel how advanced the laboratories are (units defined later)
      * @param techFocus the names of the technologies the labs are focused on
      */
-    MobileLaboratory(int size, int techLevel, List<ScienceType> techSpecialities) {
+    MobileLaboratory(int size, int techLevel, List<ScienceType> techSpecialties) {
 
         // Initialize data members.
         this.laboratorySize = size;
         this.technologyLevel = techLevel;
-        this.techSpecialities = techSpecialities;
+        this.techSpecialties = techSpecialties;
     }
 
     /** 
@@ -67,22 +66,22 @@ implements Lab, Serializable {
     }
 
     /** 
-     * Gets the lab's science specialities as an array.
-     * @return the lab's science specialities as an array.
+     * Gets the lab's science specialties as an array.
+     * @return the lab's science specialties as an array.
      */
-    public ScienceType[] getTechSpecialities() {
-        return techSpecialities.toArray(new ScienceType[] {});
+    public ScienceType[] getTechSpecialties() {
+        return techSpecialties.toArray(new ScienceType[] {});
     }
 
     /**
-     * Checks to see if the laboratory has a given tech speciality.
-     * @return true if lab has tech speciality
+     * Checks to see if the laboratory has a given tech specialty.
+     * @return true if lab has tech specialty
      */
-    public boolean hasSpeciality(ScienceType speciality) {
+    public boolean hasSpecialty(ScienceType specialty) {
         boolean result = false;
-        Iterator<ScienceType> i = techSpecialities.iterator();
-        while (!result && i.hasNext()) {
-            if (speciality == i.next()) result = true;
+        Iterator<ScienceType> i = techSpecialties.iterator();
+        while (i.hasNext()) {
+            if (specialty == i.next()) result = true;
         }
 
         return result;
@@ -122,7 +121,7 @@ implements Lab, Serializable {
 
     @Override
     public void destroy() {
-        techSpecialities.clear();
-        techSpecialities = null;
+        techSpecialties.clear();
+        techSpecialties = null;
     }
 }

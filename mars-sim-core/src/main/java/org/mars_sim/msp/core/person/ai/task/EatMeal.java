@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -25,9 +26,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.core.structure.building.function.Dining;
@@ -35,19 +34,17 @@ import org.mars_sim.msp.core.structure.building.function.Dining;
 /**
  * The EatMeal class is a task for eating a meal.
  * The duration of the task is 40 millisols.
- *
  * Note: Eating a meal reduces hunger to 0.
  */
-class EatMeal
-extends Task
+class EatMeal 
+extends Task 
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/* default logger.
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
     private static Logger logger = Logger.getLogger(EatMeal.class.getName());
-    */
 
     // TODO Task phase should be an enum
     private static final String EATING = "Eating";
@@ -56,12 +53,12 @@ implements Serializable {
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D;
 
+    // Data members
     private CookedMeal meal;
 
     /** 
-     * Constructs a EatMeal object.
+     * Constructs a EatMeal object
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public EatMeal(Person person) {
         super("Eating a meal", person, false, false, STRESS_MODIFIER, true, 10D + 
@@ -95,10 +92,10 @@ implements Serializable {
         setPhase(EATING);
     }
 
-    /** Returns the weighted probability that a person might perform this task.
-     *
-     *  @param person the person to perform the task
-     *  @return the weighted probability that a person might perform this task
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
      */
     public static double getProbability(Person person) {
 
@@ -135,19 +132,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), diningBuilding);
 
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-
-        if (connectorManager.hasValidPath(currentBuilding, diningBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, diningBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                diningBuilding)) {
+            
+            // Add subtask for walking to dining building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    diningBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to dining building.
-            BuildingManager.addPersonToBuilding(person, diningBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to dining building " + 
+                    diningBuilding.getName());
+            endTask();
         }
     }
 
@@ -155,19 +150,23 @@ implements Serializable {
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time (millisol) the phase is to be performed.
      * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (EATING.equals(getPhase())) return eatingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (EATING.equals(getPhase())) {
+            return eatingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
 
     /**
      * Performs the eating phase of the task.
      * @param time the amount of time (millisol) to perform the eating phase.
      * @return the amount of time (millisol) left after performing the eating phase.
-     * @throws Exception if error performing the eating phase.
      */
     private double eatingPhase(double time) {
 

@@ -74,10 +74,10 @@
 			<!-- capacity: the number of researchers the lab has room for concurrently. -->
 			<research tech-level="1" capacity="1">
 				<!-- Sciences that can be researched at the laboratory. -->
-				<research-speciality name="Areology" />
-				<research-speciality name="Medicine" />
-				<research-speciality name="Biology" />
-				<research-speciality name="Chemistry" />
+				<research-specialty name="Areology" />
+				<research-specialty name="Medicine" />
+				<research-specialty name="Biology" />
+				<research-specialty name="Chemistry" />
 			</research>
 			
 			<!-- The building is capable of processing resources. -->
@@ -156,7 +156,7 @@
 			
 			<life-support capacity="3" power-required="6.0" />
 			<research tech-level="1" capacity="1">
-				<research-speciality name="Botany" />
+				<research-specialty name="Botany" />
 			</research>	
 			
 			<resource-processing power-down-level=".5">
@@ -343,7 +343,7 @@
 			<life-support capacity="10" power-required="20.0" />
 			<medical-care tech-level="5" beds="8" />
 			<research tech-level="2" capacity="2">
-				<research-speciality name="Medicine" />
+				<research-specialty name="Medicine" />
 			</research>
 		</functions>
 	</building>
@@ -366,7 +366,7 @@
 			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0" />
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="2">
-				<research-speciality name="Botany" />
+				<research-specialty name="Botany" />
 			</research>
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" power-required="5.0" default="on">
@@ -389,12 +389,12 @@
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
 			<research tech-level="2" capacity="4">
-				<research-speciality name="Areology" />
-				<research-speciality name="Biology" />
-				<research-speciality name="Chemistry" />
-				<research-speciality name="Physics" />
-				<research-speciality name="Mathematics" />
-				<research-speciality name="Meteorology" />
+				<research-specialty name="Areology" />
+				<research-specialty name="Biology" />
+				<research-specialty name="Chemistry" />
+				<research-specialty name="Physics" />
+				<research-specialty name="Mathematics" />
+				<research-specialty name="Meteorology" />
 			</research>
 		</functions>
 	</building>
@@ -635,9 +635,9 @@
 			<EVA airlock-capacity="1" />
 			<life-support capacity="4" power-required="8.0" />
 			<research tech-level="2" capacity="4">
-				<research-speciality name="Astronomy" />
-				<research-speciality name="Physics" />
-				<research-speciality name="Mathematics" />
+				<research-specialty name="Astronomy" />
+				<research-specialty name="Physics" />
+				<research-specialty name="Mathematics" />
 			</research>
 		</functions>
 	</building>
@@ -674,12 +674,12 @@
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<research tech-level="2" capacity="4">
-				<research-speciality name="Areology" />
-				<research-speciality name="Biology" />
-				<research-speciality name="Chemistry" />
-				<research-speciality name="Physics" />
-				<research-speciality name="Mathematics" />
-				<research-speciality name="Meteorology" />
+				<research-specialty name="Areology" />
+				<research-specialty name="Biology" />
+				<research-specialty name="Chemistry" />
+				<research-specialty name="Physics" />
+				<research-specialty name="Mathematics" />
+				<research-specialty name="Meteorology" />
 			</research>
 		</functions>
 	</building>
@@ -708,7 +708,7 @@
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<research tech-level="2" capacity="2">
-				<research-speciality name="Medicine" />
+				<research-specialty name="Medicine" />
 			</research>
 		</functions>
 	</building>
@@ -797,9 +797,9 @@
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
 			<research tech-level="2" capacity="2">
-				<research-speciality name="Areology" />
-				<research-speciality name="Biology" />
-				<research-speciality name="Chemistry" />
+				<research-specialty name="Areology" />
+				<research-specialty name="Biology" />
+				<research-specialty name="Chemistry" />
 			</research>
 		</functions>
 	</building>
@@ -811,7 +811,7 @@
 			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0" />
 			<life-support capacity="3" power-required="6.0" />
 			<research tech-level="1" capacity="1">
-				<research-speciality name="Botany" />
+				<research-specialty name="Botany" />
 			</research>	
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">

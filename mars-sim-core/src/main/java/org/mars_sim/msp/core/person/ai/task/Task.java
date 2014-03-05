@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-20
  * @author Scott Davis
  */
 
@@ -88,8 +88,8 @@ implements Serializable, Comparable<Task> {
 	 */
 	public Task(
 		String name, Person person, boolean effort, boolean createEvents, 
-		double stressModifier, boolean hasDuration, double duration
-	) {
+		double stressModifier, boolean hasDuration, double duration) {
+	    
 		this.name = name;
 		this.person = person;
 		this.createEvents = createEvents;

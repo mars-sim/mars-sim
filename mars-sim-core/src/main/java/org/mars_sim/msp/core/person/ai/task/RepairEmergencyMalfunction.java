@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-26
  * @author Scott Davis
  */
 
@@ -12,6 +12,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -25,8 +26,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 
 /**
  * The RepairEmergencyMalfunction class is a task to repair an emergency malfunction.
@@ -35,9 +34,13 @@ public class RepairEmergencyMalfunction
 extends Task
 implements Repair, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(
+            RepairEmergencyMalfunction.class.getName());
+    
 	// Task phase
 	private static final String REPAIRING = "Repairing";
 	
@@ -54,7 +57,6 @@ implements Repair, Serializable {
     /**
      * Constructs a RepairEmergencyMalfunction object.
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public RepairEmergencyMalfunction(Person person) {
         super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
@@ -82,45 +84,58 @@ implements Repair, Serializable {
 		addPhase(REPAIRING);
 		setPhase(REPAIRING);
 
-        // if (malfunction != null) logger.info(person.getName() + " starting work on emergency malfunction: " + malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        if (malfunction != null) {
+            logger.fine(person.getName() + " starting work on emergency malfunction: " + 
+                    malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
+        }
     }
     
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time (millisol) the phase is to be performed.
-     * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (REPAIRING.equals(getPhase())) return repairingPhase(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (REPAIRING.equals(getPhase())) {
+    	    return repairingPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
     
     /**
      * Performs the repairing phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double repairingPhase(double time) {
     	
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
              malfunction.getCompletedEmergencyWorkTime();
-        if (workTimeLeft == 0) endTask();
+        if (workTimeLeft == 0) {
+            endTask();
+        }
 
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
         int mechanicSkill = getEffectiveSkillLevel();
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += (workTime * (.2D * mechanicSkill));
+        if (mechanicSkill == 0) {
+            workTime /= 2;
+        }
+        else if (mechanicSkill > 1) {
+            workTime += (workTime * (.2D * mechanicSkill));
+        }
 
         // Add work to emergency malfunction.
         double remainingWorkTime = malfunction.addEmergencyWorkTime(workTime);
-        if (remainingWorkTime > 0D) endTask();
+        if (remainingWorkTime > 0D) {
+            endTask();
+        }
 
         // Add experience
         addExperience(time);
@@ -128,10 +143,7 @@ implements Repair, Serializable {
         return (time * (remainingWorkTime / workTime));
     }
     
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
+	@Override
 	protected void addExperience(double time) {
 		// Add experience to "Mechanics" skill
 		// (1 base experience point per 20 millisols of work)
@@ -156,7 +168,9 @@ implements Repair, Serializable {
         while (i.hasNext()) {
             Malfunctionable entity = i.next();
             MalfunctionManager manager = entity.getMalfunctionManager();
-            if (manager.hasEmergencyMalfunction()) result = true;
+            if (manager.hasEmergencyMalfunction()) {
+                result = true;
+            }
         }
 
         return result;
@@ -216,19 +230,17 @@ implements Repair, Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), malfunctioningBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, malfunctioningBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, malfunctioningBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                malfunctioningBuilding)) {
+            
+            // Add subtask for walking to malfunctioning building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    malfunctioningBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to malfunctioning building.
-            BuildingManager.addPersonToBuilding(person, malfunctioningBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to malfunctioning building " + 
+                    malfunctioningBuilding.getName());
+            endTask();
         }
     }
     
@@ -244,7 +256,7 @@ implements Repair, Serializable {
 		results.add(SkillType.MECHANICS);
 		return results;
 	}
-
+	
 	@Override
 	public void destroy() {
 	    super.destroy();

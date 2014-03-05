@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LaboratoryTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.vehicle;
@@ -23,8 +23,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /** 
  * The LaboratoryTabPanel is a tab panel for an explorer rover's lab information.
  */
-public class LaboratoryTabPanel
-extends TabPanel {
+public class LaboratoryTabPanel extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -75,23 +74,22 @@ extends TabPanel {
 				JLabel.CENTER);
 		labelPanel.add(researcherCapacityLabel);
 
-		// Prepare specialities label
-		JLabel specialitiesLabel = new JLabel("Specialities: ", JLabel.CENTER);
-		labelPanel.add(specialitiesLabel);
+		// Prepare specialties label
+		JLabel specialtiesLabel = new JLabel("Specialties: ", JLabel.CENTER);
+		labelPanel.add(specialtiesLabel);
 
-		// Get the research specialities of the building.
-		ScienceType[] specialities = lab.getTechSpecialities();
+		// Get the research specialties of the building.
+		ScienceType[] specialties = lab.getTechSpecialties();
 
 		// Prepare specialitiesListPanel
-		JPanel specialitiesListPanel = new JPanel(new GridLayout(specialities.length, 1, 0, 0));
-		specialitiesListPanel.setBorder(new MarsPanelBorder());
-		laboratoryPanel.add(specialitiesListPanel, BorderLayout.SOUTH);
+		JPanel specialtiesListPanel = new JPanel(new GridLayout(specialties.length, 1, 0, 0));
+		specialtiesListPanel.setBorder(new MarsPanelBorder());
+		laboratoryPanel.add(specialtiesListPanel, BorderLayout.SOUTH);
 
-		// For each speciality, add speciality name panel.
-
-		for (ScienceType speciality : specialities) {
-			JLabel specialityLabel = new JLabel(speciality.getName(), JLabel.CENTER);
-			specialitiesListPanel.add(specialityLabel);
+		// For each specialty, add specialty name panel.
+		for (ScienceType specialty : specialties) {
+			JLabel specialtyLabel = new JLabel(specialty.getName(), JLabel.CENTER);
+			specialtiesListPanel.add(specialtyLabel);
 		}
 	}
 

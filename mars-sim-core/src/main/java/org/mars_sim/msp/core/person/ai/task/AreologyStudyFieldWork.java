@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyFieldWork.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,40 +26,31 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A task for the EVA operation of performing areology field work at a research site 
  * for a scientific study.
  */
-public class AreologyStudyFieldWork
-extends EVAOperation
-implements Serializable {
-
+public class AreologyStudyFieldWork extends EVAOperation implements Serializable {
+    
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// TODO Task phases should be enums
-    private static final String WALK_TO_SITE = "Walk to Site";
+    private static final long serialVersionUID = 1L;
+    
+    // TODO Task phases should be enums
     private static final String FIELD_WORK = "Performing Field Work";
-    private static final String WALK_TO_ROVER = "Walk to Rover";
     
     // Data members
     private Person leadResearcher;
     private ScientificStudy study;
     private Rover rover;
-    private double fieldWorkXLoc;
-    private double fieldWorkYLoc;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
     
     /**
-     * Constructor.
+     * Constructor
      * @param person the person performing the task.
      * @param leadResearcher the researcher leading the field work.
      * @param study the scientific study the field work is for.
      * @param rover the rover
-     * @throws Exception if error creating task.
      */
     public AreologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study, 
             Rover rover) {
         
         // Use EVAOperation parent constructor.
-        super("Areology Study Field Work", person);
+        super("Areology Study Field Work", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         // Initialize data members.
         this.leadResearcher = leadResearcher;
@@ -68,18 +59,10 @@ implements Serializable {
         
         // Determine location for field work.
         Point2D fieldWorkLoc = determineFieldWorkLocation();
-        fieldWorkXLoc = fieldWorkLoc.getX();
-        fieldWorkYLoc = fieldWorkLoc.getY();
-        
-        // Determine location for reentering rover airlock.
-        Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
-        enterAirlockXLoc = enterAirlockLoc.getX();
-        enterAirlockYLoc = enterAirlockLoc.getY();
+        setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
         
         // Add task phases
-        addPhase(WALK_TO_SITE);
         addPhase(FIELD_WORK);
-        addPhase(WALK_TO_ROVER);
     }
     
     /**
@@ -110,19 +93,6 @@ implements Serializable {
     }
     
     /**
-     * Determine location for returning to rover airlock.
-     * @return X and Y location outside rover.
-     */
-    private Point2D determineRoverAirlockEnteringLocation() {
-        
-        Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
-        Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                vehicleLoc.getY(), rover);
-        
-        return newLocation;
-    }
-    
-    /**
      * Checks if a person can research a site.
      * @param person the person
      * @param rover the rover
@@ -146,106 +116,25 @@ implements Serializable {
         return (exitable && (sunlight || darkRegion) && !medical);
     }
     
-    /**
-     * Perform the exit rover phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error exiting rover.
-     */
-    private double exitRover(double time) {
-        
-        try {
-            time = exitAirlock(time, rover.getAirlock());
-        
-            // Add experience points
-            addExperience(time);
-        }
-        catch (Exception e) {
-            // Person unable to exit airlock.
-            endTask();
-        }
-        
-        if (exitedAirlock) {
-            
-            // Set task phase to walk to field work site.
-            setPhase(WALK_TO_SITE);
-        }
-        
-        return time;
+    @Override
+    protected String getOutsideSitePhase() {
+        return FIELD_WORK;
     }
     
-    /**
-     * Perform the enter rover phase of the task.
-     * @param time the time to perform this phase (in millisols)
-     * @return the time remaining after performing this phase (in millisols)
-     * @throws Exception if error entering rover.
-     */
-    private double enterRover(double time) {
-
-        time = enterAirlock(time, rover.getAirlock());
-
-        // Add experience points
-        addExperience(time);
+    @Override
+    protected double performMappedPhase(double time) {
         
-        if (enteredAirlock) {
-            endTask();
-            return time;
+        time = super.performMappedPhase(time);
+        
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
         }
-        
-        return 0D;
-    }
-    
-    /**
-     * Perform the walk to field work site phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToFieldWorkSitePhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_ROVER);
-            return time;
-        }
-        
-        // If not at field work site location, create walk outside subtask.
-        if ((person.getXLocation() != fieldWorkXLoc) || (person.getYLocation() != fieldWorkYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    fieldWorkXLoc, fieldWorkYLoc, false);
-            addSubTask(walkingTask);
+        else if (FIELD_WORK.equals(getPhase())) {
+            return fieldWorkPhase(time);
         }
         else {
-            setPhase(FIELD_WORK);
+            return time;
         }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to rover airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToRoverAirlock(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside rover airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
     }
     
     /**
@@ -258,10 +147,10 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
         
-        // Check if there is reason to cut the field work phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_ROVER);
+        // Check if site duration has ended or there is reason to cut the field 
+        // work phase short and return to the rover.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+            setPhase(WALK_BACK_INSIDE);
             return time;
         }
         
@@ -282,16 +171,25 @@ implements Serializable {
         // Determine effective field work time.
         double effectiveFieldWorkTime = time;
         int skill = getEffectiveSkillLevel();
-        if (skill == 0) effectiveFieldWorkTime /= 2D;
-        if (skill > 1) effectiveFieldWorkTime += effectiveFieldWorkTime * (.2D * skill);
+        if (skill == 0) {
+            effectiveFieldWorkTime /= 2D;
+        }
+        else if (skill > 1) {
+            effectiveFieldWorkTime += effectiveFieldWorkTime * (.2D * skill);
+        }
         
         // If person isn't lead researcher, divide field work time by two.
-        if (!person.equals(leadResearcher)) effectiveFieldWorkTime /= 2D;
+        if (!person.equals(leadResearcher)) {
+            effectiveFieldWorkTime /= 2D;
+        }
         
         // Add research to study for primary or collaborative researcher.
-        if (study.getPrimaryResearcher().equals(leadResearcher)) 
+        if (study.getPrimaryResearcher().equals(leadResearcher)) {
             study.addPrimaryResearchWorkTime(effectiveFieldWorkTime);
-        else study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
+        }
+        else {
+            study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
+        }
     }
     
     @Override
@@ -332,31 +230,6 @@ implements Serializable {
         int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
         int areologySkill = manager.getEffectiveSkillLevel(SkillType.AREOLOGY);
         return (int) Math.round((double)(EVAOperationsSkill + areologySkill) / 2D); 
-    }
-
-    @Override
-    protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-            return exitRover(time);
-        }
-        else if (WALK_TO_SITE.equals(getPhase())) {
-            return walkToFieldWorkSitePhase(time);
-        }
-        else if (FIELD_WORK.equals(getPhase())) {
-            return fieldWorkPhase(time);
-        }
-        else if (WALK_TO_ROVER.equals(getPhase())) {
-            return walkToRoverAirlock(time);
-        }
-        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-            return enterRover(time);
-        }
-        else {
-            return time;
-        }
     }
     
     @Override

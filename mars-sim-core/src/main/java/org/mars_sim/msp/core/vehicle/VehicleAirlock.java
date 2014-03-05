@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-02
  * @author Scott Davis
  */
 
@@ -21,10 +21,16 @@ import org.mars_sim.msp.core.person.Person;
  */
 public class VehicleAirlock extends Airlock {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     private static Logger logger = Logger.getLogger(VehicleAirlock.class.getName());
 
     // Data members.
     private Vehicle vehicle; // The vehicle this airlock is for.
+    private Point2D airlockInsidePos;
+    private Point2D airlockInteriorPos;
+    private Point2D airlockExteriorPos;
 
     /**
      * Constructor
@@ -38,10 +44,30 @@ public class VehicleAirlock extends Airlock {
         // User Airlock constructor
         super(capacity);
 
-        if (vehicle == null) throw new IllegalArgumentException("vehicle is null.");
-        else if (!(vehicle instanceof Crewable)) throw new IllegalArgumentException("vehicle not crewable.");
-        else if (!(vehicle instanceof LifeSupport)) throw new IllegalArgumentException("vehicle has no life support.");
-        else this.vehicle = vehicle;
+        if (vehicle == null) {
+            throw new IllegalArgumentException("vehicle is null.");
+        }
+        else if (!(vehicle instanceof Crewable)) {
+            throw new IllegalArgumentException("vehicle not crewable.");
+        }
+        else if (!(vehicle instanceof LifeSupport)) {
+            throw new IllegalArgumentException("vehicle has no life support.");
+        }
+        else {
+            this.vehicle = vehicle;
+        }
+        
+        // Determine airlock interior position.
+        // TODO Replace with configured airlock interior position.
+        airlockInteriorPos = LocalAreaUtil.getRandomInteriorLocation(vehicle);
+        
+        // Determine airlock exterior position.
+        // TODO Replace with configured airlock exterior position.
+        airlockExteriorPos = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+        
+        // Determine airlock inside position.
+        // TODO Replace with configured airlock inside position.
+        airlockInsidePos = LocalAreaUtil.getRandomInteriorLocation(vehicle);
     }
 
     /**
@@ -54,31 +80,22 @@ public class VehicleAirlock extends Airlock {
 
         if (inAirlock(person)) {
             if (PRESSURIZED.equals(getState())) {
+                
                 // Exit person to inside vehicle.
                 vehicle.getInventory().storeUnit(person);
-                
-                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(vehicle);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                        vehicleLoc.getY(), vehicle);
-                person.setXLocation(settlementLoc.getX());
-                person.setYLocation(settlementLoc.getY());
             }
-            else if (DEPRESSURIZED.equals(getState())){
+            else if (DEPRESSURIZED.equals(getState())) {
+                
                 // Exit person outside vehicle.  
                 vehicle.getInventory().retrieveUnit(person);
-                
-                // Move person to a random location outside of vehicle.
-                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                        vehicleLoc.getY(), vehicle);
-                person.setXLocation(settlementLoc.getX());
-                person.setYLocation(settlementLoc.getY());
             }
             else {
                 logger.severe("Vehicle airlock in incorrect state for exiting: " + getState());
             }
         }
-        else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
+        else {
+            throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
+        }
     }
 
     /**
@@ -102,5 +119,23 @@ public class VehicleAirlock extends Airlock {
     @Override
     public Object getEntity() {
         return vehicle;
+    }
+
+    @Override
+    public Point2D getAvailableInteriorPosition() {
+        return LocalAreaUtil.getLocalRelativeLocation(airlockInteriorPos.getX(), 
+                airlockInteriorPos.getY(), vehicle);
+    }
+
+    @Override
+    public Point2D getAvailableExteriorPosition() {
+        return LocalAreaUtil.getLocalRelativeLocation(airlockExteriorPos.getX(), 
+                airlockExteriorPos.getY(), vehicle);
+    }
+
+    @Override
+    public Point2D getAvailableAirlockPosition() {
+        return LocalAreaUtil.getLocalRelativeLocation(airlockInsidePos.getX(), 
+                airlockInsidePos.getY(), vehicle);
     }
 }

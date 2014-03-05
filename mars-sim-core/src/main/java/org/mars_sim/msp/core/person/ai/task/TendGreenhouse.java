@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -24,9 +24,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 
@@ -35,10 +33,10 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
  * This is an effort driven task.
  */
 public class TendGreenhouse extends Task implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+	
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
     private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
 	
@@ -56,7 +54,6 @@ public class TendGreenhouse extends Task implements Serializable {
     /**
      * Constructor
      * @param person the person performing the task.
-     * @throws Exception if error constructing task.
      */
     public TendGreenhouse(Person person) {
         // Use Task constructor
@@ -126,7 +123,9 @@ public class TendGreenhouse extends Task implements Serializable {
 
 		// Job modifier.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+		if (job != null) {
+		    result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
+		}
 
         return result;
     }
@@ -143,39 +142,37 @@ public class TendGreenhouse extends Task implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), greenhouseBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, greenhouseBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, greenhouseBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                greenhouseBuilding)) {
+            
+            // Add subtask for walking to greenhouse building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    greenhouseBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to greenhouse building.
-            BuildingManager.addPersonToBuilding(person, greenhouseBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to greenhouse building " + 
+                    greenhouseBuilding.getName());
+            endTask();
         }
     }
     
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time (millisol) the phase is to be performed.
-     * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (TENDING.equals(getPhase())) return tendingPhase(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (TENDING.equals(getPhase())) {
+    	    return tendingPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
     
     /**
      * Performs the tending phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double tendingPhase(double time) {
     	
@@ -188,8 +185,12 @@ public class TendGreenhouse extends Task implements Serializable {
         // Determine amount of effective work time based on "Botany" skill.
         double workTime = time;
         int greenhouseSkill = getEffectiveSkillLevel();
-        if (greenhouseSkill == 0) workTime /= 2;
-        else workTime += workTime * (double) greenhouseSkill;
+        if (greenhouseSkill == 0) {
+            workTime /= 2;
+        }
+        else {
+            workTime += workTime * (double) greenhouseSkill;
+        }
         
         // Add this work to the greenhouse.
         greenhouse.addWork(workTime);
@@ -203,10 +204,7 @@ public class TendGreenhouse extends Task implements Serializable {
         return 0D;
     }
     
-	/**
-	 * Adds experience to the person's skills used in this task.
-	 * @param time the amount of time (ms) the person performed this task.
-	 */
+	@Override
 	protected void addExperience(double time) {
 		// Add experience to "Botany" skill
 		// (1 base experience point per 100 millisols of work)
@@ -229,8 +227,12 @@ public class TendGreenhouse extends Task implements Serializable {
 
         // Greenhouse farming skill modification.
         int skill = getEffectiveSkillLevel();
-        if (skill <= 3) chance *= (4 - skill);
-        else chance /= (skill - 2);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
         // Modify based on the LUV's wear condition.
         chance *= greenhouse.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
@@ -252,10 +254,8 @@ public class TendGreenhouse extends Task implements Serializable {
     /**
      * Gets an available greenhouse that the person can use.
      * Returns null if no greenhouse is currently available.
-     *
      * @param person the person
      * @return available greenhouse
-     * @throws BuildingException if error finding farm building.
      */
     private static Building getAvailableGreenhouse(Person person) {
      
@@ -283,7 +283,6 @@ public class TendGreenhouse extends Task implements Serializable {
      * Gets a list of farm buildings needing work from a list of buildings with the farming function.
      * @param buildingList list of buildings with the farming function.
      * @return list of farming buildings needing work.
-     * @throws BuildingException if any buildings in building list don't have the farming function.
      */
     private static List<Building> getFarmsNeedingWork(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
@@ -292,7 +291,9 @@ public class TendGreenhouse extends Task implements Serializable {
     	while (i.hasNext()) {
     		Building building = i.next();
     		Farming farm = (Farming) building.getFunction(Farming.NAME);
-    		if (farm.requiresWork()) result.add(building);
+    		if (farm.requiresWork()) {
+    		    result.add(building);
+    		}
     	}
     	
     	return result;
@@ -323,23 +324,24 @@ public class TendGreenhouse extends Task implements Serializable {
         
         return result;
     }
-
+    
 	@Override
 	public int getEffectiveSkillLevel() {
 		SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(SkillType.BOTANY);
-	}
-
+	}  
+	
 	@Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
 		results.add(SkillType.BOTANY);
 		return results;
 	}
-
+	
 	@Override
 	public void destroy() {
 	    super.destroy();
+	    
 	    greenhouse = null;
 	}
 }

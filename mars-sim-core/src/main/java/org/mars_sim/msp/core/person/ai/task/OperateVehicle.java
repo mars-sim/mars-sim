@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-26
  * @author Scott Davis
  */
 
@@ -29,6 +29,9 @@ import java.util.Iterator;
  */
 public abstract class OperateVehicle extends Task implements Serializable {
 	
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	// Task phases
 	public final static String MOBILIZE = "Mobilize Vehicle";
 	
@@ -55,7 +58,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * @param stressModifier the modifier for stress on the person performing the task.
 	 * @param hasDuration does the task have a time duration?
 	 * @param duration the time duration (millisols) of the task (or 0 if none).
-	 * @throws Exception if task cannot be constructed.
 	 */
 	public OperateVehicle(String name, Person person, Vehicle vehicle, Coordinates destination, 
 			MarsClock startTripTime, double startTripDistance, double stressModifier, 
@@ -65,10 +67,18 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		super(name, person, true, false, stressModifier, hasDuration, duration);
 		
 		// Check for valid parameters.
-		if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
-		if (destination == null) throw new IllegalArgumentException("destination is null");
-		if (startTripTime == null) throw new IllegalArgumentException("startTripTime is null");
-		if (startTripDistance < 0D) throw new IllegalArgumentException("startTripDistance is < 0");
+		if (vehicle == null) {
+		    throw new IllegalArgumentException("vehicle is null");
+		}
+		if (destination == null) {
+		    throw new IllegalArgumentException("destination is null");
+		}
+		if (startTripTime == null) {
+		    throw new IllegalArgumentException("startTripTime is null");
+		}
+		if (startTripDistance < 0D) {
+		    throw new IllegalArgumentException("startTripDistance is < 0");
+		}
 		
 		// Initialize data members.
 		this.vehicle = vehicle;
@@ -81,16 +91,17 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		setPhase(MOBILIZE);
 	}
     
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time the phase is to be performed.
-     * @return the remaining time after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (MOBILIZE.equals(getPhase())) return mobilizeVehiclePhase(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (MOBILIZE.equals(getPhase())) {
+    	    return mobilizeVehiclePhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
 	
 	/**
@@ -137,7 +148,6 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * Perform the mobilize vehicle phase for the amount of time given.
 	 * @param time the amount of time (ms) to perform the phase.
 	 * @return the amount of time left over after performing the phase.
-	 * @throws Exception if error while performing phase.
 	 */
 	protected double mobilizeVehiclePhase(double time) {
 		
@@ -158,10 +168,14 @@ public abstract class OperateVehicle extends Task implements Serializable {
         addExperience(time);
         
         // Check for accident.
-        if (!isDone()) checkForAccident(timeUsed);
+        if (!isDone()) {
+            checkForAccident(timeUsed);
+        }
         
         // If vehicle has malfunction, end task.
-        if (vehicle.getMalfunctionManager().hasMalfunction()) endTask();
+        if (vehicle.getMalfunctionManager().hasMalfunction()) {
+            endTask();
+        }
         
         return time - timeUsed;
 	}
@@ -171,12 +185,13 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	 * Stop if reached destination.
 	 * @param time the amount of time (ms) to drive.
 	 * @return the amount of time (ms) left over after driving (if any)
-	 * @throws Exception if error while mobilizing vehicle.
 	 */
 	protected double mobilizeVehicle(double time) {
 		
         // Set person as the vehicle operator if he/she isn't already.
-        if (!person.equals(vehicle.getOperator())) vehicle.setOperator(person);
+        if (!person.equals(vehicle.getOperator())) {
+            vehicle.setOperator(person);
+        }
 		
         // Find starting distance to destination.
         double startingDistanceToDestination = getDistanceToDestination();
@@ -266,7 +281,7 @@ public abstract class OperateVehicle extends Task implements Serializable {
 	/**
 	 * Update vehicle with its current elevation or altitude.
 	 */
-	abstract protected void updateVehicleElevationAltitude();
+	protected abstract void updateVehicleElevationAltitude();
 	
     /** 
      * Determines the ETA (Estimated Time of Arrival) to the destination.
@@ -316,7 +331,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double getSpeed(Direction direction) {
 
         double speed = vehicle.getBaseSpeed() + getSpeedSkillModifier();
-        if (speed < 0D) speed = 0D;
+        if (speed < 0D) {
+            speed = 0D;
+        }
 
         return speed;
     }
@@ -328,7 +345,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     protected double getSpeedSkillModifier() {
     	double result = 0D;
         double baseSpeed = vehicle.getBaseSpeed();
-        if (getEffectiveSkillLevel() <= 5) result = 0D - ((baseSpeed / 2D) * ((5D - getEffectiveSkillLevel()) / 5D));
+        if (getEffectiveSkillLevel() <= 5) {
+            result = 0D - ((baseSpeed / 2D) * ((5D - getEffectiveSkillLevel()) / 5D));
+        }
         else {
             double tempSpeed = baseSpeed;
             for (int x=0; x < getEffectiveSkillLevel() - 5; x++) {

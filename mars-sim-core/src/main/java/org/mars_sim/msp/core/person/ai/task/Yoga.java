@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Sebastien Venot
  */
 
@@ -15,10 +15,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Yoga
-extends Task
-implements Serializable {
+/** 
+ * The Yoga class is a task for practicing yoga to reduce stress.
+ */
+public class Yoga extends Task implements Serializable {
 
+    /** default serial id. */
     private static final long serialVersionUID = 1L;
 
     // Task phase
@@ -27,7 +29,10 @@ implements Serializable {
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.7D;
 
-    /** constructor. */
+    /** 
+     * Constructs a Yoga object
+     * @param person the person to perform the task
+     */
     public Yoga(Person person) {
         super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(30D));
@@ -37,6 +42,11 @@ implements Serializable {
         setPhase(DOING_YOGA);
     }
 
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
+     */
     public static double getProbability(Person person) {
 
         double result = 0D;

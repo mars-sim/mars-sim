@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-26
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,9 +28,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 
 /**
@@ -40,9 +38,9 @@ public class ObserveAstronomicalObjects
 extends Task
 implements ResearchScientificStudy, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
     private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
 
@@ -63,7 +61,6 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Constructor.
      * @param person the person performing the task.
-     * @throws Exception if error constructing the task.
      */
     public ObserveAstronomicalObjects(Person person) {
         // Use task constructor.
@@ -114,27 +111,29 @@ implements ResearchScientificStudy, Serializable {
                 // Add probability for researcher's primary study (if any).
                 ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
                 ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-                if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-                    if (!primaryStudy.isPrimaryResearchCompleted()) {
-                        if (astronomy == primaryStudy.getScience()) {
-                            try {
-                                double primaryResult = 100D;
-                            
-                                // Get observatory building crowding modifier.
-                                primaryResult *= getObservatoryCrowdingModifier(person, observatory);
-                        
-                                // If researcher's current job isn't related to astronomy, divide by two.
-                                Job job = person.getMind().getJob();
-                                if (job != null) {
-                                    ScienceType jobScience = ScienceType.getJobScience(job);
-                                    if (astronomy != jobScience) primaryResult /= 2D;
+                if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(
+                        primaryStudy.getPhase())) {
+                    if (!primaryStudy.isPrimaryResearchCompleted() && 
+                            astronomy == primaryStudy.getScience()) {
+                        try {
+                            double primaryResult = 100D;
+
+                            // Get observatory building crowding modifier.
+                            primaryResult *= getObservatoryCrowdingModifier(person, observatory);
+
+                            // If researcher's current job isn't related to astronomy, divide by two.
+                            Job job = person.getMind().getJob();
+                            if (job != null) {
+                                ScienceType jobScience = ScienceType.getJobScience(job);
+                                if (astronomy != jobScience) {
+                                    primaryResult /= 2D;
                                 }
-                        
-                                result += primaryResult;
                             }
-                            catch (Exception e) {
-                                logger.severe("getProbability(): " + e.getMessage());
-                            }
+
+                            result += primaryResult;
+                        }
+                        catch (Exception e) {
+                            logger.severe("getProbability(): " + e.getMessage());
                         }
                     }
                 }
@@ -156,7 +155,9 @@ implements ResearchScientificStudy, Serializable {
                                     Job job = person.getMind().getJob();
                                     if (job != null) {
                                         ScienceType jobScience = ScienceType.getJobScience(job);
-                                        if (astronomy != jobScience) collabResult /= 2D;
+                                        if (astronomy != jobScience) {
+                                            collabResult /= 2D;
+                                        }
                                     }
                                 
                                     result += collabResult;
@@ -195,24 +196,22 @@ implements ResearchScientificStudy, Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), observatoryBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, observatoryBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, observatoryBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                observatoryBuilding)) {
+            
+            // Add subtask for walking to observatory building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    observatoryBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to observatory building.
-            BuildingManager.addPersonToBuilding(person, observatoryBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to observatory building " + 
+                    observatoryBuilding.getName());
+            endTask();
         }
     }
     
     /**
-     * Gets the perferred local astronomical observatory for an observer.
+     * Gets the preferred local astronomical observatory for an observer.
      * @param observer the observer.
      * @return observatory or null if none found.
      */
@@ -243,10 +242,9 @@ implements ResearchScientificStudy, Serializable {
      * @param observer the observer.
      * @param observatory the astronomical observatory.
      * @return crowding modifier.
-     * @throws BuildingException if error determining observatory building.
      */
-    private static double getObservatoryCrowdingModifier(Person observer, AstronomicalObservation observatory) 
-            {
+    private static double getObservatoryCrowdingModifier(Person observer, 
+            AstronomicalObservation observatory) {
         double result = 1D;
         if (observer.getLocationSituation().equals(Person.INSETTLEMENT)) {
             Building observatoryBuilding = observatory.getBuilding();  
@@ -262,10 +260,8 @@ implements ResearchScientificStudy, Serializable {
      * Gets a list of observatory buildings with available research space from a list of observatory buildings.
      * @param buildingList list of buildings with astronomical observation function.
      * @return observatory buildings with available observatory space.
-     * @throws BuildingException if building list contains buildings without astronomical observation function.
      */
-    private static List<Building> getObservatoriesWithAvailableSpace(List<Building> buildingList) 
-            {
+    private static List<Building> getObservatoriesWithAvailableSpace(List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
         
         Iterator<Building> i = buildingList.iterator();
@@ -273,8 +269,9 @@ implements ResearchScientificStudy, Serializable {
             Building building = i.next();
             AstronomicalObservation observatory = (AstronomicalObservation) building.getFunction(
                     AstronomicalObservation.NAME);
-            if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) 
+            if (observatory.getObserverNum() < observatory.getObservatoryCapacity()) {
                 result.add(building);
+            }
         }
         
         return result;
@@ -310,8 +307,9 @@ implements ResearchScientificStudy, Serializable {
             ScientificStudy collabStudy = i.next();
             if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
                     !collabStudy.isCollaborativeResearchCompleted(person)) {
-                if (astronomy == collabStudy.getCollaborativeResearchers().get(person))
+                if (astronomy == collabStudy.getCollaborativeResearchers().get(person)) {
                     possibleStudies.add(collabStudy);
+                }
             }
         }
         
@@ -354,47 +352,66 @@ implements ResearchScientificStudy, Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (OBSERVING.equals(getPhase())) return observingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (OBSERVING.equals(getPhase())) {
+            return observingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
     
     /**
      * Performs the observing phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     protected double observingPhase(double time) {
         
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
         
         // Check for observatory malfunction.
-        if (observatory.getBuilding().getMalfunctionManager().hasMalfunction())
+        if (observatory.getBuilding().getMalfunctionManager().hasMalfunction()) {
             endTask();
+        }
         
-        //check sunlight and end the task if sunrise
+        // Check sunlight and end the task if sunrise
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         double sunlight = surface.getSurfaceSunlight(person.getCoordinates()); 
-        if(sunlight > 0) endTask();
+        if (sunlight > 0) {
+            endTask();
+        }
         
-
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
-            if (study.isPrimaryResearchCompleted()) endTask();
+            if (study.isPrimaryResearchCompleted()) {
+                endTask();
+            }
         }
         else {
-            if (study.isCollaborativeResearchCompleted(person)) endTask();
+            if (study.isCollaborativeResearchCompleted(person)) {
+                endTask();
+            }
         }
         
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
         
         // Add research work time to study.
         double observingTime = getEffectiveObservingTime(time);
-        if (isPrimary) study.addPrimaryResearchWorkTime(observingTime);
-        else study.addCollaborativeResearchWorkTime(person, observingTime);
+        if (isPrimary) {
+            study.addPrimaryResearchWorkTime(observingTime);
+        }
+        else {
+            study.addCollaborativeResearchWorkTime(person, observingTime);
+        }
         
         // Add experience
         addExperience(observingTime);
@@ -414,18 +431,26 @@ implements ResearchScientificStudy, Serializable {
         // Determine effective observing time based on the astronomy skill.
         double observingTime = time;
         int astronomySkill = getEffectiveSkillLevel();
-        if (astronomySkill == 0) observingTime /= 2D;
-        if (astronomySkill > 1) observingTime += observingTime * (.2D * astronomySkill);
+        if (astronomySkill == 0) {
+            observingTime /= 2D;
+        }
+        if (astronomySkill > 1) {
+            observingTime += observingTime * (.2D * astronomySkill);
+        }
         
         // Modify by tech level of observatory.
         int techLevel = observatory.getTechnologyLevel();
-        if (techLevel > 0) observingTime *= techLevel;
+        if (techLevel > 0) {
+            observingTime *= techLevel;
+        }
         
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
             SkillManager manager = researchAssistant.getMind().getSkillManager();
             int assistantSkill = manager.getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
-            if (astronomySkill > 0) observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);
+            if (astronomySkill > 0) {
+                observingTime *= 1D + ((double) assistantSkill / (double) astronomySkill);
+            }
         }
         
         return observingTime;
@@ -441,14 +466,20 @@ implements ResearchScientificStudy, Serializable {
 
         // Astronomy skill modification.
         int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(ScienceType.ASTRONOMY.getSkill());
-        if (skill <= 3) chance *= (4 - skill);
-        else chance /= (skill - 2);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
         Malfunctionable entity = null;
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
+        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
             entity = observatory.getBuilding();
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) 
+        }
+        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             entity = person.getVehicle();
+        }
         
         if (entity != null) {
          
@@ -468,49 +499,36 @@ implements ResearchScientificStudy, Serializable {
     public void endTask() {
         super.endTask();
         
-        // Remove person from observator so others can use it.
+        // Remove person from observatory so others can use it.
         try {
-            if (observatory != null) observatory.removeObserver();
+            if (observatory != null) {
+                observatory.removeObserver();
+            }
         }
         catch(Exception e) {}
     }
     
-    /**
-     * Gets the scientific field that is being researched for the study.
-     * @return scientific field.
-     */
+    @Override
     public ScienceType getResearchScience() {
         return ScienceType.ASTRONOMY;
     }
     
-    /**
-     * Gets the researcher who is being assisted.
-     * @return researcher.
-     */
+    @Override
     public Person getResearcher() {
         return person;
     }
     
-    /**
-     * Checks if there is a research assistant.
-     * @return research assistant.
-     */
+    @Override
     public boolean hasResearchAssistant() {
         return (researchAssistant != null);
     }
     
-    /**
-     * Gets the research assistant.
-     * @return research assistant or null if none.
-     */
+    @Override
     public Person getResearchAssistant() {
         return researchAssistant;
     }
     
-    /**
-     * Sets the research assistant.
-     * @param researchAssistant the research assistant.
-     */
+    @Override
     public void setResearchAssistant(Person researchAssistant) {
         this.researchAssistant = researchAssistant;
     }

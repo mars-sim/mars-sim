@@ -38,9 +38,9 @@ extends Task
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
     
     // Task phase
     private static final String WALKING = "Walking";
@@ -98,7 +98,7 @@ implements Serializable {
         String location = person.getLocationSituation();
         if (!location.equals(Person.OUTSIDE)) {
             throw new IllegalStateException(
-                    "WalkOutside task started when person is not outside.");
+                    "WalkOutside task started when " + person + " is not outside.");
         }
         
         // Determine walking path.
@@ -598,7 +598,7 @@ implements Serializable {
         // If path destination is reached, end task.
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
             logger.fine(person.getName() + " finished walking to new location outside.");
-            Point2D finalLocation = walkingPath.get(walkingPathIndex);
+            Point2D finalLocation = walkingPath.get(walkingPath.size() - 1);
             person.setXLocation(finalLocation.getX());
             person.setYLocation(finalLocation.getY());
             endTask();

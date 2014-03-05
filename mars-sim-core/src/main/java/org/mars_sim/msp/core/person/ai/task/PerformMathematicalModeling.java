@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-01-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,9 +30,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -45,10 +43,11 @@ extends Task
 implements ResearchScientificStudy, Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(PerformMathematicalModeling.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(
+            PerformMathematicalModeling.class.getName());
     
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.2D; 
@@ -69,7 +68,6 @@ implements ResearchScientificStudy, Serializable {
     /**
      * Constructor.
      * @param person the person performing the task.
-     * @throws Exception if error creating task.
      */
     public PerformMathematicalModeling(Person person) {
         // Use task constructor.
@@ -126,7 +124,9 @@ implements ResearchScientificStudy, Serializable {
                             Job job = person.getMind().getJob();
                             if (job != null) {
                                 ScienceType jobScience = ScienceType.getJobScience(job);
-                                if (primaryStudy.getScience() != jobScience) primaryResult /= 2D;
+                                if (primaryStudy.getScience() != jobScience) {
+                                    primaryResult /= 2D;
+                                }
                             }
                     
                             result += primaryResult;
@@ -159,7 +159,9 @@ implements ResearchScientificStudy, Serializable {
                                 Job job = person.getMind().getJob();
                                 if (job != null) {
                                     ScienceType jobScience = ScienceType.getJobScience(job);
-                                    if (collabScience != jobScience) collabResult /= 2D;
+                                    if (collabScience != jobScience) {
+                                        collabResult /= 2D;
+                                    }
                                 }
                         
                                 result += collabResult;
@@ -190,7 +192,6 @@ implements ResearchScientificStudy, Serializable {
      * @param researcher the researcher.
      * @param lab the laboratory.
      * @return crowding modifier.
-     * @throws BuildingException if error determining lab building.
      */
     private static double getLabCrowdingModifier(Person researcher, Lab lab) 
             {
@@ -216,7 +217,7 @@ implements ResearchScientificStudy, Serializable {
         
         List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
         
-        // Add primary study if mathmatics and in research phase.
+        // Add primary study if mathematics and in research phase.
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
         if (primaryStudy != null) {
@@ -256,14 +257,17 @@ implements ResearchScientificStudy, Serializable {
      * Gets a local lab for mathematical modeling.
      * @param person the person checking for the lab.
      * @return laboratory found or null if none.
-     * @throws Exception if error getting a lab.
      */
     private static Lab getLocalLab(Person person) {
         Lab result = null;
         
         String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) result = getSettlementLab(person);
-        else if (location.equals(Person.INVEHICLE)) result = getVehicleLab(person.getVehicle());
+        if (location.equals(Person.INSETTLEMENT)) {
+            result = getSettlementLab(person);
+        }
+        else if (location.equals(Person.INVEHICLE)) {
+            result = getVehicleLab(person.getVehicle());
+        }
         
         return result;
     }
@@ -298,31 +302,31 @@ implements ResearchScientificStudy, Serializable {
      * with the research function.
      * @param buildingList list of buildings with research function.
      * @return research buildings with available lab space.
-     * @throws BuildingException if building list contains buildings without research function.
      */
-    private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList) 
-            {
+    private static List<Building> getSettlementLabsWithAvailableSpace(
+            List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
         
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.getResearcherNum() < lab.getLaboratorySize()) result.add(building);
+            if (lab.getResearcherNum() < lab.getLaboratorySize()) {
+                result.add(building);
+            }
         }
         
         return result;
     }
     
     /**
-     * Gets a list of research buildings with mathemtics speciality from a list of 
+     * Gets a list of research buildings with mathematics specialty from a list of 
      * buildings with the research function.
      * @param buildingList list of buildings with research function.
-     * @return research buildings with mathematics speciality.
-     * @throws BuildingException if building list contains buildings without research function.
+     * @return research buildings with mathematics specialty.
      */
-    private static List<Building> getSettlementLabsWithMathematicsSpeciality(List<Building> buildingList) 
-                {
+    private static List<Building> getSettlementLabsWithMathematicsSpeciality(
+            List<Building> buildingList) {
         List<Building> result = new ArrayList<Building>();
         
         ScienceType mathematicsScience = ScienceType.MATHEMATICS;
@@ -331,7 +335,9 @@ implements ResearchScientificStudy, Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpeciality(mathematicsScience)) result.add(building);
+            if (lab.hasSpecialty(mathematicsScience)) {
+                result.add(building);
+            }
         }
         
         return result;
@@ -354,9 +360,11 @@ implements ResearchScientificStudy, Serializable {
             if (rover.hasLab()) {
                 Lab lab = rover.getLab();
                 boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-                boolean speciality = lab.hasSpeciality(mathematicsScience);
+                boolean specialty = lab.hasSpecialty(mathematicsScience);
                 boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
-                if (availableSpace && speciality && !malfunction) result = lab;
+                if (availableSpace && specialty && !malfunction) {
+                    result = lab;
+                }
             }
         }
         
@@ -380,6 +388,10 @@ implements ResearchScientificStudy, Serializable {
                 malfunctions = labBuilding.getMalfunctionManager();
             }
             else if (location.equals(Person.INVEHICLE)) {
+                
+                // Walk to lab internal location in rover.
+                walkToLabLocationInRover((Rover) person.getVehicle());
+                
                 lab.addResearcher();
                 malfunctions = person.getVehicle().getMalfunctionManager();
             }
@@ -401,19 +413,43 @@ implements ResearchScientificStudy, Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), labBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, labBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, labBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                labBuilding)) {
+            
+            // Add subtask for walking to lab building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    labBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to lab building.
-            BuildingManager.addPersonToBuilding(person, labBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to lab building " + 
+                    labBuilding.getName());
+            endTask();
+        }
+    }
+    
+    /**
+     * Walk to lab interior location within rover.
+     * @param rover the lab rover.
+     */
+    private void walkToLabLocationInRover(Rover rover) {
+        
+        // Determine location of lab within rover.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double roverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
+        Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(roverLoc.getX(), 
+                roverLoc.getY(), rover);
+        
+        if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), 
+                rover)) {
+            
+            // Add subtask for walking to lab interior location.
+            addSubTask(new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), 
+                    rover));
+        }
+        else {
+            logger.fine(person.getName() + " unable to walk to lab interior location in " + 
+                    rover.getName());
+            endTask();
         }
     }
     
@@ -452,18 +488,26 @@ implements ResearchScientificStudy, Serializable {
         // Determine effective research time based on the mathematics skill.
         double modelingTime = time;
         int mathematicsSkill = getEffectiveSkillLevel();
-        if (mathematicsSkill == 0) modelingTime /= 2D;
-        if (mathematicsSkill > 1) modelingTime += modelingTime * (.2D * mathematicsSkill);
+        if (mathematicsSkill == 0){
+            modelingTime /= 2D;
+        }
+        else if (mathematicsSkill > 1) {
+            modelingTime += modelingTime * (.2D * mathematicsSkill);
+        }
         
         // Modify by tech level of laboratory.
         int techLevel = lab.getTechnologyLevel();
-        if (techLevel > 0) modelingTime *= techLevel;
+        if (techLevel > 0) {
+            modelingTime *= techLevel;
+        }
         
         // If research assistant, modify by assistant's effective skill.
         if (hasResearchAssistant()) {
             SkillManager manager = researchAssistant.getMind().getSkillManager();
             int assistantSkill = manager.getEffectiveSkillLevel(SkillType.MATHEMATICS);
-            if (mathematicsSkill > 0) modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
+            if (mathematicsSkill > 0) {
+                modelingTime *= 1D + ((double) assistantSkill / (double) mathematicsSkill);
+            }
         }
         
         return modelingTime;
@@ -471,39 +515,58 @@ implements ResearchScientificStudy, Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (MODELING.equals(getPhase())) return modelingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (MODELING.equals(getPhase())) {
+            return modelingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
     
     /**
      * Performs the mathematical modeling phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double modelingPhase(double time) {
         // If person is incapacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
         
         // Check for laboratory malfunction.
-        if (malfunctions.hasMalfunction()) endTask();
+        if (malfunctions.hasMalfunction()) {
+            endTask();
+        }
         
         // Check if research in study is completed.
         boolean isPrimary = study.getPrimaryResearcher().equals(person);
         if (isPrimary) {
-            if (study.isPrimaryResearchCompleted()) endTask();
+            if (study.isPrimaryResearchCompleted()) {
+                endTask();
+            }
         }
         else {
-            if (study.isCollaborativeResearchCompleted(person)) endTask();
+            if (study.isCollaborativeResearchCompleted(person)) {
+                endTask();
+            }
         }
         
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
         
         // Add modeling work time to study.
         double modelingTime = getEffectiveModelingTime(time);
-        if (isPrimary) study.addPrimaryResearchWorkTime(modelingTime);
-        else study.addCollaborativeResearchWorkTime(person, modelingTime);
+        if (isPrimary) {
+            study.addPrimaryResearchWorkTime(modelingTime);
+        }
+        else {
+            study.addCollaborativeResearchWorkTime(person, modelingTime);
+        }
         
         // Add experience
         addExperience(modelingTime);
@@ -524,12 +587,20 @@ implements ResearchScientificStudy, Serializable {
 
         // Mathematics skill modification.
         int skill = getEffectiveSkillLevel();
-        if (skill <= 3) chance *= (4 - skill);
-        else chance /= (skill - 2);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
         Malfunctionable entity = null;
-        if (lab instanceof Research) entity = ((Research) lab).getBuilding();
-        else entity = person.getVehicle();
+        if (lab instanceof Research) {
+            entity = ((Research) lab).getBuilding();
+        }
+        else {
+            entity = person.getVehicle();
+        }
         
         if (entity != null) {
          
@@ -544,55 +615,40 @@ implements ResearchScientificStudy, Serializable {
         }
     }
     
-    /**
-     * Ends the task and performs any final actions.
-     */
+    @Override
     public void endTask() {
         super.endTask();
         
         // Remove person from lab so others can use it.
         try {
-            if (lab != null) lab.removeResearcher();
+            if (lab != null) {
+                lab.removeResearcher();
+            }
         }
         catch(Exception e) {}
     }
     
-    /**
-     * Gets the scientific field that is being researched for the study.
-     * @return scientific field.
-     */
+    @Override
     public ScienceType getResearchScience() {
         return ScienceType.MATHEMATICS;
     }
     
-    /**
-     * Gets the researcher who is being assisted.
-     * @return researcher.
-     */
+    @Override
     public Person getResearcher() {
         return person;
     }
     
-    /**
-     * Checks if there is a research assistant.
-     * @return research assistant.
-     */
+    @Override
     public boolean hasResearchAssistant() {
         return (researchAssistant != null);
     }
     
-    /**
-     * Gets the research assistant.
-     * @return research assistant or null if none.
-     */
+    @Override
     public Person getResearchAssistant() {
         return researchAssistant;
     }
     
-    /**
-     * Sets the research assistant.
-     * @param researchAssistant the research assistant.
-     */
+    @Override
     public void setResearchAssistant(Person researchAssistant) {
         this.researchAssistant = researchAssistant;
     }

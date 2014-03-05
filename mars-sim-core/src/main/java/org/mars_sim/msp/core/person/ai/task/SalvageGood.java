@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -29,9 +29,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -44,10 +42,10 @@ extends Task
 implements Serializable {
     
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
+    private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
     
     // Task phase
     private static final String SALVAGE = "Salvage";
@@ -65,7 +63,6 @@ implements Serializable {
     /** 
      * Constructor.
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public SalvageGood(Person person) {
         super("Salvage Good", person, true, false, STRESS_MODIFIER, 
@@ -79,13 +76,19 @@ implements Serializable {
             // Walk to manufacturing workshop.
             walkToWorkshopBuilding(manufactureBuilding);
         }
-        else endTask();
+        else {
+            endTask();
+        }
         
         if (workshop != null) {
             // Determine salvage process.
             process = determineSalvageProcess();
-            if (process != null) setDescription(process.toString());
-            else endTask();
+            if (process != null) {
+                setDescription(process.toString());
+            }
+            else {
+                endTask();
+            }
         }
         
         // Initialize phase
@@ -168,19 +171,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), workshopBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, workshopBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, workshopBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                workshopBuilding)) {
+            
+            // Add subtask for walking to workshop building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    workshopBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to workshop building.
-            BuildingManager.addPersonToBuilding(person, workshopBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to workshop building " + 
+                    workshopBuilding.getName());
+            endTask();
         }
     }
     
@@ -213,19 +214,21 @@ implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null)
+        if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        if (SALVAGE.equals(getPhase()))
+        }
+        else if (SALVAGE.equals(getPhase())) {
             return salvagePhase(time);
-        else
+        }
+        else {
             return time;
+        }
     }
     
     /**
      * Perform the salvaging phase.
      * @param time the time to perform (millisols)
      * @return remaining time after performing (millisols)
-     * @throws Exception if error performing phase.
      */
     private double salvagePhase(double time) {
 
@@ -244,13 +247,19 @@ implements Serializable {
         // Determine amount of effective work time based on "Materials Science" skill.
         double workTime = time;
         int skill = getEffectiveSkillLevel();
-        if (skill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) skill);
+        if (skill == 0) {
+            workTime /= 2;
+        }
+        else {
+            workTime += workTime * (.2D * (double) skill);
+        }
 
         // Apply work time to salvage process.
         double remainingWorkTime = process.getWorkTimeRemaining();
         double providedWorkTime = workTime;
-        if (providedWorkTime > remainingWorkTime) providedWorkTime = remainingWorkTime;
+        if (providedWorkTime > remainingWorkTime) {
+            providedWorkTime = remainingWorkTime;
+        }
         process.addWorkTime(providedWorkTime, skill);
         if (process.getWorkTimeRemaining() <= 0D) {
             workshop.endSalvageProcess(process, false);
@@ -276,10 +285,12 @@ implements Serializable {
 
         // Materials science skill modification.
         int skill = getEffectiveSkillLevel();
-        if (skill <= 3)
+        if (skill <= 3) {
             chance *= (4 - skill);
-        else
+        }
+        else {
             chance /= (skill - 2);
+        }
 
         // Modify based on the workshop building's wear condition.
         chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
@@ -294,10 +305,8 @@ implements Serializable {
     /**
      * Gets an available manufacturing building that the person can use.
      * Returns null if no manufacturing building is currently available.
-     *
      * @param person the person
      * @return available manufacturing building
-     * @throws BuildingException if error finding manufacturing building.
      */
     private static Building getAvailableManufacturingBuilding(Person person) {
         
@@ -331,7 +340,6 @@ implements Serializable {
      * @param buildingList list of buildings with the manufacture function.
      * @param skill the materials science skill level of the person.
      * @return list of manufacture buildings needing work.
-     * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList, 
             int skill) {
@@ -342,7 +350,9 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.requiresSalvagingWork(skill)) result.add(building);
+            if (manufacturingFunction.requiresSalvagingWork(skill)) {
+                result.add(building);
+            }
         }
         
         return result;
@@ -353,7 +363,6 @@ implements Serializable {
      * @param buildingList the original building list.
      * @param skill the materials science skill level of the person.
      * @return subset list of buildings with processes requiring work, or original list if none found.
-     * @throws BuildingException if error determining building processes.
      */
     private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList, 
             int skill) {
@@ -364,11 +373,15 @@ implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (hasSalvageProcessRequiringWork(building, skill)) result.add(building);
+            if (hasSalvageProcessRequiringWork(building, skill)) {
+                result.add(building);
+            }
         }
         
         // If no building with processes requiring work, return original list.
-        if (result.size() == 0) result = buildingList;
+        if (result.size() == 0) {
+            result = buildingList;
+        }
         
         return result;
     }
@@ -378,20 +391,22 @@ implements Serializable {
      * @param manufacturingBuilding the manufacturing building.
      * @param skill the materials science skill level of the person.
      * @return true if processes requiring work.
-     * @throws BuildingException if building is not manufacturing.
      */
-    private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, int skill) 
-            {
+    private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
+            int skill) {
         
         boolean result = false;
         
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
+        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(
+                Manufacture.NAME);
         Iterator<SalvageProcess> i = manufacturingFunction.getSalvageProcesses().iterator();
         while (i.hasNext()) {
             SalvageProcess process = i.next();
             boolean workRequired = (process.getWorkTimeRemaining() > 0D);
             boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
-            if (workRequired && skillRequired) result = true;
+            if (workRequired && skillRequired) {
+                result = true;
+            }
         }
         
         return result;
@@ -402,10 +417,9 @@ implements Serializable {
      * with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @return subset list of highest tech level buildings.
-     * @throws BuildingException if any buildings in building list don't have the manufacture function.
      */
-    private static List<Building> getHighestManufacturingTechLevelBuildings(List<Building> buildingList)
-            {
+    private static List<Building> getHighestManufacturingTechLevelBuildings(
+            List<Building> buildingList) {
         
         List<Building> result = new ArrayList<Building>();
         
@@ -413,16 +427,21 @@ implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() > highestTechLevel) 
+            Manufacture manufacturingFunction = (Manufacture) building.getFunction(
+                    Manufacture.NAME);
+            if (manufacturingFunction.getTechLevel() > highestTechLevel) {
                 highestTechLevel = manufacturingFunction.getTechLevel();
+            }
         }
         
         Iterator<Building> j = buildingList.iterator();
         while (j.hasNext()) {
             Building building = j.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() == highestTechLevel) result.add(building);
+            Manufacture manufacturingFunction = (Manufacture) building.getFunction(
+                    Manufacture.NAME);
+            if (manufacturingFunction.getTechLevel() == highestTechLevel) {
+                result.add(building);
+            }
         }
             
         return result;
@@ -434,16 +453,17 @@ implements Serializable {
      * @param person the person to perform manufacturing.
      * @param manufacturingBuilding the manufacturing building.
      * @return highest process good value.
-     * @throws BuildingException if error determining process value.
      */
     private static double getHighestSalvagingProcessValue(Person person, 
             Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
 
-        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
+                SkillType.MATERIALS_SCIENCE);
 
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(Manufacture.NAME);
+        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(
+                Manufacture.NAME);
         int techLevel = manufacturingFunction.getTechLevel();
 
         Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
@@ -453,9 +473,11 @@ implements Serializable {
             if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
                     isSalvageProcessRunning(process, manufacturingFunction)) {
                 Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-                double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, person);
-                if (processValue > highestProcessValue)
+                double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, 
+                        person);
+                if (processValue > highestProcessValue) {
                     highestProcessValue = processValue;
+                }
             }
         }
 
@@ -476,8 +498,9 @@ implements Serializable {
         Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
         while (i.hasNext()) {
             SalvageProcess process = i.next();
-            if (process.getInfo().getItemName() == processInfo.getItemName())
+            if (process.getInfo().getItemName() == processInfo.getItemName()) {
                 result = true;
+            }
         }
 
         return result;
@@ -507,7 +530,6 @@ implements Serializable {
     /**
      * Creates a new salvage process if possible.
      * @return the new salvage process or null if none.
-     * @throws Exception if error creating salvage process.
      */
     private SalvageProcess createNewSalvageProcess() {
         SalvageProcess result = null;
@@ -550,11 +572,12 @@ implements Serializable {
     /**
      * Determines a salvage process used for the task.
      * @return salvage process or null if none determined.
-     * @throws Exception if error determining the salvage process.
      */
     private SalvageProcess determineSalvageProcess() {
         SalvageProcess process = getRunningSalvageProcess();
-        if (process == null) process = createNewSalvageProcess();
+        if (process == null) {
+            process = createNewSalvageProcess();
+        }
         return process;
     }
     
