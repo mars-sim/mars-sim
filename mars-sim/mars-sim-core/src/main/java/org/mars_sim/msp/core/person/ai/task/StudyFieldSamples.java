@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -38,9 +38,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -55,6 +53,7 @@ implements ResearchScientificStudy, Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(StudyFieldSamples.class.getName());
 
 	/** The stress modified per millisol. */
@@ -62,7 +61,7 @@ implements ResearchScientificStudy, Serializable {
 
 	/** Task phase. */
 	private static final String STUDYING_SAMPLES = "Studying Samples";
-
+    
 	/** Mass (kg) of field sample to study. */
 	private static final double SAMPLE_MASS = 1D;
 
@@ -80,713 +79,751 @@ implements ResearchScientificStudy, Serializable {
 	/** The research assistant. */
 	private Person researchAssistant;
 
-	/**
-	 * Constructor
-	 * @param person the person performing the task.
-	 * @throws Exception if error creating task.
-	 */
-	public StudyFieldSamples(Person person) {
-		// Use Task constructor.
-		super("Study Field Samples", person, true, false, STRESS_MODIFIER, true, 
-				10D + RandomUtil.getRandomDouble(40D));
-
-		// Determine study.
-		study = determineStudy();
-		if (study != null) {
-			science = getScience(person, study);
-			if (science != null) {
-				lab = getLocalLab(person, science);
-				if (lab != null) {
-					addPersonToLab();
-				}
-				else {
-					logger.info("lab could not be determined.");
-					endTask();
-				}
-			}
-			else {
-				logger.info("science could not be determined");
-				endTask();
-			}
-		}
-		else {
-			logger.info("study could not be determined");
-			endTask();
-		}
-
-		// Take field samples from inventory.
-		if (!isDone()) {
-			Unit container = person.getContainerUnit();
-			if (container != null) {
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				Inventory inv = container.getInventory();
-				double totalRockSampleMass = inv.getAmountResourceStored(rockSamples, false);
-				if (totalRockSampleMass >= SAMPLE_MASS) {
-					double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
-					if (fieldSampleMass > totalRockSampleMass) fieldSampleMass = totalRockSampleMass;
-					inv.retrieveAmountResource(rockSamples, fieldSampleMass);
-				}
-			}
-		}
-
-		// Initialize phase
-		addPhase(STUDYING_SAMPLES);
-		setPhase(STUDYING_SAMPLES);
-	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		// Create list of possible sciences for studying field samples.
+    /**
+     * Constructor
+     * @param person the person performing the task.
+     */
+    public StudyFieldSamples(Person person) {
+        // Use Task constructor.
+        super("Study Field Samples", person, true, false, STRESS_MODIFIER, true, 
+                10D + RandomUtil.getRandomDouble(40D));
+        
+        // Determine study.
+        study = determineStudy();
+        if (study != null) {
+            science = getScience(person, study);
+            if (science != null) {
+                lab = getLocalLab(person, science);
+                if (lab != null) {
+                    addPersonToLab();
+                }
+                else {
+                    logger.info("lab could not be determined.");
+                    endTask();
+                }
+            }
+            else {
+                logger.info("science could not be determined");
+                endTask();
+            }
+        }
+        else {
+            logger.info("study could not be determined");
+            endTask();
+        }
+        
+        // Take field samples from inventory.
+        if (!isDone()) {
+            Unit container = person.getContainerUnit();
+            if (container != null) {
+                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                Inventory inv = container.getInventory();
+                double totalRockSampleMass = inv.getAmountResourceStored(rockSamples, false);
+                if (totalRockSampleMass >= SAMPLE_MASS) {
+                    double fieldSampleMass = RandomUtil.getRandomDouble(SAMPLE_MASS * 2D);
+                    if (fieldSampleMass > totalRockSampleMass) {
+                        fieldSampleMass = totalRockSampleMass;
+                    }
+                    inv.retrieveAmountResource(rockSamples, fieldSampleMass);
+                }
+            }
+        }
+        
+        // Initialize phase
+        addPhase(STUDYING_SAMPLES);
+        setPhase(STUDYING_SAMPLES);
+    }
+    
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
+     */
+    public static double getProbability(Person person) {
+        double result = 0D;
+        
+        // Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = getFieldSciences();
-
-		// Add probability for researcher's primary study (if any).
-		ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-			if (!primaryStudy.isPrimaryResearchCompleted()) {
-				if (fieldSciences.contains(primaryStudy.getScience())) {
-					try {
-						Lab lab = getLocalLab(person, primaryStudy.getScience());
-						if (lab != null) {
-							double primaryResult = 50D;
-
-							// Get lab building crowding modifier.
-							primaryResult *= getLabCrowdingModifier(person, lab);
-
-							// If researcher's current job isn't related to study science, divide by two.
-							Job job = person.getMind().getJob();
-							if (job != null) {
+        
+        // Add probability for researcher's primary study (if any).
+        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
+        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
+        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
+            if (!primaryStudy.isPrimaryResearchCompleted()) {
+                if (fieldSciences.contains(primaryStudy.getScience())) {
+                    try {
+                        Lab lab = getLocalLab(person, primaryStudy.getScience());
+                        if (lab != null) {
+                            double primaryResult = 50D;
+                    
+                            // Get lab building crowding modifier.
+                            primaryResult *= getLabCrowdingModifier(person, lab);
+                    
+                            // If researcher's current job isn't related to study science, divide by two.
+                            Job job = person.getMind().getJob();
+                            if (job != null) {
 								ScienceType jobScience = ScienceType.getJobScience(job);
-								if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
-							}
-
-							result += primaryResult;
-						}
-					}
-					catch (Exception e) {
-						logger.severe("getProbability(): " + e.getMessage());
-					}
-				}
-			}
-		}
-
-		// Add probability for each study researcher is collaborating on.
-		Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-				if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-					ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
-					if (fieldSciences.contains(collabScience)) {
-						try {
-							Lab lab = getLocalLab(person, collabScience);
-							if (lab != null) {
-								double collabResult = 25D;
-
-								// Get lab building crowding modifier.
-								collabResult *= getLabCrowdingModifier(person, lab);
-
-								// If researcher's current job isn't related to study science, divide by two.
-								Job job = person.getMind().getJob();
-								if (job != null) {
-									ScienceType jobScience = ScienceType.getJobScience(job);
-									if (!collabScience.equals(jobScience)) collabResult /= 2D;
+								if (!primaryStudy.getScience().equals(jobScience)) {
+								    primaryResult /= 2D;
 								}
-
-								result += collabResult;
-							}
-						}
-						catch (Exception e) {
-							logger.severe("getProbability(): " + e.getMessage());
-						}
-					}
-				}
-			}
-		}
-
-		// Check that there are available field samples to study.
-		try {
-			Unit container = person.getContainerUnit();
-			if (container != null) {
-				Inventory inv = container.getInventory();
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				if (inv.getAmountResourceStored(rockSamples, false) < SAMPLE_MASS) result = 0D;
-			}
-		}
-		catch (Exception e) {
-			logger.severe("getProbability(): " + e.getMessage());
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-			result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets all the sciences related to studying field samples.
-	 * @return list of sciences.
-	 */
+                            }
+                    
+                            result += primaryResult;
+                        }
+                    }
+                    catch (Exception e) {
+                        logger.severe("getProbability(): " + e.getMessage());
+                    }
+                }
+            }
+        }
+        
+        // Add probability for each study researcher is collaborating on.
+        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
+        while (i.hasNext()) {
+            ScientificStudy collabStudy = i.next();
+            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
+                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
+					ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
+                    if (fieldSciences.contains(collabScience)) {
+                        try {
+                            Lab lab = getLocalLab(person, collabScience);
+                            if (lab != null) {
+                                double collabResult = 25D;
+                        
+                                // Get lab building crowding modifier.
+                                collabResult *= getLabCrowdingModifier(person, lab);
+                        
+                                // If researcher's current job isn't related to study science, divide by two.
+                                Job job = person.getMind().getJob();
+                                if (job != null) {
+									ScienceType jobScience = ScienceType.getJobScience(job);
+									if (!collabScience.equals(jobScience)) {
+									    collabResult /= 2D;
+									}
+                                }
+                        
+                                result += collabResult;
+                            }
+                        }
+                        catch (Exception e) {
+                            logger.severe("getProbability(): " + e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Check that there are available field samples to study.
+        try {
+            Unit container = person.getContainerUnit();
+            if (container != null) {
+                Inventory inv = container.getInventory();
+                AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
+                if (inv.getAmountResourceStored(rockSamples, false) < SAMPLE_MASS) {
+                    result = 0D;
+                }
+            }
+        }
+        catch (Exception e) {
+            logger.severe("getProbability(): " + e.getMessage());
+        }
+        
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets all the sciences related to studying field samples.
+     * @return list of sciences.
+     */
 	private static List<ScienceType> getFieldSciences() {
-
-		// Create list of possible sciences for studying field samples.
+    
+        // Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = new ArrayList<ScienceType>(3);
 		fieldSciences.add(ScienceType.AREOLOGY);
 		fieldSciences.add(ScienceType.BIOLOGY);
 		fieldSciences.add(ScienceType.CHEMISTRY);
-
-		return fieldSciences;
-	}
-
-	/**
-	 * Gets the crowding modifier for a researcher to use a given laboratory building.
-	 * @param researcher the researcher.
-	 * @param lab the laboratory.
-	 * @return crowding modifier.
-	 * @throws BuildingException if error determining lab building.
-	 */
-	private static double getLabCrowdingModifier(Person researcher, Lab lab) 
-	{
-		double result = 1D;
-		if (researcher.getLocationSituation().equals(Person.INSETTLEMENT)) {
-			Building labBuilding = ((Research) lab).getBuilding();  
-			if (labBuilding != null) {
-				result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
-				result *= Task.getRelationshipModifier(researcher, labBuilding);
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * Determines the scientific study that will be researched.
-	 * @return study or null if none available.
-	 */
-	private ScientificStudy determineStudy() {
-		ScientificStudy result = null;
-
-		List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
-
-		// Create list of possible sciences for studying field samples.
+        
+        return fieldSciences;
+    }
+        
+    /**
+     * Gets the crowding modifier for a researcher to use a given laboratory building.
+     * @param researcher the researcher.
+     * @param lab the laboratory.
+     * @return crowding modifier.
+     */
+    private static double getLabCrowdingModifier(Person researcher, Lab lab) {
+        double result = 1D;
+        if (researcher.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            Building labBuilding = ((Research) lab).getBuilding();  
+            if (labBuilding != null) {
+                result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
+                result *= Task.getRelationshipModifier(researcher, labBuilding);
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Determines the scientific study that will be researched.
+     * @return study or null if none available.
+     */
+    private ScientificStudy determineStudy() {
+        ScientificStudy result = null;
+        
+        List<ScientificStudy> possibleStudies = new ArrayList<ScientificStudy>();
+        
+        // Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = getFieldSciences();
-
-		// Add primary study if appropriate science and in research phase.
-		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
-		if (primaryStudy != null) {
-			if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
-					!primaryStudy.isPrimaryResearchCompleted()) {
-				if (fieldSciences.contains(primaryStudy.getScience())) {
-					// Primary study added twice to double chance of random selection.
-					possibleStudies.add(primaryStudy);
-					possibleStudies.add(primaryStudy);
-				}
-			}
-		}
-
-		// Add all collaborative studies with appropriate sciences and in research phase.
-		Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
-					!collabStudy.isCollaborativeResearchCompleted(person)) {
+        
+        // Add primary study if appropriate science and in research phase.
+        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+        ScientificStudy primaryStudy = manager.getOngoingPrimaryStudy(person);
+        if (primaryStudy != null) {
+            if (ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase()) && 
+                    !primaryStudy.isPrimaryResearchCompleted()) {
+                if (fieldSciences.contains(primaryStudy.getScience())) {
+                    // Primary study added twice to double chance of random selection.
+                    possibleStudies.add(primaryStudy);
+                    possibleStudies.add(primaryStudy);
+                }
+            }
+        }
+        
+        // Add all collaborative studies with appropriate sciences and in research phase.
+        Iterator<ScientificStudy> i = manager.getOngoingCollaborativeStudies(person).iterator();
+        while (i.hasNext()) {
+            ScientificStudy collabStudy = i.next();
+            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase()) && 
+                    !collabStudy.isCollaborativeResearchCompleted(person)) {
 				ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
-				if (fieldSciences.contains(collabScience)) {
-					possibleStudies.add(collabStudy);
-				}
-			}
-		}
-
-		// Randomly select study.
-		if (possibleStudies.size() > 0) {
-			int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
-			result = possibleStudies.get(selected);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets the field of science that the researcher is involved with in a study.
-	 * @param researcher the researcher.
-	 * @param study the scientific study.
-	 * @return the field of science or null if researcher is not involved with study.
-	 */
+                if (fieldSciences.contains(collabScience)) {
+                    possibleStudies.add(collabStudy);
+                }
+            }
+        }
+        
+        // Randomly select study.
+        if (possibleStudies.size() > 0) {
+            int selected = RandomUtil.getRandomInt(possibleStudies.size() - 1);
+            result = possibleStudies.get(selected);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets the field of science that the researcher is involved with in a study.
+     * @param researcher the researcher.
+     * @param study the scientific study.
+     * @return the field of science or null if researcher is not involved with study.
+     */
 	private static ScienceType getScience(Person researcher, ScientificStudy study) {
 		ScienceType result = null;
-
-		if (study.getPrimaryResearcher().equals(researcher)) {
-			result = study.getScience();
-		}
-		else if (study.getCollaborativeResearchers().containsKey(researcher)) {
-			result = study.getCollaborativeResearchers().get(researcher);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a local lab for studying field samples.
-	 * @param person the person checking for the lab.
-	 * @param science the science to research.
-	 * @return laboratory found or null if none.
-	 * @throws Exception if error getting a lab.
-	 */
+        
+        if (study.getPrimaryResearcher().equals(researcher)) {
+            result = study.getScience();
+        }
+        else if (study.getCollaborativeResearchers().containsKey(researcher)) {
+            result = study.getCollaborativeResearchers().get(researcher);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a local lab for studying field samples.
+     * @param person the person checking for the lab.
+     * @param science the science to research.
+     * @return laboratory found or null if none.
+     */
 	private static Lab getLocalLab(Person person, ScienceType science) {
-		Lab result = null;
-
-		String location = person.getLocationSituation();
-		if (location.equals(Person.INSETTLEMENT)) result = getSettlementLab(person, science);
-		else if (location.equals(Person.INVEHICLE)) result = getVehicleLab(person.getVehicle(), science);
-
-		return result;
-	}
-
-	/**
-	 * Gets a settlement lab for studying field samples.
-	 * @param person the person looking for a lab.
-	 * @param science the science to research.
-	 * @return a valid research lab.
-	 */
+        Lab result = null;
+        
+        String location = person.getLocationSituation();
+        if (location.equals(Person.INSETTLEMENT)) {
+            result = getSettlementLab(person, science);
+        }
+        else if (location.equals(Person.INVEHICLE)) {
+            result = getVehicleLab(person.getVehicle(), science);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a settlement lab for studying field samples.
+     * @param person the person looking for a lab.
+     * @param science the science to research.
+     * @return a valid research lab.
+     */
 	private static Lab getSettlementLab(Person person, ScienceType science) {
-		Lab result = null;
+        Lab result = null;
+        
+        BuildingManager manager = person.getSettlement().getBuildingManager();
+        List<Building> labBuildings = manager.getBuildings(Research.NAME);
+        labBuildings = getSettlementLabsWithSpecialty(science, labBuildings);
+        labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
+        labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
+        labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
 
-		BuildingManager manager = person.getSettlement().getBuildingManager();
-		List<Building> labBuildings = manager.getBuildings(Research.NAME);
-		labBuildings = getSettlementLabsWithSpeciality(science, labBuildings);
-		labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
-		labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
-		labBuildings = BuildingManager.getLeastCrowdedBuildings(labBuildings);
-
-		if (labBuildings.size() > 0) {
-			Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-					person, labBuildings);
-			Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-			result = (Research) building.getFunction(Research.NAME);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of research buildings with available research space from a list of buildings 
-	 * with the research function.
-	 * @param buildingList list of buildings with research function.
-	 * @return research buildings with available lab space.
-	 * @throws BuildingException if building list contains buildings without research function.
-	 */
-	private static List<Building> getSettlementLabsWithAvailableSpace(List<Building> buildingList) 
-	{
-		List<Building> result = new ArrayList<Building>();
-
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = (Research) building.getFunction(Research.NAME);
-			if (lab.getResearcherNum() < lab.getLaboratorySize()) result.add(building);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets a list of research buildings with a given science speciality from a list of 
-	 * buildings with the research function.
-	 * @param science the science speciality.
-	 * @param buildingList list of buildings with research function.
-	 * @return research buildings with science speciality.
-	 * @throws BuildingException if building list contains buildings without research function.
-	 */
-	private static List<Building> getSettlementLabsWithSpeciality(ScienceType science, List<Building> buildingList) 
-	{
-		List<Building> result = new ArrayList<Building>();
-
-		Iterator<Building> i = buildingList.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = (Research) building.getFunction(Research.NAME);
-			if (lab.hasSpeciality(science)) result.add(building);
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an available lab in a vehicle.
-	 * Returns null if no lab is currently available.
-	 * @param vehicle the vehicle
-	 * @param science the science to research.
-	 * @return available lab
-	 */
+        if (labBuildings.size() > 0) {
+            Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                    person, labBuildings);
+            Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
+            result = (Research) building.getFunction(Research.NAME);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of research buildings with available research space from a list of buildings 
+     * with the research function.
+     * @param buildingList list of buildings with research function.
+     * @return research buildings with available lab space.
+     */
+    private static List<Building> getSettlementLabsWithAvailableSpace(
+            List<Building> buildingList) {
+        List<Building> result = new ArrayList<Building>();
+        
+        Iterator<Building> i = buildingList.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Research lab = (Research) building.getFunction(Research.NAME);
+            if (lab.getResearcherNum() < lab.getLaboratorySize()) {
+                result.add(building);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of research buildings with a given science specialty from a list of 
+     * buildings with the research function.
+     * @param science the science specialty.
+     * @param buildingList list of buildings with research function.
+     * @return research buildings with science specialty.
+     */
+    private static List<Building> getSettlementLabsWithSpecialty(ScienceType science, 
+            List<Building> buildingList) {
+        List<Building> result = new ArrayList<Building>();
+        
+        Iterator<Building> i = buildingList.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Research lab = (Research) building.getFunction(Research.NAME);
+            if (lab.hasSpecialty(science)) {
+                result.add(building);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets an available lab in a vehicle.
+     * Returns null if no lab is currently available.
+     * @param vehicle the vehicle
+     * @param science the science to research.
+     * @return available lab
+     */
 	private static Lab getVehicleLab(Vehicle vehicle, ScienceType science) {
-
-		Lab result = null;
-
-		if (vehicle instanceof Rover) {
-			Rover rover = (Rover) vehicle;
-			if (rover.hasLab()) {
-				Lab lab = rover.getLab();
-				boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
-				boolean speciality = lab.hasSpeciality(science);
-				boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
-				if (availableSpace && speciality && !malfunction) result = lab;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Adds a person to a lab.
-	 */
-	private void addPersonToLab() {
-
-		try {
-			String location = person.getLocationSituation();
-			if (location.equals(Person.INSETTLEMENT)) {
-				Building labBuilding = ((Research) lab).getBuilding();
-
-				// Walk to lab building.
-				walkToLabBuilding(labBuilding);
-				lab.addResearcher();
-				malfunctions = labBuilding.getMalfunctionManager();
-			}
-			else if (location.equals(Person.INVEHICLE)) {
-				lab.addResearcher();
-				malfunctions = person.getVehicle().getMalfunctionManager();
-			}
-		}
-		catch (Exception e) {
-			logger.log(Level.SEVERE,"addPersonToLab(): " + e.getMessage());
-		}
-	}
-
-	/**
-	 * Walk to lab building.
-	 * @param labBuilding the lab building.
-	 */
-	private void walkToLabBuilding(Building labBuilding) {
-
-		// Determine location within lab building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), labBuilding);
-
-		// Check if there is a valid interior walking path between buildings.
-		BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-		Building currentBuilding = BuildingManager.getBuilding(person);
-
-		if (connectorManager.hasValidPath(currentBuilding, labBuilding)) {
-			Task walkingTask = new WalkSettlementInterior(person, labBuilding, settlementLoc.getX(), 
-					settlementLoc.getY());
-			addSubTask(walkingTask);
-		}
-		else {
-			// TODO: Add task for EVA walking to get to lab building.
-			BuildingManager.addPersonToBuilding(person, labBuilding, settlementLoc.getX(), 
-					settlementLoc.getY());
-		}
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to relevant science skill
-		// (1 base experience point per 10 millisols of research time)
-		// Experience points adjusted by person's "Academic Aptitude" attribute.
-		double newPoints = time / 10D;
-		int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-				NaturalAttributeManager.ACADEMIC_APTITUDE);
-		newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
+        
+        Lab result = null;
+        
+        if (vehicle instanceof Rover) {
+            Rover rover = (Rover) vehicle;
+            if (rover.hasLab()) {
+                Lab lab = rover.getLab();
+                boolean availableSpace = (lab.getResearcherNum() < lab.getLaboratorySize());
+                boolean speciality = lab.hasSpecialty(science);
+                boolean malfunction = (rover.getMalfunctionManager().hasMalfunction());
+                if (availableSpace && speciality && !malfunction) result = lab;
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Adds a person to a lab.
+     */
+    private void addPersonToLab() {
+        
+        try {
+            String location = person.getLocationSituation();
+            if (location.equals(Person.INSETTLEMENT)) {
+                Building labBuilding = ((Research) lab).getBuilding();
+                
+                // Walk to lab building.
+                walkToLabBuilding(labBuilding);
+                lab.addResearcher();
+                malfunctions = labBuilding.getMalfunctionManager();
+            }
+            else if (location.equals(Person.INVEHICLE)) {
+                lab.addResearcher();
+                malfunctions = person.getVehicle().getMalfunctionManager();
+            }
+        }
+        catch (Exception e) {
+            logger.log(Level.SEVERE,"addPersonToLab(): " + e.getMessage());
+        }
+    }
+    
+    /**
+     * Walk to lab building.
+     * @param labBuilding the lab building.
+     */
+    private void walkToLabBuilding(Building labBuilding) {
+        
+        // Determine location within lab building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), labBuilding);
+        
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                labBuilding)) {
+            
+            // Add subtask for walking to lab building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    labBuilding));
+        }
+        else {
+            logger.fine(person.getName() + " unable to walk to lab building " + 
+                    labBuilding.getName());
+            endTask();
+        }
+    }
+    
+    @Override
+    protected void addExperience(double time) {
+        // Add experience to relevant science skill
+        // (1 base experience point per 10 millisols of research time)
+        // Experience points adjusted by person's "Academic Aptitude" attribute.
+        double newPoints = time / 10D;
+        int academicAptitude = person.getNaturalAttributeManager().getAttribute(
+            NaturalAttributeManager.ACADEMIC_APTITUDE);
+        newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
+        newPoints *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(science.getSkill(), newPoints);
-	}
+    }
 
-	/**
-	 * Gets the effective research time based on the person's science skill.
-	 * @param time the real amount of time (millisol) for research.
-	 * @return the effective amount of time (millisol) for research.
-	 */
-	private double getEffectiveResearchTime(double time) {
-		// Determine effective research time based on the science skill.
-		double researchTime = time;
-		int scienceSkill = getEffectiveSkillLevel();
-		if (scienceSkill == 0) researchTime /= 2D;
-		if (scienceSkill > 1) researchTime += researchTime * (.2D * scienceSkill);
-
-		// Modify by tech level of laboratory.
-		int techLevel = lab.getTechnologyLevel();
-		if (techLevel > 0) researchTime *= techLevel;
-
-		// If research assistant, modify by assistant's effective skill.
-		if (hasResearchAssistant()) {
-			SkillManager manager = researchAssistant.getMind().getSkillManager();
+    /**
+     * Gets the effective research time based on the person's science skill.
+     * @param time the real amount of time (millisol) for research.
+     * @return the effective amount of time (millisol) for research.
+     */
+    private double getEffectiveResearchTime(double time) {
+        // Determine effective research time based on the science skill.
+        double researchTime = time;
+        int scienceSkill = getEffectiveSkillLevel();
+        if (scienceSkill == 0) {
+            researchTime /= 2D;
+        }
+        else if (scienceSkill > 1) {
+            researchTime += researchTime * (.2D * scienceSkill);
+        }
+        
+        // Modify by tech level of laboratory.
+        int techLevel = lab.getTechnologyLevel();
+        if (techLevel > 0) {
+            researchTime *= techLevel;
+        }
+        
+        // If research assistant, modify by assistant's effective skill.
+        if (hasResearchAssistant()) {
+            SkillManager manager = researchAssistant.getMind().getSkillManager();
 			int assistantSkill = manager.getEffectiveSkillLevel(science.getSkill());
-			if (scienceSkill > 0) researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
-		}
-
-		return researchTime;
-	}
-
-	@Override
+			if (scienceSkill > 0) {
+			    researchTime *= 1D + ((double) assistantSkill / (double) scienceSkill);
+            }
+        }
+        
+        return researchTime;
+    }
+    
+    @Override
 	public List<SkillType> getAssociatedSkills() {
 		List<SkillType> results = new ArrayList<SkillType>(1);
 		results.add(science.getSkill());
-		return results;
-	}
+        return results;
+    }
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
+    @Override
+    public int getEffectiveSkillLevel() {
+        SkillManager manager = person.getMind().getSkillManager();
 		return manager.getEffectiveSkillLevel(science.getSkill());
-	}
+    }
 
-	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-		if (STUDYING_SAMPLES.equals(getPhase())) return studyingSamplesPhase(time);
-		else return time;
-	}
+    @Override
+    protected double performMappedPhase(double time) {
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (STUDYING_SAMPLES.equals(getPhase())) {
+            return studyingSamplesPhase(time);
+        }
+        else {
+            return time;
+        }
+    }
+    
+    /**
+     * Performs the studying samples phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double studyingSamplesPhase(double time) {
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
+        
+        // Check for laboratory malfunction.
+        if (malfunctions.hasMalfunction()) {
+            endTask();
+        }
+        
+        // Check if research in study is completed.
+        boolean isPrimary = study.getPrimaryResearcher().equals(person);
+        if (isPrimary) {
+            if (study.isPrimaryResearchCompleted()) {
+                endTask();
+            }
+        }
+        else {
+            if (study.isCollaborativeResearchCompleted(person)) {
+                endTask();
+            }
+        }
+        
+        if (isDone()) {
+            return time;
+        }
+        
+        // Add research work time to study.
+        double researchTime = getEffectiveResearchTime(time);
+        if (isPrimary) {
+            study.addPrimaryResearchWorkTime(researchTime);
+        }
+        else {
+            study.addCollaborativeResearchWorkTime(person, researchTime);
+        }
+        
+        // If areology science, improve explored site mineral concentration estimates.
+		if (ScienceType.AREOLOGY == science) improveMineralConcentrationEstimates(time);
+        
+        // Add experience
+        addExperience(researchTime);
+        
+        // Check for lab accident.
+        checkForAccident(time);
+        
+        return 0D;
+    }
+    
+    /**
+     * Check for accident in laboratory.
+     * @param time the amount of time researching (in millisols)
+     */
+    private void checkForAccident(double time) {
 
-	/**
-	 * Performs the studying samples phase.
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 * @throws Exception if error performing the phase.
-	 */
-	private double studyingSamplesPhase(double time) {
-		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() == 0D) endTask();
+        double chance = .001D;
 
-		// Check for laboratory malfunction.
-		if (malfunctions.hasMalfunction()) endTask();
-
-		// Check if research in study is completed.
-		boolean isPrimary = study.getPrimaryResearcher().equals(person);
-		if (isPrimary) {
-			if (study.isPrimaryResearchCompleted()) endTask();
+        // Science skill modification.
+		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(science.getSkill());
+		if (skill <= 3) {
+		    chance *= (4 - skill);
 		}
 		else {
-			if (study.isCollaborativeResearchCompleted(person)) endTask();
+		    chance /= (skill - 2);
 		}
 
-		if (isDone()) return time;
-
-		// Add research work time to study.
-		double researchTime = getEffectiveResearchTime(time);
-		if (isPrimary) study.addPrimaryResearchWorkTime(researchTime);
-		else study.addCollaborativeResearchWorkTime(person, researchTime);
-
-		// If areology science, improve explored site mineral concentration estimates.
-		if (ScienceType.AREOLOGY == science) improveMineralConcentrationEstimates(time);
-
-		// Add experience
-		addExperience(researchTime);
-
-		// Check for lab accident.
-		checkForAccident(time);
-
-		return 0D;
-	}
-
-	/**
-	 * Check for accident in laboratory.
-	 * @param time the amount of time researching (in millisols)
-	 */
-	private void checkForAccident(double time) {
-
-		double chance = .001D;
-
-		// Science skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(science.getSkill());
-		if (skill <= 3) chance *= (4 - skill);
-		else chance /= (skill - 2);
-
-		Malfunctionable entity = null;
-		if (lab instanceof Research) entity = ((Research) lab).getBuilding();
-		else entity = person.getVehicle();
-
-		if (entity != null) {
-
-			// Modify based on the entity's wear condition.
-			chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
-
-			if (RandomUtil.lessThanRandPercent(chance * time)) {
-				logger.info(person.getName() + " has a lab accident while studying field samples.");
-				entity.getMalfunctionManager().accident();
-			}
-		}
-	}
-
-	/**
-	 * Improve the mineral concentration estimates of an explored site.
-	 * @param time the amount of time available (millisols).
-	 */
-	private void improveMineralConcentrationEstimates(double time) {
-		double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
-		if (RandomUtil.getRandomDouble(1.0D) <= probability) {
-
-			// Determine explored site to improve estimations.
-			ExploredLocation site = determineExplorationSite();
-			if (site != null) {
-				MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
-				Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
-				Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
-				while (i.hasNext()) {
-					String mineralType = i.next();
-					double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
-					double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
-					double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
-					double estimationImprovement = RandomUtil.getRandomDouble(1D * getEffectiveSkillLevel());
-					if (estimationImprovement > estimationDiff) estimationImprovement = estimationDiff;
-					if (estimatedConcentration < actualConcentration) estimatedConcentration += estimationImprovement;
-					else estimatedConcentration -= estimationImprovement;
-					estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Determines an exploration site to improve mineral concentration estimates.
-	 * @return exploration site or null if none.
-	 */
-	private ExploredLocation determineExplorationSite() {
-
-		// Try to use an exploration mission site.
-		ExploredLocation result = getExplorationMissionSite();
-
-		// Try to use a site explored previously by the settlement.
-		if (result == null) result = getSettlementExploredSite();
-
-		return result;
-	}
-
-	/**
-	 * Gets an exploration site that's been explored by the person's current 
-	 * exploration mission (if any).
-	 * @return exploration site or null if none.
-	 */
-	private ExploredLocation getExplorationMissionSite() {
-		ExploredLocation result = null;
-
-		Mission mission = person.getMind().getMission();
-		if ((mission != null) && (mission instanceof Exploration)) {
-			Exploration explorationMission = (Exploration) mission;
-			List<ExploredLocation> exploredSites = explorationMission.getExploredSites();
-			if (exploredSites.size() > 0) {
-				int siteIndex = RandomUtil.getRandomInt(exploredSites.size() - 1);
-				ExploredLocation location = exploredSites.get(siteIndex);
-				if (!location.isMined() && !location.isReserved())
-					result = location;
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Gets an exploration site that was previously explored by the person's settlement.
-	 * @return exploration site or null if none.
-	 */
-	private ExploredLocation getSettlementExploredSite() {
-		ExploredLocation result = null;
-
-		Settlement settlement = person.getAssociatedSettlement();
-		if (settlement != null) {
-			List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
-			List<ExploredLocation> allExploredLocations = Simulation.instance().getMars().
-					getSurfaceFeatures().getExploredLocations();
-			Iterator<ExploredLocation> i = allExploredLocations.iterator();
-			while (i.hasNext()) {
-				ExploredLocation location = i.next();
-				if (settlement.equals(location.getSettlement()) && !location.isMined() && 
-						!location.isReserved())
-					settlementExploredLocations.add(location);
-			}
-
-			if (settlementExploredLocations.size() > 0) {
-				int siteIndex = RandomUtil.getRandomInt(settlementExploredLocations.size() - 1);
-				result = settlementExploredLocations.get(siteIndex);
-			}
-		}
-
-		return result;
-	}
-
-	/**
-	 * Ends the task and performs any final actions.
-	 */
-	public void endTask() {
-		super.endTask();
-
-		// Remove person from lab so others can use it.
-		try {
-			if (lab != null) lab.removeResearcher();
-		}
-		catch(Exception e) {}
-	}
-
-	/**
-	 * Gets the scientific field that is being researched for the study.
-	 * @return scientific field.
-	 */
-	public ScienceType getResearchScience() {
-		return science;
-	}
-
-	/**
-	 * Gets the researcher who is being assisted.
-	 * @return researcher.
-	 */
-	public Person getResearcher() {
-		return person;
-	}
-
-	/**
-	 * Checks if there is a research assistant.
-	 * @return research assistant.
-	 */
-	public boolean hasResearchAssistant() {
-		return (researchAssistant != null);
-	}
-
-	/**
-	 * Gets the research assistant.
-	 * @return research assistant or null if none.
-	 */
-	public Person getResearchAssistant() {
-		return researchAssistant;
-	}
-
-	/**
-	 * Sets the research assistant.
-	 * @param researchAssistant the research assistant.
-	 */
-	public void setResearchAssistant(Person researchAssistant) {
-		this.researchAssistant = researchAssistant;
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		study = null;
-		lab = null;
-		science = null;
-		malfunctions = null;
-		researchAssistant = null;
-	}
+        Malfunctionable entity = null;
+        if (lab instanceof Research) {
+            entity = ((Research) lab).getBuilding();
+        }
+        else {
+            entity = person.getVehicle();
+        }
+        
+        if (entity != null) {
+         
+            // Modify based on the entity's wear condition.
+            chance *= entity.getMalfunctionManager().getWearConditionAccidentModifier();
+            
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
+                logger.info(person.getName() + " has a lab accident while studying field samples.");
+                entity.getMalfunctionManager().accident();
+            }
+        }
+    }
+    
+    /**
+     * Improve the mineral concentration estimates of an explored site.
+     * @param time the amount of time available (millisols).
+     */
+    private void improveMineralConcentrationEstimates(double time) {
+        double probability = (time / 1000D) * getEffectiveSkillLevel() * ESTIMATE_IMPROVEMENT_FACTOR;
+        if (RandomUtil.getRandomDouble(1.0D) <= probability) {
+            
+            // Determine explored site to improve estimations.
+            ExploredLocation site = determineExplorationSite();
+            if (site != null) {
+                MineralMap mineralMap = Simulation.instance().getMars().getSurfaceFeatures().getMineralMap();
+                Map<String, Double> estimatedMineralConcentrations = site.getEstimatedMineralConcentrations();
+                Iterator<String> i = estimatedMineralConcentrations.keySet().iterator();
+                while (i.hasNext()) {
+                    String mineralType = i.next();
+                    double actualConcentration = mineralMap.getMineralConcentration(mineralType, site.getLocation());
+                    double estimatedConcentration = estimatedMineralConcentrations.get(mineralType);
+                    double estimationDiff = Math.abs(actualConcentration - estimatedConcentration);
+                    double estimationImprovement = RandomUtil.getRandomDouble(1D * getEffectiveSkillLevel());
+                    if (estimationImprovement > estimationDiff) {
+                        estimationImprovement = estimationDiff;
+                    }
+                    if (estimatedConcentration < actualConcentration) {
+                        estimatedConcentration += estimationImprovement;
+                    }
+                    else {
+                        estimatedConcentration -= estimationImprovement;
+                    }
+                    estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Determines an exploration site to improve mineral concentration estimates.
+     * @return exploration site or null if none.
+     */
+    private ExploredLocation determineExplorationSite() {
+        
+        // Try to use an exploration mission site.
+        ExploredLocation result = getExplorationMissionSite();
+        
+        // Try to use a site explored previously by the settlement.
+        if (result == null) {
+            result = getSettlementExploredSite();
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets an exploration site that's been explored by the person's current 
+     * exploration mission (if any).
+     * @return exploration site or null if none.
+     */
+    private ExploredLocation getExplorationMissionSite() {
+        ExploredLocation result = null;
+        
+        Mission mission = person.getMind().getMission();
+        if ((mission != null) && (mission instanceof Exploration)) {
+            Exploration explorationMission = (Exploration) mission;
+            List<ExploredLocation> exploredSites = explorationMission.getExploredSites();
+            if (exploredSites.size() > 0) {
+                int siteIndex = RandomUtil.getRandomInt(exploredSites.size() - 1);
+                ExploredLocation location = exploredSites.get(siteIndex);
+                if (!location.isMined() && !location.isReserved()) {
+                    result = location;
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets an exploration site that was previously explored by the person's settlement.
+     * @return exploration site or null if none.
+     */
+    private ExploredLocation getSettlementExploredSite() {
+        ExploredLocation result = null;
+        
+        Settlement settlement = person.getAssociatedSettlement();
+        if (settlement != null) {
+            List<ExploredLocation> settlementExploredLocations = new ArrayList<ExploredLocation>();
+            List<ExploredLocation> allExploredLocations = Simulation.instance().getMars().
+                    getSurfaceFeatures().getExploredLocations();
+            Iterator<ExploredLocation> i = allExploredLocations.iterator();
+            while (i.hasNext()) {
+                ExploredLocation location = i.next();
+                if (settlement.equals(location.getSettlement()) && !location.isMined() && 
+                        !location.isReserved()) {
+                    settlementExploredLocations.add(location);
+                }
+            }
+            
+            if (settlementExploredLocations.size() > 0) {
+                int siteIndex = RandomUtil.getRandomInt(settlementExploredLocations.size() - 1);
+                result = settlementExploredLocations.get(siteIndex);
+            }
+        }
+        
+        return result;
+    }
+    
+    @Override
+    public void endTask() {
+        super.endTask();
+        
+        // Remove person from lab so others can use it.
+        try {
+            if (lab != null) {
+                lab.removeResearcher();
+            }
+        }
+        catch(Exception e) {}
+    }
+    
+    @Override
+    public ScienceType getResearchScience() {
+        return science;
+    }
+    
+    @Override
+    public Person getResearcher() {
+        return person;
+    }
+    
+    @Override
+    public boolean hasResearchAssistant() {
+        return (researchAssistant != null);
+    }
+    
+    @Override
+    public Person getResearchAssistant() {
+        return researchAssistant;
+    }
+    
+    @Override
+    public void setResearchAssistant(Person researchAssistant) {
+        this.researchAssistant = researchAssistant;
+    }
+    
+    @Override
+    public void destroy() {
+        super.destroy();
+        
+        study = null;
+        lab = null;
+        science = null;
+        malfunctions = null;
+        researchAssistant = null;
+    }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -23,7 +24,6 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
@@ -34,12 +34,11 @@ public class Teach
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/* default logger.
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
     private static Logger logger = Logger.getLogger(Teach.class.getName());
-    */
 
     // Task phase
     private static final String TEACHING = "Teaching";
@@ -51,13 +50,13 @@ implements Serializable {
     /** The improvement in relationship opinion of the teacher from the student per millisol. */
     private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
+    // Data members
     private Person student;
     private Task teachingTask;
 
     /**
      * Constructor.
      * @param person the person performing the task.
-     * @throws Exception if error constructing task.
      */
     public Teach(Person person) {
         super("Teaching", person, false, false, STRESS_MODIFIER, false, 0D);
@@ -88,8 +87,8 @@ implements Serializable {
     }
 
     /**
-     * Gets the weighted probability that a person might perform this task. It should return a 0 if there is no chance
-     * to perform this task given the person and his/her situation.
+     * Gets the weighted probability that a person might perform this task. It should return a 0 
+     * if there is no chance to perform this task given the person and his/her situation.
      * @param person the person to perform the task
      * @return the weighted probability that a person might perform this task
      */
@@ -109,8 +108,10 @@ implements Serializable {
                     result *= Task.getCrowdingProbabilityModifier(person,
                             building);
                     result *= Task.getRelationshipModifier(person, building);
-                } else
+                } 
+                else {
                     result = 0D;
+                }
             }
         }
 
@@ -129,53 +130,50 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), studentBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, studentBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, studentBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                studentBuilding)) {
+            
+            // Add subtask for walking to student building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    studentBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to student's building.
-            BuildingManager.addPersonToBuilding(person, studentBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to student building " + 
+                    studentBuilding.getName());
+            endTask();
         }
     }
 
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time (millisol) the phase is to be performed.
-     * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null)
+        if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        if (TEACHING.equals(getPhase()))
+        }
+        else if (TEACHING.equals(getPhase())) {
             return teachingPhase(time);
-        else
+        }
+        else {
             return time;
+        }
     }
 
     /**
      * Performs the teaching phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left over after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double teachingPhase(double time) {
 
         // Check if task is finished.
-        if (teachingTask.isDone())
+        if (teachingTask.isDone()) {
             endTask();
+        }
 
         // Check if student is in a different location situation than the teacher.
         if (!student.getLocationSituation().equals(
-                person.getLocationSituation()))
+                person.getLocationSituation())) {
             endTask();
+        }
 
         // Add relationship modifier for opinion of teacher from the student.
         addRelationshipModifier(time);
@@ -194,21 +192,17 @@ implements Serializable {
         double newOpinion = currentOpinion
                 + (BASE_RELATIONSHIP_MODIFIER * time);
         Relationship relationship = manager.getRelationship(student, person);
-        if (relationship != null)
+        if (relationship != null) {
             relationship.setPersonOpinion(student, newOpinion);
+        }
     }
 
-    /**
-     * Adds experience to the person's skills used in this task.
-     * @param time the amount of time (ms) the person performed this task.
-     */
+    @Override
     protected void addExperience(double time) {
         // This task adds no experience.
     }
 
-    /**
-     * Ends the task and performs any final actions.
-     */
+    @Override
     public void endTask() {
         super.endTask();
 
@@ -238,10 +232,12 @@ implements Serializable {
                             .getFunction(LifeSupport.NAME);
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
-                    if (buildingCrowding < -1)
+                    if (buildingCrowding < -1) {
                         buildingCrowding = -1;
-                    if (buildingCrowding < crowding)
+                    }
+                    if (buildingCrowding < crowding) {
                         crowding = buildingCrowding;
+                    }
                 }
             }
 
@@ -255,14 +251,18 @@ implements Serializable {
                             .getFunction(LifeSupport.NAME);
                     int buildingCrowding = lifeSupport.getOccupantNumber()
                             - lifeSupport.getOccupantCapacity() + 1;
-                    if (buildingCrowding < -1)
+                    if (buildingCrowding < -1) {
                         buildingCrowding = -1;
-                    if (buildingCrowding == crowding)
+                    }
+                    if (buildingCrowding == crowding) {
                         leastCrowded.add(student);
+                    }
                 }
             }
-        } else
+        } 
+        else {
             leastCrowded = students;
+        }
 
         // Get the teacher's favorite students.
         RelationshipManager relationshipManager = Simulation.instance()
@@ -276,8 +276,9 @@ implements Serializable {
             Person student = k.next();
             double opinion = relationshipManager.getOpinionOfPerson(teacher,
                     student);
-            if (opinion > favorite)
+            if (opinion > favorite) {
                 favorite = opinion;
+            }
         }
 
         // Get list of favorite students.
@@ -286,8 +287,9 @@ implements Serializable {
             Person student = k.next();
             double opinion = relationshipManager.getOpinionOfPerson(teacher,
                     student);
-            if (opinion == favorite)
+            if (opinion == favorite) {
                 favoriteStudents.add(student);
+            }
         }
 
         result = favoriteStudents;
@@ -314,11 +316,13 @@ implements Serializable {
                     SkillType taskSkill = j.next();
                     int studentSkill = student.getMind().getSkillManager().getSkillLevel(taskSkill);
                     int teacherSkill = teacher.getMind().getSkillManager().getSkillLevel(taskSkill);
-                    if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher())
+                    if ((teacherSkill >= (studentSkill + 1)) && !task.hasTeacher()) {
                         possibleStudent = true;
+                    }
                 }
-                if (possibleStudent)
+                if (possibleStudent) {
                     result.add(student);
+                }
             }
         }
 
@@ -326,8 +330,8 @@ implements Serializable {
     }
 
     /**
-     * Gets a collection of people in a person's settlement or rover. The resulting collection doesn't include the given
-     * person.
+     * Gets a collection of people in a person's settlement or rover. The resulting collection 
+     * doesn't include the given person.
      * @param person the person checking
      * @return collection of people
      */
@@ -339,16 +343,19 @@ implements Serializable {
                     .iterator();
             while (i.hasNext()) {
                 Person inhabitant = i.next();
-                if (person != inhabitant)
+                if (person != inhabitant) {
                     people.add(inhabitant);
+                }
             }
-        } else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        } 
+        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
             Crewable rover = (Crewable) person.getVehicle();
             Iterator<Person> i = rover.getCrew().iterator();
             while (i.hasNext()) {
                 Person crewmember = i.next();
-                if (person != crewmember)
+                if (person != crewmember) {
                     people.add(crewmember);
+                }
             }
         }
 

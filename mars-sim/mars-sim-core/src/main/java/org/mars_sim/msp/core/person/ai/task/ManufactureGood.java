@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 
@@ -28,9 +28,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 /**
@@ -40,9 +38,9 @@ public class ManufactureGood
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
 
@@ -60,10 +58,10 @@ implements Serializable {
     /**
      * Constructor
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public ManufactureGood(Person person) {
-        super("Manufacturing", person, true, false, STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(50D));
+        super("Manufacturing", person, true, false, STRESS_MODIFIER, true, 
+                10D + RandomUtil.getRandomDouble(50D));
 
         // Initialize data members
         if (person.getSettlement() != null) {
@@ -80,7 +78,8 @@ implements Serializable {
             
             // Walk to manufacturing building.
             walkToManufacturingBuilding(manufactureBuilding);
-        } else {
+        } 
+        else {
             endTask();
         }
 
@@ -159,19 +158,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), manufactureBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, manufactureBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, manufactureBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                manufactureBuilding)) {
+            
+            // Add subtask for walking to manufacture building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    manufactureBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to manufacturing building.
-            BuildingManager.addPersonToBuilding(person, manufactureBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to manufacture building " + 
+                    manufactureBuilding.getName());
+            endTask();
         }
     }
     
@@ -220,7 +217,6 @@ implements Serializable {
      * null if no manufacturing building is currently available.
      * @param person the person
      * @return available manufacturing building
-     * @throws BuildingException if error finding manufacturing building.
      */
     private static Building getAvailableManufacturingBuilding(Person person) {
 
@@ -254,8 +250,6 @@ implements Serializable {
      * @param buildingList list of buildings with the manufacture function.
      * @param skill the materials science skill level of the person.
      * @return list of manufacture buildings needing work.
-     * @throws BuildingException if any buildings in building list don't have
-     *         the manufacture function.
      */
     private static List<Building> getManufacturingBuildingsNeedingWork(
             List<Building> buildingList, int skill) {
@@ -266,8 +260,9 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.requiresManufacturingWork(skill))
+            if (manufacturingFunction.requiresManufacturingWork(skill)) {
                 result.add(building);
+            }
         }
 
         return result;
@@ -280,7 +275,6 @@ implements Serializable {
      * @param skill the materials science skill level of the person.
      * @return subset list of buildings with processes requiring work, or
      *         original list if none found.
-     * @throws BuildingException if error determining building processes.
      */
     private static List<Building> getBuildingsWithProcessesRequiringWork(
             List<Building> buildingList, int skill) {
@@ -291,13 +285,15 @@ implements Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (hasProcessRequiringWork(building, skill))
+            if (hasProcessRequiringWork(building, skill)) {
                 result.add(building);
+            }
         }
 
         // If no building with processes requiring work, return original list.
-        if (result.size() == 0)
+        if (result.size() == 0) {
             result = buildingList;
+        }
 
         return result;
     }
@@ -307,7 +303,6 @@ implements Serializable {
      * @param manufacturingBuilding the manufacturing building.
      * @param skill the materials science skill level of the person.
      * @return true if processes requiring work.
-     * @throws BuildingException if building is not manufacturing.
      */
     private static boolean hasProcessRequiringWork(Building manufacturingBuilding, int skill) {
 
@@ -330,8 +325,6 @@ implements Serializable {
      * from a list of buildings with the manufacture function.
      * @param buildingList list of buildings with the manufacture function.
      * @return subset list of highest tech level buildings.
-     * @throws BuildingException if any buildings in building list don't have
-     *         the manufacture function.
      */
     private static List<Building> getHighestManufacturingTechLevelBuildings(
             List<Building> buildingList) {
@@ -343,16 +336,18 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() > highestTechLevel)
+            if (manufacturingFunction.getTechLevel() > highestTechLevel) {
                 highestTechLevel = manufacturingFunction.getTechLevel();
+            }
         }
 
         Iterator<Building> j = buildingList.iterator();
         while (j.hasNext()) {
             Building building = j.next();
             Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() == highestTechLevel)
+            if (manufacturingFunction.getTechLevel() == highestTechLevel) {
                 result.add(building);
+            }
         }
 
         return result;
@@ -364,7 +359,6 @@ implements Serializable {
      * @param person the person to perform manufacturing.
      * @param manufacturingBuilding the manufacturing building.
      * @return highest process good value.
-     * @throws BuildingException if error determining process value.
      */
     private static double getHighestManufacturingProcessValue(Person person, 
             Building manufacturingBuilding) {
@@ -384,8 +378,9 @@ implements Serializable {
                     isProcessRunning(process, manufacturingFunction)) {
                 Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
                 double processValue = ManufactureUtil.getManufactureProcessValue(process, settlement);
-                if (processValue > highestProcessValue)
+                if (processValue > highestProcessValue) {
                     highestProcessValue = processValue;
+                }
             }
         }
 
@@ -421,19 +416,21 @@ implements Serializable {
 
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null)
+        if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        if (MANUFACTURE.equals(getPhase()))
+        }
+        else if (MANUFACTURE.equals(getPhase())) {
             return manufacturePhase(time);
-        else
+        }
+        else {
             return time;
+        }
     }
 
     /**
      * Perform the manufacturing phase.
      * @param time the time to perform (millisols)
      * @return remaining time after performing (millisols)
-     * @throws Exception if error performing phase.
      */
     private double manufacturePhase(double time) {
 
@@ -447,8 +444,12 @@ implements Serializable {
         // skill.
         double workTime = time;
         int skill = getEffectiveSkillLevel();
-        if (skill == 0) workTime /= 2;
-        else workTime += workTime * (.2D * (double) skill);
+        if (skill == 0) {
+            workTime /= 2;
+        }
+        else {
+            workTime += workTime * (.2D * (double) skill);
+        }
 
         // Apply work time to manufacturing processes.
         while ((workTime > 0D) && !isDone()) {
@@ -456,12 +457,14 @@ implements Serializable {
             if (process != null) {
                 double remainingWorkTime = process.getWorkTimeRemaining();
                 double providedWorkTime = workTime;
-                if (providedWorkTime > remainingWorkTime)
+                if (providedWorkTime > remainingWorkTime) {
                     providedWorkTime = remainingWorkTime;
+                }
                 process.addWorkTime(providedWorkTime);
                 workTime -= providedWorkTime;
 
-                if ((process.getWorkTimeRemaining() <= 0D) && (process.getProcessTimeRemaining() <= 0D)) {
+                if ((process.getWorkTimeRemaining() <= 0D) && 
+                        (process.getProcessTimeRemaining() <= 0D)) {
                     workshop.endManufacturingProcess(process, false);
                 }
             } else {
@@ -518,8 +521,9 @@ implements Serializable {
         Iterator<ManufactureProcess> i = manufactureBuilding.getProcesses().iterator();
         while (i.hasNext()) {
             ManufactureProcess process = i.next();
-            if (process.getInfo().getName() == processInfo.getName())
+            if (process.getInfo().getName() == processInfo.getName()) {
                 result = true;
+            }
         }
 
         return result;
@@ -528,7 +532,6 @@ implements Serializable {
     /**
      * Creates a new manufacturing process if possible.
      * @return the new manufacturing process or null if none.
-     * @throws Exception if error creating manufacturing process.
      */
     private ManufactureProcess createNewManufactureProcess() {
         ManufactureProcess result = null;
@@ -579,10 +582,12 @@ implements Serializable {
 
         // Materials science skill modification.
         int skill = getEffectiveSkillLevel();
-        if (skill <= 3)
+        if (skill <= 3) {
             chance *= (4 - skill);
-        else
+        }
+        else {
             chance /= (skill - 2);
+        }
 
         // Modify based on the workshop building's wear condition.
         chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();

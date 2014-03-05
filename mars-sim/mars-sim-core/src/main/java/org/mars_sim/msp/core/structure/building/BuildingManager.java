@@ -245,7 +245,24 @@ public class BuildingManager implements Serializable {
     public void timePassing(double time) {
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) i.next().timePassing(time);
-    }   
+    }
+
+    /**
+     * Gets a random inhabitable building.
+     * @return inhabitable building.
+     */
+    public Building getRandomInhabitableBuilding() {
+        
+        Building result = null;
+        
+        List<Building> inhabitableBuildings = getBuildings(LifeSupport.NAME);
+        if (inhabitableBuildings.size() > 0) {
+            int buildingIndex = RandomUtil.getRandomInt(inhabitableBuildings.size()) - 1;
+            result = inhabitableBuildings.get(buildingIndex);
+        }
+        
+        return result;
+    }
 
     /**
      * Adds a person to a random inhabitable building within a settlement.
@@ -355,6 +372,28 @@ public class BuildingManager implements Serializable {
                 catch (Exception e) {
                 	logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());
                 }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Check what building a given local settlement position is within.
+     * @param xLoc the local X position.
+     * @param yLoc the local Y position.
+     * @return building the position is within, or null if the position is not 
+     * within any building.
+     */
+    public Building getBuildingAtPosition(double xLoc, double yLoc) {
+        
+        Building result = null;
+        
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext() && (result == null)) {
+            Building building = i.next();
+            if (LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+                result = building;
             }
         }
         

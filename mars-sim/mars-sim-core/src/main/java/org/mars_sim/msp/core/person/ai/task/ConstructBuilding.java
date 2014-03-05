@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,7 +14,6 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
-import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -34,17 +33,11 @@ public class ConstructBuilding
 extends EVAOperation
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-    /* default logger.
-    private static Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
-    */
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
     
 	// TODO Task phases should be enums
-    private static final String WALK_TO_SITE = "Walk to Site";
     private static final String CONSTRUCTION = "Construction";
-    private static final String WALK_TO_AIRLOCK = "Walk to Airlock";
     
     // The base chance of an accident while operating LUV per millisol.
     public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -56,10 +49,6 @@ implements Serializable {
     private Airlock airlock;
     private LightUtilityVehicle luv;
     private boolean operatingLUV;
-    private double constructionXLoc;
-    private double constructionYLoc;
-    private double enterAirlockXLoc;
-    private double enterAirlockYLoc;
     
     /**
      * Constructor
@@ -71,7 +60,7 @@ implements Serializable {
     public ConstructBuilding(Person person, ConstructionStage stage, 
             ConstructionSite site, List<GroundVehicle> vehicles) {
         // Use EVAOperation parent constructor.
-        super("Construct Building", person);
+        super("Construct Building", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         // Initialize data members.
         this.stage = stage;
@@ -81,22 +70,16 @@ implements Serializable {
         // Get an available airlock.
         airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
                 site.getYLocation());
-        if (airlock == null) endTask();
+        if (airlock == null) {
+            endTask();
+        }
         
         // Determine location for construction site.
-        Point2D collectionSiteLoc = determineConstructionLocation();
-        constructionXLoc = collectionSiteLoc.getX();
-        constructionYLoc = collectionSiteLoc.getY();
-        
-        // Determine location for reentering building airlock.
-        Point2D enterAirlockLoc = determineAirlockEnteringLocation();
-        enterAirlockXLoc = enterAirlockLoc.getX();
-        enterAirlockYLoc = enterAirlockLoc.getY();
+        Point2D constructionSiteLoc = determineConstructionLocation();
+        setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
         
         // Add task phase
-        addPhase(WALK_TO_SITE);
         addPhase(CONSTRUCTION);
-        addPhase(WALK_TO_AIRLOCK);
     }
     
     /**
@@ -139,154 +122,25 @@ implements Serializable {
         return settlementLocSite;
     }
     
-    /**
-     * Determine location outside building airlock.
-     * @return location.
-     */
-    private Point2D determineAirlockEnteringLocation() {
-        
-        Point2D result = null;
-        
-        // Move the person to a random location outside the airlock entity.
-        if (airlock.getEntity() instanceof LocalBoundedObject) {
-            LocalBoundedObject entityBounds = (LocalBoundedObject) airlock.getEntity();
-            Point2D.Double newLocation = null;
-            boolean goodLocation = false;
-            for (int x = 0; (x < 20) && !goodLocation; x++) {
-                Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(entityBounds, 1D);
-                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-                        boundedLocalPoint.getY(), entityBounds);
-                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-                        person.getCoordinates());
-            }
-            
-            result = newLocation;
-        }
-        
-        return result;
+    @Override
+    protected String getOutsideSitePhase() {
+        return CONSTRUCTION;
     }
     
     @Override
     protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-            return exitEVAPhase(time);
-        }
-        else if (WALK_TO_SITE.equals(getPhase())) {
-            return walkToConstructionSitePhase(time);
         }
         else if (CONSTRUCTION.equals(getPhase())) {
             return constructionPhase(time);
         }
-        else if (WALK_TO_AIRLOCK.equals(getPhase())) {
-            return walkToAirlockPhase(time);
-        }
-        else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-            return enterEVAPhase(time);
-        }
         else {
             return time;
         }
-    }
-    
-    /**
-     * Perform the exit airlock phase of the task.
-     * @param time the time (millisols) to perform this phase.
-     * @return the time (millisols) remaining after performing this phase.
-     * @throws Exception if error exiting the airlock.
-     */
-    private double exitEVAPhase(double time) {
-        
-        try {
-            time = exitAirlock(time, airlock);
-        
-            // Add experience points
-            addExperience(time);
-        }
-        catch (Exception e) {
-            // Person unable to exit airlock.
-            endTask();
-        }
-        
-        if (exitedAirlock) {
-            // Set task phase to walk to construction site.
-            setPhase(WALK_TO_SITE);
-        }
-        return time;
-    }
-
-    /**
-     * Perform the enter airlock phase of the task.
-     * @param time amount (millisols) of time to perform the phase
-     * @return time (millisols) remaining after performing the phase
-     * @throws Exception if error entering airlock.
-     */
-    private double enterEVAPhase(double time) {
-        time = enterAirlock(time, airlock);
-        
-        // Add experience points
-        addExperience(time);
-        
-        if (enteredAirlock) {
-            endTask();
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to construction site phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToConstructionSitePhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // Check if there is reason to cut the EVA walk phase short and return
-        // to the rover.
-        if (shouldEndEVAOperation()) {
-            setPhase(WALK_TO_AIRLOCK);
-            return time;
-        }
-        
-        // If not at construction site location, create walk outside subtask.
-        if ((person.getXLocation() != constructionXLoc) || (person.getYLocation() != constructionYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    constructionXLoc, constructionYLoc, false);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(CONSTRUCTION);
-        }
-        
-        return time;
-    }
-    
-    /**
-     * Perform the walk to airlock phase.
-     * @param time the time available (millisols).
-     * @return remaining time after performing phase (millisols).
-     */
-    private double walkToAirlockPhase(double time) {
-        
-        // Check for an accident during the EVA walk.
-        checkForAccident(time);
-        
-        // If not at outside airlock location, create walk outside subtask.
-        if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-            Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-                    enterAirlockXLoc, enterAirlockYLoc, true);
-            addSubTask(walkingTask);
-        }
-        else {
-            setPhase(EVAOperation.ENTER_AIRLOCK);
-        }
-        
-        return time;
     }
     
     /**
@@ -300,23 +154,33 @@ implements Serializable {
         // Check for an accident during the EVA operation.
         checkForAccident(time);
         
-        if (shouldEndEVAOperation() || stage.isComplete()) {
-            // End operating light utility vehicle.
-            if ((luv != null) && luv.getInventory().containsUnit(person))  
-                returnVehicle();
+        // Check if site duration has ended or there is reason to cut the construction 
+        // phase short and return to the rover.
+        if (shouldEndEVAOperation() || addTimeOnSite(time) || stage.isComplete()) {
             
-            setPhase(WALK_TO_AIRLOCK);
+            // End operating light utility vehicle.
+            if ((luv != null) && luv.getInventory().containsUnit(person)) {
+                returnVehicle();
+            }
+            
+            setPhase(WALK_BACK_INSIDE);
             return time;
         }
         
         // Operate light utility vehicle if no one else is operating it.
-        if (!operatingLUV) obtainVehicle();
+        if (!operatingLUV) {
+            obtainVehicle();
+        }
         
         // Determine effective work time based on "Construction" and "EVA Operations" skills.
         double workTime = time;
         int skill = getEffectiveSkillLevel();
-        if (skill == 0) workTime /= 2;
-        if (skill > 1) workTime += workTime * (.2D * skill);
+        if (skill == 0) {
+            workTime /= 2;
+        }
+        else if (skill > 1) {
+            workTime += workTime * (.2D * skill);
+        }
         
         // Work on construction.
         stage.addWorkTime(workTime);
@@ -431,14 +295,19 @@ implements Serializable {
             
             // Driving skill modification.
             int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-            if (skill <= 3) chance *= (4 - skill);
-            else chance /= (skill - 2);
+            if (skill <= 3) {
+                chance *= (4 - skill);
+            }
+            else {
+                chance /= (skill - 2);
+            }
             
             // Modify based on the LUV's wear condition.
             chance *= luv.getMalfunctionManager().getWearConditionAccidentModifier();
             
-            if (RandomUtil.lessThanRandPercent(chance * time))
+            if (RandomUtil.lessThanRandPercent(chance * time)) {
                 luv.getMalfunctionManager().accident();
+            }
         }
     }
     
@@ -447,8 +316,9 @@ implements Serializable {
         boolean result = super.shouldEndEVAOperation();
         
         // If operating LUV, check if LUV has malfunction.
-        if (operatingLUV && luv.getMalfunctionManager().hasMalfunction())
+        if (operatingLUV && luv.getMalfunctionManager().hasMalfunction()) {
             result = true;
+        }
     
         return result;
     }
@@ -466,7 +336,9 @@ implements Serializable {
         super.destroy();
         
         stage = null;
-        if (vehicles != null) vehicles.clear();
+        if (vehicles != null) {
+            vehicles.clear();
+        }
         vehicles = null;
         airlock = null;
         luv = null;

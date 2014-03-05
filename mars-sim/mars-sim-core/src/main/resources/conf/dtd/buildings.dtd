@@ -61,11 +61,11 @@ storage? )>
 <!ATTLIST power-storage capacity CDATA #REQUIRED>
 <!ELEMENT recreation EMPTY>
 <!ATTLIST recreation population-support CDATA #REQUIRED>
-<!ELEMENT research (research-speciality+)>
+<!ELEMENT research (research-specialty+)>
 <!ATTLIST research tech-level CDATA #REQUIRED>
 <!ATTLIST research capacity CDATA #REQUIRED>
-<!ELEMENT research-speciality EMPTY>
-<!ATTLIST research-speciality name CDATA #REQUIRED>
+<!ELEMENT research-specialty EMPTY>
+<!ATTLIST research-specialty name CDATA #REQUIRED>
 <!ELEMENT resource-processing (process+)>
 <!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
 <!ELEMENT process (input+, output+)>

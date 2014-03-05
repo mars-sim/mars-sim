@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 
@@ -41,7 +41,6 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -54,7 +53,7 @@ implements Serializable {
     
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
+    
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
 	
@@ -71,7 +70,7 @@ implements Serializable {
     private static double LOAD_RATE = 20D;
     
     /** The duration of the loading task (millisols). */
-    private static double DURATION = 50D;
+    private static double DURATION = 10D + RandomUtil.getRandomDouble(50D);
 
     // Data members
     /** The vehicle that needs to be loaded. */
@@ -104,7 +103,9 @@ implements Serializable {
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
     		optionalEquipment = mission.getOptionalEquipmentToLoad();
     		settlement = person.getSettlement();
-    		if (settlement == null) endTask();
+    		if (settlement == null) {
+    		    endTask();
+    		}
     		
     		// If vehicle is in a garage, add person to garage.
             Building garageBuilding = BuildingManager.getBuilding(vehicle);
@@ -115,7 +116,9 @@ implements Serializable {
             }
             
             // End task if vehicle or garage not available.
-            if ((vehicle == null) || (garageBuilding == null)) endTask();    
+            if ((vehicle == null) || (garageBuilding == null)) {
+                endTask();    
+            }
     		
     		// Initialize task phase
             addPhase(LOADING);
@@ -144,10 +147,18 @@ implements Serializable {
     	setDescription("Loading " + vehicle.getName());
         this.vehicle = vehicle;
         
-        if (requiredResources != null) this.requiredResources = new HashMap<Resource, Number>(requiredResources);
-        if (optionalResources != null) this.optionalResources = new HashMap<Resource, Number>(optionalResources);
-        if (requiredEquipment != null) this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
-        if (optionalEquipment != null) this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        if (requiredResources != null) {
+            this.requiredResources = new HashMap<Resource, Number>(requiredResources);
+        }
+        if (optionalResources != null) {
+            this.optionalResources = new HashMap<Resource, Number>(optionalResources);
+        }
+        if (requiredEquipment != null) {
+            this.requiredEquipment = new HashMap<Class, Integer>(requiredEquipment);
+        }
+        if (optionalEquipment != null) {
+            this.optionalEquipment = new HashMap<Class, Integer>(optionalEquipment);
+        }
         
         settlement = person.getSettlement();
         
@@ -190,7 +201,9 @@ implements Serializable {
         
 		// Job modifier.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);        
+		if (job != null) {
+		    result *= job.getStartTaskProbabilityModifier(LoadVehicleGarage.class);
+		}
 	
         return result;
     }
@@ -207,19 +220,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), garageBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, garageBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, garageBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                garageBuilding)) {
+            
+            // Add subtask for walking to garage building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    garageBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to garage building.
-            BuildingManager.addPersonToBuilding(person, garageBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to garage building " + 
+                    garageBuilding.getName());
+            endTask();
         }
     }
     
@@ -289,19 +300,23 @@ implements Serializable {
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time (millisol) the phase is to be performed.
      * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (LOADING.equals(getPhase())) return loadingPhase(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (LOADING.equals(getPhase())) {
+    	    return loadingPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
     
     /**
      * Perform the loading phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) after performing the phase.
-     * @throws Exception if error in loading phase.
      */
     double loadingPhase(double time) {
     	

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-03
  * @author Scott Davis
  */
 
@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -22,13 +21,12 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -307,17 +305,19 @@ extends VehicleMission {
             if (!person.getLocationSituation().equals(Person.INVEHICLE)
                     && !person.getLocationSituation().equals(Person.BURIED)) {
 
+                // Move person to random location within rover.
+                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
+                Point2D.Double adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
+                        vehicleLoc.getY(), getVehicle());
+                if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle())) {
+                    assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), getVehicle()));
+                }
+                else {
+                    logger.severe(person.getName() + " unable to enter rover " + getVehicle());
+                    endMission(person.getName() + " unable to enter rover " + getVehicle());
+                }
+                
                 if (isRoverInAGarage()) {
-                    if (getVehicle().getInventory().canStoreUnit(person, false)) {
-                        if (settlement.getInventory().containsUnit(person)) {
-                            settlement.getInventory().retrieveUnit(person);
-                        }
-                        getVehicle().getInventory().storeUnit(person);
-                    }
-                    else {
-                        endMission("Crew member " + person + " cannot be loaded in rover " + getVehicle());
-                        return;
-                    }
                     
                     // Store one EVA suit for person (if possible).
                     if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
@@ -330,43 +330,6 @@ extends VehicleMission {
                             endMission("Equipment " + suit + " cannot be loaded in rover " + getVehicle());
                             return;
                         }
-                    }
-                    
-                    // Move person to random location within rover.
-                    Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
-                    Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                            vehicleLoc.getY(), getVehicle());
-                    person.setXLocation(settlementLoc.getX());
-                    person.setYLocation(settlementLoc.getY());
-                }
-                else {
-                    if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-
-                        // Have person exit the settlement via an airlock.
-                        Airlock airlock = startingSettlement.getClosestWalkableAvailableAirlock(person, 
-                                getRover().getXLocation(), getRover().getYLocation());
-                        if (airlock != null) {
-                            if (ExitAirlock.canExitAirlock(person, airlock)) {
-                                assignTask(person, new ExitAirlock(person, airlock));
-                            }
-                            else {
-                                logger.info(person + " unable to exit airlock at " + startingSettlement + " to rover " + 
-                                        getRover() + " due to health problems or being unable to obtain a functioning EVA suit.");
-                                endMission(person + " unable to exit airlock from " + startingSettlement + 
-                                        " due to health problems or being unable to obtain a functioning EVA suit.");                  
-                            }
-                        }
-                        else {
-                            logger.info(person + " unable to exit airlock at " + startingSettlement + " to rover " + 
-                                    getRover() + " due to no valid path to an airlock.");
-                            endMission(person + " unable to exit airlock from " + startingSettlement + 
-                                    " due to no valid path to an airlock.");     
-                        }
-                    }
-                    else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-
-                        // Have person enter the rover airlock.
-                        assignTask(person, new EnterAirlock(person, getRover().getAirlock()));
                     }
                 }
             }
@@ -417,33 +380,27 @@ extends VehicleMission {
         }
 
         // Have person exit rover if necessary.
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
-            if (isRoverInAGarage()) {
-                if (getVehicle() != null) {
-                    getVehicle().getInventory().retrieveUnit(person);
-                    disembarkSettlement.getInventory().storeUnit(person);
-                    garageBuilding = BuildingManager.getBuilding(getVehicle());
-                    BuildingManager.addPersonToBuildingRandomLocation(person, garageBuilding);
+        if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            
+            // Get random inhabitable building at settlement.
+            Building destinationBuilding = disembarkSettlement.getBuildingManager().
+                    getRandomInhabitableBuilding();
+            if (destinationBuilding != null) {
+                Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
+                Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 
+                        destinationLoc.getY(), destinationBuilding);
+                
+                if (Walk.canWalkAllSteps(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding)) {
+                    assignTask(person, new Walk(person, adjustedLoc.getX(), adjustedLoc.getY(), destinationBuilding));
+                }
+                else {
+                    logger.severe("Unable to walk to building " + destinationBuilding);
                 }
             }
             else {
-                // Have person exit the rover via its airlock if possible.
-                if (ExitAirlock.canExitAirlock(person, getRover().getAirlock())) {
-                    assignTask(person, new ExitAirlock(person, getRover().getAirlock()));
-                }
-                else {
-                    logger.info(person + " unable to exit " + getRover() + " through airlock to settlement " + 
-                            disembarkSettlement + " due to health problems or being unable to obtain a functioning EVA suit.  " + 
-                            "Using emergency exit procedure.");
-                    getVehicle().getInventory().retrieveUnit(person);
-                    disembarkSettlement.getInventory().storeUnit(person);
-                    BuildingManager.addToRandomBuilding(person, disembarkSettlement);
-                }
+                logger.severe("No inhabitable buildings at " + destinationBuilding);
+                endMission("No inhabitable buildings at " + destinationBuilding);
             }
-        }
-        else if (person.getLocationSituation().equals(Person.OUTSIDE)) {
-            // Have person enter the settlement via an airlock.
-            assignTask(person, new EnterAirlock(person, disembarkSettlement.getClosestAvailableAirlock(person)));
         }
 
         Rover rover = (Rover) getVehicle();

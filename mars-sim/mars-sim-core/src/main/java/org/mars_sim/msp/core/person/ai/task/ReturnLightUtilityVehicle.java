@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReturnLightUtilityVehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 
@@ -36,10 +36,11 @@ extends Task
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(
+            ReturnLightUtilityVehicle.class.getName());
     
     // Task phase
     private static final String RETURN_LUV = "Returning Light Utility Vehicle";
@@ -137,7 +138,6 @@ implements Serializable {
             
             if (person.getVehicle() instanceof LightUtilityVehicle) {
                 result = 500D;
-                //System.out.println(person.getName() + " is in light utility vehicle!");
             }
         }
 
@@ -149,8 +149,7 @@ implements Serializable {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        
-        if (RETURN_LUV.equals(getPhase())) {
+        else if (RETURN_LUV.equals(getPhase())) {
             return returnLUVPhase(time);
         }
         else {
@@ -180,7 +179,8 @@ implements Serializable {
                 }
             }
             else {
-                logger.severe("Light utility vehicle: " + luv.getName() + " could not be stored in " + returnContainer.getName());
+                logger.severe("Light utility vehicle: " + luv.getName() + 
+                        " could not be stored in " + returnContainer.getName());
             }
         
             // Unload any attachment parts or inventory from light utility vehicle.
@@ -224,8 +224,8 @@ implements Serializable {
                 rcInv.storeItemResources(item, num);
             }
             else {
-                logger.severe(item.getName() + " numbered " + num + " cannot be stored in " + returnContainer.getName() + 
-                        " due to insufficient remaining general capacity.");
+                logger.severe(item.getName() + " numbered " + num + " cannot be stored in " + 
+                        returnContainer.getName() + " due to insufficient remaining general capacity.");
             }
         }
         
@@ -239,7 +239,8 @@ implements Serializable {
                 rcInv.storeAmountResource(resource, amount, true);
             }
             else {
-                logger.severe(resource.getName() + " of amount " + amount + " kg. cannot be stored in " + returnContainer.getName());
+                logger.severe(resource.getName() + " of amount " + amount + " kg. cannot be stored in " + 
+                        returnContainer.getName());
             }
         }
     }

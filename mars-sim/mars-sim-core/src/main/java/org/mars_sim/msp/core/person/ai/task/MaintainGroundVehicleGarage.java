@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-25
  * @author Scott Davis
  */
 
@@ -33,7 +33,6 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -48,11 +47,11 @@ extends Task
 implements Serializable {
 	
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
-
+    private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
+	
 	// TODO Task phase should be an enum
 	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
 
@@ -69,7 +68,6 @@ implements Serializable {
     /** 
      * Constructor
      * @param person the person to perform the task
-     * @throws Exception if error constructing task.
      */
     public MaintainGroundVehicleGarage(Person person) {
         super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
@@ -77,7 +75,9 @@ implements Serializable {
 
         // Choose an available needy ground vehicle.
         vehicle = getNeedyGroundVehicle(person);
-        if (vehicle != null) vehicle.setReservedForMaintenance(true);
+        if (vehicle != null) {
+            vehicle.setReservedForMaintenance(true);
+        }
         
         // Determine the garage it's in.
         if (vehicle != null) {
@@ -118,7 +118,9 @@ implements Serializable {
         }
         
         // End task if vehicle or garage not available.
-        if ((vehicle == null) || (garage == null)) endTask();    
+        if ((vehicle == null) || (garage == null)) {
+            endTask();    
+        }
 
         // Initialize phase
         addPhase(MAINTAIN_VEHICLE);
@@ -149,7 +151,9 @@ implements Serializable {
         			boolean minTime = (effectiveTime >= 1000D);
         			if (!hasMalfunction && hasParts && minTime) {
         				double entityProb = effectiveTime / 20D;
-        				if (entityProb > 100D) entityProb = 100D;
+        				if (entityProb > 100D) {
+        				    entityProb = 100D;
+        				}
         				result += entityProb;
         			}
             	}
@@ -169,24 +173,32 @@ implements Serializable {
 				try {
 					Building building = j.next();
 					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
-					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) garageSpace = true;
+					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
+					    garageSpace = true;
+					}
 					
 					Iterator<Vehicle> i = garage.getVehicles().iterator();
 					while (i.hasNext()) {
-						if (i.next().isReservedForMaintenance()) needyVehicleInGarage = true;
+						if (i.next().isReservedForMaintenance()) {
+						    needyVehicleInGarage = true;
+						}
 					}
 				}
 				catch (Exception e) {}
 			}
 		}
-		if (!garageSpace && !needyVehicleInGarage) result = 0D;
+		if (!garageSpace && !needyVehicleInGarage) {
+		    result = 0D;
+		}
 
         // Effort-driven task modifier.
         result *= person.getPerformanceRating();
         
 		// Job modifier.
         Job job = person.getMind().getJob();
-		if (job != null) result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
+		if (job != null) {
+		    result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleGarage.class);        
+		}
 	
         return result;
     }
@@ -203,53 +215,59 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), garageBuilding);
         
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-        
-        if (connectorManager.hasValidPath(currentBuilding, garageBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, garageBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                garageBuilding)) {
+            
+            // Add subtask for walking to garage building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    garageBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to garage building.
-            BuildingManager.addPersonToBuilding(person, garageBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to garage building " + 
+                    garageBuilding.getName());
+            endTask();
         }
     }
     
-    /**
-     * Performs the method mapped to the task's current phase.
-     * @param time the amount of time (millisol) the phase is to be performed.
-     * @return the remaining time (millisol) after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
-     */
+    @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (MAINTAIN_VEHICLE.equals(getPhase())) return maintainVehiclePhase(time);
-    	else return time;
+    	if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (MAINTAIN_VEHICLE.equals(getPhase())) {
+    	    return maintainVehiclePhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
     
     /**
      * Performs the maintain vehicle phase.
      * @param time the amount of time (millisols) to perform the phase.
      * @return the amount of time (millisols) left after performing the phase.
-     * @throws Exception if error performing the phase.
      */
     private double maintainVehiclePhase(double time) {
         MalfunctionManager manager = vehicle.getMalfunctionManager();
     	
-        // If person is incompacitated, end task.
-        if (person.getPerformanceRating() == 0D) endTask();
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() == 0D) {
+            endTask();
+        }
 
         // Check if maintenance has already been completed.
-        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) endTask();
+        if (manager.getEffectiveTimeSinceLastMaintenance() == 0D) {
+            endTask();
+        }
 
         // If vehicle has malfunction, end task.
-        if (manager.hasMalfunction()) endTask();
+        if (manager.hasMalfunction()) {
+            endTask();
+        }
 
-        if (isDone()) return time;
+        if (isDone()) {
+            return time;
+        }
     	
         // Add repair parts if necessary.
         Inventory inv = person.getTopContainerUnit().getInventory();
@@ -273,8 +291,12 @@ implements Serializable {
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
         int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-        if (mechanicSkill == 0) workTime /= 2;
-        if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
+        if (mechanicSkill == 0) {
+            workTime /= 2;
+        }
+        if (mechanicSkill > 1) {
+            workTime += workTime * (.2D * mechanicSkill);
+        }
 
         // Add work to the maintenance
         manager.addMaintenanceWorkTime(workTime);
@@ -357,7 +379,9 @@ implements Serializable {
 			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();
-				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) result.add(vehicle);
+				if ((vehicle instanceof GroundVehicle) && !vehicle.isReservedForMission()) {
+				    result.add(vehicle);
+				}
 			}
 		}
         
@@ -369,7 +393,6 @@ implements Serializable {
      * Returns null if none available.
      * @param person person checking.
      * @return ground vehicle
-     * @throws Exception if error finding needy vehicle.
      */
     private GroundVehicle getNeedyGroundVehicle(Person person) {
             
@@ -405,7 +428,6 @@ implements Serializable {
      * Gets the probability weight for a vehicle.
      * @param vehicle the vehicle.
      * @return the probability weight.
-     * @throws Exception if error determining probability weight.
      */
     private double getProbabilityWeight(Vehicle vehicle) {
     	double result = 0D;
@@ -414,7 +436,9 @@ implements Serializable {
 		double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
 		boolean minTime = (effectiveTime >= 1000D); 
 		boolean enoughParts = Maintenance.hasMaintenanceParts(person, vehicle);
-		if (!hasMalfunction && minTime && enoughParts) result = effectiveTime;
+		if (!hasMalfunction && minTime && enoughParts) {
+		    result = effectiveTime;
+		}
 		return result;
     }
     
@@ -430,7 +454,7 @@ implements Serializable {
 		results.add(SkillType.MECHANICS);
 		return results;
 	}
-
+	
 	@Override
 	public void destroy() {
 	    super.destroy();

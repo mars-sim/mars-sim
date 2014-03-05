@@ -47,4 +47,8 @@ public class MockBuilding extends Building {
 	public void setFacing(double facing) {
 	    this.facing = facing;
 	}
+	
+	public void addFunction(Function function) {
+	    functions.add(function);
+	}
 }

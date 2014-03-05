@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Astronomer.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -101,7 +101,7 @@ public class Astronomer extends Job implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpeciality(ScienceType.ASTRONOMY)) 
+            if (lab.hasSpecialty(ScienceType.ASTRONOMY)) 
                 result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
         }
 

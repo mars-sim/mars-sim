@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -27,9 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 
 /** 
@@ -42,10 +40,10 @@ extends Task
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
     // TODO Task phase should be an enum
     private static final String COOKING = "Cooking";
@@ -92,9 +90,9 @@ implements Serializable {
         addPhase(COOKING);
         setPhase(COOKING);
 
-        // String jobName = person.getMind().getJob().getName();
-        // logger.info(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
-        // " in " + person.getSettlement());
+        String jobName = person.getMind().getJob().getName();
+        logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
+                " in " + person.getSettlement());
     }
 
     /** 
@@ -153,19 +151,17 @@ implements Serializable {
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), kitchenBuilding);
 
-        // Check if there is a valid interior walking path between buildings.
-        BuildingConnectorManager connectorManager = person.getSettlement().getBuildingConnectorManager();
-        Building currentBuilding = BuildingManager.getBuilding(person);
-
-        if (connectorManager.hasValidPath(currentBuilding, kitchenBuilding)) {
-            Task walkingTask = new WalkSettlementInterior(person, kitchenBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
-            addSubTask(walkingTask);
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                kitchenBuilding)) {
+            
+            // Add subtask for walking to kitchen building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    kitchenBuilding));
         }
         else {
-            // TODO: Add task for EVA walking to get to kitchen building.
-            BuildingManager.addPersonToBuilding(person, kitchenBuilding, settlementLoc.getX(), 
-                    settlementLoc.getY());
+            logger.fine(person.getName() + " unable to walk to kitchen building " + 
+                    kitchenBuilding.getName());
+            endTask();
         }
     }
 
@@ -173,19 +169,23 @@ implements Serializable {
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (COOKING.equals(getPhase())) return cookingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (COOKING.equals(getPhase())) {
+            return cookingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
 
     /**
      * Performs the cooking phase of the task.
      * @param time the amount of time (millisol) to perform the cooking phase.
      * @return the amount of time (millisol) left after performing the cooking phase.
-     * @throws Exception if error performing the cooking phase.
      */
     private double cookingPhase(double time) {
 
@@ -210,14 +210,7 @@ implements Serializable {
         else workTime += workTime * (.2D * (double) cookingSkill);
 
         // Add this work to the kitchen.
-        //		try {
         kitchen.addWork(workTime);
-        //		}
-        //		catch (BuildingException e) {
-        //			// Not enough food.
-        //			endTask();
-        //			return time;
-        //		}
 
         // Add experience
         addExperience(time);
@@ -285,7 +278,9 @@ implements Serializable {
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
         double modifiedTime = timeOfDay + timeDiff;
-        if (modifiedTime >= 1000D) modifiedTime -= 1000D;
+        if (modifiedTime >= 1000D) {
+            modifiedTime -= 1000D;
+        }
 
         if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) {
             result = true;
@@ -310,7 +305,9 @@ implements Serializable {
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         double timeDiff = 1000D * (person.getCoordinates().getTheta() / (2D * Math.PI));
         double modifiedTime = timeOfDay + timeDiff;
-        if (modifiedTime >= 1000D) modifiedTime -= 1000D;
+        if (modifiedTime >= 1000D) {
+            modifiedTime -= 1000D;
+        }
 
         if ((modifiedTime >= BREAKFAST_START) && (modifiedTime <= (BREAKFAST_START + MEALTIME_DURATION))) {
             result = "Breakfast";

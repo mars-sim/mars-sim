@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -33,11 +33,10 @@ import org.mars_sim.msp.core.structure.building.function.WindPowerSource;
  * Provides configuration information about settlement buildings.
  * Uses a DOM document to get the information. 
  */
-public class BuildingConfig
-implements Serializable {
-
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+public class BuildingConfig implements Serializable {
+    
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
 	// Element and attribute names
 	private static final String BUILDING = "building";
@@ -53,7 +52,7 @@ implements Serializable {
 	private static final String LIVING_ACCOMMODATIONS = "living-accommodations";
 	private static final String RESEARCH = "research";
 	private static final String TECH_LEVEL = "tech-level";
-	private static final String RESEARCH_SPECIALITY = "research-speciality";
+	private static final String RESEARCH_SPECIALTY = "research-specialty";
 	private static final String COMMUNICATION = "communication";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK_CAPACITY = "airlock-capacity";
@@ -294,29 +293,25 @@ implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of research specialities for the building's lab.
+	 * Gets a list of research specialties for the building's lab.
 	 * @param buildingName the name of the building
-	 * @return list of research specialities as {@link ScienceType}.
+	 * @return list of research specialties as {@link ScienceType}.
 	 * @throws Exception if building name cannot be found or XML parsing error.
 	 */
-    @SuppressWarnings("unchecked")
-	public List<ScienceType> getResearchSpecialities(String buildingName) {
-		List<ScienceType> result = new ArrayList<ScienceType>();
-		Element buildingElement = getBuildingElement(buildingName);
-		Element functionsElement = buildingElement.getChild(FUNCTIONS);
-		Element researchElement = functionsElement.getChild(RESEARCH);
-		List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALITY);
-		
-		for (Element researchSpecialityElement : researchSpecialities ) {
-			String value = researchSpecialityElement.getAttributeValue(NAME);
-			result.add(
-				ScienceType.valueOf(
-					ScienceType.class,
-					value.toUpperCase().replace(" ","_") // take care that entries in buildings.xml conform to enum values of {@link ScienceType}
-				)
-			);
-		}
-		return result;
+	@SuppressWarnings("unchecked")
+	public List<ScienceType> getResearchSpecialties(String buildingName) {
+	    List<ScienceType> result = new ArrayList<ScienceType>();
+	    Element buildingElement = getBuildingElement(buildingName);
+	    Element functionsElement = buildingElement.getChild(FUNCTIONS);
+	    Element researchElement = functionsElement.getChild(RESEARCH);
+	    List<Element> researchSpecialities = researchElement.getChildren(RESEARCH_SPECIALTY);
+
+	    for (Element researchSpecialityElement : researchSpecialities ) {
+	        String value = researchSpecialityElement.getAttributeValue(NAME);
+	        // take care that entries in buildings.xml conform to enum values of {@link ScienceType}
+	        result.add(ScienceType.valueOf(ScienceType.class, value.toUpperCase().replace(" ","_")));
+	    }
+	    return result;
 	}
 	
 	/**

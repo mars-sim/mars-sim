@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
@@ -30,14 +31,16 @@ extends OperateVehicle
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	// TODO Task phases should be an enum
+    private static final long serialVersionUID = 1L;
+    
+    private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
+    
+    // TODO Task phases should be an enum
     public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
     public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
 
     /** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+    private static final double STRESS_MODIFIER = .1D;
 
     // Side directions.
     private final static int NONE = 0;
@@ -54,7 +57,6 @@ implements Serializable {
      * @param destination location to be driven to
      * @param startTripTime the starting time of the trip
      * @param startTripDistance the starting distance to destination for the trip
-     * @throws Exception if task cannot be constructed.
      */
     public DriveGroundVehicle(Person person, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
@@ -68,7 +70,7 @@ implements Serializable {
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 
-        // logger.info(person.getName() + " is driving " + vehicle.getName());
+        logger.fine(person.getName() + " is driving " + vehicle.getName());
     }
 
     /**
@@ -79,7 +81,6 @@ implements Serializable {
      * @param startTripTime the starting time of the trip
      * @param startTripDistance the starting distance to destination for the trip
      * @param startingPhase the starting phase for the task
-     * @throws Exception if task cannot be constructed.
      */
     public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, 
             MarsClock startTripTime, double startTripDistance, String startingPhase) {
@@ -94,21 +95,30 @@ implements Serializable {
         addPhase(WINCH_VEHICLE);
 		if ((startingPhase != null) && startingPhase.length() != 0) setPhase(startingPhase);
 
-        // logger.info(person.getName() + " is driving " + vehicle.getName());
+        logger.fine(person.getName() + " is driving " + vehicle.getName());
     }
     
     /**
      * Performs the method mapped to the task's current phase.
      * @param time the amount of time the phase is to be performed.
      * @return the remaining time after the phase has been performed.
-     * @throws Exception if error in performing phase or if phase cannot be found.
      */
     protected double performMappedPhase(double time) {
-    	time = super.performMappedPhase(time);
-    	if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-    	if (AVOID_OBSTACLE.equals(getPhase())) return obstaclePhase(time);
-    	if (WINCH_VEHICLE.equals(getPhase())) return winchingPhase(time);
-    	else return time;
+    	
+        time = super.performMappedPhase(time);
+    	
+        if (getPhase() == null) {
+    	    throw new IllegalArgumentException("Task phase is null");
+    	}
+    	else if (AVOID_OBSTACLE.equals(getPhase())) {
+    	    return obstaclePhase(time);
+    	}
+    	else if (WINCH_VEHICLE.equals(getPhase())) {
+    	    return winchingPhase(time);
+    	}
+    	else {
+    	    return time;
+    	}
     }
 	
 	/**
@@ -116,7 +126,6 @@ implements Serializable {
 	 * Stop if reached destination.
 	 * @param time the amount of time (ms) to drive.
 	 * @return the amount of time (ms) left over after driving (if any)
-	 * @throws Exception of error mobilizing vehicle.
 	 */
 	protected double mobilizeVehicle(double time) {
 		
@@ -139,7 +148,6 @@ implements Serializable {
      * Perform task in obstacle phase.
      * @param time the amount of time to perform the task (in millisols)
      * @return time remaining after performing phase (in millisols)
-     * @throws Exception if error performing phase.
      */
     private double obstaclePhase(double time) {
 
@@ -196,7 +204,6 @@ implements Serializable {
      * Perform task in winching phase.
      * @param time the amount of time to perform the phase.
      * @return time remaining after performing the phase.
-     * @throws Exception if error while performing phase.
      */
     private double winchingPhase(double time) {
 
@@ -236,7 +243,6 @@ implements Serializable {
     /** 
      * Gets the direction for obstacle avoidance.
      * @return direction for obstacle avoidance in radians or null if none found.
-     * @throws exception if error in getting direction.
      */
     private Direction getObstacleAvoidanceDirection() {
         Direction result = null;
@@ -413,7 +419,7 @@ implements Serializable {
      */
     public void endTask() {
     	
-        // logger.info(person.getName() + " finished driving " + getVehicle().getName());
+        logger.fine(person.getName() + " finished driving " + getVehicle().getName());
         // ((GroundVehicle) getVehicle()).setStuck(false);
     	
     	super.endTask();

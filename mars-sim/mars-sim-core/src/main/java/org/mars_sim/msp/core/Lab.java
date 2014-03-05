@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Lab.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core;
@@ -14,8 +14,7 @@ import org.mars_sim.msp.core.science.ScienceType;
  * The Lab interface represents a unit that can perform the function
  * of a research laboratory.
  */
-public interface Lab
-extends Serializable{
+public interface Lab extends Serializable {
 
 	/** 
 	 * Gets the laboratory size.
@@ -32,24 +31,23 @@ extends Serializable{
 	 */
 	public int getTechnologyLevel();
 
-	/** 
-	 * Gets the lab's science specialities as an array of Strings. 
-	 * @return the lab's science specialities as an array of Strings
-	 */
-	public ScienceType[] getTechSpecialities(); 
+    /** 
+     * Gets the lab's science specialties .
+     * @return the lab's science specialties
+     */
+    public ScienceType[] getTechSpecialties();
 
-	/**
-	 * Checks to see if the laboratory has a given tech speciality.
-	 * @param speciality {@link ScienceType}
-	 * @return true if lab has tech speciality
-	 */
-	public boolean hasSpeciality(ScienceType speciality);
-
-	/**
-	 * Gets the number of people currently researching in the laboratory.
-	 * @return number of researchers
-	 */
-	public int getResearcherNum(); 
+    /**
+     * Checks to see if the laboratory has a given tech specialty.
+     * @return true if lab has tech specialty
+     */
+    public boolean hasSpecialty(ScienceType specialty);
+    
+    /**
+     * Gets the number of people currently researching in the laboratory.
+     * @return number of researchers
+     */
+    public int getResearcherNum(); 
 
 	/**
 	 * Adds a researcher to the laboratory.

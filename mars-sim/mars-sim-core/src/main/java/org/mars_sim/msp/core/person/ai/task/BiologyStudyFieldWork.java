@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyFieldWork.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-04
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,342 +28,217 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class BiologyStudyFieldWork extends EVAOperation implements Serializable {
 
-	/** default serial id.*/
-	private static final long serialVersionUID = 1L;
+    /** default serial id.*/
+    private static final long serialVersionUID = 1L;
 
-	// TODO Task phases should be enums
-	private static final String WALK_TO_SITE = "Walk to Site";
-	private static final String FIELD_WORK = "Performing Field Work";
-	private static final String WALK_TO_ROVER = "Walk to Rover";
+    // TODO Task phases should be enums
+    private static final String FIELD_WORK = "Performing Field Work";
 
-	// Data members
-	private Person leadResearcher;
-	private ScientificStudy study;
-	private Rover rover;
-	private double fieldWorkXLoc;
-	private double fieldWorkYLoc;
-	private double enterAirlockXLoc;
-	private double enterAirlockYLoc;
+    // Data members
+    private Person leadResearcher;
+    private ScientificStudy study;
+    private Rover rover;
 
-	/**
-	 * Constructor.
-	 * @param person the person performing the task.
-	 * @param leadResearcher the researcher leading the field work.
-	 * @param study the scientific study the field work is for.
-	 * @param rover the rover
-	 * @throws Exception if error creating task.
-	 */
-	public BiologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study, 
-			Rover rover) {
+    /**
+     * Constructor.
+     * @param person the person performing the task.
+     * @param leadResearcher the researcher leading the field work.
+     * @param study the scientific study the field work is for.
+     * @param rover the rover
+     */
+    public BiologyStudyFieldWork(Person person, Person leadResearcher, ScientificStudy study, 
+            Rover rover) {
 
-		// Use EVAOperation parent constructor.
-		super("Biology Study Field Work", person);
+        // Use EVAOperation parent constructor.
+        super("Biology Study Field Work", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-		// Initialize data members.
-		this.leadResearcher = leadResearcher;
-		this.study = study;
-		this.rover = rover;
+        // Initialize data members.
+        this.leadResearcher = leadResearcher;
+        this.study = study;
+        this.rover = rover;
 
-		// Determine location for field work.
-		Point2D fieldWorkLoc = determineFieldWorkLocation();
-		fieldWorkXLoc = fieldWorkLoc.getX();
-		fieldWorkYLoc = fieldWorkLoc.getY();
+        // Determine location for field work.
+        Point2D fieldWorkLoc = determineFieldWorkLocation();
+        setOutsideSiteLocation(fieldWorkLoc.getX(), fieldWorkLoc.getY());
+        
+        // Add task phases
+        addPhase(FIELD_WORK);
+    }
 
-		// Determine location for reentering rover airlock.
-		Point2D enterAirlockLoc = determineRoverAirlockEnteringLocation();
-		enterAirlockXLoc = enterAirlockLoc.getX();
-		enterAirlockYLoc = enterAirlockLoc.getY();
+    /**
+     * Determine location for field work.
+     * @return field work X and Y location outside rover.
+     */
+    private Point2D determineFieldWorkLocation() {
 
-		// Add task phases
-		addPhase(WALK_TO_SITE);
-		addPhase(FIELD_WORK);
-		addPhase(WALK_TO_ROVER);
-	}
+        Point2D newLocation = null;
+        boolean goodLocation = false;
+        for (int x = 0; (x < 5) && !goodLocation; x++) {
+            for (int y = 0; (y < 10) && !goodLocation; y++) {
 
-	/**
-	 * Determine location for field work.
-	 * @return field work X and Y location outside rover.
-	 */
-	private Point2D determineFieldWorkLocation() {
+                double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
+                double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
+                double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
+                double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
+                Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
 
-		Point2D newLocation = null;
-		boolean goodLocation = false;
-		for (int x = 0; (x < 5) && !goodLocation; x++) {
-			for (int y = 0; (y < 10) && !goodLocation; y++) {
+                newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                        boundedLocalPoint.getY(), rover);
+                goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                        person.getCoordinates());
+            }
+        }
 
-				double distance = RandomUtil.getRandomDouble(100D) + (x * 100D) + 50D;
-				double radianDirection = RandomUtil.getRandomDouble(Math.PI * 2D);
-				double newXLoc = rover.getXLocation() - (distance * Math.sin(radianDirection));
-				double newYLoc = rover.getYLocation() + (distance * Math.cos(radianDirection));
-				Point2D boundedLocalPoint = new Point2D.Double(newXLoc, newYLoc);
+        return newLocation;
+    }
 
-				newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-						boundedLocalPoint.getY(), rover);
-				goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-						person.getCoordinates());
-			}
-		}
+    /**
+     * Checks if a person can research a site.
+     * @param person the person
+     * @param rover the rover
+     * @return true if person can research a site.
+     */
+    public static boolean canResearchSite(Person person, Rover rover) {
+        // Check if person can exit the rover.
+        boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
-		return newLocation;
-	}
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
 
-	/**
-	 * Determine location for returning to rover airlock.
-	 * @return X and Y location outside rover.
-	 */
-	private Point2D determineRoverAirlockEnteringLocation() {
+        // Check if it is night time outside.
+        boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
 
-		Point2D vehicleLoc = LocalAreaUtil.getRandomExteriorLocation(rover, 1D);
-		Point2D newLocation = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-				vehicleLoc.getY(), rover);
+        // Check if in dark polar region.
+        boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
 
-		return newLocation;
-	}
+        // Check if person's medical condition will not allow task.
+        boolean medical = person.getPerformanceRating() < .5D;
 
-	/**
-	 * Checks if a person can research a site.
-	 * @param person the person
-	 * @param rover the rover
-	 * @return true if person can research a site.
-	 */
-	public static boolean canResearchSite(Person person, Rover rover) {
-		// Check if person can exit the rover.
-		boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
+        return (exitable && (sunlight || darkRegion) && !medical);
+    }
 
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+    @Override
+    protected String getOutsideSitePhase() {
+        return FIELD_WORK;
+    }
+    
+    @Override
+    protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (FIELD_WORK.equals(getPhase())) {
+            return fieldWorkPhase(time);
+        }
+        else {
+            return time;
+        }
+    }
+    
+    /**
+     * Perform the field work phase of the task.
+     * @param time the time available (millisols).
+     * @return remaining time after performing phase (millisols).
+     * @throws Exception if error performing phase.
+     */
+    private double fieldWorkPhase(double time) {
 
-		// Check if it is night time outside.
-		boolean sunlight = surface.getSurfaceSunlight(rover.getCoordinates()) > 0;
+        // Check for an accident during the EVA operation.
+        checkForAccident(time);
 
-		// Check if in dark polar region.
-		boolean darkRegion = surface.inDarkPolarRegion(rover.getCoordinates());
+        // Check if site duration has ended or there is reason to cut the field 
+        // work phase short and return to the rover.
+        if (shouldEndEVAOperation() || addTimeOnSite(time)) {
+            setPhase(WALK_BACK_INSIDE);
+            return time;
+        }
 
-		// Check if person's medical condition will not allow task.
-		boolean medical = person.getPerformanceRating() < .5D;
+        // Add research work to the scientific study for lead researcher.
+        addResearchWorkTime(time);
 
-		return (exitable && (sunlight || darkRegion) && !medical);
-	}
+        // Add experience points
+        addExperience(time);
 
-	/**
-	 * Perform the exit rover phase of the task.
-	 * @param time the time to perform this phase (in millisols)
-	 * @return the time remaining after performing this phase (in millisols)
-	 * @throws Exception if error exiting rover.
-	 */
-	private double exitRover(double time) {
+        return 0D;
+    }
 
-		try {
-			time = exitAirlock(time, rover.getAirlock());
+    /**
+     * Adds research work time to the scientific study for the lead researcher.
+     * @param time the time (millisols) performing field work.
+     */
+    private void addResearchWorkTime(double time) {
+        // Determine effective field work time.
+        double effectiveFieldWorkTime = time;
+        int skill = getEffectiveSkillLevel();
+        if (skill == 0) {
+            effectiveFieldWorkTime /= 2D;
+        }
+        else if (skill > 1) {
+            effectiveFieldWorkTime += effectiveFieldWorkTime * (.2D * skill);
+        }
 
-			// Add experience points
-			addExperience(time);
-		}
-		catch (Exception e) {
-			// Person unable to exit airlock.
-			endTask();
-		}
+        // If person isn't lead researcher, divide field work time by two.
+        if (!person.equals(leadResearcher)) {
+            effectiveFieldWorkTime /= 2D;
+        }
 
-		if (exitedAirlock) {
+        // Add research to study for primary or collaborative researcher.
+        if (study.getPrimaryResearcher().equals(leadResearcher)) {
+            study.addPrimaryResearchWorkTime(effectiveFieldWorkTime);
+        }
+        else {
+            study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
+        }
+    }
 
-			// Set task phase to walk to field work site.
-			setPhase(WALK_TO_SITE);
-		}
+    @Override
+    protected void addExperience(double time) {
+        // Add experience to "EVA Operations" skill.
+        // (1 base experience point per 100 millisols of time spent)
+        double evaExperience = time / 100D;
 
-		return time;
-	}
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+        evaExperience += evaExperience * experienceAptitudeModifier;
+        evaExperience *= getTeachingExperienceModifier();
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
-	/**
-	 * Perform the enter rover phase of the task.
-	 * @param time the time to perform this phase (in millisols)
-	 * @return the time remaining after performing this phase (in millisols)
-	 * @throws Exception if error entering rover.
-	 */
-	private double enterRover(double time) {
+        // If phase is performing field work, add experience to biology skill.
+        if (FIELD_WORK.equals(getPhase())) {
+            // 1 base experience point per 10 millisols of field work time spent.
+            // Experience points adjusted by person's "Experience Aptitude" attribute.
+            double biologyExperience = time / 10D;
+            biologyExperience += biologyExperience * experienceAptitudeModifier;
+            person.getMind().getSkillManager().addExperience(SkillType.BIOLOGY, biologyExperience);
+        }
+    }
 
-		time = enterAirlock(time, rover.getAirlock());
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.BIOLOGY);
+        return results;
+    }
 
-		// Add experience points
-		addExperience(time);
+    @Override
+    public int getEffectiveSkillLevel() {
+        SkillManager manager = person.getMind().getSkillManager();
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int biologySkill = manager.getEffectiveSkillLevel(SkillType.BIOLOGY);
+        return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D); 
+    }
 
-		if (enteredAirlock) {
-			endTask();
-			return time;
-		}
+    @Override
+    public void destroy() {
+        super.destroy();
 
-		return 0D;
-	}
-
-	/**
-	 * Perform the walk to field work site phase.
-	 * @param time the time available (millisols).
-	 * @return remaining time after performing phase (millisols).
-	 */
-	private double walkToFieldWorkSitePhase(double time) {
-
-		// Check for an accident during the EVA walk.
-		checkForAccident(time);
-
-		// Check if there is reason to cut the EVA walk phase short and return
-		// to the rover.
-		if (shouldEndEVAOperation()) {
-			setPhase(WALK_TO_ROVER);
-			return time;
-		}
-
-		// If not at field work site location, create walk outside subtask.
-		if ((person.getXLocation() != fieldWorkXLoc) || (person.getYLocation() != fieldWorkYLoc)) {
-			Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-					fieldWorkXLoc, fieldWorkYLoc, false);
-			addSubTask(walkingTask);
-		}
-		else {
-			setPhase(FIELD_WORK);
-		}
-
-		return time;
-	}
-
-	/**
-	 * Perform the walk to rover airlock phase.
-	 * @param time the time available (millisols).
-	 * @return remaining time after performing phase (millisols).
-	 */
-	private double walkToRoverAirlock(double time) {
-
-		// Check for an accident during the EVA walk.
-		checkForAccident(time);
-
-		// If not at outside rover airlock location, create walk outside subtask.
-		if ((person.getXLocation() != enterAirlockXLoc) || (person.getYLocation() != enterAirlockYLoc)) {
-			Task walkingTask = new WalkOutside(person, person.getXLocation(), person.getYLocation(), 
-					enterAirlockXLoc, enterAirlockYLoc, true);
-			addSubTask(walkingTask);
-		}
-		else {
-			setPhase(EVAOperation.ENTER_AIRLOCK);
-		}
-
-		return time;
-	}
-
-	/**
-	 * Perform the field work phase of the task.
-	 * @param time the time available (millisols).
-	 * @return remaining time after performing phase (millisols).
-	 * @throws Exception if error performing phase.
-	 */
-	private double fieldWorkPhase(double time) {
-
-		// Check for an accident during the EVA operation.
-		checkForAccident(time);
-
-		// Check if there is reason to cut the field work phase short and return
-		// to the rover.
-		if (shouldEndEVAOperation()) {
-			setPhase(WALK_TO_ROVER);
-			return time;
-		}
-
-		// Add research work to the scientific study for lead researcher.
-		addResearchWorkTime(time);
-
-		// Add experience points
-		addExperience(time);
-
-		return 0D;
-	}
-
-	/**
-	 * Adds research work time to the scientific study for the lead researcher.
-	 * @param time the time (millisols) performing field work.
-	 */
-	private void addResearchWorkTime(double time) {
-		// Determine effective field work time.
-		double effectiveFieldWorkTime = time;
-		int skill = getEffectiveSkillLevel();
-		if (skill == 0) effectiveFieldWorkTime /= 2D;
-		if (skill > 1) effectiveFieldWorkTime += effectiveFieldWorkTime * (.2D * skill);
-
-		// If person isn't lead researcher, divide field work time by two.
-		if (!person.equals(leadResearcher)) effectiveFieldWorkTime /= 2D;
-
-		// Add research to study for primary or collaborative researcher.
-		if (study.getPrimaryResearcher().equals(leadResearcher)) 
-			study.addPrimaryResearchWorkTime(effectiveFieldWorkTime);
-		else study.addCollaborativeResearchWorkTime(leadResearcher, effectiveFieldWorkTime);
-	}
-
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "EVA Operations" skill.
-		// (1 base experience point per 100 millisols of time spent)
-		double evaExperience = time / 100D;
-
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
-		evaExperience += evaExperience * experienceAptitudeModifier;
-		evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
-
-		// If phase is performing field work, add experience to biology skill.
-		if (FIELD_WORK.equals(getPhase())) {
-			// 1 base experience point per 10 millisols of field work time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double biologyExperience = time / 10D;
-			biologyExperience += biologyExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.BIOLOGY, biologyExperience);
-		}
-	}
-
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.BIOLOGY);
-		return results;
-	}
-
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int biologySkill = manager.getEffectiveSkillLevel(SkillType.BIOLOGY);
-		return (int) Math.round((double)(EVAOperationsSkill + biologySkill) / 2D); 
-	}
-
-	@Override
-	protected double performMappedPhase(double time) {
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		}
-		else if (EVAOperation.EXIT_AIRLOCK.equals(getPhase())) {
-			return exitRover(time);
-		}
-		else if (WALK_TO_SITE.equals(getPhase())) {
-			return walkToFieldWorkSitePhase(time);
-		}
-		else if (FIELD_WORK.equals(getPhase())) {
-			return fieldWorkPhase(time);
-		}
-		else if (WALK_TO_ROVER.equals(getPhase())) {
-			return walkToRoverAirlock(time);
-		}
-		else if (EVAOperation.ENTER_AIRLOCK.equals(getPhase())) {
-			return enterRover(time);
-		}
-		else {
-			return time;
-		}
-	}
-
-	@Override
-	public void destroy() {
-		super.destroy();
-
-		leadResearcher = null;
-		study = null;
-		rover = null;
-	}
+        leadResearcher = null;
+        study = null;
+        rover = null;
+    }
 }

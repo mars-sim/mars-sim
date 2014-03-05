@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mathematician.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -43,68 +43,69 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	//	private static Logger logger = Logger.getLogger(Mathematician.class.getName());
+//	private static Logger logger = Logger.getLogger(Mathematician.class.getName());
 
-	/**
-	 * Constructor
-	 */
-	public Mathematician() {
-		// Use Job constructor
-		super("Mathematician");
+    /**
+     * Constructor
+     */
+    public Mathematician() {
+        // Use Job constructor
+        super("Mathematician");
+        
+        // Add mathematician-related tasks.
+        jobTasks.add(AssistScientificStudyResearcher.class);
+        jobTasks.add(CompileScientificStudyResults.class);
+        jobTasks.add(InviteStudyCollaborator.class);
+        jobTasks.add(PeerReviewStudyPaper.class);
+        jobTasks.add(PerformLaboratoryResearch.class);
+        jobTasks.add(PerformMathematicalModeling.class);
+        jobTasks.add(ProposeScientificStudy.class);
+        jobTasks.add(ResearchScientificStudy.class);
+        jobTasks.add(RespondToStudyInvitation.class);
+        jobTasks.add(DigLocalIce.class);
+        
+        // Add mathematician-related missions.
+        jobMissionStarts.add(TravelToSettlement.class);
+        jobMissionJoins.add(TravelToSettlement.class);  
+        jobMissionStarts.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(RescueSalvageVehicle.class);
+        jobMissionJoins.add(BuildingConstructionMission.class);
+        jobMissionJoins.add(BuildingSalvageMission.class);
+        jobMissionStarts.add(EmergencySupplyMission.class);
+        jobMissionJoins.add(EmergencySupplyMission.class);
+    }
+    
+    @Override
+    public double getCapability(Person person) {
+        double result = 0D;
+        
+        int mathematicsSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATHEMATICS);
+        result = mathematicsSkill;
+        
+        NaturalAttributeManager attributes = person.getNaturalAttributeManager();
+        int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+        result+= result * ((academicAptitude - 50D) / 100D);
+        
+        if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+        
+        return result;
+    }
 
-		// Add mathematician-related tasks.
-		jobTasks.add(AssistScientificStudyResearcher.class);
-		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(InviteStudyCollaborator.class);
-		jobTasks.add(PeerReviewStudyPaper.class);
-		jobTasks.add(PerformLaboratoryResearch.class);
-		jobTasks.add(PerformMathematicalModeling.class);
-		jobTasks.add(ProposeScientificStudy.class);
-		jobTasks.add(ResearchScientificStudy.class);
-		jobTasks.add(RespondToStudyInvitation.class);
-		jobTasks.add(DigLocalIce.class);
+    @Override
+    public double getSettlementNeed(Settlement settlement) {
+        double result = 0D;
+        
+        // Add (labspace * tech level / 2) for all labs with mathematics specialties.
+        List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
+        Iterator<Building> i = laboratoryBuildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            Research lab = (Research) building.getFunction(Research.NAME);
+            if (lab.hasSpecialty(ScienceType.MATHEMATICS)) {
+                result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
+            }
+        }
 
-		// Add mathematician-related missions.
-		jobMissionStarts.add(TravelToSettlement.class);
-		jobMissionJoins.add(TravelToSettlement.class);  
-		jobMissionStarts.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(BuildingConstructionMission.class);
-		jobMissionJoins.add(BuildingSalvageMission.class);
-		jobMissionStarts.add(EmergencySupplyMission.class);
-		jobMissionJoins.add(EmergencySupplyMission.class);
-	}
-
-	@Override
-	public double getCapability(Person person) {
-		double result = 0D;
-
-		int mathematicsSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.MATHEMATICS);
-		result = mathematicsSkill;
-
-		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
-		result+= result * ((academicAptitude - 50D) / 100D);
-
-		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-
-		return result;
-	}
-
-	@Override
-	public double getSettlementNeed(Settlement settlement) {
-		double result = 0D;
-
-		// Add (labspace * tech level / 2) for all labs with mathematics specialties.
-		List<Building> laboratoryBuildings = settlement.getBuildingManager().getBuildings(Research.NAME);
-		Iterator<Building> i = laboratoryBuildings.iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			Research lab = (Research) building.getFunction(Research.NAME);
-			if (lab.hasSpeciality(ScienceType.MATHEMATICS)) 
-				result += (lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D);
-		}
-
-		return result;  
-	}
+        return result;  
+    }
 }

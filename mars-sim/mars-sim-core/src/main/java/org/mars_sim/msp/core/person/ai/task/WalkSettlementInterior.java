@@ -37,17 +37,18 @@ extends Task
 implements Serializable {
 
     /** default serial id. */
-	private static final long serialVersionUID = 1L;
-
+    private static final long serialVersionUID = 1L;
+    
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
-
+    private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
+    
     // Task phase
     private static final String WALKING = "Walking";
     
     // Static members
     private static final double WALKING_SPEED = 5D; // km / hr.
     private static final double VERY_SMALL_DISTANCE = .00001D;
+    private static final double STRESS_MODIFIER = -.1D;
     
     // Data members
     private Settlement settlement;
@@ -66,7 +67,7 @@ implements Serializable {
      */
     public WalkSettlementInterior(Person person, Building destinationBuilding, 
             double destinationXLocation, double destinationYLocation) {
-        super("Walking Settlement Interior", person, false, false, 0D, false, 0D);
+        super("Walking Settlement Interior", person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Check that the person is currently inside the settlement.
         String location = person.getLocationSituation();
@@ -112,9 +113,15 @@ implements Serializable {
     
     @Override
     protected double performMappedPhase(double time) {
-        if (getPhase() == null) throw new IllegalArgumentException("Task phase is null");
-        if (WALKING.equals(getPhase())) return walkingPhase(time);
-        else return time;
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        if (WALKING.equals(getPhase())) {
+            return walkingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
     
     /**
@@ -177,6 +184,9 @@ implements Serializable {
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
             logger.fine(person.getName() + " walked from " + startBuilding.getName() + " to " + 
                     destBuilding.getName());
+            InsidePathLocation location = walkingPath.getNextPathLocation();
+            person.setXLocation(location.getXLocation());
+            person.setYLocation(location.getYLocation());
             endTask();
         }
         

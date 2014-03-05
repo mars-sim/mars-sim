@@ -53,7 +53,6 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
      * @param name the name of the rover
      * @param description the configuration description of the vehicle.
      * @param settlement the settlement the rover is parked at
-     * @throws Exception if rover could not be constructed.
      */
     public Rover(String name, String description, Settlement settlement) {
         // Use GroundVehicle constructor

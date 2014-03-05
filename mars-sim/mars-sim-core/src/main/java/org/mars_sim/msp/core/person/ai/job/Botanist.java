@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Botanist.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-27
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -115,8 +115,9 @@ implements Serializable {
 		while (i.hasNext()) {
 		    Building building = i.next();
 		    Research lab = (Research) building.getFunction(Research.NAME);
-		    if (lab.hasSpeciality(ScienceType.BOTANY)) 
+		    if (lab.hasSpecialty(ScienceType.BOTANY)) {
 		        result += (double) (lab.getResearcherNum() * lab.getTechnologyLevel()) / 2D;
+		    }
 		}
 
 		// Add (growing area in greenhouses) / 25

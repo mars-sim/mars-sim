@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-02-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,31 +25,31 @@ import org.mars_sim.msp.core.resource.AmountResource;
 /** 
  * A task for consolidating the resources stored in local containers.
  */
-public class ConsolidateContainers
-extends Task
+public class ConsolidateContainers 
+extends Task 
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
-
-	// TODO Task phase should be an enum
-	private static final String CONSOLIDATING = "Consolidating Containers";
-
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.1D;
-
-	/** The amount of resources (kg) one person of average strength can load per millisol. */
-	private static double LOAD_RATE = 20D;
-
-	/** Time (millisols) duration. */
-	private static final double DURATION = 30D;
-
-	// Data members.
-	private Inventory topInventory = null;
-
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
+    
+    // TODO Task phase should be an enum
+    private static final String CONSOLIDATING = "Consolidating Containers";
+    
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.1D;
+    
+    /** The amount of resources (kg) one person of average strength can load per millisol. */
+    private static double LOAD_RATE = 20D;
+    
+    /** Time (millisols) duration. */
+    private static final double DURATION = 30D;
+    
+    // Data members.
+    private Inventory topInventory = null;
+    
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -151,7 +151,7 @@ implements Serializable {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        if (CONSOLIDATING.equals(getPhase())) {
+        else if (CONSOLIDATING.equals(getPhase())) {
             return consolidatingPhase(time);
         }
         else {
