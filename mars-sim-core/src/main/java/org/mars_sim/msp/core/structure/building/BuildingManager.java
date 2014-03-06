@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-05
  * @author Scott Davis
  */
  
@@ -257,7 +257,7 @@ public class BuildingManager implements Serializable {
         
         List<Building> inhabitableBuildings = getBuildings(LifeSupport.NAME);
         if (inhabitableBuildings.size() > 0) {
-            int buildingIndex = RandomUtil.getRandomInt(inhabitableBuildings.size()) - 1;
+            int buildingIndex = RandomUtil.getRandomInt(inhabitableBuildings.size() - 1);
             result = inhabitableBuildings.get(buildingIndex);
         }
         
