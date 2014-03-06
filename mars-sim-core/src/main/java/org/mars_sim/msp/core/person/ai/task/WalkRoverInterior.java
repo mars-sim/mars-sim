@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkRoverInterior.java
- * @version 3.06 2014-02-10
+ * @version 3.06 2014-03-05
  * @author Scott Davis
  */
 
@@ -63,8 +63,13 @@ implements Serializable {
         
         // Check that destination location is within rover.
         if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, rover)) {
-            throw new IllegalStateException(
-                    "Given destination walking location not within rover.");
+            // Determine new destination location within rover.
+            Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
+            Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(), newRoverLoc.getY(), rover);
+            destXLoc = relativeRoverLoc.getX();
+            destYLoc = relativeRoverLoc.getY();
+//            throw new IllegalStateException(
+//                    "Given destination walking location not within rover.");
         }
         
         // Initialize task phase.
