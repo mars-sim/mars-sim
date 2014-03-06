@@ -23,15 +23,20 @@ import org.mars_sim.msp.core.time.MarsClock;
 /**
  * A manager for interplanetary transportation.
  */
-public class TransportManager implements Serializable {
+public class TransportManager
+implements Serializable {
 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(TransportManager.class.getName());
-    
+
 	// Data members
 	private Collection<Transportable> transportItems;
-	
+
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public TransportManager() {
 		
@@ -75,8 +80,8 @@ public class TransportManager implements Serializable {
 	    Iterator<Transportable> i = transportItems.iterator();
 	    while (i.hasNext()) {
 	    	Transportable transportItem = i.next();
-	        String state = transportItem.getTransitState();
-	        if (Transportable.PLANNED.equals(state) || Transportable.IN_TRANSIT.equals(state)) {
+	    	TransitState state = transportItem.getTransitState();
+	        if (TransitState.PLANNED == state || TransitState.IN_TRANSIT == state) {
 	            incoming.add(transportItem);
 	        }
 	    }
@@ -94,8 +99,8 @@ public class TransportManager implements Serializable {
 	    Iterator<Transportable> i = transportItems.iterator();
         while (i.hasNext()) {
         	Transportable transportItem = i.next();
-            String state = transportItem.getTransitState();
-            if (Transportable.ARRIVED.equals(state)) {
+        	TransitState state = transportItem.getTransitState();
+            if (TransitState.ARRIVED == state) {
                 arrived.add(transportItem);
             }
         }
@@ -108,7 +113,7 @@ public class TransportManager implements Serializable {
 	 * @param transportItem the transport item.
 	 */
 	public void cancelTransportItem(Transportable transportItem) {
-	    transportItem.setTransitState(Transportable.CANCELED);
+	    transportItem.setTransitState(TransitState.CANCELED);
 	    HistoricalEvent cancelEvent = new TransportEvent(transportItem, TransportEvent.TRANSPORT_ITEM_CANCELLED,
                 "Transport item cancelled");
 	    Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
@@ -126,10 +131,10 @@ public class TransportManager implements Serializable {
 		while (i.hasNext()) {
 			Transportable transportItem = i.next();
 			MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-			if (Transportable.PLANNED.equals(transportItem.getTransitState())) {
+			if (TransitState.PLANNED == transportItem.getTransitState()) {
 			    if (MarsClock.getTimeDiff(currentTime, transportItem.getLaunchDate()) >= 0D) {
 			        // Transport item is launched.
-			        transportItem.setTransitState(Transportable.IN_TRANSIT);
+			        transportItem.setTransitState(TransitState.IN_TRANSIT);
 			        HistoricalEvent deliverEvent = new TransportEvent(transportItem, 
 			        		TransportEvent.TRANSPORT_ITEM_LAUNCHED, "Transport item launched");
 			        Simulation.instance().getEventManager().registerNewEvent(deliverEvent);
@@ -137,10 +142,10 @@ public class TransportManager implements Serializable {
 			        continue;
 			    }
 			}
-			else if (Transportable.IN_TRANSIT.equals(transportItem.getTransitState())) {
+			else if (TransitState.IN_TRANSIT == transportItem.getTransitState()) {
 			    if (MarsClock.getTimeDiff(currentTime, transportItem.getArrivalDate()) >= 0D) {
                     // Transport item has arrived on Mars.
-                    transportItem.setTransitState(Transportable.ARRIVED);
+                    transportItem.setTransitState(TransitState.ARRIVED);
                     transportItem.performArrival();
                     HistoricalEvent arrivalEvent = new TransportEvent(transportItem, 
                     		TransportEvent.TRANSPORT_ITEM_ARRIVED, "Transport item arrived on Mars");

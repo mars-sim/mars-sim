@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
 import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.structure.building.Building;
 
 /**
@@ -87,21 +88,21 @@ implements MonitorModel, HistoricalEventListener {
 		// Filter events based on category.
 		for (int x = 0; x < manager.size(); x++) {
 			HistoricalEvent event = manager.getEvent(x);
-			String category = event.getCategory();
+			HistoricalEventType category = event.getCategory();
 
-			if (category.equals(HistoricalEventManager.MALFUNCTION) && displayMalfunction)
+			if (category.equals(HistoricalEventType.MALFUNCTION) && displayMalfunction)
 				cachedEvents.add(event);
 
-			if (category.equals(HistoricalEventManager.MEDICAL) && displayMedical)
+			if (category.equals(HistoricalEventType.MEDICAL) && displayMedical)
 				cachedEvents.add(event);
 
-			if (category.equals(HistoricalEventManager.MISSION) && displayMission)
+			if (category.equals(HistoricalEventType.MISSION) && displayMission)
 				cachedEvents.add(event);
 
-			if (category.equals(HistoricalEventManager.TASK) && displayTask)
+			if (category.equals(HistoricalEventType.TASK) && displayTask)
 				cachedEvents.add(event);
 
-			if (category.equals(HistoricalEventManager.TRANSPORT) && displayTransport)
+			if (category.equals(HistoricalEventType.TRANSPORT) && displayTransport)
 				cachedEvents.add(event);
 		}
 

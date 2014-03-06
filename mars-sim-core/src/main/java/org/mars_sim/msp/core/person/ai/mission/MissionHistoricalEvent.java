@@ -7,15 +7,16 @@
 package org.mars_sim.msp.core.person.ai.mission;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.person.Person;
 
 /**
  * This class represents the historical actions involving missions.
  */
-public class MissionHistoricalEvent extends HistoricalEvent {
+public class MissionHistoricalEvent
+extends HistoricalEvent {
 	
-	// Mission event types.
+	// TODO Mission event types should be an enum.
 	public static final String START = "Mission Started";
 	public static final String JOINING = "Mission Joined";
 	public static final String FINISH = "Mission Finished";
@@ -27,14 +28,13 @@ public class MissionHistoricalEvent extends HistoricalEvent {
 	public static final String RESCUE_PERSON = "Rescue Person";
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param person The person on the mission.
 	 * @param mission The mission with the event.
 	 * @param eventType The type of event.
 	 */
 	public MissionHistoricalEvent(Person person, Mission mission, String eventType) {
-		
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventManager.MISSION, eventType, person, mission.getName());
+		super(HistoricalEventType.MISSION, eventType, person, mission.getName());
 	}
 }

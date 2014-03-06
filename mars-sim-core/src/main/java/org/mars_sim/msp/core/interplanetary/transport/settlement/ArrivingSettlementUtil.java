@@ -14,7 +14,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitType;
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -90,11 +90,11 @@ public class ArrivingSettlementUtil {
 			arrivingSettlement.setLaunchDate(launchDate);
 
 			// Set transit state based on launch and arrival time.
-			String transitState = Transportable.PLANNED;
+			TransitState transitState = TransitState.PLANNED;
 			if (MarsClock.getTimeDiff(currentTime, launchDate) >= 0D) {
-				transitState = Transportable.IN_TRANSIT;
+				transitState = TransitState.IN_TRANSIT;
 				if (MarsClock.getTimeDiff(currentTime, arrivalDate) >= 0D) {
-					transitState = Transportable.ARRIVED;
+					transitState = TransitState.ARRIVED;
 				}
 			}
 			arrivingSettlement.setTransitState(transitState);

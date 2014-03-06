@@ -44,15 +44,15 @@ implements Serializable {
 	public String getDescription() {
 		return description;
 	}
-	
+
 	/*
 	 * Default private constructor
 	 *
 	private ItemResource() {
 		throw new UnsupportedOperationException("invalid constructor");
 	}
-	*/
-	
+	 */
+
 	/**
 	 * Constructor.
 	 * @param name the name of the resource.
@@ -73,32 +73,32 @@ implements Serializable {
 		return massPerItem;
 	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final ItemResource other = (ItemResource) obj;
-        if ((this.getName() == null) ? (other.getName() != null) : !this.getName().equals(other.getName())) {
-            return false;
-        }
-        if (Double.doubleToLongBits(this.massPerItem) != Double.doubleToLongBits(other.massPerItem)) {
-            return false;
-        }
-        return true;
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final ItemResource other = (ItemResource) obj;
+		if ((this.getName() == null) ? (other.getName() != null) : !this.getName().equals(other.getName())) {
+			return false;
+		}
+		if (Double.doubleToLongBits(this.massPerItem) != Double.doubleToLongBits(other.massPerItem)) {
+			return false;
+		}
+		return true;
+	}
 
-    @Override
-    public int hashCode() {
-        int hash = 7;
-        hash = 19 * hash + (this.getName() != null ? this.getName().hashCode() : 0);
-        hash = 19 * hash + (int) (Double.doubleToLongBits(this.massPerItem) ^ (Double.doubleToLongBits(this.massPerItem) >>> 32));
-        return hash;
-    }
-	
+	@Override
+	public int hashCode() {
+		int hash = 7;
+		hash = 19 * hash + (this.getName() != null ? this.getName().hashCode() : 0);
+		hash = 19 * hash + (int) (Double.doubleToLongBits(this.massPerItem) ^ (Double.doubleToLongBits(this.massPerItem) >>> 32));
+		return hash;
+	}
+
 	/**
 	 * Finds an item resource by name.
 	 * @param name the name of the resource.
@@ -115,48 +115,50 @@ implements Serializable {
 		if (result != null) return result;
 		else throw new UnknownResourceName(name);
 	}
-	
+
 	/**
 	 * Gets a ummutable collection of all the item resources.
 	 * @return collection of item resources.
 	 */
 	public static Set<Part> getItemResources() {
 		Set<Part> set = SimulationConfig
-		.instance()
-		.getPartConfiguration()
-		.getItemResources();
+				.instance()
+				.getPartConfiguration()
+				.getItemResources();
 		return Collections.unmodifiableSet(set);
 	}
 
 	public static TreeMap<String,Part> getItemResourcesMap() {
 		return SimulationConfig
-		.instance()
-		.getPartConfiguration()
-		.getItemResourcesMap();
+				.instance()
+				.getPartConfiguration()
+				.getItemResourcesMap();
 	}
 
-    public static ItemResource createItemResource(
-    	String resourceName,
-    	String description,
-    	double massPerItem
-    ) {
-        return new ItemResource(resourceName,description,massPerItem);
-    }
+	public static ItemResource createItemResource(
+			String resourceName,
+			String description,
+			double massPerItem
+			) {
+		return new ItemResource(resourceName,description,massPerItem);
+	}
 
-	private static class UnknownResourceName extends RuntimeException {
+	private static class UnknownResourceName
+	extends RuntimeException {
+
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private String name;
 
-        public UnknownResourceName(String name) {
-            super("Unknown resource name : " + name);
-            this.name = name;
-        }
-/*
-        public String getName() {
-            return name;
-        }
-*/
-    }
+		public UnknownResourceName(String name) {
+			super("Unknown resource name : " + name);
+			this.name = name;
+		}
+		/*
+		public String getName() {
+			return name;
+		}
+		 */
+	}
 }

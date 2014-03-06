@@ -37,7 +37,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellEditor;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -51,32 +51,35 @@ import org.mars_sim.msp.ui.swing.tool.resupply.SupplyTableModel.SupplyItem;
 /**
  * A panel for creating or editing a resupply mission.
  */
-public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
+public class ResupplyMissionEditingPanel
+extends TransportItemEditingPanel {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	// Data members
-    private Resupply resupply;
-    private JComboBoxMW<Settlement> destinationCB;
-    private JRadioButton arrivalDateRB;
-    private JLabel arrivalDateTitleLabel;
-    private JRadioButton timeUntilArrivalRB;
-    private JLabel timeUntilArrivalLabel;
-    private MartianSolComboBoxModel martianSolCBModel;
-    private JLabel solLabel;
-    private JComboBoxMW<?> solCB;
-    private JLabel monthLabel;
-    private JComboBoxMW<?> monthCB;
-    private JLabel orbitLabel;
-    private JComboBoxMW<?> orbitCB;
-    private JTextField solsTF;
-    private JLabel solInfoLabel;
-    private JTextField immigrantsTF;
-    private SupplyTableModel supplyTableModel;
-    private JTable supplyTable;
-    private JButton removeSupplyButton;
-    
-    public ResupplyMissionEditingPanel(Resupply resupply) {
+	private Resupply resupply;
+	private JComboBoxMW<Settlement> destinationCB;
+	private JRadioButton arrivalDateRB;
+	private JLabel arrivalDateTitleLabel;
+	private JRadioButton timeUntilArrivalRB;
+	private JLabel timeUntilArrivalLabel;
+	private MartianSolComboBoxModel martianSolCBModel;
+	private JLabel solLabel;
+	private JComboBoxMW<?> solCB;
+	private JLabel monthLabel;
+	private JComboBoxMW<?> monthCB;
+	private JLabel orbitLabel;
+	private JComboBoxMW<?> orbitCB;
+	private JTextField solsTF;
+	private JLabel solInfoLabel;
+	private JTextField immigrantsTF;
+	private SupplyTableModel supplyTableModel;
+	private JTable supplyTable;
+	private JButton removeSupplyButton;
+
+	/** constructor. */
+	public ResupplyMissionEditingPanel(Resupply resupply) {
         // User TransportItemEditingPanel constructor.
         super(resupply);
         
@@ -492,11 +495,11 @@ public class ResupplyMissionEditingPanel extends TransportItemEditingPanel {
 
         // Set resupply state based on launch and arrival time.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        String state = Transportable.PLANNED;
+        TransitState state = TransitState.PLANNED;
         if (MarsClock.getTimeDiff(currentTime, launchDate) > 0D) {
-            state = Transportable.IN_TRANSIT;
+            state = TransitState.IN_TRANSIT;
             if (MarsClock.getTimeDiff(currentTime, arrivalDate) > 0D) {
-                state = Transportable.ARRIVED;
+                state = TransitState.ARRIVED;
             }
         }
         resupplyMission.setTransitState(state);

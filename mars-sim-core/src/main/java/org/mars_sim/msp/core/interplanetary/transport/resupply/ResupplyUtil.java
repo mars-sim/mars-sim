@@ -12,7 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.SettlementConfig;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -60,11 +60,11 @@ public final class ResupplyUtil {
                 resupply.setLaunchDate(launchDate);
                 
                 // Set resupply state based on launch and arrival time.
-                String state = Transportable.PLANNED;
+                TransitState state = TransitState.PLANNED;
                 if (MarsClock.getTimeDiff(currentTime, launchDate) >= 0D) {
-                    state = Transportable.IN_TRANSIT;
+                    state = TransitState.IN_TRANSIT;
                     if (MarsClock.getTimeDiff(currentTime, arrivalDate) >= 0D) {
-                        state = Transportable.ARRIVED;
+                        state = TransitState.ARRIVED;
                     }
                 }
                 resupply.setTransitState(state);

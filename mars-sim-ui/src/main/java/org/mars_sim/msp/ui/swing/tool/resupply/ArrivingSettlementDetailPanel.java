@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -202,7 +202,7 @@ implements ClockListener, HistoricalEventListener {
 	private void updateArrivingSettlementInfo() {
 
 		nameValueLabel.setText(arrivingSettlement.getName());
-		stateValueLabel.setText(arrivingSettlement.getTransitState());
+		stateValueLabel.setText(arrivingSettlement.getTransitState().getName());
 		arrivalDateValueLabel.setText(arrivingSettlement.getArrivalDate().getDateString());
 
 		updateTimeToArrival();
@@ -243,7 +243,7 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void eventAdded(int index, HistoricalEvent event) {
-		if (HistoricalEventManager.TRANSPORT.equals(event.getCategory()) && 
+		if (HistoricalEventType.TRANSPORT == event.getCategory() && 
 				TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
 			if ((arrivingSettlement != null) && event.getSource().equals(arrivingSettlement)) {
 				SwingUtilities.invokeLater(new Runnable() {

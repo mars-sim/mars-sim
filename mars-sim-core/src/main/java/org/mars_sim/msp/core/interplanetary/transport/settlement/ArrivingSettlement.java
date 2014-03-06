@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.Person;
@@ -51,7 +52,7 @@ implements Transportable, Serializable {
 	// Data members.
 	private String name;
 	private String template;
-	private String transitState;
+	private TransitState transitState;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	private Coordinates landingLocation;
@@ -112,15 +113,15 @@ implements Transportable, Serializable {
 	 * Gets the transit state of the settlement.
 	 * @return transit state string.
 	 */
-	public String getTransitState() {
+	public TransitState getTransitState() {
 		return transitState;
 	}
 
 	/**
 	 * Sets the transit state of the settlement.
-	 * @param transitState the transit state string.
+	 * @param transitState {@link TransitState} the transit state
 	 */
-	public void setTransitState(String transitState) {
+	public void setTransitState(TransitState transitState) {
 		this.transitState = transitState;
 	}
 
