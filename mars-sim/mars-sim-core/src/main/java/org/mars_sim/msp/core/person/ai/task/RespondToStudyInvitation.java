@@ -130,7 +130,7 @@ implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion + 10D);
                 }
                 
-                logger.fine(job.getName() + " " + person.getName() + 
+                logger.fine(job.getName(person.getGender()) + " " + person.getName() + 
                         " accepting invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }
@@ -142,7 +142,7 @@ implements Serializable {
                     relationship.setPersonOpinion(primaryResearcher, currentOpinion - 10D);
                 }
                 
-                logger.fine(job.getName() + " " + person.getName() + 
+                logger.fine(job.getName(person.getGender()) + " " + person.getName() + 
                         " rejecting invitation from " + primaryResearcher.getName() + 
                         " to collaborate on " + study.toString());
             }

@@ -97,10 +97,10 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
 		jobPanel.add(jobLabel);        
         
         // Prepare job combo box
-		jobCache = mind.getJob().getName();
+		jobCache = mind.getJob().getName(person.getGender());
         String[] jobNames = new String[JobManager.getJobs().size()];
         for (int x=0; x < JobManager.getJobs().size(); x++)
-        	jobNames[x] = JobManager.getJobs().get(x).getName();
+        	jobNames[x] = JobManager.getJobs().get(x).getName(person.getGender());
         jobComboBox = new JComboBoxMW<Object>(jobNames);
         jobComboBox.setSelectedItem(jobCache);
         jobComboBox.addActionListener(this);
@@ -229,7 +229,7 @@ public class ActivityTabPanel extends TabPanel implements ActionListener {
         	jobCache = deathInfo.getJob();
         	jobComboBox.setEnabled(false);
        	} 
-        else jobCache = mind.getJob().getName();
+        else jobCache = mind.getJob().getName(person.getGender());
         if (!jobCache.equals(jobComboBox.getSelectedItem())) jobComboBox.setSelectedItem(jobCache);
         
         TaskManager taskManager = null;

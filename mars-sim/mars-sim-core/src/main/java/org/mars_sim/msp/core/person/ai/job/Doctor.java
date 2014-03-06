@@ -53,7 +53,7 @@ implements Serializable {
 	 */
 	public Doctor() {
 		// Use Job constructor
-		super("Doctor");
+		super(Doctor.class);
 		
 		// Add doctor-related tasks.
         jobTasks.add(AssistScientificStudyResearcher.class);

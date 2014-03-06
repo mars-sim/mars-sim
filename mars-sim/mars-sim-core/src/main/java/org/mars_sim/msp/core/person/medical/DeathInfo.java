@@ -7,6 +7,8 @@
 
 package org.mars_sim.msp.core.person.medical;
 
+import java.util.Iterator;
+
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -15,10 +17,10 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-
-import java.util.Iterator;
 
 /**
  * This class represents the status of a Person when death occurs. It records
@@ -29,170 +31,183 @@ import java.util.Iterator;
  */
 public class DeathInfo implements java.io.Serializable {
 
-    // Data members
-    private String timeOfDeath; // The time of death.
-    private String illness; // Medical cause of death.
-    private String placeOfDeath; // Place of death.
-    private Unit containerUnit; // Container unit at death.
-    private Coordinates locationOfDeath; // location of death.
-    private String job; // Name of person's job.
-    private String mission; // Name of mission at time of death.
-    private String missionPhase; // Phase of mission at time of death.
-    private String task; // Name of task at time of death.
-    private String taskPhase; // Phase of task at time of death.
-    private String malfunction; // Name of the most serious local emergency malfunction. 
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * The construct creates an instance of a DeathInfo class.
-     * @param person the dead person
-     */
-    public DeathInfo(Person person) {
+	// Data members
+	private String timeOfDeath;
+	/** Medical cause of death. */
+	private String illness;
+	private String placeOfDeath;
+	/** Container unit at time of death. */
+	private Unit containerUnit;
+	private Coordinates locationOfDeath;
+	/** the person's job at time of death. */
+	private Job job;
+	/** Name of mission at time of death. */
+	private String mission;
+	/** Phase of mission at time of death. */
+	private String missionPhase;
+	/** Name of task at time of death. */
+	private String task;
+	/** Phase of task at time of death. */
+	private String taskPhase;
+	/** Name of the most serious local emergency malfunction. */
+	private String malfunction; 
+	/** gender at time of death. */
+	private PersonGender gender;
 
-        // Initialize data members
-        timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
-    
-        Complaint serious = person.getPhysicalCondition().getMostSerious();
-        if (serious != null) illness = serious.getName();
+	/**
+	 * The construct creates an instance of a DeathInfo class.
+	 * @param person the dead person
+	 */
+	public DeathInfo(Person person) {
 
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
-        else {
-            containerUnit = person.getContainerUnit();  
-            placeOfDeath = containerUnit.getName();
-        }
+		// Initialize data members
+		timeOfDeath = Simulation.instance().getMasterClock().getMarsClock().getTimeStamp();
 
-        locationOfDeath = person.getCoordinates();
+		Complaint serious = person.getPhysicalCondition().getMostSerious();
+		if (serious != null) illness = serious.getName();
 
-        Mind mind = person.getMind();
-        
-        job = "";
-        if (mind.getJob() != null) job = mind.getJob().getName();
-        
-        if (mind.getMission() != null) {
-            mission = mind.getMission().getName();
-            missionPhase = mind.getMission().getPhaseDescription();
-        }
+		if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
+		else {
+			containerUnit = person.getContainerUnit();  
+			placeOfDeath = containerUnit.getName();
+		}
 
-        TaskManager taskMgr = mind.getTaskManager();
-        if (taskMgr.hasTask()) {
-            task = taskMgr.getTaskName();
-            taskPhase = taskMgr.getPhase();
-        }
+		locationOfDeath = person.getCoordinates();
 
-        Iterator i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        Malfunction mostSerious = null;
-        int severity = 0;
-        while (i.hasNext()) {
-            Malfunctionable entity = (Malfunctionable) i.next();
-            MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
-            if (malfunctionMgr.hasEmergencyMalfunction()) {
-                Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
-                if (m.getSeverity() > severity) {
-                    mostSerious = m;
-                    severity = m.getSeverity();
-                }
-            }
-        }
-        if (mostSerious != null) malfunction = mostSerious.getName();
-    }
+		Mind mind = person.getMind();
 
-    /**
-     * Get the time death happened.
-     * @return formatted time.
-     */
-    public String getTimeOfDeath() {
-        if (timeOfDeath != null) return timeOfDeath;
-        else return "";
-    }
+		job = mind.getJob();
 
-    /**
-     * Gets the place the death happened.  
-     * Either the name of the unit the person was in, or 'outside' if
-     * the person died on an EVA.
-     * @return place of death.
-     */
-    public String getPlaceOfDeath() {
-        if (placeOfDeath != null) return placeOfDeath;
-        else return "";
-    }
+		if (mind.getMission() != null) {
+			mission = mind.getMission().getName();
+			missionPhase = mind.getMission().getPhaseDescription();
+		}
 
-    /** 
-     * Gets the container unit at the time of death.
-     * Returns null if none.
-     * @return container unit
-     */
-    public Unit getContainerUnit() {
-        return containerUnit;
-    }
+		TaskManager taskMgr = mind.getTaskManager();
+		if (taskMgr.hasTask()) {
+			task = taskMgr.getTaskName();
+			taskPhase = taskMgr.getPhase();
+		}
 
-    /**
-     * Get the name of the illness that caused the death.
-     * @return name of the illness.
-     */
-    public String getIllness() {
-        if (illness != null) return illness;
-        else return "";
-    }
+		Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
+		Malfunction mostSerious = null;
+		int severity = 0;
+		while (i.hasNext()) {
+			Malfunctionable entity = i.next();
+			MalfunctionManager malfunctionMgr = entity.getMalfunctionManager();
+			if (malfunctionMgr.hasEmergencyMalfunction()) {
+				Malfunction m = malfunctionMgr.getMostSeriousEmergencyMalfunction();
+				if (m.getSeverity() > severity) {
+					mostSerious = m;
+					severity = m.getSeverity();
+				}
+			}
+		}
+		if (mostSerious != null) malfunction = mostSerious.getName();
+		this.gender = person.getGender();
+	}
 
-    /**
-     * Gets the location of death.
-     * @return coordinates
-     */
-    public Coordinates getLocationOfDeath() {
-        return locationOfDeath;
-    }
+	/**
+	 * Get the time death happened.
+	 * @return formatted time.
+	 */
+	public String getTimeOfDeath() {
+		if (timeOfDeath != null) return timeOfDeath;
+		else return "";
+	}
+
+	/**
+	 * Gets the place the death happened.  
+	 * Either the name of the unit the person was in, or 'outside' if
+	 * the person died on an EVA.
+	 * @return place of death.
+	 */
+	public String getPlaceOfDeath() {
+		if (placeOfDeath != null) return placeOfDeath;
+		else return "";
+	}
+
+	/** 
+	 * Gets the container unit at the time of death.
+	 * Returns null if none.
+	 * @return container unit
+	 */
+	public Unit getContainerUnit() {
+		return containerUnit;
+	}
+
+	/**
+	 * Get the name of the illness that caused the death.
+	 * @return name of the illness.
+	 */
+	public String getIllness() {
+		if (illness != null) return illness;
+		else return "";
+	}
+
+	/**
+	 * Gets the location of death.
+	 * @return coordinates
+	 */
+	public Coordinates getLocationOfDeath() {
+		return locationOfDeath;
+	}
 
 	/**
 	 * Gets the person's job at the time of death.
 	 * @return job
 	 */
 	public String getJob() {
-		if (job != null) return job;
+		if (job != null) return job.getName(gender);
 		else return "";
 	}
 
-    /**
-     * Gets the mission the person was on at time of death.
-     * @return mission name
-     */
-    public String getMission() {
-        if (mission != null) return mission;
-        else return "";
-    }
+	/**
+	 * Gets the mission the person was on at time of death.
+	 * @return mission name
+	 */
+	public String getMission() {
+		if (mission != null) return mission;
+		else return "";
+	}
 
-    /**
-     * Gets the mission phase at time of death.
-     * @return mission phase
-     */
-    public String getMissionPhase() {
-        if (missionPhase != null) return missionPhase;
-        else return "";
-    }
+	/**
+	 * Gets the mission phase at time of death.
+	 * @return mission phase
+	 */
+	public String getMissionPhase() {
+		if (missionPhase != null) return missionPhase;
+		else return "";
+	}
 
-    /**
-     * Gets the task the person was doing at time of death.
-     * @return task name
-     */
-    public String getTask() {
-        if (task != null) return task;
-        else return "";
-    }
+	/**
+	 * Gets the task the person was doing at time of death.
+	 * @return task name
+	 */
+	public String getTask() {
+		if (task != null) return task;
+		else return "";
+	}
 
-    /**
-     * Gets the task phase at time of death.
-     * @return task phase
-     */
-    public String getTaskPhase() {
-        if (taskPhase != null) return taskPhase;
-        else return "";
-    }
+	/**
+	 * Gets the task phase at time of death.
+	 * @return task phase
+	 */
+	public String getTaskPhase() {
+		if (taskPhase != null) return taskPhase;
+		else return "";
+	}
 
-    /**
-     * Gets the most serious emergency malfunction
-     * local to the person at time of death.
-     * @return malfunction name
-     */
-    public String getMalfunction() {
-        if (malfunction != null) return malfunction;
-        else return "";
-    }
+	/**
+	 * Gets the most serious emergency malfunction
+	 * local to the person at time of death.
+	 * @return malfunction name
+	 */
+	public String getMalfunction() {
+		if (malfunction != null) return malfunction;
+		else return "";
+	}
 }

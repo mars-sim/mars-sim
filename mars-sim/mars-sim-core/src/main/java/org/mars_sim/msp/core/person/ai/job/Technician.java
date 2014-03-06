@@ -42,7 +42,7 @@ implements Serializable {
 	 */
 	public Technician() {
 		// Use Job constructor
-		super("Technician");
+		super(Technician.class);
 
 		// Add technician-related tasks.
 		jobTasks.add(Maintenance.class);

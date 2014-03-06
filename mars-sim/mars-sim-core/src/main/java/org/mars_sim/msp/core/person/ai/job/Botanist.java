@@ -52,7 +52,7 @@ implements Serializable {
 	 */
 	public Botanist() {
 		// Use Job constructor
-		super("Botanist");
+		super(Botanist.class);
 		
 		// Add botany-related tasks.
         jobTasks.add(AssistScientificStudyResearcher.class);

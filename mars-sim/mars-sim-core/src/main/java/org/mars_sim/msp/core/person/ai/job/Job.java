@@ -10,7 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
@@ -32,8 +34,7 @@ implements Serializable {
 	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
 
 	// Domain members
-	/** Name of the job. */
-	private String name;
+	protected Class<? extends Job> jobClass;
 	/** List of tasks related to the job. */
 	protected List<Class<?>> jobTasks;
 	/** List of missions to be started by a person with this job. */
@@ -45,19 +46,27 @@ implements Serializable {
 	 * Constructor.
 	 * @param name the name of the job.
 	 */
-	public Job(String name) {
-		this.name = name;
+	public Job(Class<? extends Job> jobClass) {
+		this.jobClass = jobClass;
 		jobTasks = new ArrayList<Class<?>>();
 		jobMissionStarts = new ArrayList<Class<?>>();
 		jobMissionJoins = new ArrayList<Class<?>>();
 	}
 
 	/**
-	 * Gets the job's name.
+	 * Gets the job's internationalized name for display in user interface.
 	 * @return name
 	 */
-	public String getName() {
-		return name;
+	public String getName(PersonGender gender) {
+		switch (gender) {
+			case MALE : return Msg.getString("job.male." + jobClass.getSimpleName()); //$NON-NLS-1$
+			case FEMALE : return Msg.getString("job.female." + jobClass.getSimpleName()); //$NON-NLS-1$
+			default : return Msg.getString("job.unknown." + jobClass.getSimpleName()); //$NON-NLS-1$
+		}
+	};
+
+	public Class<? extends Job> getJobClass() {
+		return this.jobClass;
 	}
 
 	/**

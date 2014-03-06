@@ -38,7 +38,7 @@ implements Serializable {
 
 	public Chef() {
 		// Use Job constructor
-		super("Chef");
+		super(Chef.class);
 		
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);

@@ -30,25 +30,32 @@ import org.mars_sim.msp.core.time.MarsClock;
  *
  * There is one instance of TaskManager per person.
  */
-public class TaskManager implements Serializable {
+public class TaskManager
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(TaskManager.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    private Task currentTask; // The current task the person is doing.
-    private Mind mind; // The mind of the person the task manager is responsible for.
-    // Array of available tasks
-    private Class<? extends Task>[] availableTasks = null;
-    // Cache variables.
-    private MarsClock timeCache;
-    private Map<Class<? extends Task>, Double> taskProbCache;
-    private double totalProbCache;
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(TaskManager.class.getName());
 
-    /** 
-     * Constructor
-     * @param mind the mind that uses this task manager.
-     */
-    public TaskManager(Mind mind) {
+	// Data members
+	/** The current task the person is doing. */
+	private Task currentTask;
+	/** The mind of the person the task manager is responsible for. */
+	private Mind mind;
+	/** Array of available tasks. */
+	private Class<? extends Task>[] availableTasks = null;
+	// Cache variables.
+	private MarsClock timeCache;
+	private Map<Class<? extends Task>, Double> taskProbCache;
+	private double totalProbCache;
+
+	/** 
+	 * Constructor.
+	 * @param mind the mind that uses this task manager.
+	 */
+	public TaskManager(Mind mind) {
         // Initialize data members
         this.mind = mind;
         currentTask = null;

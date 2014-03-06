@@ -42,78 +42,78 @@ public class Astronomer extends Job implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static Logger logger = Logger.getLogger(Astronomer.class.getName());
+	//	private static Logger logger = Logger.getLogger(Astronomer.class.getName());
 
-    /**
-     * Constructor
-     */
-    public Astronomer() {
-        // Use Job constructor
-        super("Astronomer");
-        
-        // Add astronomer-related tasks.
-        jobTasks.add(AssistScientificStudyResearcher.class);
-        jobTasks.add(CompileScientificStudyResults.class);
-        jobTasks.add(InviteStudyCollaborator.class);
-        jobTasks.add(ObserveAstronomicalObjects.class);
-        jobTasks.add(PeerReviewStudyPaper.class);
-        jobTasks.add(PerformLaboratoryResearch.class);
-        jobTasks.add(ProposeScientificStudy.class);
-        jobTasks.add(ResearchScientificStudy.class);
-        jobTasks.add(RespondToStudyInvitation.class);
-        jobTasks.add(DigLocalIce.class);
-        
-        // Add astronomer-related missions.
-        jobMissionStarts.add(TravelToSettlement.class);
-        jobMissionJoins.add(TravelToSettlement.class);  
-        jobMissionStarts.add(RescueSalvageVehicle.class);
-        jobMissionJoins.add(RescueSalvageVehicle.class);
-        jobMissionJoins.add(BuildingConstructionMission.class);
-        jobMissionJoins.add(BuildingSalvageMission.class);
-        jobMissionStarts.add(EmergencySupplyMission.class);
-        jobMissionJoins.add(EmergencySupplyMission.class);
-    }
-    
-    @Override
-    public double getCapability(Person person) {
-        double result = 0D;
-        
-        int astronomySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
-        result = astronomySkill;
-        
-        NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-        int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
-        result+= result * ((academicAptitude - 50D) / 100D);
-        
-        if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-        
-        return result;
-    }
+	/**
+	 * Constructor.
+	 */
+	public Astronomer() {
+		// Use Job constructor
+		super(Astronomer.class);
 
-    @Override
-    public double getSettlementNeed(Settlement settlement) {
-        double result = 0D;
-        
-        BuildingManager manager = settlement.getBuildingManager();
-        
-        // Add (labspace * tech level / 2) for all labs with astronomy specialties.
-        Iterator<Building> i = manager.getBuildings(Research.NAME).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Research lab = (Research) building.getFunction(Research.NAME);
-            if (lab.hasSpecialty(ScienceType.ASTRONOMY)) 
-                result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
-        }
+		// Add astronomer-related tasks.
+		jobTasks.add(AssistScientificStudyResearcher.class);
+		jobTasks.add(CompileScientificStudyResults.class);
+		jobTasks.add(InviteStudyCollaborator.class);
+		jobTasks.add(ObserveAstronomicalObjects.class);
+		jobTasks.add(PeerReviewStudyPaper.class);
+		jobTasks.add(PerformLaboratoryResearch.class);
+		jobTasks.add(ProposeScientificStudy.class);
+		jobTasks.add(ResearchScientificStudy.class);
+		jobTasks.add(RespondToStudyInvitation.class);
+		jobTasks.add(DigLocalIce.class);
 
-        // Add astronomical observatories (observer capacity * tech level * 2).
-        Iterator<Building> j = manager.getBuildings(AstronomicalObservation.NAME).iterator();
-        while (j.hasNext()) {
-            Building building = j.next();
-            AstronomicalObservation observatory = (AstronomicalObservation) 
-            building.getFunction(AstronomicalObservation.NAME);
-            result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
-        }
-        
-        return result;  
-    }
+		// Add astronomer-related missions.
+		jobMissionStarts.add(TravelToSettlement.class);
+		jobMissionJoins.add(TravelToSettlement.class);  
+		jobMissionStarts.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(RescueSalvageVehicle.class);
+		jobMissionJoins.add(BuildingConstructionMission.class);
+		jobMissionJoins.add(BuildingSalvageMission.class);
+		jobMissionStarts.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(EmergencySupplyMission.class);
+	}
+
+	@Override
+	public double getCapability(Person person) {
+		double result = 0D;
+
+		int astronomySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.ASTRONOMY);
+		result = astronomySkill;
+
+		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
+		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+		result+= result * ((academicAptitude - 50D) / 100D);
+
+		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
+
+		return result;
+	}
+
+	@Override
+	public double getSettlementNeed(Settlement settlement) {
+		double result = 0D;
+
+		BuildingManager manager = settlement.getBuildingManager();
+
+		// Add (labspace * tech level / 2) for all labs with astronomy specialties.
+		Iterator<Building> i = manager.getBuildings(Research.NAME).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			Research lab = (Research) building.getFunction(Research.NAME);
+			if (lab.hasSpecialty(ScienceType.ASTRONOMY)) 
+				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
+		}
+
+		// Add astronomical observatories (observer capacity * tech level * 2).
+		Iterator<Building> j = manager.getBuildings(AstronomicalObservation.NAME).iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			AstronomicalObservation observatory = (AstronomicalObservation) 
+					building.getFunction(AstronomicalObservation.NAME);
+			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
+		}
+
+		return result;  
+	}
 }

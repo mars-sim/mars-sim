@@ -363,7 +363,7 @@ extends UnitTableModel {
 				if (person.getPhysicalCondition().isDead()) 
 					result = person.getPhysicalCondition().getDeathDetails().getJob();
 				else {
-					if (person.getMind().getJob() != null) result = person.getMind().getJob().getName();
+					if (person.getMind().getJob() != null) result = person.getMind().getJob().getName(person.getGender());
 					else result = null;
 				} 
 			} break;

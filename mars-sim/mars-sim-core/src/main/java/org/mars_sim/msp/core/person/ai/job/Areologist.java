@@ -61,7 +61,7 @@ public class Areologist extends Job implements Serializable {
 	 */
 	public Areologist() {
 		// Use Job constructor
-		super("Areologist");
+		super(Areologist.class);
 		
 		// Add areologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);

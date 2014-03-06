@@ -23,7 +23,7 @@ implements Serializable, Comparable<Object> {
 
 	// Data members.
 	private ScienceType type;
-	private List<Job> jobs = new ArrayList<Job>();
+	private List<Class<? extends Job>> jobs = new ArrayList<Class<? extends Job>>();
 	private List<ScienceType> collaborativeSciences = new ArrayList<ScienceType>();
 
 	/**
@@ -31,9 +31,9 @@ implements Serializable, Comparable<Object> {
 	 * @param type {@link ScienceType} the name of the field of science.
 	 * @param job job associated with the field.
 	 */
-	public Science(ScienceType type, Job job) {
+	public Science(ScienceType type) {
 		this.type = type;
-		this.jobs.add(job);
+		this.jobs.add(type.getJobClass());
 	}
 
 	/**
@@ -41,9 +41,9 @@ implements Serializable, Comparable<Object> {
 	 * @param type {@link ScienceType} the name of the field of science.
 	 * @param jobs jobs associated with the field.
 	 */
-	public Science(ScienceType type, Job[] jobs) {
+	public Science(ScienceType type, Class<? extends Job>[] jobs) {
 		this.type = type;
-		for (Job job : jobs) {
+		for (Class<? extends Job> job : jobs) {
 			this.jobs.add(job);
 		}
 	}
@@ -78,7 +78,7 @@ implements Serializable, Comparable<Object> {
 	 * Gets the jobs associated with this field of science.
 	 * @return jobs.
 	 */
-	public final List<Job> getJobs() {
+	public final List<Class<? extends Job>> getJobs() {
 		return jobs;
 	}
 

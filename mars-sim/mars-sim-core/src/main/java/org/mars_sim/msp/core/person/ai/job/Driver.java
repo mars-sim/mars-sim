@@ -54,7 +54,7 @@ implements Serializable {
 	 */
 	public Driver() {
 		// Use Job constructor
-		super("Driver");
+		super(Driver.class);
 
 		// Add driver-related tasks.
 		jobTasks.add(MaintainGroundVehicleGarage.class);

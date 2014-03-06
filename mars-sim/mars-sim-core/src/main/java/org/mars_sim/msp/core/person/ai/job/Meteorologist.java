@@ -49,7 +49,7 @@ implements Serializable {
      */
     public Meteorologist() {
         // Use Job constructor
-        super("Meteorologist");
+        super(Meteorologist.class);
         
         // Add meteorologist-related tasks.
         jobTasks.add(AssistScientificStudyResearcher.class);
