@@ -30,21 +30,22 @@ public final class ContainerUtil {
 	public static Class<? extends Container> getContainerClassToHoldResource(
 		AmountResource resource
 	) {
-
-		Class<? extends Container> result = null;
-
 		Phase phase = resource.getPhase();
+		return getContainerTypeNeeded(phase);
+	}
 
-		if (Phase.GAS.equals(phase)) {
-			result = GasCanister.class;
+	/**
+	 * Gets the container type needed for an amount resource phase.
+	 * @param phase the amount resource phase.
+	 * @return container class.
+	 */
+	public static Class<? extends Container> getContainerTypeNeeded(Phase phase) {
+		Class<? extends Container> result = null;
+		switch (phase) {
+			case GAS : result = GasCanister.class; break;
+			case LIQUID : result = Barrel.class; break;
+			case SOLID : result = Bag.class;
 		}
-		else if (Phase.LIQUID.equals(phase)) {
-			result = Barrel.class;
-		}
-		else if (Phase.SOLID.equals(phase)) {
-			result = Bag.class;
-		}
-
 		return result;
 	}
 

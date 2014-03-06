@@ -7,16 +7,18 @@
 
 package org.mars_sim.msp.core.resource;
 
+import org.mars_sim.msp.core.Msg;
+
 
 /**
  * A phase of an amount resource.
  */
 public enum Phase {
 
-	GAS ("gas"),
-	LIQUID ("liquid"),
-	SOLID ("solid");
-	
+	GAS (Msg.getString("Phase.gas")), //$NON-NLS-1$
+	LIQUID (Msg.getString("Phase.liquid")), //$NON-NLS-1$
+	SOLID (Msg.getString("Phase.solid")); //$NON-NLS-1$
+
 	private String name;
 
 	/**
@@ -28,7 +30,7 @@ public enum Phase {
 	}
 
 	/**
-	 * Gets the name of the phase.
+	 * Gets the internationalized name of the phase for display in user interface.
 	 * @return name
 	 */
 	public String getName() {

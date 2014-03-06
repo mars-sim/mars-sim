@@ -585,11 +585,7 @@ implements Serializable {
 					.getSkillManager()
 					.addNewSkill(
 						new Skill(
-							SkillType.valueOf(
-								skillName
-								.toUpperCase() // due to i18n, the keys from xml must equal the enum values, which are all upper case
-								.replace(" ","_") // same reason
-							),
+							SkillType.valueOfIgnoreCase(skillName), // due to i18n, the keys from xml must equal the enum values, which are all upper case
 							level
 						)
 					);

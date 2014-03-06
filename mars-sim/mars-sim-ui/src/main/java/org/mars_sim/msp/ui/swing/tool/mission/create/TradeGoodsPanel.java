@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Barrel;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.person.ai.mission.TradeUtil;
@@ -295,7 +296,7 @@ extends WizardPanel {
 			if (good.getCategory() == GoodType.AMOUNT_RESOURCE) {
 				AmountResource resource = (AmountResource) good.getObject();
 				Phase phase = resource.getPhase();
-				Class containerType = getContainerTypeNeeded(phase);
+				Class containerType = ContainerUtil.getContainerTypeNeeded(phase);
 				int containerNum = containerMap.get(containerType);
 				Unit container = EquipmentFactory.getEquipment(containerType, new Coordinates(0, 0), true);
 				double capacity = container.getInventory().getAmountResourceCapacity(resource, false);
@@ -332,20 +333,6 @@ extends WizardPanel {
 		Good containerGood = GoodsUtil.getEquipmentGood(containerType);
 		Map<Good, Integer> tradeGoods = tradeTableModel.getTradeGoods();
 		if (tradeGoods.containsKey(containerGood)) result = tradeGoods.get(containerGood);
-		return result;
-	}
-
-	/**
-	 * Gets the container type needed for an amount resource phase.
-	 * @param phase the amount resource phase.
-	 * @return container class.
-	 */
-	@SuppressWarnings("rawtypes")
-	private Class getContainerTypeNeeded(Phase phase) {
-		Class result = null;
-		if (phase.equals(Phase.SOLID)) result = Bag.class;
-		if (phase.equals(Phase.LIQUID)) result = Barrel.class;
-		if (phase.equals(Phase.GAS)) result = GasCanister.class;
 		return result;
 	}
 

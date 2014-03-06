@@ -57,13 +57,7 @@ public class Msg {
 		try {
 			return RESOURCE_BUNDLE.getString(key);
 		} catch (MissingResourceException e) {
-			String msg = new StringBuffer()
-			.append("!!") //$NON-NLS-1$
-			.append(key)
-			.append("??") //$NON-NLS-1$
-			.toString();
-			logger.log(Level.WARNING,msg);
-			return msg;
+			return handle(e,key);
 		}
 	}
 
@@ -103,7 +97,7 @@ public class Msg {
 		try {
 			return Boolean.parseBoolean(RESOURCE_BUNDLE.getString(key));
 		} catch (MissingResourceException e) {
-			handle(e);
+			handle(e,key);
 			return false;
 		}
 	}
@@ -112,7 +106,7 @@ public class Msg {
 		try {
 			return Integer.parseInt(RESOURCE_BUNDLE.getString(key));
 		} catch (MissingResourceException e) {
-			handle(e);
+			handle(e,key);
 			return 0;
 		}
 	}
@@ -121,7 +115,7 @@ public class Msg {
 		try {
 			return Long.parseLong(RESOURCE_BUNDLE.getString(key));
 		} catch (MissingResourceException e) {
-			handle(e);
+			handle(e,key);
 			return 0;
 		}
 	}
@@ -130,7 +124,7 @@ public class Msg {
 		try {
 			return Double.parseDouble(RESOURCE_BUNDLE.getString(key));
 		} catch (MissingResourceException e) {
-			handle(e);
+			handle(e,key);
 			return 0;
 		}
 	}
@@ -160,14 +154,20 @@ public class Msg {
 				}
 			}
 		} catch (MissingResourceException e) {
-			handle(e);
+			handle(e,key);
 		}
 		return result;
 	}
 
 	/** prints an error message to the console. */
-	public static final void handle(Exception e) {
-		System.err.println(e.getMessage());
+	public static final String handle(Exception e,String key) {
+		String msg = new StringBuffer()
+		.append("!!") //$NON-NLS-1$
+		.append(key)
+		.append("??") //$NON-NLS-1$
+		.toString();
+		logger.log(Level.WARNING,msg);
+		return msg;
 	}
 
 	/**
