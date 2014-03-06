@@ -36,4 +36,8 @@ public enum SkillType {
 	public String getName() {
 		return this.name;
 	}
+
+	public static SkillType valueOfIgnoreCase(String skillName) {
+		return SkillType.valueOf(skillName.toUpperCase().replace(" ","_"));
+	}
 }

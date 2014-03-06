@@ -17,17 +17,14 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.equipment.Bag;
-import org.mars_sim.msp.core.equipment.Barrel;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.equipment.GasCanister;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
-import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.goods.CreditManager;
 import org.mars_sim.msp.core.structure.goods.Good;
@@ -673,11 +670,7 @@ public final class TradeUtil {
 
 		Equipment result = null;
 
-		Class containerType = null;
-
-		if (resource.getPhase().equals(Phase.SOLID)) containerType = Bag.class;
-		else if (resource.getPhase().equals(Phase.LIQUID)) containerType = Barrel.class;
-		else if (resource.getPhase().equals(Phase.GAS)) containerType = GasCanister.class;
+		Class containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Inventory settlementInv = settlement.getInventory();
 
@@ -749,10 +742,7 @@ public final class TradeUtil {
 	private static double getResourceTradeAmount(AmountResource resource) {
 		double result = 0D;
 
-		Class containerType = null;
-		if (resource.getPhase().equals(Phase.SOLID)) containerType = Bag.class;
-		else if (resource.getPhase().equals(Phase.LIQUID)) containerType = Barrel.class;
-		else if (resource.getPhase().equals(Phase.GAS)) containerType = GasCanister.class;
+		Class containerType = ContainerUtil.getContainerTypeNeeded(resource.getPhase());
 
 		Equipment container = null;
 		if (containerTypeCache.containsKey(containerType)) container = containerTypeCache.get(containerType);

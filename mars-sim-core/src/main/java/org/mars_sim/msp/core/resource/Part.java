@@ -9,6 +9,8 @@ package org.mars_sim.msp.core.resource;
 import java.io.Serializable;
 import java.util.*;
 
+import org.mars_sim.msp.core.Msg;
+
 /**
  * The Part class represents a type of unit resource that is used for maintenance and repairs.
  */
@@ -50,7 +52,7 @@ public class Part extends ItemResource {
      */
     public boolean hasMaintenanceEntity(String entityName) {
         if (entityName == null) {
-            throw new IllegalArgumentException("name is null");
+            throw new IllegalArgumentException(Msg.getString("Part.error.nameIsNull")); //$NON-NLS-1$
         }
         boolean result = false;
         Iterator<MaintenanceEntity> i = maintenanceEntities.iterator();
@@ -69,7 +71,7 @@ public class Part extends ItemResource {
      */
     public int getMaintenanceProbability(String entityName) {
         if (entityName == null) {
-            throw new IllegalArgumentException("name is null");
+            throw new IllegalArgumentException(Msg.getString("Part.error.nameIsNull")); //$NON-NLS-1$
         }
         int result = 0;
         Iterator<MaintenanceEntity> i = maintenanceEntities.iterator();
@@ -89,7 +91,7 @@ public class Part extends ItemResource {
      */
     public int getMaintenanceMaximumNumber(String entityName) {
         if (entityName == null) {
-            throw new IllegalArgumentException("name is null");
+            throw new IllegalArgumentException(Msg.getString("Part.error.nameIsNull")); //$NON-NLS-1$
         }
         int result = 0;
         Iterator<MaintenanceEntity> i = maintenanceEntities.iterator();
@@ -145,7 +147,7 @@ public class Part extends ItemResource {
 		 */
 		private MaintenanceEntity(String name, int probability, int maxNumber) {
 			if (name == null) {
-				throw new IllegalArgumentException("name is null");
+				throw new IllegalArgumentException(Msg.getString("Part.error.nameIsNull")); //$NON-NLS-1$
 			}
 			this.name = name;
 			this.probability = probability;

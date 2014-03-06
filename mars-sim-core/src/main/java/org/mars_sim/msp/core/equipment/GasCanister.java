@@ -15,7 +15,12 @@ import java.io.Serializable;
 /**
  * A canister container for holding gas amount resources.
  */
-public class GasCanister extends Equipment implements Container, Serializable {
+public class GasCanister
+extends Equipment
+implements Container, Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Static data members
 	public static final String TYPE = "Gas Canister";
@@ -23,7 +28,7 @@ public class GasCanister extends Equipment implements Container, Serializable {
     public static final double EMPTY_MASS = 20D;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param location the location of the gas canister.
 	 * @throws Exception if error creating gas canister.
 	 */
