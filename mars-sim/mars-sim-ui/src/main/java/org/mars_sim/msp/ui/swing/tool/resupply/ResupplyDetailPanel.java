@@ -32,7 +32,7 @@ import javax.swing.table.DefaultTableModel;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -45,18 +45,22 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 /**
  * A panel showing a selected resupply mission details.
  */
-public class ResupplyDetailPanel extends JPanel implements ClockListener, 
-        HistoricalEventListener {
+public class ResupplyDetailPanel
+extends JPanel
+implements ClockListener, HistoricalEventListener {
 
-    // Data members
-    private Resupply resupply;
-    private JLabel destinationValueLabel;
-    private JLabel stateValueLabel;
-    private JLabel arrivalDateValueLabel;
-    private JLabel timeArrivalValueLabel;
-    private JLabel immigrantsValueLabel;
-    private int solsToArrival = -1;
-    private JPanel innerSupplyPane;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	private Resupply resupply;
+	private JLabel destinationValueLabel;
+	private JLabel stateValueLabel;
+	private JLabel arrivalDateValueLabel;
+	private JLabel timeArrivalValueLabel;
+	private JLabel immigrantsValueLabel;
+	private int solsToArrival = -1;
+	private JPanel innerSupplyPane;
 
     /**
      * Constructor
@@ -208,7 +212,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
 
         destinationValueLabel.setText(resupply.getSettlement().getName());
 
-        stateValueLabel.setText(resupply.getTransitState());
+        stateValueLabel.setText(resupply.getTransitState().getName());
 
         arrivalDateValueLabel.setText(resupply.getArrivalDate().getDateString());
 
@@ -571,7 +575,7 @@ public class ResupplyDetailPanel extends JPanel implements ClockListener,
 
     @Override
     public void eventAdded(int index, HistoricalEvent event) {
-        if (HistoricalEventManager.TRANSPORT.equals(event.getCategory()) && 
+        if (HistoricalEventType.TRANSPORT == event.getCategory() && 
                 TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
             if ((resupply != null) && event.getSource().equals(resupply)) {
                 SwingUtilities.invokeLater(new Runnable() {

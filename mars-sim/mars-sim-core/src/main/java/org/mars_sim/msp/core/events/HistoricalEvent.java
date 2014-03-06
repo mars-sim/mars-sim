@@ -19,76 +19,85 @@ import org.mars_sim.msp.core.time.MarsClock;
  */
 public abstract class HistoricalEvent {
 
-	private String		category;       // Category of event (see HistoricalEventManager)
-    private String      type;           // Type of event
-    private String      description;    // Long description
-    private MarsClock   timestamp;      // Time event occuried
-    private Object      source;         // Source of event may be null.
+	/**
+	 * Category of event
+	 * @see HistoricalEventManager
+	 * @see HistoricalEventType
+	 */
+	private HistoricalEventType category;
+	/** Type of event. */
+	private String type;
+	/** Long description. */
+	private String description;
+	/** Time event occuried. */
+	private MarsClock timestamp;
+	/** Source of event may be null. */
+	private Object source;
 
-    /**
-     * Construct an event with the appropriate information. The time is not
-     * defined until the evnet is registered with the Event Manager.
-     *
-     * @param category Category of event.
-     * @param type Type of event.
-     * @param source The object that has produced the event, if this is null
-     * then it is a global simulation event. It could be a Unit or a Building.
-     * @param description Long description of event.
-     *
-     * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
-     */
-    public HistoricalEvent(String category, String type, Object source, String description) {
-    	this.category = category;
-        this.type = type;
-        this.source = source;
-        this.description = description;
-    }
+	/**
+	 * Construct an event with the appropriate information. The time is not
+	 * defined until the evnet is registered with the Event Manager.
+	 *
+	 * @param malfunction {@link HistoricalEventType} Category of event.
+	 * @param type Type of event.
+	 * @param source The object that has produced the event, if this is null
+	 * then it is a global simulation event. It could be a Unit or a Building.
+	 * @param description Long description of event.
+	 *
+	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
+	 */
+	public HistoricalEvent(HistoricalEventType malfunction, String type, Object source, String description) {
+		this.category = malfunction;
+		this.type = type;
+		this.source = source;
+		this.description = description;
+	}
 
-    /**
-     * Set the timestamp for this event.
-     * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
-     */
-    void setTimestamp(MarsClock timestamp) {
-        this.timestamp = timestamp;
-    }
+	/**
+	 * Set the timestamp for this event.
+	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
+	 */
+	void setTimestamp(MarsClock timestamp) {
+		this.timestamp = timestamp;
+	}
 
-    /**
-     * Get description.
-     * @return Description
-     */
-    public String getDescription() {
-        return description;
-    }
+	/**
+	 * Get description.
+	 * @return Description
+	 */
+	public String getDescription() {
+		return description;
+	}
 
-    /**
-     * Get the Unit source.
-     * @return Object as the source of event.
-     */
-    public Object getSource() {
-        return source;
-    }
+	/**
+	 * Get the Unit source.
+	 * @return Object as the source of event.
+	 */
+	public Object getSource() {
+		return source;
+	}
 
-    /**
-     * Get event time.
-     * @return Time the event happened
-     */
-    public MarsClock getTimestamp() {
-        return timestamp;
-    }
+	/**
+	 * Get event time.
+	 * @return Time the event happened
+	 */
+	public MarsClock getTimestamp() {
+		return timestamp;
+	}
 
-    /**
-     * Get the type of event.
-     * @return String representing the type.
-     */
-    public String getType() {
-        return type;
-    }
-    
-    /*
-     * Gets the category of the event.
-     * @return event category (see HistoricalEventManager)
-     */
-    public String getCategory() {
-    	return category;
-    }
+	/**
+	 * Get the type of event.
+	 * @return String representing the type.
+	 */
+	public String getType() {
+		return type;
+	}
+
+	/**
+	 * Gets the category of the event.
+	 * @return {@link HistoricalEventType}
+	 */
+	public HistoricalEventType getCategory() {
+		return category;
+	}
 }

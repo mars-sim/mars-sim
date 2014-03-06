@@ -7,16 +7,17 @@
 package org.mars_sim.msp.core.person.medical;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventManager;
+import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.person.Person;
 
 /**
  * This class represents the historical action of a medical problem occuring or
  * being resolved.  Death is also recorded with medical events.
  */
-public class MedicalEvent extends HistoricalEvent {
+public class MedicalEvent
+extends HistoricalEvent {
 
-	// Medical event type.
+	// TODO Medical event type should be an enum.
 	final public static String CURED = "Illness Cured";
 	final public static String STARTS = "Illness Starts";
 	final public static String DEGRADES = "Illness Degrades";
@@ -25,7 +26,7 @@ public class MedicalEvent extends HistoricalEvent {
 	final public static String DEATH = "Person Dies";
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param person the person with the medical problem.
 	 * @param illness the medical problem.
 	 * @param eventType the medical event type.
@@ -33,7 +34,7 @@ public class MedicalEvent extends HistoricalEvent {
 	public MedicalEvent(Person person, HealthProblem illness, String eventType) {
 		
 		// Call HistoricalEvent constructor.
-		super(HistoricalEventManager.MEDICAL, eventType, person, 
+		super(HistoricalEventType.MEDICAL, eventType, person, 
 			illness.getIllness().getName());
 	}
 }

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.UnitType;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
 import org.mars_sim.msp.core.person.Person;
@@ -52,11 +53,12 @@ implements Serializable, Transportable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(Resupply.class.getName());
 	
 	// Data members
 	private Settlement settlement;
-	private String state;
+	private TransitState state;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
 	private List<String> newBuildings;
@@ -276,12 +278,12 @@ implements Serializable, Transportable {
 	}
 
 	@Override
-	public String getTransitState() {
+	public TransitState getTransitState() {
 		return state;
 	}
 
 	@Override
-	public void setTransitState(String transitState) {
+	public void setTransitState(TransitState transitState) {
 		this.state = transitState;
 	}
 

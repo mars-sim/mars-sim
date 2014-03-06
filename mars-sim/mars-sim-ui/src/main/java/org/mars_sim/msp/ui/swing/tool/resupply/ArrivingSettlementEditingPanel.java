@@ -26,7 +26,7 @@ import javax.swing.border.TitledBorder;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
-import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -38,32 +38,36 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * A panel for creating or editing an arriving settlement.
  */
-public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
+public class ArrivingSettlementEditingPanel
+extends TransportItemEditingPanel {
 
-    // Data members
-    private ArrivingSettlement settlement;
-    private JTextField nameTF;
-    private JComboBoxMW templateCB;
-    private JRadioButton arrivalDateRB;
-    private JLabel arrivalDateTitleLabel;
-    private JRadioButton timeUntilArrivalRB;
-    private JLabel timeUntilArrivalLabel;
-    private MartianSolComboBoxModel martianSolCBModel;
-    private JLabel solLabel;
-    private JComboBoxMW solCB;
-    private JLabel monthLabel;
-    private JComboBoxMW monthCB;
-    private JLabel orbitLabel;
-    private JComboBoxMW orbitCB;
-    private JTextField solsTF;
-    private JLabel solInfoLabel;
-    private JTextField latitudeTF;
-    private JComboBoxMW latitudeDirectionCB;
-    private JTextField longitudeTF;
-    private JComboBoxMW longitudeDirectionCB;
-    private JTextField populationTF;
-    private JLabel errorLabel;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members
+	private ArrivingSettlement settlement;
+	private JTextField nameTF;
+	private JComboBoxMW templateCB;
+	private JRadioButton arrivalDateRB;
+	private JLabel arrivalDateTitleLabel;
+	private JRadioButton timeUntilArrivalRB;
+	private JLabel timeUntilArrivalLabel;
+	private MartianSolComboBoxModel martianSolCBModel;
+	private JLabel solLabel;
+	private JComboBoxMW solCB;
+	private JLabel monthLabel;
+	private JComboBoxMW monthCB;
+	private JLabel orbitLabel;
+	private JComboBoxMW orbitCB;
+	private JTextField solsTF;
+	private JLabel solInfoLabel;
+	private JTextField latitudeTF;
+	private JComboBoxMW latitudeDirectionCB;
+	private JTextField longitudeTF;
+	private JComboBoxMW longitudeDirectionCB;
+	private JTextField populationTF;
+	private JLabel errorLabel;
+
     /**
      * Constructor.
      * @param settlement the arriving settlement to modify
@@ -596,11 +600,11 @@ public class ArrivingSettlementEditingPanel extends TransportItemEditingPanel {
         
         // Set transit state based on launch and arrival time.
         MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        String state = Transportable.PLANNED;
+        TransitState state = TransitState.PLANNED;
         if (MarsClock.getTimeDiff(currentTime, launchDate) > 0D) {
-            state = Transportable.IN_TRANSIT;
+            state = TransitState.IN_TRANSIT;
             if (MarsClock.getTimeDiff(currentTime, arrivalDate) > 0D) {
-                state = Transportable.ARRIVED;
+                state = TransitState.ARRIVED;
             }
         }
         settlement.setTransitState(state);
