@@ -67,19 +67,18 @@ public final class JobManager implements Serializable {
 	}
 
 	/**
-	 * Gets a job from a job name.
+	 * Gets a job from a job class name.
 	 * @param jobName the name of the job.
 	 * @return job or null if job with name not found.
-	 * @deprecated don't use localized strings
 	 */
-	public static Job getJob(String jobName) {
-		Job result = null;
-		Iterator<Job> i = getJobs().iterator();
-		while (i.hasNext()) {
-			Job job = i.next();
-			if (job.getName().equalsIgnoreCase(jobName)) result = job;
+	public static Job getJob(String jobClassName) {
+		if (jobs == null) loadJobs();
+		for (Job job : jobs) {
+			if (job.getClass().getSimpleName().compareTo(jobClassName) == 0) {
+				return job;
+			}
 		}
-		return result;
+		return null;
 	}
 
 	/**
@@ -135,8 +134,8 @@ public final class JobManager implements Serializable {
 
 			if(logger.isLoggable(Level.FINEST)) {
 				if ((newJob != null) && (newJob != originalJob)) 
-					logger.finest(person.getName() + " changed jobs to " + newJob.getName());
-				else logger.finest(person.getName() + " keeping old job of " + originalJob.getName());
+					logger.finest(person.getName() + " changed jobs to " + newJob.getName(person.getGender()));
+				else logger.finest(person.getName() + " keeping old job of " + originalJob.getName(person.getGender()));
 
 			}
 

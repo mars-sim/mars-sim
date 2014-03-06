@@ -35,11 +35,11 @@ implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Architect.class.getName());
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public Architect() {
 		// Use Job constructor.
-		super("Architect");
+		super(Architect.class);
 
 		// Add architect-related tasks.
 		jobTasks.add(DigLocalRegolith.class);
@@ -80,12 +80,9 @@ implements Serializable {
 
 	@Override
 	public double getSettlementNeed(Settlement settlement) {
-
 		double result = 0D;
-
 		// Add number of buildings currently at settlement.
 		result += settlement.getBuildingManager().getBuildingNum() / 10D;
-
 		return result;  
 	}
 }

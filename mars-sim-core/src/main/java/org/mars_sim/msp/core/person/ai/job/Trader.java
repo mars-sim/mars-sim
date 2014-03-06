@@ -33,11 +33,11 @@ implements Serializable {
     private static double SETTLEMENT_MULTIPLIER = 3D;
     
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public Trader() {
 		// Use Job constructor.
-		super("Trader");
+		super(Trader.class);
 		
 		// Add trader-related tasks.
 		jobTasks.add(DigLocalIce.class);

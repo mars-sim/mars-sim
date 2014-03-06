@@ -32,7 +32,9 @@ import org.mars_sim.msp.core.structure.building.function.Manufacture;
  * The Engineer class represents an engineer job focusing on repair and maintenance of buildings and 
  * vehicles.
  */
-public class Engineer extends Job implements Serializable {
+public class Engineer
+extends Job
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -40,11 +42,11 @@ public class Engineer extends Job implements Serializable {
 	//	private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public Engineer() {
 		// Use Job constructor
-		super("Engineer");
+		super(Engineer.class);
 
 		// Add engineer-related tasks.
 		jobTasks.add(UnloadVehicleEVA.class);

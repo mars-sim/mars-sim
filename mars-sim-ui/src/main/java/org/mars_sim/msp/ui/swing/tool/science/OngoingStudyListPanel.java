@@ -137,7 +137,7 @@ extends JPanel {
 		private List<ScientificStudy> studies;
 
 		/**
-		 * Constructor
+		 * Constructor.
 		 */
 		private StudyTableModel() {
 			ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();

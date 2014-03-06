@@ -29,21 +29,20 @@ public class ProposeScientificStudy
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            ProposeScientificStudy.class.getName());
-    
-    // The stress modified per millisol.
-    private static final double STRESS_MODIFIER = 0D;
-    
-    // Task phase.
-    private static final String PROPOSAL_PHASE = "Writing Study Proposal";
-    
-    private ScientificStudy study; // The scientific study to propose.
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
+
+	// The stress modified per millisol.
+	private static final double STRESS_MODIFIER = 0D;
+
+	// Task phase.
+	private static final String PROPOSAL_PHASE = "Writing Study Proposal";
+
+	private ScientificStudy study; // The scientific study to propose.
+
     /**
      * Constructor.
      * @param person the person performing the task.
@@ -64,7 +63,7 @@ implements Serializable {
                 study = manager.createScientificStudy(person, science, level);
             }
             else {
-                logger.severe("Person's job: " + job.getName() + " not scientist.");
+                logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
                 endTask();
             }
         }

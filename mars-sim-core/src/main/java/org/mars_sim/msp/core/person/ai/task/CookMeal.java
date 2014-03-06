@@ -90,7 +90,7 @@ implements Serializable {
         addPhase(COOKING);
         setPhase(COOKING);
 
-        String jobName = person.getMind().getJob().getName();
+        String jobName = person.getMind().getJob().getName(person.getGender());
         logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
                 " in " + person.getSettlement());
     }

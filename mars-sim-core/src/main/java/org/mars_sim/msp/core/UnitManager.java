@@ -559,7 +559,9 @@ implements Serializable {
 			String jobName = personConfig.getConfiguredPersonJob(x);
 			if (jobName != null) {
 				Job job = JobManager.getJob(jobName);
-				person.getMind().setJob(job, true);
+				if (job != null) {
+					person.getMind().setJob(job, true);
+				}
 			}
 
 			// Set person's configured natural attributes (if any).
