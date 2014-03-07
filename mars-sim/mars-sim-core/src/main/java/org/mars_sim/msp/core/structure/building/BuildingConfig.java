@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.06 2014-02-27
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -56,6 +56,10 @@ public class BuildingConfig implements Serializable {
 	private static final String COMMUNICATION = "communication";
 	private static final String EVA = "EVA";
 	private static final String AIRLOCK_CAPACITY = "airlock-capacity";
+	private static final String INTERIOR_X_LOCATION = "interior-xloc";
+	private static final String INTERIOR_Y_LOCATION = "interior-yloc";
+	private static final String EXTERIOR_X_LOCATION = "exterior-xloc";
+	private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
 	private static final String RECREATION = "recreation";
 	private static final String DINING = "dining";
 	private static final String RESOURCE_PROCESSING = "resource-processing";
@@ -343,6 +347,60 @@ public class BuildingConfig implements Serializable {
 	public int getAirlockCapacity(String buildingName) {
 		return getValueAsInteger(buildingName,FUNCTIONS,EVA,AIRLOCK_CAPACITY);
 	}
+	
+	/**
+	 * Gets the relative X location of the airlock.
+	 * @param buildingName the name of the building.
+	 * @return relative X location.
+	 */
+	public double getAirlockXLoc(String buildingName) {
+	    return getValueAsDouble(buildingName, FUNCTIONS, EVA, X_LOCATION);
+	}
+	
+	/**
+     * Gets the relative Y location of the airlock.
+     * @param buildingName the name of the building.
+     * @return relative Y location.
+     */
+    public double getAirlockYLoc(String buildingName) {
+        return getValueAsDouble(buildingName, FUNCTIONS, EVA, Y_LOCATION);
+    }
+    
+    /**
+     * Gets the relative X location of the interior side of the airlock.
+     * @param buildingName the name of the building.
+     * @return relative X location.
+     */
+    public double getAirlockInteriorXLoc(String buildingName) {
+        return getValueAsDouble(buildingName, FUNCTIONS, EVA, INTERIOR_X_LOCATION);
+    }
+    
+    /**
+     * Gets the relative Y location of the interior side of the airlock.
+     * @param buildingName the name of the building.
+     * @return relative Y location.
+     */
+    public double getAirlockInteriorYLoc(String buildingName) {
+        return getValueAsDouble(buildingName, FUNCTIONS, EVA, INTERIOR_Y_LOCATION);
+    }
+    
+    /**
+     * Gets the relative X location of the exterior side of the airlock.
+     * @param buildingName the name of the building.
+     * @return relative X location.
+     */
+    public double getAirlockExteriorXLoc(String buildingName) {
+        return getValueAsDouble(buildingName, FUNCTIONS, EVA, EXTERIOR_X_LOCATION);
+    }
+    
+    /**
+     * Gets the relative Y location of the exterior side of the airlock.
+     * @param buildingName the name of the building.
+     * @return relative Y location.
+     */
+    public double getAirlockExteriorYLoc(String buildingName) {
+        return getValueAsDouble(buildingName, FUNCTIONS, EVA, EXTERIOR_Y_LOCATION);
+    }
 	
 	/**
 	 * Checks if the building has a recreation facility.

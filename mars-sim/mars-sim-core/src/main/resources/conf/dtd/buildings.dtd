@@ -25,6 +25,12 @@ storage? )>
 <!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
 <!ELEMENT EVA EMPTY>
 <!ATTLIST EVA airlock-capacity CDATA #REQUIRED>
+<!ATTLIST EVA xloc CDATA #REQUIRED>
+<!ATTLIST EVA yloc CDATA #REQUIRED>
+<!ATTLIST EVA interior-xloc CDATA #REQUIRED>
+<!ATTLIST EVA interior-yloc CDATA #REQUIRED>
+<!ATTLIST EVA exterior-xloc CDATA #REQUIRED>
+<!ATTLIST EVA exterior-yloc CDATA #REQUIRED>
 <!ELEMENT exercise EMPTY>
 <!ATTLIST exercise capacity CDATA #REQUIRED>
 <!ELEMENT farming EMPTY>

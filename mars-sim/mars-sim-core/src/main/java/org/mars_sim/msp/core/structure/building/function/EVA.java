@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -36,7 +36,15 @@ public class EVA extends Function implements Serializable {
 
 		// Add a building airlock.
 		int airlockCapacity = config.getAirlockCapacity(building.getName());
-		airlock = new BuildingAirlock(building, airlockCapacity);
+		double airlockXLoc = config.getAirlockXLoc(building.getName());
+		double airlockYLoc = config.getAirlockYLoc(building.getName());
+		double interiorXLoc = config.getAirlockInteriorXLoc(building.getName());
+        double interiorYLoc = config.getAirlockInteriorYLoc(building.getName());
+        double exteriorXLoc = config.getAirlockExteriorXLoc(building.getName());
+        double exteriorYLoc = config.getAirlockExteriorYLoc(building.getName());
+		
+		airlock = new BuildingAirlock(building, airlockCapacity, airlockXLoc, airlockYLoc, 
+		        interiorXLoc, interiorYLoc, exteriorXLoc, exteriorYLoc);
 	}
 	
 	/**

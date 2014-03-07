@@ -161,7 +161,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         MockBuilding building1 = new MockBuilding(buildingManager);
@@ -174,7 +174,7 @@ public class WalkingStepsTest extends TestCase {
         building1.setFacing(270D);
         buildingManager.addBuilding(building1);
         
-        BuildingAirlock airlock1 = new BuildingAirlock(building1, 1);
+        BuildingAirlock airlock1 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building1.addFunction(new EVA(building1, airlock1));
         
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -234,7 +234,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -374,7 +374,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -438,7 +438,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -592,7 +592,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Point2D parkingLocation = new Point2D.Double(0D, 0D);
@@ -653,7 +653,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Point2D parkingLocation = new Point2D.Double(0D, 0D);
@@ -712,7 +712,7 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0);
         
-        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1);
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
         building0.addFunction(new EVA(building0, airlock0));
         
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);

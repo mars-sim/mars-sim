@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.06 2014-03-02
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 
@@ -37,10 +37,10 @@ public class VehicleAirlock extends Airlock {
      * 
      * @param vehicle the vehicle this airlock of for.
      * @param capacity number of people airlock can hold.
-     * @throws IllegalArgumentException if vehicle is not valid or if 
-     * capacity is less than one.
      */
-    public VehicleAirlock(Vehicle vehicle, int capacity) {
+    public VehicleAirlock(Vehicle vehicle, int capacity, double xLoc, double yLoc, 
+            double interiorXLoc, double interiorYLoc, double exteriorXLoc, 
+            double exteriorYLoc) {
         // User Airlock constructor
         super(capacity);
 
@@ -58,16 +58,13 @@ public class VehicleAirlock extends Airlock {
         }
         
         // Determine airlock interior position.
-        // TODO Replace with configured airlock interior position.
-        airlockInteriorPos = LocalAreaUtil.getRandomInteriorLocation(vehicle);
+        airlockInteriorPos = new Point2D.Double(interiorXLoc, interiorYLoc);
         
         // Determine airlock exterior position.
-        // TODO Replace with configured airlock exterior position.
-        airlockExteriorPos = LocalAreaUtil.getRandomExteriorLocation(vehicle, 1D);
+        airlockExteriorPos = new Point2D.Double(exteriorXLoc, exteriorYLoc);
         
         // Determine airlock inside position.
-        // TODO Replace with configured airlock inside position.
-        airlockInsidePos = LocalAreaUtil.getRandomInteriorLocation(vehicle);
+        airlockInsidePos = new Point2D.Double(xLoc, yLoc); 
     }
 
     /**

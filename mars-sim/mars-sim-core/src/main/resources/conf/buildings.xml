@@ -32,7 +32,11 @@
 		
 			<!-- The building has an airlock and changing room for EVA operations. -->
 			<!-- airlock-capacity: the number of people who can use the airlock at once. -->
-			<EVA airlock-capacity="4" />
+			<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
+			<!-- interior-xloc, interior-yloc: the relative X/Y location inside the building. -->
+			<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the building. -->
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			
 			<!-- The building has exercise facilities. -->
 			<exercise capacity="1" />
@@ -353,7 +357,8 @@
 		<power-required base-power="50.0" base-power-down-power="10.0" />
 		<functions>
 			<communication />
-			<EVA airlock-capacity="8" />
+			<EVA airlock-capacity="8" xloc="-3.0" yloc="2.3" interior-xloc="-2.5" interior-yloc="2.3" 
+			exterior-xloc="-4.5" exterior-yloc="2.3" />
 			<life-support capacity="10" power-required="20.0" />
 			<management population-support="25" />
 		</functions>
@@ -427,7 +432,8 @@
 	<building name="Garage" width="12.0" length="16.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="8" />
+			<EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0" 
+			exterior-xloc="0.0" exterior-yloc="9.0" />
 			<ground-vehicle-maintenance vehicle-capacity="2" >
 		        <parking-location xloc="2.60" yloc="2.0" />
 		        <parking-location xloc="-2.60" yloc="2.0" />
@@ -666,7 +672,8 @@
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<astronomical-observation tech-level="2" capacity="1" power-required="4.0"/>
-			<EVA airlock-capacity="1" />
+			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5" 
+			exterior-xloc="0.0" exterior-yloc="4.5" />
 			<life-support capacity="4" power-required="8.0" />
 			<research tech-level="2" capacity="4">
 				<research-specialty name="ASTRONOMY" />
@@ -680,7 +687,8 @@
 	<building name="Storage Hab" width="9.0" length="9.0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -703,7 +711,8 @@
 	<building name="Research Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
@@ -723,7 +732,8 @@
 	<building name="Residential Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="8" power-required="16.0" />
 			<living-accommodations beds="8" />
 			<power-generation>
@@ -736,7 +746,8 @@
 	<building name="Medical Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
 			<medical-care tech-level="4" beds="4" />
 			<power-generation>
@@ -752,7 +763,8 @@
 	<building name="Machinery Hab" width="9.0" length="9.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="4" />
+			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
+			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
 			<manufacture tech-level="2" concurrent-processes="3" />
 			<storage>
@@ -815,7 +827,8 @@
 	<building name="Loading Dock Garage" width="15.0" length="18.0">
 		<power-required base-power="8.0" base-power-down-power="0.0" />
 		<functions>
-			<EVA airlock-capacity="8" />
+			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5" 
+			exterior-xloc="0.0" exterior-yloc="10.0" />
 			<ground-vehicle-maintenance vehicle-capacity="2" >
                 <parking-location xloc="4.5" yloc="-3.2" />
                 <parking-location xloc="-4.5" yloc="-3.2" />

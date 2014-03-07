@@ -71,6 +71,13 @@
 			<tech-speciality value="Areology" />
 			<tech-speciality value="Biology" />
 		</lab>
+		
+		<!-- Airlock locations (optional) -->
+		<!-- xloc, yloc: the relative X/Y location inside the airlock. -->
+		<!-- interior-xloc, interior-yloc: the relative X/Y location inside the vehicle. -->
+		<!-- exterior-xloc, exterior-yloc: the relative X/Y location outside the vehicle. -->
+		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
+		exterior-yloc="0.0" />
 
 	</vehicle>
 
@@ -88,6 +95,8 @@
 			<capacity resource="Food" value="525.0" />
 		</cargo>
 		<sickbay tech-level="3" beds="2" />
+		<airlock xloc="-1.25" yloc="0.0" interior-xloc="-.75" interior-yloc="0.0" exterior-xloc="-2.75" 
+		exterior-yloc="0.0" />
 	</vehicle>
 	
 	<!-- Cargo rover -->
@@ -104,6 +113,8 @@
 			<capacity resource="Food" value="525.0" />
 		</cargo>
 		<sickbay tech-level="1" beds="1" />
+		<airlock xloc="-1.5" yloc="0.0" interior-xloc="-1.0" interior-yloc="0.0" exterior-xloc="-3.0" 
+		exterior-yloc="0.0" />
 	</vehicle>
 
 	<!-- Light Utility Vehicle -->
