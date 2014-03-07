@@ -389,6 +389,7 @@ extends UnitTableModel {
 	/**
 	 * Prepares the model for deletion.
 	 */
+	@Override
 	public void destroy() {
 		super.destroy();
 

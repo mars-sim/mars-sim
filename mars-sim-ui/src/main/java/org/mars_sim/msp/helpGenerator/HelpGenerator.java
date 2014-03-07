@@ -2,6 +2,7 @@ package org.mars_sim.msp.helpGenerator;
 
 import java.io.File;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -333,16 +334,19 @@ public class HelpGenerator {
 
 			if (v.hasPartAttachments()) {
 				StringBuffer parts = new StringBuffer().append("[");
-				Iterator<Part> iterator = config.getAttachableParts(vehicle).iterator();
-				while (iterator.hasNext()) {
-					Part part = iterator.next();
-					parts.append(getLinkPart(part.getName()));
-					if (iterator.hasNext()) {
-						parts.append(", ");
+				Collection<Part> partsCollection = config.getAttachableParts(vehicle);
+				if (partsCollection != null) {
+					Iterator<Part> iterator = partsCollection.iterator();
+					while (iterator.hasNext()) {
+						Part part = iterator.next();
+						parts.append(getLinkPart(part.getName()));
+						if (iterator.hasNext()) {
+							parts.append(", ");
+						}
 					}
+					helpFileTableRow(content,new String[] {"attachable parts",parts.append("]").toString()});
+					helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(v.getAttachmentSlots())});
 				}
-				helpFileTableRow(content,new String[] {"attachable parts",parts.append("]").toString()});
-				helpFileTableRow(content,new String[] {"attachment slots",Integer.toString(v.getAttachmentSlots())});
 			}
 			helpFileTableRow(content,new String[] {"base speed",Double.toString(v.getBaseSpeed())});
 			helpFileTableRow(content,new String[] {"total cargo capacity",Double.toString(v.getTotalCapacity())});
