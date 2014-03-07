@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
@@ -53,6 +53,13 @@ public class VehicleConfig implements Serializable {
 	private static final String NUMBER_SLOTS = "number-slots";
 	private static final String PART = "part";
 	private static final String NAME = "name";
+	private static final String AIRLOCK = "airlock";
+	private static final String X_LOCATION = "xloc";
+    private static final String Y_LOCATION = "yloc";
+    private static final String INTERIOR_X_LOCATION = "interior-xloc";
+    private static final String INTERIOR_Y_LOCATION = "interior-yloc";
+    private static final String EXTERIOR_X_LOCATION = "exterior-xloc";
+    private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
 	private static final String ROVER_NAME_LIST = "rover-name-list";
 	private static final String ROVER_NAME = "rover-name";
 
@@ -143,19 +150,30 @@ public class VehicleConfig implements Serializable {
 				}
 
 				// attachments
-				v.attachmableParts = new ArrayList<Part>();
+				v.attachableParts = new ArrayList<Part>();
 				v.attachmentSlots = 0;
 				v.hasPartAttachments = (vehicleElement.getChildren(PART_ATTACHMENT).size() > 0);
 				if (v.hasPartAttachments) {
 					Element attachmentElement = vehicleElement.getChild(PART_ATTACHMENT);
 					v.attachmentSlots = Integer.parseInt(attachmentElement.getAttributeValue(NUMBER_SLOTS));
 					for (Object part : attachmentElement.getChildren(PART)) {
-						v.attachmableParts.add(
+						v.attachableParts.add(
 							(Part) Part.findItemResource(
 								(((Element) part).getAttributeValue(NAME)).toLowerCase()
 							)
 						);
 					}
+				}
+				
+				// airlock locations (optional).
+				Element airlockElement = vehicleElement.getChild(AIRLOCK);
+				if (airlockElement != null) {
+				    v.airlockXLoc = Double.parseDouble(airlockElement.getAttributeValue(X_LOCATION));
+				    v.airlockYLoc = Double.parseDouble(airlockElement.getAttributeValue(Y_LOCATION));
+				    v.airlockInteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_X_LOCATION));
+				    v.airlockInteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_Y_LOCATION));
+				    v.airlockExteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_X_LOCATION));
+                    v.airlockExteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_Y_LOCATION));
 				}
 
 				// and keep results for later use
@@ -345,7 +363,7 @@ public class VehicleConfig implements Serializable {
 	 */
 	public Collection<Part> getAttachableParts(String vehicleType) {
 		parseIfNeccessary();
-		return map.get(vehicleType.toLowerCase()).attachmableParts;
+		return map.get(vehicleType.toLowerCase()).attachableParts;
 	}
 
 	public String getDescription(String vehicleType) {
@@ -357,6 +375,66 @@ public class VehicleConfig implements Serializable {
 		parseIfNeccessary();
 		return map.get(vehicleType.toLowerCase());
 	}
+	
+	/**
+	 * Gets the vehicle airlock's relative X location.
+	 * @param vehicleType the vehicle type.
+	 * @return relative X location (meters from vehicle center).
+	 */
+	public double getAirlockXLocation(String vehicleType) {
+	    parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockXLoc();
+	}
+	
+	/**
+     * Gets the vehicle airlock's relative Y location.
+     * @param vehicleType the vehicle type.
+     * @return relative Y location (meters from vehicle center).
+     */
+    public double getAirlockYLocation(String vehicleType) {
+        parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockYLoc();
+    }
+    
+    /**
+     * Gets the relative X location of the interior side of the vehicle airlock..
+     * @param vehicleType the vehicle type.
+     * @return relative X location (meters from vehicle center).
+     */
+    public double getAirlockInteriorXLocation(String vehicleType) {
+        parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockInteriorXLoc();
+    }
+    
+    /**
+     * Gets the relative Y location of the interior side of the vehicle airlock..
+     * @param vehicleType the vehicle type.
+     * @return relative Y location (meters from vehicle center).
+     */
+    public double getAirlockInteriorYLocation(String vehicleType) {
+        parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockInteriorYLoc();
+    }
+    
+    /**
+     * Gets the relative X location of the exterior side of the vehicle airlock..
+     * @param vehicleType the vehicle type.
+     * @return relative X location (meters from vehicle center).
+     */
+    public double getAirlockExteriorXLocation(String vehicleType) {
+        parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockExteriorXLoc();
+    }
+    
+    /**
+     * Gets the relative Y location of the exterior side of the vehicle airlock..
+     * @param vehicleType the vehicle type.
+     * @return relative Y location (meters from vehicle center).
+     */
+    public double getAirlockExteriorYLocation(String vehicleType) {
+        parseIfNeccessary();
+        return map.get(vehicleType.toLowerCase()).getAirlockExteriorYLoc();
+    }
 
 	/**
 	 * Gets a list of rover names.
@@ -410,7 +488,13 @@ public class VehicleConfig implements Serializable {
 		private int sickbayTechLevel,sickbayBeds;
 		private int labTechLevel,attachmentSlots;
 		private List<ScienceType> labTechSpecialities;
-		private List<Part> attachmableParts;
+		private List<Part> attachableParts;
+		private double airlockXLoc;
+		private double airlockYLoc;
+		private double airlockInteriorXLoc;
+		private double airlockInteriorYLoc;
+		private double airlockExteriorXLoc;
+		private double airlockExteriorYLoc;
 
 		/**
 		 * get <code>0.0d</code> or capacity for given cargo.
@@ -494,8 +578,32 @@ public class VehicleConfig implements Serializable {
 		}
 		/** @return the attachableParts */
 		public final List<Part> getAttachableParts() {
-			return attachmableParts;
+			return attachableParts;
 		}
+		/** @return the airlockXLoc */
+		public final double getAirlockXLoc() {
+		    return airlockXLoc;
+		}
+		/** @return the airlockYLoc */
+        public final double getAirlockYLoc() {
+            return airlockYLoc;
+        }
+        /** @return the airlockInteriorXLoc */
+        public final double getAirlockInteriorXLoc() {
+            return airlockInteriorXLoc;
+        }
+        /** @return the airlockInteriorYLoc */
+        public final double getAirlockInteriorYLoc() {
+            return airlockInteriorYLoc;
+        }
+        /** @return the airlockExteriorXLoc */
+        public final double getAirlockExteriorXLoc() {
+            return airlockExteriorXLoc;
+        }
+        /** @return the airlockExteriorYLoc */
+        public final double getAirlockExteriorYLoc() {
+            return airlockExteriorYLoc;
+        }
 	}
 
 }

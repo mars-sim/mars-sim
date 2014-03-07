@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 
@@ -103,7 +103,14 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		setTerrainHandlingCapability(0D);
 
 		// Create the rover's airlock.
-		try { airlock = new VehicleAirlock(this, 2); }
+		double airlockXLoc = config.getAirlockXLocation(description);
+		double airlockYLoc = config.getAirlockYLocation(description);
+		double airlockInteriorXLoc = config.getAirlockInteriorXLocation(description);
+        double airlockInteriorYLoc = config.getAirlockInteriorYLocation(description);
+        double airlockExteriorXLoc = config.getAirlockExteriorXLocation(description);
+        double airlockExteriorYLoc = config.getAirlockExteriorYLocation(description);
+		try { airlock = new VehicleAirlock(this, 2, airlockXLoc, airlockYLoc, airlockInteriorXLoc, airlockInteriorYLoc, 
+		        airlockExteriorXLoc, airlockExteriorYLoc); }
 		catch (Exception e) { e.printStackTrace(System.err); }
     }
     

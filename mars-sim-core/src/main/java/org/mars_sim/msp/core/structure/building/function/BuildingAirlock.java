@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-03-02
+ * @version 3.06 2014-03-06
  * @author Scott Davis
  */
 
@@ -39,10 +39,10 @@ public class BuildingAirlock extends Airlock {
      * 
      * @param building the building this airlock of for.
      * @param capacity number of people airlock can hold.
-     * @throws IllegalArgumentException if building is not valid or if 
-     * capacity is less than one.
+     * 
      */
-    public BuildingAirlock(Building building, int capacity) {
+    public BuildingAirlock(Building building, int capacity, double xLoc, double yLoc, 
+            double interiorXLoc, double interiorYLoc, double exteriorXLoc, double exteriorYLoc) {
         // User Airlock constructor
         super(capacity);
 
@@ -53,22 +53,13 @@ public class BuildingAirlock extends Airlock {
         }
         
         // Determine airlock interior position.
-        // TODO Replace with configured airlock interior position.
-        Point2D relativeInteriorPos = LocalAreaUtil.getRandomInteriorLocation(building);
-        airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(relativeInteriorPos.getX(), 
-                relativeInteriorPos.getY(), building);
+        airlockInteriorPos = LocalAreaUtil.getLocalRelativeLocation(interiorXLoc, interiorYLoc, building);
         
         // Determine airlock exterior position.
-        // TODO Replace with configured airlock exterior position.
-        Point2D relativeExteriorPos = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-        airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(relativeExteriorPos.getX(), 
-                relativeExteriorPos.getY(), building);
+        airlockExteriorPos = LocalAreaUtil.getLocalRelativeLocation(exteriorXLoc, exteriorYLoc, building);
         
         // Determine airlock inside position.
-        // TODO Replace with configured airlock inside position.
-        Point2D relativeAirlockInsidePos = LocalAreaUtil.getRandomInteriorLocation(building);
-        airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(relativeAirlockInsidePos.getX(), 
-                relativeAirlockInsidePos.getY(), building);
+        airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building); 
     }
 
     /**
