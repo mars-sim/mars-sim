@@ -41,7 +41,8 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
 /** 
- * The ActivityTabPanel is a tab panel for a person's current activities.
+ * The ActivityTabPanel is a tab panel for a person's current activities
+ * and to change their job.
  */
 public class ActivityTabPanel
 extends TabPanel

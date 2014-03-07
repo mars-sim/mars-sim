@@ -26,10 +26,8 @@ implements Serializable {
 
 	/** Probability penalty for starting a non-job-related task. */
 	private static final double NON_JOB_TASK_PENALTY = .01D;
-
 	/** Probability penalty for starting a non-job-related mission. */
 	private static final double NON_JOB_MISSION_START_PENALTY = .01D;
-
 	/** Probability penalty for joining a non-job-related mission. */
 	private static final double NON_JOB_MISSION_JOIN_PENALTY = .01D;
 
@@ -55,6 +53,10 @@ implements Serializable {
 
 	/**
 	 * Gets the job's internationalized name for display in user interface.
+	 * This uses directly the name of the class that extends {@link Job},
+	 * so take care not to rename those, or if you do then remember to
+	 * change the keys in <code>messages.properties</code> accordingly. 
+	 * @param gender {@link PersonGender}
 	 * @return name
 	 */
 	public String getName(PersonGender gender) {
