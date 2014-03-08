@@ -431,6 +431,9 @@ implements Serializable {
     
     @Override
     protected double performMappedPhase(double time) {
+        
+        time = super.performMappedPhase(time);
+        
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
