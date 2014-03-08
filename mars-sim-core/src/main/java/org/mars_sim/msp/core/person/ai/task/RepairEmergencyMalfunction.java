@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -34,37 +35,36 @@ public class RepairEmergencyMalfunction
 extends Task
 implements Repair, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            RepairEmergencyMalfunction.class.getName());
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RepairEmergencyMalfunction.class.getName());
+
 	// Task phase
 	private static final String REPAIRING = "Repairing";
-	
+
 	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 2D;
 
-    // Data members
-    /** The entity being repaired. */
+	// Data members
+	/** The entity being repaired. */
 	private Malfunctionable entity;
-    /** Problem being fixed. */
+	/** Problem being fixed. */
 	private Malfunction malfunction;
 
-    /**
-     * Constructs a RepairEmergencyMalfunction object.
-     * @param person the person to perform the task
-     */
+	/**
+	 * Constructs a RepairEmergencyMalfunction object.
+	 * @param person the person to perform the task
+	 */
     public RepairEmergencyMalfunction(Person person) {
         super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
 
 		// Add person to malfunctioning building if necessary.
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 	        if (entity != null) {
 	            // Add person to building if malfunctionable is a building with life support.
 	            addPersonToMalfunctionableBuilding(entity); 

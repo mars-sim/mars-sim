@@ -34,6 +34,7 @@ extends JDialog {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+
 	private final static String PIE_MESSAGE = Msg.getString("ColumnSelector.singleColumn"); //$NON-NLS-1$
 	private final static String BAR_MESSAGE = Msg.getString("ColumnSelector.multipleColumns"); //$NON-NLS-1$
 

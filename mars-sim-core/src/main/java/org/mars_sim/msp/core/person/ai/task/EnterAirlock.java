@@ -9,13 +9,13 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -31,35 +31,35 @@ public class EnterAirlock
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // TODO Task phase should be an enum
-    private static final String WAITING_TO_ENTER_AIRLOCK = "Waiting to Enter Airlock";
-    private static final String ENTERING_AIRLOCK = "Entering Airlock";
-    private static final String WAITING_INSIDE_AIRLOCK = "Waiting inside Airlock";
-    private static final String EXITING_AIRLOCK = "Exiting Airlock";
-    private static final String STORING_EVA_SUIT = "Storing EVA Suit";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(EnterAirlock.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
+	// TODO Task phase should be an enum
+	private static final String WAITING_TO_ENTER_AIRLOCK = "Waiting to Enter Airlock";
+	private static final String ENTERING_AIRLOCK = "Entering Airlock";
+	private static final String WAITING_INSIDE_AIRLOCK = "Waiting inside Airlock";
+	private static final String EXITING_AIRLOCK = "Exiting Airlock";
+	private static final String STORING_EVA_SUIT = "Storing EVA Suit";
 
-    // Data members
-    /** The airlock to be used. */
-    private Airlock airlock;
-    private Point2D insideAirlockPos = null;
-    private Point2D interiorAirlockPos = null;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .5D;
 
-    /** 
-     * Constructor.
-     * @param person the person to perform the task
-     * @param airlock to be used.
-     */
-    public EnterAirlock(Person person, Airlock airlock) {
+	// Data members
+	/** The airlock to be used. */
+	private Airlock airlock;
+	private Point2D insideAirlockPos = null;
+	private Point2D interiorAirlockPos = null;
+
+	/** 
+	 * Constructor.
+	 * @param person the person to perform the task
+	 * @param airlock to be used.
+	 */
+	public EnterAirlock(Person person, Airlock airlock) {
         super("Entering airlock from EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
@@ -220,7 +220,7 @@ implements Serializable {
             }
         }
         else {
-            if (Person.OUTSIDE.equals(person.getLocationSituation())) {
+            if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
             
                 // Walk to inside airlock position.
                 addSubTask(new WalkOutside(person, person.getXLocation(), person.getYLocation(), 

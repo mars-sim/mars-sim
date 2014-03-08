@@ -16,7 +16,7 @@ extends TableTab {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param model the table model.
 	 * @param mandatory Is this table view mandatory.
 	 */

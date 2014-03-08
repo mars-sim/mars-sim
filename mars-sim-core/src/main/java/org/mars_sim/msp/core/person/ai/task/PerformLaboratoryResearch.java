@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Lab;
@@ -21,6 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -42,36 +42,35 @@ public class PerformLaboratoryResearch
 extends Task
 implements ResearchScientificStudy, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            PerformLaboratoryResearch.class.getName());
-    
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D; 
-    
-    // TODO Task phase should be an enum.
-    private static final String RESEARCHING = "Researching";
-    
-    // Data members.
-    /** The scientific study the person is researching for. */
-    private ScientificStudy study;
-    /** The laboratory the person is working in. */
-    private Lab lab;
-    /** The science that is being researched. */
-    private ScienceType science;
-    /** The lab's associated malfunction manager. */
-    private MalfunctionManager malfunctions;
-    /** The research assistant. */
-    private Person researchAssistant;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public PerformLaboratoryResearch(Person person) {
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(PerformLaboratoryResearch.class.getName());
+
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D; 
+
+	// TODO Task phase should be an enum.
+	private static final String RESEARCHING = "Researching";
+
+	// Data members.
+	/** The scientific study the person is researching for. */
+	private ScientificStudy study;
+	/** The laboratory the person is working in. */
+	private Lab lab;
+	/** The science that is being researched. */
+	private ScienceType science;
+	/** The lab's associated malfunction manager. */
+	private MalfunctionManager malfunctions;
+	/** The research assistant. */
+	private Person researchAssistant;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public PerformLaboratoryResearch(Person person) {
         // Use task constructor.
         super("Perform Laboratory Research", person, true, false, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(50D));
@@ -203,7 +202,7 @@ implements ResearchScientificStudy, Serializable {
      */
     private static double getLabCrowdingModifier(Person researcher, Lab lab) {
         double result = 1D;
-        if (researcher.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building labBuilding = ((Research) lab).getBuilding();  
             if (labBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
@@ -296,11 +295,11 @@ implements ResearchScientificStudy, Serializable {
     private static Lab getLocalLab(Person person, ScienceType science) {
         Lab result = null;
         
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
             result = getSettlementLab(person, science);
         }
-        else if (location.equals(Person.INVEHICLE)) {
+        else if (location == LocationSituation.IN_VEHICLE) {
             result = getVehicleLab(person.getVehicle(), science);
         }
         
@@ -411,8 +410,8 @@ implements ResearchScientificStudy, Serializable {
     private void addPersonToLab() {
         
         try {
-            String location = person.getLocationSituation();
-            if (location.equals(Person.INSETTLEMENT)) {
+            LocationSituation location = person.getLocationSituation();
+            if (location == LocationSituation.IN_SETTLEMENT) {
                 Building labBuilding = ((Research) lab).getBuilding();
                 
                 // Walk to lab building.
@@ -421,7 +420,7 @@ implements ResearchScientificStudy, Serializable {
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
             }
-            else if (location.equals(Person.INVEHICLE)) {
+            else if (location == LocationSituation.IN_VEHICLE) {
                 
                 // Walk to lab internal location in rover.
                 walkToLabLocationInRover((Rover) person.getVehicle());

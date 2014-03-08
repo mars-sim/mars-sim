@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -26,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
@@ -40,32 +42,32 @@ class EatMeal
 extends Task 
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(EatMeal.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // TODO Task phase should be an enum
-    private static final String EATING = "Eating";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.2D;
+	// TODO Task phase should be an enum
+	private static final String EATING = "Eating";
 
-    // Data members
-    private CookedMeal meal;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.2D;
 
-    /** 
-     * Constructs a EatMeal object
-     * @param person the person to perform the task
-     */
-    public EatMeal(Person person) {
+	// Data members
+	private CookedMeal meal;
+
+	/** 
+	 * Constructs a EatMeal object, hence a constructor.
+	 * @param person the person to perform the task
+	 */
+	public EatMeal(Person person) {
         super("Eating a meal", person, false, false, STRESS_MODIFIER, true, 10D + 
                 RandomUtil.getRandomDouble(30D));
 
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
             // If person is in a settlement, try to find a dining area.
             Building diningBuilding = getAvailableDiningBuilding(person);
             if (diningBuilding != null) {
@@ -83,7 +85,7 @@ implements Serializable {
                 setDescription("Eating a cooked meal");
             }
         }
-        else if (location.equals(Person.OUTSIDE)) {
+        else if (location == LocationSituation.OUTSIDE) {
             endTask();
         }
 
@@ -102,7 +104,7 @@ implements Serializable {
         double result = person.getPhysicalCondition().getHunger() - 250D;
         if (result < 0D) result = 0D;
 
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) result = 0D;
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
 
         Building building = getAvailableDiningBuilding(person);
         if (building != null) {
@@ -213,7 +215,7 @@ implements Serializable {
 
         Building result = null;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
             List<Building> diningBuildings = manager.getBuildings(Dining.NAME);
@@ -239,7 +241,7 @@ implements Serializable {
     private static Cooking getKitchenWithFood(Person person) {
         Cooking result = null;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             BuildingManager manager = settlement.getBuildingManager();
             List<Building> cookingBuildings = manager.getBuildings(Cooking.NAME);

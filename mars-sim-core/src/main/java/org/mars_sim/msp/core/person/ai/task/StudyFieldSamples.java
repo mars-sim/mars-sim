@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -264,7 +265,7 @@ implements ResearchScientificStudy, Serializable {
      */
     private static double getLabCrowdingModifier(Person researcher, Lab lab) {
         double result = 1D;
-        if (researcher.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building labBuilding = ((Research) lab).getBuilding();  
             if (labBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(researcher, labBuilding);     
@@ -350,11 +351,11 @@ implements ResearchScientificStudy, Serializable {
 	private static Lab getLocalLab(Person person, ScienceType science) {
         Lab result = null;
         
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
             result = getSettlementLab(person, science);
         }
-        else if (location.equals(Person.INVEHICLE)) {
+        else if (location == LocationSituation.IN_VEHICLE) {
             result = getVehicleLab(person.getVehicle(), science);
         }
         
@@ -463,8 +464,8 @@ implements ResearchScientificStudy, Serializable {
     private void addPersonToLab() {
         
         try {
-            String location = person.getLocationSituation();
-            if (location.equals(Person.INSETTLEMENT)) {
+            LocationSituation location = person.getLocationSituation();
+            if (location == LocationSituation.IN_SETTLEMENT) {
                 Building labBuilding = ((Research) lab).getBuilding();
                 
                 // Walk to lab building.
@@ -472,7 +473,7 @@ implements ResearchScientificStudy, Serializable {
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();
             }
-            else if (location.equals(Person.INVEHICLE)) {
+            else if (location == LocationSituation.IN_VEHICLE) {
                 lab.addResearcher();
                 malfunctions = person.getVehicle().getMalfunctionManager();
             }

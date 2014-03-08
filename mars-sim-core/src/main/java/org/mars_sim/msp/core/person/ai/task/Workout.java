@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -25,34 +26,37 @@ import org.mars_sim.msp.core.structure.building.function.Exercise;
 /**
  * The Workout class is a task for working out in an exercise facility.
  */
-public class Workout extends Task implements Serializable {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+public class Workout
+extends Task
+implements Serializable {
 
-    private static Logger logger = Logger.getLogger(Workout.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
-    private static final String EXERCISING = "Exercising";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Workout.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -1D;
+	// Task phase
+	private static final String EXERCISING = "Exercising";
 
-    // Data members
-    /** The exercise building the person is using. */
-    private Exercise gym;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -1D;
 
-    /**
-     * Constructor This is an effort-driven task.
-     * @param person the person performing the task.
-     */
+	// Data members
+	/** The exercise building the person is using. */
+	private Exercise gym;
+
+	/**
+	 * Constructor This is an effort-driven task.
+	 * @param person the person performing the task.
+	 */
     public Workout(Person person) {
         // Use Task constructor.
         super("Exercise", person, true, false, STRESS_MODIFIER, true,
                 10D + RandomUtil.getRandomDouble(30D));
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // If person is in a settlement, try to find a gym.
             Building gymBuilding = getAvailableGym(person);
@@ -84,7 +88,7 @@ public class Workout extends Task implements Serializable {
 
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             // Probability affected by the person's stress and fatigue.
             PhysicalCondition condition = person.getPhysicalCondition();
             result = condition.getStress() - (condition.getFatigue() / 10D)
@@ -185,7 +189,7 @@ public class Workout extends Task implements Serializable {
         Building result = null;
 
         // If person is in a settlement, try to find a building with a gym.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager buildingManager = person.getSettlement()
                     .getBuildingManager();
             List<Building> gyms = buildingManager.getBuildings(Exercise.NAME);

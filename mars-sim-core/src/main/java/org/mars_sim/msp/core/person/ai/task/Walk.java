@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -37,29 +38,29 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class Walk extends Task implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    private static Logger logger = Logger.getLogger(Walk.class.getName());
-    
-    // Task phase
-    private static final String WALKING_SETTLEMENT_INTERIOR = "Walking Inside Settlement";
-    private static final String WALKING_ROVER_INTERIOR = "Walking Inside Rover";
-    private static final String WALKING_EXTERIOR = "Walking Outside";
-    private static final String EXITING_AIRLOCK = "Exiting Airlock";
-    private static final String ENTERING_AIRLOCK = "Entering Airlock";
-    private static final String EXITING_ROVER_GARAGE = "Exiting Rover in Garage";
-    private static final String ENTERING_ROVER_GARAGE = "Entering Rover in Garage";
-    
-    // Data members
-    private WalkingSteps walkingSteps;
-    private Map<Integer, String> walkingStepPhaseMap;
-    private int walkingStepIndex;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	private static Logger logger = Logger.getLogger(Walk.class.getName());
+
+	// TODO Task phase should be an enum
+	private static final String WALKING_SETTLEMENT_INTERIOR = "Walking Inside Settlement";
+	private static final String WALKING_ROVER_INTERIOR = "Walking Inside Rover";
+	private static final String WALKING_EXTERIOR = "Walking Outside";
+	private static final String EXITING_AIRLOCK = "Exiting Airlock";
+	private static final String ENTERING_AIRLOCK = "Entering Airlock";
+	private static final String EXITING_ROVER_GARAGE = "Exiting Rover in Garage";
+	private static final String ENTERING_ROVER_GARAGE = "Entering Rover in Garage";
+
+	// Data members
+	private WalkingSteps walkingSteps;
+	private Map<Integer, String> walkingStepPhaseMap;
+	private int walkingStepIndex;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
     public Walk(Person person) {
         super("Walking", person, false, false, 0D, false, 0D);
         
@@ -69,7 +70,7 @@ public class Walk extends Task implements Serializable {
         walkingStepIndex = 0;
         
         // Determine if person is outside.
-        if (Person.OUTSIDE.equals(person.getLocationSituation())) {
+        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
             
             Airlock airlock = findEmergencyAirlock(person);
             if (airlock != null) {
@@ -81,7 +82,7 @@ public class Walk extends Task implements Serializable {
                         adjustedInteriorPos.getY(), entity);
             }
         }
-        else if (Person.INSETTLEMENT.equals(person.getLocationSituation())){
+        else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()){
          
             // Walk to random inhabitable building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(person);
@@ -98,7 +99,7 @@ public class Walk extends Task implements Serializable {
             }
             
         }
-        else if (Person.INVEHICLE.equals(person.getLocationSituation())) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             
             // Walk to random location within rover.
             if (person.getVehicle() instanceof Rover) {
@@ -181,14 +182,14 @@ public class Walk extends Task implements Serializable {
         double result = 0D;
 
         // If person is outside, give high probability to walk to emergency airlock location.
-        if (Person.OUTSIDE.equals(person.getLocationSituation())) {
+        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
             result = 1000D;
         }
-        else if (Person.INSETTLEMENT.equals(person.getLocationSituation())) {
+        else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
             // If person is inside a settlement building, may walk to a random location within settlement.
             result = 10D;
         }
-        else if (Person.INVEHICLE.equals(person.getLocationSituation())) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             // If person is inside a rover, may walk to random location within rover.
             if (person.getVehicle() instanceof Rover) {
                 result = 10D;
@@ -213,11 +214,11 @@ public class Walk extends Task implements Serializable {
             while (i.hasNext() && (result == null)) {
                 Person p = i.next();
                 if (p != person) {
-                    String location = p.getLocationSituation();
-                    if (location.equals(Person.INSETTLEMENT)) {
+                    LocationSituation location = p.getLocationSituation();
+                    if (location == LocationSituation.IN_SETTLEMENT) {
                         result = p.getSettlement().getClosestAvailableAirlock(person);
                     }
-                    else if (location.equals(Person.INVEHICLE)) {
+                    else if (location == LocationSituation.IN_VEHICLE) {
                         Vehicle vehicle = p.getVehicle();
                         if (vehicle instanceof Airlockable) 
                             result = ((Airlockable) vehicle).getAirlock();
@@ -486,7 +487,7 @@ public class Walk extends Task implements Serializable {
         // Check if person has reached the outside of the airlock.
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
         Airlock airlock = step.airlock;
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                 walkingStepIndex++;
                 setPhase(getWalkingStepPhase());
@@ -522,7 +523,7 @@ public class Walk extends Task implements Serializable {
         // Check if person has reached the inside of the airlock.
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
         Airlock airlock = step.airlock;
-        if (!person.getLocationSituation().equals(Person.OUTSIDE)) {
+        if (person.getLocationSituation() != LocationSituation.OUTSIDE) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                 walkingStepIndex++;
                 setPhase(getWalkingStepPhase());

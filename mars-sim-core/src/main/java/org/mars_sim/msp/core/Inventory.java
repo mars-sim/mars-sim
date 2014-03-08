@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.resource.Phase;
  * contains in terms of resources and other units.
  * It has methods for adding, removing and querying
  * what the unit contains.
+ * TODO please reduce the textual error messages to absolute minimum to aid in translation.
  */
 public class Inventory
 implements Serializable {

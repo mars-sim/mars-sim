@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -50,6 +51,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(CollectResourcesMission.class.getName());
 
 	/** Mission phase. */
@@ -230,7 +232,7 @@ implements Serializable {
             Class missionType) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.
@@ -537,7 +539,7 @@ implements Serializable {
      */
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == getStartingSettlement())
                     return true;
             }

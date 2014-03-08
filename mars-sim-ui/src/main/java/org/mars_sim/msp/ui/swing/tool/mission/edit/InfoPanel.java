@@ -32,6 +32,7 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -47,7 +48,8 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * The mission info panel for the edit mission dialog.
  */
-public class InfoPanel extends JPanel {
+public class InfoPanel
+extends JPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -61,14 +63,14 @@ public class InfoPanel extends JPanel {
 	final static String ACTION_NEAREST = "Go to Nearest Settlement and End Mission";
 	
 	// Data members.
-	Mission mission;
-	Dialog parent;
-	JTextField descriptionField;
-	JComboBoxMW<?> actionDropDown;
-	DefaultListModel<Person> memberListModel;
-	JList<Person> memberList;
-	JButton addMembersButton;
-	JButton removeMembersButton;
+	protected Mission mission;
+	protected Dialog parent;
+	protected JTextField descriptionField;
+	protected JComboBoxMW<?> actionDropDown;
+	protected DefaultListModel<Person> memberListModel;
+	protected JList<Person> memberList;
+	protected JButton addMembersButton;
+	protected JButton removeMembersButton;
 	
 	/**
 	 * Constructor.
@@ -294,7 +296,7 @@ public class InfoPanel extends JPanel {
 			Iterator<Person> i = Simulation.instance().getUnitManager().getPeople().iterator();
 			while (i.hasNext()) {
 				Person person = i.next();
-				if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+				if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
 					if (person.getCoordinates().equals(missionLocation)) {
 						if (!memberListModel.contains(person)) result.add(person);
 					}

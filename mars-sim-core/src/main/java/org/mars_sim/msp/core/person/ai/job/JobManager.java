@@ -6,15 +6,16 @@
  */
 package org.mars_sim.msp.core.person.ai.job;
 
-import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.structure.Settlement;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
  * The JobManager class keeps track of the settler jobs in a simulation.
@@ -113,7 +114,7 @@ public final class JobManager implements Serializable {
 
 		// Determine person's associated settlement.
 		Settlement settlement = null;
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) 
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) 
 			settlement = person.getSettlement();
 		else if (person.getMind().hasActiveMission()) 
 			settlement = person.getMind().getMission().getAssociatedSettlement();

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.UnitManagerEvent;
 import org.mars_sim.msp.core.UnitManagerEventType;
 import org.mars_sim.msp.core.UnitManagerListener;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionEvent;
@@ -348,14 +349,14 @@ extends UnitTableModel {
 			} break;
 
 			case LOCATION : {
-				String locationSituation = person.getLocationSituation();
-				if (locationSituation.equals(Person.INSETTLEMENT)) {
+				LocationSituation locationSituation = person.getLocationSituation();
+				if (locationSituation == LocationSituation.IN_SETTLEMENT) {
 					if (person.getSettlement() != null) result = person.getSettlement().getName();
 				}
-				else if (locationSituation.equals(Person.INVEHICLE)) {
+				else if (locationSituation == LocationSituation.IN_VEHICLE) {
 					if (person.getVehicle() != null) result = person.getVehicle().getName();
 				}
-				else result = locationSituation;
+				else result = locationSituation.getName();
 			} break;
 
 			case JOB : {

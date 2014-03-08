@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -38,28 +39,28 @@ public class ManufactureGood
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
+	private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
 
-    // TODO Task phase should be an enum.
-    private static final String MANUFACTURE = "Manufacture";
+	// TODO Task phase should be an enum.
+	private static final String MANUFACTURE = "Manufacture";
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
 
-    // Data members
-    /** The manufacturing workshop the person is using. */
-    private Manufacture workshop;
+	// Data members
+	/** The manufacturing workshop the person is using. */
+	private Manufacture workshop;
 
-    /**
-     * Constructor
-     * @param person the person to perform the task
-     */
-    public ManufactureGood(Person person) {
+	/**
+	 * Constructor.
+	 * @param person the person to perform the task
+	 */
+	public ManufactureGood(Person person) {
         super("Manufacturing", person, true, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(50D));
 
@@ -100,7 +101,7 @@ implements Serializable {
         // associated with the settlement.
         cancelDifficultManufacturingProcesses(person);
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // See if there is an available manufacturing building.
             Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
@@ -225,7 +226,7 @@ implements Serializable {
         SkillManager skillManager = person.getMind().getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
             manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -35,29 +36,28 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class PrescribeMedication
 extends Task
 implements Serializable {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            PrescribeMedication.class.getName());
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(PrescribeMedication.class.getName());
+
 	// TODO Task phase should be an enum.
-    private static final String MEDICATING = "Medicating";
-    
+	private static final String MEDICATING = "Medicating";
+
 	/** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 0D;
-    
-    // Data members.
-    private Person patient = null;
-    private Medication medication = null;
-    
-    /**
-     * Constructor.
-     * @param person the person performing the task.
-     */
-    public PrescribeMedication(Person person) {
+	private static final double STRESS_MODIFIER = 0D;
+
+	// Data members.
+	private Person patient = null;
+	private Medication medication = null;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public PrescribeMedication(Person person) {
         // Use task constructor.
         super("Prescribing Medication", person, true, false, STRESS_MODIFIER, true, 10D);
         
@@ -68,7 +68,7 @@ implements Serializable {
             medication = determineMedication(patient);
             
             // If in settlement, move doctor to building patient is in.
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 
                 // Walk to patient's building.
                 walkToPatientBuilding(BuildingManager.getBuilding(patient));
@@ -150,11 +150,11 @@ implements Serializable {
         // Get possible patient list.
         // Note: Doctor can also prescribe medication for himself.
         Collection<Person> patientList = null;
-        String loc = doctor.getLocationSituation();
-        if (loc.equals(Person.INSETTLEMENT)) {
+        LocationSituation loc = doctor.getLocationSituation();
+        if (loc == LocationSituation.IN_SETTLEMENT) {
             patientList = doctor.getSettlement().getInhabitants();
         }
-        else if (loc.equals(Person.INVEHICLE)) {
+        else if (loc == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = doctor.getVehicle();
             if (vehicle instanceof Crewable) {
                 Crewable crewVehicle = (Crewable) vehicle;

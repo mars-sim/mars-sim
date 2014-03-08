@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
@@ -47,28 +48,29 @@ extends VehicleMission {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(RoverMission.class.getName());
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
-    // Static members
-    protected static final int MIN_PEOPLE = 2;
-    protected static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
+	// Static members
+	protected static final int MIN_PEOPLE = 2;
+	protected static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
 
-    // Data members
-    private Settlement startingSettlement;
+	// Data members
+	private Settlement startingSettlement;
+
+	/**
+	 * Constructor.
+	 * @param name the name of the mission.
+	 * @param startingPerson the person starting the mission.
+	 * @throws MissionException if error constructing mission.
+	 */
+	protected RoverMission(String name, Person startingPerson) {
+		// Use VehicleMission constructor.
+		super(name, startingPerson, MIN_PEOPLE);
+	}
 
     /**
-     * Constructor
-     * @param name the name of the mission.
-     * @param startingPerson the person starting the mission.
-     * @throws MissionException if error constructing mission.
-     */
-    protected RoverMission(String name, Person startingPerson) {
-        // Use VehicleMission constructor.
-        super(name, startingPerson, MIN_PEOPLE);
-    }
-
-    /**
-     * Constructor with min people
+     * Constructor with min people.
      * @param name the name of the mission.
      * @param startingPerson the person starting the mission.
      * @param minPeople the minimum number of people required for mission.
@@ -222,7 +224,7 @@ extends VehicleMission {
         boolean result = true;
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
-            if (!i.next().getLocationSituation().equals(Person.INVEHICLE))
+            if (i.next().getLocationSituation() != LocationSituation.IN_VEHICLE)
                 result = false;
         }
         return result;
@@ -236,7 +238,7 @@ extends VehicleMission {
         boolean result = true;
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
-            if (i.next().getLocationSituation().equals(Person.INVEHICLE))
+            if (i.next().getLocationSituation() == LocationSituation.IN_VEHICLE)
                 result = false;
         }
         return result;
@@ -302,8 +304,8 @@ extends VehicleMission {
             }
         } else {
             // If person is not aboard the rover, board rover.
-            if (!person.getLocationSituation().equals(Person.INVEHICLE)
-                    && !person.getLocationSituation().equals(Person.BURIED)) {
+            if (person.getLocationSituation() != LocationSituation.IN_VEHICLE
+                    && person.getLocationSituation() != LocationSituation.BURIED) {
 
                 // Move person to random location within rover.
                 Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -380,7 +382,7 @@ extends VehicleMission {
         }
 
         // Have person exit rover if necessary.
-        if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
             
             // Get random inhabitable building at settlement.
             Building destinationBuilding = disembarkSettlement.getBuildingManager().
@@ -605,7 +607,7 @@ extends VehicleMission {
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             Person person = i.next();
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT))
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
                 person.setAssociatedSettlement(person.getSettlement());
         }
 

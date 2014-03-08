@@ -22,6 +22,7 @@ import javax.swing.SwingConstants;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -30,7 +31,9 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /** 
  * The LocationTabPanel is a tab panel for location information.
  */
-public class LocationTabPanel extends TabPanel implements ActionListener {
+public class LocationTabPanel
+extends TabPanel
+implements ActionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 12L;
@@ -95,7 +98,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
             locationTextLabel.setText("Outside");
             if (unit instanceof Person) {
                 Person person = (Person) unit;
-                if (person.getLocationSituation().equals(Person.BURIED)) 
+                if (person.getLocationSituation() == LocationSituation.BURIED) 
                     locationTextLabel.setText("Buried Outside");
             }
             addLocationTextLabel();
@@ -162,7 +165,7 @@ public class LocationTabPanel extends TabPanel implements ActionListener {
             locationTextLabel.setText("Outside");
             if (unit instanceof Person) {
                 Person person = (Person) unit;
-                if (person.getLocationSituation().equals(Person.BURIED)) 
+                if (person.getLocationSituation() == LocationSituation.BURIED) 
                     locationTextLabel.setText("Buried Outside");
             }
             addLocationTextLabel();

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -36,42 +37,42 @@ public class WalkSettlementInterior
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
-    
-    // Task phase
-    private static final String WALKING = "Walking";
-    
-    // Static members
-    private static final double WALKING_SPEED = 5D; // km / hr.
-    private static final double VERY_SMALL_DISTANCE = .00001D;
-    private static final double STRESS_MODIFIER = -.1D;
-    
-    // Data members
-    private Settlement settlement;
-    private Building startBuilding;
-    private Building destBuilding;
-    private double destXLoc;
-    private double destYLoc;
-    private InsideBuildingPath walkingPath;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @param destinationBuilding the building that is walked to. (Can be same as current building).
-     * @param destinationXLocation the destination X location at the settlement.
-     * @param destinationYLocation the destination Y location at the settlement.
-     */
+	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
+
+	// TODO Task phase should be an enum
+	private static final String WALKING = "Walking";
+
+	// Static members
+	private static final double WALKING_SPEED = 5D; // km / hr.
+	private static final double VERY_SMALL_DISTANCE = .00001D;
+	private static final double STRESS_MODIFIER = -.1D;
+
+	// Data members
+	private Settlement settlement;
+	private Building startBuilding;
+	private Building destBuilding;
+	private double destXLoc;
+	private double destYLoc;
+	private InsideBuildingPath walkingPath;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 * @param destinationBuilding the building that is walked to. (Can be same as current building).
+	 * @param destinationXLocation the destination X location at the settlement.
+	 * @param destinationYLocation the destination Y location at the settlement.
+	 */
     public WalkSettlementInterior(Person person, Building destinationBuilding, 
             double destinationXLocation, double destinationYLocation) {
         super("Walking Settlement Interior", person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Check that the person is currently inside the settlement.
-        String location = person.getLocationSituation();
-        if (!location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location != LocationSituation.IN_SETTLEMENT) {
             throw new IllegalStateException(
                     "WalkSettlementInterior task started when person is not in settlement.");
         }

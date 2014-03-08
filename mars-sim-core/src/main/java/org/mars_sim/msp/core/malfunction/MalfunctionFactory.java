@@ -7,10 +7,18 @@
 
 package org.mars_sim.msp.core.malfunction;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -20,25 +28,27 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-import java.io.Serializable;
-import java.util.*;
-
 /**
  * This class is a factory for Malfunction objects.
  */
-public final class MalfunctionFactory implements Serializable {
+public final class MalfunctionFactory
+implements Serializable {
 
-    // Data members
-    private Collection<Malfunction> malfunctions;  // The possible malfunctions in the simulation.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructs a MalfunctionFactory object.
-     * @param config malfunction configuration DOM document.
-     * @throws Exception when malfunction list could not be found.
-     */
-    public MalfunctionFactory(MalfunctionConfig config)  {
+	// Data members
+	/** The possible malfunctions in the simulation. */
+	private Collection<Malfunction> malfunctions;
+
+	/**
+	 * Constructs a MalfunctionFactory object.
+	 * @param config malfunction configuration DOM document.
+	 * @throws Exception when malfunction list could not be found.
+	 */
+	public MalfunctionFactory(MalfunctionConfig config)  {
 		malfunctions = config.getMalfunctionList(); 
-    }
+	}
 
     /**
      * Gets a randomly-picked malfunction for a given unit scope.
@@ -88,9 +98,9 @@ public final class MalfunctionFactory implements Serializable {
     public static Collection<Malfunctionable> getMalfunctionables(Person person) {
 
         Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-        String location = person.getLocationSituation();
+        LocationSituation location = person.getLocationSituation();
 	
-        if (location.equals(Person.INSETTLEMENT)) {
+        if (location == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
             while (i.hasNext()) {
@@ -98,11 +108,11 @@ public final class MalfunctionFactory implements Serializable {
             }
         }
 
-        if (location.equals(Person.INVEHICLE)) {
+        if (location == LocationSituation.IN_VEHICLE) {
             entities.add(person.getVehicle());
         }
 
-        if (!location.equals(Person.OUTSIDE)) {
+        if (location != LocationSituation.OUTSIDE) {
             Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
             while (i.hasNext()) {
                 Unit unit = i.next();
@@ -207,7 +217,7 @@ public final class MalfunctionFactory implements Serializable {
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
 			Person person = j.next();
-			if (person.getLocationSituation().equals(Person.OUTSIDE)) 
+			if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
 				entities.addAll(getMalfunctionables(person));
 		}
     	

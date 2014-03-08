@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -249,7 +250,7 @@ implements Serializable {
         double missionProbability = 0D;
 
         // Check if person is in a settlement.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if mission is possible for person based on their circumstance.
             boolean missionPossible = true;
@@ -432,7 +433,7 @@ implements Serializable {
         }
 
         // Have person exit rover if necessary.
-        if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
             
             // Get random inhabitable building at trading settlement.
             Building destinationBuilding = tradingSettlement.getBuildingManager().
@@ -626,8 +627,8 @@ implements Serializable {
     private void performTradeEmbarkingPhase(Person person) {
 
         // If person is not aboard the rover, board rover.
-        if (!isDone() && !person.getLocationSituation().equals(Person.INVEHICLE) && 
-                !person.getLocationSituation().equals(Person.BURIED)) {
+        if (!isDone() && person.getLocationSituation() != LocationSituation.IN_VEHICLE && 
+                person.getLocationSituation() != LocationSituation.BURIED) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());
@@ -860,7 +861,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == getStartingSettlement()) {
                     return true;
                 }

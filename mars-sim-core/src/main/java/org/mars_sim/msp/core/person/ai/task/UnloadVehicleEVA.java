@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -134,7 +135,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check all vehicle missions occurring at the settlement.
             try {
@@ -163,7 +164,7 @@ implements Serializable {
         } 
 
         // Crowded settlement modifier
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;

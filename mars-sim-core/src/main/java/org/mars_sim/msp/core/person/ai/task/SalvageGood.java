@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -40,31 +41,31 @@ import org.mars_sim.msp.core.time.MarsClock;
 public class SalvageGood
 extends Task
 implements Serializable {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
-    
-    // Task phase
-    private static final String SALVAGE = "Salvage";
-    
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
-    
-    // Data members
-    /** The manufacturing workshop the person is using. */
-    private Manufacture workshop;
-    /** The salvage process. */
-    private SalvageProcess process;
-    
-    /** 
-     * Constructor.
-     * @param person the person to perform the task
-     */
-    public SalvageGood(Person person) {
+	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
+
+	// Task phase
+	private static final String SALVAGE = "Salvage";
+
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
+
+	// Data members
+	/** The manufacturing workshop the person is using. */
+	private Manufacture workshop;
+	/** The salvage process. */
+	private SalvageProcess process;
+
+	/** 
+	 * Constructor.
+	 * @param person the person to perform the task
+	 */
+	public SalvageGood(Person person) {
         super("Salvage Good", person, true, false, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(40D));
         
@@ -104,7 +105,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // See if there is an available manufacturing building.
             Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
@@ -315,7 +316,7 @@ implements Serializable {
         SkillManager skillManager = person.getMind().getSkillManager();
         int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
             manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);

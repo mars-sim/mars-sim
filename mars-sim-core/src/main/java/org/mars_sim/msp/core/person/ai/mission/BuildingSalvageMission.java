@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -299,7 +300,7 @@ implements Serializable {
         double result = 0D;
 
         // Check if person is in a settlement.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
             // Check if available light utility vehicles.
@@ -553,7 +554,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == settlement)
                     return true;
             }

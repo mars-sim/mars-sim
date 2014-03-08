@@ -45,9 +45,10 @@ implements UnitListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
 
-	// Mission phases
+	// TODO Mission phases should be an enum.
 	public static final String EMBARKING = "Embarking";
 	public static final String TRAVELLING = "Travelling";
 	public static final String DISEMBARKING = "Disembarking";

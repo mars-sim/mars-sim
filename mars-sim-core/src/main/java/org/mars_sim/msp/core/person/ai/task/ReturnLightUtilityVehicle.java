@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -35,28 +36,27 @@ public class ReturnLightUtilityVehicle
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            ReturnLightUtilityVehicle.class.getName());
-    
-    // Task phase
-    private static final String RETURN_LUV = "Returning Light Utility Vehicle";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
-    
-    // Data members.
-    LightUtilityVehicle luv = null;
-    Unit returnContainer = null;
-    
-    /**
-     * Constructor
-     * @param person the person starting the task.
-     */
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
+
+	// TODO Task phase should be an enum
+	private static final String RETURN_LUV = "Returning Light Utility Vehicle";
+
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .5D;
+
+	// Data members.
+	LightUtilityVehicle luv = null;
+	Unit returnContainer = null;
+
+	/**
+	 * Constructor.
+	 * @param person the person starting the task.
+	 */
     public ReturnLightUtilityVehicle(Person person) {
         super("Returning light utility vehicle", person, false, false, STRESS_MODIFIER, false, 0D);
         
@@ -134,7 +134,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             
             if (person.getVehicle() instanceof LightUtilityVehicle) {
                 result = 500D;

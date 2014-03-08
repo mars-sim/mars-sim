@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Architect;
@@ -81,7 +82,7 @@ implements Serializable {
 	/** Initialized logger. */
 	private static Logger logger = Logger.getLogger(GoodsManager.class.getName());
 
-	// Mission types.
+	// TODO Mission types should be an enum.
 	private static final String TRAVEL_TO_SETTLEMENT_MISSION = "travel to settlement";
 	private static final String EXPLORATION_MISSION = "exploration";
 	private static final String COLLECT_ICE_MISSION = "collect ice";
@@ -118,7 +119,7 @@ implements Serializable {
 	private boolean initialized = false;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param settlement the settlement this manager is for.
 	 * @throws Exception if errors constructing instance.
 	 */
@@ -822,7 +823,7 @@ implements Serializable {
 		 Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		 while (j.hasNext()) {
 			 Person person = j.next();
-			 if (person.getLocationSituation().equals(Person.OUTSIDE)) 
+			 if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
 				 amount += person.getInventory().getAmountResourceStored(resource, false);
 		 }
 
@@ -1188,7 +1189,7 @@ implements Serializable {
 		 Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		 while (j.hasNext()) {
 			 Person person = j.next();
-			 if (person.getLocationSituation().equals(Person.OUTSIDE)) 
+			 if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
 				 number += person.getInventory().getItemResourceNum(resource);
 		 }
 
@@ -1394,7 +1395,7 @@ implements Serializable {
 		 Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		 while (j.hasNext()) {
 			 Person person = j.next();
-			 if (person.getLocationSituation().equals(Person.OUTSIDE)) 
+			 if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
 				 number += person.getInventory().findNumEmptyUnitsOfClass(equipmentClass, false);
 		 }
 

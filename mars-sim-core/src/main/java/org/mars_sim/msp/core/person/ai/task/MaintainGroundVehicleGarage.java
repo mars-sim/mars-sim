@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -45,13 +46,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MaintainGroundVehicleGarage
 extends Task
 implements Serializable {
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
-	
+	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
+
 	// TODO Task phase should be an enum
 	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
 
@@ -59,17 +60,17 @@ implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 
-    // Data members
-    /** The maintenance garage. */
+	// Data members
+	/** The maintenance garage. */
 	private VehicleMaintenance garage;
-    /** Vehicle to be maintained. */
+	/** Vehicle to be maintained. */
 	private GroundVehicle vehicle;
 
-    /** 
-     * Constructor
-     * @param person the person to perform the task
-     */
-    public MaintainGroundVehicleGarage(Person person) {
+	/** 
+	 * Constructor.
+	 * @param person the person to perform the task
+	 */
+	public MaintainGroundVehicleGarage(Person person) {
         super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
         		true, 10D + RandomUtil.getRandomDouble(40D));
 
@@ -140,7 +141,7 @@ implements Serializable {
 
         try {
         	// Get all vehicles requiring maintenance.
-        	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         		Iterator<Vehicle> i = getAllVehicleCandidates(person).iterator();
         		while (i.hasNext()) {
         			Vehicle vehicle = i.next();
@@ -166,7 +167,7 @@ implements Serializable {
 		// Determine if settlement has available space in garage.
 		boolean garageSpace = false;
 		boolean needyVehicleInGarage = false;
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
 			Settlement settlement = person.getSettlement();
 			Iterator<Building> j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
 			while (j.hasNext() && !garageSpace) {
@@ -375,7 +376,7 @@ implements Serializable {
     private static Collection<Vehicle> getAllVehicleCandidates(Person person) {
 		Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
         
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Iterator<Vehicle> vI = person.getSettlement().getParkedVehicles().iterator();
 			while (vI.hasNext()) {
 				Vehicle vehicle = vI.next();

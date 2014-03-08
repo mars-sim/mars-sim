@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
@@ -43,6 +44,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(RescueSalvageVehicle.class.getName());
 
 	/** Default description. */
@@ -162,8 +164,8 @@ implements Serializable {
     public static double getNewMissionProbability(Person person) {
 
     	double missionProbability = 0D;
-    	
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
         	// Check if mission is possible for person based on their circumstance.
         	boolean missionPossible = true;
@@ -626,7 +628,7 @@ implements Serializable {
 	 */
 	protected boolean isCapableOfMission(Person person) {
 		if (super.isCapableOfMission(person)) {
-			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 				if (person.getSettlement() == getStartingSettlement()) return true;
 			}
 		}

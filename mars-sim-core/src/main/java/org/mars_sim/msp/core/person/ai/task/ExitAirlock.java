@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -32,37 +33,37 @@ public class ExitAirlock
 extends Task
 implements Serializable {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ExitAirlock.class.getName());
 
-    // Task phase
-    private static final String PROCURING_EVA_SUIT = "Procuring EVA Suit";
-    private static final String WAITING_TO_ENTER_AIRLOCK = "Waiting to Enter Airlock";
-    private static final String ENTERING_AIRLOCK = "Entering Airlock";
-    private static final String WAITING_INSIDE_AIRLOCK = "Waiting inside Airlock";
-    private static final String EXITING_AIRLOCK = "Exiting Airlock";
+	// Task phase
+	private static final String PROCURING_EVA_SUIT = "Procuring EVA Suit";
+	private static final String WAITING_TO_ENTER_AIRLOCK = "Waiting to Enter Airlock";
+	private static final String ENTERING_AIRLOCK = "Entering Airlock";
+	private static final String WAITING_INSIDE_AIRLOCK = "Waiting inside Airlock";
+	private static final String EXITING_AIRLOCK = "Exiting Airlock";
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .5D;
 
-    // Data members
-    /** The airlock to be used. */
-    private Airlock airlock;
-    /** True if person has an EVA suit. */
-    private boolean hasSuit = false;
-    private Point2D insideAirlockPos = null;
-    private Point2D exteriorAirlockPos = null;
+	// Data members
+	/** The airlock to be used. */
+	private Airlock airlock;
+	/** True if person has an EVA suit. */
+	private boolean hasSuit = false;
+	private Point2D insideAirlockPos = null;
+	private Point2D exteriorAirlockPos = null;
 
-    /** 
-     * Constructor.
-     * @param person the person to perform the task
-     * @param airlock the airlock to use.
-     */
-    public ExitAirlock(Person person, Airlock airlock) {
+	/** 
+	 * Constructor.
+	 * @param person the person to perform the task
+	 * @param airlock the airlock to use.
+	 */
+	public ExitAirlock(Person person, Airlock airlock) {
         super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
@@ -275,7 +276,7 @@ implements Serializable {
             }
         }
         else {
-            if (!Person.OUTSIDE.equals(person.getLocationSituation())) {
+            if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
                 
                 // Walk to inside airlock position.
                 if (airlock.getEntity() instanceof Building) {

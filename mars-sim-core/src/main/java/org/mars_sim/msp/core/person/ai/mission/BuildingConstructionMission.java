@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -60,38 +61,39 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
 
 	/** Default description. */
 	public static final String DEFAULT_DESCRIPTION = "Construct Building";
 
-    // TODO Mission phases should be enums
-    final public static String PREPARE_SITE_PHASE = "Prepare Site";
-    final public static String CONSTRUCTION_PHASE = "Construction";
-    
-    // Number of mission members.
-    private static final int MIN_PEOPLE = 3;
-    private static final int MAX_PEOPLE = 10;
-    
-    /** Time (millisols) required to prepare construction site for stage. */
-    private static final double SITE_PREPARE_TIME = 500D;
-    
-    // Data members
-    private Settlement settlement;
-    private ConstructionSite constructionSite;
-    private ConstructionStage constructionStage;
-    private List<GroundVehicle> constructionVehicles;
-    private MarsClock sitePreparationStartTime;
-    private boolean finishingExistingStage;
-    private boolean constructionSuppliesLoaded;
-    private List<Part> luvAttachmentParts;
-    
-    /**
-     * Constructor
-     * @param startingPerson the person starting the mission.
-     * @throws MissionException if error creating mission.
-     */
-    public BuildingConstructionMission(Person startingPerson) {
+	// TODO Mission phases should be enums
+	final public static String PREPARE_SITE_PHASE = "Prepare Site";
+	final public static String CONSTRUCTION_PHASE = "Construction";
+
+	// Number of mission members.
+	private static final int MIN_PEOPLE = 3;
+	private static final int MAX_PEOPLE = 10;
+
+	/** Time (millisols) required to prepare construction site for stage. */
+	private static final double SITE_PREPARE_TIME = 500D;
+
+	// Data members
+	private Settlement settlement;
+	private ConstructionSite constructionSite;
+	private ConstructionStage constructionStage;
+	private List<GroundVehicle> constructionVehicles;
+	private MarsClock sitePreparationStartTime;
+	private boolean finishingExistingStage;
+	private boolean constructionSuppliesLoaded;
+	private List<Part> luvAttachmentParts;
+
+	/**
+	 * Constructor.
+	 * @param startingPerson the person starting the mission.
+	 * @throws MissionException if error creating mission.
+	 */
+	public BuildingConstructionMission(Person startingPerson) {
         // Use Mission constructor.
         super(DEFAULT_DESCRIPTION, startingPerson, MIN_PEOPLE);
         
@@ -319,7 +321,7 @@ implements Serializable {
         double result = 0D;
         
         // Check if person is in a settlement.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
         
             // Check if available light utility vehicles.
@@ -448,7 +450,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == settlement) return true;
             }
         }
@@ -633,16 +635,15 @@ implements Serializable {
         return resources;
     }
 
-    @Override
-    public Map<Class, Integer> getEquipmentNeededForRemainingMission(
-            boolean useBuffer) {
-        
-        Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
-        equipment.put(EVASuit.class, getPeopleNumber());
-        
-        return equipment;
-    }
-    
+	@Override
+	public Map<Class, Integer> getEquipmentNeededForRemainingMission(
+		boolean useBuffer
+	) {
+		Map<Class, Integer> equipment = new HashMap<Class, Integer>(1);
+		equipment.put(EVASuit.class, getPeopleNumber());
+		return equipment;
+	}
+
     /**
      * Reserves a light utility vehicle for the mission.
      * @return reserved light utility vehicle or null if none.

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -62,32 +63,33 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
-    
-    /** Default description. */
-    public static final String DEFAULT_DESCRIPTION = "Deliver Emergency Supplies";
-    
-    // Static members
-    private static final int MAX_MEMBERS = 2;
-    private static final double BASE_STARTING_PROBABILITY = 100D;
-    private static final double VEHICLE_FUEL_DEMAND = 1000D;
-    private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
-    private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
-    
-    // Mission phases.
-    public static final String SUPPLY_DELIVERY_DISEMBARKING = "Supply Delivery Disembarking";
-    public static final String SUPPLY_DELIVERY = "Unload Supply Goods";
-    public static final String LOAD_RETURN_TRIP_SUPPLIES = "Load Return Trip Supplies";
-    public static final String RETURN_TRIP_EMBARKING = "Return Trip Embarking";
-    
-    // Data members.
-    private Settlement emergencySettlement;
-    private boolean outbound;
-    private Map<AmountResource, Double> emergencyResources;
-    private Map<Class, Integer> emergencyEquipment;
-    private Map<Part, Integer> emergencyParts;
-    private Vehicle emergencyVehicle;
-    
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
+
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = "Deliver Emergency Supplies";
+
+	// Static members
+	private static final int MAX_MEMBERS = 2;
+	private static final double BASE_STARTING_PROBABILITY = 100D;
+	private static final double VEHICLE_FUEL_DEMAND = 1000D;
+	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
+	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
+
+	// TODO Mission phases should be an enum.
+	public static final String SUPPLY_DELIVERY_DISEMBARKING = "Supply Delivery Disembarking";
+	public static final String SUPPLY_DELIVERY = "Unload Supply Goods";
+	public static final String LOAD_RETURN_TRIP_SUPPLIES = "Load Return Trip Supplies";
+	public static final String RETURN_TRIP_EMBARKING = "Return Trip Embarking";
+
+	// Data members.
+	private Settlement emergencySettlement;
+	private boolean outbound;
+	private Map<AmountResource, Double> emergencyResources;
+	private Map<Class, Integer> emergencyEquipment;
+	private Map<Part, Integer> emergencyParts;
+	private Vehicle emergencyVehicle;
+
     /**
      * Constructor.
      * @param startingPerson the person starting the settlement.
@@ -257,7 +259,7 @@ implements Serializable {
         }
 
         // Check if person is in a settlement.
-        boolean inSettlement = person.getLocationSituation().equals(Person.INSETTLEMENT);
+        boolean inSettlement = person.getLocationSituation() == LocationSituation.IN_SETTLEMENT;
 
         if (inSettlement && (jobModifier > 0D)) {
             
@@ -417,7 +419,7 @@ implements Serializable {
         }
 
         // Have person exit rover if necessary.
-        if (!person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() != LocationSituation.IN_SETTLEMENT) {
             
             // Get random inhabitable building at emergency settlement.
             Building destinationBuilding = emergencySettlement.getBuildingManager().
@@ -531,8 +533,8 @@ implements Serializable {
     private void performReturnTripEmbarkingPhase(Person person) {
         
         // If person is not aboard the rover, board rover.
-        if (!person.getLocationSituation().equals(Person.INVEHICLE) && 
-                !person.getLocationSituation().equals(Person.BURIED)) {
+        if (person.getLocationSituation() != LocationSituation.IN_VEHICLE && 
+                person.getLocationSituation() != LocationSituation.BURIED) {
 
             // Move person to random location within rover.
             Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(getVehicle());

@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -43,25 +44,25 @@ public class RepairEVAMalfunction
 extends EVAOperation
 implements Repair, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
 
-    // TODO Phase names should be an enum.
-    private static final String REPAIR_MALFUNCTION = "Repair Malfunction";
+	// TODO Phase names should be an enum.
+	private static final String REPAIR_MALFUNCTION = "Repair Malfunction";
 
-    // Data members
-    /** The malfunctionable entity being repaired. */
-    private Malfunctionable entity;
-    /** The container unit the person started the mission in. */
-    private Unit containerUnit;
+	// Data members
+	/** The malfunctionable entity being repaired. */
+	private Malfunctionable entity;
+	/** The container unit the person started the mission in. */
+	private Unit containerUnit;
 
-    /**
-     * Constructs a RepairEVAMalfunction object.
-     * @param person the person to perform the task
-     */
+	/**
+	 * Constructs a RepairEVAMalfunction object.
+	 * @param person the person to perform the task
+	 */
     public RepairEVAMalfunction(Person person) {
         super("Repairing EVA Malfunction", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
@@ -213,7 +214,7 @@ implements Repair, Serializable {
         result *= person.getPerformanceRating();
 
         // Check if person is in vehicle.
-        boolean inVehicle = Person.INVEHICLE.equals(person.getLocationSituation());
+        boolean inVehicle = LocationSituation.IN_VEHICLE == person.getLocationSituation();
 
         // Job modifier if not in vehicle.
         Job job = person.getMind().getJob();
