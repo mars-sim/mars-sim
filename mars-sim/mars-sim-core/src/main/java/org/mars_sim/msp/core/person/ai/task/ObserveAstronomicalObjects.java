@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -38,30 +39,30 @@ public class ObserveAstronomicalObjects
 extends Task
 implements ResearchScientificStudy, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-	/** default logger. */
-    private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.2D; 
-    
-    // Task phase.
-    private static final String OBSERVING = "Observing";
-    
-    // Data members.
-    /** The scientific study the person is researching for. */
-    private ScientificStudy study;
-    /** The observatory the person is using. */
-    private AstronomicalObservation observatory;
-    /** The research assistant. */
-    private Person researchAssistant;
-    
-    /**
-     * Constructor.
-     * @param person the person performing the task.
-     */
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ObserveAstronomicalObjects.class.getName());
+
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.2D; 
+
+	// Task phase.
+	private static final String OBSERVING = "Observing";
+
+	// Data members.
+	/** The scientific study the person is researching for. */
+	private ScientificStudy study;
+	/** The observatory the person is using. */
+	private AstronomicalObservation observatory;
+	/** The research assistant. */
+	private Person researchAssistant;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
     public ObserveAstronomicalObjects(Person person) {
         // Use task constructor.
         super("Observe Night Sky with Telescope", person, true, false, STRESS_MODIFIER, 
@@ -218,7 +219,7 @@ implements ResearchScientificStudy, Serializable {
     private static AstronomicalObservation determineObservatory(Person observer) {
         AstronomicalObservation result = null;
         
-        if (Person.INSETTLEMENT.equals(observer.getLocationSituation())) {
+        if (LocationSituation.IN_SETTLEMENT == observer.getLocationSituation()) {
 
             BuildingManager manager = observer.getSettlement().getBuildingManager();
             List<Building> observatoryBuildings = manager.getBuildings(AstronomicalObservation.NAME);
@@ -246,7 +247,7 @@ implements ResearchScientificStudy, Serializable {
     private static double getObservatoryCrowdingModifier(Person observer, 
             AstronomicalObservation observatory) {
         double result = 1D;
-        if (observer.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (observer.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building observatoryBuilding = observatory.getBuilding();  
             if (observatoryBuilding != null) {
                 result *= Task.getCrowdingProbabilityModifier(observer, observatoryBuilding);     
@@ -474,10 +475,10 @@ implements ResearchScientificStudy, Serializable {
         }
 
         Malfunctionable entity = null;
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             entity = observatory.getBuilding();
         }
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             entity = person.getVehicle();
         }
         

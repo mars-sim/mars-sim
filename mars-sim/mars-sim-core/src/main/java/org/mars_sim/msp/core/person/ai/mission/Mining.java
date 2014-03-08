@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -47,9 +48,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class Mining
 extends RoverMission {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(Mining.class.getName());
 
 	/** Default description. */
@@ -219,7 +221,7 @@ extends RoverMission {
 
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
 
             // Check if a mission-capable rover is available.
@@ -783,7 +785,7 @@ extends RoverMission {
     @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == getStartingSettlement())
                     return true;
             }

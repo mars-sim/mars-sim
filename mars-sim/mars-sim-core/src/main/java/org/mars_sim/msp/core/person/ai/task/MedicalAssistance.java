@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -44,13 +45,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MedicalAssistance
 extends Task
 implements Serializable {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-	
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(MedicalAssistance.class.getName());
-	
+	private static Logger logger = Logger.getLogger(MedicalAssistance.class.getName());
+
 	private static final String TREATMENT = "Treatment";
 
 	/** The stress modified per millisol. */
@@ -136,7 +137,7 @@ implements Serializable {
         }
         
         // Crowding task modifier.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	try {
 				Building building = getMedicalAidBuilding(person);
 				if (building != null) {
@@ -255,8 +256,8 @@ implements Serializable {
     private static List<MedicalAid> getNeedyMedicalAids(Person person) {
         List<MedicalAid> result = new ArrayList<MedicalAid>();
         
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
         	try {
         		Building building = getMedicalAidBuilding(person);
         		if (building != null) {
@@ -267,7 +268,7 @@ implements Serializable {
         		logger.severe("MedicalAssistance.getNeedyMedicalAids(): " + e.getMessage());
         	}
         }
-        else if (location.equals(Person.INVEHICLE)) {
+        else if (location == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Medical) {
                 MedicalAid aid = ((Medical) vehicle).getSickBay();
@@ -372,7 +373,7 @@ implements Serializable {
     private static Building getMedicalAidBuilding(Person person) {
     	Building result = null;
     	
-    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 			BuildingManager manager = settlement.getBuildingManager();
 			List<Building> medicalBuildings = manager.getBuildings(MedicalCare.NAME);
@@ -411,7 +412,7 @@ implements Serializable {
     private static boolean isThereADoctorInTheHouse(Person person) {
     	boolean result = false;
     	
-    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     		Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
     		while (i.hasNext()) {
     			Person inhabitant = i.next();
@@ -421,7 +422,7 @@ implements Serializable {
     			}
     		}
     	}
-    	else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+    	else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
     		if (person.getVehicle() instanceof Rover) {
     			Rover rover = (Rover) person.getVehicle();
     			Iterator<Person> i = rover.getCrew().iterator();

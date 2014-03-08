@@ -46,27 +46,8 @@ implements VehicleOperator, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/* default logger.
-    private static transient Logger logger = Logger.getLogger(Person.class.getName());
+	private static transient Logger logger = Logger.getLogger(Person.class.getName());
 	 */
-	/**
-	 * Status string used when Person resides in settlement
-	 */
-	public final static String INSETTLEMENT = "In Settlement";
-
-	/**
-	 * Status string used when Person resides in a vehicle
-	 */
-	public final static String INVEHICLE = "In Vehicle";
-
-	/**
-	 * Status string used when Person is outside
-	 */
-	public final static String OUTSIDE = "Outside";
-
-	/**
-	 * Status string used when Person has been buried
-	 */
-	public final static String BURIED = "Buried";
 
 	/** The base carrying capacity (kg) of a person. */
 	private final static double BASE_CAPACITY = 60D;
@@ -100,9 +81,9 @@ implements VehicleOperator, Serializable {
 	/**
 	 * Constructs a Person object at a given settlement.
 	 * @param name the person's name
-	 * @param gender the person's gender ("male" or "female")
+	 * @param gender {@link PersonGender} the person's gender
 	 * @param birthplace the location of the person's birth
-	 * @param settlement the settlement the person is at
+	 * @param settlement {@link Settlement} the settlement the person is at
 	 * @throws Exception if no inhabitable building available at settlement.
 	 */
 	public Person(String name, PersonGender gender, String birthplace, Settlement settlement) {
@@ -123,17 +104,16 @@ implements VehicleOperator, Serializable {
 		scientificAchievement = new HashMap<ScienceType, Double>(0);
 
 		// Set base mass of person from 58 to 76, peaking at 67.
-		setBaseMass(56D + (RandomUtil.getRandomInt(100)
-				+ RandomUtil.getRandomInt(100))/10D);
+		setBaseMass(56D + (RandomUtil.getRandomInt(100) + RandomUtil.getRandomInt(100))/10D);
 
 		// Set height of person as gender-correlated curve.
-		height = (this.gender == PersonGender.MALE ? 156 + (RandomUtil.getRandomInt(22)
-				+ RandomUtil.getRandomInt(22)) : 146 + (RandomUtil.getRandomInt(15)
-						+ RandomUtil.getRandomInt(15)) );
+		height = (this.gender == PersonGender.MALE ?
+			156 + (RandomUtil.getRandomInt(22) + RandomUtil.getRandomInt(22)) :
+			146 + (RandomUtil.getRandomInt(15) + RandomUtil.getRandomInt(15))
+		);
 
 		// Set inventory total mass capacity based on the person's strength.
-		int strength = attributes
-				.getAttribute(NaturalAttributeManager.STRENGTH);
+		int strength = attributes.getAttribute(NaturalAttributeManager.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
 		// Put person in proper building.
@@ -175,26 +155,21 @@ implements VehicleOperator, Serializable {
 	}
 
 	/**
-	 * Returns a string for the person's relative location "In Settlement", "In
-	 * Vehicle", "Outside" or "Buried"
-	 * @return the person's location
+	 * @return {@link LocationSituation} the person's location
 	 */
-	public String getLocationSituation() {
-		String location = null;
-
+	public LocationSituation getLocationSituation() {
 		if (isBuried)
-			location = BURIED;
+			return LocationSituation.BURIED;
 		else {
 			Unit container = getContainerUnit();
 			if (container == null)
-				location = OUTSIDE;
+				return LocationSituation.OUTSIDE;
 			else if (container instanceof Settlement)
-				location = INSETTLEMENT;
+				return LocationSituation.IN_SETTLEMENT;
 			else if (container instanceof Vehicle)
-				location = INVEHICLE;
+				return LocationSituation.IN_VEHICLE;
 		}
-
-		return location;
+		return null;
 	}
 
 	/**
@@ -234,7 +209,7 @@ implements VehicleOperator, Serializable {
 	 * @return the person's settlement
 	 */
 	public Settlement getSettlement() {
-		if (INSETTLEMENT.equals(getLocationSituation()))
+		if (LocationSituation.IN_SETTLEMENT == getLocationSituation())
 			return (Settlement) getContainerUnit();
 		else
 			return null;
@@ -246,7 +221,7 @@ implements VehicleOperator, Serializable {
 	 * @return the person's vehicle
 	 */
 	public Vehicle getVehicle() {
-		if (INVEHICLE.equals(getLocationSituation()))
+		if (LocationSituation.IN_VEHICLE == getLocationSituation())
 			return (Vehicle) getContainerUnit();
 		else
 			return null;
@@ -344,8 +319,8 @@ implements VehicleOperator, Serializable {
 	MedicalAid getAccessibleAid() {
 		MedicalAid found = null;
 
-		String location = getLocationSituation();
-		if (location.equals(INSETTLEMENT)) {
+		LocationSituation location = getLocationSituation();
+		if (location == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = getSettlement();
 			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(
 					MedicalCare.NAME);
@@ -355,7 +330,7 @@ implements VehicleOperator, Serializable {
 				found = (MedicalAid) foundBuilding.getFunction(MedicalCare.NAME);
 			}
 		}
-		if (location.equals(Person.INVEHICLE)) {
+		if (location  == LocationSituation.IN_VEHICLE) {
 			Vehicle vehicle = getVehicle();
 			if (vehicle instanceof Medical) {
 				found = ((Medical) vehicle).getSickBay();
@@ -487,7 +462,7 @@ implements VehicleOperator, Serializable {
 	public Collection<Person> getLocalGroup() {
 		Collection<Person> localGroup = new ConcurrentLinkedQueue<Person>();
 
-		if (getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
 				String lifeSupportName = org.mars_sim.msp.core.structure.building.function.LifeSupport.NAME;
@@ -498,20 +473,19 @@ implements VehicleOperator, Serializable {
 					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
 				}
 			}
-		} else if (getLocationSituation().equals(Person.INVEHICLE)) {
+		} else if (getLocationSituation() == LocationSituation.IN_VEHICLE) {
 			Crewable crewableVehicle = (Crewable) getVehicle();
 			localGroup = new ConcurrentLinkedQueue<Person>(crewableVehicle.getCrew());
 		}
 
-		if (localGroup.contains(this))
+		if (localGroup.contains(this)) {
 			localGroup.remove(this);
-
+		}
 		return localGroup;
 	}
 
 	/**
 	 * Checks if the vehicle operator is fit for operating the vehicle.
-	 * 
 	 * @return true if vehicle operator is fit.
 	 */
 	public boolean isFitForOperatingVehicle() {
@@ -520,7 +494,6 @@ implements VehicleOperator, Serializable {
 
 	/**
 	 * Gets the name of the vehicle operator
-	 * 
 	 * @return vehicle operator name.
 	 */
 	public String getOperatorName() {
@@ -529,7 +502,6 @@ implements VehicleOperator, Serializable {
 
 	/**
 	 * Gets the settlement the person is currently associated with.
-	 * 
 	 * @return associated settlement or null if none.
 	 */
 	public Settlement getAssociatedSettlement() {
@@ -538,7 +510,6 @@ implements VehicleOperator, Serializable {
 
 	/**
 	 * Sets the associated settlement for a person.
-	 * 
 	 * @param newSettlement the new associated settlement or null if none.
 	 */
 	public void setAssociatedSettlement(Settlement newSettlement) {
@@ -557,39 +528,31 @@ implements VehicleOperator, Serializable {
 
 	/**
 	 * Gets the person's achievement credit for a given scientific field.
-	 * 
 	 * @param science the scientific field.
 	 * @return achievement credit.
 	 */
 	public double getScientificAchievement(ScienceType science) {
 		double result = 0D;
-
 		if (scientificAchievement.containsKey(science)) {
 			result = scientificAchievement.get(science);
 		}
-
 		return result;
 	}
 
 	/**
 	 * Gets the person's total scientific achievement credit.
-	 * 
 	 * @return achievement credit.
 	 */
 	public double getTotalScientificAchievement() {
-		double result = 0D;
-
-		Iterator<Double> i = scientificAchievement.values().iterator();
-		while (i.hasNext()) {
-			result += i.next();
+		double result = 0d;
+		for (double value : scientificAchievement.values()) {
+			result += value;
 		}
-
 		return result;
 	}
 
 	/**
 	 * Add achievement credit to the person in a scientific field.
-	 * 
 	 * @param achievementCredit the achievement credit.
 	 * @param science the scientific field.
 	 */
@@ -597,14 +560,12 @@ implements VehicleOperator, Serializable {
 		if (scientificAchievement.containsKey(science)) {
 			achievementCredit += scientificAchievement.get(science);
 		}
-
 		scientificAchievement.put(science, achievementCredit);
 	}
 
 	@Override
 	public void destroy() {
 		super.destroy();
-
 		attributes.destroy();
 		attributes = null;
 		mind.destroy();

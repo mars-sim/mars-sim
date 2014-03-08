@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -27,6 +28,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 
@@ -39,37 +41,37 @@ public class CookMeal
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(CookMeal.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // TODO Task phase should be an enum
-    private static final String COOKING = "Cooking";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D;
+	// TODO Task phase should be an enum
+	private static final String COOKING = "Cooking";
 
-    // Starting meal times (millisol) for 0 degrees longitude.
-    private static final double BREAKFAST_START = 300D;
-    private static final double LUNCH_START = 500D;
-    private static final double DINNER_START = 700D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D;
 
-    // Time (millisols) duration of meals.
-    private static final double MEALTIME_DURATION = 100D;
+	// Starting meal times (millisol) for 0 degrees longitude.
+	private static final double BREAKFAST_START = 300D;
+	private static final double LUNCH_START = 500D;
+	private static final double DINNER_START = 700D;
 
-    // Data members
-    /** The kitchen the person is cooking at. */
-    private Cooking kitchen;
+	// Time (millisols) duration of meals.
+	private static final double MEALTIME_DURATION = 100D;
 
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @throws Exception if error constructing task.
-     */
-    public CookMeal(Person person) {
+	// Data members
+	/** The kitchen the person is cooking at. */
+	private Cooking kitchen;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 * @throws Exception if error constructing task.
+	 */
+	public CookMeal(Person person) {
         // Use Task constructor
         super("Cooking", person, true, false, STRESS_MODIFIER, false, 0D);
 
@@ -330,8 +332,8 @@ implements Serializable {
     private static Building getAvailableKitchen(Person person) {
         Building result = null;
 
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> kitchenBuildings = manager.getBuildings(Cooking.NAME);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);

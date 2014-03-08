@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -32,14 +33,16 @@ import org.mars_sim.msp.core.structure.building.function.Farming;
  * The TendGreenhouse class is a task for tending the greenhouse in a settlement.
  * This is an effort driven task.
  */
-public class TendGreenhouse extends Task implements Serializable {
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+public class TendGreenhouse
+extends Task
+implements Serializable {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
-	
+	private static Logger logger = Logger.getLogger(TendGreenhouse.class.getName());
+
 	// Task phase
 	private static final String TENDING = "Tending";
 
@@ -47,15 +50,15 @@ public class TendGreenhouse extends Task implements Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.1D;
 
-    // Data members
+	// Data members
 	/** The greenhouse the person is tending. */
-    private Farming greenhouse;
+	private Farming greenhouse;
 
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public TendGreenhouse(Person person) {
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public TendGreenhouse(Person person) {
         // Use Task constructor
         super("Tending Greenhouse", person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(50D));
@@ -92,7 +95,7 @@ public class TendGreenhouse extends Task implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	try {
         		// See if there is an available greenhouse.
         		Building farmingBuilding = getAvailableGreenhouse(person);
@@ -261,8 +264,8 @@ public class TendGreenhouse extends Task implements Serializable {
      
         Building result = null;
      
-        String location = person.getLocationSituation();
-        if (location.equals(Person.INSETTLEMENT)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location == LocationSituation.IN_SETTLEMENT) {
         	BuildingManager manager = person.getSettlement().getBuildingManager();
             List<Building> farmBuildings = manager.getBuildings(Farming.NAME);
 			farmBuildings = BuildingManager.getNonMalfunctioningBuildings(farmBuildings);

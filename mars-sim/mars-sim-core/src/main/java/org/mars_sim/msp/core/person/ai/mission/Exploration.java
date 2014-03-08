@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.Mars;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -209,41 +210,41 @@ implements Serializable {
      */
     public static double getNewMissionProbability(Person person) {
 
-        double result = 0D;
+    	double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
-            Settlement settlement = person.getSettlement();
+    	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+    		Settlement settlement = person.getSettlement();
 
-            // Check if a mission-capable rover is available.
-            boolean reservableRover = RoverMission.areVehiclesAvailable(
-                    settlement, false);
+    		// Check if a mission-capable rover is available.
+    		boolean reservableRover = RoverMission.areVehiclesAvailable(
+    				settlement, false);
 
-            // Check if available backup rover.
-            boolean backupRover = hasBackupRover(settlement);
+    		// Check if available backup rover.
+    		boolean backupRover = hasBackupRover(settlement);
 
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (MIN_PEOPLE + 1));
+    		// Check if minimum number of people are available at the settlement.
+    		// Plus one to hold down the fort.
+    		boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
+    				settlement, (MIN_PEOPLE + 1));
 
-            // Check if there are enough specimen containers at the settlement for collecting rock samples.
-            boolean enoughContainers = false;
-            int numContainers = settlement.getInventory()
-                    .findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
-            enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
+    		// Check if there are enough specimen containers at the settlement for collecting rock samples.
+    		boolean enoughContainers = false;
+    		int numContainers = settlement.getInventory()
+    				.findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
+    		enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
 
-            // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission
-                    .hasEmbarkingMissions(settlement);
+    		// Check for embarking missions.
+    		boolean embarkingMissions = VehicleMission
+    				.hasEmbarkingMissions(settlement);
 
-            // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission
-                    .hasEnoughBasicResources(settlement);
-            
-            // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
+    		// Check if settlement has enough basic resources for a rover mission.
+    		boolean hasBasicResources = RoverMission
+    				.hasEnoughBasicResources(settlement);
+
+    		// Check if starting settlement has minimum amount of methane fuel.
+    		AmountResource methane = AmountResource.findAmountResource("methane");
+    		boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
+    				RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
 
             if (reservableRover && backupRover && minNum && enoughContainers
                     && !embarkingMissions && hasBasicResources && enoughMethane) {
@@ -509,7 +510,7 @@ implements Serializable {
     @Override
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == getStartingSettlement())
                     return true;
             }

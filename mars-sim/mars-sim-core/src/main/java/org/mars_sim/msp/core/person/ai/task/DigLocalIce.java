@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -43,31 +44,31 @@ public class DigLocalIce
 extends EVAOperation 
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
-    
-    // TODO Phase name should be an enum
-    private static final String COLLECT_ICE = "Collecting Ice";
-    
-    /**  Collection rate of ice during EVA (kg/millisol). */
-    private static final double COLLECTION_RATE = 2D;
-    
-    // Domain members
-    /** Airlock to be used for EVA. */
-    private Airlock airlock;
-    /** Bag for collecting ice. */
-    private Bag bag;
-    private Settlement settlement;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @throws Exception if error constructing the task.
-     */
-    public DigLocalIce(Person person) {
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
+
+	// TODO Phase name should be an enum
+	private static final String COLLECT_ICE = "Collecting Ice";
+
+	/**  Collection rate of ice during EVA (kg/millisol). */
+	private static final double COLLECTION_RATE = 2D;
+
+	// Domain members
+	/** Airlock to be used for EVA. */
+	private Airlock airlock;
+	/** Bag for collecting ice. */
+	private Bag bag;
+	private Settlement settlement;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 * @throws Exception if error constructing the task.
+	 */
+	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
         super("Digging local ice", person, false, 0D);
         
@@ -109,7 +110,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Inventory inv = settlement.getInventory();
             

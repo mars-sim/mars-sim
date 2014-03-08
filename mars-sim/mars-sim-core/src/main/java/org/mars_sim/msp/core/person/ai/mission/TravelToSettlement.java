@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitManager;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -178,7 +179,7 @@ implements Serializable {
 
         double missionProbability = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Check if mission is possible for person based on their
             // circumstance.
@@ -437,7 +438,7 @@ implements Serializable {
      */
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 if (person.getSettlement() == getStartingSettlement())
                     return true;
             }

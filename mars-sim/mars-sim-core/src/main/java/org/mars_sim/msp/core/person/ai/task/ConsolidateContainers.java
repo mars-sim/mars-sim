@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -82,8 +83,8 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
         
-        if (Person.INSETTLEMENT.equals(person.getLocationSituation()) || 
-                Person.INVEHICLE.equals(person.getLocationSituation())) {
+        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation() || 
+                LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
         
             // Check if there are local containers that need resource consolidation.
             if (needResourceConsolidation(person)) {

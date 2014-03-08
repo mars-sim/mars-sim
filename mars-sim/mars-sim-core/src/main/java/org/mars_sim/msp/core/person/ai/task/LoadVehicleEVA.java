@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -51,40 +52,40 @@ public class LoadVehicleEVA
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
-    
-    /** Comparison to indicate a small but non-zero amount. */
-    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
-    
-    // TODO Task phase should be an enum
-    private static final String LOADING = "Loading";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** The amount of resources (kg) one person of average strength can load per millisol. */
-    private static double LOAD_RATE = 20D;
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(LoadVehicleEVA.class.getName());
 
-    // Data members
-    /** The vehicle that needs to be loaded. */
-    private Vehicle vehicle;
-    /** The person's settlement. */
-    private Settlement settlement;
-    /** Resources required to load. */
-    private Map<Resource, Number> requiredResources;
-    /** Resources desired to load but not required. */
-    private Map<Resource, Number> optionalResources;
-    /** Equipment required to load. */
-    private Map<Class, Integer> requiredEquipment;
-    /** Equipment desired to load but not required. */
-    private Map<Class, Integer> optionalEquipment;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public LoadVehicleEVA(Person person) {
+	/** Comparison to indicate a small but non-zero amount. */
+	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+
+	// TODO Task phase should be an enum
+	private static final String LOADING = "Loading";
+
+	/** The amount of resources (kg) one person of average strength can load per millisol. */
+	private static double LOAD_RATE = 20D;
+
+	// Data members
+	/** The vehicle that needs to be loaded. */
+	private Vehicle vehicle;
+	/** The person's settlement. */
+	private Settlement settlement;
+	/** Resources required to load. */
+	private Map<Resource, Number> requiredResources;
+	/** Resources desired to load but not required. */
+	private Map<Resource, Number> optionalResources;
+	/** Equipment required to load. */
+	private Map<Class, Integer> requiredEquipment;
+	/** Equipment desired to load but not required. */
+	private Map<Class, Integer> optionalEquipment;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public LoadVehicleEVA(Person person) {
         // Use Task constructor
         super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
@@ -169,7 +170,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             
             // Check all vehicle missions occurring at the settlement.
             try {
@@ -194,7 +195,7 @@ implements Serializable {
         } 
         
         // Crowded settlement modifier
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                 result *= 2D;

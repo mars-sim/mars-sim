@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessItem;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -46,28 +47,27 @@ public class ManufactureConstructionMaterials
 extends Task
 implements Serializable {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/** default logger. */
-	private static Logger logger = Logger.getLogger(
-	        ManufactureConstructionMaterials.class.getName());
+	private static Logger logger = Logger.getLogger(ManufactureConstructionMaterials.class.getName());
 
-    // Task phase
-    private static final String MANUFACTURE = "Manufacture";
+	// Task phase
+	private static final String MANUFACTURE = "Manufacture";
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
 
-    /** List of construction material resources. */
-    private static List<AmountResource> constructionResources;
-    /** List of construction material parts. */
-    private static List<Part> constructionParts;
+	/** List of construction material resources. */
+	private static List<AmountResource> constructionResources;
+	/** List of construction material parts. */
+	private static List<Part> constructionParts;
 
-    // Data members
-    /** The manufacturing workshop the person is using. */
-    private Manufacture workshop;
+	// Data members
+	/** The manufacturing workshop the person is using. */
+	private Manufacture workshop;
 
     /**
      * Constructor.
@@ -112,7 +112,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             try {
                 // See if there is an available manufacturing building.
                 Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
@@ -205,7 +205,7 @@ implements Serializable {
         SkillManager skillManager = person.getMind().getSkillManager();
 		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement()
                     .getBuildingManager();
             List<Building> manufacturingBuildings = manager

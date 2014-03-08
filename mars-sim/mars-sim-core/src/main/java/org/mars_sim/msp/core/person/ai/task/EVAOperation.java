@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -38,35 +39,35 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** default serial id. */
-    private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
-    
-    // TODO Task phase names should be an enum
-    protected static final String WALK_TO_OUTSIDE_SITE = "Walk to Outside Site";
-    protected static final String WALK_BACK_INSIDE = "Walk Back Inside";
-    
+	private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
+
+	// TODO Task phase names should be an enum
+	protected static final String WALK_TO_OUTSIDE_SITE = "Walk to Outside Site";
+	protected static final String WALK_BACK_INSIDE = "Walk Back Inside";
+
 	// Static members
 	/** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
+	private static final double STRESS_MODIFIER = .5D;
 	/** The base chance of an accident per millisol. */
-    public static final double BASE_ACCIDENT_CHANCE = .001;
-    
-    // Data members
-    /** Flag for ending EVA operation externally. */
-    private boolean endEVA;
-    private boolean hasSiteDuration;
-    private double siteDuration;
-    private double timeOnSite;
-    private LocalBoundedObject interiorObject;
-    private double returnInsideXLoc;
-    private double returnInsideYLoc;
-    private double outsideSiteXLoc;
-    private double outsideSiteYLoc;
-	
-    /** 
-     * Constructor.
-     * @param name the name of the task
-     * @param person the person to perform the task
-     */
+	public static final double BASE_ACCIDENT_CHANCE = .001;
+
+	// Data members
+	/** Flag for ending EVA operation externally. */
+	private boolean endEVA;
+	private boolean hasSiteDuration;
+	private double siteDuration;
+	private double timeOnSite;
+	private LocalBoundedObject interiorObject;
+	private double returnInsideXLoc;
+	private double returnInsideYLoc;
+	private double outsideSiteXLoc;
+	private double outsideSiteYLoc;
+
+	/** 
+	 * Constructor.
+	 * @param name the name of the task
+	 * @param person the person to perform the task
+	 */
     public EVAOperation(String name, Person person, boolean hasSiteDuration, double siteDuration) { 
         super(name, person, true, false, STRESS_MODIFIER, false, 0D);
         
@@ -76,13 +77,13 @@ implements Serializable {
         timeOnSite = 0D;
         
         // Check if person is in a settlement or a rover.
-        if (Person.INSETTLEMENT.equals(person.getLocationSituation())) {
+        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
             interiorObject = BuildingManager.getBuilding(person);
             if (interiorObject == null) {
                 throw new IllegalStateException(person.getName() + " not in building.");
             }
         }
-        else if (Person.INVEHICLE.equals(person.getLocationSituation())) {
+        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             if (person.getVehicle() instanceof Rover) {
                 interiorObject = (Rover) person.getVehicle();
             }
@@ -180,7 +181,7 @@ implements Serializable {
     private double walkToOutsideSitePhase(double time) {
         
         // If not at field work site location, create walk outside subtask.
-        if (!Person.OUTSIDE.equals(person.getLocationSituation()) || 
+        if (LocationSituation.OUTSIDE != person.getLocationSituation() || 
                 (person.getXLocation() != outsideSiteXLoc) || (person.getYLocation() != outsideSiteYLoc)) {
             if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
                 Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
@@ -206,7 +207,7 @@ implements Serializable {
     private double walkBackInsidePhase(double time) {
         
         // If not at field work site location, create walk outside subtask.
-        if (Person.OUTSIDE.equals(person.getLocationSituation()) || 
+        if (LocationSituation.OUTSIDE == person.getLocationSituation() || 
                 (person.getXLocation() != returnInsideXLoc) || (person.getYLocation() != returnInsideYLoc)) {
             if (Walk.canWalkAllSteps(person, returnInsideXLoc, returnInsideYLoc, interiorObject)) {
                 Task walkingTask = new Walk(person, returnInsideXLoc, returnInsideYLoc, interiorObject);
@@ -350,13 +351,13 @@ implements Serializable {
     public static Airlock getClosestWalkableAvailableAirlock(Person person, double xLocation, 
             double yLocation) {
         Airlock result = null;
-        String location = person.getLocationSituation();
+        LocationSituation location = person.getLocationSituation();
         
-        if (location.equals(Person.INSETTLEMENT)) {
+        if (location == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             result = settlement.getClosestWalkableAvailableAirlock(person, xLocation, yLocation);
         }
-        else if (location.equals(Person.INVEHICLE)) {
+        else if (location == LocationSituation.IN_VEHICLE) {
             Vehicle vehicle = person.getVehicle();
             if (vehicle instanceof Airlockable) {
                 result = ((Airlockable) vehicle).getAirlock();

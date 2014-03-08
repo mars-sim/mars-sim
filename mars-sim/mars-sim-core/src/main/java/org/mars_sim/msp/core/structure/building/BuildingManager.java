@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
@@ -61,11 +62,13 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * The BuildingManager manages the settlement's buildings.
  */
-public class BuildingManager implements Serializable {
+public class BuildingManager
+implements Serializable {
 	
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default serial id. */
 	private static Logger logger = Logger.getLogger(BuildingManager.class.getName());
 
     // Data members
@@ -321,14 +324,11 @@ public class BuildingManager implements Serializable {
         
     /**
      * Gets the building a given person is in.
-     *
      * @return building or null if none.
      */
     public static Building getBuilding(Person person) {
-        
         Building result = null;
-        
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Settlement settlement = person.getSettlement();
             Iterator<Building> i = settlement.getBuildingManager().getBuildings(LifeSupport.NAME).iterator();
             while (i.hasNext()) {
@@ -342,20 +342,16 @@ public class BuildingManager implements Serializable {
             	}
             }
         }
-        
         return result;
     }
     
     /**
      * Gets the vehicle maintenance building a given vehicle is in.
-     *
      * @return building or null if none.
      */
     public static Building getBuilding(Vehicle vehicle) {
     	if (vehicle == null) throw new IllegalArgumentException("vehicle is null");
-        
         Building result = null;
-        
         Settlement settlement = vehicle.getSettlement();
         if (settlement != null) {
             Iterator<Building> i = settlement.getBuildingManager().getBuildings(
@@ -374,7 +370,6 @@ public class BuildingManager implements Serializable {
                 }
             }
         }
-        
         return result;
     }
     
@@ -386,9 +381,7 @@ public class BuildingManager implements Serializable {
      * within any building.
      */
     public Building getBuildingAtPosition(double xLoc, double yLoc) {
-        
         Building result = null;
-        
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext() && (result == null)) {
             Building building = i.next();
@@ -408,7 +401,6 @@ public class BuildingManager implements Serializable {
      */
     public static List<Building> getUncrowdedBuildings(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
-    	
     	try {
     		Iterator<Building> i = buildingList.iterator();
     		while (i.hasNext()) {
@@ -423,7 +415,6 @@ public class BuildingManager implements Serializable {
     		throw new IllegalStateException("BuildingManager.getUncrowdedBuildings(): " +
                     "building isn't a life support building.");
     	}
-    	
     	return result;
     }
     
@@ -435,7 +426,6 @@ public class BuildingManager implements Serializable {
      */
     public static List<Building> getLeastCrowdedBuildings(List<Building> buildingList) {
     	List<Building> result = new ArrayList<Building>();
-    	
     	// Find least crowded population.
     	int leastCrowded = Integer.MAX_VALUE;
     	Iterator<Building> i = buildingList.iterator();
@@ -468,9 +458,7 @@ public class BuildingManager implements Serializable {
      */
     public static Map<Building, Double> getBestRelationshipBuildings(Person person, List<Building> buildingList) {
     	Map<Building, Double> result = new HashMap<Building, Double>(buildingList.size());
-    	
     	RelationshipManager relationshipManager = Simulation.instance().getRelationshipManager();	
-
 		// Determine probabilities based on relationships in buildings.
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
@@ -486,7 +474,6 @@ public class BuildingManager implements Serializable {
 				    numPeople++;
 				}
 			}
-			
 			double prob = 50D;
 			if (numPeople > 0) {
 			    prob = buildingRelationships / numPeople;
@@ -497,7 +484,6 @@ public class BuildingManager implements Serializable {
 			
 			result.put(building, prob);
 		}
-    	
     	return result;
     }
     

@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
@@ -34,32 +35,32 @@ public class Teach
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(Teach.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
-    private static final String TEACHING = "Teaching";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Teach.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = -.1D;
+	// Task phase
+	private static final String TEACHING = "Teaching";
 
-    /** The improvement in relationship opinion of the teacher from the student per millisol. */
-    private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = -.1D;
 
-    // Data members
-    private Person student;
-    private Task teachingTask;
+	/** The improvement in relationship opinion of the teacher from the student per millisol. */
+	private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
-    /**
-     * Constructor.
-     * @param person the person performing the task.
-     */
-    public Teach(Person person) {
-        super("Teaching", person, false, false, STRESS_MODIFIER, false, 0D);
+	// Data members
+	private Person student;
+	private Task teachingTask;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public Teach(Person person) {
+		super("Teaching", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Randomly get a student.
         Collection<Person> students = getBestStudents(person);
@@ -73,7 +74,7 @@ implements Serializable {
                     + student.getName());
 
             // If in settlement, move teacher to building student is in.
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 // Walk to student's building.
                 walkToStudentBuilding(BuildingManager.getBuilding(student));
             }
@@ -101,7 +102,7 @@ implements Serializable {
             result = 50D;
 
             // If teacher is in a settlement, use crowding modifier.
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Person student = (Person) potentialStudents.toArray()[0];
                 Building building = BuildingManager.getBuilding(student);
                 if (building != null) {
@@ -220,7 +221,7 @@ implements Serializable {
 
         // If teacher is in a settlement, best students are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
-        if (teacher.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (teacher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             // Find the least crowded buildings that teachable students are in.
             int crowding = Integer.MAX_VALUE;
             Iterator<Person> i = students.iterator();
@@ -338,7 +339,7 @@ implements Serializable {
     private static Collection<Person> getLocalPeople(Person person) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Iterator<Person> i = person.getSettlement().getInhabitants()
                     .iterator();
             while (i.hasNext()) {
@@ -348,7 +349,7 @@ implements Serializable {
                 }
             }
         } 
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Crewable rover = (Crewable) person.getVehicle();
             Iterator<Person> i = rover.getCrew().iterator();
             while (i.hasNext()) {

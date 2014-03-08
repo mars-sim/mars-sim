@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
@@ -110,7 +111,7 @@ implements Serializable {
 
 		// Check if mission creation at settlement (if any) is overridden.
 		boolean overrideMission = false;
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT))
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT)
 			overrideMission = person.getSettlement()
 			.getMissionCreationOverride();
 
@@ -306,7 +307,7 @@ implements Serializable {
 	 */
 	private void enterSettlementIfInRover() {
 		if (mission == null) {
-			if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+			if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
 				Vehicle vehicle = person.getVehicle();
 				if (vehicle.getSettlement() != null) {
 					Settlement settlement = vehicle.getSettlement();

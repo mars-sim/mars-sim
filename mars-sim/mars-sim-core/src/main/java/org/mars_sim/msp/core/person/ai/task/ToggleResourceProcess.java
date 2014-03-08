@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -40,29 +41,29 @@ public class ToggleResourceProcess
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(ToggleResourceProcess.class.getName());
-    
-    // TODO Task phase should be an enum.
-    private static final String TOGGLE_PROCESS = "toggle process";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Data members
-    /** True if toggling process is EVA operation. */
-    private boolean isEVA;
-    /** The resource process to toggle. */
-    private ResourceProcess process;
-    /** The building the resource process is in. */
-    private Building building;
-    /** True if process is to be turned on, false if turned off. */
-    private boolean toggleOn;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(ToggleResourceProcess.class.getName());
+
+	// TODO Task phase should be an enum.
+	private static final String TOGGLE_PROCESS = "toggle process";
+
+	// Data members
+	/** True if toggling process is EVA operation. */
+	private boolean isEVA;
+	/** The resource process to toggle. */
+	private ResourceProcess process;
+	/** The building the resource process is in. */
+	private Building building;
+	/** True if process is to be turned on, false if turned off. */
+	private boolean toggleOn;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
     public ToggleResourceProcess(Person person) {
         super("Turning on resource process", person, false, 0D);
 
@@ -107,7 +108,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             boolean isEVA = false;
 
             Settlement settlement = person.getSettlement();
@@ -153,7 +154,7 @@ implements Serializable {
                 } 
 
                 // Crowded settlement modifier
-                if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                     if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
                         result *= 2D;
                     }

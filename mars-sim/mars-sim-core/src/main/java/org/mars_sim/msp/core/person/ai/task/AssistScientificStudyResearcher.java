@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -41,6 +42,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
 
 	/** Task phase. */
@@ -74,7 +76,7 @@ implements Serializable {
                 setDescription("Assisting researcher " + researcher.getName());
                 
                 // If in settlement, move assistant to building researcher is in.
-                if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+                if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
                     Building researcherBuilding = BuildingManager.getBuilding(researcher);
                     if (researcherBuilding != null) {
@@ -114,7 +116,7 @@ implements Serializable {
             result = 50D; 
         
             // If assistant is in a settlement, use crowding modifier.
-            if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 Person researcher = (Person) potentialResearchers.toArray()[0];
 
                 Building building = BuildingManager.getBuilding(researcher);
@@ -189,7 +191,7 @@ implements Serializable {
         
         // If assistant is in a settlement, best researchers are in least crowded buildings.
         Collection<Person> leastCrowded = new ConcurrentLinkedQueue<Person>();
-        if (assistant.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (assistant.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             // Find the least crowded buildings that researchers are in.
             int crowding = Integer.MAX_VALUE;
@@ -281,14 +283,14 @@ implements Serializable {
     private static Collection<Person> getLocalPeople(Person person) {
         Collection<Person> people = new ConcurrentLinkedQueue<Person>();
         
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Iterator<Person> i = person.getSettlement().getInhabitants().iterator();
             while (i.hasNext()) {
                 Person inhabitant = i.next();
                 if (person != inhabitant) people.add(inhabitant);
             }
         }
-        else if (person.getLocationSituation().equals(Person.INVEHICLE)) {
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             Crewable rover = (Crewable) person.getVehicle();
             Iterator<Person> i = rover.getCrew().iterator();
             while (i.hasNext()) {

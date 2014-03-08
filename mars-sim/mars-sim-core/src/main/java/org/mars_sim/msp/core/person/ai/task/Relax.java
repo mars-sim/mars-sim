@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -53,7 +54,7 @@ implements Serializable {
                 RandomUtil.getRandomDouble(40D));
 
         // If person is in a settlement, try to find a place to relax.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {      	
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {      	
         	try {
         		Building recBuilding = getAvailableRecreationBuilding(person);
         		if (recBuilding != null) {
@@ -85,7 +86,7 @@ implements Serializable {
     	result += person.getPhysicalCondition().getStress();
     	
     	// Crowding modifier
-    	if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+    	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
     		try {
     			Building recBuilding = getAvailableRecreationBuilding(person);
     			if (recBuilding != null) {
@@ -165,7 +166,7 @@ implements Serializable {
      
 		Building result = null;
         
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> recreationBuildings = manager.getBuildings(Recreation.NAME);
 			recreationBuildings = BuildingManager.getNonMalfunctioningBuildings(recreationBuildings);

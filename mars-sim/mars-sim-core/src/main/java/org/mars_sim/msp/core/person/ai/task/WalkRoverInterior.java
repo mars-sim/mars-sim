@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -26,32 +27,33 @@ public class WalkRoverInterior
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(WalkRoverInterior.class.getName());
-    
-    // Task phase
-    private static final String WALKING = "Walking";
-    
-    // Static members
-    /** km per hour. */
-    private static final double WALKING_SPEED = 5D;
-    private static final double STRESS_MODIFIER = -.1D;
-    
-    // Data members
-    private Rover rover;
-    private double destXLoc;
-    private double destYLoc;
-    
+	private static Logger logger = Logger.getLogger(WalkRoverInterior.class.getName());
+
+	// Task phase
+	private static final String WALKING = "Walking";
+
+	// Static members
+	/** km per hour. */
+	private static final double WALKING_SPEED = 5D;
+	private static final double STRESS_MODIFIER = -.1D;
+
+	// Data members
+	private Rover rover;
+	private double destXLoc;
+	private double destYLoc;
+
+	/** constructor. */
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation, 
             double destinationYLocation) {
         super("Walking Settlement Interior", person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Check that the person is currently inside a rover.
-        String location = person.getLocationSituation();
-        if (!location.equals(Person.INVEHICLE)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location != LocationSituation.IN_VEHICLE) {
             throw new IllegalStateException(
                     "WalkRoverInterior task started when person is not in a rover.");
         }

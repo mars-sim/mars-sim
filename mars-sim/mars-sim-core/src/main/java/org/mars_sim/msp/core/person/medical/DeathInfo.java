@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.core.person.medical;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -16,6 +17,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -25,11 +27,12 @@ import org.mars_sim.msp.core.person.ai.task.TaskManager;
 /**
  * This class represents the status of a Person when death occurs. It records
  * the Complaint that caused the death to occur, the time of death and
- * the Location.
+ * the Location.<br/>
  * The Location is recorded as a dead body may be moved from the place of death.
  * This class is immutable since once Death occurs it is final.
  */
-public class DeathInfo implements java.io.Serializable {
+public class DeathInfo
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -69,7 +72,7 @@ public class DeathInfo implements java.io.Serializable {
 		Complaint serious = person.getPhysicalCondition().getMostSerious();
 		if (serious != null) illness = serious.getName();
 
-		if (person.getLocationSituation().equals(Person.OUTSIDE)) placeOfDeath = "Outside";
+		if (person.getLocationSituation() == LocationSituation.OUTSIDE) placeOfDeath = "Outside";
 		else {
 			containerUnit = person.getContainerUnit();  
 			placeOfDeath = containerUnit.getName();

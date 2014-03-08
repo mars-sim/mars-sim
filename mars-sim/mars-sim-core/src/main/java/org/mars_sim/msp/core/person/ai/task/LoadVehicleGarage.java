@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -50,47 +51,47 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class LoadVehicleGarage
 extends Task
 implements Serializable {
-    
+
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-    
+
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
-	
-    /** Comparison to indicate a small but non-zero amount. */
-    private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
-	
+
+	/** Comparison to indicate a small but non-zero amount. */
+	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
+
 	// TODO Task phase should be an enum.
 	private static final String LOADING = "Loading";
-	
+
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
 
-    /** The amount of resources (kg) one person of average strength can load per millisol. */
-    private static double LOAD_RATE = 20D;
-    
-    /** The duration of the loading task (millisols). */
-    private static double DURATION = 10D + RandomUtil.getRandomDouble(50D);
+	/** The amount of resources (kg) one person of average strength can load per millisol. */
+	private static double LOAD_RATE = 20D;
 
-    // Data members
-    /** The vehicle that needs to be loaded. */
-    private Vehicle vehicle;
-    /** The person's settlement. */
-    private Settlement settlement;
-    /** Resources required to load. */
-    private Map<Resource, Number> requiredResources;
-    /** Resources desired to load but not required. */
-    private Map<Resource, Number> optionalResources;
-    /** Equipment required to load. */
-    private Map<Class, Integer> requiredEquipment;
-    /** Equipment desired to load but not required. */
-    private Map<Class, Integer> optionalEquipment;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public LoadVehicleGarage(Person person) {
+	/** The duration of the loading task (millisols). */
+	private static double DURATION = 10D + RandomUtil.getRandomDouble(50D);
+
+	// Data members
+	/** The vehicle that needs to be loaded. */
+	private Vehicle vehicle;
+	/** The person's settlement. */
+	private Settlement settlement;
+	/** Resources required to load. */
+	private Map<Resource, Number> requiredResources;
+	/** Resources desired to load but not required. */
+	private Map<Resource, Number> optionalResources;
+	/** Equipment required to load. */
+	private Map<Class, Integer> requiredEquipment;
+	/** Equipment desired to load but not required. */
+	private Map<Class, Integer> optionalEquipment;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public LoadVehicleGarage(Person person) {
     	// Use Task constructor
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
@@ -184,7 +185,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
         	// Check all vehicle missions occurring at the settlement.
         	try {
@@ -639,9 +640,9 @@ implements Serializable {
         Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
-        Iterator<Class> iE = requiredEquipment.keySet().iterator();
+        Iterator iE = requiredEquipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
-            Class equipmentType = iE.next();
+            Class equipmentType = (Class) iE.next();
             int numNeededTotal = (Integer) requiredEquipment.get(equipmentType);
             int numAlreadyLoaded = vInv.findNumUnitsOfClass(equipmentType);
             if (numAlreadyLoaded < numNeededTotal) {
@@ -721,9 +722,9 @@ implements Serializable {
         Inventory vInv = vehicle.getInventory();
         Inventory sInv = settlement.getInventory();
         
-        Iterator<Class> iE = optionalEquipment.keySet().iterator();
+        Iterator iE = optionalEquipment.keySet().iterator();
         while (iE.hasNext() && (amountLoading > 0D)) {
-            Class equipmentType = iE.next();
+            Class equipmentType = (Class) iE.next();
             int numNeededTotal = (Integer) optionalEquipment.get(equipmentType);
             if (requiredEquipment.containsKey(equipmentType)) {
                 numNeededTotal += (Integer) requiredEquipment.get(equipmentType);
@@ -856,9 +857,9 @@ implements Serializable {
         }
         
         // Check if there is enough equipment at the settlement.
-        Iterator<Class> iE = equipment.keySet().iterator();
+        Iterator iE = equipment.keySet().iterator();
         while (iE.hasNext()) {
-        	Class equipmentType = iE.next();
+        	Class equipmentType = (Class) iE.next();
         	int numNeeded = (Integer) equipment.get(equipmentType);
         	int remainingSettlementNum = getRemainingSettlementNum(settlement, vehicleCrewNum, equipmentType);
         	int numLoaded = vInv.findNumUnitsOfClass(equipmentType);
@@ -1143,9 +1144,9 @@ implements Serializable {
         Inventory sInv = settlement.getInventory();
         
         // Check that required equipment is loaded first.
-        Iterator<Class> iE = requiredEquipment.keySet().iterator();
+        Iterator iE = requiredEquipment.keySet().iterator();
         while (iE.hasNext() && sufficientSupplies) {
-        	Class equipmentType = iE.next();
+        	Class equipmentType = (Class) iE.next();
         	int num = requiredEquipment.get(equipmentType);
         	if (vInv.findNumUnitsOfClass(equipmentType) < num) {
         	    sufficientSupplies = false;
@@ -1153,9 +1154,9 @@ implements Serializable {
         }
         
         // Check that optional equipment is loaded or can't be loaded.
-        Iterator<Class> iE2 = optionalEquipment.keySet().iterator();
+        Iterator iE2 = optionalEquipment.keySet().iterator();
         while (iE2.hasNext() && sufficientSupplies) {
-            Class equipmentType = iE2.next();
+            Class equipmentType = (Class) iE2.next();
             int num = optionalEquipment.get(equipmentType);
             if (requiredEquipment.containsKey(equipmentType)) {
                 num += requiredEquipment.get(equipmentType);

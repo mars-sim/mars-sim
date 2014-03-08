@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -42,35 +43,35 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class UnloadVehicleGarage
 extends Task
 implements Serializable {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-	
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
-    
+	private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
+
 	// Task phase
 	private static final String UNLOADING = "Unloading";
 
 	/** The amount of resources (kg) one person of average strength can unload per millisol. */
-    private static double UNLOAD_RATE = 20D;
-    
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
-    
-    /** The duration of the task (millisols). */
+	private static double UNLOAD_RATE = 20D;
+
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
+
+	/** The duration of the task (millisols). */
 	private static final double DURATION = RandomUtil.getRandomDouble(40D) + 10D;
 
-    // Data members
+	// Data members
 	/** The vehicle that needs to be unloaded. */
-    private Vehicle vehicle;
-    /** The settlement the person is unloading to. */
-    private Settlement settlement;
-    
-    /**
-     * Constructor
-     * @param person the person to perform the task.
-     */
+	private Vehicle vehicle;
+	/** The settlement the person is unloading to. */
+	private Settlement settlement;
+
+	/**
+	 * Constructor.
+	 * @param person the person to perform the task.
+	 */
     public UnloadVehicleGarage(Person person) {
     	// Use Task constructor.
     	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
@@ -147,7 +148,7 @@ implements Serializable {
     public static double getProbability(Person person) {
         double result = 0D;
 
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
         	
         	// Check all vehicle missions occurring at the settlement.
         	try {

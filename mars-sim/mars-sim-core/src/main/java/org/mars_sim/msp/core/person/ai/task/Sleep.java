@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -54,7 +55,7 @@ class Sleep extends Task implements Serializable {
 	private double previousTime;
 
     /** 
-     * Constructor
+     * Constructor.
      * @param person the person to perform the task
      */
     public Sleep(Person person) {
@@ -62,7 +63,7 @@ class Sleep extends Task implements Serializable {
                 (250D + RandomUtil.getRandomDouble(80D)));
 
         // If person is in a settlement, try to find a living accommodations building.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
             Building quarters = getAvailableLivingQuartersBuilding(person);
             if (quarters != null) {
@@ -102,7 +103,7 @@ class Sleep extends Task implements Serializable {
 		}
         
         // Crowding modifier.
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
 		    Building building = getAvailableLivingQuartersBuilding(person);
 		    if (building != null) {
@@ -112,7 +113,7 @@ class Sleep extends Task implements Serializable {
 		}
         
         // No sleeping outside.
-        if (person.getLocationSituation().equals(Person.OUTSIDE)) {
+        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
             result = 0D;
         }
 
@@ -212,7 +213,7 @@ class Sleep extends Task implements Serializable {
      
 		Building result = null;
         
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
 			List<Building> quartersBuildings = manager.getBuildings(LivingAccommodations.NAME);
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);

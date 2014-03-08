@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -37,48 +38,49 @@ public class WalkOutside
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
-    
-    // Task phase
-    private static final String WALKING = "Walking";
-    
-    // Static members
-    private static final double BASE_WALKING_SPEED = 2D; // Km / hr.
-    private static final double MAX_WALKING_SPEED = 5D; // Km / hr.
-    private static final double VERY_SMALL_DISTANCE = .00001D;
-    
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .5D;
-    
-    /** The base chance of an accident per millisol. */
-    public static final double BASE_ACCIDENT_CHANCE = .001;
-    
-    /** Obstacle avoidance path neighbor distance (meters). */
-    public static final double NEIGHBOR_DISTANCE = 7D;
-    
-    // Data members
-    private double startXLocation;
-    private double startYLocation;
-    private double destinationXLocation;
-    private double destinationYLocation;
-    private boolean obstaclesInPath;
-    private List<Point2D> walkingPath; 
-    private int walkingPathIndex;
-    private double[] obstacleSearchLimits;
-    private boolean ignoreEndEVA;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @param startXLocation the starting local X location.
-     * @param startYLocation the starting local Y location.
-     * @param destinationXLocation the destination local X location.
-     * @param destinationYLocation the destination local Y location.
-     * @param ignoreEndEVA ignore end EVA situations and continue walking task.
-     */
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
+
+	// Task phase
+	private static final String WALKING = "Walking";
+
+	// Static members
+	private static final double BASE_WALKING_SPEED = 2D; // Km / hr.
+	private static final double MAX_WALKING_SPEED = 5D; // Km / hr.
+	private static final double VERY_SMALL_DISTANCE = .00001D;
+
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .5D;
+
+	/** The base chance of an accident per millisol. */
+	public static final double BASE_ACCIDENT_CHANCE = .001;
+
+	/** Obstacle avoidance path neighbor distance (meters). */
+	public static final double NEIGHBOR_DISTANCE = 7D;
+
+	// Data members
+	private double startXLocation;
+	private double startYLocation;
+	private double destinationXLocation;
+	private double destinationYLocation;
+	private boolean obstaclesInPath;
+	private List<Point2D> walkingPath; 
+	private int walkingPathIndex;
+	private double[] obstacleSearchLimits;
+	private boolean ignoreEndEVA;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 * @param startXLocation the starting local X location.
+	 * @param startYLocation the starting local Y location.
+	 * @param destinationXLocation the destination local X location.
+	 * @param destinationYLocation the destination local Y location.
+	 * @param ignoreEndEVA ignore end EVA situations and continue walking task.
+	 */
     public WalkOutside(Person person, double startXLocation, double startYLocation, 
             double destinationXLocation, double destinationYLocation, boolean ignoreEndEVA) {
         
@@ -95,8 +97,8 @@ implements Serializable {
         walkingPathIndex = 1;
         
         // Check that the person is currently outside a settlement or vehicle.
-        String location = person.getLocationSituation();
-        if (!location.equals(Person.OUTSIDE)) {
+        LocationSituation location = person.getLocationSituation();
+        if (location != LocationSituation.OUTSIDE) {
             throw new IllegalStateException(
                     "WalkOutside task started when " + person + " is not outside.");
         }

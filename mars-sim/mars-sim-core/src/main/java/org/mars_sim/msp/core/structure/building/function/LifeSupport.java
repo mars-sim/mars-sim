@@ -27,18 +27,22 @@ import java.util.logging.Logger;
  * The LifeSupport class is a building function for life support and managing inhabitants.
  */
 public class LifeSupport extends Function implements Serializable {
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
 	public static final String NAME = "Life Support";
-	
+
 	// Data members
 	private int occupantCapacity;
 	private double powerRequired;
 	private Collection<Person> occupants;
 
 	/**
-	 * Constructor
+	 * Constructor.
      * @param building the building this function is for.
      * @throws BuildingException if error in constructing function.
 	 */

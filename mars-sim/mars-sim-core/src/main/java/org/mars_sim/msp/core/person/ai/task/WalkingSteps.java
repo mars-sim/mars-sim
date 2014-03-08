@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -24,19 +25,20 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /**
  * A helper class for determining the walking steps from one location to another.
  */
-public class WalkingSteps implements Serializable {
+public class WalkingSteps
+implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    // Data members.
-    private List<WalkStep> walkingSteps;
-    private boolean canWalkAllSteps;
-    
-    /**
-     * Empty private constructor for utility class.
-     */
-    WalkingSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// Data members.
+	private List<WalkStep> walkingSteps;
+	private boolean canWalkAllSteps;
+
+	/**
+	 * constructor.
+	 */
+	public WalkingSteps(Person person, double xLoc, double yLoc, LocalBoundedObject interiorObject) {
         
         // Initialize data members.
         canWalkAllSteps = true;
@@ -91,10 +93,10 @@ public class WalkingSteps implements Serializable {
         
         WalkState result = null;
         
-        String locationSituation = person.getLocationSituation();
+        LocationSituation locationSituation = person.getLocationSituation();
 
         // Determine initial walk state based on person's location situation.
-        if (Person.INSETTLEMENT.equals(locationSituation)) {
+        if (LocationSituation.IN_SETTLEMENT == locationSituation) {
             
             Building building = BuildingManager.getBuilding(person);
             if (building == null) {
@@ -104,7 +106,7 @@ public class WalkingSteps implements Serializable {
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
         }
-        else if (Person.INVEHICLE.equals(locationSituation)) {
+        else if (LocationSituation.IN_VEHICLE  == locationSituation) {
             
             Vehicle vehicle = person.getVehicle();
             
@@ -116,7 +118,7 @@ public class WalkingSteps implements Serializable {
                 result = new WalkState(WalkState.OUTSIDE_LOC); 
             }
         }
-        else if (Person.OUTSIDE.equals(locationSituation)) {
+        else if (LocationSituation.OUTSIDE == locationSituation) {
             
             result = new WalkState(WalkState.OUTSIDE_LOC); 
         }

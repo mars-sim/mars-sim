@@ -39,112 +39,117 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 abstract class TableTab
 extends MonitorTab {
 
-    /** default serial id. */
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
 	/**
-     * This class provides a fixed image icon that is drawn using a Graphics
-     * object. It represents an arrow Icon that can be other ascending or
-     * or descending.
-     */
-    static class ColumnSortIcon implements Icon
-    {
-        static final int midw = 4;
-        private Color lightShadow;
-        private Color darkShadow;
-        private boolean downwards;
+	 * This internal class provides a fixed image icon that is drawn using a Graphics
+	 * object. It represents an arrow Icon that can be other ascending or
+	 * or descending.
+	 */
+	static class ColumnSortIcon
+	implements Icon {
 
-        public ColumnSortIcon(boolean downwards, Color baseColor) {
-            this.downwards = downwards;
-            this.lightShadow = baseColor.brighter();
-            this.darkShadow = baseColor.darker().darker();
-        }
+		static final int midw = 4;
+		private Color lightShadow;
+		private Color darkShadow;
+		private boolean downwards;
 
+		/** constructor. */
+		public ColumnSortIcon(boolean downwards, Color baseColor) {
+			this.downwards = downwards;
+			this.lightShadow = baseColor.brighter();
+			this.darkShadow = baseColor.darker().darker();
+		}
 
-        public void paintIcon(Component c, Graphics g, int xo, int yo) {
-            int w = getIconWidth();
-            int xw = xo+w-1;
-            int h = getIconHeight();
-            int yh = yo+h-1;
+		public void paintIcon(Component c, Graphics g, int xo, int yo) {
+			int w = getIconWidth();
+			int xw = xo+w-1;
+			int h = getIconHeight();
+			int yh = yo+h-1;
 
-            if (downwards)
-            {
-                g.setColor(lightShadow);
-                g.drawLine(xo+midw+1, yo, xw, yh-1);
-                g.drawLine(xo, yh, xw, yh);
-                g.setColor(darkShadow);
-                g.drawLine(xo+midw-1, yo, xo, yh-1);
-            }
-            else
-            {
-                g.setColor(lightShadow);
-                g.drawLine(xw, yo+1, xo+midw, yh);
-                g.setColor(darkShadow);
-                g.drawLine(xo+1, yo+1, xo+midw-1, yh);
-                g.drawLine(xo, yo, xw, yo);
-            }
-        }
+			if (downwards)
+			{
+				g.setColor(lightShadow);
+				g.drawLine(xo+midw+1, yo, xw, yh-1);
+				g.drawLine(xo, yh, xw, yh);
+				g.setColor(darkShadow);
+				g.drawLine(xo+midw-1, yo, xo, yh-1);
+			}
+			else
+			{
+				g.setColor(lightShadow);
+				g.drawLine(xw, yo+1, xo+midw, yh);
+				g.setColor(darkShadow);
+				g.drawLine(xo+1, yo+1, xo+midw-1, yh);
+				g.drawLine(xo, yo, xw, yo);
+			}
+		}
 
-        public int getIconWidth(){
-            return 2 * midw;
-        }
+		public int getIconWidth(){
+			return 2 * midw;
+		}
 
-        public int getIconHeight() {
-            return getIconWidth()-1;
-        }
-    }
+		public int getIconHeight() {
+			return getIconWidth()-1;
+		}
+	}
 
-    /**
-     * This renderer use a delegation software design pattern to delegate
-     * this rendering of the table cell header to the real default render,
-     * however this renderer adds in an icon on the cells which are sorted.
-     **/
-    class TableHeaderRenderer implements TableCellRenderer {
-        private TableCellRenderer defaultRenderer;
+	/**
+	 * This renderer use a delegation software design pattern to delegate
+	 * this rendering of the table cell header to the real default render,
+	 * however this renderer adds in an icon on the cells which are sorted.
+	 **/
+	class TableHeaderRenderer implements TableCellRenderer {
+		private TableCellRenderer defaultRenderer;
 
-        public TableHeaderRenderer(TableCellRenderer theRenderer) {
-            defaultRenderer = theRenderer;
-        }
+		public TableHeaderRenderer(TableCellRenderer theRenderer) {
+			defaultRenderer = theRenderer;
+		}
 
-        /**
-         * Renderer the specified Table Header cell
-         **/
-        public Component getTableCellRendererComponent(JTable table,
-                                                       Object value,
-                                                       boolean isSelected,
-                                                       boolean hasFocus,
-                                                       int row,
-                                                       int column)
-        {
-            Component theResult = defaultRenderer.getTableCellRendererComponent(
-                                         table, value, isSelected, hasFocus,
-                                         row, column);
-            if (theResult instanceof JLabel) {
-                // Must clear the icon if not sorted column. This is a renderer
-                // class used to render each column heading in turn.
-                JLabel cell = (JLabel)theResult;
-                Icon icon = null;
-                if (column == sortedColumn) {
-                    if (sortAscending)
-                        icon = ascendingIcon;
-                    else
-                        icon = descendingIcon;
-                }
-                cell.setIcon(icon);
-            }
-            return theResult;
-        }
-    }
+		/**
+		 * Renderer the specified Table Header cell
+		 **/
+		public Component getTableCellRendererComponent(JTable table,
+				Object value,
+				boolean isSelected,
+				boolean hasFocus,
+				int row,
+				int column)
+		{
+			Component theResult = defaultRenderer.getTableCellRendererComponent(
+					table, value, isSelected, hasFocus,
+					row, column);
+			if (theResult instanceof JLabel) {
+				// Must clear the icon if not sorted column. This is a renderer
+				// class used to render each column heading in turn.
+				JLabel cell = (JLabel)theResult;
+				Icon icon = null;
+				if (column == sortedColumn) {
+					if (sortAscending)
+						icon = ascendingIcon;
+					else
+						icon = descendingIcon;
+				}
+				cell.setIcon(icon);
+			}
+			return theResult;
+		}
+	}
 
-    // These icons are used to render the sorting images on the column header
-    private static Icon ascendingIcon = null;
-    private static Icon descendingIcon = null;
-    private final static Icon TABLEICON = ImageLoader.getIcon("Table");
+	// These icons are used to render the sorting images on the column header
+	private static Icon ascendingIcon = null;
+	private static Icon descendingIcon = null;
+	private final static Icon TABLEICON = ImageLoader.getIcon("Table");
 
-    protected JTable table;                 // Table component
-    private TableSorter sortedModel;        // Sortable modle proxy
-    private boolean sortAscending = true;   // Constructor will flip this
-    private int sortedColumn = 0;           // Sort column is defined
+	/** Table component. */
+	protected JTable table;
+	/** Sortable modle proxy. */
+	private TableSorter sortedModel;
+	/** Constructor will flip this. */
+	private boolean sortAscending = true;
+	/** Sort column is defined. */
+	private int sortedColumn = 0;
 
     /**
      * Create a Jtable within a tab displaying the specified model.

@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -41,24 +42,26 @@ import org.mars_sim.msp.core.structure.building.function.LifeSupport;
  * The Maintenance class is a task for performing
  * preventive maintenance on malfunctionable entities outdoors.
  */
-public class MaintenanceEVA extends EVAOperation implements Serializable {
+public class MaintenanceEVA
+extends EVAOperation
+implements Serializable {
 	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintenanceEVA.class.getName());
-	
+
 	// TODO Task phases should be an enum.
 	private static final String MAINTAIN = "Maintenance";
-	
+
 	// Data members
 	/** Entity to be maintained. */
-    private Malfunctionable entity;
+	private Malfunctionable entity;
 	private Settlement settlement;
-	
+
 	/** 
-	 * Constructor
+	 * Constructor.
 	 * @param person the person to perform the task
 	 */
 	public MaintenanceEVA(Person person) {
@@ -139,7 +142,7 @@ public class MaintenanceEVA extends EVAOperation implements Serializable {
 		} 
 		
 		// Crowded settlement modifier
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
 			    result *= 2D;

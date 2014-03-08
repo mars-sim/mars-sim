@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.mars.Mars;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -184,7 +185,7 @@ implements Serializable {
 
 		double result = 0D;
 
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 
 			// Check if a mission-capable rover is available.
@@ -614,7 +615,7 @@ implements Serializable {
 	@Override
 	protected boolean isCapableOfMission(Person person) {
 		if (super.isCapableOfMission(person)) {
-			if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+			if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 				if (person.getSettlement() == getStartingSettlement()) return true;
 			}
 		}

@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -96,7 +97,7 @@ implements Serializable {
         double result = 0D;
 
 		// Get all vehicles needing maintenance.
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Iterator<Vehicle> i = getAllVehicleCandidates(person).iterator();
 			while (i.hasNext()) {
 				MalfunctionManager manager = i.next().getMalfunctionManager();
@@ -107,7 +108,7 @@ implements Serializable {
 		}
 
 		// Determine if settlement has a garage.
-        if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {	
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
 			if (person.getSettlement().getBuildingManager().getBuildings(
 			        GroundVehicleMaintenance.NAME).size() > 0) {
 				result = 0D;
@@ -128,7 +129,7 @@ implements Serializable {
         } 
         
 		// Crowded settlement modifier
-		if (person.getLocationSituation().equals(Person.INSETTLEMENT)) {
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = person.getSettlement();
 			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
 			    result *= 2D;
