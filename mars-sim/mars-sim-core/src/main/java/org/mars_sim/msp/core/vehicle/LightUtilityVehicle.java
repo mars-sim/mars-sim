@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Medical.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-10
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.vehicle;
@@ -22,9 +22,15 @@ import java.util.Collection;
  */
 public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
+    
     /** Vehicle name. */
     public static final String NAME = "Light Utility Vehicle";
 
+    /** The amount of work time to perform maintenance (millisols) */
+    public static final double MAINTENANCE_WORK_TIME = 200D;
+    
     // Data members.
     /** The LightUtilityVehicle's capacity for crewmembers. */
     private int crewCapacity = 0;
@@ -33,7 +39,7 @@ public class LightUtilityVehicle extends GroundVehicle implements Crewable {
 
     public LightUtilityVehicle(String name, String description, Settlement settlement) {
         // Use GroundVehicle constructor.
-        super(name, description, settlement);
+        super(name, description, settlement, MAINTENANCE_WORK_TIME);
 
         // Get vehicle configuration.
         VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();

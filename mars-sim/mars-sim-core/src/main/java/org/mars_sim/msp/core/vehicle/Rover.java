@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.06 2014-03-06
+ * @version 3.06 2014-03-10
  * @author Scott Davis
  */
 
@@ -34,6 +34,9 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	/** Normal temperature (celsius). */
 	private double NORMAL_TEMP = 25D;
 
+	/** The amount of work time to perform maintenance (millisols) */
+    public static final double MAINTENANCE_WORK_TIME = 500D;
+	
 	public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
 
 	// Data members
@@ -56,7 +59,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
      */
     public Rover(String name, String description, Settlement settlement) {
         // Use GroundVehicle constructor
-        super(name, description, settlement);
+        super(name, description, settlement, MAINTENANCE_WORK_TIME);
 		
 		// Get vehicle configuration.
 		VehicleConfig config = SimulationConfig.instance().getVehicleConfiguration();
