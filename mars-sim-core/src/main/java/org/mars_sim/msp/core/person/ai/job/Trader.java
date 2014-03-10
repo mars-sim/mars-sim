@@ -4,12 +4,12 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.job;
 
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -30,8 +30,8 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private static double TRADING_RANGE = 1500D;
-    private static double SETTLEMENT_MULTIPLIER = 3D;
-    
+	private static double SETTLEMENT_MULTIPLIER = 3D;
+
 	/**
 	 * Constructor.
 	 */
@@ -70,11 +70,11 @@ implements Serializable {
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		
 		// Add experience aptitude.
-		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);
 		
 		// Add conversation.
-		int conversation = attributes.getAttribute(NaturalAttributeManager.CONVERSATION);
+		int conversation = attributes.getAttribute(NaturalAttribute.CONVERSATION);
 		result+= result * ((conversation - 50D) / 100D);
 		
 		return result;

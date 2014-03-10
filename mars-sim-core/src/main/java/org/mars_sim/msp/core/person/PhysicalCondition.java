@@ -4,55 +4,82 @@
  * @version 3.06 2014-01-29
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.person;
 
-import org.mars_sim.msp.core.*;
-import org.mars_sim.msp.core.person.medical.*;
-import org.mars_sim.msp.core.resource.AmountResource;
-
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.mars_sim.msp.core.LifeSupport;
+import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.Unit;
+import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.medical.Complaint;
+import org.mars_sim.msp.core.person.medical.DeathInfo;
+import org.mars_sim.msp.core.person.medical.HealthProblem;
+import org.mars_sim.msp.core.person.medical.MedicalAid;
+import org.mars_sim.msp.core.person.medical.MedicalEvent;
+import org.mars_sim.msp.core.person.medical.MedicalManager;
+import org.mars_sim.msp.core.person.medical.Medication;
+import org.mars_sim.msp.core.resource.AmountResource;
 
 /**
  * This class represents the Physical Condition of a Person. It models the
  * Persons health and physical characteristics.
  */
-public class PhysicalCondition implements Serializable {
+public class PhysicalCondition
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
 	private static Logger logger = Logger.getLogger(PhysicalCondition.class.getName());
-	
-    // Life support minimum and maximum values.
-    private static int MIN_VALUE = 0;
-    private static int MAX_VALUE = 1;
-    
-    // Stress jump resulting from being in an accident.
-    public static final double ACCIDENT_STRESS = 40D;
-    
-    // The anxiety attack health complaint.
-    private static final String ANXIETY_ATTACK = "Anxiety Attack";
 
-    // Data members
-    private DeathInfo deathDetails;     // Details of persons death
-    private HashMap<Complaint, HealthProblem> problems; // Injury/Illness effecting person
-    private HealthProblem serious;      // Most serious problem
-    private double fatigue;             // Person's fatigue level
-    private double hunger;              // Person's hunger level
-    private double stress;              // Person's stress level (0.0 - 100.0)
-    private double performance;         // Performance factor
-    private Person person;              // Person's of this physical
-    private boolean alive;              // True if person is alive.
-    private List<Medication> medicationList; // List of medication affecting the person.
+	/** Life support minimum value. */
+	private static int MIN_VALUE = 0;
+	/** Life support maximum value. */
+	private static int MAX_VALUE = 1;
 
-    /**
-     * Constructor
-     * @param newPerson The person requiring a physical presence.
-     */
+	/** Stress jump resulting from being in an accident. */
+	public static final double ACCIDENT_STRESS = 40D;
+
+	/** TODO The anxiety attack health complaint should be an enum or smth. */
+	private static final String ANXIETY_ATTACK = "Anxiety Attack";
+
+	// Data members
+	/** Details of persons death. */
+	private DeathInfo deathDetails;
+	/** Injury/Illness effecting person. */
+	private HashMap<Complaint, HealthProblem> problems;
+	/** Most serious problem. */
+	private HealthProblem serious;
+	/** Person's fatigue level. */
+	private double fatigue;
+	/** Person's hunger level. */
+	private double hunger;
+	/** Person's stress level (0.0 - 100.0). */
+	private double stress;
+	/** Performance factor. */
+	private double performance;
+	/** Person owning this physical. */
+	private Person person;
+	/** True if person is alive. */
+	private boolean alive;
+	/** List of medication affecting the person. */
+	private List<Medication> medicationList;
+
+	/**
+	 * Constructor.
+	 * @param newPerson The person requiring a physical presence.
+	 */
     public PhysicalCondition(Person newPerson) {
         deathDetails = null;
         person = newPerson;
@@ -454,7 +481,7 @@ public class PhysicalCondition implements Serializable {
 			if (!problems.containsKey(ANXIETY_ATTACK)) {
 				
 				// Determine stress resilience modifier (0D - 2D).
-				int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRESS_RESILIENCE);
+				int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
 				double resilienceModifier = (double) (100 - resilience) / 50D;
 				
 				// If random breakdown, add anxiety attack.

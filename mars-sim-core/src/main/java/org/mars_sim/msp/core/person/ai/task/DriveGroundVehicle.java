@@ -16,7 +16,7 @@ import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -30,35 +30,36 @@ public class DriveGroundVehicle
 extends OperateVehicle
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
-    
-    // TODO Task phases should be an enum
-    public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
-    public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
 
-    // Side directions.
-    private final static int NONE = 0;
-    private final static int LEFT = 1;
-    private final static int RIGHT = 2;
-    
-    // Data members
-    private int sideDirection = NONE;
+	// TODO Task phases should be an enum
+	public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
+	public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
 
-    /** 
-     * Default Constructor.
-     * @param person the person to perform the task
-     * @param vehicle the vehicle to be driven
-     * @param destination location to be driven to
-     * @param startTripTime the starting time of the trip
-     * @param startTripDistance the starting distance to destination for the trip
-     */
-    public DriveGroundVehicle(Person person, GroundVehicle vehicle,
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
+
+	// Side directions.
+	private final static int NONE = 0;
+	private final static int LEFT = 1;
+	private final static int RIGHT = 2;
+
+	// Data members
+	private int sideDirection = NONE;
+
+	/** 
+	 * Default Constructor.
+	 * @param person the person to perform the task
+	 * @param vehicle the vehicle to be driven
+	 * @param destination location to be driven to
+	 * @param startTripTime the starting time of the trip
+	 * @param startTripDistance the starting distance to destination for the trip
+	 */
+	public DriveGroundVehicle(Person person, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
     	
     	// User OperateVehicle constructor
@@ -405,7 +406,7 @@ implements Serializable {
         // Add one point for every 100 millisols.
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        	NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		double phaseModifier = 1D;

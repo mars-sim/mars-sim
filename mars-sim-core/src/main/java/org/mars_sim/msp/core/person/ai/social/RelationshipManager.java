@@ -16,7 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.PersonalityType;
@@ -296,14 +296,14 @@ implements Serializable {
 				changeAmount+= RandomUtil.getRandomDouble(otherOpinionModifier);
 
 				// Modify based on the conversation attribute of other person.
-				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.CONVERSATION);
+				double conversation = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttribute.CONVERSATION);
 				double conversationModifier = (conversation - 50D) / 50D;
 				conversationModifier*= BASE_CONVERSATION_MODIFIER * time;
 				changeAmount+= RandomUtil.getRandomDouble(conversationModifier);
 
 				// Modify based on attractiveness attribute if people are of opposite genders.
 				// Note: We may add sexual orientation later that will add further complexity to this.
-				double attractiveness = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ATTRACTIVENESS);
+				double attractiveness = localPerson.getNaturalAttributeManager().getAttribute(NaturalAttribute.ATTRACTIVENESS);
 				double attractivenessModifier = (attractiveness - 50D) / 50D;
 				attractivenessModifier*= BASE_ATTRACTIVENESS_MODIFIER * time;
 				boolean oppositeGenders = (!person.getGender().equals(localPerson.getGender()));

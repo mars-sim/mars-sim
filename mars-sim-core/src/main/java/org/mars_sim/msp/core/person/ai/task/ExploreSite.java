@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.equipment.SpecimenContainer;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -38,23 +39,23 @@ public class ExploreSite
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private static Logger logger = Logger.getLogger(ExploreSite.class.getName());
-    
-    // TODO Task phases should be an enum
+	private static Logger logger = Logger.getLogger(ExploreSite.class.getName());
+
+	// TODO Task phases should be an enum
 	private static final String EXPLORING = "Exploring";
-	
+
 	// Static members
 	private static final double AVERAGE_ROCK_SAMPLES_COLLECTED_SITE = 10D;
 	public static final double AVERAGE_ROCK_SAMPLE_MASS = .5D;
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
-	
+
 	// Data members
 	private ExploredLocation site;
 	private Rover rover;
-	
+
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -301,7 +302,7 @@ implements Serializable {
 		
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();

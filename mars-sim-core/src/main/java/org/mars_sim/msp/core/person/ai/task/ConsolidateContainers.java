@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -168,7 +168,7 @@ implements Serializable {
     private double consolidatingPhase(double time) {
         
         // Determine consolidation load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double totalAmountLoading = LOAD_RATE * strengthModifier * time;
         double remainingAmountLoading = totalAmountLoading;

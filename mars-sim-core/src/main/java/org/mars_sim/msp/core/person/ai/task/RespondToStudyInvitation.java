@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -32,34 +32,33 @@ public class RespondToStudyInvitation
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(
-            RespondToStudyInvitation.class.getName());
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RespondToStudyInvitation.class.getName());
+
 	/** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 0D;
-    
+	private static final double STRESS_MODIFIER = 0D;
+
 	/** Duration (millisols) of task. */
-    private static final double DURATION = 40D;
-    
+	private static final double DURATION = 40D;
+
 	// TODO Task phase should be an enum.
-    private static final String RESPONDING_INVITATION = "Responding to Invitation";
-    
+	private static final String RESPONDING_INVITATION = "Responding to Invitation";
+
 	/** The scientific study. */
 	private ScientificStudy study;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public RespondToStudyInvitation(Person person) {
-        super("Responding to a Study Invitation", person, false, true, 
-                STRESS_MODIFIER, true, DURATION);
-        
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
+
+	/**
+	 * Constructor
+	 * @param person the person performing the task.
+	 */
+	public RespondToStudyInvitation(Person person) {
+		super("Responding to a Study Invitation", person, false, true, 
+				STRESS_MODIFIER, true, DURATION);
+
+		ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
         if (invitedStudies.size() > 0) {
             study = invitedStudies.get(0);
@@ -227,8 +226,7 @@ implements Serializable {
         double newPoints = time / 25D;
         
         // Experience points adjusted by person's "Academic Aptitude" attribute.
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.ACADEMIC_APTITUDE);
+        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         

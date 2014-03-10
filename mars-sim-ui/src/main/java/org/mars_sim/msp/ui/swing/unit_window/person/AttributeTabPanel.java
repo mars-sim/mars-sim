@@ -4,11 +4,16 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.unit_window.person;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -16,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
@@ -26,119 +33,141 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /** 
  * The AttributeTabPanel is a tab panel for the natural attributes of a person.
  */
-public class AttributeTabPanel extends TabPanel {
-    
-    /** default serial id. */
+public class AttributeTabPanel
+extends TabPanel {
+
+	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	private AttributeTableModel attributeTableModel;
-    
-    /**
-     * Constructor.
-     * @param person {@link Person} the person.
-     * @param desktop {@link MainDesktopPane} the main desktop.
-     */
-    public AttributeTabPanel(Person person, MainDesktopPane desktop) { 
-        // Use the TabPanel constructor
-        super("Attributes", null, "Natural Attributes", person, desktop);
-        
-        // Create attribute label panel.
-        JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        topContentPanel.add(attributeLabelPanel);
-        
-        // Create attribute label
-        JLabel attributeLabel = new JLabel("Natural Attributes", JLabel.CENTER);
-        attributeLabelPanel.add(attributeLabel);
-        
-        // Create attribute scroll panel
-        JScrollPane attributeScrollPanel = new JScrollPane();
-        attributeScrollPanel.setBorder(new MarsPanelBorder());
-        centerContentPanel.add(attributeScrollPanel);
-        
-        // Create attribute table model
-        attributeTableModel = new AttributeTableModel(person);
-            
-        // Create attribute table
-        JTable attributeTable = new JTable(attributeTableModel);
-        attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
-        attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
-        attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
-        attributeTable.setCellSelectionEnabled(false);
-        // attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
-        attributeScrollPanel.setViewportView(attributeTable);
-    }
-    
-    /**
-     * Updates the info on this panel.
-     */
-    @Override
-    public void update() {}
-    
-    /** 
-     * Internal class used as model for the attribute table.
-     */
-    private static class AttributeTableModel extends AbstractTableModel {
-        
-        /** default serial id. */
+
+	/**
+	 * Constructor.
+	 * @param person {@link Person} the person.
+	 * @param desktop {@link MainDesktopPane} the main desktop.
+	 */
+	public AttributeTabPanel(Person person, MainDesktopPane desktop) { 
+		// Use the TabPanel constructor
+		super(
+			Msg.getString("AttributeTabPanel.title"), //$NON-NLS-1$
+			null,
+			Msg.getString("AttributeTabPanel.tooltip"), //$NON-NLS-1$
+			person,
+			desktop
+		);
+
+		// Create attribute label panel.
+		JPanel attributeLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+		topContentPanel.add(attributeLabelPanel);
+
+		// Create attribute label
+		JLabel attributeLabel = new JLabel(Msg.getString("AttributeTabPanel.label"), JLabel.CENTER); //$NON-NLS-1$
+		attributeLabelPanel.add(attributeLabel);
+
+		// Create attribute scroll panel
+		JScrollPane attributeScrollPanel = new JScrollPane();
+		attributeScrollPanel.setBorder(new MarsPanelBorder());
+		centerContentPanel.add(attributeScrollPanel);
+
+		// Create attribute table model
+		attributeTableModel = new AttributeTableModel(person);
+
+		// Create attribute table
+		JTable attributeTable = new JTable(attributeTableModel);
+		attributeTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
+		attributeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
+		attributeTable.getColumnModel().getColumn(1).setPreferredWidth(70);
+		attributeTable.setCellSelectionEnabled(false);
+		// attributeTable.setDefaultRenderer(Integer.class, new NumberCellRenderer());
+		attributeScrollPanel.setViewportView(attributeTable);
+	}
+
+	/**
+	 * Updates the info on this panel.
+	 */
+	@Override
+	public void update() {}
+
+	/** 
+	 * Internal class used as model for the attribute table.
+	 */
+	private static class AttributeTableModel
+	extends AbstractTableModel {
+
+		private List<Map<String,NaturalAttribute>> attributes;
+
+		/** default serial id. */
 		private static final long serialVersionUID = 1L;
-		NaturalAttributeManager manager;
+		private NaturalAttributeManager manager;
 
 		/**
 		 * hidden constructor.
 		 * @param person {@link Person}
 		 */
-        private AttributeTableModel(Person person) {
-            manager = person.getNaturalAttributeManager();
-        }
+		private AttributeTableModel(Person person) {
+			manager = person.getNaturalAttributeManager();
+			attributes = new ArrayList<Map<String,NaturalAttribute>>();
+			for (NaturalAttribute value : NaturalAttribute.values()) {
+				Map<String,NaturalAttribute> map = new TreeMap<String,NaturalAttribute>();
+				map.put(value.getName(),value);
+				attributes.add(map);
+			}
+			Collections.sort(
+				attributes,
+				new Comparator<Map<String,NaturalAttribute>>() {
+					@Override
+					public int compare(Map<String,NaturalAttribute> o1,Map<String,NaturalAttribute> o2) {
+						return o1.keySet().iterator().next().compareTo(o2.keySet().iterator().next());
+					}
+				}
+			);
+		}
 
-        @Override
-        public int getRowCount() {
-            return manager.getAttributeNum();
-        }
+		@Override
+		public int getRowCount() {
+			return manager.getAttributeNum();
+		}
 
-        @Override
-        public int getColumnCount() {
-            return 2;
-        }
+		@Override
+		public int getColumnCount() {
+			return 2;
+		}
 
-        @Override
-        public Class<?> getColumnClass(int columnIndex) {
-            Class<?> dataType = super.getColumnClass(columnIndex);
-            if (columnIndex == 0) dataType = String.class;
-            if (columnIndex == 1) dataType = String.class;
-            return dataType;
-        }
+		@Override
+		public Class<?> getColumnClass(int columnIndex) {
+			Class<?> dataType = super.getColumnClass(columnIndex);
+			if (columnIndex == 0) dataType = String.class;
+			if (columnIndex == 1) dataType = String.class;
+			return dataType;
+		}
 
-        @Override
-        public String getColumnName(int columnIndex) {
-            if (columnIndex == 0) return "Attribute";
-            else if (columnIndex == 1) return "Level";
-            else return "unknown";
-        }
+		@Override
+		public String getColumnName(int columnIndex) {
+			if (columnIndex == 0) return Msg.getString("AttributeTabPanel.column.attribute"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("AttributeTabPanel.column.level"); //$NON-NLS-1$
+			else return null;
+		}
 
-        @Override
-        public Object getValueAt(int row, int column) {
-            String[] attributeNames = NaturalAttributeManager.getKeys();
-            if (column == 0) return attributeNames[row];
-            else if (column == 1) return getLevelString(manager.getAttribute(attributeNames[row]));
-            else return "unknown";
-        }
-/*
-        public void update() {}
-*/
-        public String getLevelString(int level) {
-        	String result = "";
-        	
-        	if (level < 5) result = "Terrible";
-        	else if (level < 20) result = "Very Poor";
-        	else if (level < 35) result = "Poor";
-        	else if (level < 45) result = "Below Average";
-        	else if (level < 55) result = "Average";
-        	else if (level < 65) result = "Above Average";
-        	else if (level < 80) result = "Good";
-        	else if (level < 95) result = "Very Good";
-        	else result = "Exceptional";
-        	
-        	return result;
-        }
-    }
+		@Override
+		public Object getValueAt(int row, int column) {
+			if (column == 0) return attributes.get(row).keySet().iterator().next();
+			else if (column == 1) return getLevelString(manager.getAttribute(attributes.get(row).values().iterator().next()));
+			else return null;
+		}
+		/*
+		public void update() {}
+		 */
+		public String getLevelString(int level) {
+			String result = null;
+			if (level < 5) result = Msg.getString("AttributeTabPanel.level.0"); //$NON-NLS-1$
+			else if (level < 20) result = Msg.getString("AttributeTabPanel.level.1"); //$NON-NLS-1$
+			else if (level < 35) result = Msg.getString("AttributeTabPanel.level.2"); //$NON-NLS-1$
+			else if (level < 45) result = Msg.getString("AttributeTabPanel.level.3"); //$NON-NLS-1$
+			else if (level < 55) result = Msg.getString("AttributeTabPanel.level.4"); //$NON-NLS-1$
+			else if (level < 65) result = Msg.getString("AttributeTabPanel.level.5"); //$NON-NLS-1$
+			else if (level < 80) result = Msg.getString("AttributeTabPanel.level.6"); //$NON-NLS-1$
+			else if (level < 95) result = Msg.getString("AttributeTabPanel.level.7"); //$NON-NLS-1$
+			else result = Msg.getString("AttributeTabPanel.level.8"); //$NON-NLS-1$
+			return result;
+		}
+	}
 }

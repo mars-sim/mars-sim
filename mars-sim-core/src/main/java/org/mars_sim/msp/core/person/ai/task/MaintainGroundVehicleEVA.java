@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -44,26 +45,26 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 public class MaintainGroundVehicleEVA
 extends EVAOperation
 implements Serializable {
-	
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
-	
-    // TODO Phase names should be an enum.
-    private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
- 
-    // Data members.
-    /** Vehicle to be maintained. */
-    private GroundVehicle vehicle;
-    private Settlement settlement;
-    
+	private static Logger logger = Logger.getLogger(MaintainGroundVehicleEVA.class.getName());
+
+	// TODO Phase names should be an enum.
+	private static final String MAINTAIN_VEHICLE = "Maintain Vehicle";
+
+	// Data members.
+	/** Vehicle to be maintained. */
+	private GroundVehicle vehicle;
+	private Settlement settlement;
+
 	/** 
 	 * Constructor.
 	 * @param person the person to perform the task
 	 */
-    public MaintainGroundVehicleEVA(Person person) {
+	public MaintainGroundVehicleEVA(Person person) {
         super("Performing Vehicle Maintenance", person, true, RandomUtil.getRandomDouble(50D) + 10D);
    
         settlement = person.getSettlement();
@@ -197,7 +198,7 @@ implements Serializable {
 		
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();

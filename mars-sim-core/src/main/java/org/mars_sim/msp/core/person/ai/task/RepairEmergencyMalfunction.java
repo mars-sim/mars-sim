@@ -22,7 +22,7 @@ import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -41,7 +41,7 @@ implements Repair, Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(RepairEmergencyMalfunction.class.getName());
 
-	// Task phase
+	// TODO Task phase should be an enum.
 	private static final String REPAIRING = "Repairing";
 
 	// Static members
@@ -150,7 +150,7 @@ implements Repair, Serializable {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 20D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        	NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);

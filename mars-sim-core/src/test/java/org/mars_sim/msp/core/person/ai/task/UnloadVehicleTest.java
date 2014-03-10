@@ -12,7 +12,7 @@ import junit.framework.TestCase;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -65,7 +65,7 @@ extends TestCase {
 		}
 		
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
-		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
+		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		
 		UnloadVehicleGarage unloadVehicle = new UnloadVehicleGarage(person, vehicle);
 		unloadVehicle.unloadingPhase(11D);

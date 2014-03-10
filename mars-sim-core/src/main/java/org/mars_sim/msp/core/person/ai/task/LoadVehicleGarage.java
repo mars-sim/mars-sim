@@ -28,7 +28,7 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -327,7 +327,7 @@ implements Serializable {
     	}
     	
         // Determine load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time;
         

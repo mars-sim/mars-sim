@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -42,27 +42,28 @@ public class Maintenance
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    private static Logger logger = Logger.getLogger(Maintenance.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // Task phase
-    private static final String MAINTAIN = "Maintain";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(Maintenance.class.getName());
 
-    // Static members
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = .1D;
+	// TODO Task phase should be an enum
+	private static final String MAINTAIN = "Maintain";
 
-    // Data members
-    /** Entity to be maintained. */
-    private Malfunctionable entity;
+	// Static members
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = .1D;
 
-    /** 
-     * Constructor
-     * @param person the person to perform the task
-     */
-    public Maintenance(Person person) {
+	// Data members
+	/** Entity to be maintained. */
+	private Malfunctionable entity;
+
+	/** 
+	 * Constructor.
+	 * @param person the person to perform the task
+	 */
+	public Maintenance(Person person) {
         super("Performing Maintenance", person, true, false, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(40D));
 
@@ -226,7 +227,7 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 100D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.EXPERIENCE_APTITUDE);
+                NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);

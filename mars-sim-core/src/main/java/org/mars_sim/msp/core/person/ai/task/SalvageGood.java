@@ -23,7 +23,7 @@ import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -48,7 +48,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
 
-	// Task phase
+	// TODO Task phase should be an enum.
 	private static final String SALVAGE = "Salvage";
 
 	// Static members
@@ -193,8 +193,7 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude"
         // attribute.
         double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);

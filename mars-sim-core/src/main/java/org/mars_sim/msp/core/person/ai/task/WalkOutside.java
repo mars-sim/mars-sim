@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -44,12 +45,14 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(WalkOutside.class.getName());
 
-	// Task phase
+	// TODO Task phase should be an enum.
 	private static final String WALKING = "Walking";
 
 	// Static members
-	private static final double BASE_WALKING_SPEED = 2D; // Km / hr.
-	private static final double MAX_WALKING_SPEED = 5D; // Km / hr.
+	/** in km / hr. */
+	private static final double BASE_WALKING_SPEED = 2D;
+	/** in km / hr. */
+	private static final double MAX_WALKING_SPEED = 5D;
 	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	/** The stress modified per millisol. */
@@ -738,7 +741,7 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

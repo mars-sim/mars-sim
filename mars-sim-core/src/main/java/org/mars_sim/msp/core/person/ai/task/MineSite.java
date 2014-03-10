@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -36,15 +37,15 @@ public class MineSite
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(MineSite.class.getName());
-    
-    // TODO Task phases should be an enum
+	private static Logger logger = Logger.getLogger(MineSite.class.getName());
+
+	// TODO Task phases should be an enum
 	private static final String MINING = "Mining";
-	
+
 	/** Excavation rates (kg/millisol). */
 	private static final double HAND_EXCAVATION_RATE = .1D;
 	/** Excavation rates (kg/millisol). */
@@ -250,7 +251,7 @@ implements Serializable {
 		
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
 		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 		evaExperience += evaExperience * experienceAptitudeModifier;
 		evaExperience *= getTeachingExperienceModifier();

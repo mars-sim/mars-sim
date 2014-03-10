@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.mars.MineralMap;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -62,7 +62,7 @@ implements ResearchScientificStudy, Serializable {
 
 	/** Task phase. */
 	private static final String STUDYING_SAMPLES = "Studying Samples";
-    
+
 	/** Mass (kg) of field sample to study. */
 	private static final double SAMPLE_MASS = 1D;
 
@@ -80,11 +80,11 @@ implements ResearchScientificStudy, Serializable {
 	/** The research assistant. */
 	private Person researchAssistant;
 
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public StudyFieldSamples(Person person) {
+	/**
+	 * Constructor.
+	 * @param person {@link Person} the person performing the task.
+	 */
+	public StudyFieldSamples(Person person) {
         // Use Task constructor.
         super("Study Field Samples", person, true, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(40D));
@@ -516,7 +516,7 @@ implements ResearchScientificStudy, Serializable {
         // Experience points adjusted by person's "Academic Aptitude" attribute.
         double newPoints = time / 10D;
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.ACADEMIC_APTITUDE);
+            NaturalAttribute.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(science.getSkill(), newPoints);

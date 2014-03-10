@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -227,8 +227,7 @@ implements Serializable {
         double newPoints = time / 25D;
         
         // Experience points adjusted by person's "Academic Aptitude" attribute.
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.ACADEMIC_APTITUDE);
+        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         

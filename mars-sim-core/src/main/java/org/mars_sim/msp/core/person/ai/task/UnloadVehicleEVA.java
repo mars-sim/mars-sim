@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -46,33 +47,33 @@ public class UnloadVehicleEVA
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // TODO Task phase should be an enum
-    private static final String UNLOADING = "Unloading";
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
 
-    /** The amount of resources (kg) one person of average strength can unload per millisol. */
-    private static double UNLOAD_RATE = 20D;
+	// TODO Task phase should be an enum.
+	private static final String UNLOADING = "Unloading";
 
-    // Data members
-    /** The vehicle that needs to be unloaded. */
-    private Vehicle vehicle;
-    /** The settlement the person is unloading to. */
-    private Settlement settlement;
+	/** The amount of resources (kg) one person of average strength can unload per millisol. */
+	private static double UNLOAD_RATE = 20D;
 
-    /**
-     * Constructor
-     * @param person the person to perform the task.
-     */
-    public UnloadVehicleEVA(Person person) {
-        // Use EVAOperation constructor.
-        super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+	// Data members
+	/** The vehicle that needs to be unloaded. */
+	private Vehicle vehicle;
+	/** The settlement the person is unloading to. */
+	private Settlement settlement;
 
-        settlement = person.getSettlement();
+	/**
+	 * Constructor
+	 * @param person the person to perform the task.
+	 */
+	public UnloadVehicleEVA(Person person) {
+		// Use EVAOperation constructor.
+		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+
+		settlement = person.getSettlement();
 
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
@@ -341,8 +342,7 @@ implements Serializable {
         }
 
         // Determine unload rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.STRENGTH);
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time / 4D;
 
@@ -487,7 +487,7 @@ implements Serializable {
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
