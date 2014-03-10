@@ -670,10 +670,16 @@ public class MainDetailPanel extends JPanel implements ListSelectionListener,
     		UnitEventType type = event.getType();
     		Person person = (Person) event.getSource();
     		int index = getIndex(members,person);
-    		if (type == UnitEventType.NAME_EVENT) 
+    		if (type == UnitEventType.NAME_EVENT) {
     			SwingUtilities.invokeLater(new MemberTableUpdater(index, 0));
-    		else if (type == UnitEventType.TASK_DESC_EVENT || type == UnitEventType.TASK_EVENT) 
-    			SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
+    		}
+    		else if ((type == UnitEventType.TASK_DESC_EVENT) || 
+    		        (type == UnitEventType.TASK_EVENT) || 
+    		        (type == UnitEventType.TASK_ENDED_EVENT) || 
+    		        (type == UnitEventType.TASK_SUBTASK_EVENT) || 
+    		        (type == UnitEventType.TASK_NAME_EVENT)) {
+    		    SwingUtilities.invokeLater(new MemberTableUpdater(index, 1));
+    		}
     	}
     	
     	private int getIndex(Collection col, Object obj) {
