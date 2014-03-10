@@ -21,7 +21,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -50,7 +50,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
 
-	// Task phase
+	// TODO Task phase should be an enum.
 	private static final String UNLOADING = "Unloading";
 
 	/** The amount of resources (kg) one person of average strength can unload per millisol. */
@@ -315,7 +315,7 @@ implements Serializable {
     protected double unloadingPhase(double time) {
     	
         // Determine unload rate.
-		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
 		double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;
         

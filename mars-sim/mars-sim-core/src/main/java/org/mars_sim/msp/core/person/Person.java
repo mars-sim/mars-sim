@@ -113,7 +113,7 @@ implements VehicleOperator, Serializable {
 		);
 
 		// Set inventory total mass capacity based on the person's strength.
-		int strength = attributes.getAttribute(NaturalAttributeManager.STRENGTH);
+		int strength = attributes.getAttribute(NaturalAttribute.STRENGTH);
 		getInventory().addGeneralCapacity(BASE_CAPACITY + strength);
 
 		// Put person in proper building.

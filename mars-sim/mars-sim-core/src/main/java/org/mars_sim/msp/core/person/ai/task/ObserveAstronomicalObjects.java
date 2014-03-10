@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -48,7 +48,7 @@ implements ResearchScientificStudy, Serializable {
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = -.2D; 
 
-	// Task phase.
+	// TODO Task phase should be an enum.
 	private static final String OBSERVING = "Observing";
 
 	// Data members.
@@ -330,7 +330,7 @@ implements ResearchScientificStudy, Serializable {
         // Experience points adjusted by person's "Academic Aptitude" attribute.
         double newPoints = time / 25D;
         int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.ACADEMIC_APTITUDE);
+            NaturalAttribute.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         ScienceType astronomyScience = ScienceType.ASTRONOMY;

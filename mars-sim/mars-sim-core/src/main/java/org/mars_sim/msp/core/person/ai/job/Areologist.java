@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Lab;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -49,15 +50,17 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
 /** 
  * The Areologist class represents a job for an areologist, one who studies the rocks and landforms of Mars.
  */
-public class Areologist extends Job implements Serializable {
+public class Areologist
+extends Job
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 	
-//	private static Logger logger = Logger.getLogger(Areologist.class.getName());
+	//private static Logger logger = Logger.getLogger(Areologist.class.getName());
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 */
 	public Areologist() {
 		// Use Job constructor
@@ -110,8 +113,8 @@ public class Areologist extends Job implements Serializable {
 		result = areologySkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
-		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		double averageAptitude = (academicAptitude + experienceAptitude) / 2D;
 		result+= result * ((averageAptitude - 50D) / 100D);
 		

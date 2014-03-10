@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -26,7 +27,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A task for the EVA operation of performing biology field work at a research site 
  * for a scientific study.
  */
-public class BiologyStudyFieldWork extends EVAOperation implements Serializable {
+public class BiologyStudyFieldWork
+extends EVAOperation
+implements Serializable {
 
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
@@ -201,7 +204,7 @@ public class BiologyStudyFieldWork extends EVAOperation implements Serializable 
 
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

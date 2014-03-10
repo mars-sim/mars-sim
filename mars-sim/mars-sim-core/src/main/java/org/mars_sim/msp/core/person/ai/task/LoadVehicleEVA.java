@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -337,7 +338,7 @@ implements Serializable {
         }
         
         // Determine load rate.
-        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.STRENGTH);
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
         double strengthModifier = .1D + (strength * .018D);
         double amountLoading = LOAD_RATE * strengthModifier * time / 4D;
         
@@ -1216,7 +1217,7 @@ implements Serializable {
         
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

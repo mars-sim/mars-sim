@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -34,34 +35,34 @@ public class SalvageBuilding
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(SalvageBuilding.class.getName());
-    
-    // TODO Task phases should be an enum.
-    private static final String SALVAGE = "Salvage";
-    
-    /** The base chance of an accident while operating LUV per millisol. */
-    public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
-    
-    // Data members.
-    private ConstructionStage stage;
-    private ConstructionSite site;
-    private List<GroundVehicle> vehicles;
-    private LightUtilityVehicle luv;
-    private boolean operatingLUV;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @param stage the construction site salvage stage.
-     * @param vehicles the construction vehicles.
-     */
-    public SalvageBuilding(Person person, ConstructionStage stage, 
-            ConstructionSite site, List<GroundVehicle> vehicles) {
-        // Use EVAOperation parent constructor.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(SalvageBuilding.class.getName());
+
+	// TODO Task phases should be an enum.
+	private static final String SALVAGE = "Salvage";
+
+	/** The base chance of an accident while operating LUV per millisol. */
+	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
+
+	// Data members.
+	private ConstructionStage stage;
+	private ConstructionSite site;
+	private List<GroundVehicle> vehicles;
+	private LightUtilityVehicle luv;
+	private boolean operatingLUV;
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 * @param stage the construction site salvage stage.
+	 * @param vehicles the construction vehicles.
+	 */
+	public SalvageBuilding(Person person, ConstructionStage stage, 
+			ConstructionSite site, List<GroundVehicle> vehicles) {
+		// Use EVAOperation parent constructor.
         super("Salvage Building", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         // Initialize data members.
@@ -130,7 +131,7 @@ implements Serializable {
         
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();

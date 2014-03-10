@@ -6,9 +6,14 @@
  */
 package org.mars_sim.msp.core.science;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -16,29 +21,24 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.Settlement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A utility class for scientific studies.
  */
 public class ScientificStudyUtil {
 
-    /**
-     * Private constructor for utility class.
-     */
-    private ScientificStudyUtil() {}
-    
-    /**
-     * Gets a list of all available collaborators that can be invited to a study.
-     * @param study the scientific study.
-     * @return list of potential collaborators.
-     */
-    public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
-        List<Person> result = new ArrayList<Person>();
-        
+	/**
+	 * Private constructor for utility class.
+	 */
+	private ScientificStudyUtil() {}
+
+	/**
+	 * Gets a list of all available collaborators that can be invited to a study.
+	 * @param study the scientific study.
+	 * @return list of potential collaborators.
+	 */
+	public static List<Person> getAvailableCollaboratorsForInvite(ScientificStudy study) {
+		List<Person> result = new ArrayList<Person>();
+
         Collection<Person> allPeople = Simulation.instance().getUnitManager().getPeople();
         Iterator<Person> i = allPeople.iterator();
         while (i.hasNext()) {
@@ -79,8 +79,7 @@ public class ScientificStudyUtil {
         double baseChance = 50D;
         
         // Modify based on primary researcher's academic aptitude attribute.
-        int academicAptitude = study.getPrimaryResearcher().getNaturalAttributeManager().
-                getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+        int academicAptitude = study.getPrimaryResearcher().getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
         double academicAptitudeModifier = (academicAptitude - 50) / 2D;
         baseChance += academicAptitudeModifier;
         
@@ -96,8 +95,7 @@ public class ScientificStudyUtil {
             collaboratorModifier *= (double) skillLevel / (double) study.getDifficultyLevel();
             
             // Modify based on researcher's academic aptitude attribute.
-            int collaboratorAcademicAptitude = researcher.getNaturalAttributeManager().
-                    getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+            int collaboratorAcademicAptitude = researcher.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
             double collaboratorAcademicAptitudeModifier = (collaboratorAcademicAptitude - 50) / 10D;
             collaboratorModifier += collaboratorAcademicAptitudeModifier;
             

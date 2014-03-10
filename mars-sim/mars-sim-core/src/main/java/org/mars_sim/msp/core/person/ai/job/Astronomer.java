@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.job;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -37,7 +38,9 @@ import org.mars_sim.msp.core.structure.building.function.Research;
 /** 
  * The Astronomer class represents a job for an astronomer.
  */
-public class Astronomer extends Job implements Serializable {
+public class Astronomer
+extends Job
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -82,7 +85,7 @@ public class Astronomer extends Job implements Serializable {
 		result = astronomySkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int academicAptitude = attributes.getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+		int academicAptitude = attributes.getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
 		result+= result * ((academicAptitude - 50D) / 100D);
 
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

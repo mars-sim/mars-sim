@@ -24,7 +24,7 @@ import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -39,33 +39,33 @@ public class RepairMalfunction
 extends Task
 implements Repair, Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    /** default logger. */
-    private static Logger logger = Logger.getLogger(RepairMalfunction.class.getName());
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(RepairMalfunction.class.getName());
 
-    // Task phase
-    private static final String REPAIRING = "Repairing";
+	// TODO Task phase should be an enum.
+	private static final String REPAIRING = "Repairing";
 
-    // Static members
+	// Static members
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .3D;
 
-    // Data members
-    /** Entity being repaired. */
+	// Data members
+	/** Entity being repaired. */
 	private Malfunctionable entity;
 
-    /**
-     * Constructor
-     * @param person the person to perform the task
-     */
-    public RepairMalfunction(Person person) {
-        super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, 10D + 
-                RandomUtil.getRandomDouble(50D));
+	/**
+	 * Constructor
+	 * @param person the person to perform the task
+	 */
+	public RepairMalfunction(Person person) {
+		super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, 10D + 
+				RandomUtil.getRandomDouble(50D));
 
-        // Get the malfunctioning entity.
-        entity = getMalfunctionEntity(person);
+		// Get the malfunctioning entity.
+		entity = getMalfunctionEntity(person);
         if (entity != null) {
             // Add person to building if malfunctionable is a building with life support.
             addPersonToMalfunctionableBuilding(entity); 
@@ -284,8 +284,7 @@ implements Repair, Serializable {
         // (1 base experience point per 20 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 20D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);

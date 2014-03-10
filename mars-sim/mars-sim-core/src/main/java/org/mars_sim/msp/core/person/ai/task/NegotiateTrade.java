@@ -17,6 +17,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -37,37 +38,37 @@ public class NegotiateTrade
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    // TODO Task phase should be an enum.
-    private static final String NEGOTIATING = "Negotiating";
-    
-    /** The predetermined duration of task in millisols. */
-    private static final double DURATION = 50D;
-    /** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 0D;
+	private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
 
-    // Data members.
-    private Map<Good, Integer> buyLoad;
-    private Settlement sellingSettlement;
-    private Settlement buyingSettlement;
-    private Rover rover;
-    private Map<Good, Integer> soldLoad;
-    private Person buyingTrader;
-    private Person sellingTrader;
+	// TODO Task phase should be an enum.
+	private static final String NEGOTIATING = "Negotiating";
 
-    /**
-     * Constructor.
-     * @param sellingSettlement the selling settlement.
-     * @param buyingSettlement the buying settlement.
-     * @param rover the rover to transport the goods.
-     * @param soldLoad the goods sold.
-     * @param buyingTrader the buying trader.
-     * @param sellingTrader the selling trader.
-     */
+	/** The predetermined duration of task in millisols. */
+	private static final double DURATION = 50D;
+	/** The stress modified per millisol. */
+	private static final double STRESS_MODIFIER = 0D;
+
+	// Data members.
+	private Map<Good, Integer> buyLoad;
+	private Settlement sellingSettlement;
+	private Settlement buyingSettlement;
+	private Rover rover;
+	private Map<Good, Integer> soldLoad;
+	private Person buyingTrader;
+	private Person sellingTrader;
+
+	/**
+	 * Constructor.
+	 * @param sellingSettlement the selling settlement.
+	 * @param buyingSettlement the buying settlement.
+	 * @param rover the rover to transport the goods.
+	 * @param soldLoad the goods sold.
+	 * @param buyingTrader the buying trader.
+	 * @param sellingTrader the selling trader.
+	 */
     public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
             Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
 
@@ -188,12 +189,12 @@ implements Serializable {
         NaturalAttributeManager buyerAttributes = sellingTrader.getNaturalAttributeManager();
 
         // Modify by 10% for conversation natural attributes in buyer and seller.
-        modifier += sellerAttributes.getAttribute(NaturalAttributeManager.CONVERSATION) / 1000D;
-        modifier -= buyerAttributes.getAttribute(NaturalAttributeManager.CONVERSATION) / 1000D;
+        modifier += sellerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
+        modifier -= buyerAttributes.getAttribute(NaturalAttribute.CONVERSATION) / 1000D;
 
         // Modify by 10% for attractiveness natural attributes in buyer and seller.
-        modifier += sellerAttributes.getAttribute(NaturalAttributeManager.ATTRACTIVENESS) / 1000D;
-        modifier -= buyerAttributes.getAttribute(NaturalAttributeManager.ATTRACTIVENESS) / 1000D;
+        modifier += sellerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
+        modifier -= buyerAttributes.getAttribute(NaturalAttribute.ATTRACTIVENESS) / 1000D;
 
         // Modify by 10% for each skill level in trading for buyer and seller.
         modifier += buyingTrader.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.TRADING) / 10D;
@@ -226,8 +227,7 @@ implements Serializable {
         // (1 base experience point per 2 millisols of work)
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 2D;
-        int experienceAptitude = trader.getNaturalAttributeManager().getAttribute(
-                NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = trader.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
         trader.getMind().getSkillManager().addExperience(SkillType.TRADING, newPoints);

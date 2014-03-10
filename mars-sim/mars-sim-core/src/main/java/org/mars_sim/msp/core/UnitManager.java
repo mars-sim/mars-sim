@@ -20,6 +20,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
@@ -571,7 +572,10 @@ implements Serializable {
 				while (i.hasNext()) {
 					String attributeName = i.next();
 					int value = (Integer) naturalAttributeMap.get(attributeName);
-					person.getNaturalAttributeManager().setAttribute(attributeName, value);
+					person.getNaturalAttributeManager().setAttribute(
+						NaturalAttribute.valueOfIgnoreCase(attributeName),
+						value
+					);
 				}
 			}
 

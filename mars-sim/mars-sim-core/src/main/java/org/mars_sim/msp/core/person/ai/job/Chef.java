@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.Iterator;
 import java.util.List;
 
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -68,7 +69,7 @@ implements Serializable {
 		result = cookingSkill;
 		
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
-		int experienceAptitude = attributes.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);	
 		
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;

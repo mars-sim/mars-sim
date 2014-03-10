@@ -18,6 +18,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -42,33 +43,33 @@ public class ToggleFuelPowerSource
 extends EVAOperation
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
-    
-    // Task phase
-    private static final String TOGGLE_POWER_SOURCE = "Toggle Power Source";
-    
-    // Data members
-    /** True if toggling process is EVA operation. */
-    private boolean isEVA;
-    /** The fuel power source to toggle. */
-    private FuelPowerSource powerSource;
-    /** The building the resource process is in. */
-    private Building building;
-    /** True if power source is to be turned on, false if turned off. */
-    private boolean toggleOn;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     * @throws Exception if error constructing the task.
-     */
-    public ToggleFuelPowerSource(Person person) {
-        super("Turning on fuel power source", person, false, 0D);
-        
+	private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
+
+	// TODO Task phase should be an enum.
+	private static final String TOGGLE_POWER_SOURCE = "Toggle Power Source";
+
+	// Data members
+	/** True if toggling process is EVA operation. */
+	private boolean isEVA;
+	/** The fuel power source to toggle. */
+	private FuelPowerSource powerSource;
+	/** The building the resource process is in. */
+	private Building building;
+	/** True if power source is to be turned on, false if turned off. */
+	private boolean toggleOn;
+
+	/**
+	 * Constructor
+	 * @param person the person performing the task.
+	 * @throws Exception if error constructing the task.
+	 */
+	public ToggleFuelPowerSource(Person person) {
+		super("Turning on fuel power source", person, false, 0D);
+
         building = getFuelPowerSourceBuilding(person);
         if (building != null) {
             powerSource = getFuelPowerSource(building);
@@ -360,7 +361,7 @@ implements Serializable {
         
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-        int experienceAptitude = nManager.getAttribute(NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         
         if (isEVA) {

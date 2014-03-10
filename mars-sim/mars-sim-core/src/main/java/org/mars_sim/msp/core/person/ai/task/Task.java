@@ -4,7 +4,6 @@
  * @version 3.06 2014-02-20
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -15,7 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -514,8 +513,8 @@ implements Serializable, Comparable<Task> {
         double result = 1D;
 
         if (hasTeacher()) {
-            int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.TEACHING);
-            int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttributeManager.ACADEMIC_APTITUDE);
+            int teachingModifier = teacher.getNaturalAttributeManager().getAttribute(NaturalAttribute.TEACHING);
+            int learningModifier = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
             result+= (double) (teachingModifier + learningModifier) / 100D;
         }
 

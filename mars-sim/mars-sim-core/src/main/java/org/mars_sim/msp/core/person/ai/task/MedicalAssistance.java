@@ -20,7 +20,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -52,6 +52,7 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MedicalAssistance.class.getName());
 
+	// TODO Task phase should be an enum.
 	private static final String TREATMENT = "Treatment";
 
 	/** The stress modified per millisol. */
@@ -243,7 +244,7 @@ implements Serializable {
 		// Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 25D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-        	NaturalAttributeManager.EXPERIENCE_APTITUDE);
+        	NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
 		newPoints *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);

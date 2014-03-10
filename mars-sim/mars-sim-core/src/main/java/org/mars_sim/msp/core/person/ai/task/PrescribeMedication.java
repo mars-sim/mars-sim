@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -227,7 +227,7 @@ implements Serializable {
         // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 10D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.EXPERIENCE_APTITUDE);
+            NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(SkillType.MEDICINE, newPoints);

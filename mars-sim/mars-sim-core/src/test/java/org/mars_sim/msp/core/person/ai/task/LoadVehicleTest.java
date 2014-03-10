@@ -15,7 +15,7 @@ import junit.framework.TestCase;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -26,8 +26,10 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
-public class LoadVehicleTest extends TestCase {
-    @Override
+public class LoadVehicleTest
+extends TestCase {
+
+	@Override
     public void setUp() throws Exception {
         SimulationConfig.loadConfig();
     }
@@ -47,7 +49,7 @@ public class LoadVehicleTest extends TestCase {
 	public void testLoadingPhase() throws Exception {
 		Settlement settlement = new MockSettlement();
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
-		person.getNaturalAttributeManager().setAttribute(NaturalAttributeManager.STRENGTH, 100);
+		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);
 		Vehicle vehicle = new MockVehicle(settlement);
         ItemResource hammer = ItemResource.createItemResource(resourceName,description,massPerItem);
 		

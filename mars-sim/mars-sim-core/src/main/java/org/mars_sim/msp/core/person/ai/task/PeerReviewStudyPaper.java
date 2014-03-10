@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.person.NaturalAttributeManager;
+import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -30,26 +30,26 @@ public class PeerReviewStudyPaper
 extends Task
 implements Serializable {
 
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
 	/** default logger. */
-    private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
+	private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
 
 	/** The stress modified per millisol. */
-    private static final double STRESS_MODIFIER = 0D;
+	private static final double STRESS_MODIFIER = 0D;
 
 	// TODO Task phase should be an enum.
-    private static final String REVIEW = "Reviewing Study Paper";
+	private static final String REVIEW = "Reviewing Study Paper";
 
 	/** The scientific study to review. */
 	private ScientificStudy study;
-    
-    /**
-     * Constructor
-     * @param person the person performing the task.
-     */
-    public PeerReviewStudyPaper(Person person) {
+
+	/**
+	 * Constructor.
+	 * @param person the person performing the task.
+	 */
+	public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
         super("Peer Review Compiled Study Paper", person, true, false, 
                 STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(300D));
@@ -160,8 +160,7 @@ implements Serializable {
         // (1 base experience point per 25 millisols of research time)
         // Experience points adjusted by person's "Academic Aptitude" attribute.
         double newPoints = time / 25D;
-        int academicAptitude = person.getNaturalAttributeManager().getAttribute(
-            NaturalAttributeManager.ACADEMIC_APTITUDE);
+        int academicAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.ACADEMIC_APTITUDE);
         newPoints += newPoints * ((double) academicAptitude - 50D) / 100D;
         newPoints *= getTeachingExperienceModifier();
 		person.getMind().getSkillManager().addExperience(study.getScience().getSkill(), newPoints);
