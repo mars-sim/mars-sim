@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StandardPowerSource.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -132,6 +132,11 @@ implements Serializable {
 		 fuelPower -= fuelValue;
 		 if (fuelPower < 0D) fuelPower = 0D;
 		 return fuelPower;
+	 }
+	 
+	 @Override
+	 public double getMaintenanceTime() {
+	     return getMaxPower() * 2D;
 	 }
 
 	 @Override

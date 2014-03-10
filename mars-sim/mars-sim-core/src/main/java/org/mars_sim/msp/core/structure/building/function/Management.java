@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Management.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 
@@ -93,5 +93,10 @@ public class Management extends Function implements Serializable {
     @Override
     public void timePassing(double time) {
         // Do nothing
+    }
+    
+    @Override
+    public double getMaintenanceTime() {
+        return populationSupport * 1D;
     }
 }

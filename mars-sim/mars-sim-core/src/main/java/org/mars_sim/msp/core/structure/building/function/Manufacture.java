@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Manufacture.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -569,6 +569,19 @@ implements Serializable {
 					process.toString());
 		}
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        double result = 0D;
+        
+        // Add maintenance for tech level.
+        result += techLevel * 10D;
+        
+        // Add maintenance for concurrect process capacity.
+        result += concurrentProcesses * 10D;
+        
+        return result;
+    }
 
 	@Override
 	public void destroy() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Function.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -47,6 +47,12 @@ implements Serializable {
 		return building;
 	}
 
+	/**
+	 * Gets the maintenance time for this building function.
+	 * @return maintenance work time (millisols).
+	 */
+	public abstract double getMaintenanceTime();
+	
 	/**
 	 * Gets the function's malfunction scope strings.
 	 * @return array of scope strings.

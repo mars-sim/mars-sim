@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMaintenance.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -229,6 +229,11 @@ public abstract class VehicleMaintenance extends Function implements Serializabl
         }
         
         return result;
+    }
+    
+    @Override
+    public double getMaintenanceTime() {
+        return vehicleCapacity * 50D;
     }
 
     @Override

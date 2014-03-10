@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -172,7 +172,9 @@ implements Serializable {
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
 			ResourceProcess process = i.next();
-			if (process.isProcessRunning()) result += process.getPowerRequired();
+			if (process.isProcessRunning()) {
+			    result += process.getPowerRequired();
+			}
 		}
 		return result;
 	}
@@ -186,10 +188,17 @@ implements Serializable {
 		Iterator<ResourceProcess> i = resourceProcesses.iterator();
 		while (i.hasNext()) {
 			ResourceProcess process = i.next();
-			if (process.isProcessRunning()) result += process.getPowerRequired();
+			if (process.isProcessRunning()) {
+			    result += process.getPowerRequired();
+			}
 		}
 		return result;
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        return resourceProcesses.size() * 5D;
+    }
 
 	@Override
 	public void destroy() {

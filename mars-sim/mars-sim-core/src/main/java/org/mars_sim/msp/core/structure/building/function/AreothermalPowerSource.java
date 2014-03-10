@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WindPowerSource.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -45,5 +45,10 @@ extends PowerSource {
 				.getAreothermalPotential(location);
 
 		return getMaxPower() * (areothermalHeat / 100D);
+	}
+	
+	@Override
+	public double getMaintenanceTime() {
+	    return getMaxPower() * 1D;
 	}
 }

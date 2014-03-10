@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -314,6 +314,11 @@ implements Serializable {
 		double aveGrowingCyclesPerOrbit = solsInOrbit * 1000D / aveGrowingTime;
 		return maxHarvest * aveGrowingCyclesPerOrbit;
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        return growingArea * 5D;
+    }
 
 	@Override
 	public void destroy() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AstronomicalObservation.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -195,5 +195,19 @@ extends Function {
 		if (result < 0D) result = 0D;
 
 		return result;
+	}
+	
+	@Override
+	public double getMaintenanceTime() {
+	    
+	    double result = 0D;
+	    
+	    // Add maintenance for tech level.
+	    result += techLevel * 10D;
+	    
+	    // Add maintenance for observer capacity.
+	    result += observatoryCapacity * 10D;
+	    
+	    return result;
 	}
 }

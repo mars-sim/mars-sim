@@ -418,7 +418,7 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
 
     /** Sets the vehicle's facing direction (0 = north, clockwise in radians)
-     *  @param direction the direction the vehicle is travleling (in radians)
+     *  @param direction the direction the vehicle is traveling (in radians)
      */
     public void setDirection(Direction direction) {
         this.direction.setDirection(direction.getDirection());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.06 2014-03-02
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
  
@@ -62,8 +62,8 @@ LocalBoundedObject, InsidePathLocation {
     // TODO Maintenance info should not be hard coded but initialized from some config files
     /** 3340 Sols (5 orbits). */
     private static final double WEAR_LIFETIME = 3340000D;
-    /** 1 Sol. */
-    private static final double MAINTENANCE_TIME = 500D;
+    /** Base amount of maintenance time for building. */
+    private static final double BASE_MAINTENANCE_TIME = 50D;
     
     // Data members
     protected BuildingManager manager; 
@@ -148,8 +148,16 @@ LocalBoundedObject, InsidePathLocation {
         basePowerRequirement = config.getBasePowerRequirement(name);
         basePowerDownPowerRequirement = config.getBasePowerDownPowerRequirement(name);
 
+        // Determine total maintenance time.
+        double totalMaintenanceTime = BASE_MAINTENANCE_TIME;
+        Iterator<Function> j = functions.iterator();
+        while (j.hasNext()) {
+            Function function = j.next();
+            totalMaintenanceTime += function.getMaintenanceTime();
+        }
+        
         // Set up malfunction manager.
-        malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+        malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, totalMaintenanceTime);
         malfunctionManager.addScopeString("Building");
 
         // Add each function to the malfunction scope.
