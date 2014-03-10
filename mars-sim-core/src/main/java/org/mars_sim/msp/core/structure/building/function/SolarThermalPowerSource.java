@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SolarThermalPowerSource.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -49,5 +49,10 @@ implements Serializable {
 	@Override
 	public double getAveragePower(Settlement settlement) {
 		return getMaxPower() / 2.5D;
+	}
+	
+	@Override
+	public double getMaintenanceTime() {
+	    return getMaxPower() * 2D;
 	}
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -38,12 +38,8 @@ public class PowerStorage extends Function implements Serializable {
         super(NAME, building);
         
         BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-//        try {
-            powerStorageCapacity = config.getPowerStorageCapacity(building.getName());
-//        }
-//        catch (Exception e) {
-//            throw new BuildingException("PowerStorage.constructor: " + e.getMessage());
-//        }
+        
+        powerStorageCapacity = config.getPowerStorageCapacity(building.getName());
     }
     
     /**
@@ -121,5 +117,10 @@ public class PowerStorage extends Function implements Serializable {
     @Override
     public void timePassing(double time) {
         // Do nothing.
+    }
+    
+    @Override
+    public double getMaintenanceTime() {
+        return powerStorageCapacity / 5D;
     }
 }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVASuit.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -68,9 +68,6 @@ implements LifeSupport, Serializable, Malfunctionable {
 		malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
 		malfunctionManager.addScopeString("EVA Suit");
 		malfunctionManager.addScopeString("Life Support");
-
-		// Set maintenance work time.
-		malfunctionManager.setMaintenanceWorkTime(500D);
 
 		// Set the empty mass of the EVA suit in kg.
 		setBaseMass(EMPTY_MASS);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVA.java
- * @version 3.06 2014-03-06
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -129,6 +129,11 @@ public class EVA extends Function implements Serializable {
 	public double getPowerDownPowerRequired() {
 		return 0D;
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        return airlock.getCapacity() * 30D;
+    }
 	
 	@Override
 	public void destroy() {

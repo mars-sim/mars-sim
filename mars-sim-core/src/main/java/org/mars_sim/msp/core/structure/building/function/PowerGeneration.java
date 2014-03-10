@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerGeneration.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -196,9 +196,10 @@ implements Serializable {
 
 		result[0] = getName();
 
-		for (int x = 0; x < powerSources.size(); x++)
+		for (int x = 0; x < powerSources.size(); x++) {
 			result[x + 1] = powerSources.get(x).getType().getString();
-
+		}
+			
 		return result;
 	}
 
@@ -209,6 +210,19 @@ implements Serializable {
 	public List<PowerSource> getPowerSources() {
 		return new ArrayList<PowerSource>(powerSources);
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        
+        double result = 0D;
+        
+        Iterator<PowerSource> i = powerSources.iterator();
+        while (i.hasNext()) {
+            result += i.next().getMaintenanceTime();
+        }
+        
+        return result;
+    }
 
 	@Override
 	public void destroy() {
@@ -218,5 +232,6 @@ implements Serializable {
 		while (i.hasNext()) {
 			i.next().destroy();
 		}
+		powerSources.clear();
 	}
 }

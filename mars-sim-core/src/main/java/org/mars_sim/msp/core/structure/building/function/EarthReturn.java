@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EarthReturn.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 
@@ -104,5 +104,10 @@ public class EarthReturn extends Function implements Serializable {
     @Override
     public void timePassing(double time) {
         // Do nothing
+    }
+    
+    @Override
+    public double getMaintenanceTime() {
+        return crewCapacity * 50D;
     }
 }

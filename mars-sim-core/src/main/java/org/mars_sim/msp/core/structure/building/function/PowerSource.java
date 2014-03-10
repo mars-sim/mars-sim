@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PowerSource.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -64,6 +64,12 @@ implements Serializable {
 	 */
 	public abstract double getAveragePower(Settlement settlement);
 
+	/**
+     * Gets the maintenance time for this power source.
+     * @return maintenance work time (millisols).
+     */
+	public abstract double getMaintenanceTime();
+	
 	/**
 	 * Prepare object for garbage collection.
 	 */

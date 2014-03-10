@@ -64,12 +64,7 @@ implements Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-//		try {
-			this.cookCapacity = config.getCookCapacity(building.getName());
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("Cooking.constructor: " + e.getMessage());
-//		}
+		this.cookCapacity = config.getCookCapacity(building.getName());
 	}
     
     /**
@@ -305,6 +300,11 @@ implements Serializable {
 	public double getPowerDownPowerRequired() {
 		return 0;
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        return cookCapacity * 10D;
+    }
 	
 	@Override
 	public void destroy() {

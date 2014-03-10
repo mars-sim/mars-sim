@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -44,14 +44,9 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 		
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 		
-//		try {
-			int techLevel = config.getMedicalCareTechLevel(building.getName());
-			int beds = config.getMedicalCareBeds(building.getName());
-			medicalStation = new MedicalStation(techLevel, beds);
-//		}
-//		catch (Exception e) {
-//			throw new BuildingException("MedicalCare.constructor: " + e.getMessage());
-//		}
+		int techLevel = config.getMedicalCareTechLevel(building.getName());
+		int beds = config.getMedicalCareBeds(building.getName());
+		medicalStation = new MedicalStation(techLevel, beds);
 	}
     
     /**
@@ -269,6 +264,20 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	public int getTechLevel() {
 		return medicalStation.getTreatmentLevel();
 	}
+	
+    @Override
+    public double getMaintenanceTime() {
+        
+        double result = 0D;
+        
+        // Add maintenance for treatment level.
+        result += medicalStation.getTreatmentLevel() * 10D;
+        
+        // Add maintenance for number of sick beds.
+        result += medicalStation.getSickBedNum() * 10D;
+        
+        return result;
+    }
 	
 	@Override
 	public void destroy() {
