@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-10
  * @author Scott Davis
  */
 
@@ -43,11 +43,12 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
      * @param name name of the ground vehicle
      * @param description the configuration description of the vehicle.
      * @param settlement settlement the ground vehicle is parked at
-     * @throws an exception if ground vehicle could not be constructed.
+     * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
-    GroundVehicle(String name, String description, Settlement settlement) {
+    GroundVehicle(String name, String description, Settlement settlement, 
+            double maintenanceWorkTime) {
         // use Vehicle constructor
-        super(name, description, settlement);
+        super(name, description, settlement, maintenanceWorkTime);
 
         // Add scope to malfunction manager.
         malfunctionManager.addScopeString("GroundVehicle");

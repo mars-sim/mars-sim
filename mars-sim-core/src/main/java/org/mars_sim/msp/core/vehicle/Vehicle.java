@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-10
  * @author Scott Davis
  */
 
@@ -58,7 +58,6 @@ public abstract class Vehicle extends Unit implements Serializable,
 
     // Maintenance info
     private static final double WEAR_LIFETIME = 668000D; // 668 Sols (1 orbit)
-    private static final double MAINTENANCE_TIME = 500D; // 1 Sol
     
     // Data members
     protected MalfunctionManager malfunctionManager; // The malfunction manager for the vehicle.
@@ -92,10 +91,11 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param baseSpeed the base speed of the vehicle (kph)
      * @param baseMass the base mass of the vehicle (kg)
      * @param fuelEfficiency the fuel efficiency of the vehicle (km/kg)
-     * @throws Exception if error constructing vehicle
+     * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
     protected Vehicle(String name, String description, Settlement settlement, 
-    		double baseSpeed, double baseMass, double fuelEfficiency) {
+    		double baseSpeed, double baseMass, double fuelEfficiency, 
+    		double maintenanceWorkTime) {
     	
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
@@ -119,7 +119,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    facingParked = 0D;
 	    
 	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString("Vehicle");
     }
     
@@ -128,9 +128,9 @@ public abstract class Vehicle extends Unit implements Serializable,
      * @param name the vehicle's name
      * @param description the configuration description of the vehicle.
      * @param settlement the settlement the vehicle is parked at.
-     * @throws an exception if vehicle could not be constructed.
+     * @param maintenanceWorkTime the work time required for maintenance (millisols)
      */
-    Vehicle(String name, String description, Settlement settlement) {
+    Vehicle(String name, String description, Settlement settlement, double maintenanceWorkTime) {
 	    
     	// Use Unit constructor
         super(name, settlement.getCoordinates());
@@ -145,7 +145,7 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    status = PARKED;
 	    
 	    // Initialize malfunction manager.
-	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, MAINTENANCE_TIME);
+	    malfunctionManager = new MalfunctionManager(this, WEAR_LIFETIME, maintenanceWorkTime);
 	    malfunctionManager.addScopeString("Vehicle");
     	
 	    // Get vehicle configuration.
