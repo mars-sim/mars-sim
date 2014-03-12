@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mind.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai;
@@ -20,9 +20,6 @@ import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /**
  * The Mind class represents a person's mind. It keeps track of missions and 
@@ -242,10 +239,6 @@ implements Serializable {
 		if (person.getPerformanceRating() < 0.5D)
 			missions = false;
 
-		// If for some reason person is in a rover at the settlement, and not on a mission,
-		// have them enter the settlement.
-		enterSettlementIfInRover();
-
 		// Get probability weights from tasks, missions and active missions.
 		double taskWeights = 0D;
 		double missionWeights = 0D;
@@ -299,25 +292,6 @@ implements Serializable {
 		logger.severe(person.getName()
 				+ " couldn't determine new action - taskWeights: "
 				+ taskWeights + ", missionWeights: " + missionWeights);
-	}
-
-	/**
-	 * If person is not on mission and is in a vehicle parked at a settlement, have person leave vehicle and enter
-	 * settlement.
-	 */
-	private void enterSettlementIfInRover() {
-		if (mission == null) {
-			if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-				Vehicle vehicle = person.getVehicle();
-				if (vehicle.getSettlement() != null) {
-					Settlement settlement = vehicle.getSettlement();
-					// Move person from vehicle to settlement.
-					vehicle.getInventory().retrieveUnit(person);
-					settlement.getInventory().storeUnit(person);
-					BuildingManager.addToRandomBuilding(person, settlement);
-				}
-			}
-		}
 	}
 
 	/**

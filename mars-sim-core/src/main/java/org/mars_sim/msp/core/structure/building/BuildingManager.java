@@ -292,8 +292,12 @@ implements Serializable {
             }
         }
         
-        if (building != null) addPersonToBuildingRandomLocation(person, building);
-        else throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
+        if (building != null) {
+            addPersonToBuildingRandomLocation(person, building);
+        }
+        else {
+            throw new IllegalStateException("No inhabitable buildings available for " + person.getName());
+        }
     }
     
     /**
@@ -581,7 +585,9 @@ implements Serializable {
                 throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
             }
         }
-        else throw new IllegalStateException("Building is null");
+        else {
+            throw new IllegalStateException("Building is null");
+        }
     }
     
     /**
@@ -593,7 +599,9 @@ implements Serializable {
 		if (building != null) {
 			try {
 				LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-				if (!lifeSupport.containsPerson(person)) lifeSupport.addPerson(person); 
+				if (!lifeSupport.containsPerson(person)) {
+				    lifeSupport.addPerson(person); 
+				}
 				
 				// Add person to random location within building.
 				// TODO: Modify this when implementing active locations in buildings.
@@ -607,7 +615,9 @@ implements Serializable {
 				throw new IllegalStateException("BuildingManager.addPersonToBuilding(): " + e.getMessage());
 			}
 		}
-		else throw new IllegalStateException("Building is null");
+		else {
+		    throw new IllegalStateException("Building is null");
+		}
     }
     
     /**
@@ -619,13 +629,17 @@ implements Serializable {
         if (building != null) {
             try {
                 LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
-                if (lifeSupport.containsPerson(person)) lifeSupport.removePerson(person); 
+                if (lifeSupport.containsPerson(person)) {
+                    lifeSupport.removePerson(person); 
+                }
             }
             catch (Exception e) {
                 throw new IllegalStateException("BuildingManager.removePersonFromBuilding(): " + e.getMessage());
             }
         }
-        else throw new IllegalStateException("Building is null");
+        else {
+            throw new IllegalStateException("Building is null");
+        }
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.06 2014-03-04
+ * @version 3.06 2014-03-12
  * @author Scott Davis
  */
 
@@ -101,14 +101,40 @@ public class Walk extends Task implements Serializable {
         }
         else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             
-            // Walk to random location within rover.
-            if (person.getVehicle() instanceof Rover) {
-                Rover rover = (Rover) person.getVehicle();
-                Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
-                Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
-                        interiorPos.getX(), interiorPos.getY(), rover);
-                walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
-                        adjustedInteriorPos.getY(), rover);
+            Vehicle vehicle = person.getVehicle();
+            
+            // If no mission and vehicle is at a settlement location, enter settlement.
+            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+                
+                Settlement settlement = vehicle.getSettlement();
+                
+                // If not a rover, retrieve person from vehicle.
+                if (!(vehicle instanceof Rover)) {
+                    vehicle.getInventory().retrieveUnit(person);
+                }
+                
+                // Walk to nearest emergency airlock in settlement.
+                Airlock airlock = settlement.getClosestAvailableAirlock(person);
+                if (airlock != null) {
+                    LocalBoundedObject entity = (LocalBoundedObject) airlock.getEntity();
+                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(entity);
+                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                            interiorPos.getX(), interiorPos.getY(), entity);
+                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                            adjustedInteriorPos.getY(), entity);
+                }
+            }
+            else {
+            
+                // Walk to random location within rover.
+                if (person.getVehicle() instanceof Rover) {
+                    Rover rover = (Rover) person.getVehicle();
+                    Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
+                    Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                            interiorPos.getX(), interiorPos.getY(), rover);
+                    walkingSteps = new WalkingSteps(person, adjustedInteriorPos.getX(), 
+                            adjustedInteriorPos.getY(), rover);
+                }
             }
         }
         else {
@@ -191,9 +217,7 @@ public class Walk extends Task implements Serializable {
         }
         else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
             // If person is inside a rover, may walk to random location within rover.
-            if (person.getVehicle() instanceof Rover) {
-                result = 10D;
-            }
+            result = 10D;
         }
         
         return result;
