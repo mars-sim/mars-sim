@@ -19,6 +19,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -48,9 +49,9 @@ implements ListSelectionListener {
 	public TabPanelSocial(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			"Social",
+			Msg.getString("TabPanelSocial.title"), //$NON-NLS-1$
 			null,
-			"Social",
+			Msg.getString("TabPanelSocial.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
 
@@ -59,7 +60,7 @@ implements ListSelectionListener {
 		topContentPanel.add(relationshipLabelPanel);
 
 		// Create relationship label
-		JLabel relationshipLabel = new JLabel("Relationships", JLabel.CENTER);
+		JLabel relationshipLabel = new JLabel(Msg.getString("TabPanelSocial.label"), JLabel.CENTER); //$NON-NLS-1$
 		relationshipLabelPanel.add(relationshipLabel);
 
 		// Create relationship scroll panel
@@ -132,9 +133,9 @@ implements ListSelectionListener {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Person";
-			else if (columnIndex == 1) return "Relationship";
-			else return "unknown";
+			if (columnIndex == 0) return Msg.getString("TabPanelSocial.column.person"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelSocial.column.relationship"); //$NON-NLS-1$
+			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -143,7 +144,7 @@ implements ListSelectionListener {
 				double opinion = manager.getOpinionOfPerson(person, (Person) knownPeople.toArray()[row]);
 				return getRelationshipString(opinion);
 			} 
-			else return "unknown";
+			else return null;
 		}
 
 		public void update() {
@@ -156,18 +157,16 @@ implements ListSelectionListener {
 		}
 
 		private String getRelationshipString(double opinion) {
-			String result = "";
-
-			if (opinion < 5) result = "Hatred";
-			else if (opinion < 20) result = "Antagonism";
-			else if (opinion < 35) result = "Unfriendly";
-			else if (opinion < 45) result = "Bothersome";
-			else if (opinion < 55) result = "Indifference";
-			else if (opinion < 65) result = "Cordial";
-			else if (opinion < 80) result = "Amicable";
-			else if (opinion < 95) result = "Friendly";
-			else result = "Devoted";
-
+			String result = null;
+			if (opinion < 5) result = Msg.getString("TabPanelSocial.opinion.0"); //$NON-NLS-1$
+			else if (opinion < 20) result = Msg.getString("TabPanelSocial.opinion.1"); //$NON-NLS-1$
+			else if (opinion < 35) result = Msg.getString("TabPanelSocial.opinion.2"); //$NON-NLS-1$
+			else if (opinion < 45) result = Msg.getString("TabPanelSocial.opinion.3"); //$NON-NLS-1$
+			else if (opinion < 55) result = Msg.getString("TabPanelSocial.opinion.4"); //$NON-NLS-1$
+			else if (opinion < 65) result = Msg.getString("TabPanelSocial.opinion.5"); //$NON-NLS-1$
+			else if (opinion < 80) result = Msg.getString("TabPanelSocial.opinion.6"); //$NON-NLS-1$
+			else if (opinion < 95) result = Msg.getString("TabPanelSocial.opinion.7"); //$NON-NLS-1$
+			else result = Msg.getString("TabPanelSocial.opinion.8"); //$NON-NLS-1$
 			return result;
 		}
 	}

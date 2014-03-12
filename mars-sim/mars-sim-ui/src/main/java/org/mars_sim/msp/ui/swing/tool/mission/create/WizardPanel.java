@@ -12,16 +12,20 @@ import javax.swing.*;
 /**
  * An abstract panel for the create mission wizard.
  */
-abstract class WizardPanel extends JPanel {
+abstract class WizardPanel
+extends JPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members.
 	private CreateMissionWizard wizard;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	WizardPanel(CreateMissionWizard wizard) {
+	public WizardPanel(CreateMissionWizard wizard) {
 		// Use JPanel constructor.
 		super();
 		
@@ -40,6 +44,8 @@ abstract class WizardPanel extends JPanel {
 	/**
 	 * Gets the wizard panel name.
 	 * @return panel name.
+	 * @deprecated
+	 * TODO internationalize the wizzard panel names.
 	 */
 	abstract String getPanelName();
 	
