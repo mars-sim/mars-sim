@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -15,7 +16,9 @@ import java.awt.Toolkit;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
+import org.mars_sim.msp.core.Simulation;
 
 /**
  * The SplashWindow class is a splash screen shown when the project
@@ -27,6 +30,9 @@ public class SplashWindow {
 	private JFrame window;
 
 	// Constant data member
+	public static final String VERSION_STRING = Simulation.VERSION;
+
+	
 	private static String[] IMAGE_NAMES = {"SplashImage.png", "SplashImage2.jpg", "SplashImage3.jpg"};
 
 	private Image splashImage;
@@ -41,6 +47,9 @@ public class SplashWindow {
 
 				// Draw splash image
 				g.drawImage(splashImage, 0, 0, this);
+				window.setForeground(Color.white);
+				g.setFont(new Font("SansSerif", Font.PLAIN, 11));
+				g.drawString(VERSION_STRING, 20, 20);
 			}
 		};
 //		super(new Frame());
