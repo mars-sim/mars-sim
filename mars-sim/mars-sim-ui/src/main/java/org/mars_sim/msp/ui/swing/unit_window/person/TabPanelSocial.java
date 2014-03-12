@@ -29,40 +29,42 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /**
  * A tab panel displaying a person's social relationships.
  */
-public class SocialTabPanel extends TabPanel implements ListSelectionListener {
+public class TabPanelSocial
+extends TabPanel
+implements ListSelectionListener {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-    // Data members
+	// Data members
 	private JTable relationshipTable;
 	private RelationshipTableModel relationshipTableModel;
-	
+
 	/**
 	 * Constructor.
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public SocialTabPanel(Person person, MainDesktopPane desktop) { 
+	public TabPanelSocial(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super("Social", null, "Social", person, desktop);
-		
+
 		// Create relationship label panel.
 		JPanel relationshipLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		topContentPanel.add(relationshipLabelPanel);
-        
+
 		// Create relationship label
 		JLabel relationshipLabel = new JLabel("Relationships", JLabel.CENTER);
 		relationshipLabelPanel.add(relationshipLabel);
-        
+
 		// Create relationship scroll panel
 		JScrollPane relationshipScrollPanel = new JScrollPane();
 		relationshipScrollPanel.setBorder(new MarsPanelBorder());
 		centerContentPanel.add(relationshipScrollPanel);
-        
+
 		// Create relationship table model
 		relationshipTableModel = new RelationshipTableModel(person);
-            
+
 		// Create relationship table
 		relationshipTable = new JTable(relationshipTableModel);
 		relationshipTable.setPreferredScrollableViewportSize(new Dimension(225, 100));
@@ -80,7 +82,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 	public void update() {
 		relationshipTableModel.update();
 	}
-	
+
 	/**
 	 * Called whenever the value of the selection changes.
 	 * @param e the event that characterizes the change.
@@ -90,46 +92,46 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 		Person selectedPerson = (Person) relationshipTable.getValueAt(index, 0);
 		if (selectedPerson != null) desktop.openUnitWindow(selectedPerson, false);
 	}
-	
+
 	/** 
 	 * Internal class used as model for the relationship table.
 	 */
 	private static class RelationshipTableModel extends AbstractTableModel {
-	
+
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
 		private RelationshipManager manager;
 		private Collection<?> knownPeople;
 		private Person person;
-		
+
 		private RelationshipTableModel(Person person) {
 			this.person = person;
 			manager = Simulation.instance().getRelationshipManager();
 			knownPeople = manager.getAllKnownPeople(person);
 		}
-		
+
 		public int getRowCount() {
 			return knownPeople.size();
 		}
-		
+
 		public int getColumnCount() {
 			return 2;
 		}
-		
+
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
 			if (columnIndex == 1) dataType = String.class;
 			return dataType;
 		}
-		
+
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return "Person";
 			else if (columnIndex == 1) return "Relationship";
 			else return "unknown";
 		}
-		
+
 		public Object getValueAt(int row, int column) {
 			if (column == 0) return knownPeople.toArray()[row];
 			else if (column == 1) {
@@ -138,7 +140,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 			} 
 			else return "unknown";
 		}
-		
+
 		public void update() {
 			Collection<?> newKnownPeople = manager.getAllKnownPeople(person);
 			if (!knownPeople.equals(newKnownPeople)) {
@@ -147,10 +149,10 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 			}
 			else fireTableDataChanged();
 		}
-		
+
 		private String getRelationshipString(double opinion) {
 			String result = "";
-			
+
 			if (opinion < 5) result = "Hatred";
 			else if (opinion < 20) result = "Antagonism";
 			else if (opinion < 35) result = "Unfriendly";
@@ -160,7 +162,7 @@ public class SocialTabPanel extends TabPanel implements ListSelectionListener {
 			else if (opinion < 80) result = "Amicable";
 			else if (opinion < 95) result = "Friendly";
 			else result = "Devoted";
-			
+
 			return result;
 		}
 	}

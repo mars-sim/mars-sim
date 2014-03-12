@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * AttributeTabPanel.java
+ * TabPanelAttribute.java
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
@@ -31,9 +31,9 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
 /** 
- * The AttributeTabPanel is a tab panel for the natural attributes of a person.
+ * The TabPanelAttribute is a tab panel for the natural attributes of a person.
  */
-public class AttributeTabPanel
+public class TabPanelAttribute
 extends TabPanel {
 
 	/** default serial id. */
@@ -45,12 +45,12 @@ extends TabPanel {
 	 * @param person {@link Person} the person.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public AttributeTabPanel(Person person, MainDesktopPane desktop) { 
+	public TabPanelAttribute(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("AttributeTabPanel.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelAttribute.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("AttributeTabPanel.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelAttribute.tooltip"), //$NON-NLS-1$
 			person,
 			desktop
 		);
@@ -60,7 +60,7 @@ extends TabPanel {
 		topContentPanel.add(attributeLabelPanel);
 
 		// Create attribute label
-		JLabel attributeLabel = new JLabel(Msg.getString("AttributeTabPanel.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel attributeLabel = new JLabel(Msg.getString("TabPanelAttribute.label"), JLabel.CENTER); //$NON-NLS-1$
 		attributeLabelPanel.add(attributeLabel);
 
 		// Create attribute scroll panel
@@ -142,8 +142,8 @@ extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return Msg.getString("AttributeTabPanel.column.attribute"); //$NON-NLS-1$
-			else if (columnIndex == 1) return Msg.getString("AttributeTabPanel.column.level"); //$NON-NLS-1$
+			if (columnIndex == 0) return Msg.getString("TabPanelAttribute.column.attribute"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelAttribute.column.level"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -158,15 +158,15 @@ extends TabPanel {
 		 */
 		public String getLevelString(int level) {
 			String result = null;
-			if (level < 5) result = Msg.getString("AttributeTabPanel.level.0"); //$NON-NLS-1$
-			else if (level < 20) result = Msg.getString("AttributeTabPanel.level.1"); //$NON-NLS-1$
-			else if (level < 35) result = Msg.getString("AttributeTabPanel.level.2"); //$NON-NLS-1$
-			else if (level < 45) result = Msg.getString("AttributeTabPanel.level.3"); //$NON-NLS-1$
-			else if (level < 55) result = Msg.getString("AttributeTabPanel.level.4"); //$NON-NLS-1$
-			else if (level < 65) result = Msg.getString("AttributeTabPanel.level.5"); //$NON-NLS-1$
-			else if (level < 80) result = Msg.getString("AttributeTabPanel.level.6"); //$NON-NLS-1$
-			else if (level < 95) result = Msg.getString("AttributeTabPanel.level.7"); //$NON-NLS-1$
-			else result = Msg.getString("AttributeTabPanel.level.8"); //$NON-NLS-1$
+			if (level < 5) result = Msg.getString("TabPanelAttribute.level.0"); //$NON-NLS-1$
+			else if (level < 20) result = Msg.getString("TabPanelAttribute.level.1"); //$NON-NLS-1$
+			else if (level < 35) result = Msg.getString("TabPanelAttribute.level.2"); //$NON-NLS-1$
+			else if (level < 45) result = Msg.getString("TabPanelAttribute.level.3"); //$NON-NLS-1$
+			else if (level < 55) result = Msg.getString("TabPanelAttribute.level.4"); //$NON-NLS-1$
+			else if (level < 65) result = Msg.getString("TabPanelAttribute.level.5"); //$NON-NLS-1$
+			else if (level < 80) result = Msg.getString("TabPanelAttribute.level.6"); //$NON-NLS-1$
+			else if (level < 95) result = Msg.getString("TabPanelAttribute.level.7"); //$NON-NLS-1$
+			else result = Msg.getString("TabPanelAttribute.level.8"); //$NON-NLS-1$
 			return result;
 		}
 	}

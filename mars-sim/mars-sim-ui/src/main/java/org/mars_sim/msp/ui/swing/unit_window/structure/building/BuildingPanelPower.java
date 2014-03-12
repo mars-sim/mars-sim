@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * PowerBuildingPanel.java
+ * BuildingPanelPower.java
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
@@ -18,7 +18,7 @@ import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
- * The PowerBuildingPanel class is a building function panel representing 
+ * The BuildingPanelPower class is a building function panel representing 
  * the power production and use of a settlement building.
  */
 public class BuildingPanelPower
@@ -36,7 +36,7 @@ extends BuildingFunctionPanel {
 	/** The power used label. */
 	private JLabel usedLabel;
 	/** Decimal formatter. */
-	private DecimalFormat formatter = new DecimalFormat(Msg.getString("PowerBuildingPanel.decimalFormat")); //$NON-NLS-1$
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("BuildingPanelPower.decimalFormat")); //$NON-NLS-1$
 
 	// Caches
 	/** The power status cache. */
@@ -66,7 +66,7 @@ extends BuildingFunctionPanel {
 		// Prepare power status label.
 		powerStatusCache = building.getPowerMode();
 		powerStatusLabel = new JLabel(
-			Msg.getString("PowerBuildingPanel.powerStatus", powerStatusCache.getName()), //$NON-NLS-1$
+			Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName()), //$NON-NLS-1$
 			JLabel.CENTER
 		);
 		add(powerStatusLabel);
@@ -76,7 +76,7 @@ extends BuildingFunctionPanel {
 			PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
 			productionCache = generator.getGeneratedPower();
 			productionLabel = new JLabel(
-				Msg.getString("PowerBuildingPanel.powerProduced", formatter.format(productionCache)), //$NON-NLS-1$
+				Msg.getString("BuildingPanelPower.powerProduced", formatter.format(productionCache)), //$NON-NLS-1$
 				JLabel.CENTER
 			);
 			add(productionLabel);
@@ -89,7 +89,7 @@ extends BuildingFunctionPanel {
 			usedCache = building.getPoweredDownPowerRequired();
 		else usedCache = 0D;
 		usedLabel = new JLabel(
-			Msg.getString("PowerBuildingPanel.powerUsed", formatter.format(usedCache)), //$NON-NLS-1$
+			Msg.getString("BuildingPanelPower.powerUsed", formatter.format(usedCache)), //$NON-NLS-1$
 			JLabel.CENTER
 		);
 		add(usedLabel);
@@ -103,7 +103,7 @@ extends BuildingFunctionPanel {
 		// Update power status if necessary.
 		if (!powerStatusCache.equals(building.getPowerMode())) {
 			powerStatusCache = building.getPowerMode();
-			powerStatusLabel.setText(Msg.getString("PowerBuildingPanel.powerStatus", powerStatusCache.getName())); //$NON-NLS-1$
+			powerStatusLabel.setText(Msg.getString("BuildingPanelPower.powerStatus", powerStatusCache.getName())); //$NON-NLS-1$
 		}
 
 		// Update power production if necessary.
@@ -111,7 +111,7 @@ extends BuildingFunctionPanel {
 			PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
 			if (productionCache != generator.getGeneratedPower()) {
 				productionCache = generator.getGeneratedPower();
-				productionLabel.setText(Msg.getString("PowerBuildingPanel.powerProduced", formatter.format(productionCache))); //$NON-NLS-1$
+				productionLabel.setText(Msg.getString("BuildingPanelPower.powerProduced", formatter.format(productionCache))); //$NON-NLS-1$
 			}
 		}
 
@@ -123,7 +123,7 @@ extends BuildingFunctionPanel {
 			usedPower = building.getPoweredDownPowerRequired();
 		if (usedCache != usedPower) {
 			usedCache = usedPower;
-			usedLabel.setText(Msg.getString("PowerBuildingPanel.powerUsed", formatter.format(usedCache))); //$NON-NLS-1$
+			usedLabel.setText(Msg.getString("BuildingPanelPower.powerUsed", formatter.format(usedCache))); //$NON-NLS-1$
 		}
 	}
 }

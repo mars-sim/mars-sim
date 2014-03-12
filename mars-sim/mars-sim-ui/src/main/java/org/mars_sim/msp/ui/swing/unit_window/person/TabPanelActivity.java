@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * ActivityTabPanel.java
+ * TabPanelActivity.java
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
@@ -42,10 +42,10 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 
 /** 
- * The ActivityTabPanel is a tab panel for a person's current activities
+ * The TabPanelActivity is a tab panel for a person's current activities
  * and to change their job.
  */
-public class ActivityTabPanel
+public class TabPanelActivity
 extends TabPanel
 implements ActionListener {
 
@@ -76,12 +76,12 @@ implements ActionListener {
 	 * @param unit {@link Unit} the unit to display.
 	 * @param desktop {@link MainDesktopPane} the main desktop.
 	 */
-	public ActivityTabPanel(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelActivity(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("ActivityTabPanel.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelActivity.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("ActivityTabPanel.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelActivity.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -95,7 +95,7 @@ implements ActionListener {
 		topContentPanel.add(activityLabelPanel);
 
 		// Prepare activity label
-		JLabel activityLabel = new JLabel(Msg.getString("ActivityTabPanel.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel activityLabel = new JLabel(Msg.getString("TabPanelActivity.label"), JLabel.CENTER); //$NON-NLS-1$
 		activityLabelPanel.add(activityLabel);
 
 		// Prepare job panel
@@ -104,7 +104,7 @@ implements ActionListener {
 		topContentPanel.add(jobPanel);
 
 		// Prepare job label
-		jobLabel = new JLabel(Msg.getString("ActivityTabPanel.job"), JLabel.CENTER); //$NON-NLS-1$
+		jobLabel = new JLabel(Msg.getString("TabPanelActivity.job"), JLabel.CENTER); //$NON-NLS-1$
 		jobPanel.add(jobLabel);        
 
 		// Prepare job combo box
@@ -133,7 +133,7 @@ implements ActionListener {
 		taskTopPanel.add(taskPanel);
 
 		// Prepare task label
-		JLabel taskLabel = new JLabel(Msg.getString("ActivityTabPanel.task"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel taskLabel = new JLabel(Msg.getString("TabPanelActivity.task"), JLabel.CENTER); //$NON-NLS-1$
 		taskPanel.add(taskLabel, BorderLayout.NORTH);
 
 		// Prepare task text area
@@ -150,7 +150,7 @@ implements ActionListener {
 		taskTopPanel.add(taskPhasePanel);
 
 		// Prepare task phase label
-		JLabel taskPhaseLabel = new JLabel(Msg.getString("ActivityTabPanel.taskPhase"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel taskPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.taskPhase"), JLabel.CENTER); //$NON-NLS-1$
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare task phase text area
@@ -176,7 +176,7 @@ implements ActionListener {
 		missionLeftPanel.add(missionPanel);
 
 		// Prepare mission label
-		JLabel missionLabel = new JLabel(Msg.getString("ActivityTabPanel.mission"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel missionLabel = new JLabel(Msg.getString("TabPanelActivity.mission"), JLabel.CENTER); //$NON-NLS-1$
 		missionPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
@@ -193,7 +193,7 @@ implements ActionListener {
 		missionLeftPanel.add(missionPhasePanel);
 
 		// Prepare mission phase label
-		JLabel missionPhaseLabel = new JLabel(Msg.getString("ActivityTabPanel.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel missionPhaseLabel = new JLabel(Msg.getString("TabPanelActivity.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare mission phase text area
@@ -212,7 +212,7 @@ implements ActionListener {
 		// Prepare mission tool button.
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText(Msg.getString("ActivityTabPanel.tooltip.mission")); //$NON-NLS-1$
+		missionButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 		missionButton.setEnabled(mind.getMission() != null);
 		missionButtonPanel.add(missionButton);
@@ -220,7 +220,7 @@ implements ActionListener {
 		// Prepare mission monitor button
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText(Msg.getString("ActivityTabPanel.tooltip.monitor")); //$NON-NLS-1$
+		monitorButton.setToolTipText(Msg.getString("TabPanelActivity.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		monitorButton.setEnabled(mind.getMission() != null);
 		missionButtonPanel.add(monitorButton);

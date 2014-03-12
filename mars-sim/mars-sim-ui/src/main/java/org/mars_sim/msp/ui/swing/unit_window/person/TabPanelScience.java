@@ -41,7 +41,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /**
  * A tab panel displaying a person's scientific studies and achievements.
  */
-public class ScienceTabPanel
+public class TabPanelScience
 extends TabPanel {
 
 	/** default serial id. */
@@ -60,7 +60,7 @@ extends TabPanel {
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public ScienceTabPanel(Person person, MainDesktopPane desktop) {
+	public TabPanelScience(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
 			"Science",

@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * DeathTabPanel.java
+ * TabPanelDeath.java
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
@@ -26,9 +26,9 @@ import java.awt.event.ActionListener;
 
 
 /** 
- * The DeathTabPanel is a tab panel with info about a person's death.
+ * The TabPanelDeath is a tab panel with info about a person's death.
  */
-public class DeathTabPanel
+public class TabPanelDeath
 extends TabPanel
 implements ActionListener {
 
@@ -40,12 +40,12 @@ implements ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public DeathTabPanel(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelDeath(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("DeathTabPanel.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelDeath.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("DeathTabPanel.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelDeath.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -58,7 +58,7 @@ implements ActionListener {
 		topContentPanel.add(deathInfoLabelPanel);
 
 		// Prepare death info label
-		JLabel deathInfoLabel = new JLabel(Msg.getString("DeathTabPanel.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel deathInfoLabel = new JLabel(Msg.getString("TabPanelDeath.label"), JLabel.CENTER); //$NON-NLS-1$
 		deathInfoLabelPanel.add(deathInfoLabel);
 
 		// Prepare death label panel
@@ -67,15 +67,15 @@ implements ActionListener {
 		centerContentPanel.add(deathLabelPanel, BorderLayout.NORTH);
 
 		// Prepare cause label
-		JLabel causeLabel = new JLabel(Msg.getString("DeathTabPanel.cause") + death.getIllness(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel causeLabel = new JLabel(Msg.getString("TabPanelDeath.cause") + death.getIllness(), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(causeLabel);
 
 		// Prepare time label
-		JLabel timeLabel = new JLabel(Msg.getString("DeathTabPanel.time") + death.getTimeOfDeath(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel timeLabel = new JLabel(Msg.getString("TabPanelDeath.time") + death.getTimeOfDeath(), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(timeLabel);
 
 		// Prepare malfunction label
-		JLabel malfunctionLabel = new JLabel(Msg.getString("DeathTabPanel.malfunctionIfAny") + death.getMalfunction(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel malfunctionLabel = new JLabel(Msg.getString("TabPanelDeath.malfunctionIfAny") + death.getMalfunction(), JLabel.LEFT); //$NON-NLS-1$
 		deathLabelPanel.add(malfunctionLabel);
 
 		// Prepare bottom content panel
@@ -95,11 +95,11 @@ implements ActionListener {
 		JButton centerMapButton = new JButton(ImageLoader.getIcon(Msg.getString("img.centerMap"))); //$NON-NLS-1$
 		centerMapButton.setMargin(new Insets(1, 1, 1, 1));
 		centerMapButton.addActionListener(this);
-		centerMapButton.setToolTipText(Msg.getString("DeathTabPanel.tooltip.centerMap")); //$NON-NLS-1$
+		centerMapButton.setToolTipText(Msg.getString("TabPanelDeath.tooltip.centerMap")); //$NON-NLS-1$
 		locationLabelPanel.add(centerMapButton);
 
 		// Prepare location label
-		JLabel locationLabel = new JLabel(Msg.getString("DeathTabPanel.location"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel locationLabel = new JLabel(Msg.getString("TabPanelDeath.location"), JLabel.CENTER); //$NON-NLS-1$
 		locationLabelPanel.add(locationLabel);
 
 		if (death.getContainerUnit() != null) {
@@ -126,11 +126,11 @@ implements ActionListener {
 		Coordinates deathLocation = death.getLocationOfDeath();
 
 		// Prepare latitude label
-		JLabel latitudeLabel = new JLabel(Msg.getString("DeathTabPanel.latitude") + deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel latitudeLabel = new JLabel(Msg.getString("TabPanelDeath.latitude") + deathLocation.getFormattedLatitudeString(), JLabel.LEFT); //$NON-NLS-1$
 		locationCoordsPanel.add(latitudeLabel);
 
 		// Prepare longitude label
-		JLabel longitudeLabel = new JLabel(Msg.getString("DeathTabPanel.longitude") + deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
+		JLabel longitudeLabel = new JLabel(Msg.getString("TabPanelDeath.longitude") + deathLocation.getFormattedLongitudeString(), JLabel.LEFT); //$NON-NLS-1$
 		locationCoordsPanel.add(longitudeLabel);
 
 		// Add empty panel
