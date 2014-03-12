@@ -45,7 +45,12 @@ extends TabPanel {
 	 */
 	public SkillTabPanel(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
-		super("Skills", null, "Skills", person, desktop);
+		super(
+			"Skills",
+			null,
+			"Skills",
+			person, desktop
+		);
 
 		// Create skill label panel.
 		JPanel skillLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -83,7 +88,8 @@ extends TabPanel {
 	/** 
 	 * Internal class used as model for the skill table.
 	 */
-	private static class SkillTableModel extends AbstractTableModel {
+	private static class SkillTableModel
+	extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
