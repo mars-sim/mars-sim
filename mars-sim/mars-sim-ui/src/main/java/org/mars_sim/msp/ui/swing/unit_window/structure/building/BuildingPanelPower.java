@@ -21,7 +21,7 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
  * The PowerBuildingPanel class is a building function panel representing 
  * the power production and use of a settlement building.
  */
-public class PowerBuildingPanel
+public class BuildingPanelPower
 extends BuildingFunctionPanel {
 
 	/** default serial id. */
@@ -51,7 +51,7 @@ extends BuildingFunctionPanel {
 	 * @param building the building the panel is for.
 	 * @param desktop The main desktop.
 	 */
-	public PowerBuildingPanel(Building building, MainDesktopPane desktop) {
+	public BuildingPanelPower(Building building, MainDesktopPane desktop) {
 
 		// Use BuildingFunctionPanel constructor
 		super(building, desktop);

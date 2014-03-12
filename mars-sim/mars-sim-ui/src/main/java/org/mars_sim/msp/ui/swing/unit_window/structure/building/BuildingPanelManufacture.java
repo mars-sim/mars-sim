@@ -45,14 +45,15 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.SalvagePanel;
 /**
  * A building panel displaying the manufacture building function.
  */
-public class ManufactureBuildingPanel extends BuildingFunctionPanel {
+public class BuildingPanelManufacture
+extends BuildingFunctionPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-	private static String CLASS_NAME = 
-	    "org.mars_sim.msp.ui.standard.unit_window.structure.building.ManufactureBuildingPanel";
-	private static Logger logger = Logger.getLogger(CLASS_NAME);
-	
+
+	/** default logger. */
+	private static Logger logger = Logger.getLogger(BuildingPanelManufacture.class.getName());
+
 	/** The manufacture building. */
 	private Manufacture workshop;
 	/** Panel for displaying process panels. */
@@ -64,19 +65,22 @@ public class ManufactureBuildingPanel extends BuildingFunctionPanel {
 	private List<SalvageProcess> salvageCache;
 	/** Process selector. */
 	private JComboBoxMW processSelection;
-	private Vector<ManufactureProcessInfo> processSelectionCache; // List of available processes.
-	private Vector<SalvageProcessInfo> salvageSelectionCache; // List of available salvage processes.
-	private JButton newProcessButton; // Process selection button.
-	
+	/** List of available processes. */
+	private Vector<ManufactureProcessInfo> processSelectionCache;
+	/** List of available salvage processes. */
+	private Vector<SalvageProcessInfo> salvageSelectionCache;
+	/** Process selection button. */
+	private JButton newProcessButton;
+
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param workshop the manufacturing building function.
 	 * @param desktop the main desktop.
 	 */
-	public ManufactureBuildingPanel(Manufacture workshop, MainDesktopPane desktop) {
+	public BuildingPanelManufacture(Manufacture workshop, MainDesktopPane desktop) {
 		// Use BuildingFunctionPanel constructor.
 		super(workshop.getBuilding(), desktop);
-		
+
 		// Initialize data model.
 		this.workshop = workshop;
 		
