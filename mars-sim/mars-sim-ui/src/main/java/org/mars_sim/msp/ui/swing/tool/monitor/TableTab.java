@@ -6,6 +6,7 @@
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
@@ -286,7 +287,7 @@ extends MonitorTab {
         // Add a scrolled window and center it with the table
         JScrollPane scroller = new JScrollPane(table);
         scroller.setBorder(new MarsPanelBorder());
-        add(scroller, "Center");
+        add(scroller, BorderLayout.CENTER);
 
         setName(model.getName());
         setSortColumn(0);
@@ -298,8 +299,7 @@ extends MonitorTab {
      * @param desktop Main desktop owing the properties dialog.
      */
     public void displayProps(MainDesktopPane desktop) {
-        TableProperties propsWindow = new TableProperties(getName(), table,
-                                                          desktop);
+        TableProperties propsWindow = new TableProperties(getName(), table, desktop);
         propsWindow.show();
     }
 

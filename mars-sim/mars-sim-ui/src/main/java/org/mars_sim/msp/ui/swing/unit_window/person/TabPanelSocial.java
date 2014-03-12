@@ -47,7 +47,12 @@ implements ListSelectionListener {
 	 */
 	public TabPanelSocial(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
-		super("Social", null, "Social", person, desktop);
+		super(
+			"Social",
+			null,
+			"Social",
+			person, desktop
+		);
 
 		// Create relationship label panel.
 		JPanel relationshipLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));

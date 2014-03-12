@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -46,9 +47,9 @@ extends TabPanel {
 	public TabPanelSkill(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			"Skills",
+			Msg.getString("TabPanelSkill.title"), //$NON-NLS-1$
 			null,
-			"Skills",
+			Msg.getString("TabPanelSkill.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
 
@@ -57,7 +58,7 @@ extends TabPanel {
 		topContentPanel.add(skillLabelPanel);
 
 		// Create skill label
-		JLabel skillLabel = new JLabel("Skills", JLabel.CENTER);
+		JLabel skillLabel = new JLabel(Msg.getString("TabPanelSkill.label"), JLabel.CENTER); //$NON-NLS-1$
 		skillLabelPanel.add(skillLabel);
 
 		// Create skill scroll panel
@@ -94,9 +95,9 @@ extends TabPanel {
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
 
-		SkillManager manager;
-		Map<String, Integer> skills;
-		List<String> skillNames;
+		private SkillManager manager;
+		private Map<String, Integer> skills;
+		private List<String> skillNames;
 
 		private SkillTableModel(Person person) {
 			manager = person.getMind().getSkillManager();
@@ -129,15 +130,15 @@ extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 1) return "Skill";
-			else if (columnIndex == 0) return "Level";
-			else return "unknown";
+			if (columnIndex == 1) return Msg.getString("TabPanelSkill.column.skill"); //$NON-NLS-1$
+			else if (columnIndex == 0) return Msg.getString("TabPanelSkill.column.level"); //$NON-NLS-1$
+			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
 			if (column == 1) return skillNames.get(row);
 			else if (column == 0) return skills.get(skillNames.get(row));
-			else return "unknown";
+			else return null;
 		}
 
 		public void update() {

@@ -26,6 +26,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -63,9 +64,9 @@ extends TabPanel {
 	public TabPanelScience(Person person, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			"Science",
+			Msg.getString("TabPanelScience.title"), //$NON-NLS-1$
 			null,
-			"Science",
+			Msg.getString("TabPanelScience.tooltip"), //$NON-NLS-1$
 			person, desktop
 		);
 
@@ -74,7 +75,7 @@ extends TabPanel {
 		topContentPanel.add(titlePane);
 
 		// Create the title label.
-		JLabel titleLabel = new JLabel("Science", JLabel.CENTER);
+		JLabel titleLabel = new JLabel(Msg.getString("TabPanelScience.label"), JLabel.CENTER); //$NON-NLS-1$
 		titlePane.add(titleLabel);
 
 		// Create the main panel.
@@ -87,7 +88,7 @@ extends TabPanel {
 		mainPane.add(studiesPane);
 
 		// Create the studies label.
-		JLabel studiesLabel = new JLabel("Scientific Studies", JLabel.CENTER);
+		JLabel studiesLabel = new JLabel(Msg.getString("TabPanelScience.scientificStudies"), JLabel.CENTER); //$NON-NLS-1$
 		studiesPane.add(studiesLabel, BorderLayout.NORTH);
 
 		// Create the study scroll panel.
@@ -117,10 +118,10 @@ extends TabPanel {
 		studiesPane.add(buttonPane, BorderLayout.SOUTH);
 
 		// Create the science tool button.
-		scienceToolButton = new JButton(ImageLoader.getIcon("Science"));
+		scienceToolButton = new JButton(ImageLoader.getIcon(Msg.getString("img.science"))); //$NON-NLS-1$
 		scienceToolButton.setEnabled(false);
 		scienceToolButton.setMargin(new Insets(1, 1, 1, 1));
-		scienceToolButton.setToolTipText("Open study in science tool.");
+		scienceToolButton.setToolTipText(Msg.getString("TabPanelScience.tooltip.science")); //$NON-NLS-1$
 		scienceToolButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				displayStudyInScienceTool();
@@ -138,12 +139,12 @@ extends TabPanel {
 		achievementPane.add(achievementLabelPane, BorderLayout.NORTH);
 
 		// Create the achievement label.
-		JLabel achievementLabel = new JLabel("Scientific Achievement", JLabel.CENTER);
+		JLabel achievementLabel = new JLabel(Msg.getString("TabPanelScience.scientificAchievement"), JLabel.CENTER); //$NON-NLS-1$
 		achievementLabelPane.add(achievementLabel);
 
-		DecimalFormat formatter = new DecimalFormat("0.0");
+		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
 		String totalAchievementString = formatter.format(person.getTotalScientificAchievement());
-		totalAchievementLabel = new JLabel("Total Achievement Credit: " + totalAchievementString, JLabel.CENTER);
+		totalAchievementLabel = new JLabel(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString), JLabel.CENTER); //$NON-NLS-1$
 		achievementLabelPane.add(totalAchievementLabel);
 
 		// Create the achievement scroll panel.
@@ -183,9 +184,9 @@ extends TabPanel {
 
 		// Update total achievement label.
 		Person person = (Person) getUnit();
-		DecimalFormat formatter = new DecimalFormat("0.0");
+		DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelScience.decimalFormat")); //$NON-NLS-1$
 		String totalAchievementString = formatter.format(person.getTotalScientificAchievement());
-		totalAchievementLabel.setText("Total Achievement Credit: " + totalAchievementString);
+		totalAchievementLabel.setText(Msg.getString("TabPanelScience.totalAchievementCredit", totalAchievementString)); //$NON-NLS-1$
 	}
 
 	/**
@@ -246,9 +247,9 @@ extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Study";
-			else if (columnIndex == 1) return "Role";
-			else if (columnIndex == 2) return "Status";
+			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.study"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.role"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelScience.column.status"); //$NON-NLS-1$
 			else return null;
 		}
 
@@ -272,8 +273,8 @@ extends TabPanel {
 				ScientificStudy study = studies.get(rowIndex);
 				if (columnIndex == 0) result = study.toString();
 				else if (columnIndex == 1) {
-					if (person.equals(study.getPrimaryResearcher())) result = "Primary";
-					else result = "Collaborator";
+					if (person.equals(study.getPrimaryResearcher())) result = Msg.getString("TabPanelScience.primary"); //$NON-NLS-1$
+					else result = Msg.getString("TabPanelScience.collaborator"); //$NON-NLS-1$
 				}
 				else if (columnIndex == 2) {
 					if (study.isCompleted()) result = study.getCompletionState();
@@ -348,8 +349,8 @@ extends TabPanel {
 
 		@Override
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Science";
-			else if (columnIndex == 1) return "Achievement Credit";
+			if (columnIndex == 0) return Msg.getString("TabPanelScience.column.science"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelScience.column.achievementCredit"); //$NON-NLS-1$
 			else return null;
 		}
 
