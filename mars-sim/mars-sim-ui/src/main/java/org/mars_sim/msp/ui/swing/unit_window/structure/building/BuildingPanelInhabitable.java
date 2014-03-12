@@ -7,11 +7,13 @@
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -58,16 +60,20 @@ implements MouseListener {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Create inhabitant label
-		JLabel inhabitantLabel = new JLabel("Occupants", JLabel.CENTER);
+		JLabel inhabitantLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.occupants"), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(inhabitantLabel);
 
 		// Create number label
-		numberLabel = new JLabel("Number: " + inhabitable.getOccupantNumber(), JLabel.CENTER);
+		numberLabel = new JLabel(Msg.getString("BuildingPanelInhabitable.number", inhabitable.getOccupantNumber()), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numberLabel);
 
 		// Create capacity label
-		JLabel capacityLabel = new JLabel("Capacity: " + 
-				inhabitable.getOccupantCapacity(), JLabel.CENTER);
+		JLabel capacityLabel = new JLabel(
+			Msg.getString(
+				"BuildingPanelInhabitable.capacity", //$NON-NLS-1$
+				inhabitable.getOccupantCapacity()
+			),JLabel.CENTER
+		);
 		labelPanel.add(capacityLabel);
 
 		// Create inhabitant list panel
@@ -103,7 +109,7 @@ implements MouseListener {
 			Iterator<Person> i = inhabitantCache.iterator();
 			while (i.hasNext()) inhabitantListModel.addElement(i.next());
 
-			numberLabel.setText("Number: " + inhabitantCache.size());
+			numberLabel.setText(Msg.getString("BuildingPanelInhabitable.number", inhabitantCache.size())); //$NON-NLS-1$
 		}
 	}
 

@@ -6,10 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 /**
@@ -57,26 +59,26 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Prepare cooking label
-		JLabel cookingLabel = new JLabel("Cooking", JLabel.CENTER);
+		JLabel cookingLabel = new JLabel(Msg.getString("BuildingPanelCooking.cooking"), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(cookingLabel);
 
 		// Prepare cook number label
 		numCooksCache = kitchen.getNumCooks();
-		numCooksLabel = new JLabel("Number of Cooks: " + numCooksCache, JLabel.CENTER);
+		numCooksLabel = new JLabel(Msg.getString("BuildingPanelCooking.numberOfCooks", numCooksCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numCooksLabel);
 
 		// Prepare cook capacity label
-		JLabel cookCapacityLabel = new JLabel("Cook Capacity: " + kitchen.getCookCapacity(), JLabel.CENTER);
+		JLabel cookCapacityLabel = new JLabel(Msg.getString("BuildingPanelCooking.cookCapacity", kitchen.getCookCapacity()), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(cookCapacityLabel);
 
 		// Prepare meal number label
 		numMealsCache = kitchen.getNumberOfCookedMeals();
-		numMealsLabel = new JLabel("Number of Meals: " + numMealsCache, JLabel.CENTER);
+		numMealsLabel = new JLabel(Msg.getString("BuildingPanelCooking.numberOfMeals", numMealsCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(numMealsLabel);
 
 		// Prepare meal quality label
 		mealQualityCache = kitchen.getBestMealQuality();
-		mealQualityLabel = new JLabel("Quality of Meals: " + mealQualityCache, JLabel.CENTER);
+		mealQualityLabel = new JLabel(Msg.getString("BuildingPanelCooking.qualityOfMeals", mealQualityCache), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(mealQualityLabel);
 	}	
 
@@ -87,19 +89,19 @@ extends BuildingFunctionPanel {
 		// Update cook number
 		if (numCooksCache != kitchen.getNumCooks()) {
 			numCooksCache = kitchen.getNumCooks();
-			numCooksLabel.setText("Number of Cooks: " + numCooksCache);
+			numCooksLabel.setText(Msg.getString("BuildingPanelCooking.numberOfCooks", numCooksCache)); //$NON-NLS-1$
 		}
 
 		// Update meal number
 		if (numMealsCache != kitchen.getNumberOfCookedMeals()) {
 			numMealsCache = kitchen.getNumberOfCookedMeals();
-			numMealsLabel.setText("Number of Meals: " + numMealsCache);
+			numMealsLabel.setText(Msg.getString("BuildingPanelCooking.numberOfMeals", numMealsCache)); //$NON-NLS-1$
 		}
 
 		// Update meal quality
 		if (mealQualityCache != kitchen.getBestMealQuality()) {
 			mealQualityCache = kitchen.getBestMealQuality();
-			mealQualityLabel.setText("Quality of Meals: " + mealQualityCache);
+			mealQualityLabel.setText(Msg.getString("BuildingPanelCooking.qualityOfMeals", mealQualityCache)); //$NON-NLS-1$
 		}
 	}
 }

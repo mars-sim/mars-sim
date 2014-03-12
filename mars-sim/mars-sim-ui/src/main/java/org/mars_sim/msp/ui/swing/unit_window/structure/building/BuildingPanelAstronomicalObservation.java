@@ -6,10 +6,12 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 import javax.swing.*;
+
 import java.awt.*;
 
 /**
@@ -48,7 +50,7 @@ extends BuildingFunctionPanel {
 		add(labelPanel, BorderLayout.NORTH);
 
 		// Astronomy top label
-		JLabel astronomyLabel = new JLabel("Astronomy Observation", JLabel.CENTER);
+		JLabel astronomyLabel = new JLabel(Msg.getString("BuildingPanelAstronomicalObservation.astronomyObservation"), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(astronomyLabel);
 
 		// Observer number label
@@ -58,8 +60,12 @@ extends BuildingFunctionPanel {
 		labelPanel.add(observersLabel);
 
 		// Observer capacityLabel
-		JLabel observerCapacityLabel = new JLabel("Observer Capacity: " + 
-				function.getObservatoryCapacity(), JLabel.CENTER);
+		JLabel observerCapacityLabel = new JLabel(
+			Msg.getString(
+				"BuildingPanelAstronomicalObservation.observerCapacity", //$NON-NLS-1$
+				function.getObservatoryCapacity()
+			),JLabel.CENTER
+		);
 		labelPanel.add(observerCapacityLabel);
 	}
 
@@ -67,7 +73,12 @@ extends BuildingFunctionPanel {
 	public void update() {
 		if (currentObserversAmount != function.getObserverNum()) {
 			currentObserversAmount = function.getObserverNum();
-			observersLabel.setText("Number of Observers: " + currentObserversAmount);
+			observersLabel.setText(
+				Msg.getString(
+					"BuildingPanelAstronomicalObservation.numberOfObservers", //$NON-NLS-1$
+					currentObserversAmount
+				)
+			);
 		}
 	}
 }

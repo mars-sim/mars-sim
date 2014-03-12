@@ -164,7 +164,7 @@ extends BuildingFunctionPanel {
 			else if (columnIndex == 1) return "Crop";
 			else if (columnIndex == 2) return "Phase";
 			else if (columnIndex == 3) return "Growth";
-			else return "unknown";
+			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -189,7 +189,7 @@ extends BuildingFunctionPanel {
 				else if (phase.equals(Crop.HARVESTING) || phase.equals(Crop.FINISHED)) growth = 100;
 				return String.valueOf(growth) + "%";
 			}
-			else return "unknown";
+			else return null;
 		}
 
 		public void update() {
