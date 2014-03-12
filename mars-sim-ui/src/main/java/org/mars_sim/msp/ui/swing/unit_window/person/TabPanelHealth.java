@@ -21,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -33,13 +34,13 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /** 
  * The HealthTabPanel is a tab panel for a person's health.
  */
-public class HealthTabPanel
+public class TabPanelHealth
 extends TabPanel {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DecimalFormat formatter = new DecimalFormat("0.0");
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelHealth.decimalFormat")); //$NON-NLS-1$
 	private JLabel fatigueLabel;
 	private JLabel hungerLabel;
 	private JLabel stressLabel;
@@ -58,12 +59,12 @@ extends TabPanel {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public HealthTabPanel(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelHealth(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
-			"Health",
+			Msg.getString("TabPanelHealth.title"), //$NON-NLS-1$
 			null,
-			"Health",
+			Msg.getString("TabPanelHealth.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -75,7 +76,7 @@ extends TabPanel {
 		topContentPanel.add(healthLabelPanel);
 
 		// Prepare health label
-		JLabel healthLabel = new JLabel("Health", JLabel.CENTER);
+		JLabel healthLabel = new JLabel(Msg.getString("TabPanelHealth.label"), JLabel.CENTER); //$NON-NLS-1$
 		healthLabelPanel.add(healthLabel);
 
 		// Prepare condition panel
@@ -84,7 +85,7 @@ extends TabPanel {
 		centerContentPanel.add(conditionPanel, BorderLayout.NORTH);
 
 		// Prepare fatigue name label
-		JLabel fatigueNameLabel = new JLabel("Fatigue", JLabel.LEFT);
+		JLabel fatigueNameLabel = new JLabel(Msg.getString("TabPanelHealth.fatigue"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(fatigueNameLabel);
 
 		// Prepare fatigue label
@@ -93,7 +94,7 @@ extends TabPanel {
 		conditionPanel.add(fatigueLabel);
 
 		// Prepare hunger name label
-		JLabel hungerNameLabel = new JLabel("Hunger", JLabel.LEFT);
+		JLabel hungerNameLabel = new JLabel(Msg.getString("TabPanelHealth.hunger"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(hungerNameLabel);
 
 		// Prepare hunger label
@@ -102,7 +103,7 @@ extends TabPanel {
 		conditionPanel.add(hungerLabel);
 
 		// Prepare streses name label
-		JLabel stressNameLabel = new JLabel("Stress", JLabel.LEFT);
+		JLabel stressNameLabel = new JLabel(Msg.getString("TabPanelHealth.stress"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(stressNameLabel);
 
 		// Prepare stress label
@@ -111,7 +112,7 @@ extends TabPanel {
 		conditionPanel.add(stressLabel);
 
 		// Prepare performance rating label
-		JLabel performanceNameLabel = new JLabel("Performance", JLabel.LEFT);
+		JLabel performanceNameLabel = new JLabel(Msg.getString("TabPanelHealth.performance"), JLabel.LEFT); //$NON-NLS-1$
 		conditionPanel.add(performanceNameLabel);
 
 		// Performance rating label
@@ -129,7 +130,7 @@ extends TabPanel {
 		tablePanel.add(medicationPanel);
 
 		// Prepare medication label.
-		JLabel medicationLabel = new JLabel("Medication", JLabel.CENTER);
+		JLabel medicationLabel = new JLabel(Msg.getString("TabPanelHealth.medication"), JLabel.CENTER); //$NON-NLS-1$
 		medicationPanel.add(medicationLabel, BorderLayout.NORTH);
 
 		// Prepare medication scroll panel
@@ -151,7 +152,7 @@ extends TabPanel {
 		tablePanel.add(healthProblemPanel);
 
 		// Prepare health problem label
-		JLabel healthProblemLabel = new JLabel("Health Problems", JLabel.CENTER);
+		JLabel healthProblemLabel = new JLabel(Msg.getString("TabPanelHealth.healthProblems"), JLabel.CENTER); //$NON-NLS-1$
 		healthProblemPanel.add(healthProblemLabel, BorderLayout.NORTH);
 
 		// Prepare health problem scroll panel
@@ -197,7 +198,7 @@ extends TabPanel {
 		// Update performance cache if necessary.
 		if (performanceCache != (person.getPerformanceRating() * 100D)) {
 			performanceCache = person.getPerformanceRating() * 100D;
-			performanceLabel.setText(formatter.format(performanceCache) + "%");
+			performanceLabel.setText(formatter.format(performanceCache) + " %");
 		}
 
 		// Update medication table model.
@@ -239,8 +240,8 @@ extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Problem";
-			else if (columnIndex == 1) return "Condition";
+			if (columnIndex == 0) return Msg.getString("TabPanelHealth.column.problem"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelHealth.column.condition"); //$NON-NLS-1$
 			else return "unknown";
 		}
 
@@ -310,8 +311,8 @@ extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "Medication";
-			else if (columnIndex == 1) return "Duration (millisols)";
+			if (columnIndex == 0) return Msg.getString("TabPanelHealth.column.medication"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelHealth.column.duration"); //$NON-NLS-1$
 			else return "unknown";
 		}
 

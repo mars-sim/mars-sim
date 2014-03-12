@@ -30,7 +30,7 @@ import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 /** 
  * The SkillTabPanel is a tab panel for the skills of a person.
  */
-public class SkillTabPanel
+public class TabPanelSkill
 extends TabPanel {
 
 	/** default serial id. */
@@ -43,7 +43,7 @@ extends TabPanel {
 	 * @param person the person.
 	 * @param desktop the main desktop.
 	 */
-	public SkillTabPanel(Person person, MainDesktopPane desktop) { 
+	public TabPanelSkill(Person person, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
 		super(
 			"Skills",

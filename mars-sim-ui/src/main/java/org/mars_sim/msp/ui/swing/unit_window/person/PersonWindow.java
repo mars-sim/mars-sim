@@ -36,18 +36,18 @@ extends UnitWindow {
 		// Add tab panels
 		addTopPanel(new LocationTabPanel(person, desktop));
 		addTabPanel(new InventoryTabPanel(person, desktop));
-		addTabPanel(new AttributeTabPanel(person, desktop));
-		addTabPanel(new SkillTabPanel(person, desktop));
-		addTabPanel(new ActivityTabPanel(person, desktop));
-		addTabPanel(new HealthTabPanel(person, desktop));
-		addTabPanel(new GeneralTabPanel(person, desktop));
-		addTabPanel(new SocialTabPanel(person, desktop));
-		addTabPanel(new ScienceTabPanel(person, desktop));
+		addTabPanel(new TabPanelAttribute(person, desktop));
+		addTabPanel(new TabPanelSkill(person, desktop));
+		addTabPanel(new TabPanelActivity(person, desktop));
+		addTabPanel(new TabPanelHealth(person, desktop));
+		addTabPanel(new TabPanelGeneral(person, desktop));
+		addTabPanel(new TabPanelSocial(person, desktop));
+		addTabPanel(new TabPanelScience(person, desktop));
 
 		// Add death tab panel if person is dead.
 		if (person.getPhysicalCondition().isDead()) {
 			dead = true;
-			addTabPanel(new DeathTabPanel(person, desktop));
+			addTabPanel(new TabPanelDeath(person, desktop));
 		}
 		else dead = false;
 	}
@@ -62,7 +62,7 @@ extends UnitWindow {
 		if (!dead) {
 			if (person.getPhysicalCondition().isDead()) {
 				dead = true;
-				addTabPanel(new DeathTabPanel(person, desktop));
+				addTabPanel(new TabPanelDeath(person, desktop));
 			}
 		}
 	}
