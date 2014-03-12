@@ -450,6 +450,8 @@ implements VehicleOperator, Serializable {
 	/**
 	 * Gets the birthplace of the person
 	 * @return the gender
+	 * @deprecated
+	 * TODO internationalize the place of birth for display in user interface.
 	 */
 	public String getBirthplace() {
 		return birthplace;
