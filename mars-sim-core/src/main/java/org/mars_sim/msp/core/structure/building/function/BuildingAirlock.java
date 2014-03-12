@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-03-06
+ * @version 3.06 2014-03-11
  * @author Scott Davis
  */
 
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -60,27 +61,7 @@ public class BuildingAirlock extends Airlock {
         
         // Determine airlock inside position.
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building); 
-    }
-
-    /**
-     * Enters a person into the airlock from either the inside or the outside.
-     * Inner or outer door (respectively) must be open for person to enter.
-     * @param person the person to enter the airlock
-     * @param inside true if person is entering from inside
-     *               false if person is entering from outside
-     * @return true if person entered the airlock successfully
-     */
-    public boolean enterAirlock(Person person, boolean inside) {
-        boolean result = super.enterAirlock(person, inside);
-
-        // Check if person is entering airlock from inside.
-        if (result && inside) {
-            // Add person to the building.
-            BuildingManager.addPersonToBuildingSameLocation(person, building);
-        }
-
-        return result;
-    }         
+    }   
 
     /**
      * Causes a person within the airlock to exit either inside or outside.
@@ -94,20 +75,34 @@ public class BuildingAirlock extends Airlock {
         if (inAirlock(person)) {
 
             if (PRESSURIZED.equals(getState())) {
-                // Exit person to inside building.
-                BuildingManager.addPersonToBuildingSameLocation(person, building);
-                inv.storeUnit(person);
+                if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+                    // Exit person to inside building.
+                    BuildingManager.addPersonToBuildingSameLocation(person, building);
+                    inv.storeUnit(person);
+                }
+                else {
+                    throw new IllegalStateException(person + " is entering " + getEntityName() + 
+                            " from an airlock but is not outside.");
+                }
             }
             else if (DEPRESSURIZED.equals(getState())) {
-                // Exit person to outside building.
-                BuildingManager.removePersonFromBuilding(person, building);
-                inv.retrieveUnit(person);
+                if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
+                    // Exit person to outside building.
+                    BuildingManager.removePersonFromBuilding(person, building);
+                    inv.retrieveUnit(person);
+                }
+                else {
+                    throw new IllegalStateException(person + " is exiting " + getEntityName() + 
+                            " from an airlock but is not inside.");
+                }
             }
             else {
                 logger.severe("Building airlock in incorrect state for exiting: " + getState());
             }
         }
-        else throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
+        else {
+            throw new IllegalStateException(person.getName() + " not in airlock of " + getEntityName());
+        }
     }
 
     /**
