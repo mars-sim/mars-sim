@@ -15,6 +15,7 @@ import org.mars_sim.msp.ui.swing.configeditor.TempSimulationConfigEditor;
 
 import javax.swing.*;
 
+import java.awt.Cursor;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,7 +55,7 @@ public class MarsProject {
             // Create a splash window
             SplashWindow splashWindow = new SplashWindow();
             splashWindow.show();
-
+            splashWindow.getJFrame().setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
             boolean newSim = initializeSimulation(args);
 
             // Create the main desktop window.
