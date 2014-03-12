@@ -414,7 +414,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		 * @return the value Object at the specified cell.
 		 */
 		public Object getValueAt(int row, int column) {
-			Object result = "unknown";
+			Object result = null;
 
 			if (row < goodsList.size()) {
 				Good good = goodsList.get(row); 
@@ -546,7 +546,7 @@ public class EmergencySupplyPanel extends WizardPanel {
 		 * @return the value Object at the specified cell.
 		 */
 		public Object getValueAt(int row, int column) {
-			Object result = "unknown";
+			Object result = null;
 
 			if (row < cargoList.size()) {
 				Good good = cargoList.get(row); 

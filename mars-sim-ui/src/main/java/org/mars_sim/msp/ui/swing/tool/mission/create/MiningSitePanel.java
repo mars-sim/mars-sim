@@ -390,7 +390,7 @@ public class MiningSitePanel extends WizardPanel {
         public String getColumnName(int columnIndex) {
             if (columnIndex == 0) return "Mineral";
             else if (columnIndex == 1) return "Color";
-            else return "unknown";
+            else return null;
         }
         
         public Object getValueAt(int row, int column) {
@@ -402,9 +402,9 @@ public class MiningSitePanel extends WizardPanel {
                 else if (column == 1) {
                     return mineralColors.get(mineralName);
                 }
-                else return "unknown";
+                else return null;
             }
-            else return "unknown";
+            else return null;
         }
     }
     

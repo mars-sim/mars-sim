@@ -173,7 +173,7 @@ extends WizardPanel {
          * @return the value Object at the specified cell.
          */
         public Object getValueAt(int row, int column) {
-            Object result = "unknown";
+            Object result = null;
             
             if ((row >= 0) && (row < units.size())) {
                 Person person = (Person) getUnit(row);

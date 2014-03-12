@@ -99,12 +99,12 @@ implements Serializable {
 	/**
 	 * Gets the gender of a given person name.
 	 * @param name the name of the person
-	 * @return the gender of the person name ("male", "female", "unknown")
+	 * @return {@link PersonGender} the gender of the person name
 	 * @throws Exception if person names could not be found.
 	 */
-    @SuppressWarnings("unchecked")
+	@SuppressWarnings("unchecked")
 	public PersonGender getPersonGender(String name) {
-    	PersonGender result = PersonGender.UNKNOWN;
+		PersonGender result = PersonGender.UNKNOWN;
 		
 		Element root = personDoc.getRootElement();
 		Element personNameList = root.getChild(PERSON_NAME_LIST);

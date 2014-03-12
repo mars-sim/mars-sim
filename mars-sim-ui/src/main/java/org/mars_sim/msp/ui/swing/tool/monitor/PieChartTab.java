@@ -7,6 +7,7 @@
 
 package org.mars_sim.msp.ui.swing.tool.monitor;
 
+import java.awt.BorderLayout;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -279,7 +280,7 @@ class PieChartTab extends MonitorTab {
         pieModel.addChangeListener(plot);
 
         chartpanel = new ChartPanel(chart, true);
-        add(chartpanel, "Center");
+        add(chartpanel, BorderLayout.CENTER);
     }
 
     /**

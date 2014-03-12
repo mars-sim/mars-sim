@@ -88,6 +88,8 @@ extends WizardPanel {
 		// Create the study table.
 		studyTable = new JTable(studyTableModel);
 		studyTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+			/** default serial id. */
+			private static final long serialVersionUID = 1L;
 			public Component getTableCellRendererComponent(JTable table, Object value, 
 					boolean isSelected, boolean hasFocus, int row, int column) {
 
@@ -226,7 +228,7 @@ extends WizardPanel {
 		 * @return column name.
 		 */
 		public String getColumnName(int columnIndex) {
-			String result = "unknown";
+			String result = null;
 			if (columnIndex == 0) result = "Study";
 			else if (columnIndex == 1) result = "Phase";
 			else if (columnIndex == 2) result = scienceName + " Researchers";
@@ -240,7 +242,7 @@ extends WizardPanel {
 		 * @return the value Object at the specified cell
 		 */
 		public Object getValueAt(int row, int column) {
-			Object result = "unknown";
+			Object result = null;
 
 			if (row < studies.size()) {
 				try {

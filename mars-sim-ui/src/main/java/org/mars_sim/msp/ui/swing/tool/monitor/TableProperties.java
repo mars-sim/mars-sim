@@ -92,7 +92,7 @@ class TableProperties extends JInternalFrame {
             columnButton.setSelected(true);
         }
 
-        mainPane.add(columnPane, "Center");
+        mainPane.add(columnPane, BorderLayout.CENTER);
         pack();
         main.add(this);
     }
