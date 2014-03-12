@@ -446,6 +446,7 @@ extends UnitTableModel {
 			m.put(UnitEventType.PERFORMANCE_EVENT, PERFORMANCE);
 			m.put(UnitEventType.JOB_EVENT, JOB);
 			m.put(UnitEventType.TASK_EVENT, TASK);
+			m.put(UnitEventType.TASK_NAME_EVENT, TASK);
 			m.put(UnitEventType.TASK_ENDED_EVENT, TASK);
 			m.put(UnitEventType.TASK_SUBTASK_EVENT, TASK);
 			m.put(UnitEventType.MISSION_EVENT, MISSION);
