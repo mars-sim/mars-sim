@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.mission;
@@ -11,7 +11,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Iterator;
 
 import javax.swing.JButton;
 import javax.swing.JList;
@@ -22,12 +21,7 @@ import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
-import org.mars_sim.msp.core.person.ai.mission.RoverMission;
-import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 import org.mars_sim.msp.ui.swing.tool.mission.create.CreateMissionWizard;
@@ -193,38 +187,7 @@ extends ToolWindow {
 	private void endMission(Mission mission) {
 		// logger.info("End mission: " + mission.getName());
 
-		// If vehicle is parked at a settlement, have all people exit vehicle.
-		exitVehicleAtSettlement(mission);
-
 		mission.endMission("User ending mission.");
-	}
-
-	/**
-	 * If vehicle is parked at a settlement, have all people exit vehicle.
-	 * @param mission the mission to check.
-	 */
-	private void exitVehicleAtSettlement(Mission mission) {
-		if (mission instanceof RoverMission) {
-			RoverMission roverMission = (RoverMission) mission;
-			if (roverMission.hasVehicle()) {
-				Rover rover = roverMission.getRover();
-				Settlement settlement = rover.getSettlement();
-				if (settlement != null) {
-					Iterator<Person> i = rover.getCrew().iterator();
-					while (i.hasNext()) {
-						Person crewmember = i.next();
-						try {
-							rover.getInventory().retrieveUnit(crewmember);
-							settlement.getInventory().storeUnit(crewmember);
-							BuildingManager.addToRandomBuilding(crewmember, settlement);
-						}
-						catch (Exception e) {
-							e.printStackTrace(System.err);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**
