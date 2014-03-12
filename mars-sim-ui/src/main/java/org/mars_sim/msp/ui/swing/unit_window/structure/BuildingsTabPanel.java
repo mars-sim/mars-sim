@@ -12,6 +12,7 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -52,10 +53,16 @@ implements ActionListener {
 	 */
 	public BuildingsTabPanel(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
-		super("Buildings", null, "Settlement Buildings", unit, desktop);
+		super(
+			"Buildings",
+			null,
+			"Settlement Buildings",
+			unit, desktop
+		);
 
 		Settlement settlement = (Settlement) unit;
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
+		Collections.sort(buildings);
 
 		// Create building select panel.
 		JPanel buildingSelectPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -96,8 +103,8 @@ implements ActionListener {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
-
 		Settlement settlement = (Settlement) unit;
 		List<Building> buildings = settlement.getBuildingManager().getBuildings();
 
@@ -142,7 +149,6 @@ implements ActionListener {
 
 	/** 
 	 * Action event occurs.
-	 *
 	 * @param event the action event
 	 */
 	public void actionPerformed(ActionEvent event) {
@@ -154,7 +160,6 @@ implements ActionListener {
 
 	/**
 	 * Gets the building panel for a given building.
-	 *
 	 * @param building the given building
 	 * @return the building panel or null if none.
 	 */
