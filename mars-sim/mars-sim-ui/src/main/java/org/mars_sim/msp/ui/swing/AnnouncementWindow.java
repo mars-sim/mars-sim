@@ -8,6 +8,7 @@ package org.mars_sim.msp.ui.swing;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+
 import java.awt.*;
 
 /** 
@@ -40,6 +41,7 @@ extends JInternalFrame {
 		announcementLabel = new JLabel("", JLabel.CENTER); //$NON-NLS-1$
 		announcementLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 		mainPane.add(announcementLabel, BorderLayout.CENTER);
+		mainPane.setCursor(new Cursor(java.awt.Cursor.WAIT_CURSOR));
 	}
 
 	/**
