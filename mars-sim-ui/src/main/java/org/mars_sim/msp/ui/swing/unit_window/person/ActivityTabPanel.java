@@ -23,6 +23,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
@@ -60,15 +61,15 @@ implements ActionListener {
 	private JButton missionButton;
 
 	/** data cache */
-	private String jobCache = "";
+	private String jobCache = ""; //$NON-NLS-1$
 	/** data cache */
-	private String taskCache = "";
+	private String taskCache = ""; //$NON-NLS-1$
 	/** data cache */
-	private String taskPhaseCache = "";
+	private String taskPhaseCache = ""; //$NON-NLS-1$
 	/** data cache */
-	private String missionCache = "";
+	private String missionCache = ""; //$NON-NLS-1$
 	/** data cache */
-	private String missionPhaseCache = "";
+	private String missionPhaseCache = ""; //$NON-NLS-1$
 
 	/**
 	 * Constructor.
@@ -77,7 +78,12 @@ implements ActionListener {
 	 */
 	public ActivityTabPanel(Unit unit, MainDesktopPane desktop) { 
 		// Use the TabPanel constructor
-		super("Activity", null, "Activity", unit, desktop);
+		super(
+			Msg.getString("ActivityTabPanel.title"), //$NON-NLS-1$
+			null,
+			Msg.getString("ActivityTabPanel.tooltip"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		Person person = (Person) unit;
 		Mind mind = person.getMind();
@@ -89,7 +95,7 @@ implements ActionListener {
 		topContentPanel.add(activityLabelPanel);
 
 		// Prepare activity label
-		JLabel activityLabel = new JLabel("Activity", JLabel.CENTER);
+		JLabel activityLabel = new JLabel(Msg.getString("ActivityTabPanel.label"), JLabel.CENTER); //$NON-NLS-1$
 		activityLabelPanel.add(activityLabel);
 
 		// Prepare job panel
@@ -98,7 +104,7 @@ implements ActionListener {
 		topContentPanel.add(jobPanel);
 
 		// Prepare job label
-		jobLabel = new JLabel("Job: ", JLabel.CENTER);
+		jobLabel = new JLabel(Msg.getString("ActivityTabPanel.job"), JLabel.CENTER); //$NON-NLS-1$
 		jobPanel.add(jobLabel);        
 
 		// Prepare job combo box
@@ -127,7 +133,7 @@ implements ActionListener {
 		taskTopPanel.add(taskPanel);
 
 		// Prepare task label
-		JLabel taskLabel = new JLabel("Task", JLabel.CENTER);
+		JLabel taskLabel = new JLabel(Msg.getString("ActivityTabPanel.task"), JLabel.CENTER); //$NON-NLS-1$
 		taskPanel.add(taskLabel, BorderLayout.NORTH);
 
 		// Prepare task text area
@@ -144,7 +150,7 @@ implements ActionListener {
 		taskTopPanel.add(taskPhasePanel);
 
 		// Prepare task phase label
-		JLabel taskPhaseLabel = new JLabel("Task Phase", JLabel.CENTER);
+		JLabel taskPhaseLabel = new JLabel(Msg.getString("ActivityTabPanel.taskPhase"), JLabel.CENTER); //$NON-NLS-1$
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare task phase text area
@@ -170,7 +176,7 @@ implements ActionListener {
 		missionLeftPanel.add(missionPanel);
 
 		// Prepare mission label
-		JLabel missionLabel = new JLabel("Mission", JLabel.CENTER);
+		JLabel missionLabel = new JLabel(Msg.getString("ActivityTabPanel.mission"), JLabel.CENTER); //$NON-NLS-1$
 		missionPanel.add(missionLabel, BorderLayout.NORTH);
 
 		// Prepare mission text area
@@ -187,7 +193,7 @@ implements ActionListener {
 		missionLeftPanel.add(missionPhasePanel);
 
 		// Prepare mission phase label
-		JLabel missionPhaseLabel = new JLabel("Mission Phase", JLabel.CENTER);
+		JLabel missionPhaseLabel = new JLabel(Msg.getString("ActivityTabPanel.missionPhase"), JLabel.CENTER); //$NON-NLS-1$
 		missionPhasePanel.add(missionPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare mission phase text area
@@ -204,17 +210,17 @@ implements ActionListener {
 		missionTopPanel.add(missionButtonPanel);
 
 		// Prepare mission tool button.
-		missionButton = new JButton(ImageLoader.getIcon("Mission"));
+		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText("Open mission in mission tool.");
+		missionButton.setToolTipText(Msg.getString("ActivityTabPanel.tooltip.mission")); //$NON-NLS-1$
 		missionButton.addActionListener(this);
 		missionButton.setEnabled(mind.getMission() != null);
 		missionButtonPanel.add(missionButton);
 
 		// Prepare mission monitor button
-		monitorButton = new JButton(ImageLoader.getIcon("Monitor"));
+		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText("Open tab in monitor tool for this mission.");
+		monitorButton.setToolTipText(Msg.getString("ActivityTabPanel.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.addActionListener(this);
 		monitorButton.setEnabled(mind.getMission() != null);
 		missionButtonPanel.add(monitorButton);
@@ -261,14 +267,14 @@ implements ActionListener {
 		// Update mission text area if necessary.
 		if (dead) missionCache = deathInfo.getMission();
 		else if (mission != null) missionCache = mission.getDescription();
-		else missionCache = "";
+		else missionCache = ""; //$NON-NLS-1$
 		if ((missionCache != null) && !missionCache.equals(missionTextArea.getText())) 
 			missionTextArea.setText(missionCache);
 
 		// Update mission phase text area if necessary.
 		if (dead) missionPhaseCache = deathInfo.getMissionPhase();
 		else if (mission != null) missionPhaseCache = mission.getPhaseDescription();
-		else missionPhaseCache = "";
+		else missionPhaseCache = ""; //$NON-NLS-1$
 		if ((missionPhaseCache != null) && !missionPhaseCache.equals(missionPhaseTextArea.getText())) 
 			missionPhaseTextArea.setText(missionPhaseCache);
 

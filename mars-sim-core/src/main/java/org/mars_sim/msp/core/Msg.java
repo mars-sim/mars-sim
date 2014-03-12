@@ -77,6 +77,34 @@ public class Msg {
 
 	/**
 	 * replaces all occurances of "{0}" with the given parameter.
+	 * @param key {@link String}
+	 * @param param1 {@link Integer}
+	 * @return {@link String}
+	 */
+	public static String getString(
+		final String key,
+		final int param1
+	) {
+		return getString(key)
+		.replace("{0}",Integer.toString(param1));
+	}
+
+	/**
+	 * replaces all occurances of "{0}" with the given parameter.
+	 * @param key {@link String}
+	 * @param param1 {@link Double}
+	 * @return {@link String}
+	 */
+	public static String getString(
+		final String key,
+		final double param1
+	) {
+		return getString(key)
+		.replace("{0}",Double.toString(param1));
+	}
+
+	/**
+	 * replaces all occurances of "{0}" with the given parameter.
 	 * replaces all occurances of "{1}" with the given second parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
