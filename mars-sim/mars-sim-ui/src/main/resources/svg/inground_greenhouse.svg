@@ -14,7 +14,7 @@
    height="1000"
    id="svg3649"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.3.1 r9886"
    sodipodi:docname="inground_greenhouse.svg">
   <defs
      id="defs3651">
@@ -128,7 +128,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.557"
-     inkscape:cx="250"
+     inkscape:cx="38.150808"
      inkscape:cy="571.81329"
      inkscape:document-units="px"
      inkscape:current-layer="layer5"
@@ -136,9 +136,9 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:snap-grids="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="825"
-     inkscape:window-x="0"
+     inkscape:window-width="1871"
+     inkscape:window-height="1056"
+     inkscape:window-x="49"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:snap-to-guides="false">
@@ -166,7 +166,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -4326,11 +4326,11 @@
          sodipodi:cy="1260"
          sodipodi:rx="20"
          sodipodi:ry="20"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          transform="translate(622.39878,-926.30242)" />
       <path
          transform="translate(622.39878,-879.83007)"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          sodipodi:ry="20"
          sodipodi:rx="20"
          sodipodi:cy="1260"
@@ -4346,11 +4346,11 @@
          sodipodi:cy="1260"
          sodipodi:rx="20"
          sodipodi:ry="20"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          transform="translate(622.39878,-833.35772)" />
       <path
          transform="translate(622.39878,-785.85265)"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          sodipodi:ry="20"
          sodipodi:rx="20"
          sodipodi:cy="1260"
@@ -4366,7 +4366,7 @@
          sodipodi:cy="1260"
          sodipodi:rx="20"
          sodipodi:ry="20"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          transform="translate(622.39878,-740.41302)" />
       <rect
          ry="17.253193"
@@ -4378,7 +4378,7 @@
          style="fill:#c85706;fill-opacity:1;fill-rule:evenodd;stroke:#050509;stroke-width:4.90067816;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
       <path
          transform="translate(539.78127,-927.33514)"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          sodipodi:ry="20"
          sodipodi:rx="20"
          sodipodi:cy="1260"
@@ -4394,11 +4394,11 @@
          sodipodi:cy="1260"
          sodipodi:rx="20"
          sodipodi:ry="20"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          transform="translate(539.78127,-880.86279)" />
       <path
          transform="translate(539.78127,-834.39044)"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          sodipodi:ry="20"
          sodipodi:rx="20"
          sodipodi:cy="1260"
@@ -4414,11 +4414,11 @@
          sodipodi:cy="1260"
          sodipodi:rx="20"
          sodipodi:ry="20"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          transform="translate(539.78127,-786.88537)" />
       <path
          transform="translate(539.78127,-741.44574)"
-         d="m 390,1260 a 20,20 0 1 1 -40,0 20,20 0 1 1 40,0 z"
+         d="m 390,1260 c 0,11.0457 -8.95431,20 -20,20 -11.04569,0 -20,-8.9543 -20,-20 0,-11.0457 8.95431,-20 20,-20 11.04569,0 20,8.9543 20,20 z"
          sodipodi:ry="20"
          sodipodi:rx="20"
          sodipodi:cy="1260"
@@ -5132,30 +5132,5 @@
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
        d="m 360,800 120,0"
        id="path4281" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer6"
-     inkscape:label="doors"
-     sodipodi:insensitive="true"
-     style="display:inline">
-    <rect
-       style="fill:#000080;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35829991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new"
-       id="rect3611"
-       width="120"
-       height="20"
-       x="190"
-       y="0"
-       rx="0"
-       ry="20" />
-    <rect
-       ry="20"
-       rx="0"
-       y="980"
-       x="190"
-       height="20"
-       width="120"
-       id="rect4314"
-       style="fill:#000080;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35829991;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline;enable-background:new" />
   </g>
 </svg>
