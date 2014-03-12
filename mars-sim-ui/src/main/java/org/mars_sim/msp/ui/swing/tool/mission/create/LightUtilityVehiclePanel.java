@@ -25,7 +25,11 @@ import java.util.Iterator;
 /**
  * A wizard panel for selecting the mission light utility vehicle.
  */
-class LightUtilityVehiclePanel extends WizardPanel {
+class LightUtilityVehiclePanel
+extends WizardPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// The wizard panel name.
 	private final static String NAME = "Light Utility Vehicle";
@@ -36,10 +40,10 @@ class LightUtilityVehiclePanel extends WizardPanel {
 	private JLabel errorMessageLabel;
 	
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param wizard the create mission wizard.
 	 */
-	LightUtilityVehiclePanel(CreateMissionWizard wizard) {
+	public LightUtilityVehiclePanel(CreateMissionWizard wizard) {
 		// User WizardPanel constructor.
 		super(wizard);
 		
@@ -115,7 +119,8 @@ class LightUtilityVehiclePanel extends WizardPanel {
 	 * Gets the wizard panel name.
 	 * @return panel name.
 	 */
-	String getPanelName() {
+	@Override
+	public String getPanelName() {
 		return NAME;
 	}
 
@@ -150,87 +155,89 @@ class LightUtilityVehiclePanel extends WizardPanel {
 	/**
 	 * A table model for vehicles.
 	 */
-    private class VehicleTableModel extends UnitTableModel {
-    	
-    	/**
-    	 * Constructor
-    	 */
-    	private VehicleTableModel() {
-    		// Use UnitTableModel constructor.
-    		super();
-    		
-    		// Add columns.
-    		columns.add("Name");
-    		columns.add("Status");
-    		columns.add("Mission");
-    	}
-    	
-    	/**
-    	 * Returns the value for the cell at columnIndex and rowIndex.
-    	 * @param row the row whose value is to be queried
-    	 * @param column the column whose value is to be queried
-    	 * @return the value Object at the specified cell
-    	 */
-    	public Object getValueAt(int row, int column) {
-    		Object result = null;
-    		
-            if (row < units.size()) {
-            	LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
-            	
-            	try {
-            		if (column == 0) 
-            			result = vehicle.getName();
-            		else if (column == 1) 
-            			result = vehicle.getStatus();
-            		else if (column == 2) {
-            			Mission mission = Simulation.instance().getMissionManager().
-    							getMissionForVehicle(vehicle);
-            			if (mission != null) result = mission.getDescription();
-            			else result = "None";
-            		}
-            	}
-            	catch (Exception e) {}
-            }
-            
-            return result;
-        }
-    	
-    	/**
-    	 * Updates the table data.
-    	 */
-    	void updateTable() {
-    		units.clear();
-    		Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
-    		Collection<Vehicle> vehicles = CollectionUtils.sortByName(
-    				startingSettlement.getParkedVehicles());
-    		Iterator<Vehicle> i = vehicles.iterator();
-    		while (i.hasNext()) {
-    			Vehicle vehicle = i.next();
-    			if (vehicle instanceof LightUtilityVehicle) units.add(vehicle);
-    		}
-    		fireTableDataChanged();
-    	}
-    	
-    	/**
-    	 * Checks if a table cell is a failure cell.
-    	 * @param row the table row.
-    	 * @param column the table column.
-    	 * @return true if cell is a failure cell.
-    	 */
-    	boolean isFailureCell(int row, int column) {
-    		boolean result = false;
-    		LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
-    		
-    		if (column == 1) {
-    			if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
-    		}
-    		else if (column == 2) {
-    			Mission mission = Simulation.instance().getMissionManager().
-    					getMissionForVehicle(vehicle);
-    			if (mission != null) result = true;
-    		}
-    		
-    		return result;
-    	}
-    }
+	private class VehicleTableModel
+	extends UnitTableModel {
+
+		/** default serial id. */
+		private static final long serialVersionUID = 1L;
+
+		/** hidden Constructor. */
+		private VehicleTableModel() {
+			// Use UnitTableModel constructor.
+			super();
+
+			// Add columns.
+			columns.add("Name");
+			columns.add("Status");
+			columns.add("Mission");
+		}
+
+		/**
+		 * Returns the value for the cell at columnIndex and rowIndex.
+		 * @param row the row whose value is to be queried
+		 * @param column the column whose value is to be queried
+		 * @return the value Object at the specified cell
+		 */
+		public Object getValueAt(int row, int column) {
+			Object result = null;
+
+			if (row < units.size()) {
+				LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
+
+				try {
+					if (column == 0) 
+						result = vehicle.getName();
+					else if (column == 1) 
+						result = vehicle.getStatus();
+					else if (column == 2) {
+						Mission mission = Simulation.instance().getMissionManager().
+								getMissionForVehicle(vehicle);
+						if (mission != null) result = mission.getDescription();
+						else result = "None";
+					}
+				}
+				catch (Exception e) {}
+			}
+
+			return result;
+		}
+
+		/**
+		 * Updates the table data.
+		 */
+		void updateTable() {
+			units.clear();
+			Settlement startingSettlement = getWizard().getMissionData().getStartingSettlement();
+			Collection<Vehicle> vehicles = CollectionUtils.sortByName(
+					startingSettlement.getParkedVehicles());
+			Iterator<Vehicle> i = vehicles.iterator();
+			while (i.hasNext()) {
+				Vehicle vehicle = i.next();
+				if (vehicle instanceof LightUtilityVehicle) units.add(vehicle);
+			}
+			fireTableDataChanged();
+		}
+
+		/**
+		 * Checks if a table cell is a failure cell.
+		 * @param row the table row.
+		 * @param column the table column.
+		 * @return true if cell is a failure cell.
+		 */
+		boolean isFailureCell(int row, int column) {
+			boolean result = false;
+			LightUtilityVehicle vehicle = (LightUtilityVehicle) getUnit(row);
+
+			if (column == 1) {
+				if (!vehicle.getStatus().equals(Vehicle.PARKED)) result = true;
+			}
+			else if (column == 2) {
+				Mission mission = Simulation.instance().getMissionManager().
+						getMissionForVehicle(vehicle);
+				if (mission != null) result = true;
+			}
+
+			return result;
+		}
+	}
 }
