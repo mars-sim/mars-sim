@@ -1,15 +1,17 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.06 2014-03-08
+ * @version 3.06 2014-03-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.MedicalAssistance;
 import org.mars_sim.msp.core.person.ai.task.Task;
+import org.mars_sim.msp.core.person.ai.task.Walk;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.MedicalStation;
@@ -19,6 +21,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
@@ -186,11 +189,25 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	public void requestTreatment(HealthProblem problem) {
 		medicalStation.requestTreatment(problem);
 		
+		Person person = problem.getSufferer();
+		
+		Building medicalBuilding = getBuilding();
+		
+		Building currentBuilding = BuildingManager.getBuilding(person);
+		
 		// Add person to building if possible.
-		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-		    // TODO: Try to walk to this location.
-			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-			        getBuilding());
+		if (medicalBuilding.hasFunction(LifeSupport.NAME) && 
+		        !medicalBuilding.equals(currentBuilding)) {
+		   
+		    // Try to walk to a random location within medical building.
+		    // TODO: replace with activity spot.
+		    Point2D location = LocalAreaUtil.getRandomInteriorLocation(medicalBuilding);
+		    Point2D relativeLoc = LocalAreaUtil.getLocalRelativeLocation(location.getX(), 
+		            location.getY(), medicalBuilding);
+		    if (Walk.canWalkAllSteps(person, relativeLoc.getX(), relativeLoc.getY(), medicalBuilding)) {
+                person.getMind().getTaskManager().addTask(new Walk(person, relativeLoc.getX(), 
+                        relativeLoc.getY(), medicalBuilding));
+            }
 		}
 	}
 	
@@ -204,12 +221,26 @@ public class MedicalCare extends Function implements MedicalAid, Serializable {
 	public void startTreatment(HealthProblem problem, double treatmentDuration) {
 		medicalStation.startTreatment(problem, treatmentDuration);
         
-		// Add person to building if possible.
-		if (getBuilding().hasFunction(LifeSupport.NAME)) {
-		    // TODO: Try to walk to this location.
-		    BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-		            getBuilding());
-		}
+		Person person = problem.getSufferer();
+        
+        Building medicalBuilding = getBuilding();
+        
+        Building currentBuilding = BuildingManager.getBuilding(person);
+        
+        // Add person to building if possible.
+        if (medicalBuilding.hasFunction(LifeSupport.NAME) && 
+                !medicalBuilding.equals(currentBuilding)) {
+           
+            // Try to walk to a random location within medical building.
+            // TODO: replace with activity spot.
+            Point2D location = LocalAreaUtil.getRandomInteriorLocation(medicalBuilding);
+            Point2D relativeLoc = LocalAreaUtil.getLocalRelativeLocation(location.getX(), 
+                    location.getY(), medicalBuilding);
+            if (Walk.canWalkAllSteps(person, relativeLoc.getX(), relativeLoc.getY(), medicalBuilding)) {
+                person.getMind().getTaskManager().addTask(new Walk(person, relativeLoc.getX(), 
+                        relativeLoc.getY(), medicalBuilding));
+            }
+        }
 	}
 	
 	/**
