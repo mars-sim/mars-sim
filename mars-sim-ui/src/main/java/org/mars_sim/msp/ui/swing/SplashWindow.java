@@ -32,9 +32,8 @@ public class SplashWindow {
 	// Constant data member
 	public static final String VERSION_STRING = Simulation.VERSION;
 
+	private static String IMAGE_NAME = "splash.png";
 	
-	private static String[] IMAGE_NAMES = {"SplashImage.png", "SplashImage2.jpg", "SplashImage3.jpg"};
-
 	private Image splashImage;
 	private int width;
 	private int height;
@@ -45,17 +44,17 @@ public class SplashWindow {
 			public void paint(Graphics g) {
 //				window.paint(g);
 
-				// Draw splash image
+				// Draw splash image and superimposed text
 				g.drawImage(splashImage, 0, 0, this);
 				window.setForeground(Color.white);
+				g.setFont(new Font("SansSerif", Font.PLAIN, 35));
+				g.drawString("Mars Simulation Project" , 30, 60);
 				g.setFont(new Font("SansSerif", Font.PLAIN, 11));
-				g.drawString(VERSION_STRING, 20, 20);
+				g.drawString(VERSION_STRING, 930, 20);
 			}
 		};
-//		super(new Frame());
 
-		String imageName = IMAGE_NAMES[RandomUtil.getRandomInt(IMAGE_NAMES.length - 1)];
-		splashImage = ImageLoader.getImage(imageName);
+		splashImage = ImageLoader.getImage(IMAGE_NAME);
 		ImageIcon splashIcon = new ImageIcon(splashImage);
 		width = splashIcon.getIconWidth();
 		height = splashIcon.getIconHeight();
@@ -88,10 +87,4 @@ public class SplashWindow {
 		return window;
 	}
 
-//	public void paint(Graphics g) {
-//		window.paint(g);
-//
-//		// Draw splash image
-//		g.drawImage(splashImage, 0, 0, this);
-//	}
 }
