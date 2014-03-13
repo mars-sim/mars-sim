@@ -19,6 +19,7 @@ import java.util.List;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -31,7 +32,7 @@ import org.mars_sim.msp.ui.swing.unit_window.structure.building.BuildingPanel;
 /**
  * The BuildingsTabPanel is a tab panel containing building panels.
  */
-public class BuildingsTabPanel
+public class TabPanelBuildings
 extends TabPanel
 implements ActionListener {
 
@@ -51,12 +52,12 @@ implements ActionListener {
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public BuildingsTabPanel(Unit unit, MainDesktopPane desktop) {
+	public TabPanelBuildings(Unit unit, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			"Buildings",
+			Msg.getString("TabPanelBuildings.title"), //$NON-NLS-1$
 			null,
-			"Settlement Buildings",
+			Msg.getString("TabPanelBuildings.tooltip"), //$NON-NLS-1$
 			unit, desktop
 		);
 
@@ -155,7 +156,7 @@ implements ActionListener {
 		Building building = (Building) buildingComboBox.getSelectedItem();
 		BuildingPanel panel = getBuildingPanel(building);
 		if (panel != null) buildingLayout.show(buildingDisplayPanel, panel.getPanelName());
-		else System.err.println("Couldn't find panel for " + building);
+		else System.err.println(Msg.getString("TabPanelBuildings.err.cantFindPanelForBuilding", building.getName())); //$NON-NLS-1$
 	}
 
 	/**
