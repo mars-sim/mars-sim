@@ -55,58 +55,58 @@ import org.mars_sim.msp.core.structure.building.function.Storage;
 public class Building
 implements Malfunctionable, Serializable, Comparable<Building>,
 LocalBoundedObject, InsidePathLocation {
-    
-    /** default serial id. */
-    private static final long serialVersionUID = 1L;
-    
-    // TODO Maintenance info should not be hard coded but initialized from some config files
-    /** 3340 Sols (5 orbits). */
-    private static final double WEAR_LIFETIME = 3340000D;
-    /** Base amount of maintenance time for building. */
-    private static final double BASE_MAINTENANCE_TIME = 50D;
-    
-    // Data members
-    protected BuildingManager manager; 
-    protected int id;
-    protected String name;
-    protected double width;
-    protected double length;
-    protected double xLoc;
-    protected double yLoc;
-    protected double facing;
-    protected PowerMode powerMode;
-    protected MalfunctionManager malfunctionManager;
-    protected List<Function> functions;
-    protected double basePowerRequirement;
-    protected double basePowerDownPowerRequirement;
-    
-    /**
-     * Constructs a Building object.
-     * @param template the building template.
-     * @param manager the building's building manager.
-     * @throws BuildingException if building can not be created.
-     */
-    public Building(BuildingTemplate template, BuildingManager manager) {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// TODO Maintenance info should not be hard coded but initialized from some config files
+	/** 3340 Sols (5 orbits). */
+	private static final double WEAR_LIFETIME = 3340000D;
+	/** Base amount of maintenance time for building. */
+	private static final double BASE_MAINTENANCE_TIME = 50D;
+
+	// Data members
+	protected BuildingManager manager; 
+	protected int id;
+	protected String name;
+	protected double width;
+	protected double length;
+	protected double xLoc;
+	protected double yLoc;
+	protected double facing;
+	protected PowerMode powerMode;
+	protected MalfunctionManager malfunctionManager;
+	protected List<Function> functions;
+	protected double basePowerRequirement;
+	protected double basePowerDownPowerRequirement;
+
+	/**
+	 * Constructs a Building object.
+	 * @param template the building template.
+	 * @param manager the building's building manager.
+	 * @throws BuildingException if building can not be created.
+	 */
+	public Building(BuildingTemplate template, BuildingManager manager) {
 		this(
 			template.getID(), template.getType(),
 			template.getWidth(), template.getLength(), 
 			template.getXLoc(), template.getYLoc(),
 			template.getFacing(), manager
 		);
-    }
-    
-    /**
-     * Constructs a Building object.
-     * @param id the building's unique ID number.
-     * @param name the building's name.
-     * @param width the width (meters) of the building or -1 if not set.
-     * @param length the length (meters) of the building or -1 if not set.
-     * @param xLoc the x location of the building in the settlement.
-     * @param yLoc the y location of the building in the settlement.
-     * @param facing the facing of the building (degrees clockwise from North).
-     * @param manager the building's building manager.
-     * @throws BuildingException if building can not be created.
-     */
+	}
+
+	/**
+	 * Constructs a Building object.
+	 * @param id the building's unique ID number.
+	 * @param name the building's name.
+	 * @param width the width (meters) of the building or -1 if not set.
+	 * @param length the length (meters) of the building or -1 if not set.
+	 * @param xLoc the x location of the building in the settlement.
+	 * @param yLoc the y location of the building in the settlement.
+	 * @param facing the facing of the building (degrees clockwise from North).
+	 * @param manager the building's building manager.
+	 * @throws BuildingException if building can not be created.
+	 */
     public Building(int id, String name, double width, double length, double xLoc, 
             double yLoc, double facing, BuildingManager manager) {
 
@@ -170,13 +170,9 @@ LocalBoundedObject, InsidePathLocation {
         }
     }
     
-    /**
-     * Empty constructor.
-     */
-    protected Building() {
-    	
-    }
-    
+    /** Empty constructor. */
+    protected Building() {}
+
     /**
      * Determines the building functions.
      * @return list of building functions.
@@ -314,9 +310,11 @@ LocalBoundedObject, InsidePathLocation {
     
     /**
      * Gets the building's name.
-     *
      * @return building's name as a String.
+     * @deprecated
+     * TODO internationalize building names for display in user interface.
      */
+    @Override
     public String getName() {
         return name;
     }

@@ -50,160 +50,160 @@ implements Serializable {
 		malfunctions = config.getMalfunctionList(); 
 	}
 
-    /**
-     * Gets a randomly-picked malfunction for a given unit scope.
-     * @param scope a collection of scope strings defining the unit.
-     * @return a randomly-picked malfunction or null if there are none available.
-     */
-    public Malfunction getMalfunction(Collection<String> scope) {
+	/**
+	 * Gets a randomly-picked malfunction for a given unit scope.
+	 * @param scope a collection of scope strings defining the unit.
+	 * @return a randomly-picked malfunction or null if there are none available.
+	 */
+	public Malfunction getMalfunction(Collection<String> scope) {
 
-        Malfunction result = null;
+		Malfunction result = null;
 
-        double totalProbability = 0D;
-        if (malfunctions.size() > 0) {
-            Iterator<Malfunction> i = malfunctions.iterator();
-            while (i.hasNext()) {
-                Malfunction temp = i.next();
-    	        if (temp.unitScopeMatch(scope)) totalProbability += temp.getProbability();
-            }
-        }
+		double totalProbability = 0D;
+		if (malfunctions.size() > 0) {
+			Iterator<Malfunction> i = malfunctions.iterator();
+			while (i.hasNext()) {
+				Malfunction temp = i.next();
+				if (temp.unitScopeMatch(scope)) totalProbability += temp.getProbability();
+			}
+		}
 
-        double r = RandomUtil.getRandomDouble(totalProbability);
-	
-        Iterator<Malfunction> i = malfunctions.iterator();
-        while (i.hasNext()) {
-            Malfunction temp = i.next();
-            double probability = temp.getProbability();
-            if (temp.unitScopeMatch(scope) && (result == null)) {
-                if (r < probability) {
-                	try {
-                		result = temp.getClone();
-                		result.determineRepairParts();
-                	}
-                	catch (Exception e) {
-                		e.printStackTrace(System.err);
-                	}
-                }
-                else r -= probability;
-            }
-        }
+		double r = RandomUtil.getRandomDouble(totalProbability);
 
-        return result;
-    }
-    
-    /**
-     * Gets a collection of malfunctionable entities local to the given person.
-     * @return collection collection of malfunctionables.
-     */
-    public static Collection<Malfunctionable> getMalfunctionables(Person person) {
+		Iterator<Malfunction> i = malfunctions.iterator();
+		while (i.hasNext()) {
+			Malfunction temp = i.next();
+			double probability = temp.getProbability();
+			if (temp.unitScopeMatch(scope) && (result == null)) {
+				if (r < probability) {
+					try {
+						result = temp.getClone();
+						result.determineRepairParts();
+					}
+					catch (Exception e) {
+						e.printStackTrace(System.err);
+					}
+				}
+				else r -= probability;
+			}
+		}
 
-        Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-        LocationSituation location = person.getLocationSituation();
-	
-        if (location == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-            while (i.hasNext()) {
-                entities.add(i.next());
-            }
-        }
+		return result;
+	}
 
-        if (location == LocationSituation.IN_VEHICLE) {
-            entities.add(person.getVehicle());
-        }
+	/**
+	 * Gets a collection of malfunctionable entities local to the given person.
+	 * @return collection collection of malfunctionables.
+	 */
+	public static Collection<Malfunctionable> getMalfunctionables(Person person) {
 
-        if (location != LocationSituation.OUTSIDE) {
-            Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
-            while (i.hasNext()) {
-                Unit unit = i.next();
-                if (unit instanceof Malfunctionable) {
-                    entities.add((Malfunctionable) unit);
-                }
-            }
-        }
+		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+		LocationSituation location = person.getLocationSituation();
 
-        Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
-        if (inventoryUnits.size() > 0) {
-            Iterator<Unit> i = inventoryUnits.iterator();
-            while (i.hasNext()) {
-                Unit unit = i.next();
-                if (unit instanceof Malfunctionable) {
-                    entities.add((Malfunctionable)unit);
-                }
-            }
-        }
+		if (location == LocationSituation.IN_SETTLEMENT) {
+			Settlement settlement = person.getSettlement();
+			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+			while (i.hasNext()) {
+				entities.add(i.next());
+			}
+		}
 
-        return entities;
-    }
-    
-    /** 
-     * Gets a collection of malfunctionable entities local to a given settlement.
-     * @param settlement the settlement.
-     * @return collection of malfunctionables.
-     */
-    public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
-        
-        Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
-        
-        // Add all buildings within the settlement.
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-        while (i.hasNext()) {
-            entities.add(i.next());
-        }
-        
-        // Add all malfunctionable entities in settlement inventory.
-        Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
-        if (inventoryUnits.size() > 0) {
-            Iterator<Unit> j = inventoryUnits.iterator();
-            while (j.hasNext()) {
-                Unit unit = j.next();
-                if (unit instanceof Malfunctionable) {
-                    entities.add((Malfunctionable)unit);
-                }
-            }
-        }
-        
-        return entities;
-    }
+		if (location == LocationSituation.IN_VEHICLE) {
+			entities.add(person.getVehicle());
+		}
 
-    /**
-     * Gets a collection of malfunctionable entities
-     * local to the given malfunctionable entity.
-     * @return collection of malfunctionables.
-     */
-    public static Collection<Malfunctionable> getMalfunctionables(Malfunctionable entity) {
+		if (location != LocationSituation.OUTSIDE) {
+			Iterator<Unit> i = person.getContainerUnit().getInventory().getContainedUnits().iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Malfunctionable) {
+					entities.add((Malfunctionable) unit);
+				}
+			}
+		}
 
-        Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+		Collection<Unit> inventoryUnits = person.getInventory().getContainedUnits();
+		if (inventoryUnits.size() > 0) {
+			Iterator<Unit> i = inventoryUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Malfunctionable) {
+					entities.add((Malfunctionable)unit);
+				}
+			}
+		}
 
-        entities.add(entity);
+		return entities;
+	}
 
-        Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
-        if (inventoryUnits.size() > 0) {
-            Iterator<Unit> i = inventoryUnits.iterator();
-            while (i.hasNext()) {
-                Unit unit = i.next();
-                if (unit instanceof Malfunctionable) {
-                    entities.add((Malfunctionable)unit);
-                }
-            }
-        }
+	/** 
+	 * Gets a collection of malfunctionable entities local to a given settlement.
+	 * @param settlement the settlement.
+	 * @return collection of malfunctionables.
+	 */
+	public static Collection<Malfunctionable> getMalfunctionables(Settlement settlement) {
 
-        return entities;
-    }
-    
-    /**
-     * Gets all malfunctionables associated with a settlement.
-     * @param settlement the settlement.
-     * @return collection of malfunctionables.
-     */
-    public static Collection<Malfunctionable> getAssociatedMalfunctionables(Settlement settlement) {
-    	
-    	// Add settlement, buildings and all other malfunctionables in settlement inventory.
-    	Collection<Malfunctionable> entities = getMalfunctionables(settlement);
-    	
-    	// Add all associated rovers out on missions and their inventories.
-    	Iterator<Mission> i = Simulation.instance().getMissionManager()
-    	        .getMissionsForSettlement(settlement).iterator();
+		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+
+		// Add all buildings within the settlement.
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+		while (i.hasNext()) {
+			entities.add(i.next());
+		}
+
+		// Add all malfunctionable entities in settlement inventory.
+		Collection<Unit> inventoryUnits = settlement.getInventory().getContainedUnits();
+		if (inventoryUnits.size() > 0) {
+			Iterator<Unit> j = inventoryUnits.iterator();
+			while (j.hasNext()) {
+				Unit unit = j.next();
+				if (unit instanceof Malfunctionable) {
+					entities.add((Malfunctionable)unit);
+				}
+			}
+		}
+
+		return entities;
+	}
+
+	/**
+	 * Gets a collection of malfunctionable entities
+	 * local to the given malfunctionable entity.
+	 * @return collection of malfunctionables.
+	 */
+	public static Collection<Malfunctionable> getMalfunctionables(Malfunctionable entity) {
+
+		Collection<Malfunctionable> entities = new ArrayList<Malfunctionable>();
+
+		entities.add(entity);
+
+		Collection<Unit> inventoryUnits = entity.getInventory().getContainedUnits();
+		if (inventoryUnits.size() > 0) {
+			Iterator<Unit> i = inventoryUnits.iterator();
+			while (i.hasNext()) {
+				Unit unit = i.next();
+				if (unit instanceof Malfunctionable) {
+					entities.add((Malfunctionable)unit);
+				}
+			}
+		}
+
+		return entities;
+	}
+
+	/**
+	 * Gets all malfunctionables associated with a settlement.
+	 * @param settlement the settlement.
+	 * @return collection of malfunctionables.
+	 */
+	public static Collection<Malfunctionable> getAssociatedMalfunctionables(Settlement settlement) {
+
+		// Add settlement, buildings and all other malfunctionables in settlement inventory.
+		Collection<Malfunctionable> entities = getMalfunctionables(settlement);
+
+		// Add all associated rovers out on missions and their inventories.
+		Iterator<Mission> i = Simulation.instance().getMissionManager()
+				.getMissionsForSettlement(settlement).iterator();
 		while (i.hasNext()) {
 			Mission mission = i.next();
 			if (mission instanceof VehicleMission) {
@@ -212,7 +212,7 @@ implements Serializable {
 					entities.addAll(getMalfunctionables(vehicle));
 			}
 		}
-		
+
 		// Get entities carried by people on EVA.
 		Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
 		while (j.hasNext()) {
@@ -220,74 +220,74 @@ implements Serializable {
 			if (person.getLocationSituation() == LocationSituation.OUTSIDE) 
 				entities.addAll(getMalfunctionables(person));
 		}
-    	
-    	return entities;
-    }
-    
-    /**
-     * Gets the repair part probabilities per malfunction for a set of entity scope strings.
-     * @param scope a collection of entity scope strings.
-     * @return map of repair parts and probable number of parts needed per malfunction.
-     * @throws Exception if error finding repair part probabilities.
-     */
-    Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) {
-    	Map<Part, Double> result = new HashMap<Part, Double>();
-    	
-    	Iterator<Malfunction> i = malfunctions.iterator();
-    	while (i.hasNext()) {
-    		Malfunction malfunction = i.next();
-    		if (malfunction.unitScopeMatch(scope)) {
-    			double malfunctionProbability = malfunction.getProbability() / 100D;
-    			MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
-    			String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
-                for (String partName : partNames) {
-                    double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
-                    int partNumber = config.getRepairPartNumber(malfunction.getName(), partName);
-                    double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-                    double totalNumber = averageNumber * partProbability * malfunctionProbability;
-                    Part part = (Part) ItemResource.findItemResource(partName);
-                    if (result.containsKey(part)) totalNumber += result.get(part);
-                    result.put(part, totalNumber);
-                }
-    		}
-    	}
-    	
-    	return result;
-    }
-    
-    /**
-     * Gets the probabilities of parts per maintenance for a set of entity scope strings.
-     * @param scope a collection of entity scope strings.
-     * @return map of maintenance parts and probable number of parts needed per maintenance.
-     * @throws Exception if error finding maintenance part probabilities.
-     */
-    Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) {
-    	Map<Part, Double> result = new HashMap<Part, Double>();
-    	
-    	Iterator<String> i = scope.iterator();
-    	while (i.hasNext()) {
-    		String entity = i.next();
-    		Iterator<Part> j = Part.getParts().iterator();
-    		while (j.hasNext()) {
-    			Part part = j.next();
-    			if (part.hasMaintenanceEntity(entity)) {
-    				double prob = part.getMaintenanceProbability(entity) / 100D;
-    				int partNumber = part.getMaintenanceMaximumNumber(entity);
-    				double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
-    				double totalNumber = averageNumber * prob;
-    				if (result.containsKey(part)) totalNumber += result.get(part);
-    				result.put(part, totalNumber);
-    			}
-    		}
-    	}
-    	
-    	return result;
-    }
-    
-    /**
-     * Prepares the object for garbage collection.
-     */
-    public void destroy() {
-        malfunctions = null;
-    }
+
+		return entities;
+	}
+
+	/**
+	 * Gets the repair part probabilities per malfunction for a set of entity scope strings.
+	 * @param scope a collection of entity scope strings.
+	 * @return map of repair parts and probable number of parts needed per malfunction.
+	 * @throws Exception if error finding repair part probabilities.
+	 */
+	Map<Part, Double> getRepairPartProbabilities(Collection<String> scope) {
+		Map<Part, Double> result = new HashMap<Part, Double>();
+
+		Iterator<Malfunction> i = malfunctions.iterator();
+		while (i.hasNext()) {
+			Malfunction malfunction = i.next();
+			if (malfunction.unitScopeMatch(scope)) {
+				double malfunctionProbability = malfunction.getProbability() / 100D;
+				MalfunctionConfig config = SimulationConfig.instance().getMalfunctionConfiguration();
+				String[] partNames = config.getRepairPartNamesForMalfunction(malfunction.getName());
+				for (String partName : partNames) {
+					double partProbability = config.getRepairPartProbability(malfunction.getName(), partName) / 100D;
+					int partNumber = config.getRepairPartNumber(malfunction.getName(), partName);
+					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+					double totalNumber = averageNumber * partProbability * malfunctionProbability;
+					Part part = (Part) ItemResource.findItemResource(partName);
+					if (result.containsKey(part)) totalNumber += result.get(part);
+					result.put(part, totalNumber);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the probabilities of parts per maintenance for a set of entity scope strings.
+	 * @param scope a collection of entity scope strings.
+	 * @return map of maintenance parts and probable number of parts needed per maintenance.
+	 * @throws Exception if error finding maintenance part probabilities.
+	 */
+	Map<Part, Double> getMaintenancePartProbabilities(Collection<String> scope) {
+		Map<Part, Double> result = new HashMap<Part, Double>();
+
+		Iterator<String> i = scope.iterator();
+		while (i.hasNext()) {
+			String entity = i.next();
+			Iterator<Part> j = Part.getParts().iterator();
+			while (j.hasNext()) {
+				Part part = j.next();
+				if (part.hasMaintenanceEntity(entity)) {
+					double prob = part.getMaintenanceProbability(entity) / 100D;
+					int partNumber = part.getMaintenanceMaximumNumber(entity);
+					double averageNumber = RandomUtil.getRandomRegressionIntegerAverageValue(partNumber);
+					double totalNumber = averageNumber * prob;
+					if (result.containsKey(part)) totalNumber += result.get(part);
+					result.put(part, totalNumber);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Prepares the object for garbage collection.
+	 */
+	public void destroy() {
+		malfunctions = null;
+	}
 }
