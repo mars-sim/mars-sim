@@ -70,6 +70,16 @@ extends ToolWindow {
 		public String getName() {
 			return this.name;
 		}
+		public static UnitCategory fromName(String name) {
+		    if (name != null) {
+		        for (UnitCategory b : UnitCategory.values()) {
+		            if (name.equalsIgnoreCase(b.name)) {
+		                return b;
+		            }
+		        }
+		    }
+		    throw new IllegalArgumentException("No UnitCategory with name " + name + " found");
+		}
 	}
 
 	// Data members
@@ -268,7 +278,7 @@ extends ToolWindow {
 	private void changeCategory(String category) {
 		// Change unitList to the appropriate category list
 		lockUnitList = true;
-		unitListModel.updateCategory(UnitCategory.valueOf(category));
+		unitListModel.updateCategory(UnitCategory.fromName(category));
 		unitList.setSelectedIndex(0);
 		unitList.ensureIndexIsVisible(0);
 		lockUnitList = false;
