@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.06 2014-02-25
+ * @version 3.06 2014-03-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -147,7 +147,7 @@ implements Serializable {
 
         // If person still doesn't have an EVA suit, end task.
         if (!hasSuit) {
-            logger.info(person.getName() + " does not have an EVA suit, ExitAirlock ended");
+            logger.finer(person.getName() + " does not have an EVA suit, ExitAirlock ended");
             endTask();
             return 0D;
         }
@@ -171,6 +171,12 @@ implements Serializable {
         double remainingTime = time;
         
         logger.finer(person + " waiting to enter airlock.");
+        
+        // If person is already outside, change to exit airlock phase.
+        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+            setPhase(EXITING_AIRLOCK);
+            return remainingTime;
+        }
         
         // If airlock is pressurized and inner door unlocked, enter airlock.
         if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
@@ -229,7 +235,7 @@ implements Serializable {
         }
         
         if (airlock.inAirlock(person)) {
-            logger.finer(person + " is entering airlock, but is already inside.");
+            logger.finer(person + " is entering airlock, but is already in airlock.");
             setPhase(WAITING_INSIDE_AIRLOCK);
         }
         else if ((person.getXLocation() == insideAirlockPos.getX()) && 
@@ -296,7 +302,7 @@ implements Serializable {
                 }
             }
             else {
-                logger.finer(person + " person is entering airlock, but is alreay outside.");
+                logger.finer(person + " is entering airlock, but is already inside.");
                 setPhase(WAITING_INSIDE_AIRLOCK);
             }
         }
