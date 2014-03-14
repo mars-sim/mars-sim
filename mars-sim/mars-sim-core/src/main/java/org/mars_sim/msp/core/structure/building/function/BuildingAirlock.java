@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-03-11
+ * @version 3.06 2014-03-14
  * @author Scott Davis
  */
 
@@ -37,10 +37,8 @@ public class BuildingAirlock extends Airlock {
 
     /**
      * Constructor
-     * 
      * @param building the building this airlock of for.
      * @param capacity number of people airlock can hold.
-     * 
      */
     public BuildingAirlock(Building building, int capacity, double xLoc, double yLoc, 
             double interiorXLoc, double interiorYLoc, double exteriorXLoc, double exteriorYLoc) {
@@ -63,12 +61,7 @@ public class BuildingAirlock extends Airlock {
         airlockInsidePos = LocalAreaUtil.getLocalRelativeLocation(xLoc, yLoc, building); 
     }   
 
-    /**
-     * Causes a person within the airlock to exit either inside or outside.
-     *
-     * @param person the person to exit.
-     * @throws Exception if person is not in the airlock.
-     */
+    @Override
     protected void exitAirlock(Person person) {
         Inventory inv = building.getInventory();
 
@@ -105,21 +98,13 @@ public class BuildingAirlock extends Airlock {
         }
     }
 
-    /**
-     * Gets the name of the entity this airlock is attached to.
-     *
-     * @return name
-     */
+    @Override
     public String getEntityName() {
         Settlement settlement = building.getBuildingManager().getSettlement();
         return settlement.getName() + ": " + building.getName();
     }
 
-    /**
-     * Gets the inventory of the entity this airlock is attached to.
-     *
-     * @return inventory
-     */
+    @Override
     public Inventory getEntityInventory() {
         return building.getInventory();
     }

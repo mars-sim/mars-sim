@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.06 2014-02-14
+ * @version 3.06 2014-03-14
  * @author Scott Davis
  */
 
@@ -97,15 +97,21 @@ public abstract class Airlock implements Serializable {
             if (inside && !innerDoorLocked) {
                 if (awaitingInnerDoor.contains(person)) {
                     awaitingInnerDoor.remove(person);
+                    if (awaitingInnerDoor.contains(person)) {
+                        throw new IllegalStateException(person + " still awaiting inner door!");
+                    }
                 }
-                logger.fine(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
+                logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
                 result = true;
             }
             else if (!inside && !outerDoorLocked) {
                 if (awaitingOuterDoor.contains(person)) {
                     awaitingOuterDoor.remove(person);
+                    if (awaitingOuterDoor.contains(person)) {
+                        throw new IllegalStateException(person + " still awaiting outer door!");
+                    }
                 }
-                logger.fine(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
+                logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
                 result = true;
             }
 
@@ -132,8 +138,11 @@ public abstract class Airlock implements Serializable {
                 while ((occupants.size() < capacity) && (awaitingInnerDoor.size() > 0)) {
                     Person person = awaitingInnerDoor.get(0);
                     awaitingInnerDoor.remove(person);
+                    if (awaitingInnerDoor.contains(person)) {
+                        throw new IllegalStateException(person + " still awaiting inner door!");
+                    }
                     if (!occupants.contains(person)) {
-                        logger.fine(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
+                        logger.finer(person.getName() + " enters inner door of " + getEntityName() + " airlock.");
                         occupants.add(person);
                     }
                 }
@@ -143,8 +152,11 @@ public abstract class Airlock implements Serializable {
                 while ((occupants.size() < capacity) && (awaitingOuterDoor.size() > 0)) {
                     Person person = awaitingOuterDoor.get(0);
                     awaitingOuterDoor.remove(person);
+                    if (awaitingOuterDoor.contains(person)) {
+                        throw new IllegalStateException(person + " still awaiting outer door!");
+                    }
                     if (!occupants.contains(person)) {
-                        logger.fine(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
+                        logger.finer(person.getName() + " enters outer door of " + getEntityName() + " airlock.");
                         occupants.add(person);
                     }
                 }
@@ -226,12 +238,7 @@ public abstract class Airlock implements Serializable {
 
             Iterator<Person> i = occupants.iterator();
             while (i.hasNext()) {
-                try {
-                    exitAirlock(i.next());
-                }
-                catch (Exception e) { 
-                    logger.severe(e.getMessage()); 
-                }
+                exitAirlock(i.next());
             }
             occupants.clear();
 
@@ -245,11 +252,9 @@ public abstract class Airlock implements Serializable {
 
     /**
      * Causes a person within the airlock to exit either inside or outside.
-     *
      * @param person the person to exit.
-     * @throws Exception if person is not in the airlock.
      */
-    protected abstract void exitAirlock(Person person) throws Exception;      
+    protected abstract void exitAirlock(Person person);      
 
     /** 
      * Checks if the airlock's outer door is locked.
@@ -289,7 +294,7 @@ public abstract class Airlock implements Serializable {
      */
     private void setState(String state) {
         this.state = state;
-        logger.fine(getEntityName() + " airlock is " + state);
+        logger.finer(getEntityName() + " airlock is " + state);
     }
 
     /**
@@ -321,7 +326,7 @@ public abstract class Airlock implements Serializable {
      */
     public void addAwaitingAirlockInnerDoor(Person person) {
         if (!awaitingInnerDoor.contains(person)) {
-            logger.fine(person.getName() + " awaiting inner door of " + getEntityName() + " airlock.");
+            logger.finer(person.getName() + " awaiting inner door of " + getEntityName() + " airlock.");
             awaitingInnerDoor.add(person);
         }
     }
@@ -332,7 +337,7 @@ public abstract class Airlock implements Serializable {
      */
     public void addAwaitingAirlockOuterDoor(Person person) {
         if (!awaitingOuterDoor.contains(person)) {
-            logger.fine(person.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
+            logger.finer(person.getName() + " awaiting outer door of " + getEntityName() + " airlock.");
             awaitingOuterDoor.add(person);
         }
     }
@@ -353,7 +358,7 @@ public abstract class Airlock implements Serializable {
                 	String operatorName = operator.getName();
                     deactivateAirlock();
                     logger.severe("Airlock operator " + operatorName +
-                    " is dead.  Deactivating airlock of " + getEntityName());
+                            " is dead.  Deactivating airlock of " + getEntityName());
                 }
             }
             else {
@@ -383,14 +388,12 @@ public abstract class Airlock implements Serializable {
 
     /**
      * Gets the name of the entity this airlock is attached to.
-     *
      * @return name
      */
     public abstract String getEntityName();
 
     /**
      * Gets the inventory of the entity this airlock is attached to.
-     *
      * @return inventory
      */
     public abstract Inventory getEntityInventory();

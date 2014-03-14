@@ -450,6 +450,18 @@ public class Walk extends Task implements Serializable {
         // Check if person has reached destination location.
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
         Rover rover = (Rover) person.getVehicle();
+        
+        // Update rover destination if rover has moved and existing destination is no longer within rover.
+        if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(step.xLoc, step.yLoc, rover)) {
+            // Determine new destination location within rover.
+            // TODO: Determine location based on activity spot?
+            Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
+            Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(), 
+                    newRoverLoc.getY(), rover);
+            step.xLoc = relativeRoverLoc.getX();
+            step.yLoc = relativeRoverLoc.getY();
+        }
+        
         if (step.rover.equals(rover) && (person.getXLocation() == step.xLoc) && 
                 (person.getYLocation() == step.yLoc)) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.06 2014-03-06
+ * @version 3.06 2014-03-14
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 
 /** 
@@ -77,14 +78,24 @@ public class VehicleAirlock extends Airlock {
 
         if (inAirlock(person)) {
             if (PRESSURIZED.equals(getState())) {
-                
-                // Exit person to inside vehicle.
-                vehicle.getInventory().storeUnit(person);
+                if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
+                    // Exit person to inside vehicle.
+                    vehicle.getInventory().storeUnit(person);
+                }
+                else {
+                    throw new IllegalStateException(person + " is entering " + getEntityName() + 
+                            " from an airlock but is not outside.");
+                }
             }
             else if (DEPRESSURIZED.equals(getState())) {
-                
-                // Exit person outside vehicle.  
-                vehicle.getInventory().retrieveUnit(person);
+                if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
+                    // Exit person outside vehicle.  
+                    vehicle.getInventory().retrieveUnit(person);
+                }
+                else {
+                    throw new IllegalStateException(person + " is exiting " + getEntityName() + 
+                            " from an airlock but is not inside.");
+                }
             }
             else {
                 logger.severe("Vehicle airlock in incorrect state for exiting: " + getState());

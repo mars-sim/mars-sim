@@ -49,7 +49,7 @@ implements Serializable {
 	/** constructor. */
     public WalkRoverInterior(Person person, Rover rover, double destinationXLocation, 
             double destinationYLocation) {
-        super("Walking Settlement Interior", person, false, false, STRESS_MODIFIER, false, 0D);
+        super("Walking Rover Interior", person, false, false, STRESS_MODIFIER, false, 0D);
         
         // Check that the person is currently inside a rover.
         LocationSituation location = person.getLocationSituation();
@@ -62,17 +62,6 @@ implements Serializable {
         this.rover = rover;
         this.destXLoc = destinationXLocation;
         this.destYLoc = destinationYLocation;
-        
-        // Check that destination location is within rover.
-        if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(destXLoc, destYLoc, rover)) {
-            // Determine new destination location within rover.
-            Point2D newRoverLoc = LocalAreaUtil.getRandomInteriorLocation(rover);
-            Point2D relativeRoverLoc = LocalAreaUtil.getLocalRelativeLocation(newRoverLoc.getX(), newRoverLoc.getY(), rover);
-            destXLoc = relativeRoverLoc.getX();
-            destYLoc = relativeRoverLoc.getY();
-//            throw new IllegalStateException(
-//                    "Given destination walking location not within rover.");
-        }
         
         // Initialize task phase.
         addPhase(WALKING);
