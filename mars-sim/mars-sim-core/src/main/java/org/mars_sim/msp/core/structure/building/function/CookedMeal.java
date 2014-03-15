@@ -10,12 +10,16 @@ import org.mars_sim.msp.core.time.MarsClock;
 
 import java.io.Serializable;
 
-/*
- * The CookedMeal class represents a cooked meal from a kitchen.
+/**
+ * This class represents a cooked meal from a kitchen.
  */
-public class CookedMeal implements Serializable {
+public class CookedMeal
+implements Serializable {
 
-	// The time (millisols) between when a meal is cooked and when it expires.
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The time (millisols) between when a meal is cooked and when it expires. */
 	private static final double SHELF_LIFE = 100D;
 
 	// Data members
@@ -23,11 +27,11 @@ public class CookedMeal implements Serializable {
 	private MarsClock expirationTime;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param quality the quality of the food
 	 * @param creationTime the time the food was cooked.
 	 */
-	CookedMeal(int quality, MarsClock creationTime) {
+	public CookedMeal(int quality, MarsClock creationTime) {
 		this.quality = quality;
 		expirationTime = (MarsClock) creationTime.clone();
 		expirationTime.addTime(SHELF_LIFE);
@@ -40,7 +44,7 @@ public class CookedMeal implements Serializable {
 	public int getQuality() {
 		return quality;
 	}
-	
+
 	/**
 	 * Gets the expiration time of the meal.
 	 * @return expiration time

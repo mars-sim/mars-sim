@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
@@ -322,12 +323,11 @@ implements VehicleOperator, Serializable {
 		LocationSituation location = getLocationSituation();
 		if (location == LocationSituation.IN_SETTLEMENT) {
 			Settlement settlement = getSettlement();
-			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(
-					MedicalCare.NAME);
+			List<Building> infirmaries = settlement.getBuildingManager().getBuildings(BuildingFunction.MEDICAL_CARE);
 			if (infirmaries.size() > 0) {
 				int rand = RandomUtil.getRandomInt(infirmaries.size() - 1);
 				Building foundBuilding = infirmaries.get(rand);
-				found = (MedicalAid) foundBuilding.getFunction(MedicalCare.NAME);
+				found = (MedicalAid) foundBuilding.getFunction(BuildingFunction.MEDICAL_CARE);
 			}
 		}
 		if (location  == LocationSituation.IN_VEHICLE) {
@@ -467,11 +467,10 @@ implements VehicleOperator, Serializable {
 		if (getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Building building = BuildingManager.getBuilding(this);
 			if (building != null) {
-				String lifeSupportName = org.mars_sim.msp.core.structure.building.function.LifeSupport.NAME;
-				if (building.hasFunction(lifeSupportName)) {
+				if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 					org.mars_sim.msp.core.structure.building.function.LifeSupport lifeSupport = 
 							(org.mars_sim.msp.core.structure.building.function.LifeSupport) 
-							building.getFunction(lifeSupportName);
+							building.getFunction(BuildingFunction.LIFE_SUPPORT);
 					localGroup = new ConcurrentLinkedQueue<Person>(lifeSupport.getOccupants());
 				}
 			}

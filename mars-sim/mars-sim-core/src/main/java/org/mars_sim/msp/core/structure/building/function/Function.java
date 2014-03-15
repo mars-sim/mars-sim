@@ -19,24 +19,24 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private String name;
+	private BuildingFunction function;
 	private Building building;
 
 	/**
 	 * Constructor.
-	 * @param name the function name.
+	 * @param function the function name.
 	 */
-	public Function(String name, Building building) {
-		this.name = name;
+	public Function(BuildingFunction function, Building building) {
+		this.function = function;
 		this.building = building;
 	}
 
 	/**
-	 * Gets the function name.
-	 * @return name
+	 * Gets the function.
+	 * @return {@link BuildingFunction}
 	 */
-	public String getName() {
-		return name;
+	public BuildingFunction getFunction() {
+		return function;
 	}
 
 	/**
@@ -56,9 +56,11 @@ implements Serializable {
 	/**
 	 * Gets the function's malfunction scope strings.
 	 * @return array of scope strings.
+	 * @deprecated
+	 * TODO malfunction scope strings should be internationalized.
 	 */
 	public String[] getMalfunctionScopeStrings() {
-		String[] result = {name};
+		String[] result = {function.getName()};
 		return result;
 	}
 
@@ -92,7 +94,7 @@ implements Serializable {
 	 * Prepare object for garbage collection.
 	 */
 	public void destroy() {
-		name = null;
+		function = null;
 		building = null;
 	}
 }

@@ -4,7 +4,6 @@
  * @version 3.06 2014-02-25
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -37,7 +36,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 
 /** 
  * The Maintenance class is a task for performing
@@ -109,7 +108,7 @@ implements Serializable {
 				boolean isStructure = (entity instanceof Structure);
 				boolean uninhabitableBuilding = false;
 				if (entity instanceof Building) {
-					uninhabitableBuilding = !((Building) entity).hasFunction(LifeSupport.NAME);
+					uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
 				}
 				MalfunctionManager manager = entity.getMalfunctionManager();
 				boolean hasMalfunction = manager.hasMalfunction();
@@ -350,7 +349,7 @@ implements Serializable {
 		boolean isStructure = (malfunctionable instanceof Structure);
 		boolean uninhabitableBuilding = false;
 		if (malfunctionable instanceof Building) 
-			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(LifeSupport.NAME);
+			uninhabitableBuilding = !((Building) malfunctionable).hasFunction(BuildingFunction.LIFE_SUPPORT);
 		MalfunctionManager manager = malfunctionable.getMalfunctionManager();
 		boolean hasMalfunction = manager.hasMalfunction();
 		boolean hasParts = Maintenance.hasMaintenanceParts(person, malfunctionable);

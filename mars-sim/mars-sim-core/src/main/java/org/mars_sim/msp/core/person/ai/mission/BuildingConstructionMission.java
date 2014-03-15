@@ -37,7 +37,7 @@ import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.construction.ConstructionManager;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
@@ -850,7 +850,7 @@ implements Serializable {
             boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().hasLifeSupport(buildingType);
             if (hasLifeSupport) {
                 // Try to put building next to another inhabitable building.
-                List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+                List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
                 Collections.shuffle(inhabitableBuildings);
                 Iterator<Building> i = inhabitableBuildings.iterator();
                 while (i.hasNext()) {

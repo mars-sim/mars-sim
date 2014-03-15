@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -281,7 +282,7 @@ implements ResearchScientificStudy, Serializable {
         Lab result = null;
         
         BuildingManager manager = person.getSettlement().getBuildingManager();
-        List<Building> labBuildings = manager.getBuildings(Research.NAME);
+        List<Building> labBuildings = manager.getBuildings(BuildingFunction.RESEARCH);
         labBuildings = getSettlementLabsWithMathematicsSpeciality(labBuildings);
         labBuildings = BuildingManager.getNonMalfunctioningBuildings(labBuildings);
         labBuildings = getSettlementLabsWithAvailableSpace(labBuildings);
@@ -291,7 +292,7 @@ implements ResearchScientificStudy, Serializable {
             Map<Building, Double> labBuildingProbs = BuildingManager.getBestRelationshipBuildings(
                     person, labBuildings);
             Building building = RandomUtil.getWeightedRandomObject(labBuildingProbs);
-            result = (Research) building.getFunction(Research.NAME);
+            result = (Research) building.getFunction(BuildingFunction.RESEARCH);
         }
         
         return result;
@@ -310,7 +311,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(Research.NAME);
+            Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
             if (lab.getResearcherNum() < lab.getLaboratorySize()) {
                 result.add(building);
             }
@@ -334,7 +335,7 @@ implements ResearchScientificStudy, Serializable {
         Iterator<Building> i = buildingList.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            Research lab = (Research) building.getFunction(Research.NAME);
+            Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
             if (lab.hasSpecialty(mathematicsScience)) {
                 result.add(building);
             }

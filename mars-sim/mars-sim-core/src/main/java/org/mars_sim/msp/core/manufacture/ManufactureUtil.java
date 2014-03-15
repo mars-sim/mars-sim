@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
@@ -44,9 +45,7 @@ import org.mars_sim.msp.core.vehicle.VehicleConfig;
  */
 public final class ManufactureUtil {
 	
-	/**
-	 * Private constructor.
-	 */
+	/** Private constructor. */
 	private ManufactureUtil() {}
 	
 	/**
@@ -455,7 +454,7 @@ public final class ManufactureUtil {
 	public static boolean doesSettlementHaveManufacturing(Settlement settlement)
 			{
 		BuildingManager manager = settlement.getBuildingManager();
-        return (manager.getBuildings(Manufacture.NAME).size() > 0);
+        return (manager.getBuildings(BuildingFunction.MANUFACTURE).size() > 0);
 	}
 	
 	/**
@@ -468,10 +467,10 @@ public final class ManufactureUtil {
 			{
 		int highestTechLevel = 0;
 		BuildingManager manager = settlement.getBuildingManager();
-		Iterator<Building> i = manager.getBuildings(Manufacture.NAME).iterator();
+		Iterator<Building> i = manager.getBuildings(BuildingFunction.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
     		if (manufacturingFunction.getTechLevel() > highestTechLevel) 
     			highestTechLevel = manufacturingFunction.getTechLevel();
 		}

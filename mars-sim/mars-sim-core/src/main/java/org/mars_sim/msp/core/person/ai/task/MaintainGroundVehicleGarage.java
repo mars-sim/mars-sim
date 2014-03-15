@@ -4,7 +4,6 @@
  * @version 3.06 2014-02-25
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -34,7 +33,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -85,7 +84,7 @@ implements Serializable {
         	Building building = BuildingManager.getBuilding(vehicle);
         	if (building != null) {
         		try {
-        			garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+        			garage = (VehicleMaintenance) building.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         			
         			// Walk to garage.
         			walkToGarageBuilding(building);
@@ -98,11 +97,11 @@ implements Serializable {
         		// If not in a garage, try to add it to a garage with empty space.
         		Settlement settlement = person.getSettlement();
         		Iterator<Building> j = settlement.getBuildingManager().getBuildings(
-        		        GroundVehicleMaintenance.NAME).iterator();
+        		        BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
         		while (j.hasNext() && (garage == null)) {
         			try {
         				Building garageBuilding = j.next();
-        				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(GroundVehicleMaintenance.NAME);
+        				VehicleMaintenance garageTemp = (VehicleMaintenance) garageBuilding.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         				if (garageTemp.getCurrentVehicleNumber() < garageTemp.getVehicleCapacity()) {
         					garage = garageTemp;
         					garage.addVehicle(vehicle);
@@ -169,11 +168,11 @@ implements Serializable {
 		boolean needyVehicleInGarage = false;
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
 			Settlement settlement = person.getSettlement();
-			Iterator<Building> j = settlement.getBuildingManager().getBuildings(GroundVehicleMaintenance.NAME).iterator();
+			Iterator<Building> j = settlement.getBuildingManager().getBuildings(BuildingFunction.GROUND_VEHICLE_MAINTENANCE).iterator();
 			while (j.hasNext() && !garageSpace) {
 				try {
 					Building building = j.next();
-					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+					VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
 					if (garage.getCurrentVehicleNumber() < garage.getVehicleCapacity()) {
 					    garageSpace = true;
 					}

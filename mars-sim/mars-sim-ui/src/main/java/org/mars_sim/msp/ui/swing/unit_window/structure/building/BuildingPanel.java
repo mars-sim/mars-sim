@@ -6,35 +6,57 @@
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure.building;
 
-import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.*;
-import org.mars_sim.msp.ui.swing.MainDesktopPane;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.BoxLayout;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.Farming;
+import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.Manufacture;
+import org.mars_sim.msp.core.structure.building.function.MedicalCare;
+import org.mars_sim.msp.core.structure.building.function.PowerStorage;
+import org.mars_sim.msp.core.structure.building.function.Research;
+import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
+import org.mars_sim.msp.core.structure.building.function.Storage;
+import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
+import org.mars_sim.msp.ui.swing.MainDesktopPane;
+
 /**
  * The BuildingPanel class is a panel representing a settlement building.
  */
-public class BuildingPanel extends JPanel {
-    
-    private String panelName; // The name of the panel.
-    private Building building; // The building this panel is for.
-    private List<BuildingFunctionPanel> functionPanels; // The function panels
-    
-    /**
-     * Constructor
-     *
-     * @param panelName the name of the panel.
-     * @param building the building this panel is for.
-     * @param desktop the main desktop.
-     */
-    public BuildingPanel(String panelName, Building building, MainDesktopPane desktop) {
-        super();
-        
+public class BuildingPanel
+extends JPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** The name of the panel. */
+	private String panelName;
+	/** The building this panel is for. */
+	private Building building;
+	/** The function panels. */
+	private List<BuildingFunctionPanel> functionPanels;
+
+	/**
+	 * Constructor
+	 *
+	 * @param panelName the name of the panel.
+	 * @param building the building this panel is for.
+	 * @param desktop the main desktop.
+	 */
+	public BuildingPanel(String panelName, Building building, MainDesktopPane desktop) {
+		super();
+
         // Initialize data members
         this.panelName = panelName;
         this.building = building;
@@ -54,9 +76,9 @@ public class BuildingPanel extends JPanel {
         functionScrollPanel.setViewportView(functionListPanel);
         
         // Prepare inhabitable panel if building has lifesupport.
-        if (building.hasFunction(LifeSupport.NAME)) {
+        if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 //        	try {
-        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+        		LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
             	BuildingFunctionPanel inhabitablePanel = new BuildingPanelInhabitable(lifeSupport, desktop);
             	functionPanels.add(inhabitablePanel);
             	functionListPanel.add(inhabitablePanel);
@@ -65,9 +87,9 @@ public class BuildingPanel extends JPanel {
         }
         
         // Prepare manufacture panel if building has manufacturing.
-        if (building.hasFunction(Manufacture.NAME)) {
+        if (building.hasFunction(BuildingFunction.MANUFACTURE)) {
 //        	try {
-        		Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
+        		Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
         		BuildingFunctionPanel manufacturePanel = new BuildingPanelManufacture(workshop, desktop);
         		functionPanels.add(manufacturePanel);
         		functionListPanel.add(manufacturePanel);
@@ -76,9 +98,9 @@ public class BuildingPanel extends JPanel {
         }
         
         // Prepare farming panel if building has farming.
-        if (building.hasFunction(Farming.NAME)) {
+        if (building.hasFunction(BuildingFunction.FARMING)) {
 //        	try {
-        		Farming farm = (Farming) building.getFunction(Farming.NAME);
+        		Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
             	BuildingFunctionPanel farmingPanel = new BuildingPanelFarming(farm, desktop);
             	functionPanels.add(farmingPanel);
             	functionListPanel.add(farmingPanel);
@@ -87,9 +109,9 @@ public class BuildingPanel extends JPanel {
         }
         
 		// Prepare cooking panel if building has cooking.
-		if (building.hasFunction(Cooking.NAME)) {
+		if (building.hasFunction(BuildingFunction.COOKING)) {
 //			try {
-				Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+				Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
 				BuildingFunctionPanel cookingPanel = new BuildingPanelCooking(kitchen, desktop);
 				functionPanels.add(cookingPanel);
 				functionListPanel.add(cookingPanel);
@@ -98,9 +120,9 @@ public class BuildingPanel extends JPanel {
 		}
         
         // Prepare medical care panel if building has medical care.
-        if (building.hasFunction(MedicalCare.NAME)) {
+        if (building.hasFunction(BuildingFunction.MEDICAL_CARE)) {
 //        	try {
-        		MedicalCare med = (MedicalCare) building.getFunction(MedicalCare.NAME);
+        		MedicalCare med = (MedicalCare) building.getFunction(BuildingFunction.MEDICAL_CARE);
             	BuildingFunctionPanel medicalCarePanel = new BuildingPanelMedicalCare(med, desktop);
             	functionPanels.add(medicalCarePanel);
             	functionListPanel.add(medicalCarePanel);
@@ -109,9 +131,9 @@ public class BuildingPanel extends JPanel {
         }
         
 		// Prepare vehicle maintenance panel if building has vehicle maintenance.
-		if (building.hasFunction(GroundVehicleMaintenance.NAME)) {
+		if (building.hasFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE)) {
 //			try {
-				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(GroundVehicleMaintenance.NAME);
+				VehicleMaintenance garage = (VehicleMaintenance) building.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
 				BuildingFunctionPanel vehicleMaintenancePanel = new BuildingPanelVehicleMaintenance(garage, desktop);
 				functionPanels.add(vehicleMaintenancePanel);
 				functionListPanel.add(vehicleMaintenancePanel);
@@ -120,9 +142,9 @@ public class BuildingPanel extends JPanel {
 		}
         
         // Prepare research panel if building has research.
-        if (building.hasFunction(Research.NAME)) {
+        if (building.hasFunction(BuildingFunction.RESEARCH)) {
 //        	try {
-        		Research lab = (Research) building.getFunction(Research.NAME);
+        		Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
             	BuildingFunctionPanel researchPanel = new BuildingPanelResearch(lab, desktop);
             	functionPanels.add(researchPanel);
             	functionListPanel.add(researchPanel);
@@ -132,9 +154,9 @@ public class BuildingPanel extends JPanel {
         
         
         // Prepare Observation panel if building has Observatory.
-        if (building.hasFunction(AstronomicalObservation.NAME)) {
+        if (building.hasFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS)) {
 //        	try {
-        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(AstronomicalObservation.NAME);
+        		AstronomicalObservation observation = (AstronomicalObservation) building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
             	BuildingFunctionPanel observationPanel = new BuildingPanelAstronomicalObservation(observation, desktop);
             	functionPanels.add(observationPanel);
             	functionListPanel.add(observationPanel);
@@ -148,9 +170,9 @@ public class BuildingPanel extends JPanel {
         functionListPanel.add(powerPanel);
         
         // Prepare power storage panel if building has power storage.
-        if (building.hasFunction(PowerStorage.NAME)) {
+        if (building.hasFunction(BuildingFunction.POWER_STORAGE)) {
 //            try {
-                PowerStorage storage = (PowerStorage) building.getFunction(PowerStorage.NAME);
+                PowerStorage storage = (PowerStorage) building.getFunction(BuildingFunction.POWER_STORAGE);
                 BuildingFunctionPanel powerStoragePanel = new BuildingPanelPowerStorage(storage, desktop);
                 functionPanels.add(powerStoragePanel);
                 functionListPanel.add(powerStoragePanel);
@@ -159,9 +181,9 @@ public class BuildingPanel extends JPanel {
         }
         
         // Prepare resource processing panel if building has resource processes.
-        if (building.hasFunction(ResourceProcessing.NAME)) {
+        if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
 //        	try {
-        		ResourceProcessing processor = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
+        		ResourceProcessing processor = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
             	BuildingFunctionPanel resourceProcessingPanel = new BuildingPanelResourceProcessing(processor, desktop);
             	functionPanels.add(resourceProcessingPanel);
             	functionListPanel.add(resourceProcessingPanel);
@@ -170,9 +192,9 @@ public class BuildingPanel extends JPanel {
         }
         
         // Prepare storage process panel if building has storage function.
-        if (building.hasFunction(Storage.NAME)) {
+        if (building.hasFunction(BuildingFunction.STORAGE)) {
 //            try {
-                Storage storage = (Storage) building.getFunction(Storage.NAME);
+                Storage storage = (Storage) building.getFunction(BuildingFunction.STORAGE);
                 BuildingFunctionPanel storagePanel = new BuildingPanelStorage(storage, desktop);
                 functionPanels.add(storagePanel);
                 functionListPanel.add(storagePanel);
@@ -195,7 +217,6 @@ public class BuildingPanel extends JPanel {
     
     /**
      * Gets the panel's name.
-     *
      * @return panel name
      */
     public String getPanelName() {
@@ -204,7 +225,6 @@ public class BuildingPanel extends JPanel {
     
     /**
      * Gets the panel's building.
-     *
      * @return building
      */
     public Building getBuilding() {
@@ -212,7 +232,7 @@ public class BuildingPanel extends JPanel {
     }
     
     /**
-     * Update this panel
+     * Update this panel.
      */
     public void update() {
         // Update each building function panel.

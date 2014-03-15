@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.task.CookMeal;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 
 /** 
@@ -35,25 +36,26 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-//	private static Logger logger = Logger.getLogger(Chef.class.getName());
+	//	private static Logger logger = Logger.getLogger(Chef.class.getName());
 
+	/** constructor. */
 	public Chef() {
 		// Use Job constructor
 		super(Chef.class);
-		
+
 		// Add chef-related tasks.
 		jobTasks.add(CookMeal.class);
 		jobTasks.add(DigLocalIce.class);
-		
+
 		// Add chef-related missions.
-        jobMissionStarts.add(TravelToSettlement.class);
+		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
-        jobMissionJoins.add(BuildingConstructionMission.class);
-        jobMissionJoins.add(BuildingSalvageMission.class);
-        jobMissionStarts.add(EmergencySupplyMission.class);
-        jobMissionJoins.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(BuildingConstructionMission.class);
+		jobMissionJoins.add(BuildingSalvageMission.class);
+		jobMissionStarts.add(EmergencySupplyMission.class);
+		jobMissionJoins.add(EmergencySupplyMission.class);
 	}
 
 	/**
@@ -62,18 +64,18 @@ implements Serializable {
 	 * @return capability (min 0.0).
 	 */	
 	public double getCapability(Person person) {
-		
+
 		double result = 0D;
-		
+
 		int cookingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.COOKING);
 		result = cookingSkill;
-		
+
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
 		result+= result * ((experienceAptitude - 50D) / 100D);	
-		
+
 		if (person.getPhysicalCondition().hasSeriousMedicalProblems()) result = 0D;
-		
+
 		return result;
 	}
 
@@ -84,20 +86,20 @@ implements Serializable {
 	 */
 	public double getSettlementNeed(Settlement settlement) {
 		double result = 0D;
-		
+
 		// Add all kitchen work space in settlement.
-		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(Cooking.NAME);
+		List<Building> kitchenBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.COOKING);
 		Iterator<Building> i = kitchenBuildings.iterator();
 		while (i.hasNext()) {
-		    Building building = i.next();
-		    Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME); 
-		    result += (double) kitchen.getCookCapacity();
+			Building building = i.next();
+			Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING); 
+			result += (double) kitchen.getCookCapacity();
 		}
-		
+
 		// Add total population / 10.
 		int population = settlement.getCurrentPopulationNum();
 		result+= ((double) population / 10D);
-		
+
 		return result;			
 	}
 }

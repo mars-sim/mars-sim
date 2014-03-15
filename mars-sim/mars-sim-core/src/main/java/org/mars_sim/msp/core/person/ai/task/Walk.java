@@ -27,7 +27,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.Airlockable;
 import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -36,11 +36,14 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * A general walking task that includes interior/exterior walking
  * and entering/exiting airlocks.
  */
-public class Walk extends Task implements Serializable {
+public class Walk
+extends Task
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default serial id. */
 	private static Logger logger = Logger.getLogger(Walk.class.getName());
 
 	// TODO Task phase should be an enum
@@ -86,8 +89,7 @@ public class Walk extends Task implements Serializable {
          
             // Walk to random inhabitable building at settlement.
             Building currentBuilding = BuildingManager.getBuilding(person);
-            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(
-                    LifeSupport.NAME);
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
             if (buildingList.size() > 0) {
                 int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
                 Building destinationBuilding = buildingList.get(buildingIndex);

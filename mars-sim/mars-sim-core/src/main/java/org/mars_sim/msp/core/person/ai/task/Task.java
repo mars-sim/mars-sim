@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 
 /** 
@@ -443,22 +444,21 @@ implements Serializable, Comparable<Task> {
      * @return probability modifier
      * @throws BuildingException if current or new building doesn't have life support function.
      */
-    protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) 
-    {
+    protected static double getCrowdingProbabilityModifier(Person person, Building newBuilding) {
         double modifier = 1D;
 
         Building currentBuilding = BuildingManager.getBuilding(person);
         if ((currentBuilding != null) && (newBuilding != null) && (currentBuilding != newBuilding)) {
 
             // Increase probability if current building is overcrowded.
-            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(LifeSupport.NAME);
+            LifeSupport currentLS = (LifeSupport) currentBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
             int currentOverCrowding = currentLS.getOccupantNumber() - currentLS.getOccupantCapacity();
             if (currentOverCrowding > 0) {
                 modifier *= ((double) currentOverCrowding + 2);
             }
 
             // Decrease probability if new building is overcrowded.
-            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(LifeSupport.NAME);
+            LifeSupport newLS = (LifeSupport) newBuilding.getFunction(BuildingFunction.LIFE_SUPPORT);
             int newOverCrowding = newLS.getOccupantNumber() - newLS.getOccupantCapacity();
             if (newOverCrowding > 0) {
                 modifier /= ((double) newOverCrowding + 2);
@@ -537,8 +537,8 @@ implements Serializable, Comparable<Task> {
             throw new IllegalArgumentException("Task.getRelationshipModifier(): null parameter.");
         }
         else {
-            if (building.hasFunction(LifeSupport.NAME)) {
-                LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+                LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
                 double totalOpinion = 0D;
                 Iterator<Person> i = lifeSupport.getOccupants().iterator();
                 while (i.hasNext()) {

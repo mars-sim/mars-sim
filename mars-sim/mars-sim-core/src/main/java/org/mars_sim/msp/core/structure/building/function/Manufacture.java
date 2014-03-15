@@ -63,9 +63,9 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Manufacture.class.getName());
 
-	public static final String NAME = "Manufacture";
+	private static final BuildingFunction FUNCTION = BuildingFunction.MANUFACTURE;
 
-	public static final double PROCESS_MAX_VALUE = 100D;
+	private static final double PROCESS_MAX_VALUE = 100D;
 
 	// Data members.
 	private int techLevel;
@@ -74,13 +74,13 @@ implements Serializable {
 	private List<SalvageProcess> salvages;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param building the building the function is for.
 	 * @throws BuildingException if error constructing function.
 	 */
 	public Manufacture(Building building) {
 		// Use Function constructor.
-		super(NAME, building);
+		super(FUNCTION, building);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -116,14 +116,14 @@ implements Serializable {
 		double supply = 0D;
 		int highestExistingTechLevel = 0;
 		boolean removedBuilding = false;
-		Iterator<Building> j = settlement.getBuildingManager().getBuildings(NAME).iterator();
+		Iterator<Building> j = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
-				Manufacture manFunction = (Manufacture) building.getFunction(NAME);
+				Manufacture manFunction = (Manufacture) building.getFunction(FUNCTION);
 				int tech = manFunction.techLevel;
 				double processes = manFunction.concurrentProcesses;
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
@@ -569,19 +569,19 @@ implements Serializable {
 					process.toString());
 		}
 	}
-	
-    @Override
-    public double getMaintenanceTime() {
-        double result = 0D;
-        
-        // Add maintenance for tech level.
-        result += techLevel * 10D;
-        
-        // Add maintenance for concurrect process capacity.
-        result += concurrentProcesses * 10D;
-        
-        return result;
-    }
+
+	@Override
+	public double getMaintenanceTime() {
+		double result = 0D;
+
+		// Add maintenance for tech level.
+		result += techLevel * 10D;
+
+		// Add maintenance for concurrect process capacity.
+		result += concurrentProcesses * 10D;
+
+		return result;
+	}
 
 	@Override
 	public void destroy() {

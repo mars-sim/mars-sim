@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.structure.construction.ConstructionStageInfo;
 import org.mars_sim.msp.core.structure.construction.ConstructionUtil;
@@ -90,7 +91,7 @@ implements Serializable {
         Building manufactureBuilding = getAvailableManufacturingBuilding(person);
         if (manufactureBuilding != null) {
             workshop = (Manufacture) manufactureBuilding
-                    .getFunction(Manufacture.NAME);
+                    .getFunction(BuildingFunction.MANUFACTURE);
             
             // Walk to manufacturing building.
             walkToManufacturingBuilding(manufactureBuilding);
@@ -209,7 +210,7 @@ implements Serializable {
             BuildingManager manager = person.getSettlement()
                     .getBuildingManager();
             List<Building> manufacturingBuildings = manager
-                    .getBuildings(Manufacture.NAME);
+                    .getBuildings(BuildingFunction.MANUFACTURE);
             manufacturingBuildings = BuildingManager
                     .getNonMalfunctioningBuildings(manufacturingBuildings);
             manufacturingBuildings = getManufacturingBuildingsNeedingWork(
@@ -246,7 +247,7 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(Manufacture.NAME);
+                    .getFunction(BuildingFunction.MANUFACTURE);
             if (manufacturingFunction.requiresManufacturingWork(skill)) {
                 result.add(building);
             }
@@ -295,7 +296,7 @@ implements Serializable {
         boolean result = false;
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
-                .getFunction(Manufacture.NAME);
+                .getFunction(BuildingFunction.MANUFACTURE);
         Iterator<ManufactureProcess> i = manufacturingFunction.getProcesses()
                 .iterator();
         while (i.hasNext()) {
@@ -339,7 +340,7 @@ implements Serializable {
         while (i.hasNext()) {
             Building building = i.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(Manufacture.NAME);
+                    .getFunction(BuildingFunction.MANUFACTURE);
             if (manufacturingFunction.getTechLevel() > highestTechLevel) {
                 highestTechLevel = manufacturingFunction.getTechLevel();
             }
@@ -349,7 +350,7 @@ implements Serializable {
         while (j.hasNext()) {
             Building building = j.next();
             Manufacture manufacturingFunction = (Manufacture) building
-                    .getFunction(Manufacture.NAME);
+                    .getFunction(BuildingFunction.MANUFACTURE);
             if (manufacturingFunction.getTechLevel() == highestTechLevel) {
                 result.add(building);
             }
@@ -373,7 +374,7 @@ implements Serializable {
 				.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
 
         Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding
-                .getFunction(Manufacture.NAME);
+                .getFunction(BuildingFunction.MANUFACTURE);
         int techLevel = manufacturingFunction.getTechLevel();
 
         Iterator<ManufactureProcessInfo> i = ManufactureUtil

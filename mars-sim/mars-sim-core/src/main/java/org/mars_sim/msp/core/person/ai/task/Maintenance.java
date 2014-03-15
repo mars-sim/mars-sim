@@ -31,7 +31,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -100,7 +100,7 @@ implements Serializable {
                 boolean isVehicle = (entity instanceof Vehicle);
                 boolean uninhabitableBuilding = false;
                 if (entity instanceof Building) 
-                    uninhabitableBuilding = !((Building) entity).hasFunction(LifeSupport.NAME);
+                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
                 MalfunctionManager manager = entity.getMalfunctionManager();
                 boolean hasMalfunction = manager.hasMalfunction();
                 boolean hasParts = hasMaintenanceParts(person, entity);
@@ -340,7 +340,7 @@ implements Serializable {
         boolean result = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building.hasFunction(LifeSupport.NAME)) {
+            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
                 result = true;
             }
         }
@@ -358,7 +358,7 @@ implements Serializable {
         boolean isVehicle = (malfunctionable instanceof Vehicle);
         boolean uninhabitableBuilding = false;
         if (malfunctionable instanceof Building) 
-            uninhabitableBuilding = !((Building) malfunctionable).hasFunction(LifeSupport.NAME);
+            uninhabitableBuilding = !((Building) malfunctionable).hasFunction(BuildingFunction.LIFE_SUPPORT);
         MalfunctionManager manager = malfunctionable.getMalfunctionManager();
         boolean hasMalfunction = manager.hasMalfunction();
         double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();

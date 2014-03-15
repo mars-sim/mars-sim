@@ -26,7 +26,9 @@ import java.util.logging.Logger;
 /**
  * The LifeSupport class is a building function for life support and managing inhabitants.
  */
-public class LifeSupport extends Function implements Serializable {
+public class LifeSupport
+extends Function
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -34,7 +36,7 @@ public class LifeSupport extends Function implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LifeSupport.class.getName());
 
-	public static final String NAME = "Life Support";
+	private static final BuildingFunction FUNCTION = BuildingFunction.LIFE_SUPPORT;
 
 	// Data members
 	private int occupantCapacity;
@@ -43,24 +45,24 @@ public class LifeSupport extends Function implements Serializable {
 
 	/**
 	 * Constructor.
-     * @param building the building this function is for.
-     * @throws BuildingException if error in constructing function.
+	 * @param building the building this function is for.
+	 * @throws BuildingException if error in constructing function.
 	 */
 	public LifeSupport(Building building) {
 		// Call Function constructor.
-		super(NAME, building);
-		
+		super(FUNCTION, building);
+
 		occupants = new ConcurrentLinkedQueue<Person>();
-		
+
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		
+
 		// Set occupant capacity.
 		occupantCapacity = config.getLifeSupportCapacity(building.getName());
 
 		// Set life support power required.
 		powerRequired = config.getLifeSupportPowerRequirement(building.getName());
 	}
-	
+
 	/**
 	 * Alternate constructor with given occupant capacity and power required.
 	 * @param building the building this function is for.
@@ -70,61 +72,61 @@ public class LifeSupport extends Function implements Serializable {
 	 */
 	public LifeSupport(Building building, int occupantCapacity, double powerRequired) {
 		// Use Function constructor
-		super(NAME, building);
-		
+		super(FUNCTION, building);
+
 		occupants = new ConcurrentLinkedQueue<Person>();
 		this.occupantCapacity = occupantCapacity;
 		this.powerRequired = powerRequired;
 	}
-    
-    /**
-     * Gets the value of the function for a named building.
-     * @param buildingName the building name.
-     * @param newBuilding true if adding a new building.
-     * @param settlement the settlement.
-     * @return value (VP) of building function.
-     * @throws Exception if error getting function value.
-     */
-    public static double getFunctionValue(String buildingName, boolean newBuilding,
-            Settlement settlement) {
-        
-        // Demand is 2 occupant capacity for every inhabitant. 
-        double demand = settlement.getAllAssociatedPeople().size() * 2D;
-        
-        double supply = 0D;
-        boolean removedBuilding = false;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
-                removedBuilding = true;
-            }
-            else {
-                LifeSupport lsFunction = (LifeSupport) building.getFunction(NAME);
-                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-                supply += lsFunction.occupantCapacity * wearModifier;
-            }
-        }
-        
-        double occupantCapacityValue = demand / (supply + 1D);
-        
-        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-        double occupantCapacity = config.getLifeSupportCapacity(buildingName);
-        
-        double result = occupantCapacity * occupantCapacityValue;
-        
-        // Subtract power usage cost per sol.
-        double power = config.getLifeSupportPowerRequirement(buildingName);
-        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-        double powerPerSol = power * hoursInSol;
-        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
-        result -= powerValue;
-        
-        if (result < 0D) result = 0D;
-        
-        return result;
-    }
-	
+
+	/**
+	 * Gets the value of the function for a named building.
+	 * @param buildingName the building name.
+	 * @param newBuilding true if adding a new building.
+	 * @param settlement the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public static double getFunctionValue(String buildingName, boolean newBuilding,
+			Settlement settlement) {
+
+		// Demand is 2 occupant capacity for every inhabitant. 
+		double demand = settlement.getAllAssociatedPeople().size() * 2D;
+
+		double supply = 0D;
+		boolean removedBuilding = false;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+				removedBuilding = true;
+			}
+			else {
+				LifeSupport lsFunction = (LifeSupport) building.getFunction(FUNCTION);
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += lsFunction.occupantCapacity * wearModifier;
+			}
+		}
+
+		double occupantCapacityValue = demand / (supply + 1D);
+
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+		double occupantCapacity = config.getLifeSupportCapacity(buildingName);
+
+		double result = occupantCapacity * occupantCapacityValue;
+
+		// Subtract power usage cost per sol.
+		double power = config.getLifeSupportPowerRequirement(buildingName);
+		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+		double powerPerSol = power * hoursInSol;
+		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue() / 1000D;
+		result -= powerValue;
+
+		if (result < 0D) result = 0D;
+
+		return result;
+	}
+
 	/**
 	 * Gets the building's capacity for supporting occupants.
 	 * @return number of inhabitants.
@@ -132,7 +134,7 @@ public class LifeSupport extends Function implements Serializable {
 	public int getOccupantCapacity() {
 		return occupantCapacity;
 	}
-	
+
 	/**
 	 * Gets the current number of occupants in the building.
 	 * @return occupant number
@@ -150,15 +152,15 @@ public class LifeSupport extends Function implements Serializable {
 		if (available > 0) return available;
 		else return 0;
 	}
-	
+
 	/**
 	 * Checks if the building contains a particular person.
 	 * @return true if person is in building.
 	 */
 	public boolean containsPerson(Person person) {
-        return occupants.contains(person);
+		return occupants.contains(person);
 	}
-	
+
 	/**
 	 * Gets a collection of occupants in the building.
 	 * @return collection of occupants
@@ -166,7 +168,7 @@ public class LifeSupport extends Function implements Serializable {
 	public Collection<Person> getOccupants() {
 		return new ConcurrentLinkedQueue<Person>(occupants);
 	}
-	
+
 	/**
 	 * Adds a person to the building.
 	 * Note: building occupant capacity can be exceeded but stress levels
@@ -181,8 +183,8 @@ public class LifeSupport extends Function implements Serializable {
 			Iterator<Building> i = getBuilding().getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				if (building.hasFunction(NAME)) {
-				    BuildingManager.removePersonFromBuilding(person, building);
+				if (building.hasFunction(FUNCTION)) {
+					BuildingManager.removePersonFromBuilding(person, building);
 				}
 			}
 
@@ -193,7 +195,7 @@ public class LifeSupport extends Function implements Serializable {
 			throw new IllegalStateException("Person already occupying building.");
 		} 
 	}
-	
+
 	/**
 	 * Removes a person from the building.
 	 * @param occupant the person to remove from building.
@@ -220,14 +222,14 @@ public class LifeSupport extends Function implements Serializable {
 		while (i.hasNext()) {
 			if (!inv.containsUnit(i.next())) i.remove();
 		}
-		
+
 		// Add stress if building is overcrowded.
 		int overcrowding = getOccupantNumber() - occupantCapacity;
 		if (overcrowding > 0) {
-		    
-		    	if(logger.isLoggable(Level.FINEST)){
-		    	    logger.finest("Overcrowding at " + getBuilding());
-		    	}
+
+			if(logger.isLoggable(Level.FINEST)){
+				logger.finest("Overcrowding at " + getBuilding());
+			}
 			double stressModifier = .1D * overcrowding * time;
 			Iterator<Person> j = getOccupants().iterator();
 			while (j.hasNext()) {
@@ -252,17 +254,17 @@ public class LifeSupport extends Function implements Serializable {
 	public double getPowerDownPowerRequired() {
 		return 0;
 	}
-	
-    @Override
-    public double getMaintenanceTime() {
-        return occupantCapacity * 10D;
-    }
-	
+
+	@Override
+	public double getMaintenanceTime() {
+		return occupantCapacity * 10D;
+	}
+
 	@Override
 	public void destroy() {
-	    super.destroy();
-	    
-	    occupants.clear();
-	    occupants = null;
+		super.destroy();
+
+		occupants.clear();
+		occupants = null;
 	}
 }
