@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.PowerGeneration;
 import org.mars_sim.msp.core.structure.building.function.PowerMode;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -252,9 +253,9 @@ extends TabPanel {
 			else if (column == 1) return buildings.get(row);
 			else if (column == 2) {
 				double generated = 0D;
-				if (building.hasFunction(PowerGeneration.NAME)) {
+				if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
 					try {
-						PowerGeneration generator = (PowerGeneration) building.getFunction(PowerGeneration.NAME);
+						PowerGeneration generator = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
 						generated = generator.getGeneratedPower();
 					}
 					catch (Exception e) {}

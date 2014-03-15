@@ -35,7 +35,8 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String NAME = "Farming";
+	private static final BuildingFunction FUNCTION = BuildingFunction.FARMING;
+
 	public static final double HARVEST_MULTIPLIER = 10D;
 
 	private int cropNum;
@@ -46,13 +47,13 @@ implements Serializable {
 	private List<Crop> crops;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param building the building the function is for.
 	 * @throws BuildingException if error in constructing function.
 	 */
 	public Farming(Building building) {
 		// Use Function constructor.
-		super(NAME, building);
+		super(FUNCTION, building);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -95,14 +96,14 @@ implements Serializable {
 		// Supply is total estimate harvest per orbit.
 		double supply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(NAME).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			}
 			else {
-				Farming farmingFunction = (Farming) building.getFunction(NAME);
+				Farming farmingFunction = (Farming) building.getFunction(FUNCTION);
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
 				supply += farmingFunction.getEstimatedHarvestPerOrbit() * wearModifier;
 			}
@@ -205,9 +206,9 @@ implements Serializable {
 	public int getFarmerNum() {
 		int result = 0;
 
-		if (getBuilding().hasFunction(LifeSupport.NAME)) {
+		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 			try {
-				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(LifeSupport.NAME);
+				LifeSupport lifeSupport = (LifeSupport) getBuilding().getFunction(BuildingFunction.LIFE_SUPPORT);
 				Iterator<Person> i = lifeSupport.getOccupants().iterator();
 				while (i.hasNext()) {
 					Task task = i.next().getMind().getTaskManager().getTask();

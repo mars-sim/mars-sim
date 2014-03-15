@@ -7,10 +7,30 @@
 
 package org.mars_sim.msp.ui.swing.unit_window.structure;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.DecimalFormat;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
 import org.mars_sim.msp.core.structure.building.function.ResourceProcessing;
 import org.mars_sim.msp.ui.swing.ImageLoader;
@@ -18,18 +38,13 @@ import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DecimalFormat;
-import java.util.Iterator;
-import java.util.List;
-
 /**
  * A tab panel for displaying all of the resource processes in a settlement.
  */
 public class ResourceProcessesTabPanel extends TabPanel {
+
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
 	// Data members
 	private List<Building> processingBuildings;
@@ -38,7 +53,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 	private JCheckBox overrideCheckbox;
 	
     /**
-     * Constructor
+     * Constructor.
      * @param unit the unit to display.
      * @param desktop the main desktop.
      */
@@ -48,7 +63,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
         super("Processes", null, "Resource Processes", unit, desktop);
         
         Settlement settlement = (Settlement) unit;
-        processingBuildings = settlement.getBuildingManager().getBuildings(ResourceProcessing.NAME);
+        processingBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESOURCE_PROCESSING);
         
         // Prepare resource processes label panel.
         JPanel resourceProcessesLabelPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -100,7 +115,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
     		Iterator<Building> i = processingBuildings.iterator();
     		while (i.hasNext()) {
     			Building building = i.next();
-    			ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
+    			ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
     			Iterator<ResourceProcess> j = processing.getProcesses().iterator();
     			while (j.hasNext()) {
     				ResourceProcess process = j.next();
@@ -118,7 +133,7 @@ public class ResourceProcessesTabPanel extends TabPanel {
 		
 		// Check if building list has changed.
 		Settlement settlement = (Settlement) unit;
-		List<Building> tempBuildings = settlement.getBuildingManager().getBuildings(ResourceProcessing.NAME);
+		List<Building> tempBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.RESOURCE_PROCESSING);
 		if (!tempBuildings.equals(processingBuildings)) {
 			// Populate process list.
 			processingBuildings = tempBuildings;

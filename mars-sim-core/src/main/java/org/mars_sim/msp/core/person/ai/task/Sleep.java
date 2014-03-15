@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 
 /** 
@@ -70,7 +71,7 @@ class Sleep extends Task implements Serializable {
                 // Walk to quarters.
                 walkToQuartersBuilding(quarters);
                 accommodations = (LivingAccommodations) quarters.getFunction(
-                        LivingAccommodations.NAME);
+                        BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations.addSleeper();
             }
         }
@@ -215,7 +216,7 @@ class Sleep extends Task implements Serializable {
         
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			BuildingManager manager = person.getSettlement().getBuildingManager();
-			List<Building> quartersBuildings = manager.getBuildings(LivingAccommodations.NAME);
+			List<Building> quartersBuildings = manager.getBuildings(BuildingFunction.LIVING_ACCOMODATIONS);
 			quartersBuildings = BuildingManager.getNonMalfunctioningBuildings(quartersBuildings);
 			quartersBuildings = getQuartersWithEmptyBeds(quartersBuildings);
 			quartersBuildings = BuildingManager.getLeastCrowdedBuildings(quartersBuildings);
@@ -241,7 +242,7 @@ class Sleep extends Task implements Serializable {
 		Iterator<Building> i = buildingList.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			LivingAccommodations quarters = (LivingAccommodations) building.getFunction(LivingAccommodations.NAME);
+			LivingAccommodations quarters = (LivingAccommodations) building.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			if (quarters.getSleepers() < quarters.getBeds()) {
 			    result.add(building);
 			}

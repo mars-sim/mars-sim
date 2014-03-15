@@ -21,174 +21,169 @@ import java.util.Iterator;
  */
 public class LivingAccommodations extends Function implements Serializable {
 
-    // Mass of water used per person per Sol for bathing, etc.
-    public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    public static final String NAME = "Living Accommodations";
+	/** Mass of water used per person per Sol for bathing, etc. */
+	public final static double WASH_WATER_USAGE_PERSON_SOL = 26D;
 
-    private int beds;
-    private int sleepers;
+	private static final BuildingFunction FUNCTION = BuildingFunction.LIVING_ACCOMODATIONS;
 
-    /**
-     * Constructor
-     * @param building the building this function is for.
-     * @throws BuildingException if error in constructing function.
-     */
-    public LivingAccommodations(Building building) {
-        // Call Function constructor.
-        super(NAME, building);
+	private int beds;
+	private int sleepers;
 
-        BuildingConfig config = SimulationConfig.instance()
-                .getBuildingConfiguration();
+	/**
+	 * Constructor
+	 * @param building the building this function is for.
+	 * @throws BuildingException if error in constructing function.
+	 */
+	public LivingAccommodations(Building building) {
+		// Call Function constructor.
+		super(FUNCTION, building);
 
-        beds = config.getLivingAccommodationBeds(building.getName());
-    }
+		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-    /**
-     * Gets the value of the function for a named building.
-     * @param buildingName the building name.
-     * @param newBuilding true if adding a new building.
-     * @param settlement the settlement.
-     * @return value (VP) of building function.
-     * @throws Exception if error getting function value.
-     */
-    public static double getFunctionValue(String buildingName,
-            boolean newBuilding, Settlement settlement) {
+		beds = config.getLivingAccommodationBeds(building.getName());
+	}
 
-        // Demand is two beds for every inhabitant (with population expansion in mind).
-        double demand = settlement.getAllAssociatedPeople().size() * 2D;
+	/**
+	 * Gets the value of the function for a named building.
+	 * @param buildingName the building name.
+	 * @param newBuilding true if adding a new building.
+	 * @param settlement the settlement.
+	 * @return value (VP) of building function.
+	 * @throws Exception if error getting function value.
+	 */
+	public static double getFunctionValue(String buildingName,
+			boolean newBuilding, Settlement settlement) {
 
-        double supply = 0D;
-        boolean removedBuilding = false;
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-                NAME).iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (!newBuilding
-                    && building.getName().equalsIgnoreCase(buildingName)
-                    && !removedBuilding) {
-                removedBuilding = true;
-            } else {
-                LivingAccommodations livingFunction = (LivingAccommodations) building
-                        .getFunction(NAME);
-                double wearModifier = (building.getMalfunctionManager()
-                        .getWearCondition() / 100D) * .75D + .25D;
-                supply += livingFunction.beds * wearModifier;
-            }
-        }
+		// Demand is two beds for every inhabitant (with population expansion in mind).
+		double demand = settlement.getAllAssociatedPeople().size() * 2D;
 
-        double bedCapacityValue = demand / (supply + 1D);
+		double supply = 0D;
+		boolean removedBuilding = false;
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			if (!newBuilding
+					&& building.getName().equalsIgnoreCase(buildingName)
+					&& !removedBuilding) {
+				removedBuilding = true;
+			} else {
+				LivingAccommodations livingFunction = (LivingAccommodations) building.getFunction(FUNCTION);
+				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+				supply += livingFunction.beds * wearModifier;
+			}
+		}
 
-        BuildingConfig config = SimulationConfig.instance()
-                .getBuildingConfiguration();
-        double bedCapacity = config.getLivingAccommodationBeds(buildingName);
+		double bedCapacityValue = demand / (supply + 1D);
 
-        return bedCapacity * bedCapacityValue;
-    }
+		BuildingConfig config = SimulationConfig.instance()
+				.getBuildingConfiguration();
+		double bedCapacity = config.getLivingAccommodationBeds(buildingName);
 
-    /**
-     * Gets the number of beds in the living accommodations.
-     * @return number of beds.
-     */
-    public int getBeds() {
-        return beds;
-    }
+		return bedCapacity * bedCapacityValue;
+	}
 
-    /**
-     * Gets the number of people sleeping in the beds.
-     * @return number of people
-     */
-    public int getSleepers() {
-        return sleepers;
-    }
+	/**
+	 * Gets the number of beds in the living accommodations.
+	 * @return number of beds.
+	 */
+	public int getBeds() {
+		return beds;
+	}
 
-    /**
-     * Adds a sleeper to a bed.
-     * @throws BuildingException if beds are already in use.
-     */
-    public void addSleeper() {
-        sleepers++;
-        if (sleepers > beds) {
-            sleepers = beds;
-            throw new IllegalStateException("All beds are full.");
-        }
-    }
+	/**
+	 * Gets the number of people sleeping in the beds.
+	 * @return number of people
+	 */
+	public int getSleepers() {
+		return sleepers;
+	}
 
-    /**
-     * Removes a sleeper from a bed.
-     * @throws BuildingException if no sleepers to remove.
-     */
-    public void removeSleeper() {
-        sleepers--;
-        if (sleepers < 0) {
-            sleepers = 0;
-            throw new IllegalStateException("Beds are empty.");
-        }
-    }
+	/**
+	 * Adds a sleeper to a bed.
+	 * @throws BuildingException if beds are already in use.
+	 */
+	public void addSleeper() {
+		sleepers++;
+		if (sleepers > beds) {
+			sleepers = beds;
+			throw new IllegalStateException("All beds are full.");
+		}
+	}
 
-    /**
-     * Utilizes water for bathing, washing, etc based on population.
-     * @param time amount of time passing (millisols)
-     * @throws Exception if error in water usage.
-     */
-    public void waterUsage(double time) {
+	/**
+	 * Removes a sleeper from a bed.
+	 * @throws BuildingException if no sleepers to remove.
+	 */
+	public void removeSleeper() {
+		sleepers--;
+		if (sleepers < 0) {
+			sleepers = 0;
+			throw new IllegalStateException("Beds are empty.");
+		}
+	}
 
-        Settlement settlement = getBuilding().getBuildingManager()
-                .getSettlement();
-        double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D)
-                * time;
-        double waterUsageSettlement = waterUsagePerPerson
-                * settlement.getCurrentPopulationNum();
-        double buildingProportionCap = (double) beds
-                / (double) settlement.getPopulationCapacity();
-        double waterUsageBuilding = waterUsageSettlement
-                * buildingProportionCap;
+	/**
+	 * Utilizes water for bathing, washing, etc based on population.
+	 * @param time amount of time passing (millisols)
+	 * @throws Exception if error in water usage.
+	 */
+	public void waterUsage(double time) {
 
-        Inventory inv = getBuilding().getInventory();
-        AmountResource water = AmountResource.findAmountResource("water");
-        double waterUsed = waterUsageBuilding;
-        double waterAvailable = inv.getAmountResourceStored(water, false);
-        if (waterUsed > waterAvailable)
-            waterUsed = waterAvailable;
-        inv.retrieveAmountResource(water, waterUsed);
+		Settlement settlement = getBuilding().getBuildingManager()
+				.getSettlement();
+		double waterUsagePerPerson = (LivingAccommodations.WASH_WATER_USAGE_PERSON_SOL / 1000D) * time;
+		double waterUsageSettlement = waterUsagePerPerson * settlement.getCurrentPopulationNum();
+		double buildingProportionCap = (double) beds / (double) settlement.getPopulationCapacity();
+		double waterUsageBuilding = waterUsageSettlement * buildingProportionCap;
 
-        AmountResource wasteWater = AmountResource
-                .findAmountResource("waste water");
-        double wasteWaterProduced = waterUsed;
-        double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
-                wasteWater, false, false);
-        if (wasteWaterProduced > wasteWaterCapacity)
-            wasteWaterProduced = wasteWaterCapacity;
-        inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
-    }
+		Inventory inv = getBuilding().getInventory();
+		AmountResource water = AmountResource.findAmountResource("water");
+		double waterUsed = waterUsageBuilding;
+		double waterAvailable = inv.getAmountResourceStored(water, false);
+		if (waterUsed > waterAvailable)
+			waterUsed = waterAvailable;
+		inv.retrieveAmountResource(water, waterUsed);
 
-    /**
-     * Time passing for the building.
-     * @param time amount of time passing (in millisols)
-     * @throws BuildingException if error occurs.
-     */
-    public void timePassing(double time) {
-        waterUsage(time);
-    }
+		AmountResource wasteWater = AmountResource
+				.findAmountResource("waste water");
+		double wasteWaterProduced = waterUsed;
+		double wasteWaterCapacity = inv.getAmountResourceRemainingCapacity(
+				wasteWater, false, false);
+		if (wasteWaterProduced > wasteWaterCapacity)
+			wasteWaterProduced = wasteWaterCapacity;
+		inv.storeAmountResource(wasteWater, wasteWaterProduced, false);
+	}
 
-    /**
-     * Gets the amount of power required when function is at full power.
-     * @return power (kW)
-     */
-    public double getFullPowerRequired() {
-        return 0D;
-    }
+	/**
+	 * Time passing for the building.
+	 * @param time amount of time passing (in millisols)
+	 * @throws BuildingException if error occurs.
+	 */
+	public void timePassing(double time) {
+		waterUsage(time);
+	}
 
-    /**
-     * Gets the amount of power required when function is at power down level.
-     * @return power (kW)
-     */
-    public double getPowerDownPowerRequired() {
-        return 0D;
-    }
-    
-    @Override
-    public double getMaintenanceTime() {
-        return beds * 7D;
-    }
+	/**
+	 * Gets the amount of power required when function is at full power.
+	 * @return power (kW)
+	 */
+	public double getFullPowerRequired() {
+		return 0D;
+	}
+
+	/**
+	 * Gets the amount of power required when function is at power down level.
+	 * @return power (kW)
+	 */
+	public double getPowerDownPowerRequired() {
+		return 0D;
+	}
+
+	@Override
+	public double getMaintenanceTime() {
+		return beds * 7D;
+	}
 }

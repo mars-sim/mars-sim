@@ -33,6 +33,7 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Research;
 
 /** 
@@ -47,9 +48,7 @@ implements Serializable {
 
 	//	private static Logger logger = Logger.getLogger(Astronomer.class.getName());
 
-	/**
-	 * Constructor.
-	 */
+	/** Constructor. */
 	public Astronomer() {
 		// Use Job constructor
 		super(Astronomer.class);
@@ -100,20 +99,20 @@ implements Serializable {
 		BuildingManager manager = settlement.getBuildingManager();
 
 		// Add (labspace * tech level / 2) for all labs with astronomy specialties.
-		Iterator<Building> i = manager.getBuildings(Research.NAME).iterator();
+		Iterator<Building> i = manager.getBuildings(BuildingFunction.RESEARCH).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Research lab = (Research) building.getFunction(Research.NAME);
+			Research lab = (Research) building.getFunction(BuildingFunction.RESEARCH);
 			if (lab.hasSpecialty(ScienceType.ASTRONOMY)) 
 				result += lab.getLaboratorySize() * lab.getTechnologyLevel() / 2D;
 		}
 
 		// Add astronomical observatories (observer capacity * tech level * 2).
-		Iterator<Building> j = manager.getBuildings(AstronomicalObservation.NAME).iterator();
+		Iterator<Building> j = manager.getBuildings(BuildingFunction.ASTRONOMICAL_OBSERVATIONS).iterator();
 		while (j.hasNext()) {
 			Building building = j.next();
 			AstronomicalObservation observatory = (AstronomicalObservation) 
-					building.getFunction(AstronomicalObservation.NAME);
+					building.getFunction(BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
 			result += observatory.getObservatoryCapacity() * observatory.getTechnologyLevel() * 2D;
 		}
 

@@ -6,76 +6,80 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
-import org.jdom.Document;
-import org.jdom.Element;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jdom.Document;
+import org.jdom.Element;
+
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.
  */
-public class CropConfig implements Serializable {
+public class CropConfig
+implements Serializable {
 
-    // Element names
-    private static final String CROP = "crop";
-    private static final String NAME = "name";
-    private static final String GROWING_TIME = "growing-time";
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
 
-    private Document cropDoc;
-    private List<CropType> cropList;
+	// Element names
+	private static final String CROP = "crop";
+	private static final String NAME = "name";
+	private static final String GROWING_TIME = "growing-time";
 
-    /**
-     * Constructor
-     * @param cropDoc the crop DOM document.
-     */
-    public CropConfig(Document cropDoc) {
-        this.cropDoc = cropDoc;
-    }
+	private Document cropDoc;
+	private List<CropType> cropList;
 
-    /**
-     * Gets a list of crop types.
-     * @return list of crop types
-     * @throws Exception when crops could not be parsed.
-     */
-    @SuppressWarnings("unchecked")
-    public List<CropType> getCropList() {
+	/**
+	 * Constructor.
+	 * @param cropDoc the crop DOM document.
+	 */
+	public CropConfig(Document cropDoc) {
+		this.cropDoc = cropDoc;
+	}
 
-        if (cropList == null) {
-            cropList = new ArrayList<CropType>();
+	/**
+	 * Gets a list of crop types.
+	 * @return list of crop types
+	 * @throws Exception when crops could not be parsed.
+	 */
+	@SuppressWarnings("unchecked")
+	public List<CropType> getCropList() {
 
-            Element root = cropDoc.getRootElement();
-            List<Element> crops = root.getChildren(CROP);
+		if (cropList == null) {
+			cropList = new ArrayList<CropType>();
 
-            for (Element crop : crops) {
-                String name = "";
+			Element root = cropDoc.getRootElement();
+			List<Element> crops = root.getChildren(CROP);
 
-                // Get name.
-                name = crop.getAttributeValue(NAME);
+			for (Element crop : crops) {
+				String name = "";
 
-                // Get growing time.
-                String growingTimeStr = crop.getAttributeValue(GROWING_TIME);
-                double growingTime = Double.parseDouble(growingTimeStr);
+				// Get name.
+				name = crop.getAttributeValue(NAME);
 
-                // Create crop type.
-                CropType cropType = new CropType(name, growingTime * 1000D);
+				// Get growing time.
+				String growingTimeStr = crop.getAttributeValue(GROWING_TIME);
+				double growingTime = Double.parseDouble(growingTimeStr);
 
-                cropList.add(cropType);
-            }
-        }
+				// Create crop type.
+				CropType cropType = new CropType(name, growingTime * 1000D);
 
-        return cropList;
-    }
-    
-    /**
-     * Prepare object for garbage collection.
-     */
-    public void destroy() {
-        cropDoc = null;
-        if(cropList != null){
-            cropList.clear();
-            cropList = null;
-        }
-    }
+				cropList.add(cropType);
+			}
+		}
+
+		return cropList;
+	}
+
+	/**
+	 * Prepare object for garbage collection.
+	 */
+	public void destroy() {
+		cropDoc = null;
+		if(cropList != null){
+			cropList.clear();
+			cropList = null;
+		}
+	}
 }

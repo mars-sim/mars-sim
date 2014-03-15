@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
 
 /** 
@@ -81,7 +82,7 @@ implements Serializable {
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
         if (kitchenBuilding != null) {
-            kitchen = (Cooking) kitchenBuilding.getFunction(Cooking.NAME);
+            kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
             // Walk to kitchen building.
             walkToKitchenBuilding(kitchenBuilding);
@@ -335,7 +336,7 @@ implements Serializable {
         LocationSituation location = person.getLocationSituation();
         if (location == LocationSituation.IN_SETTLEMENT) {
             BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> kitchenBuildings = manager.getBuildings(Cooking.NAME);
+            List<Building> kitchenBuildings = manager.getBuildings(BuildingFunction.COOKING);
             kitchenBuildings = BuildingManager.getNonMalfunctioningBuildings(kitchenBuildings);
             kitchenBuildings = getKitchensNeedingCooks(kitchenBuildings);
             kitchenBuildings = BuildingManager.getLeastCrowdedBuildings(kitchenBuildings); 
@@ -363,7 +364,7 @@ implements Serializable {
             Iterator<Building> i = kitchenBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                Cooking kitchen = (Cooking) building.getFunction(Cooking.NAME);
+                Cooking kitchen = (Cooking) building.getFunction(BuildingFunction.COOKING);
                 if (kitchen.getNumCooks() < kitchen.getCookCapacity()) result.add(building);
             }
         }

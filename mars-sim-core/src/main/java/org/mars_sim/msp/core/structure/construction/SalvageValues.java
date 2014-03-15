@@ -16,8 +16,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.EVA;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
 import org.mars_sim.msp.core.structure.goods.GoodsManager;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
@@ -220,18 +219,17 @@ implements Serializable {
 		}
 
 		// Check that building doesn't have remaining life support at settlement.
-		if (building.hasFunction(LifeSupport.NAME)) {
-			if (settlement.getBuildingManager().getBuildings(LifeSupport.NAME).size() == 1) {
+		if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+			if (settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT).size() == 1) {
 				result = 0D;
 			}
 		}
 
 		// Check if building has needed living accommodations for settlement population.
-		if (building.hasFunction(LivingAccommodations.NAME)) {
+		if (building.hasFunction(BuildingFunction.LIVING_ACCOMODATIONS)) {
 			int popSize = settlement.getAllAssociatedPeople().size();
 			int popCapacity = settlement.getPopulationCapacity();
-			LivingAccommodations livingAccommodations = (LivingAccommodations) 
-					building.getFunction(LivingAccommodations.NAME);
+			LivingAccommodations livingAccommodations = (LivingAccommodations) building.getFunction(BuildingFunction.LIVING_ACCOMODATIONS);
 			int buildingPopCapacity = livingAccommodations.getBeds();
 			if ((popCapacity - buildingPopCapacity) < popSize) {
 				result = 0D;
@@ -239,7 +237,7 @@ implements Serializable {
 		}
 
 		// Check that building doesn't have only airlock at settlement.
-		if (building.hasFunction(EVA.NAME)) {
+		if (building.hasFunction(BuildingFunction.EVA)) {
 			if (settlement.getAirlockNum() == 1) result = 0D;
 		}
 

@@ -6,19 +6,20 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
 import org.mars_sim.msp.core.time.MarsClock;
-
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * The ResourceProcessing class is a building function indicating 
@@ -31,7 +32,7 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	public static final String NAME = "Resource Processing";
+	private static final BuildingFunction FUNCTION = BuildingFunction.RESOURCE_PROCESSING;
 
 	public static final double PROCESS_MAX_VALUE = 100D;
 
@@ -45,7 +46,7 @@ implements Serializable {
 	 */
 	public ResourceProcessing(Building building) {
 		// Use Function constructor
-		super(NAME, building);
+		super(FUNCTION, building);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 

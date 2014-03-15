@@ -57,6 +57,7 @@ import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Crop;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
@@ -423,8 +424,8 @@ implements Serializable {
 			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 			while (i.hasNext()) {
 				Building building = i.next();
-				if (building.hasFunction(Farming.NAME)) {
-					Farming farm = (Farming) building.getFunction(Farming.NAME);
+				if (building.hasFunction(BuildingFunction.FARMING)) {
+					Farming farm = (Farming) building.getFunction(BuildingFunction.FARMING);
 
 					double amountNeeded = 0D;
 					if (resource.equals(wasteWater)) 
@@ -521,8 +522,8 @@ implements Serializable {
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			if (building.hasFunction(ResourceProcessing.NAME)) {
-				ResourceProcessing processing = (ResourceProcessing) building.getFunction(ResourceProcessing.NAME);
+			if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
+				ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
 				processes.addAll(processing.getProcesses());
 			}
 		}

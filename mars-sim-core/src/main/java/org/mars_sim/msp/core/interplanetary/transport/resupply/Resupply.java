@@ -38,7 +38,7 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
-import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -388,7 +388,7 @@ implements Serializable, Transportable {
                 hasLifeSupport(buildingType);
         if (hasLifeSupport) {
             // Try to put building next to another inhabitable building.
-            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(LifeSupport.NAME);
+            List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
             Collections.shuffle(inhabitableBuildings);
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {

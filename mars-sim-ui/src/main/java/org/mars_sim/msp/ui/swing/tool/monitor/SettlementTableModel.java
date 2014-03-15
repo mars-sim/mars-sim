@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Farming;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -201,18 +202,18 @@ extends UnitTableModel {
 				} break;
 
 				case GREENHOUSES : {
-					int greenhouses = bMgr.getBuildings(Farming.NAME).size();
+					int greenhouses = bMgr.getBuildings(BuildingFunction.FARMING).size();
 					result = greenhouses;
 				} break;
 
 				case CROPS : {
 					int crops = 0;
-					List<Building> greenhouses = bMgr.getBuildings(Farming.NAME);
+					List<Building> greenhouses = bMgr.getBuildings(BuildingFunction.FARMING);
 					Iterator<Building> i = greenhouses.iterator();
 					while (i.hasNext()) {
 						try {
 							Building greenhouse = i.next();
-							Farming farm = (Farming) greenhouse.getFunction(Farming.NAME);
+							Farming farm = (Farming) greenhouse.getFunction(BuildingFunction.FARMING);
 							crops += farm.getCrops().size();
 						}
 						catch (Exception e) {}

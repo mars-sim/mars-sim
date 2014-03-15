@@ -32,7 +32,7 @@ extends Function {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(AstronomicalObservation.class.getName());
 
-	public static String NAME = "Astronomical Observations";
+	private static final BuildingFunction FUNCTION = BuildingFunction.ASTRONOMICAL_OBSERVATIONS;
 
 	// Data members
 	private double powerRequired;
@@ -47,7 +47,7 @@ extends Function {
 	 */
 	public AstronomicalObservation(Building building) {
 		// Use function constructor.
-		super(NAME, building);
+		super(FUNCTION, building);
 
 		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
@@ -160,13 +160,13 @@ extends Function {
 		// Determine existing settlement supply of astronomical observatories.
 		double observatorySupply = 0D;
 		boolean removedBuilding = false;
-		Iterator<Building> k = settlement.getBuildingManager().getBuildings(NAME).iterator();
+		Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
 		while (k.hasNext()) {
 			Building building = k.next();
 			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
 				removedBuilding = true;
 			} else {
-				AstronomicalObservation astroFunction = (AstronomicalObservation) building.getFunction(NAME);
+				AstronomicalObservation astroFunction = (AstronomicalObservation) building.getFunction(FUNCTION);
 				int techLevel = astroFunction.techLevel;
 				int observatorySize = astroFunction.observatoryCapacity;
 				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;

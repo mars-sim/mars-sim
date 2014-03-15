@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -37,7 +38,7 @@ implements Serializable {
 	private double toggleRunningWorkTime;
 
 	/**
-	 * Constructor
+	 * Constructor.
 	 * @param _maxPower the maximum power (kW) of the power source.
 	 * @param _toggle if the power source is toggled on or off.
 	 * @param fuelType the fuel type.
@@ -116,8 +117,8 @@ implements Serializable {
 		 if (toggleRunningWorkTime >= TOGGLE_RUNNING_WORK_TIME_REQUIRED) {
 			 toggleRunningWorkTime = 0D;
 			 toggle = !toggle;
-			 if (toggle) logger.info(getType() + " turned on.");
-			 else logger.info(getType() + " turned off.");
+			 if (toggle) logger.info(Msg.getString("FuelPowerSource.log.turnedOn",getType().getString())); //$NON-NLS-1$
+			 else logger.info(Msg.getString("FuelPowerSource.log.turnedOff",getType().getString())); //$NON-NLS-1$
 		 }
 	 }
 

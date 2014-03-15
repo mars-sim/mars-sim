@@ -6,19 +6,20 @@
  */
 package org.mars_sim.msp.core.structure.building.function;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
+import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.goods.Good;
 import org.mars_sim.msp.core.structure.goods.GoodsUtil;
-
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * The PowerGeneration class is a building function for generating power.
@@ -31,7 +32,7 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/** TODO Name of the building function needs to be internationalized. */
-	public static final String NAME = "Power Generation";
+	private static final BuildingFunction FUNCTION = BuildingFunction.POWER_GENERATION;
 
 	// Data members.
 	private List<PowerSource> powerSources;
@@ -43,7 +44,7 @@ implements Serializable {
 	 */
 	public PowerGeneration(Building building) {
 		// Call Function constructor.
-		super(NAME, building);
+		super(FUNCTION, building);
 
 		// Determine power sources.
 		BuildingConfig config = SimulationConfig.instance()
@@ -67,7 +68,7 @@ implements Serializable {
 		double supply = 0D;
 		boolean removedBuilding = false;
 		Iterator<Building> i = settlement.getBuildingManager().getBuildings(
-				NAME).iterator();
+				FUNCTION).iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (!newBuilding
@@ -76,7 +77,7 @@ implements Serializable {
 				removedBuilding = true;
 			} else {
 				PowerGeneration powerFunction = (PowerGeneration) building
-						.getFunction(NAME);
+						.getFunction(FUNCTION);
 				double wearModifier = (building.getMalfunctionManager()
 						.getWearCondition() / 100D) * .75D + .25D;
 				supply += getPowerSourceSupply(powerFunction.powerSources,
@@ -193,8 +194,8 @@ implements Serializable {
 	@Override
 	public String[] getMalfunctionScopeStrings() {
 		String[] result = new String[powerSources.size() + 1];
-
-		result[0] = getName();
+		// TODO take care to properly internationalize malfunction scope "strings"
+		result[0] = getFunction().getName();
 
 		for (int x = 0; x < powerSources.size(); x++) {
 			result[x + 1] = powerSources.get(x).getType().getString();

@@ -31,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.core.time.MarsClock;
 
@@ -66,526 +67,522 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public SalvageGood(Person person) {
-        super("Salvage Good", person, true, false, STRESS_MODIFIER, 
-                true, 10D + RandomUtil.getRandomDouble(40D));
-        
-        // Get available manufacturing workshop if any.
-        Building manufactureBuilding = getAvailableManufacturingBuilding(person);
-        if (manufactureBuilding != null) {
-            workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
-            
-            // Walk to manufacturing workshop.
-            walkToWorkshopBuilding(manufactureBuilding);
-        }
-        else {
-            endTask();
-        }
-        
-        if (workshop != null) {
-            // Determine salvage process.
-            process = determineSalvageProcess();
-            if (process != null) {
-                setDescription(process.toString());
-            }
-            else {
-                endTask();
-            }
-        }
-        
-        // Initialize phase
-        addPhase(SALVAGE);
-        setPhase(SALVAGE);
-    }
-    
-    /**
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
+		super("Salvage Good", person, true, false, STRESS_MODIFIER, 
+				true, 10D + RandomUtil.getRandomDouble(40D));
 
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+		// Get available manufacturing workshop if any.
+		Building manufactureBuilding = getAvailableManufacturingBuilding(person);
+		if (manufactureBuilding != null) {
+			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 
-            // See if there is an available manufacturing building.
-            Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-            if (manufacturingBuilding != null) {
-                result = 1D;
+			// Walk to manufacturing workshop.
+			walkToWorkshopBuilding(manufactureBuilding);
+		}
+		else {
+			endTask();
+		}
 
-                // No salvaging goods until after the first month of the simulation.
-            	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-            	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-            	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-            	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-            	if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
-            		result = 0D;
-            	}
-                
-                // Crowding modifier.
-                result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-                result *= Task.getRelationshipModifier(person, manufacturingBuilding);
+		if (workshop != null) {
+			// Determine salvage process.
+			process = determineSalvageProcess();
+			if (process != null) {
+				setDescription(process.toString());
+			}
+			else {
+				endTask();
+			}
+		}
 
-                // Salvaging good value modifier.
-                result *= getHighestSalvagingProcessValue(person, manufacturingBuilding);
+		// Initialize phase
+		addPhase(SALVAGE);
+		setPhase(SALVAGE);
+	}
 
-                if (result > 100D) {
-                    result = 100D;
-                }
+	/**
+	 * Returns the weighted probability that a person might perform this task.
+	 * @param person the person to perform the task
+	 * @return the weighted probability that a person might perform this task
+	 */
+	public static double getProbability(Person person) {
+		double result = 0D;
 
-                // If manufacturing building has salvage process requiring work, add
-                // modifier.
-                SkillManager skillManager = person.getMind().getSkillManager();
-                int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
-                    result += 10D;
-                }
-                
-                // If settlement has manufacturing override, no new
-                // salvage processes can be created.
-                else if (person.getSettlement().getManufactureOverride()) {
-                    result = 0;
-                }
-            }
-        }
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
+			// See if there is an available manufacturing building.
+			Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
+			if (manufacturingBuilding != null) {
+				result = 1D;
 
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
-        }
+				// No salvaging goods until after the first month of the simulation.
+				MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
+				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
+				double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
+				double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
+				if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
+					result = 0D;
+				}
 
-        return result;
-    }
-    
-    /**
-     * Walk to workshop building.
-     * @param workshopBuilding the workshop building.
-     */
-    private void walkToWorkshopBuilding(Building workshopBuilding) {
-        
-        // Determine location within workshop building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), workshopBuilding);
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                workshopBuilding)) {
-            
-            // Add subtask for walking to workshop building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    workshopBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to workshop building " + 
-                    workshopBuilding.getName());
-            endTask();
-        }
-    }
-    
-    @Override
-    protected void addExperience(double time) {
-        // Add experience to "Materials Science" skill
-        // (1 base experience point per 100 millisols of work)
-        // Experience points adjusted by person's "Experience Aptitude"
-        // attribute.
-        double newPoints = time / 100D;
-        int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-        newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-        newPoints *= getTeachingExperienceModifier();
-        person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
-    }
+				// Crowding modifier.
+				result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
+				result *= Task.getRelationshipModifier(person, manufacturingBuilding);
 
-    @Override
-    public List<SkillType> getAssociatedSkills() {
-        List<SkillType> results = new ArrayList<SkillType>(1);
-        results.add(SkillType.MATERIALS_SCIENCE);
-        return results;
-    }
+				// Salvaging good value modifier.
+				result *= getHighestSalvagingProcessValue(person, manufacturingBuilding);
 
-    @Override
-    public int getEffectiveSkillLevel() {
-        SkillManager manager = person.getMind().getSkillManager();
-        return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-    }
+				if (result > 100D) {
+					result = 100D;
+				}
 
-    @Override
-    protected double performMappedPhase(double time) {
-        if (getPhase() == null) {
-            throw new IllegalArgumentException("Task phase is null");
-        }
-        else if (SALVAGE.equals(getPhase())) {
-            return salvagePhase(time);
-        }
-        else {
-            return time;
-        }
-    }
-    
-    /**
-     * Perform the salvaging phase.
-     * @param time the time to perform (millisols)
-     * @return remaining time after performing (millisols)
-     */
-    private double salvagePhase(double time) {
+				// If manufacturing building has salvage process requiring work, add
+				// modifier.
+				SkillManager skillManager = person.getMind().getSkillManager();
+				int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+				if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
+					result += 10D;
+				}
 
-        // Check if workshop has malfunction.
-        if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
-            endTask();
-            return time;
-        }
-        
-        // Check if salvage has been completed.
-        if (process.getWorkTimeRemaining() <= 0D) {
-            endTask();
-            return time;
-        }
+				// If settlement has manufacturing override, no new
+				// salvage processes can be created.
+				else if (person.getSettlement().getManufactureOverride()) {
+					result = 0;
+				}
+			}
+		}
 
-        // Determine amount of effective work time based on "Materials Science" skill.
-        double workTime = time;
-        int skill = getEffectiveSkillLevel();
-        if (skill == 0) {
-            workTime /= 2;
-        }
-        else {
-            workTime += workTime * (.2D * (double) skill);
-        }
+		// Effort-driven task modifier.
+		result *= person.getPerformanceRating();
 
-        // Apply work time to salvage process.
-        double remainingWorkTime = process.getWorkTimeRemaining();
-        double providedWorkTime = workTime;
-        if (providedWorkTime > remainingWorkTime) {
-            providedWorkTime = remainingWorkTime;
-        }
-        process.addWorkTime(providedWorkTime, skill);
-        if (process.getWorkTimeRemaining() <= 0D) {
-            workshop.endSalvageProcess(process, false);
-            endTask();
-        }
+		// Job modifier.
+		Job job = person.getMind().getJob();
+		if (job != null) {
+			result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
+		}
 
-        // Add experience
-        addExperience(time);
+		return result;
+	}
 
-        // Check for accident in workshop.
-        checkForAccident(time);
+	/**
+	 * Walk to workshop building.
+	 * @param workshopBuilding the workshop building.
+	 */
+	private void walkToWorkshopBuilding(Building workshopBuilding) {
 
-        return 0D;
-    }
-    
-    /**
-     * Check for accident in manufacturing building.
-     * @param time the amount of time working (in millisols)
-     */
-    private void checkForAccident(double time) {
+		// Determine location within workshop building.
+		// TODO: Use action point rather than random internal location.
+		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
+		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+				buildingLoc.getY(), workshopBuilding);
 
-        double chance = .001D;
+		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+				workshopBuilding)) {
 
-        // Materials science skill modification.
-        int skill = getEffectiveSkillLevel();
-        if (skill <= 3) {
-            chance *= (4 - skill);
-        }
-        else {
-            chance /= (skill - 2);
-        }
+			// Add subtask for walking to workshop building.
+			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+					workshopBuilding));
+		}
+		else {
+			logger.fine(person.getName() + " unable to walk to workshop building " + 
+					workshopBuilding.getName());
+			endTask();
+		}
+	}
 
-        // Modify based on the workshop building's wear condition.
-        chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
+	@Override
+	protected void addExperience(double time) {
+		// Add experience to "Materials Science" skill
+		// (1 base experience point per 100 millisols of work)
+		// Experience points adjusted by person's "Experience Aptitude"
+		// attribute.
+		double newPoints = time / 100D;
+		int experienceAptitude = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+		newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
+		newPoints *= getTeachingExperienceModifier();
+		person.getMind().getSkillManager().addExperience(SkillType.MATERIALS_SCIENCE, newPoints);
+	}
 
-        if (RandomUtil.lessThanRandPercent(chance * time)) {
-            logger.info(person.getName() + " has accident while salvaging " + 
-                    process.getInfo().getItemName() + ".");
-            workshop.getBuilding().getMalfunctionManager().accident();
-        }
-    }
+	@Override
+	public List<SkillType> getAssociatedSkills() {
+		List<SkillType> results = new ArrayList<SkillType>(1);
+		results.add(SkillType.MATERIALS_SCIENCE);
+		return results;
+	}
 
-    /**
-     * Gets an available manufacturing building that the person can use.
-     * Returns null if no manufacturing building is currently available.
-     * @param person the person
-     * @return available manufacturing building
-     */
-    private static Building getAvailableManufacturingBuilding(Person person) {
-        
-        Building result = null;
-        
-        SkillManager skillManager = person.getMind().getSkillManager();
-        int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            BuildingManager manager = person.getSettlement().getBuildingManager();
-            List<Building> manufacturingBuildings = manager.getBuildings(Manufacture.NAME);
-            manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
-            manufacturingBuildings = getManufacturingBuildingsNeedingSalvageWork(manufacturingBuildings, skill);
-            manufacturingBuildings = getBuildingsWithSalvageProcessesRequiringWork(manufacturingBuildings, skill);
-            manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
-            manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
-            
-            if (manufacturingBuildings.size() > 0) {
-                Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(
-                        person, manufacturingBuildings);
-                result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
-            }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets a list of manufacturing buildings needing work from a list of buildings 
-     * with the manufacture function.
-     * @param buildingList list of buildings with the manufacture function.
-     * @param skill the materials science skill level of the person.
-     * @return list of manufacture buildings needing work.
-     */
-    private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList, 
-            int skill) {
-        
-        List<Building> result = new ArrayList<Building>();
-        
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(Manufacture.NAME);
-            if (manufacturingFunction.requiresSalvagingWork(skill)) {
-                result.add(building);
-            }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets a subset list of manufacturing buildings with salvage processes requiring work.
-     * @param buildingList the original building list.
-     * @param skill the materials science skill level of the person.
-     * @return subset list of buildings with processes requiring work, or original list if none found.
-     */
-    private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList, 
-            int skill) {
-        
-        List<Building> result = new ArrayList<Building>();
-        
-        // Add all buildings with processes requiring work.
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            if (hasSalvageProcessRequiringWork(building, skill)) {
-                result.add(building);
-            }
-        }
-        
-        // If no building with processes requiring work, return original list.
-        if (result.size() == 0) {
-            result = buildingList;
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Checks if manufacturing building has any salvage processes requiring work.
-     * @param manufacturingBuilding the manufacturing building.
-     * @param skill the materials science skill level of the person.
-     * @return true if processes requiring work.
-     */
-    private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
-            int skill) {
-        
-        boolean result = false;
-        
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(
-                Manufacture.NAME);
-        Iterator<SalvageProcess> i = manufacturingFunction.getSalvageProcesses().iterator();
-        while (i.hasNext()) {
-            SalvageProcess process = i.next();
-            boolean workRequired = (process.getWorkTimeRemaining() > 0D);
-            boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
-            if (workRequired && skillRequired) {
-                result = true;
-            }
-        }
-        
-        return result;
-    }
-    
-    /**
-     * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings 
-     * with the manufacture function.
-     * @param buildingList list of buildings with the manufacture function.
-     * @return subset list of highest tech level buildings.
-     */
-    private static List<Building> getHighestManufacturingTechLevelBuildings(
-            List<Building> buildingList) {
-        
-        List<Building> result = new ArrayList<Building>();
-        
-        int highestTechLevel = 0;
-        Iterator<Building> i = buildingList.iterator();
-        while (i.hasNext()) {
-            Building building = i.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(
-                    Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() > highestTechLevel) {
-                highestTechLevel = manufacturingFunction.getTechLevel();
-            }
-        }
-        
-        Iterator<Building> j = buildingList.iterator();
-        while (j.hasNext()) {
-            Building building = j.next();
-            Manufacture manufacturingFunction = (Manufacture) building.getFunction(
-                    Manufacture.NAME);
-            if (manufacturingFunction.getTechLevel() == highestTechLevel) {
-                result.add(building);
-            }
-        }
-            
-        return result;
-    }
-    
-    /**
-     * Gets the highest salvaging process goods value for the person and the
-     * manufacturing building.
-     * @param person the person to perform manufacturing.
-     * @param manufacturingBuilding the manufacturing building.
-     * @return highest process good value.
-     */
-    private static double getHighestSalvagingProcessValue(Person person, 
-            Building manufacturingBuilding) {
+	@Override
+	public int getEffectiveSkillLevel() {
+		SkillManager manager = person.getMind().getSkillManager();
+		return manager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+	}
 
-        double highestProcessValue = 0D;
+	@Override
+	protected double performMappedPhase(double time) {
+		if (getPhase() == null) {
+			throw new IllegalArgumentException("Task phase is null");
+		}
+		else if (SALVAGE.equals(getPhase())) {
+			return salvagePhase(time);
+		}
+		else {
+			return time;
+		}
+	}
 
-        int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
-                SkillType.MATERIALS_SCIENCE);
+	/**
+	 * Perform the salvaging phase.
+	 * @param time the time to perform (millisols)
+	 * @return remaining time after performing (millisols)
+	 */
+	private double salvagePhase(double time) {
 
-        Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(
-                Manufacture.NAME);
-        int techLevel = manufacturingFunction.getTechLevel();
+		// Check if workshop has malfunction.
+		if (workshop.getBuilding().getMalfunctionManager().hasMalfunction()) {
+			endTask();
+			return time;
+		}
 
-        Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
-                techLevel, skillLevel).iterator();
-        while (i.hasNext()) {
-            SalvageProcessInfo process = i.next();
-            if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
-                    isSalvageProcessRunning(process, manufacturingFunction)) {
-                Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
-                double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, 
-                        person);
-                if (processValue > highestProcessValue) {
-                    highestProcessValue = processValue;
-                }
-            }
-        }
+		// Check if salvage has been completed.
+		if (process.getWorkTimeRemaining() <= 0D) {
+			endTask();
+			return time;
+		}
 
-        return highestProcessValue;
-    }
-    
-    /**
-     * Checks if a process type is currently running at a manufacturing
-     * building.
-     * @param processInfo the process type.
-     * @param manufactureBuilding the manufacturing building.
-     * @return true if process is running.
-     */
-    private static boolean isSalvageProcessRunning(SalvageProcessInfo processInfo, 
-            Manufacture manufactureBuilding) {
-        boolean result = false;
+		// Determine amount of effective work time based on "Materials Science" skill.
+		double workTime = time;
+		int skill = getEffectiveSkillLevel();
+		if (skill == 0) {
+			workTime /= 2;
+		}
+		else {
+			workTime += workTime * (.2D * (double) skill);
+		}
 
-        Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
-        while (i.hasNext()) {
-            SalvageProcess process = i.next();
-            if (process.getInfo().getItemName() == processInfo.getItemName()) {
-                result = true;
-            }
-        }
+		// Apply work time to salvage process.
+		double remainingWorkTime = process.getWorkTimeRemaining();
+		double providedWorkTime = workTime;
+		if (providedWorkTime > remainingWorkTime) {
+			providedWorkTime = remainingWorkTime;
+		}
+		process.addWorkTime(providedWorkTime, skill);
+		if (process.getWorkTimeRemaining() <= 0D) {
+			workshop.endSalvageProcess(process, false);
+			endTask();
+		}
 
-        return result;
-    }
-    
-    /**
-     * Gets an available running salvage process.
-     * @return process or null if none.
-     */
-    private SalvageProcess getRunningSalvageProcess() {
-        SalvageProcess result = null;
+		// Add experience
+		addExperience(time);
 
-        int skillLevel = getEffectiveSkillLevel();
+		// Check for accident in workshop.
+		checkForAccident(time);
 
-        Iterator<SalvageProcess> i = workshop.getSalvageProcesses().iterator();
-        while (i.hasNext() && (result == null)) {
-            SalvageProcess process = i.next();
-            if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
-                    (process.getWorkTimeRemaining() > 0D)) {
-                result = process;
-            }
-        }
+		return 0D;
+	}
 
-        return result;
-    }
-    
-    /**
-     * Creates a new salvage process if possible.
-     * @return the new salvage process or null if none.
-     */
-    private SalvageProcess createNewSalvageProcess() {
-        SalvageProcess result = null;
+	/**
+	 * Check for accident in manufacturing building.
+	 * @param time the amount of time working (in millisols)
+	 */
+	private void checkForAccident(double time) {
 
-        if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {
+		double chance = .001D;
 
-            int skillLevel = getEffectiveSkillLevel();
-            int techLevel = workshop.getTechLevel();
+		// Materials science skill modification.
+		int skill = getEffectiveSkillLevel();
+		if (skill <= 3) {
+			chance *= (4 - skill);
+		}
+		else {
+			chance /= (skill - 2);
+		}
 
-            Map<SalvageProcessInfo, Double> processValues = new HashMap<SalvageProcessInfo, Double>();
-            Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
-                    techLevel, skillLevel).iterator();
-            while (i.hasNext()) {
-                SalvageProcessInfo processInfo = i.next();
-                if (ManufactureUtil.canSalvageProcessBeStarted(processInfo, workshop)) {
-                    double processValue = ManufactureUtil.getSalvageProcessValue(processInfo, 
-                            person.getSettlement(), person);
-                    if (processValue > 0D) {
-                        processValues.put(processInfo, processValue);
-                    }
-                }
-            }
-            
-            // Randomly determine process based on value weights.
-            SalvageProcessInfo selectedProcess = RandomUtil.getWeightedRandomObject(processValues);
+		// Modify based on the workshop building's wear condition.
+		chance *= workshop.getBuilding().getMalfunctionManager().getWearConditionAccidentModifier();
 
-            if (selectedProcess != null) {
-                Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess, 
-                        person.getSettlement());
-                if (salvagedUnit != null) {
-                    result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);
-                    workshop.addSalvageProcess(result);
-                }
-            }
-        }
+		if (RandomUtil.lessThanRandPercent(chance * time)) {
+			logger.info(person.getName() + " has accident while salvaging " + 
+					process.getInfo().getItemName() + ".");
+			workshop.getBuilding().getMalfunctionManager().accident();
+		}
+	}
 
-        return result;
-    }
-    
-    /**
-     * Determines a salvage process used for the task.
-     * @return salvage process or null if none determined.
-     */
-    private SalvageProcess determineSalvageProcess() {
-        SalvageProcess process = getRunningSalvageProcess();
-        if (process == null) {
-            process = createNewSalvageProcess();
-        }
-        return process;
-    }
-    
-    @Override
-    public void destroy() {
-        super.destroy();
-        
-        workshop = null;
-        process = null;
-    }
+	/**
+	 * Gets an available manufacturing building that the person can use.
+	 * Returns null if no manufacturing building is currently available.
+	 * @param person the person
+	 * @return available manufacturing building
+	 */
+	private static Building getAvailableManufacturingBuilding(Person person) {
+
+		Building result = null;
+
+		SkillManager skillManager = person.getMind().getSkillManager();
+		int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
+
+		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+			BuildingManager manager = person.getSettlement().getBuildingManager();
+			List<Building> manufacturingBuildings = manager.getBuildings(BuildingFunction.MANUFACTURE);
+			manufacturingBuildings = BuildingManager.getNonMalfunctioningBuildings(manufacturingBuildings);
+			manufacturingBuildings = getManufacturingBuildingsNeedingSalvageWork(manufacturingBuildings, skill);
+			manufacturingBuildings = getBuildingsWithSalvageProcessesRequiringWork(manufacturingBuildings, skill);
+			manufacturingBuildings = getHighestManufacturingTechLevelBuildings(manufacturingBuildings);
+			manufacturingBuildings = BuildingManager.getLeastCrowdedBuildings(manufacturingBuildings);
+
+			if (manufacturingBuildings.size() > 0) {
+				Map<Building, Double> manufacturingBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+						person, manufacturingBuildings);
+				result = RandomUtil.getWeightedRandomObject(manufacturingBuildingProbs);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a list of manufacturing buildings needing work from a list of buildings 
+	 * with the manufacture function.
+	 * @param buildingList list of buildings with the manufacture function.
+	 * @param skill the materials science skill level of the person.
+	 * @return list of manufacture buildings needing work.
+	 */
+	private static List<Building> getManufacturingBuildingsNeedingSalvageWork(List<Building> buildingList, 
+			int skill) {
+
+		List<Building> result = new ArrayList<Building>();
+
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			if (manufacturingFunction.requiresSalvagingWork(skill)) {
+				result.add(building);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a subset list of manufacturing buildings with salvage processes requiring work.
+	 * @param buildingList the original building list.
+	 * @param skill the materials science skill level of the person.
+	 * @return subset list of buildings with processes requiring work, or original list if none found.
+	 */
+	private static List<Building> getBuildingsWithSalvageProcessesRequiringWork(List<Building> buildingList, 
+			int skill) {
+
+		List<Building> result = new ArrayList<Building>();
+
+		// Add all buildings with processes requiring work.
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			if (hasSalvageProcessRequiringWork(building, skill)) {
+				result.add(building);
+			}
+		}
+
+		// If no building with processes requiring work, return original list.
+		if (result.size() == 0) {
+			result = buildingList;
+		}
+
+		return result;
+	}
+
+	/**
+	 * Checks if manufacturing building has any salvage processes requiring work.
+	 * @param manufacturingBuilding the manufacturing building.
+	 * @param skill the materials science skill level of the person.
+	 * @return true if processes requiring work.
+	 */
+	private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
+			int skill) {
+
+		boolean result = false;
+
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		Iterator<SalvageProcess> i = manufacturingFunction.getSalvageProcesses().iterator();
+		while (i.hasNext()) {
+			SalvageProcess process = i.next();
+			boolean workRequired = (process.getWorkTimeRemaining() > 0D);
+			boolean skillRequired = (process.getInfo().getSkillLevelRequired() <= skill);
+			if (workRequired && skillRequired) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets a subset list of manufacturing buildings with the highest tech level from a list of buildings 
+	 * with the manufacture function.
+	 * @param buildingList list of buildings with the manufacture function.
+	 * @return subset list of highest tech level buildings.
+	 */
+	private static List<Building> getHighestManufacturingTechLevelBuildings(
+			List<Building> buildingList) {
+
+		List<Building> result = new ArrayList<Building>();
+
+		int highestTechLevel = 0;
+		Iterator<Building> i = buildingList.iterator();
+		while (i.hasNext()) {
+			Building building = i.next();
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			if (manufacturingFunction.getTechLevel() > highestTechLevel) {
+				highestTechLevel = manufacturingFunction.getTechLevel();
+			}
+		}
+
+		Iterator<Building> j = buildingList.iterator();
+		while (j.hasNext()) {
+			Building building = j.next();
+			Manufacture manufacturingFunction = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
+			if (manufacturingFunction.getTechLevel() == highestTechLevel) {
+				result.add(building);
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets the highest salvaging process goods value for the person and the
+	 * manufacturing building.
+	 * @param person the person to perform manufacturing.
+	 * @param manufacturingBuilding the manufacturing building.
+	 * @return highest process good value.
+	 */
+	private static double getHighestSalvagingProcessValue(Person person, 
+			Building manufacturingBuilding) {
+
+		double highestProcessValue = 0D;
+
+		int skillLevel = person.getMind().getSkillManager().getEffectiveSkillLevel(
+				SkillType.MATERIALS_SCIENCE);
+
+		Manufacture manufacturingFunction = (Manufacture) manufacturingBuilding.getFunction(BuildingFunction.MANUFACTURE);
+		int techLevel = manufacturingFunction.getTechLevel();
+
+		Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
+				techLevel, skillLevel).iterator();
+		while (i.hasNext()) {
+			SalvageProcessInfo process = i.next();
+			if (ManufactureUtil.canSalvageProcessBeStarted(process, manufacturingFunction) || 
+					isSalvageProcessRunning(process, manufacturingFunction)) {
+				Settlement settlement = manufacturingBuilding.getBuildingManager().getSettlement();
+				double processValue = ManufactureUtil.getSalvageProcessValue(process, settlement, 
+						person);
+				if (processValue > highestProcessValue) {
+					highestProcessValue = processValue;
+				}
+			}
+		}
+
+		return highestProcessValue;
+	}
+
+	/**
+	 * Checks if a process type is currently running at a manufacturing
+	 * building.
+	 * @param processInfo the process type.
+	 * @param manufactureBuilding the manufacturing building.
+	 * @return true if process is running.
+	 */
+	private static boolean isSalvageProcessRunning(SalvageProcessInfo processInfo, 
+			Manufacture manufactureBuilding) {
+		boolean result = false;
+
+		Iterator<SalvageProcess> i = manufactureBuilding.getSalvageProcesses().iterator();
+		while (i.hasNext()) {
+			SalvageProcess process = i.next();
+			if (process.getInfo().getItemName() == processInfo.getItemName()) {
+				result = true;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Gets an available running salvage process.
+	 * @return process or null if none.
+	 */
+	private SalvageProcess getRunningSalvageProcess() {
+		SalvageProcess result = null;
+
+		int skillLevel = getEffectiveSkillLevel();
+
+		Iterator<SalvageProcess> i = workshop.getSalvageProcesses().iterator();
+		while (i.hasNext() && (result == null)) {
+			SalvageProcess process = i.next();
+			if ((process.getInfo().getSkillLevelRequired() <= skillLevel) && 
+					(process.getWorkTimeRemaining() > 0D)) {
+				result = process;
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Creates a new salvage process if possible.
+	 * @return the new salvage process or null if none.
+	 */
+	private SalvageProcess createNewSalvageProcess() {
+		SalvageProcess result = null;
+
+		if (workshop.getTotalProcessNumber() < workshop.getConcurrentProcesses()) {
+
+			int skillLevel = getEffectiveSkillLevel();
+			int techLevel = workshop.getTechLevel();
+
+			Map<SalvageProcessInfo, Double> processValues = new HashMap<SalvageProcessInfo, Double>();
+			Iterator<SalvageProcessInfo> i = ManufactureUtil.getSalvageProcessesForTechSkillLevel(
+					techLevel, skillLevel).iterator();
+			while (i.hasNext()) {
+				SalvageProcessInfo processInfo = i.next();
+				if (ManufactureUtil.canSalvageProcessBeStarted(processInfo, workshop)) {
+					double processValue = ManufactureUtil.getSalvageProcessValue(processInfo, 
+							person.getSettlement(), person);
+					if (processValue > 0D) {
+						processValues.put(processInfo, processValue);
+					}
+				}
+			}
+
+			// Randomly determine process based on value weights.
+			SalvageProcessInfo selectedProcess = RandomUtil.getWeightedRandomObject(processValues);
+
+			if (selectedProcess != null) {
+				Unit salvagedUnit = ManufactureUtil.findUnitForSalvage(selectedProcess, 
+						person.getSettlement());
+				if (salvagedUnit != null) {
+					result = new SalvageProcess(selectedProcess, workshop, salvagedUnit);
+					workshop.addSalvageProcess(result);
+				}
+			}
+		}
+
+		return result;
+	}
+
+	/**
+	 * Determines a salvage process used for the task.
+	 * @return salvage process or null if none determined.
+	 */
+	private SalvageProcess determineSalvageProcess() {
+		SalvageProcess process = getRunningSalvageProcess();
+		if (process == null) {
+			process = createNewSalvageProcess();
+		}
+		return process;
+	}
+
+	@Override
+	public void destroy() {
+		super.destroy();
+
+		workshop = null;
+		process = null;
+	}
 }

@@ -4,8 +4,11 @@
  * @version 3.06 2014-03-10
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.vehicle;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.List;
 
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.LocalAreaUtil;
@@ -15,19 +18,20 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.mars.TerrainElevation;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
-
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.List;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 
 /** The GroundVehicle class represents a ground-type vehicle.  It is
  *  abstract and should be extended to a particular type of ground
  *  vehicle.
 */
-public abstract class GroundVehicle extends Vehicle implements Serializable {
+public abstract class GroundVehicle
+extends Vehicle
+implements Serializable {
 
-	/** Ground Vehicle Status String. */
+	/** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	/** TODO Ground Vehicle Status String should be internationalized. */
 	public final static String STUCK = "Stuck - using winch";
 
 	// Data members
@@ -165,7 +169,7 @@ public abstract class GroundVehicle extends Vehicle implements Serializable {
     	// If settlement has garages, place vehicle near a random garage.
     	// Otherwise place vehicle near settlement center.
     	List<Building> garageList = settlement.getBuildingManager().getBuildings(
-    	        GroundVehicleMaintenance.NAME);
+    	        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
     	if (garageList.size() >= 1) {
     		Collections.shuffle(garageList);
     		Building garage = garageList.get(0);

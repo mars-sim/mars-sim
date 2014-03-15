@@ -42,13 +42,12 @@ import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
-import java.awt.event.MouseWheelListener;
-import java.awt.event.MouseWheelEvent;
 
 /**
  * A tab panel displaying settlement manufacturing information.
@@ -82,7 +81,7 @@ public class ManufactureTabPanel extends TabPanel {
 	private JCheckBox overrideCheckbox;
 	
     /**
-     * Constructor
+     * Constructor.
      * @param unit {@link Unit} the unit to display.
      * @param desktop {@link MainDesktopPane} the main desktop.
      */
@@ -166,7 +165,7 @@ public class ManufactureTabPanel extends TabPanel {
         		try {
         			Building workshopBuilding = (Building) buildingSelection.getSelectedItem();
         			if (workshopBuilding != null) {
-        				Manufacture workshop = (Manufacture) workshopBuilding.getFunction(Manufacture.NAME);
+        				Manufacture workshop = (Manufacture) workshopBuilding.getFunction(BuildingFunction.MANUFACTURE);
         				Object selectedItem = processSelection.getSelectedItem();
         				if (selectedItem != null) {
         				    if (selectedItem instanceof ManufactureProcessInfo) {
@@ -328,10 +327,10 @@ public class ManufactureTabPanel extends TabPanel {
 	private List<ManufactureProcess> getManufactureProcesses() {
 		List<ManufactureProcess> result = new ArrayList<ManufactureProcess>();
 		
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(Manufacture.NAME).iterator();
+		Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
 		while (i.hasNext()) {
 //			try {
-				Manufacture workshop = (Manufacture) i.next().getFunction(Manufacture.NAME);
+				Manufacture workshop = (Manufacture) i.next().getFunction(BuildingFunction.MANUFACTURE);
 				result.addAll(workshop.getProcesses());
 //			}
 //			catch (BuildingException e) {}
@@ -347,10 +346,10 @@ public class ManufactureTabPanel extends TabPanel {
     private List<SalvageProcess> getSalvageProcesses() {
         List<SalvageProcess> result = new ArrayList<SalvageProcess>();
         
-        Iterator<Building> i = settlement.getBuildingManager().getBuildings(Manufacture.NAME).iterator();
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE).iterator();
         while (i.hasNext()) {
 //            try {
-                Manufacture workshop = (Manufacture) i.next().getFunction(Manufacture.NAME);
+                Manufacture workshop = (Manufacture) i.next().getFunction(BuildingFunction.MANUFACTURE);
                 result.addAll(workshop.getSalvageProcesses());
 //            }
 //            catch (BuildingException e) {}
@@ -402,7 +401,7 @@ public class ManufactureTabPanel extends TabPanel {
 	 * @return vector of buildings.
 	 */
 	private Vector<Building> getManufacturingBuildings() {
-		return new Vector<Building>(settlement.getBuildingManager().getBuildings(Manufacture.NAME));
+		return new Vector<Building>(settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE));
 	}
 	
 	/**
@@ -415,7 +414,7 @@ public class ManufactureTabPanel extends TabPanel {
 		
 		try {
 			if (manufactureBuilding != null) {
-				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
+				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 				if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
 					Iterator<ManufactureProcessInfo> i = 
 						ManufactureUtil.getManufactureProcessesForTechLevel(
@@ -443,7 +442,7 @@ public class ManufactureTabPanel extends TabPanel {
         
         try {
             if (manufactureBuilding != null) {
-                Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(Manufacture.NAME);
+                Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
                 if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
                     Iterator<SalvageProcessInfo> i = Collections.unmodifiableList(
                             ManufactureUtil.getSalvageProcessesForTechLevel(

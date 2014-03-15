@@ -34,7 +34,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -111,7 +111,7 @@ implements Serializable {
 		// Determine if settlement has a garage.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
 			if (person.getSettlement().getBuildingManager().getBuildings(
-			        GroundVehicleMaintenance.NAME).size() > 0) {
+			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
 				result = 0D;
 			}
         }

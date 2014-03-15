@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
 
 /** 
@@ -42,9 +43,7 @@ implements Serializable {
 
 	//	private static Logger logger = Logger.getLogger(Engineer.class.getName());
 
-	/**
-	 * Constructor.
-	 */
+	/** Constructor. */
 	public Engineer() {
 		// Use Job constructor
 		super(Engineer.class);
@@ -101,11 +100,11 @@ implements Serializable {
 		double result = 0D;
 
 		// Add (tech level * process number / 2) for all manufacture buildings.
-		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(Manufacture.NAME);
+		List<Building> manufactureBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.MANUFACTURE);
 		Iterator<Building> i = manufactureBuildings.iterator();
 		while (i.hasNext()) {
 			Building building = i.next();
-			Manufacture workshop = (Manufacture) building.getFunction(Manufacture.NAME);
+			Manufacture workshop = (Manufacture) building.getFunction(BuildingFunction.MANUFACTURE);
 			result += workshop.getTechLevel() * workshop.getConcurrentProcesses() / 2D;
 		}
 

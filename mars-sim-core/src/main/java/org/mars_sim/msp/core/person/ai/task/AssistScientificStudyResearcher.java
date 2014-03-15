@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
@@ -200,7 +201,7 @@ implements Serializable {
                 Person researcher = i.next();
                 Building building = BuildingManager.getBuilding(researcher);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
                     int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) buildingCrowding = -1;
                     if (buildingCrowding < crowding) crowding = buildingCrowding;
@@ -213,7 +214,7 @@ implements Serializable {
                 Person researcher = j.next();
                 Building building = BuildingManager.getBuilding(researcher);
                 if (building != null) {
-                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(LifeSupport.NAME);
+                    LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
                     int buildingCrowding = lifeSupport.getOccupantNumber() - lifeSupport.getOccupantCapacity() + 1;
                     if (buildingCrowding < -1) buildingCrowding = -1;
                     if (buildingCrowding == crowding) leastCrowded.add(researcher);
