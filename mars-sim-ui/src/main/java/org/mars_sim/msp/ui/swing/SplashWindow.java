@@ -30,7 +30,8 @@ public class SplashWindow {
 	private JFrame window;
 
 	// Constant data member
-	public static final String VERSION_STRING = Simulation.VERSION;
+	private static final String VERSION_STRING = Simulation.VERSION;
+	private static final String MSP_STRING = Msg.getString("SplashWindow.title");
 
 	private static String IMAGE_NAME = "splash.png";
 	
@@ -48,7 +49,7 @@ public class SplashWindow {
 				g.drawImage(splashImage, 0, 0, this);
 				window.setForeground(Color.white);
 				g.setFont(new Font("SansSerif", Font.PLAIN, 35));
-				g.drawString("Mars Simulation Project" , 30, 60);
+				g.drawString(MSP_STRING, 30, 60);
 				g.setFont(new Font("SansSerif", Font.PLAIN, 11));
 				g.drawString(VERSION_STRING, 930, 20);
 			}
