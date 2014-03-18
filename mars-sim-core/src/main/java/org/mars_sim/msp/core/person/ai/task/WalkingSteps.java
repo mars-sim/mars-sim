@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkingSteps.java
- * @version 3.06 2014-03-03
+ * @version 3.06 2014-03-17
  * @author Scott Davis
  */
 
@@ -11,6 +11,7 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalBoundedObject;
@@ -27,9 +28,11 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class WalkingSteps
 implements Serializable {
-
+    
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
+	
+	private static Logger logger = Logger.getLogger(WalkingSteps.class.getName());
 
 	// Data members.
 	private List<WalkStep> walkingSteps;
@@ -258,6 +261,7 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
+                logger.severe("Cannot find walkable airlock from building interior to building interior.");
                 return;
             }
             
@@ -317,6 +321,7 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
+                logger.severe("Cannot find walkable airlock from building interior to rover interior.");
                 return;
             }
             
@@ -354,6 +359,7 @@ implements Serializable {
                 destinationWalkState.xLoc, destinationWalkState.yLoc);
         if (airlock == null) {
             canWalkAllSteps = false;
+            logger.severe("Cannot find walkable airlock from building interior to outside.");
             return;
         }
         
@@ -846,6 +852,7 @@ implements Serializable {
                     
                     // Cannot walk to destination building.
                     canWalkAllSteps = false;
+                    logger.severe("Cannot find walkable airlock from building airlock exterior to building interior.");
                 }
             }
         }
@@ -875,6 +882,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
+                logger.severe("Cannot find walkable airlock from rover airlock exterior to building interior.");
             }
         }
         else {
@@ -937,6 +945,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
+                logger.severe("Cannot find walkable airlock from airlock exterior to rover in garage.");
             }
         }
         else {
@@ -1046,6 +1055,7 @@ implements Serializable {
             
             // Cannot walk to destination building.
             canWalkAllSteps = false;
+            logger.severe("Cannot find walkable airlock from outside to building interior.");
         }
     }
     
@@ -1085,6 +1095,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
+                logger.severe("Cannot find walkable airlock from outside to rover in garage.");
             }
         }
         else {

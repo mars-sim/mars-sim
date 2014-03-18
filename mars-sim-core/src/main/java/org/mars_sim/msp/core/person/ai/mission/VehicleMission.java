@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-17
  * @author Scott Davis
  */
 
@@ -54,9 +54,6 @@ implements UnitListener {
 	public static final String DISEMBARKING = "Disembarking";
 
     // Static members
-
-	/** Buffer distance for determining fuel requirements. */
-	private static final double BUFFER_DISTANCE = 50D;
 
 	/** Modifier for number of parts needed for a trip. */
 	private static final double PARTS_NUMBER_MODIFIER = 2D;
@@ -347,7 +344,6 @@ implements UnitListener {
         double result = tripDistance / fuelEfficiency;
         if (useBuffer) {
             result *= Vehicle.RANGE_ERROR_MARGIN;
-            result += BUFFER_DISTANCE / fuelEfficiency;
         }
 
         return result;

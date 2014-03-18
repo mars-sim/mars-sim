@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-17
  * @author Scott Davis
  */
 
@@ -96,13 +96,15 @@ extends RoverMission {
 
         if (!isDone()) {
             // Set mission capacity.
-            if (hasVehicle())
+            if (hasVehicle()) {
                 setMissionCapacity(getRover().getCrewCapacity());
+            }
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(startingPerson
                             .getSettlement());
-            if (availableSuitNum < getMissionCapacity())
+            if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
+            }
 
             // Initialize data members.
             setStartingSettlement(startingPerson.getSettlement());
@@ -130,8 +132,9 @@ extends RoverMission {
                     getStartingSettlement(), getStartingSettlement().getName()));
 
             // Check if vehicle can carry enough supplies for the mission.
-            if (hasVehicle() && !isVehicleLoadable())
+            if (hasVehicle() && !isVehicleLoadable()) {
                 endMission("Vehicle is not loadable. (Mining)");
+            }
 
             if (!isDone()) {
                 // Reserve light utility vehicle.
@@ -177,13 +180,15 @@ extends RoverMission {
         setMissionCapacity(getRover().getCrewCapacity());
         int availableSuitNum = Mission
                 .getNumberAvailableEVASuitsAtSettlement(startingSettlement);
-        if (availableSuitNum < getMissionCapacity())
+        if (availableSuitNum < getMissionCapacity()) {
             setMissionCapacity(availableSuitNum);
+        }
 
         // Add mission members.
         Iterator<Person> i = members.iterator();
-        while (i.hasNext())
+        while (i.hasNext()) {
             i.next().getMind().setMission(this);
+        }
 
         // Add mining site nav point.
         addNavpoint(new NavPoint(miningSite.getLocation(), "mining site"));
@@ -193,15 +198,18 @@ extends RoverMission {
                 getStartingSettlement(), getStartingSettlement().getName()));
 
         // Check if vehicle can carry enough supplies for the mission.
-        if (hasVehicle() && !isVehicleLoadable())
+        if (hasVehicle() && !isVehicleLoadable()) {
             endMission("Vehicle is not loadable. (Mining)");
+        }
 
         // Reserve light utility vehicle.
         this.luv = luv;
-        if (luv == null)
+        if (luv == null) {
             endMission("Light utility vehicle not available.");
-        else
+        }
+        else {
             luv.setReservedForMission(true);
+        }
 
         // Add mining site phase.
         addPhase(MINING_SITE);
@@ -277,8 +285,9 @@ extends RoverMission {
                                 rover, settlement);
                         if (miningSite != null) {
                             result = getMiningSiteValue(miningSite, settlement);
-                            if (result > 100D)
+                            if (result > 100D) {
                                 result = 100D;
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -289,20 +298,23 @@ extends RoverMission {
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum()
                     - settlement.getPopulationCapacity();
-            if (crowding > 0)
+            if (crowding > 0) {
                 result *= (crowding + 1);
+            }
 
             // Job modifier.
             Job job = person.getMind().getJob();
-            if (job != null)
+            if (job != null) {
                 result *= job.getStartMissionProbabilityModifier(Mining.class);
+            }
         }
 
         if (result > 0D) {
             // Check if min number of EVA suits at settlement.
             if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < MIN_PEOPLE)
+                    .getSettlement()) < MIN_PEOPLE) {
                 result = 0D;
+            }
         }
 
         return result;
@@ -322,14 +334,18 @@ extends RoverMission {
 
             if (vehicle instanceof LightUtilityVehicle) {
                 boolean usable = true;
-                if (vehicle.isReserved())
+                if (vehicle.isReserved()) {
                     usable = false;
-                if (!vehicle.getStatus().equals(Vehicle.PARKED))
+                }
+                if (!vehicle.getStatus().equals(Vehicle.PARKED)) {
                     usable = false;
-                if (((Crewable) vehicle).getCrewNum() > 0)
+                }
+                if (((Crewable) vehicle).getCrewNum() > 0) {
                     usable = false;
-                if (usable)
+                }
+                if (usable) {
                     result = true;
+                }
             }
         }
 
@@ -348,11 +364,13 @@ extends RoverMission {
 
         try {
             Part pneumaticDrill = (Part) Part.findItemResource(PNEUMATIC_DRILL);
-            if (!inv.hasItemResource(pneumaticDrill))
+            if (!inv.hasItemResource(pneumaticDrill)) {
                 result = false;
+            }
             Part backhoe = (Part) Part.findItemResource(BACKHOE);
-            if (!inv.hasItemResource(backhoe))
+            if (!inv.hasItemResource(backhoe)) {
                 result = false;
+            }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in getting parts.");
         }
@@ -382,15 +400,17 @@ extends RoverMission {
             setPhase(VehicleMission.TRAVELLING);
             setPhaseDescription("Driving to "
                     + getNextNavpoint().getDescription());
-        } else if (DISEMBARKING.equals(getPhase()))
+        } else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");
+        }
     }
 
     @Override
     protected void performPhase(Person person) {
         super.performPhase(person);
-        if (MINING_SITE.equals(getPhase()))
+        if (MINING_SITE.equals(getPhase())) {
             miningPhase(person);
+        }
     }
 
     @Override
@@ -466,9 +486,10 @@ extends RoverMission {
     private void miningPhase(Person person) {
 
         // Set the mining site start time if necessary.
-        if (miningSiteStartTime == null)
+        if (miningSiteStartTime == null) {
             miningSiteStartTime = (MarsClock) Simulation.instance()
                     .getMasterClock().getMarsClock().clone();
+        }
 
         // Detach towed light utility vehicle if necessary.
         if (getRover().getTowedVehicle() != null) {
@@ -480,8 +501,9 @@ extends RoverMission {
         boolean timeExpired = false;
         MarsClock currentTime = (MarsClock) Simulation.instance()
                 .getMasterClock().getMarsClock().clone();
-        if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME)
+        if (MarsClock.getTimeDiff(currentTime, miningSiteStartTime) >= MINING_SITE_TIME) {
             timeExpired = true;
+        }
 
         if (isEveryoneInRover()) {
 
@@ -492,18 +514,21 @@ extends RoverMission {
             }
 
             // Check if crew has been at site for more than three sols, then end this phase.
-            if (timeExpired)
+            if (timeExpired) {
                 setPhaseEnded(true);
+            }
 
             // Determine if no one can start the mine site or collect resources tasks.
             boolean nobodyMineOrCollect = true;
             Iterator<Person> i = getPeople().iterator();
             while (i.hasNext()) {
                 Person personTemp = i.next();
-                if (MineSite.canMineSite(personTemp, getRover()))
+                if (MineSite.canMineSite(personTemp, getRover())) {
                     nobodyMineOrCollect = false;
-                if (canCollectExcavatedMinerals(personTemp))
+                }
+                if (canCollectExcavatedMinerals(personTemp)) {
                     nobodyMineOrCollect = false;
+                }
             }
 
             // If no one can mine or collect minerals at the site and this is not due to it just being
@@ -513,12 +538,14 @@ extends RoverMission {
                     .inDarkPolarRegion(getCurrentMissionLocation());
             double sunlight = mars.getSurfaceFeatures().getSurfaceSunlight(
                     getCurrentMissionLocation());
-            if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion))
+            if (nobodyMineOrCollect && ((sunlight > 0D) || inDarkPolarRegion)) {
                 setPhaseEnded(true);
+            }
 
             // Anyone in the crew or a single person at the home settlement has a dangerous illness, end phase.
-            if (hasEmergency())
+            if (hasEmergency()) {
                 setPhaseEnded(true);
+            }
 
             // Check if enough resources for remaining trip.
             if (!hasEnoughResourcesForRemainingMission(false)) {
@@ -533,10 +560,12 @@ extends RoverMission {
                 Iterator<Person> i = getPeople().iterator();
                 while (i.hasNext()) {
                     Task task = i.next().getMind().getTaskManager().getTask();
-                    if (task instanceof MineSite)
+                    if (task instanceof MineSite) {
                         ((MineSite) task).endEVA();
-                    if (task instanceof CollectMinedMinerals)
+                    }
+                    if (task instanceof CollectMinedMinerals) {
                         ((CollectMinedMinerals) task).endEVA();
+                    }
                 }
             }
         }
@@ -583,8 +612,9 @@ extends RoverMission {
             AmountResource resource = i.next();
             if ((excavatedMinerals.get(resource) >= MINIMUM_COLLECT_AMOUNT)
                     && CollectMinedMinerals.canCollectMinerals(person,
-                            getRover(), resource))
+                            getRover(), resource)) {
                 result = true;
+            }
         }
 
         return result;
@@ -627,10 +657,12 @@ extends RoverMission {
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             Task task = i.next().getMind().getTaskManager().getTask();
-            if (task instanceof MineSite)
+            if (task instanceof MineSite) {
                 ((MineSite) task).endEVA();
-            if (task instanceof CollectMinedMinerals)
+            }
+            if (task instanceof CollectMinedMinerals) {
                 ((CollectMinedMinerals) task).endEVA();
+            }
         }
     }
 
@@ -654,21 +686,25 @@ extends RoverMission {
             double tripRange = getTripTimeRange(tripTimeLimit, rover
                     .getBaseSpeed() / 2D);
             double range = roverRange;
-            if (tripRange < range)
+            if (tripRange < range) {
                 range = tripRange;
+            }
 
             Iterator<ExploredLocation> i = Simulation.instance().getMars()
                     .getSurfaceFeatures().getExploredLocations().iterator();
             while (i.hasNext()) {
                 ExploredLocation site = i.next();
                 if (!site.isMined() && !site.isReserved() && site.isExplored()) {
-                    Coordinates siteLocation = site.getLocation();
-                    Coordinates homeLocation = homeSettlement.getCoordinates();
-                    if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {
-                        double value = getMiningSiteValue(site, homeSettlement);
-                        if (value > bestValue) {
-                            result = site;
-                            bestValue = value;
+                    // Only mine from sites explored from home settlement.
+                    if (homeSettlement.equals(site.getSettlement())) {
+                        Coordinates siteLocation = site.getLocation();
+                        Coordinates homeLocation = homeSettlement.getCoordinates();
+                        if (homeLocation.getDistance(siteLocation) <= (range / 2D)) {
+                            double value = getMiningSiteValue(site, homeSettlement);
+                            if (value > bestValue) {
+                                result = site;
+                                bestValue = value;
+                            }
                         }
                     }
                 }
@@ -731,8 +767,9 @@ extends RoverMission {
         double foodConsumptionRate = config.getFoodConsumptionRate();
         double foodCapacity = vInv.getAmountResourceCapacity(food, false);
         double foodTimeLimit = foodCapacity / (foodConsumptionRate * memberNum);
-        if (foodTimeLimit < timeLimit)
+        if (foodTimeLimit < timeLimit) {
             timeLimit = foodTimeLimit;
+        }
 
         // Check water capacity as time limit.
         AmountResource water = AmountResource.findAmountResource("water");
@@ -740,8 +777,9 @@ extends RoverMission {
         double waterCapacity = vInv.getAmountResourceCapacity(water, false);
         double waterTimeLimit = waterCapacity
                 / (waterConsumptionRate * memberNum);
-        if (waterTimeLimit < timeLimit)
+        if (waterTimeLimit < timeLimit) {
             timeLimit = waterTimeLimit;
+        }
 
         // Check oxygen capacity as time limit.
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
@@ -749,13 +787,15 @@ extends RoverMission {
         double oxygenCapacity = vInv.getAmountResourceCapacity(oxygen, false);
         double oxygenTimeLimit = oxygenCapacity
                 / (oxygenConsumptionRate * memberNum);
-        if (oxygenTimeLimit < timeLimit)
+        if (oxygenTimeLimit < timeLimit) {
             timeLimit = oxygenTimeLimit;
+        }
 
         // Convert timeLimit into millisols and use error margin.
         timeLimit = (timeLimit * 1000D);
-        if (useBuffer)
+        if (useBuffer) {
             timeLimit /= Rover.LIFE_SUPPORT_RANGE_ERROR_MARGIN;
+        }
 
         return timeLimit;
     }
@@ -786,8 +826,9 @@ extends RoverMission {
     protected boolean isCapableOfMission(Person person) {
         if (super.isCapableOfMission(person)) {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                if (person.getSettlement() == getStartingSettlement())
+                if (person.getSettlement() == getStartingSettlement()) {
                     return true;
+                }
             }
         }
         return false;
@@ -804,8 +845,9 @@ extends RoverMission {
             Person lastPerson = (Person) getPeople().toArray()[getPeopleNumber() - 1];
             if (lastPerson != null) {
                 lastPerson.getMind().setMission(null);
-                if (getPeopleNumber() < getMinPeople())
+                if (getPeopleNumber() < getMinPeople()) {
                     endMission("Not enough members.");
+                }
             }
         }
     }
@@ -831,12 +873,14 @@ extends RoverMission {
             double timeSpentAtMiningSite = MarsClock.getTimeDiff(currentTime,
                     miningSiteStartTime);
             double remainingTime = MINING_SITE_TIME - timeSpentAtMiningSite;
-            if (remainingTime > 0D)
+            if (remainingTime > 0D) {
                 result = remainingTime;
+            }
         } else {
             // If mission hasn't reached mining site yet, use estimated mining site time.
-            if (miningSiteStartTime == null)
+            if (miningSiteStartTime == null) {
                 result = MINING_SITE_TIME;
+            }
         }
 
         return result;
@@ -857,22 +901,25 @@ extends RoverMission {
         AmountResource oxygen = AmountResource.findAmountResource("oxygen");
         double oxygenAmount = PhysicalCondition.getOxygenConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(oxygen))
+        if (result.containsKey(oxygen)) {
             oxygenAmount += (Double) result.get(oxygen);
+        }
         result.put(oxygen, oxygenAmount);
 
         AmountResource water = AmountResource.findAmountResource("water");
         double waterAmount = PhysicalCondition.getWaterConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(water))
+        if (result.containsKey(water)) {
             waterAmount += (Double) result.get(water);
+        }
         result.put(water, waterAmount);
 
         AmountResource food = AmountResource.findAmountResource("food");
         double foodAmount = PhysicalCondition.getFoodConsumptionRate()
                 * timeSols * crewNum;
-        if (result.containsKey(food))
+        if (result.containsKey(food)) {
             foodAmount += (Double) result.get(food);
+        }
         result.put(food, foodAmount);
 
         return result;
@@ -904,10 +951,12 @@ extends RoverMission {
     public void endMission(String reason) {
         super.endMission(reason);
 
-        if (miningSite != null)
+        if (miningSite != null) {
             miningSite.setReserved(false);
-        if (luv != null)
+        }
+        if (luv != null) {
             luv.setReservedForMission(false);
+        }
     }
 
     /**
@@ -949,10 +998,12 @@ extends RoverMission {
      * @return amount (kg)
      */
     public double getMineralExcavationAmount(AmountResource mineral) {
-        if (excavatedMinerals.containsKey(mineral))
+        if (excavatedMinerals.containsKey(mineral)) {
             return excavatedMinerals.get(mineral);
-        else
+        }
+        else {
             return 0D;
+        }
     }
 
     /**
@@ -961,10 +1012,12 @@ extends RoverMission {
      * @return amount (kg)
      */
     public double getTotalMineralExcavatedAmount(AmountResource mineral) {
-        if (totalExcavatedMinerals.containsKey(mineral))
+        if (totalExcavatedMinerals.containsKey(mineral)) {
             return totalExcavatedMinerals.get(mineral);
-        else
+        }
+        else {
             return 0D;
+        }
     }
 
     /**
@@ -974,13 +1027,15 @@ extends RoverMission {
      */
     public void excavateMineral(AmountResource mineral, double amount) {
         double currentExcavated = amount;
-        if (excavatedMinerals.containsKey(mineral))
+        if (excavatedMinerals.containsKey(mineral)) {
             currentExcavated += excavatedMinerals.get(mineral);
+        }
         excavatedMinerals.put(mineral, currentExcavated);
 
         double totalExcavated = amount;
-        if (totalExcavatedMinerals.containsKey(mineral))
+        if (totalExcavatedMinerals.containsKey(mineral)) {
             totalExcavated += totalExcavatedMinerals.get(mineral);
+        }
         totalExcavatedMinerals.put(mineral, totalExcavated);
 
         fireMissionUpdate(MissionEventType.EXCAVATE_MINERALS_EVENT);
@@ -994,13 +1049,16 @@ extends RoverMission {
      */
     public void collectMineral(AmountResource mineral, double amount) {
         double currentExcavated = 0D;
-        if (excavatedMinerals.containsKey(mineral))
+        if (excavatedMinerals.containsKey(mineral)) {
             currentExcavated = excavatedMinerals.get(mineral);
-        if (currentExcavated >= amount)
+        }
+        if (currentExcavated >= amount) {
             excavatedMinerals.put(mineral, (currentExcavated - amount));
-        else
+        }
+        else {
             throw new IllegalStateException(mineral.getName() + " amount: "
                     + amount + " more than currently excavated.");
+        }
         fireMissionUpdate(MissionEventType.COLLECT_MINERALS_EVENT);
     }
 
@@ -1010,9 +1068,13 @@ extends RoverMission {
 
         miningSite = null;
         miningSiteStartTime = null;
-        if (excavatedMinerals != null) excavatedMinerals.clear();
+        if (excavatedMinerals != null) {
+            excavatedMinerals.clear();
+        }
         excavatedMinerals = null;
-        if (totalExcavatedMinerals != null) totalExcavatedMinerals.clear();
+        if (totalExcavatedMinerals != null) {
+            totalExcavatedMinerals.clear();
+        }
         totalExcavatedMinerals = null;
         luv = null;
     }

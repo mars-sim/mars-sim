@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -119,9 +119,8 @@ implements Serializable {
             try {
                 if (hasVehicle()) {
                     int skill = startingPerson.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.AREOLOGY);
-                    determineExplorationSites(getVehicle().getRange(),
-                            getTotalTripTimeLimit(getRover(),
-                                    getPeopleNumber(), true), NUM_SITES, skill);
+                    determineExplorationSites(getVehicle().getRange(), getTotalTripTimeLimit(getRover(),
+                            getPeopleNumber(), true), NUM_SITES, skill);
                 }
             } catch (Exception e) {
                 endMission("Exploration sites could not be determined.");
@@ -141,8 +140,7 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from "
-                + getStartingSettlement().getName());
+        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
     }
 
     /**
@@ -374,8 +372,9 @@ implements Serializable {
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             Task task = i.next().getMind().getTaskManager().getTask();
-            if (task instanceof ExploreSite)
+            if (task instanceof ExploreSite) {
                 ((ExploreSite) task).endEVA();
+            }
         }
     }
 
@@ -737,8 +736,9 @@ implements Serializable {
         // Determining the actual traveling range.
         double range = roverRange;
         double timeRange = getTripTimeRange(tripTimeLimit);
-        if (timeRange < range)
+        if (timeRange < range) {
             range = timeRange;
+        }
 
         // Get the current location.
         Coordinates startingLocation = getCurrentMissionLocation();
@@ -758,18 +758,10 @@ implements Serializable {
         // Determine remaining exploration sites.
         double remainingRange = (range / 2D) - siteDistance;
         for (int x = 1; x < numSites; x++) {
-            double currentDistanceToSettlement = currentLocation
-                    .getDistance(startingLocation);
-            if (remainingRange > currentDistanceToSettlement) {
+            if (remainingRange > 1D) {
                 Direction direction = new Direction(RandomUtil
                         .getRandomDouble(2D * Math.PI));
-                double tempLimit1 = Math.pow(remainingRange, 2D)
-                        - Math.pow(currentDistanceToSettlement, 2D);
-                double tempLimit2 = (2D * remainingRange)
-                        - (2D * currentDistanceToSettlement * direction
-                                .getCosDirection());
-                double limit = tempLimit1 / tempLimit2;
-                siteDistance = RandomUtil.getRandomDouble(limit);
+                siteDistance = RandomUtil.getRandomDouble(remainingRange);
                 newLocation = currentLocation.getNewLocation(direction,
                         siteDistance);
                 unorderedSites.add(newLocation);
@@ -817,6 +809,7 @@ implements Serializable {
         }
         else {
             sites = unorderedSites;
+            double totalDistance = getTotalDistance(startingLocation, unorderedSites);
         }
         
         int explorationSiteNum = 1;
@@ -866,8 +859,9 @@ implements Serializable {
         if (randomLocation != null) {
             Direction direction = new Direction(RandomUtil
                     .getRandomDouble(2D * Math.PI));
-            if (areologySkill <= 0)
+            if (areologySkill <= 0) {
                 areologySkill = 1;
+            }
             double distance = RandomUtil.getRandomDouble(500D / areologySkill);
             result = randomLocation.getNewLocation(direction, distance);
             double distanceFromStart = startingLocation.getDistance(result);
