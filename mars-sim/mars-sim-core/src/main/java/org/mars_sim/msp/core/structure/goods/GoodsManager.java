@@ -1637,7 +1637,7 @@ implements Serializable {
 
 			 boolean hasAreologyLab = false;
 			 if (v.hasLab()) {
-				 if (v.getLabTechSpecialities().contains("Areology")) hasAreologyLab = true;
+				 if (v.getLabTechSpecialties().contains("Areology")) hasAreologyLab = true;
 			 }
 			 if (!hasAreologyLab) capacity /= 2D;
 
@@ -1693,7 +1693,7 @@ implements Serializable {
 			 if (crewCapacity >= 2) capacity = 1D;
 
 			 if (v.hasLab()) {
-				 if (v.getLabTechSpecialities().contains("Areology")) {
+				 if (v.getLabTechSpecialties().contains("Areology")) {
 					 capacity += v.getLabTechLevel();
 				 }
 				 else {
@@ -1708,7 +1708,7 @@ implements Serializable {
 			 if (crewCapacity >= 2) capacity = 1D;
 
 			 if (v.hasLab()) {
-				 if (v.getLabTechSpecialities().contains("Biology")) {
+				 if (v.getLabTechSpecialties().contains("Biology")) {
 					 capacity += v.getLabTechLevel();
 				 }
 				 else {
