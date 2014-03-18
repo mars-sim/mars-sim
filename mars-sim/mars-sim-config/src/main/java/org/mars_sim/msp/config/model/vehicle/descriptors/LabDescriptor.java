@@ -116,15 +116,15 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
 
-        //-- _techSpecialityList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.vehicle.TechSpeciality.class, "_techSpecialityList", "tech-speciality", org.exolab.castor.xml.NodeType.Element);
+        //-- _techSpecialtyList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.vehicle.TechSpecialty.class, "_techSpecialtyList", "tech-specialty", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Lab target = (Lab) object;
-                return target.getTechSpeciality();
+                return target.getTechSpecialty();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -132,7 +132,7 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
             {
                 try {
                     Lab target = (Lab) object;
-                    target.addTechSpeciality( (org.mars_sim.msp.config.model.vehicle.TechSpeciality) value);
+                    target.addTechSpecialty( (org.mars_sim.msp.config.model.vehicle.TechSpecialty) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -140,7 +140,7 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Lab target = (Lab) object;
-                    target.removeAllTechSpeciality();
+                    target.removeAllTechSpecialty();
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -148,11 +148,11 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
             @Override
             @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.mars_sim.msp.config.model.vehicle.TechSpeciality();
+                return new org.mars_sim.msp.config.model.vehicle.TechSpecialty();
             }
         };
         desc.setSchemaType("list");
-        desc.setComponentType("org.mars_sim.msp.config.model.vehicle.TechSpeciality");
+        desc.setComponentType("org.mars_sim.msp.config.model.vehicle.TechSpecialty");
         desc.setHandler(handler);
         desc.setNameSpaceURI("http://mars-sim.sourceforge.net/vehicles");
         desc.setRequired(true);
@@ -160,7 +160,7 @@ public class LabDescriptor extends org.exolab.castor.xml.util.XMLClassDescriptor
         addFieldDescriptor(desc);
         addSequenceElement(desc);
 
-        //-- validation code for: _techSpecialityList
+        //-- validation code for: _techSpecialtyList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

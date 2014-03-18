@@ -46,6 +46,11 @@ public class Vehicle implements java.io.Serializable {
     private boolean _has_length;
 
     /**
+     * Field _description.
+     */
+    private java.lang.String _description;
+
+    /**
      * Field _fuelEfficiency.
      */
     private org.mars_sim.msp.config.model.vehicle.FuelEfficiency _fuelEfficiency;
@@ -141,6 +146,16 @@ public class Vehicle implements java.io.Serializable {
     public org.mars_sim.msp.config.model.vehicle.CrewSize getCrewSize(
     ) {
         return this._crewSize;
+    }
+
+    /**
+     * Returns the value of field 'description'.
+     * 
+     * @return the value of field 'Description'.
+     */
+    public java.lang.String getDescription(
+    ) {
+        return this._description;
     }
 
     /**
@@ -318,6 +333,16 @@ public class Vehicle implements java.io.Serializable {
     public void setCrewSize(
             final org.mars_sim.msp.config.model.vehicle.CrewSize crewSize) {
         this._crewSize = crewSize;
+    }
+
+    /**
+     * Sets the value of field 'description'.
+     * 
+     * @param description the value of field 'description'.
+     */
+    public void setDescription(
+            final java.lang.String description) {
+        this._description = description;
     }
 
     /**

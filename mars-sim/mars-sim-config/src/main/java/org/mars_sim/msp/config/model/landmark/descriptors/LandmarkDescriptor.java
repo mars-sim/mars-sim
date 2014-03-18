@@ -65,8 +65,8 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         org.exolab.castor.xml.FieldValidator               fieldValidator = null;
         //-- initialize attribute descriptors
 
-        //-- _name
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _approvaldate
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_approvaldate", "approvaldate", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
@@ -74,7 +74,7 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                 throws IllegalStateException
             {
                 Landmark target = (Landmark) object;
-                return target.getName();
+                return target.getApprovaldate();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -82,7 +82,7 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     Landmark target = (Landmark) object;
-                    target.setName( (java.lang.String) value);
+                    target.setApprovaldate( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -98,7 +98,7 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
 
-        //-- validation code for: _name
+        //-- validation code for: _approvaldate
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
             org.exolab.castor.xml.validators.StringValidator typeValidator;
@@ -107,8 +107,8 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
-        //-- _longitude
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_longitude", "longitude", org.exolab.castor.xml.NodeType.Attribute);
+        //-- _diameter
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_diameter", "diameter", org.exolab.castor.xml.NodeType.Attribute);
         desc.setImmutable(true);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
@@ -116,7 +116,7 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
                 throws IllegalStateException
             {
                 Landmark target = (Landmark) object;
-                return target.getLongitude();
+                return target.getDiameter();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -124,7 +124,7 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     Landmark target = (Landmark) object;
-                    target.setLongitude( (java.lang.String) value);
+                    target.setDiameter( (java.lang.String) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -140,13 +140,12 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setMultivalued(false);
         addFieldDescriptor(desc);
 
-        //-- validation code for: _longitude
+        //-- validation code for: _diameter
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         { //-- local scope
             org.exolab.castor.xml.validators.StringValidator typeValidator;
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.addPattern("\\d{1,3}\\.\\d (N|S|E|W)");
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);
@@ -189,7 +188,134 @@ public class LandmarkDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             org.exolab.castor.xml.validators.StringValidator typeValidator;
             typeValidator = new org.exolab.castor.xml.validators.StringValidator();
             fieldValidator.setValidator(typeValidator);
-            typeValidator.addPattern("\\d{1,3}\\.\\d (N|S|E|W)");
+            typeValidator.addPattern("\\d{1,3}?\\.?\\d{1,2} (N|S|E|W)");
+            typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- _longitude
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_longitude", "longitude", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Landmark target = (Landmark) object;
+                return target.getLongitude();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Landmark target = (Landmark) object;
+                    target.setLongitude( (java.lang.String) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("string");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _longitude
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.addPattern("\\d{1,3}?\\.?\\d{1,2} (N|S|E|W)");
+            typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- _name
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_name", "name", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Landmark target = (Landmark) object;
+                return target.getName();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Landmark target = (Landmark) object;
+                    target.setName( (java.lang.String) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("string");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _name
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
+            typeValidator.setWhiteSpace("preserve");
+        }
+        desc.setValidator(fieldValidator);
+        //-- _origin
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(java.lang.String.class, "_origin", "origin", org.exolab.castor.xml.NodeType.Attribute);
+        desc.setImmutable(true);
+        handler = new org.exolab.castor.xml.XMLFieldHandler() {
+            @Override
+            public java.lang.Object getValue( java.lang.Object object ) 
+                throws IllegalStateException
+            {
+                Landmark target = (Landmark) object;
+                return target.getOrigin();
+            }
+            @Override
+            public void setValue( java.lang.Object object, java.lang.Object value) 
+                throws IllegalStateException, IllegalArgumentException
+            {
+                try {
+                    Landmark target = (Landmark) object;
+                    target.setOrigin( (java.lang.String) value);
+                } catch (java.lang.Exception ex) {
+                    throw new IllegalStateException(ex.toString());
+                }
+            }
+            @Override
+            @SuppressWarnings("unused")
+            public java.lang.Object newInstance(java.lang.Object parent) {
+                return null;
+            }
+        };
+        desc.setSchemaType("string");
+        desc.setHandler(handler);
+        desc.setMultivalued(false);
+        addFieldDescriptor(desc);
+
+        //-- validation code for: _origin
+        fieldValidator = new org.exolab.castor.xml.FieldValidator();
+        { //-- local scope
+            org.exolab.castor.xml.validators.StringValidator typeValidator;
+            typeValidator = new org.exolab.castor.xml.validators.StringValidator();
+            fieldValidator.setValidator(typeValidator);
             typeValidator.setWhiteSpace("preserve");
         }
         desc.setValidator(fieldValidator);

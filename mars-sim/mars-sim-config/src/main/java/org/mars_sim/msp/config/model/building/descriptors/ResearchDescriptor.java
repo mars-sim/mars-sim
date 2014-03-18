@@ -162,15 +162,15 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         desc.setValidator(fieldValidator);
         //-- initialize element descriptors
 
-        //-- _researchSpecialityList
-        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.ResearchSpeciality.class, "_researchSpecialityList", "research-speciality", org.exolab.castor.xml.NodeType.Element);
+        //-- _researchSpecialtyList
+        desc = new org.exolab.castor.xml.util.XMLFieldDescriptorImpl(org.mars_sim.msp.config.model.building.ResearchSpecialty.class, "_researchSpecialtyList", "research-specialty", org.exolab.castor.xml.NodeType.Element);
         handler = new org.exolab.castor.xml.XMLFieldHandler() {
             @Override
             public java.lang.Object getValue( java.lang.Object object ) 
                 throws IllegalStateException
             {
                 Research target = (Research) object;
-                return target.getResearchSpeciality();
+                return target.getResearchSpecialty();
             }
             @Override
             public void setValue( java.lang.Object object, java.lang.Object value) 
@@ -178,7 +178,7 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             {
                 try {
                     Research target = (Research) object;
-                    target.addResearchSpeciality( (org.mars_sim.msp.config.model.building.ResearchSpeciality) value);
+                    target.addResearchSpecialty( (org.mars_sim.msp.config.model.building.ResearchSpecialty) value);
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -186,7 +186,7 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             public void resetValue(Object object) throws IllegalStateException, IllegalArgumentException {
                 try {
                     Research target = (Research) object;
-                    target.removeAllResearchSpeciality();
+                    target.removeAllResearchSpecialty();
                 } catch (java.lang.Exception ex) {
                     throw new IllegalStateException(ex.toString());
                 }
@@ -194,11 +194,11 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
             @Override
             @SuppressWarnings("unused")
             public java.lang.Object newInstance(java.lang.Object parent) {
-                return new org.mars_sim.msp.config.model.building.ResearchSpeciality();
+                return new org.mars_sim.msp.config.model.building.ResearchSpecialty();
             }
         };
         desc.setSchemaType("list");
-        desc.setComponentType("org.mars_sim.msp.config.model.building.ResearchSpeciality");
+        desc.setComponentType("org.mars_sim.msp.config.model.building.ResearchSpecialty");
         desc.setHandler(handler);
         desc.setNameSpaceURI("http://mars-sim.sourceforge.net/building");
         desc.setRequired(true);
@@ -206,7 +206,7 @@ public class ResearchDescriptor extends org.exolab.castor.xml.util.XMLClassDescr
         addFieldDescriptor(desc);
         addSequenceElement(desc);
 
-        //-- validation code for: _researchSpecialityList
+        //-- validation code for: _researchSpecialtyList
         fieldValidator = new org.exolab.castor.xml.FieldValidator();
         fieldValidator.setMinOccurs(1);
         { //-- local scope

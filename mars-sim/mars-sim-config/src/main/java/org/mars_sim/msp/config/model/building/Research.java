@@ -41,9 +41,9 @@ public class Research implements java.io.Serializable {
     private boolean _has_capacity;
 
     /**
-     * Field _researchSpecialityList.
+     * Field _researchSpecialtyList.
      */
-    private java.util.List<org.mars_sim.msp.config.model.building.ResearchSpeciality> _researchSpecialityList;
+    private java.util.List<org.mars_sim.msp.config.model.building.ResearchSpecialty> _researchSpecialtyList;
 
 
       //----------------/
@@ -52,7 +52,7 @@ public class Research implements java.io.Serializable {
 
     public Research() {
         super();
-        this._researchSpecialityList = new java.util.ArrayList<org.mars_sim.msp.config.model.building.ResearchSpeciality>();
+        this._researchSpecialtyList = new java.util.ArrayList<org.mars_sim.msp.config.model.building.ResearchSpecialty>();
     }
 
 
@@ -63,29 +63,29 @@ public class Research implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vResearchSpeciality
+     * @param vResearchSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addResearchSpeciality(
-            final org.mars_sim.msp.config.model.building.ResearchSpeciality vResearchSpeciality)
+    public void addResearchSpecialty(
+            final org.mars_sim.msp.config.model.building.ResearchSpecialty vResearchSpecialty)
     throws java.lang.IndexOutOfBoundsException {
-        this._researchSpecialityList.add(vResearchSpeciality);
+        this._researchSpecialtyList.add(vResearchSpecialty);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vResearchSpeciality
+     * @param vResearchSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addResearchSpeciality(
+    public void addResearchSpecialty(
             final int index,
-            final org.mars_sim.msp.config.model.building.ResearchSpeciality vResearchSpeciality)
+            final org.mars_sim.msp.config.model.building.ResearchSpecialty vResearchSpecialty)
     throws java.lang.IndexOutOfBoundsException {
-        this._researchSpecialityList.add(index, vResearchSpeciality);
+        this._researchSpecialtyList.add(index, vResearchSpecialty);
     }
 
     /**
@@ -103,14 +103,14 @@ public class Research implements java.io.Serializable {
     }
 
     /**
-     * Method enumerateResearchSpeciality.
+     * Method enumerateResearchSpecialty.
      * 
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<? extends org.mars_sim.msp.config.model.building.ResearchSpeciality> enumerateResearchSpeciality(
+    public java.util.Enumeration<? extends org.mars_sim.msp.config.model.building.ResearchSpecialty> enumerateResearchSpecialty(
     ) {
-        return java.util.Collections.enumeration(this._researchSpecialityList);
+        return java.util.Collections.enumeration(this._researchSpecialtyList);
     }
 
     /**
@@ -124,28 +124,28 @@ public class Research implements java.io.Serializable {
     }
 
     /**
-     * Method getResearchSpeciality.
+     * Method getResearchSpecialty.
      * 
      * @param index
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.mars_sim.msp.config.model.building.ResearchSpeciality at
+     * org.mars_sim.msp.config.model.building.ResearchSpecialty at
      * the given index
      */
-    public org.mars_sim.msp.config.model.building.ResearchSpeciality getResearchSpeciality(
+    public org.mars_sim.msp.config.model.building.ResearchSpecialty getResearchSpecialty(
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._researchSpecialityList.size()) {
-            throw new IndexOutOfBoundsException("getResearchSpeciality: Index value '" + index + "' not in range [0.." + (this._researchSpecialityList.size() - 1) + "]");
+        if (index < 0 || index >= this._researchSpecialtyList.size()) {
+            throw new IndexOutOfBoundsException("getResearchSpecialty: Index value '" + index + "' not in range [0.." + (this._researchSpecialtyList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.building.ResearchSpeciality) _researchSpecialityList.get(index);
+        return (org.mars_sim.msp.config.model.building.ResearchSpecialty) _researchSpecialtyList.get(index);
     }
 
     /**
-     * Method getResearchSpeciality.Returns the contents of the
+     * Method getResearchSpecialty.Returns the contents of the
      * collection in an Array.  <p>Note:  Just in case the
      * collection contents are changing in another thread, we pass
      * a 0-length Array of the correct type into the API call. 
@@ -154,20 +154,20 @@ public class Research implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.mars_sim.msp.config.model.building.ResearchSpeciality[] getResearchSpeciality(
+    public org.mars_sim.msp.config.model.building.ResearchSpecialty[] getResearchSpecialty(
     ) {
-        org.mars_sim.msp.config.model.building.ResearchSpeciality[] array = new org.mars_sim.msp.config.model.building.ResearchSpeciality[0];
-        return (org.mars_sim.msp.config.model.building.ResearchSpeciality[]) this._researchSpecialityList.toArray(array);
+        org.mars_sim.msp.config.model.building.ResearchSpecialty[] array = new org.mars_sim.msp.config.model.building.ResearchSpecialty[0];
+        return (org.mars_sim.msp.config.model.building.ResearchSpecialty[]) this._researchSpecialtyList.toArray(array);
     }
 
     /**
-     * Method getResearchSpecialityCount.
+     * Method getResearchSpecialtyCount.
      * 
      * @return the size of this collection
      */
-    public int getResearchSpecialityCount(
+    public int getResearchSpecialtyCount(
     ) {
-        return this._researchSpecialityList.size();
+        return this._researchSpecialtyList.size();
     }
 
     /**
@@ -216,14 +216,14 @@ public class Research implements java.io.Serializable {
     }
 
     /**
-     * Method iterateResearchSpeciality.
+     * Method iterateResearchSpecialty.
      * 
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<? extends org.mars_sim.msp.config.model.building.ResearchSpeciality> iterateResearchSpeciality(
+    public java.util.Iterator<? extends org.mars_sim.msp.config.model.building.ResearchSpecialty> iterateResearchSpecialty(
     ) {
-        return this._researchSpecialityList.iterator();
+        return this._researchSpecialtyList.iterator();
     }
 
     /**
@@ -260,33 +260,33 @@ public class Research implements java.io.Serializable {
 
     /**
      */
-    public void removeAllResearchSpeciality(
+    public void removeAllResearchSpecialty(
     ) {
-        this._researchSpecialityList.clear();
+        this._researchSpecialtyList.clear();
     }
 
     /**
-     * Method removeResearchSpeciality.
+     * Method removeResearchSpecialty.
      * 
-     * @param vResearchSpeciality
+     * @param vResearchSpecialty
      * @return true if the object was removed from the collection.
      */
-    public boolean removeResearchSpeciality(
-            final org.mars_sim.msp.config.model.building.ResearchSpeciality vResearchSpeciality) {
-        boolean removed = _researchSpecialityList.remove(vResearchSpeciality);
+    public boolean removeResearchSpecialty(
+            final org.mars_sim.msp.config.model.building.ResearchSpecialty vResearchSpecialty) {
+        boolean removed = _researchSpecialtyList.remove(vResearchSpecialty);
         return removed;
     }
 
     /**
-     * Method removeResearchSpecialityAt.
+     * Method removeResearchSpecialtyAt.
      * 
      * @param index
      * @return the element removed from the collection
      */
-    public org.mars_sim.msp.config.model.building.ResearchSpeciality removeResearchSpecialityAt(
+    public org.mars_sim.msp.config.model.building.ResearchSpecialty removeResearchSpecialtyAt(
             final int index) {
-        java.lang.Object obj = this._researchSpecialityList.remove(index);
-        return (org.mars_sim.msp.config.model.building.ResearchSpeciality) obj;
+        java.lang.Object obj = this._researchSpecialtyList.remove(index);
+        return (org.mars_sim.msp.config.model.building.ResearchSpecialty) obj;
     }
 
     /**
@@ -304,34 +304,34 @@ public class Research implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @param vResearchSpeciality
+     * @param vResearchSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setResearchSpeciality(
+    public void setResearchSpecialty(
             final int index,
-            final org.mars_sim.msp.config.model.building.ResearchSpeciality vResearchSpeciality)
+            final org.mars_sim.msp.config.model.building.ResearchSpecialty vResearchSpecialty)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._researchSpecialityList.size()) {
-            throw new IndexOutOfBoundsException("setResearchSpeciality: Index value '" + index + "' not in range [0.." + (this._researchSpecialityList.size() - 1) + "]");
+        if (index < 0 || index >= this._researchSpecialtyList.size()) {
+            throw new IndexOutOfBoundsException("setResearchSpecialty: Index value '" + index + "' not in range [0.." + (this._researchSpecialtyList.size() - 1) + "]");
         }
 
-        this._researchSpecialityList.set(index, vResearchSpeciality);
+        this._researchSpecialtyList.set(index, vResearchSpecialty);
     }
 
     /**
      * 
      * 
-     * @param vResearchSpecialityArray
+     * @param vResearchSpecialtyArray
      */
-    public void setResearchSpeciality(
-            final org.mars_sim.msp.config.model.building.ResearchSpeciality[] vResearchSpecialityArray) {
+    public void setResearchSpecialty(
+            final org.mars_sim.msp.config.model.building.ResearchSpecialty[] vResearchSpecialtyArray) {
         //-- copy array
-        _researchSpecialityList.clear();
+        _researchSpecialtyList.clear();
 
-        for (int i = 0; i < vResearchSpecialityArray.length; i++) {
-                this._researchSpecialityList.add(vResearchSpecialityArray[i]);
+        for (int i = 0; i < vResearchSpecialtyArray.length; i++) {
+                this._researchSpecialtyList.add(vResearchSpecialtyArray[i]);
         }
     }
 
