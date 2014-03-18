@@ -31,9 +31,9 @@ public class Lab implements java.io.Serializable {
     private boolean _has_techLevel;
 
     /**
-     * Field _techSpecialityList.
+     * Field _techSpecialtyList.
      */
-    private java.util.List<org.mars_sim.msp.config.model.vehicle.TechSpeciality> _techSpecialityList;
+    private java.util.List<org.mars_sim.msp.config.model.vehicle.TechSpecialty> _techSpecialtyList;
 
 
       //----------------/
@@ -42,7 +42,7 @@ public class Lab implements java.io.Serializable {
 
     public Lab() {
         super();
-        this._techSpecialityList = new java.util.ArrayList<org.mars_sim.msp.config.model.vehicle.TechSpeciality>();
+        this._techSpecialtyList = new java.util.ArrayList<org.mars_sim.msp.config.model.vehicle.TechSpecialty>();
     }
 
 
@@ -53,29 +53,29 @@ public class Lab implements java.io.Serializable {
     /**
      * 
      * 
-     * @param vTechSpeciality
+     * @param vTechSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addTechSpeciality(
-            final org.mars_sim.msp.config.model.vehicle.TechSpeciality vTechSpeciality)
+    public void addTechSpecialty(
+            final org.mars_sim.msp.config.model.vehicle.TechSpecialty vTechSpecialty)
     throws java.lang.IndexOutOfBoundsException {
-        this._techSpecialityList.add(vTechSpeciality);
+        this._techSpecialtyList.add(vTechSpecialty);
     }
 
     /**
      * 
      * 
      * @param index
-     * @param vTechSpeciality
+     * @param vTechSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void addTechSpeciality(
+    public void addTechSpecialty(
             final int index,
-            final org.mars_sim.msp.config.model.vehicle.TechSpeciality vTechSpeciality)
+            final org.mars_sim.msp.config.model.vehicle.TechSpecialty vTechSpecialty)
     throws java.lang.IndexOutOfBoundsException {
-        this._techSpecialityList.add(index, vTechSpeciality);
+        this._techSpecialtyList.add(index, vTechSpecialty);
     }
 
     /**
@@ -86,14 +86,14 @@ public class Lab implements java.io.Serializable {
     }
 
     /**
-     * Method enumerateTechSpeciality.
+     * Method enumerateTechSpecialty.
      * 
      * @return an Enumeration over all possible elements of this
      * collection
      */
-    public java.util.Enumeration<? extends org.mars_sim.msp.config.model.vehicle.TechSpeciality> enumerateTechSpeciality(
+    public java.util.Enumeration<? extends org.mars_sim.msp.config.model.vehicle.TechSpecialty> enumerateTechSpecialty(
     ) {
-        return java.util.Collections.enumeration(this._techSpecialityList);
+        return java.util.Collections.enumeration(this._techSpecialtyList);
     }
 
     /**
@@ -107,28 +107,28 @@ public class Lab implements java.io.Serializable {
     }
 
     /**
-     * Method getTechSpeciality.
+     * Method getTechSpecialty.
      * 
      * @param index
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      * @return the value of the
-     * org.mars_sim.msp.config.model.vehicle.TechSpeciality at the
+     * org.mars_sim.msp.config.model.vehicle.TechSpecialty at the
      * given index
      */
-    public org.mars_sim.msp.config.model.vehicle.TechSpeciality getTechSpeciality(
+    public org.mars_sim.msp.config.model.vehicle.TechSpecialty getTechSpecialty(
             final int index)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._techSpecialityList.size()) {
-            throw new IndexOutOfBoundsException("getTechSpeciality: Index value '" + index + "' not in range [0.." + (this._techSpecialityList.size() - 1) + "]");
+        if (index < 0 || index >= this._techSpecialtyList.size()) {
+            throw new IndexOutOfBoundsException("getTechSpecialty: Index value '" + index + "' not in range [0.." + (this._techSpecialtyList.size() - 1) + "]");
         }
 
-        return (org.mars_sim.msp.config.model.vehicle.TechSpeciality) _techSpecialityList.get(index);
+        return (org.mars_sim.msp.config.model.vehicle.TechSpecialty) _techSpecialtyList.get(index);
     }
 
     /**
-     * Method getTechSpeciality.Returns the contents of the
+     * Method getTechSpecialty.Returns the contents of the
      * collection in an Array.  <p>Note:  Just in case the
      * collection contents are changing in another thread, we pass
      * a 0-length Array of the correct type into the API call. 
@@ -137,20 +137,20 @@ public class Lab implements java.io.Serializable {
      * 
      * @return this collection as an Array
      */
-    public org.mars_sim.msp.config.model.vehicle.TechSpeciality[] getTechSpeciality(
+    public org.mars_sim.msp.config.model.vehicle.TechSpecialty[] getTechSpecialty(
     ) {
-        org.mars_sim.msp.config.model.vehicle.TechSpeciality[] array = new org.mars_sim.msp.config.model.vehicle.TechSpeciality[0];
-        return (org.mars_sim.msp.config.model.vehicle.TechSpeciality[]) this._techSpecialityList.toArray(array);
+        org.mars_sim.msp.config.model.vehicle.TechSpecialty[] array = new org.mars_sim.msp.config.model.vehicle.TechSpecialty[0];
+        return (org.mars_sim.msp.config.model.vehicle.TechSpecialty[]) this._techSpecialtyList.toArray(array);
     }
 
     /**
-     * Method getTechSpecialityCount.
+     * Method getTechSpecialtyCount.
      * 
      * @return the size of this collection
      */
-    public int getTechSpecialityCount(
+    public int getTechSpecialtyCount(
     ) {
-        return this._techSpecialityList.size();
+        return this._techSpecialtyList.size();
     }
 
     /**
@@ -179,14 +179,14 @@ public class Lab implements java.io.Serializable {
     }
 
     /**
-     * Method iterateTechSpeciality.
+     * Method iterateTechSpecialty.
      * 
      * @return an Iterator over all possible elements in this
      * collection
      */
-    public java.util.Iterator<? extends org.mars_sim.msp.config.model.vehicle.TechSpeciality> iterateTechSpeciality(
+    public java.util.Iterator<? extends org.mars_sim.msp.config.model.vehicle.TechSpecialty> iterateTechSpecialty(
     ) {
-        return this._techSpecialityList.iterator();
+        return this._techSpecialtyList.iterator();
     }
 
     /**
@@ -223,33 +223,33 @@ public class Lab implements java.io.Serializable {
 
     /**
      */
-    public void removeAllTechSpeciality(
+    public void removeAllTechSpecialty(
     ) {
-        this._techSpecialityList.clear();
+        this._techSpecialtyList.clear();
     }
 
     /**
-     * Method removeTechSpeciality.
+     * Method removeTechSpecialty.
      * 
-     * @param vTechSpeciality
+     * @param vTechSpecialty
      * @return true if the object was removed from the collection.
      */
-    public boolean removeTechSpeciality(
-            final org.mars_sim.msp.config.model.vehicle.TechSpeciality vTechSpeciality) {
-        boolean removed = _techSpecialityList.remove(vTechSpeciality);
+    public boolean removeTechSpecialty(
+            final org.mars_sim.msp.config.model.vehicle.TechSpecialty vTechSpecialty) {
+        boolean removed = _techSpecialtyList.remove(vTechSpecialty);
         return removed;
     }
 
     /**
-     * Method removeTechSpecialityAt.
+     * Method removeTechSpecialtyAt.
      * 
      * @param index
      * @return the element removed from the collection
      */
-    public org.mars_sim.msp.config.model.vehicle.TechSpeciality removeTechSpecialityAt(
+    public org.mars_sim.msp.config.model.vehicle.TechSpecialty removeTechSpecialtyAt(
             final int index) {
-        java.lang.Object obj = this._techSpecialityList.remove(index);
-        return (org.mars_sim.msp.config.model.vehicle.TechSpeciality) obj;
+        java.lang.Object obj = this._techSpecialtyList.remove(index);
+        return (org.mars_sim.msp.config.model.vehicle.TechSpecialty) obj;
     }
 
     /**
@@ -267,34 +267,34 @@ public class Lab implements java.io.Serializable {
      * 
      * 
      * @param index
-     * @param vTechSpeciality
+     * @param vTechSpecialty
      * @throws java.lang.IndexOutOfBoundsException if the index
      * given is outside the bounds of the collection
      */
-    public void setTechSpeciality(
+    public void setTechSpecialty(
             final int index,
-            final org.mars_sim.msp.config.model.vehicle.TechSpeciality vTechSpeciality)
+            final org.mars_sim.msp.config.model.vehicle.TechSpecialty vTechSpecialty)
     throws java.lang.IndexOutOfBoundsException {
         // check bounds for index
-        if (index < 0 || index >= this._techSpecialityList.size()) {
-            throw new IndexOutOfBoundsException("setTechSpeciality: Index value '" + index + "' not in range [0.." + (this._techSpecialityList.size() - 1) + "]");
+        if (index < 0 || index >= this._techSpecialtyList.size()) {
+            throw new IndexOutOfBoundsException("setTechSpecialty: Index value '" + index + "' not in range [0.." + (this._techSpecialtyList.size() - 1) + "]");
         }
 
-        this._techSpecialityList.set(index, vTechSpeciality);
+        this._techSpecialtyList.set(index, vTechSpecialty);
     }
 
     /**
      * 
      * 
-     * @param vTechSpecialityArray
+     * @param vTechSpecialtyArray
      */
-    public void setTechSpeciality(
-            final org.mars_sim.msp.config.model.vehicle.TechSpeciality[] vTechSpecialityArray) {
+    public void setTechSpecialty(
+            final org.mars_sim.msp.config.model.vehicle.TechSpecialty[] vTechSpecialtyArray) {
         //-- copy array
-        _techSpecialityList.clear();
+        _techSpecialtyList.clear();
 
-        for (int i = 0; i < vTechSpecialityArray.length; i++) {
-                this._techSpecialityList.add(vTechSpecialityArray[i]);
+        for (int i = 0; i < vTechSpecialtyArray.length; i++) {
+                this._techSpecialtyList.add(vTechSpecialtyArray[i]);
         }
     }
 
