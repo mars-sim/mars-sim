@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.06 2014-03-10
+ * @version 3.06 2014-03-17
  * @author Scott Davis
  */
 
@@ -100,7 +100,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		
 		// Construct lab.
 		if (config.hasLab(description)) 
-			lab = new MobileLaboratory(1, config.getLabTechLevel(description), config.getLabTechSpecialities(description));
+			lab = new MobileLaboratory(1, config.getLabTechLevel(description), config.getLabTechSpecialties(description));
 		
 		// Set rover terrain modifier
 		setTerrainHandlingCapability(0D);

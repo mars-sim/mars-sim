@@ -25,10 +25,10 @@ empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?, airlock?)>
 <!ELEMENT sickbay EMPTY>
 <!ATTLIST sickbay tech-level CDATA #REQUIRED>
 <!ATTLIST sickbay beds CDATA #REQUIRED>
-<!ELEMENT lab (tech-speciality+)>
+<!ELEMENT lab (tech-specialty+)>
 <!ATTLIST lab tech-level CDATA #REQUIRED>
-<!ELEMENT tech-speciality EMPTY>
-<!ATTLIST tech-speciality value CDATA #REQUIRED>
+<!ELEMENT tech-specialty EMPTY>
+<!ATTLIST tech-specialty value CDATA #REQUIRED>
 <!ELEMENT airlock EMPTY>
 <!ATTLIST airlock xloc CDATA #REQUIRED>
 <!ATTLIST airlock yloc CDATA #REQUIRED>
