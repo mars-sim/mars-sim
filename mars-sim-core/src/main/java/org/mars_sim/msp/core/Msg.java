@@ -28,7 +28,7 @@ public class Msg {
 	private static Logger logger = Logger.getLogger(Msg.class.getName());
 
 	/** location of the properties files in the project code base. */
-	private static final String BUNDLE_NAME = "org.mars_sim.msp.core.messages"; //$NON-NLS-1$
+	private static final String BUNDLE_NAME = "messages"; //$NON-NLS-1$
 
 	/**
 	 * the default resource bundle.<br/>

@@ -40,14 +40,14 @@ public class SettlementWindow extends UnitWindow {
         addTabPanel(new AssociatedPeopleTabPanel(settlement, desktop));
         addTabPanel(new TabPanelVehicles(settlement, desktop));
         addTabPanel(new InventoryTabPanel(settlement, desktop));
-        addTabPanel(new PowerGridTabPanel(settlement, desktop));
+        addTabPanel(new TabPanelPowerGrid(settlement, desktop));
         addTabPanel(new TabPanelBuildings(settlement, desktop));
-        addTabPanel(new GoodsTabPanel(settlement, desktop));
-        addTabPanel(new CreditTabPanel(settlement, desktop));
+        addTabPanel(new TabPanelGoods(settlement, desktop));
+        addTabPanel(new TabPanelCredit(settlement, desktop));
         addTabPanel(new ResourceProcessesTabPanel(settlement, desktop));
-        addTabPanel(new MaintenanceTabPanel(settlement, desktop));
+        addTabPanel(new TabPanelMaintenance(settlement, desktop));
         addTabPanel(new ManufactureTabPanel(settlement, desktop));
-        addTabPanel(new MissionTabPanel(settlement, desktop));
+        addTabPanel(new TabPanelMission(settlement, desktop));
         addTabPanel(new TabPanelConstruction(settlement, desktop));
         addTabPanel(new TabPanelScience(settlement, desktop));
     }

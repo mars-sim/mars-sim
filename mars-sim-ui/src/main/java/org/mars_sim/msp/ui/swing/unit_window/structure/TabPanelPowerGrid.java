@@ -1,6 +1,6 @@
 /**
  * Mars Simulation Project
- * PowerGridTabPanel.java
+ * TabPanelPowerGrid.java
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
@@ -19,6 +19,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.PowerGrid;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -33,9 +34,9 @@ import org.mars_sim.msp.ui.swing.NumberCellRenderer;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
 
 /** 
- * The PowerGridTabPanel is a tab panel for a settlement's power grid information.
+ * This is a tab panel for a settlement's power grid information.
  */
-public class PowerGridTabPanel
+public class TabPanelPowerGrid
 extends TabPanel {
 
 	/** default serial id. */
@@ -65,17 +66,22 @@ extends TabPanel {
 	/** The total power stored cache. */
 	private double powerStoredCache;
 
-	private DecimalFormat formatter = new DecimalFormat("0.0");
+	private DecimalFormat formatter = new DecimalFormat(Msg.getString("TabPanelPowerGrid.decimalFormat")); //$NON-NLS-1$
 
 	/**
 	 * Constructor.
 	 * @param unit the unit to display.
 	 * @param desktop the main desktop.
 	 */
-	public PowerGridTabPanel(Unit unit, MainDesktopPane desktop) { 
+	public TabPanelPowerGrid(Unit unit, MainDesktopPane desktop) { 
 
 		// Use the TabPanel constructor
-		super("Power", null, "Power Grid", unit, desktop);
+		super(
+			Msg.getString("TabPanelPowerGrid.title"), //$NON-NLS-1$
+			null,
+			Msg.getString("TabPanelPowerGrid.tooltip"), //$NON-NLS-1$
+			unit, desktop
+		);
 
 		Settlement settlement = (Settlement) unit;
 		powerGrid = settlement.getPowerGrid();
@@ -85,7 +91,7 @@ extends TabPanel {
 		topContentPanel.add(powerGridLabelPanel);
 
 		// Prepare power grid label.
-		JLabel powerGridLabel = new JLabel("Power Grid", JLabel.CENTER);
+		JLabel powerGridLabel = new JLabel(Msg.getString("TabPanelPowerGrid.label"), JLabel.CENTER); //$NON-NLS-1$
 		powerGridLabelPanel.add(powerGridLabel);
 
 		// Prepare power info panel.
@@ -95,26 +101,22 @@ extends TabPanel {
 
 		// Prepare power generated label.
 		powerGeneratedCache = powerGrid.getGeneratedPower();
-		powerGeneratedLabel = new JLabel("Total Power Generated: " + 
-				formatter.format(powerGeneratedCache) + " kW.", JLabel.CENTER);
+		powerGeneratedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerGenerated", formatter.format(powerGeneratedCache)), JLabel.CENTER); //$NON-NLS-1$
 		powerInfoPanel.add(powerGeneratedLabel);
 
 		// Prepare power used label.
 		powerUsedCache = powerGrid.getRequiredPower();
-		powerUsedLabel = new JLabel("Total Power Used: " + 
-				formatter.format(powerUsedCache) + " kW.", JLabel.CENTER);
+		powerUsedLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerUsed", formatter.format(powerUsedCache)), JLabel.CENTER); //$NON-NLS-1$
 		powerInfoPanel.add(powerUsedLabel);
 
 		// Prepare power storage capacity label.
 		powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
-		powerStorageCapacityLabel = new JLabel("Power Storage Capacity: " + 
-				formatter.format(powerStorageCapacityCache) + " kW hr.", JLabel.CENTER);
+		powerStorageCapacityLabel = new JLabel(Msg.getString("TabPanelPowerGrid.powerStorageCapacity", formatter.format(powerStorageCapacityCache)), JLabel.CENTER); //$NON-NLS-1$
 		powerInfoPanel.add(powerStorageCapacityLabel);
 
 		// Prepare power stored label.
 		powerStoredCache = powerGrid.getStoredPower();
-		powerStoredLabel = new JLabel("Total Power Stored: " +
-				formatter.format(powerStoredCache) + " kW hr.", JLabel.CENTER);
+		powerStoredLabel = new JLabel(Msg.getString("TabPanelPowerGrid.totalPowerStored", formatter.format(powerStoredCache)), JLabel.CENTER); //$NON-NLS-1$
 		powerInfoPanel.add(powerStoredLabel);
 
 		// Create scroll panel for the outer table panel.
@@ -122,12 +124,12 @@ extends TabPanel {
 		powerScrollPane.setPreferredSize(new Dimension(257, 230));
 		// increase vertical mousewheel scrolling speed for this one
 		powerScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);         
+		centerContentPanel.add(powerScrollPane,BorderLayout.CENTER);
 
 		// Prepare outer table panel.
 		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
 		outerTablePanel.setBorder(new MarsPanelBorder());
-		powerScrollPane.setViewportView(outerTablePanel);   
+		powerScrollPane.setViewportView(outerTablePanel);
 
 		// Prepare power table panel.
 		JPanel powerTablePanel = new JPanel(new BorderLayout(0, 0));
@@ -157,29 +159,36 @@ extends TabPanel {
 		// Update power generated label.
 		if (powerGeneratedCache != powerGrid.getGeneratedPower()) {
 			powerGeneratedCache = powerGrid.getGeneratedPower();
-			powerGeneratedLabel.setText("Total Power Generated: " + 
-					formatter.format(powerGeneratedCache) + " kW.");
+			powerGeneratedLabel.setText(
+				Msg.getString(
+					"TabPanelPowerGrid.totalPowerGenerated", //$NON-NLS-1$
+					formatter.format(powerGeneratedCache)
+				)
+			);
 		}
 
 		// Update power used label.
 		if (powerUsedCache != powerGrid.getRequiredPower()) {
 			powerUsedCache = powerGrid.getRequiredPower();
-			powerUsedLabel.setText("Total Power Used: " + 
-					formatter.format(powerUsedCache) + " kW.");
+			powerUsedLabel.setText(Msg.getString("TabPanelPowerGrid.totalPowerUsed",formatter.format(powerUsedCache))); //$NON-NLS-1$
 		}
 
 		// Update power storage capacity label.
 		if (powerStorageCapacityCache != powerGrid.getStoredPowerCapacity()) {
 			powerStorageCapacityCache = powerGrid.getStoredPowerCapacity();
-			powerStorageCapacityLabel.setText("Power Storage Capacity: " + 
-					formatter.format(powerStorageCapacityCache) + " kW hr.");
+			powerStorageCapacityLabel.setText(Msg.getString(
+				"TabPanelPowerGrid.powerStorageCapacity", //$NON-NLS-1$
+				formatter.format(powerStorageCapacityCache)
+			));
 		}
 
 		// Update power stored label.
 		if (powerStoredCache != powerGrid.getStoredPower()) {
 			powerStoredCache = powerGrid.getStoredPower();
-			powerStoredLabel.setText("Total Power Stored: " +
-					formatter.format(powerStoredCache) + " kW hr.");
+			powerStoredLabel.setText(Msg.getString(
+				"TabPanelPowerGrid.totalPowerStored", //$NON-NLS-1$
+				formatter.format(powerStoredCache)
+			));
 		}
 
 		// Update power table.
@@ -196,16 +205,16 @@ extends TabPanel {
 
 		private Settlement settlement;
 		private java.util.List<Building> buildings;
-		private ImageIcon redDot;
-		private ImageIcon yellowDot;
-		private ImageIcon greenDot;
+		private ImageIcon dotRed;
+		private ImageIcon dotYellow;
+		private ImageIcon dotGreen;
 
 		private PowerTableModel(Settlement settlement) {
 			this.settlement = settlement;
 			buildings = settlement.getBuildingManager().getBuildings();
-			redDot = ImageLoader.getIcon("RedDot");
-			yellowDot = ImageLoader.getIcon("YellowDot");
-			greenDot = ImageLoader.getIcon("GreenDot");
+			dotRed = ImageLoader.getIcon(Msg.getString("img.dotRed")); //$NON-NLS-1$
+			dotYellow = ImageLoader.getIcon(Msg.getString("img.dotYellow")); //$NON-NLS-1$
+			dotGreen = ImageLoader.getIcon(Msg.getString("img.dotGreen")); //$NON-NLS-1$
 		}
 
 		public int getRowCount() {
@@ -226,11 +235,11 @@ extends TabPanel {
 		}
 
 		public String getColumnName(int columnIndex) {
-			if (columnIndex == 0) return "S";
-			else if (columnIndex == 1) return "Building";
-			else if (columnIndex == 2) return "Gen.";
-			else if (columnIndex == 3) return "Used";
-			else return "unknown";
+			if (columnIndex == 0) return Msg.getString("TabPanelPowerGrid.column.s"); //$NON-NLS-1$
+			else if (columnIndex == 1) return Msg.getString("TabPanelPowerGrid.column.building"); //$NON-NLS-1$
+			else if (columnIndex == 2) return Msg.getString("TabPanelPowerGrid.column.generated"); //$NON-NLS-1$
+			else if (columnIndex == 3) return Msg.getString("TabPanelPowerGrid.column.used"); //$NON-NLS-1$
+			else return null;
 		}
 
 		public Object getValueAt(int row, int column) {
@@ -240,13 +249,13 @@ extends TabPanel {
 
 			if (column == 0) {
 				if (powerMode == PowerMode.FULL_POWER) { 
-					return greenDot;
+					return dotGreen;
 				}
 				else if (powerMode == PowerMode.POWER_DOWN) {
-					return yellowDot;
+					return dotYellow;
 				}
 				else if (powerMode == PowerMode.NO_POWER) {
-					return redDot;
+					return dotRed;
 				}
 				else return null;
 			}
@@ -270,7 +279,7 @@ extends TabPanel {
 					used = building.getPoweredDownPowerRequired();
 				return used;
 			}
-			else return "unknown";
+			else return null;
 		}
 
 		public void update() {
