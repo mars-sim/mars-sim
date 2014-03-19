@@ -25,13 +25,14 @@ public abstract class Airlock implements Serializable {
 
     /** default serial id. */
     private static final long serialVersionUID = 1L;
-    
+
+    /** default logger. */
     private static Logger logger = Logger.getLogger(Airlock.class.getName());
 
     /** Pressurize/depressurize time (millisols). */
     public static final double CYCLE_TIME = 5D;
 
-    // Airlock states.
+    // TODO Airlock states should be an enum.
     public static final String PRESSURIZED = "pressurized";
     public static final String DEPRESSURIZED = "depressurized";
     public static final String PRESSURIZING = "pressurizing";
