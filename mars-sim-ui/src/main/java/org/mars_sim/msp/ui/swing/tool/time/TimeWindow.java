@@ -42,7 +42,7 @@ import org.mars_sim.msp.ui.swing.tool.ToolWindow;
 /** 
  * The TimeWindow is a tool window that displays the current 
  * Martian and Earth time.<br/>
- * the numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
+ * The numbers below have been tweaked with some care. At 20, the realworld:sim ratio is 1:1
  * above 20, the numbers start climbing logarithmically maxing out at around 100K this is really fast
  * Below 20, the simulation goes in slow motion, 1:0.0004 is around the slowest. The increments may be
  * so small at this point that events can't progress at all. When run too quickly, lots of accidents occur,
