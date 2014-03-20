@@ -52,7 +52,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 
 	//private URL guideURL = GuideWindow.class.getClassLoader().getResource("docs" + File.separator + 
 	//        "help" + File.separator + "userguide.html");
-	/* [landrus, 27.11.09]: load the url in the contructor. */
+	/* [landrus, 27.11.09]: load the url in the constructor. */
 	private URL guideURL;
 
 	private JButton homeButton = new JButton(Msg.getString("GuideWindow.button.home")); //$NON-NLS-1$
@@ -105,7 +105,7 @@ implements ActionListener, HyperlinkListener, ComponentListener {
 		mainPane.add(scrollPane);
 		mainPane.add(toolPanel, BorderLayout.NORTH);
 
-		// Have to define a starting size
+		// We have to define a starting size
 		setSize(new Dimension(575, 475));
 
 		// Allow the window to be resized by the user.

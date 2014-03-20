@@ -18,7 +18,7 @@ import javax.swing.JEditorPane;
 import org.mars_sim.msp.core.Msg;
 
 /**
- * The HTMLContentPane class provides a pane for displaying
+ * The HTMLContentPane class provides an HTML pane for displaying
  * the help files in the Guide window.
  */
 
