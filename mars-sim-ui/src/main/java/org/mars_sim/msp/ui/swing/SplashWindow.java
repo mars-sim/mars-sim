@@ -11,7 +11,9 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Toolkit;
 
 import javax.swing.ImageIcon;
@@ -58,14 +60,18 @@ extends JComponent {
 			private static final long serialVersionUID = 1L;
 			@Override
 			public void paint(Graphics g) {
-//				window.paint(g);
+
 				// Draw splash image and superimposed text
-				g.drawImage(splashImage, 0, 0, this);
-				window.setForeground(Color.white);
-				g.setFont(new Font("SansSerif", Font.PLAIN, 35));
-				g.drawString(MSP_STRING, 30, 60);
-				g.setFont(versionStringFont);
-				g.drawString(VERSION_STRING, splashImage.getWidth(this) - versionStringWidth - 10, 20);
+			    Graphics2D g2d = (Graphics2D) g;
+			    g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, 
+			            RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+				g2d.drawImage(splashImage, 0, 0, this);
+				g2d.setColor(Color.WHITE);
+				g2d.setFont(new Font("SansSerif", Font.PLAIN, 35));
+				g2d.drawString(MSP_STRING, 30, 60);
+				g2d.setFont(versionStringFont);
+				g2d.drawString(VERSION_STRING, splashImage.getWidth(this) - 
+				        versionStringWidth - 10, 20);
 			}
 		};
 
