@@ -4,9 +4,9 @@
  * @version 3.06 2014-01-29
  * @author Barry Evans
  */
-
 package org.mars_sim.msp.core.events;
 
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /**
@@ -20,14 +20,14 @@ import org.mars_sim.msp.core.time.MarsClock;
 public abstract class HistoricalEvent {
 
 	/**
-	 * Category of event
+	 * Category of event.
 	 * @see HistoricalEventManager
-	 * @see HistoricalEventType
+	 * @see HistoricalEventCategory
 	 */
-	private HistoricalEventType category;
-	/** Type of event. */
-	private String type;
-	/** Long description. */
+	private HistoricalEventCategory category;
+	/** Type of historical events. */
+	private EventType type;
+	/** TODO Long description of historical events should be internationalizable. */
 	private String description;
 	/** Time event occuried. */
 	private MarsClock timestamp;
@@ -37,17 +37,15 @@ public abstract class HistoricalEvent {
 	/**
 	 * Construct an event with the appropriate information. The time is not
 	 * defined until the evnet is registered with the Event Manager.
-	 *
-	 * @param malfunction {@link HistoricalEventType} Category of event.
-	 * @param type Type of event.
+	 * @param category {@link HistoricalEventCategory} Category of event.
+	 * @param type {@link EventType} Type of event.
 	 * @param source The object that has produced the event, if this is null
 	 * then it is a global simulation event. It could be a Unit or a Building.
 	 * @param description Long description of event.
-	 *
 	 * @see org.mars_sim.msp.core.events.HistoricalEventManager#registerNewEvent(HistoricalEvent)
 	 */
-	public HistoricalEvent(HistoricalEventType malfunction, String type, Object source, String description) {
-		this.category = malfunction;
+	public HistoricalEvent(HistoricalEventCategory category, EventType type, Object source, String description) {
+		this.category = category;
 		this.type = type;
 		this.source = source;
 		this.description = description;
@@ -89,15 +87,15 @@ public abstract class HistoricalEvent {
 	 * Get the type of event.
 	 * @return String representing the type.
 	 */
-	public String getType() {
+	public EventType getType() {
 		return type;
 	}
 
 	/**
 	 * Gets the category of the event.
-	 * @return {@link HistoricalEventType}
+	 * @return {@link HistoricalEventCategory}
 	 */
-	public HistoricalEventType getCategory() {
+	public HistoricalEventCategory getCategory() {
 		return category;
 	}
 }

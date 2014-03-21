@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
@@ -33,7 +34,8 @@ import org.mars_sim.msp.core.structure.Settlement;
  * There is at most one instance of a mission per person.
  * A Mission may have one or more people associated with it.
  */
-public abstract class Mission implements Serializable {
+public abstract class Mission
+implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -66,7 +68,7 @@ public abstract class Mission implements Serializable {
 	private transient List<MissionListener> listeners;
 
 	/** 
-	 * Constructs a Mission object
+	 * Constructor.
 	 * @param name the name of the mission
 	 * @param startingPerson the person starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
@@ -88,7 +90,7 @@ public abstract class Mission implements Serializable {
 		listeners = Collections.synchronizedList(new ArrayList<MissionListener>());
 
 		// Created mission starting event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, MissionHistoricalEvent.START);
+		HistoricalEvent newEvent = new MissionHistoricalEvent(startingPerson, this, EventType.MISSION_START);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 		// Log mission starting.
@@ -99,7 +101,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Adds a listener
+	 * Adds a listener.
 	 * @param newListener the listener to add.
 	 */
 	public final void addMissionListener(MissionListener newListener) {
@@ -112,7 +114,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	/**
-	 * Removes a listener
+	 * Removes a listener.
 	 * @param oldListener the listener to remove.
 	 */
 	public final void removeMissionListener(MissionListener oldListener) {
@@ -162,7 +164,7 @@ public abstract class Mission implements Serializable {
 			people.add(person);
 
 			// Creating mission joining event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.JOINING);
+			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_JOINING);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 			fireMissionUpdate(MissionEventType.ADD_MEMBER_EVENT, person);
@@ -172,7 +174,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	/** 
-	 * Removes a person from the mission
+	 * Removes a person from the mission.
 	 * @param person to be removed
 	 */
 	public final void removePerson(Person person) {
@@ -180,7 +182,7 @@ public abstract class Mission implements Serializable {
 			people.remove(person);
 
 			// Creating missing finishing event.
-			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.FINISH);
+			HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_FINISH);
 			Simulation.instance().getEventManager().registerNewEvent(newEvent);
 
 			fireMissionUpdate(MissionEventType.REMOVE_MEMBER_EVENT, person);
@@ -194,7 +196,7 @@ public abstract class Mission implements Serializable {
 	}
 
 	/** 
-	 * Determines if a mission includes the given person
+	 * Determines if a mission includes the given person.
 	 * @param person person to be checked
 	 * @return true if person is member of mission
 	 */
@@ -375,15 +377,17 @@ public abstract class Mission implements Serializable {
 		}
 	}
 
-	/** Gets the mission capacity for participating people.
-	 *  @return mission capacity
+	/**
+	 * Gets the mission capacity for participating people.
+	 * @return mission capacity
 	 */
 	public final int getMissionCapacity() {
 		return missionCapacity;
 	}
 
-	/** Sets the mission capacity to a given value.
-	 *  @param newCapacity the new mission capacity
+	/**
+	 * Sets the mission capacity to a given value.
+	 * @param newCapacity the new mission capacity
 	 */
 	protected final void setMissionCapacity(int newCapacity) {
 		missionCapacity = newCapacity;

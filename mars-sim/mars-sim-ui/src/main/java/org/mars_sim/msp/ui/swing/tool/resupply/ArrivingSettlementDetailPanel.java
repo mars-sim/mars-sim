@@ -19,10 +19,10 @@ import javax.swing.SwingUtilities;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventType;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.settlement.ArrivingSettlement;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -243,8 +243,8 @@ implements ClockListener, HistoricalEventListener {
 
 	@Override
 	public void eventAdded(int index, HistoricalEvent event) {
-		if (HistoricalEventType.TRANSPORT == event.getCategory() && 
-				TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
+		if (HistoricalEventCategory.TRANSPORT == event.getCategory() && 
+				EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
 			if ((arrivingSettlement != null) && event.getSource().equals(arrivingSettlement)) {
 				SwingUtilities.invokeLater(new Runnable() {
 					@Override

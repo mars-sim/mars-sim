@@ -14,6 +14,7 @@ import java.util.List;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -117,7 +118,7 @@ implements Serializable, Comparable<Task> {
 
         // Create ending task historical event if needed.
         if (createEvents) {
-            TaskEvent endingEvent = new TaskEvent(person, this, TaskEvent.FINISH, "");
+            TaskEvent endingEvent = new TaskEvent(person, this, EventType.TASK_FINISH, "");
             Simulation.instance().getEventManager().registerNewEvent(endingEvent);
         }
     }

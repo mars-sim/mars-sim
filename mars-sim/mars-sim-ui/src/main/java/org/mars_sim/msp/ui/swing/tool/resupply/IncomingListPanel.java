@@ -22,12 +22,12 @@ import javax.swing.event.ListSelectionListener;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventType;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.person.EventType;
 
 /**
  * A panel showing a list of all incoming transport items.
@@ -129,10 +129,10 @@ implements ListSelectionListener {
 
 		 @Override
 		 public void eventAdded(int index, HistoricalEvent event) {
-			 if (event.getCategory().equals(HistoricalEventType.TRANSPORT)) {
+			 if (event.getCategory().equals(HistoricalEventCategory.TRANSPORT)) {
 				 Transportable transportItem = (Transportable) event.getSource();
 
-				 if (TransportEvent.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
+				 if (EventType.TRANSPORT_ITEM_CREATED.equals(event.getType())) {
 					 if (TransitState.PLANNED == transportItem.getTransitState() || 
 							 TransitState.IN_TRANSIT.equals(transportItem.getTransitState())) {
 						 transportList.add(transportItem);
@@ -141,13 +141,13 @@ implements ListSelectionListener {
 						 fireIntervalAdded(this, transportIndex, transportIndex);
 					 }
 				 }
-				 else if (TransportEvent.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) || 
-						 TransportEvent.TRANSPORT_ITEM_CANCELLED.equals(event.getType())) {
+				 else if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType()) || 
+						 EventType.TRANSPORT_ITEM_CANCELLED.equals(event.getType())) {
 					 int transportIndex = transportList.indexOf(transportItem);
 					 transportList.remove(transportItem);
 					 fireIntervalRemoved(this, transportIndex, transportIndex);
 				 }
-				 else if (TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
+				 else if (EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
 					 if (transportList.contains(transportItem)) {
 						 Collections.sort(transportList);
 						 fireContentsChanged(this, 0, transportList.size() - 1);

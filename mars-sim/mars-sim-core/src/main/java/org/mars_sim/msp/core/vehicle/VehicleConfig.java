@@ -19,15 +19,15 @@ import org.jdom.Element;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.science.ScienceType;
 
-
 /**
  * Provides configuration information about vehicle units.
  * Uses a DOM document to get the information. 
  */
-public class VehicleConfig implements Serializable {
+public class VehicleConfig
+implements Serializable {
 
 	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
 	// Element names
 	private static final String VEHICLE = "vehicle";

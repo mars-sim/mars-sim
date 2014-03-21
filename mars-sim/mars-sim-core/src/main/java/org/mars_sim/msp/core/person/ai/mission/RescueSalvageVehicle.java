@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -350,7 +351,7 @@ implements Serializable {
 		setPhaseEnded(true);
 		
 		// Set mission event.
-		HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RENDEZVOUS);
+		HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RENDEZVOUS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
 	}
 	
@@ -388,7 +389,7 @@ implements Serializable {
     		inv.storeUnit(towedVehicle);
     		towedVehicle.determinedSettlementParkedLocationAndFacing();
     		logger.info(towedVehicle + " salvaged at " + disembarkSettlement.getName());
-    		HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.SALVAGE_VEHICLE);
+    		HistoricalEvent salvageEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_SALVAGE_VEHICLE);
 			Simulation.instance().getEventManager().registerNewEvent(salvageEvent);
     		
     		// Unload any crew at settlement.
@@ -402,7 +403,7 @@ implements Serializable {
 					BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			crewmember.setAssociatedSettlement(disembarkSettlement);
         		        logger.info(crewmember.getName() + " rescued.");
-        			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, MissionHistoricalEvent.RESCUE_PERSON);
+        			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RESCUE_PERSON);
         			Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
         		}
     		}

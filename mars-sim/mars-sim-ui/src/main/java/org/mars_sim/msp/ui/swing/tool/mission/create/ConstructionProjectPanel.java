@@ -49,25 +49,29 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 /**
  * A wizard panel for selecting the mission's construction project information.
  */
-class ConstructionProjectPanel extends WizardPanel {
+class ConstructionProjectPanel
+extends WizardPanel {
 
-    // The wizard panel name.
+    /** default serial id. */
+	private static final long serialVersionUID = 1L;
+
+	// The wizard panel name.
     private final static String NAME = "Construction Project";
     
     // Data members
     private JLabel errorMessageLabel;
-    private DefaultListModel siteListModel;
-    private JList siteList;
-    private DefaultListModel projectListModel;
-    private JList projectList;
+    private DefaultListModel<String> siteListModel;
+    private JList<String> siteList;
+    private DefaultListModel<ConstructionStageInfo> projectListModel;
+    private JList<ConstructionStageInfo> projectList;
     private MaterialsTableModel materialsTableModel;
     private JTable materialsTable;
     
     /**
-     * Constructor
+     * Constructor.
      * @param wizard the create mission wizard.
      */
-    ConstructionProjectPanel(final CreateMissionWizard wizard) {
+    public ConstructionProjectPanel(final CreateMissionWizard wizard) {
         // Use WizardPanel constructor.
         super(wizard);
         
@@ -105,9 +109,9 @@ class ConstructionProjectPanel extends WizardPanel {
         constructionSiteSelectionPane.add(siteListScrollPane, BorderLayout.CENTER);
         
         // Create site selection list.
-        siteListModel = new DefaultListModel();
+        siteListModel = new DefaultListModel<String>();
         populateSiteListModel();
-        siteList = new JList(siteListModel);
+        siteList = new JList<String>(siteListModel);
         siteList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         siteList.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent arg0) {
@@ -133,9 +137,9 @@ class ConstructionProjectPanel extends WizardPanel {
         constructionProjectSelectionPane.add(projectListScrollPane, BorderLayout.CENTER);
         
         // Create project selection list.
-        projectListModel = new DefaultListModel();
+        projectListModel = new DefaultListModel<ConstructionStageInfo>();
         populateProjectListModel();
-        projectList = new JList(projectListModel);
+        projectList = new JList<ConstructionStageInfo>(projectListModel);
         projectList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         projectList.addListSelectionListener(
         	new ListSelectionListener() {
@@ -277,6 +281,7 @@ class ConstructionProjectPanel extends WizardPanel {
      * Gets the tool tip text for the project list based on the selected stage.
      * @param stageInfo the selected stage info.
      * @return tool tip text.
+     * TODO internationalize the construction process tooltips.
      */
     private String getToolTipText(ConstructionStageInfo stageInfo) {
         String result = null;

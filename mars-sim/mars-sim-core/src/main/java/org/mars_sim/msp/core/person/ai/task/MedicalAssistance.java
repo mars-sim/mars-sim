@@ -19,6 +19,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -106,7 +107,7 @@ implements Serializable {
 
 				// Create starting task event if needed.
 				if (getCreateEvents()) {
-					TaskEvent startingEvent = new TaskEvent(person, this, TaskEvent.START, "");
+					TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
 					Simulation.instance().getEventManager().registerNewEvent(startingEvent);
 				}
 			}

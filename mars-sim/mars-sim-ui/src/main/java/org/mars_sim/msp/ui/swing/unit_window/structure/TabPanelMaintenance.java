@@ -202,7 +202,6 @@ extends TabPanel {
 	 */
 	private String getPartsString(Map<Part, Integer> parts) {
 		StringBuilder buf = new StringBuilder("Parts: ");
-
 		if (parts.size() > 0) {
 			Iterator<Part> i = parts.keySet().iterator();
 			while (i.hasNext()) {
@@ -213,7 +212,6 @@ extends TabPanel {
 			}
 		}
 		else buf.append("none");
-
 		return buf.toString();
 	}
 

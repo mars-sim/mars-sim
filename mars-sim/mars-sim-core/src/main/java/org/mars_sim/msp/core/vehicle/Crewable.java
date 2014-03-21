@@ -4,7 +4,6 @@
  * @version 3.06 2014-01-29
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.vehicle;
 
 import java.util.Collection;

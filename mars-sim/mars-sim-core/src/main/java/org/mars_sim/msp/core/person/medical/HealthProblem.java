@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 
@@ -61,7 +62,7 @@ public class HealthProblem implements Serializable {
         Treatment treatment = illness.getRecoveryTreatment();
         
         // Create medical event for health problem.
-		MedicalEvent newEvent = new MedicalEvent(sufferer, this, MedicalEvent.STARTS);
+		MedicalEvent newEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_STARTS);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);
         
         // If no degrade period & no treatment, then can do self heel
@@ -224,7 +225,7 @@ public class HealthProblem implements Serializable {
         // logger.info("Starting treatment: " + getSufferer().getName() + " - " + toString());
         
         // Create medical event for treatment.
-		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, MedicalEvent.TREATED);
+		MedicalEvent treatedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_TREATED);
 		Simulation.instance().getEventManager().registerNewEvent(treatedEvent);
     }
     
@@ -242,7 +243,7 @@ public class HealthProblem implements Serializable {
     	setState(DEGRADING);
     	
     	// Create medical event for degrading.
-		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, MedicalEvent.DEGRADES);
+		MedicalEvent degradingEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_DEGRADES);
 		Simulation.instance().getEventManager().registerNewEvent(degradingEvent);
     }
 
@@ -269,7 +270,7 @@ public class HealthProblem implements Serializable {
 				}
             	
             	// Create medical event for recovering.
-				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, MedicalEvent.RECOVERY);
+				MedicalEvent recoveringEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_RECOVERY);
 				Simulation.instance().getEventManager().registerNewEvent(recoveringEvent);
             } 
             else setCured();
@@ -280,7 +281,7 @@ public class HealthProblem implements Serializable {
     	setState(CURED);
     	
     	// Create medical event for cured.
-		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, MedicalEvent.CURED);
+		MedicalEvent curedEvent = new MedicalEvent(sufferer, this, EventType.MEDICAL_CURED);
 		Simulation.instance().getEventManager().registerNewEvent(curedEvent);
     }
 

@@ -1,7 +1,8 @@
 package org.mars_sim.msp.core.malfunction;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventType;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.person.EventType;
 
 /**
  * This class represents the historical action of a Malfunction occuring or
@@ -9,10 +10,6 @@ import org.mars_sim.msp.core.events.HistoricalEventType;
  */
 public class MalfunctionEvent
 extends HistoricalEvent {
-
-	// TODO Malfunction event type should be an enum.
-	final private static String FIXED_TYPE = "Malfunction fixed";
-	final private static String UNFIXED_TYPE = "Malfunction occurred";
 
 	/**
 	 * Create an event associated to a Malfunction.
@@ -22,8 +19,8 @@ extends HistoricalEvent {
 	 */
 	public MalfunctionEvent(Malfunctionable entity, Malfunction malfunction, boolean fixed) {
 		super(
-			HistoricalEventType.MALFUNCTION,
-			(fixed ? FIXED_TYPE : UNFIXED_TYPE), 
+			HistoricalEventCategory.MALFUNCTION,
+			(fixed ? EventType.MALFUNCTION_FIXED : EventType.MALFUNCTION_UNFIXED), 
 			entity,
 			malfunction.getName() + (fixed? " fixed" : " occurred")
 		);

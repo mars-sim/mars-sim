@@ -23,11 +23,11 @@ import javax.swing.event.ListSelectionListener;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventType;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransportManager;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.person.EventType;
 
 /**
  * A panel showing a list of all arrived resupply missions.
@@ -129,10 +129,10 @@ implements ListSelectionListener {
 
 		@Override
 		public void eventAdded(int index, HistoricalEvent event) {
-			if (event.getCategory() == HistoricalEventType.TRANSPORT) {
+			if (event.getCategory() == HistoricalEventCategory.TRANSPORT) {
 				Transportable transportItem = (Transportable) event.getSource();
 
-				if (TransportEvent.TRANSPORT_ITEM_ARRIVED.equals(event.getType())) {
+				if (EventType.TRANSPORT_ITEM_ARRIVED.equals(event.getType())) {
 					resupplyList.add(transportItem);
 					Collections.sort(resupplyList);
 					int transportItemIndex = resupplyList.indexOf(transportItem);

@@ -517,7 +517,7 @@ implements Serializable {
         logger.severe(person + " dies due to " + illness);
         
 		// Create medical event for death.
-		MedicalEvent event = new MedicalEvent(person, illness, MedicalEvent.DEATH);
+		MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);
 		
 		// Throw unit event.

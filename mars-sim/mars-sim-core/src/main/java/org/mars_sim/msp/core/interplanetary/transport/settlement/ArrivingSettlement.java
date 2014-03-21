@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
@@ -195,7 +196,7 @@ implements Transportable, Serializable {
 	public void commitModification() {
 		HistoricalEvent newEvent = new TransportEvent(
 			this,
-			TransportEvent.TRANSPORT_ITEM_MODIFIED, 
+			EventType.TRANSPORT_ITEM_MODIFIED, 
 			"Arriving settlement modified"
 		);
 		Simulation.instance().getEventManager().registerNewEvent(newEvent);  

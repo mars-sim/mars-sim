@@ -28,6 +28,7 @@ import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.interplanetary.transport.TransitState;
 import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.Transportable;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PersonGender;
@@ -222,7 +223,7 @@ implements Serializable, Transportable {
      * Commits a set of modifications for the resupply mission.
      */
     public void commitModification() {
-        HistoricalEvent newEvent = new TransportEvent(this, TransportEvent.TRANSPORT_ITEM_MODIFIED, 
+        HistoricalEvent newEvent = new TransportEvent(this, EventType.TRANSPORT_ITEM_MODIFIED, 
                 "Resupply mission modified");
         Simulation.instance().getEventManager().registerNewEvent(newEvent);  
     }
