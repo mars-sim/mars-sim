@@ -1,12 +1,13 @@
 /**
  * Mars Simulation Project
  * BuildingConnection.java
- * @version 3.06 2014-03-08
+ * @version 3.06 2014-03-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
 
 import java.io.Serializable;
+import java.util.Iterator;
 
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -20,8 +21,6 @@ implements Serializable {
 
 	public static final BuildingFunction FUNCTION = BuildingFunction.BUILDING_CONNECTION;
 
-	private static final double BASE_VALUE = 10D;
-
 	/** constructor. */
 	public BuildingConnection(Building building) {
 		// User Function constructor.
@@ -34,11 +33,47 @@ implements Serializable {
 	 * @param newBuilding true if adding a new building.
 	 * @param settlement the settlement.
 	 * @return value (VP) of building function.
-	 * @throws Exception if error getting function value.
 	 */
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
-		return BASE_VALUE;
+	    
+	    // Determine demand.
+	    double demand = 0D;
+	    Iterator<Building> i = settlement.getBuildingManager().getBuildings(
+	            BuildingFunction.LIFE_SUPPORT).iterator();
+	    while (i.hasNext()) {
+	        Building building = i.next();
+	        // Demand based on life support buildings that are not building connections.
+	        if (!building.hasFunction(BuildingFunction.BUILDING_CONNECTION)) {
+	            demand += 1D;
+	            
+	            // If building is not EVA and does not have a walkable airlock path, add more demand.
+	            if ((settlement.getAirlockNum() > 0) && !building.hasFunction(BuildingFunction.EVA)){
+	                
+	                if (settlement.getClosestWalkableAvailableAirlock(building, 0D, 0D) == null) {
+	                    
+	                    demand += 100D;
+	                }
+	            }
+	        }
+	    }
+	    
+	    // Determine supply.
+	    double supply = 0D;
+	    Iterator<Building> j = settlement.getBuildingManager().getBuildings(
+	            BuildingFunction.BUILDING_CONNECTION).iterator();
+        while (j.hasNext()) {
+            supply += (j.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+        }
+	    
+        if (!newBuilding) {
+            supply -= 1D;
+            if (supply < 0D) {
+                supply = 0D;
+            }
+        }
+	    
+        return demand / (supply + 1D);
 	}
 
 	@Override
