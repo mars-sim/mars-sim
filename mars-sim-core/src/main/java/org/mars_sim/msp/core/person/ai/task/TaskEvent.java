@@ -7,7 +7,8 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.events.HistoricalEvent;
-import org.mars_sim.msp.core.events.HistoricalEventType;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 
 /**
@@ -16,11 +17,6 @@ import org.mars_sim.msp.core.person.Person;
 public class TaskEvent
 extends HistoricalEvent {
 
-	// TODO Task event types should be an enum.
-	public final static String START = "Task Starting";
-	public final static String FINISH = "Task Finished";
-	public final static String DEVELOPMENT = "Task Development";
-
 	/**
 	 * Constructor.
 	 * @param person The person performing the task.
@@ -28,9 +24,9 @@ extends HistoricalEvent {
 	 * @param eventType The type of event.
 	 * @param description Further description of the event (may be empty string).
 	 */
-	public TaskEvent(Person person, Task task, String eventType, String description) {
+	public TaskEvent(Person person, Task task, EventType eventType, String description) {
 	
 		// Use HistoricalEvent constructor.
-		super(HistoricalEventType.TASK, eventType, person, task.getDescription() + " " + description);
+		super(HistoricalEventCategory.TASK, eventType, person, task.getDescription() + " " + description);
 	}
 }

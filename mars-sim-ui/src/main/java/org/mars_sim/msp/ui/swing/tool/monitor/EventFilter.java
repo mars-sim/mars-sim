@@ -16,7 +16,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JPanel;
 
 import org.mars_sim.msp.core.Msg;
-import org.mars_sim.msp.core.events.HistoricalEventType;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 
@@ -64,31 +64,31 @@ implements ActionListener {
 		mainPane.add(categoryPane, BorderLayout.CENTER);
 
 		// Create mechanical events checkbox.
-		malfunctionCheck = new JCheckBox(HistoricalEventType.MALFUNCTION.getName());
+		malfunctionCheck = new JCheckBox(HistoricalEventCategory.MALFUNCTION.getName());
 		malfunctionCheck.setSelected(model.getDisplayMalfunction());
 		malfunctionCheck.addActionListener(this);
 		categoryPane.add(malfunctionCheck);
 
 		// Create medical events checkbox.
-		medicalCheck = new JCheckBox(HistoricalEventType.MEDICAL.getName());
+		medicalCheck = new JCheckBox(HistoricalEventCategory.MEDICAL.getName());
 		medicalCheck.setSelected(model.getDisplayMedical());
 		medicalCheck.addActionListener(this);
 		categoryPane.add(medicalCheck);
 
 		// Create mission events checkbox.
-		missionCheck = new JCheckBox(HistoricalEventType.MISSION.getName());
+		missionCheck = new JCheckBox(HistoricalEventCategory.MISSION.getName());
 		missionCheck.setSelected(model.getDisplayMission());
 		missionCheck.addActionListener(this);
 		categoryPane.add(missionCheck);
 
 		// Create task events checkbox.
-		taskCheck = new JCheckBox(HistoricalEventType.TASK.getName());
+		taskCheck = new JCheckBox(HistoricalEventCategory.TASK.getName());
 		taskCheck.setSelected(model.getDisplayTask());
 		taskCheck.addActionListener(this);
 		categoryPane.add(taskCheck);
 
 		// Create transport events checkbox.
-		transportCheck = new JCheckBox(HistoricalEventType.TRANSPORT.getName());
+		transportCheck = new JCheckBox(HistoricalEventCategory.TRANSPORT.getName());
 		transportCheck.setSelected(model.getDisplayTransport());
 		transportCheck.addActionListener(this);
 		categoryPane.add(transportCheck);

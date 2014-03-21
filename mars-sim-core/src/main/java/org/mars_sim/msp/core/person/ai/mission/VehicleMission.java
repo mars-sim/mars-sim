@@ -23,6 +23,7 @@ import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.UnitListener;
 import org.mars_sim.msp.core.events.HistoricalEvent;
 import org.mars_sim.msp.core.malfunction.Malfunction;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
@@ -677,7 +678,7 @@ implements UnitListener {
                     // Creating emergency destination mission event.
                     HistoricalEvent newEvent = new MissionHistoricalEvent(
                             person, this,
-                            MissionHistoricalEvent.EMERGENCY_DESTINATION);
+                            EventType.MISSION_EMERGENCY_DESTINATION);
                     Simulation.instance().getEventManager().registerNewEvent(
                             newEvent);
 
@@ -703,8 +704,7 @@ implements UnitListener {
     public void setEmergencyBeacon(Person person, Vehicle vehicle,
             boolean beaconOn) {
         // Creating mission emergency beacon event.
-        HistoricalEvent newEvent = new MissionHistoricalEvent(person, this,
-                MissionHistoricalEvent.EMERGENCY_BEACON);
+        HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
         if (beaconOn)
             logger.info("Emergency beacon activated on " + vehicle.getName());

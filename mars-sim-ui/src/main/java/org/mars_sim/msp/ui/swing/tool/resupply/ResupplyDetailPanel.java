@@ -31,10 +31,10 @@ import javax.swing.table.DefaultTableModel;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
+import org.mars_sim.msp.core.events.HistoricalEventCategory;
 import org.mars_sim.msp.core.events.HistoricalEventListener;
-import org.mars_sim.msp.core.events.HistoricalEventType;
-import org.mars_sim.msp.core.interplanetary.transport.TransportEvent;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
+import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.time.ClockListener;
@@ -575,8 +575,8 @@ implements ClockListener, HistoricalEventListener {
 
     @Override
     public void eventAdded(int index, HistoricalEvent event) {
-        if (HistoricalEventType.TRANSPORT == event.getCategory() && 
-                TransportEvent.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
+        if (HistoricalEventCategory.TRANSPORT == event.getCategory() && 
+        		EventType.TRANSPORT_ITEM_MODIFIED.equals(event.getType())) {
             if ((resupply != null) && event.getSource().equals(resupply)) {
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
