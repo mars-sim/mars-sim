@@ -47,4 +47,9 @@ public enum EventType {
 	public final String getName() {
 		return this.name;
 	}
+
+	@Override
+	public final String toString() {
+		return getName();
+	}
 }

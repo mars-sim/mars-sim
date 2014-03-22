@@ -39,11 +39,15 @@ import org.mars_sim.msp.ui.swing.MarsPanelBorder;
 import org.mars_sim.msp.ui.swing.tool.mission.MissionWindow;
 import org.mars_sim.msp.ui.swing.tool.monitor.PersonTableModel;
 import org.mars_sim.msp.ui.swing.unit_window.TabPanel;
+import org.mars_sim.msp.ui.swing.unit_window.vehicle.TabPanelMission;
 
 /**
- * Tab panel displaying a list of settlement missions.
+ * Tab panel displaying a list of settlement missions.<br>
+ * Renamed to plural form to be distinguishable from
+ * {@link TabPanelMission}, which displays a vehicle's
+ * single mission's details.
  */
-public class TabPanelMission
+public class TabPanelMissions
 extends TabPanel {
 
 	/** default serial id. */
@@ -63,12 +67,12 @@ extends TabPanel {
 	 * @param settlement {@link Settlement} the settlement this tab panel is for.
 	 * @param desktop {@link MainDesktopPane} the main desktop panel.
 	 */
-	public TabPanelMission(Settlement settlement, MainDesktopPane desktop) {
+	public TabPanelMissions(Settlement settlement, MainDesktopPane desktop) {
 		// Use the TabPanel constructor
 		super(
-			Msg.getString("TabPanelMission.title"), //$NON-NLS-1$
+			Msg.getString("TabPanelMissions.title"), //$NON-NLS-1$
 			null,
-			Msg.getString("TabPanelMission.tooltip"), //$NON-NLS-1$
+			Msg.getString("TabPanelMissions.tooltip"), //$NON-NLS-1$
 			settlement, desktop
 		);
 
@@ -80,7 +84,7 @@ extends TabPanel {
 		topContentPanel.add(labelPanel);
 
 		// Create settlement missions label.
-		JLabel settlementMissionsLabel = new JLabel(Msg.getString("TabPanelMission.label"), JLabel.CENTER); //$NON-NLS-1$
+		JLabel settlementMissionsLabel = new JLabel(Msg.getString("TabPanelMissions.label"), JLabel.CENTER); //$NON-NLS-1$
 		labelPanel.add(settlementMissionsLabel);
 
 		// Create center panel.
@@ -128,7 +132,7 @@ extends TabPanel {
 		// Create mission button.
 		missionButton = new JButton(ImageLoader.getIcon(Msg.getString("img.mission"))); //$NON-NLS-1$
 		missionButton.setMargin(new Insets(1, 1, 1, 1));
-		missionButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.mission")); //$NON-NLS-1$
+		missionButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.mission")); //$NON-NLS-1$
 		missionButton.setEnabled(false);
 		missionButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -140,7 +144,7 @@ extends TabPanel {
 		// Create monitor button.
 		monitorButton = new JButton(ImageLoader.getIcon(Msg.getString("img.monitor"))); //$NON-NLS-1$
 		monitorButton.setMargin(new Insets(1, 1, 1, 1));
-		monitorButton.setToolTipText(Msg.getString("TabPanelMission.tooltip.monitor")); //$NON-NLS-1$
+		monitorButton.setToolTipText(Msg.getString("TabPanelMissions.tooltip.monitor")); //$NON-NLS-1$
 		monitorButton.setEnabled(false);
 		monitorButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
@@ -155,8 +159,8 @@ extends TabPanel {
 		topContentPanel.add(bottomPanel, BorderLayout.SOUTH);
 
 		// Create override check box.
-		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelMission.checkbox.overrideMissionCreation")); //$NON-NLS-1$
-		overrideCheckbox.setToolTipText(Msg.getString("TabPanelMission.tooltip.overrideMissionCreation")); //$NON-NLS-1$
+		overrideCheckbox = new JCheckBox(Msg.getString("TabPanelMissions.checkbox.overrideMissionCreation")); //$NON-NLS-1$
+		overrideCheckbox.setToolTipText(Msg.getString("TabPanelMissions.tooltip.overrideMissionCreation")); //$NON-NLS-1$
 		overrideCheckbox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				setMissionCreationOverride(overrideCheckbox.isSelected());

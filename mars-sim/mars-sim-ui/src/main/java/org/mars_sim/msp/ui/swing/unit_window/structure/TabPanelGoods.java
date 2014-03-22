@@ -64,7 +64,7 @@ extends TabPanel {
 		goodsScrollPane.setPreferredSize(new Dimension(220, 280));
 		// increase vertical mousewheel scrolling speed for this one
 		goodsScrollPane.getVerticalScrollBar().setUnitIncrement(16);
-		centerContentPanel.add(goodsScrollPane);         
+		centerContentPanel.add(goodsScrollPane);
 
 		// Prepare outer table panel.
 		JPanel outerTablePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
@@ -90,6 +90,7 @@ extends TabPanel {
 	/**
 	 * Updates the info on this panel.
 	 */
+	@Override
 	public void update() {
 		goodsTableModel.update();
 	} 
@@ -97,7 +98,8 @@ extends TabPanel {
 	/** 
 	 * Internal class used as model for the power table.
 	 */
-	private static class GoodsTableModel extends AbstractTableModel {
+	private static class GoodsTableModel
+	extends AbstractTableModel {
 
 		/** default serial id. */
 		private static final long serialVersionUID = 1L;
@@ -110,14 +112,17 @@ extends TabPanel {
 			goods = GoodsUtil.getGoodsList();
 		}
 
+		@Override
 		public int getRowCount() {
 			return goods.size();
 		}
 
+		@Override
 		public int getColumnCount() {
 			return 2;
 		}
 
+		@Override
 		public Class<?> getColumnClass(int columnIndex) {
 			Class<?> dataType = super.getColumnClass(columnIndex);
 			if (columnIndex == 0) dataType = String.class;
@@ -125,12 +130,14 @@ extends TabPanel {
 			return dataType;
 		}
 
+		@Override
 		public String getColumnName(int columnIndex) {
 			if (columnIndex == 0) return Msg.getString("TabPanelGoods.column.good"); //$NON-NLS-1$
 			else if (columnIndex == 1) return Msg.getString("TabPanelGoods.column.valuePoints"); //$NON-NLS-1$
 			else return null;
 		}
 
+		@Override
 		public Object getValueAt(int row, int column) {
 			if (row < getRowCount()) {
 				Good good = (Good) goods.get(row);
