@@ -39,18 +39,18 @@ public class VehicleWindow extends UnitWindow {
         super(desktop, vehicle, true);
         
         // Add tab panels
-        addTabPanel(new TabPanelNavigation(vehicle, desktop));
+        addTabPanel(new NavigationTabPanel(vehicle, desktop));
         if (vehicle instanceof Crewable) addTabPanel(new TabPanelCrew(vehicle, desktop));
         addTopPanel(new LocationTabPanel(vehicle, desktop));
         addTabPanel(new InventoryTabPanel(vehicle, desktop));
         addTabPanel(new MaintenanceTabPanel(vehicle, desktop));
         if (vehicle instanceof Rover) {
         	Rover rover = (Rover) vehicle;
-        	if (rover.hasLab()) addTabPanel(new TabPanelLaboratory(rover, desktop));
+        	if (rover.hasLab()) addTabPanel(new LaboratoryTabPanel(rover, desktop));
         	// TODO: Add sickbay tab panel.
         }
         addTabPanel(new TabPanelMission(vehicle, desktop));
-        addTabPanel(new TabPanelTow(vehicle, desktop));
+        addTabPanel(new TowTabPanel(vehicle, desktop));
         
         salvaged = vehicle.isSalvaged();
         if (salvaged) addTabPanel(new SalvageTabPanel(vehicle, desktop));
