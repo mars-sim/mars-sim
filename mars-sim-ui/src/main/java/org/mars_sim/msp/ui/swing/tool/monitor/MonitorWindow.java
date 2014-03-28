@@ -220,7 +220,7 @@ implements TableModelListener, ActionListener {
 
 	/**
 	 * This method creates a new chart window based on the model of the
-	 * currently selected window. The chart is added as a seperate tab to the
+	 * currently selected window. The chart is added as a separate tab to the
 	 * window.
 	 */
 	private void createBarChart() {
