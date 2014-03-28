@@ -17,7 +17,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.ui.swing.MainDesktopPane;
 
 /**
- * This class represents an absraction of a view displayed in the Monitor Window.
+ * This class represents an abstraction of a view displayed in the Monitor Window.
  * The view is displayed inside a tab panel within the window and depends on
  * a UnitTableModel
  */
