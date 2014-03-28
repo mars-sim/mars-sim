@@ -3,7 +3,7 @@ package org.mars_sim.msp.ui.swing.tool.monitor;
 import javax.swing.table.TableModel;
 
 /**
- * This defines a table modle for use in the Monitor tool.
+ * This defines a table model for use in the Monitor tool.
  * The subclasses on this model could provide data on any Entity within the
  * Simulation. This interface defines simple extra method that provide a richer
  * interface for the Monitor window to be based upon.
