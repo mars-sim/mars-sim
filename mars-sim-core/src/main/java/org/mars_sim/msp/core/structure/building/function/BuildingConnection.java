@@ -50,7 +50,7 @@ implements Serializable {
 	            // If building is not EVA and does not have a walkable airlock path, add more demand.
 	            if ((settlement.getAirlockNum() > 0) && !building.hasFunction(BuildingFunction.EVA)){
 	                
-	                if (settlement.getClosestWalkableAvailableAirlock(building, 0D, 0D) == null) {
+	                if (!settlement.hasWalkableAvailableAirlock(building)) {
 	                    
 	                    demand += 100D;
 	                }
