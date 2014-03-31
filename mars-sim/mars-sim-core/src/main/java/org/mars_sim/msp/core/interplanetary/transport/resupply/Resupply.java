@@ -1,11 +1,13 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-03-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
 
+import java.awt.geom.Line2D;
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -17,6 +19,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -38,6 +41,7 @@ import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.time.MarsClock;
@@ -56,6 +60,14 @@ implements Serializable, Transportable {
 
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Resupply.class.getName());
+	
+	// Default distance between buildings for resupply placement.
+    private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
+    private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
+    
+    // Default width and length for variable size buildings if not otherwise determined.
+    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
 	
 	// Data members
 	private Settlement settlement;
@@ -366,7 +378,7 @@ implements Serializable, Transportable {
             PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
             PersonGender gender = PersonGender.FEMALE;
             if (RandomUtil.getRandomDouble(1.0D) <= personConfig.getGenderRatio()) gender = PersonGender.MALE;
-            String birthplace = "Earth"; //TODO: randomize from list of countries/federations
+            String birthplace = "Earth"; //TODO: randomize from list of countries/federations.
             String immigrantName = unitManager.getNewName(UnitType.PERSON, null, gender);
             Person immigrant = new Person(immigrantName, gender, birthplace, settlement); //TODO: read from file
             unitManager.addUnit(immigrant);
@@ -385,17 +397,25 @@ implements Serializable, Transportable {
         
         BuildingTemplate newPosition = null;
         
-        boolean hasLifeSupport = SimulationConfig.instance().getBuildingConfiguration().
-                hasLifeSupport(buildingType);
-        if (hasLifeSupport) {
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        boolean isBuildingConnector = buildingConfig.hasBuildingConnection(buildingType);
+        boolean hasLifeSupport = buildingConfig.hasLifeSupport(buildingType);
+        
+        if (isBuildingConnector) {
+            // Try to find best location to connect two buildings.
+            newPosition = positionNewBuildingConnectorBuilding(buildingType);
+        }
+        else if (hasLifeSupport) {
             // Try to put building next to another inhabitable building.
             List<Building> inhabitableBuildings = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
             Collections.shuffle(inhabitableBuildings);
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
                 Building building = i.next();
-                newPosition = positionNextToBuilding(buildingType, building, 0D);
-                if (newPosition != null) break;
+                newPosition = positionNextToBuilding(buildingType, building, DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
+                if (newPosition != null) {
+                    break;
+                }
             }
         }
         else {
@@ -405,8 +425,10 @@ implements Serializable, Transportable {
             Iterator<Building> j = sameBuildings.iterator();
             while (j.hasNext()) {
                 Building building = j.next();
-                newPosition = positionNextToBuilding(buildingType, building, 0D);
-                if (newPosition != null) break;
+                newPosition = positionNextToBuilding(buildingType, building, DEFAULT_NONINHABITABLE_BUILDING_DISTANCE, false);
+                if (newPosition != null) {
+                    break;
+                }
             }
         }
         
@@ -422,24 +444,27 @@ implements Serializable, Transportable {
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {
                         Building building = i.next();
-                        newPosition = positionNextToBuilding(buildingType, building, (double) x);
-                        if (newPosition != null) break;
+                        newPosition = positionNextToBuilding(buildingType, building, (double) x, false);
+                        if (newPosition != null) {
+                            break;
+                        }
                     }
                 }
             }
             else {
-                // TODO: Replace width and length defaults to deal with variable width and length buildings.
+                // Replace width and length defaults to deal with variable width and length buildings.
                 double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(buildingType);
                 if (width <= 0D) {
-                    width = 10D;
+                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
                 }
                 double length = SimulationConfig.instance().getBuildingConfiguration().getLength(buildingType);
                 if (length <= 0D) {
-                    length = 10D;
+                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
                 }
                 
                 // If no buildings at settlement, position new building at 0,0 with random facing.
-                newPosition = new BuildingTemplate(0, buildingType, width, length, 0D, 0D, 
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                newPosition = new BuildingTemplate(buildingID, buildingType, width, length, 0D, 0D, 
                         RandomUtil.getRandomDouble(360D));
             }
         }
@@ -448,24 +473,128 @@ implements Serializable, Transportable {
     }
     
     /**
+     * Determine the position and length (for variable length) of a new building connector building.
+     * @param newBuildingType the new building type.
+     * @return new building template with position/length, or null if none found.
+     */
+    private BuildingTemplate positionNewBuildingConnectorBuilding(String newBuildingType) {
+        
+        BuildingTemplate newTemplate = null;
+       
+        BuildingManager manager = settlement.getBuildingManager();
+        List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
+        Collections.shuffle(inhabitableBuildings);
+        
+        // Try to find a connection between an inhabitable building without access to airlock and
+        // another inhabitable building with access to an airlock.
+        if (settlement.getAirlockNum() > 0) {
+            Iterator<Building> i = inhabitableBuildings.iterator();
+            while (i.hasNext()) {
+                Building startingBuilding = i.next();
+                if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
+
+                    // Find a different inhabitable building that has walkable access to an airlock.
+                    double leastDistance = Double.MAX_VALUE;
+                    Building endingBuilding = null;
+                    Iterator<Building> k = inhabitableBuildings.iterator();
+                    while (k.hasNext()) {
+                        Building building = k.next();
+                        if (!building.equals(startingBuilding)) {
+                            if (settlement.hasWalkableAvailableAirlock(building)) {
+                                double distance = Point2D.distance(startingBuilding.getXLocation(), 
+                                        startingBuilding.getYLocation(), building.getXLocation(), 
+                                        building.getYLocation());
+                                if ((distance < leastDistance) && (distance >= 1D)) {
+                                    endingBuilding = building;
+                                    leastDistance = distance;
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (endingBuilding != null) {
+                        
+                        // Determine new location/length between the two buildings.
+                        newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
+                                endingBuilding);
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // Try to find valid connection location between two inhabitable buildings that are not directly connected.
+        if (newTemplate == null) {
+            Iterator<Building> j = inhabitableBuildings.iterator();
+            while (j.hasNext()) {
+                Building startingBuilding = j.next();
+                
+                // Find a different inhabitable building.
+                double leastDistance = Double.MAX_VALUE;
+                Building endingBuilding = null;
+                Iterator<Building> k = inhabitableBuildings.iterator();
+                while (k.hasNext()) {
+                    Building building = k.next();
+                    boolean directlyConnected = (settlement.getBuildingConnectorManager().getBuildingConnections(
+                            startingBuilding, building).size() > 0);
+                    if (!building.equals(startingBuilding) && !directlyConnected) {
+                        double distance = Point2D.distance(startingBuilding.getXLocation(), 
+                                startingBuilding.getYLocation(), building.getXLocation(), 
+                                building.getYLocation());
+                        if ((distance < leastDistance) && (distance >= 1D)) {
+                            endingBuilding = building;
+                            leastDistance = distance;
+                        }
+                    }
+                }
+                
+                if (endingBuilding != null) {
+                    
+                    // Determine new location/length between the two buildings.
+                    newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
+                            endingBuilding);
+                    break;
+                }
+            }
+        }
+        
+        // Try to find connection to existing inhabitable building.
+        if (newTemplate == null) {
+            Iterator<Building> l = inhabitableBuildings.iterator();
+            while (l.hasNext()) {
+                Building building = l.next();
+                // Make connector building face away from building.
+                newTemplate = positionNextToBuilding(newBuildingType, building, 0D, true);
+
+                if (newTemplate != null) {
+                    break;
+                }
+            }
+        }
+        
+        return newTemplate;
+    }
+    
+    /**
      * Positions a new building near an existing building.
      * @param newBuildingType the new building type.
      * @param building the existing building.
      * @param separationDistance the separation distance (meters) from the building.
+     * @param faceAway true if new building should face away from other building.
      * @return new building template with determined position, or null if none found.
      */
     private BuildingTemplate positionNextToBuilding(String newBuildingType, Building building, 
-            double separationDistance) {
+            double separationDistance, boolean faceAway) {
         BuildingTemplate newPosition = null;
         
-        // TODO: Replace width and length defaults to deal with variable width and length buildings.
+        // Replace width and length defaults to deal with variable width and length buildings.
         double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
         if (width <= 0D) {
-            width = 10D;
+            width = DEFAULT_VARIABLE_BUILDING_WIDTH;
         }
         double length = SimulationConfig.instance().getBuildingConfiguration().getLength(newBuildingType);
         if (length <= 0D) {
-            length = 10D;
+            length = DEFAULT_VARIABLE_BUILDING_LENGTH;
         }
         
         final int front = 0;
@@ -499,7 +628,7 @@ implements Serializable, Transportable {
             }
             
             double distance = structureDistance + separationDistance;
-            double radianDirection = Math.PI * direction / 180D;
+            double radianDirection = Math.toRadians(direction);
             double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
             double rectRotation = building.getFacing();
@@ -509,12 +638,148 @@ implements Serializable, Transportable {
             if (settlement.getBuildingManager().checkIfNewBuildingLocationOpen(rectCenterX, 
                     rectCenterY, width, length, rectRotation)) {
                 // Set the new building here.
-                newPosition = new BuildingTemplate(0, newBuildingType, width, length, rectCenterX, 
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                newPosition = new BuildingTemplate(buildingID, newBuildingType, width, length, rectCenterX, 
                         rectCenterY, building.getFacing());
                 break;
             }
         }
         
         return newPosition;
+    }
+    
+    /**
+     * Determine the position and length (for variable length) for a connector building between two existing
+     * buildings.
+     * @param newBuildingType the new connector building type.
+     * @param firstBuilding the first of the two existing buildings.
+     * @param secondBuilding the second of the two existing buildings.
+     * @return new building template with determined position, or null if none found.
+     */
+    private BuildingTemplate positionConnectorBetweenTwoBuildings(String newBuildingType, Building firstBuilding, 
+            Building secondBuilding) {
+        
+        BuildingTemplate newPosition = null;
+        
+        // Determine valid placement lines for connector building.
+        List<Line2D> validLines = new ArrayList<Line2D>();
+        
+        // Check each building side for the two buildings for a valid line unblocked by obstacles.
+        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(newBuildingType);
+        List<Point2D> firstBuildingPositions = getFourPositionsSurroundingBuilding(firstBuilding, .1D);
+        List<Point2D> secondBuildingPositions = getFourPositionsSurroundingBuilding(secondBuilding, .1D);
+        for (int x = 0; x < firstBuildingPositions.size(); x++) {
+            for (int y = 0; y < secondBuildingPositions.size(); y++) {
+                
+                Point2D firstBuildingPos = firstBuildingPositions.get(x);
+                Point2D secondBuildingPos = secondBuildingPositions.get(y);
+                
+                double distance = Point2D.distance(firstBuildingPos.getX(), firstBuildingPos.getY(), 
+                        secondBuildingPos.getX(), secondBuildingPos.getY());
+                
+                if (distance > 1D) {
+                    // Check line rect between positions for obstacle collision.
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(firstBuildingPos.getX(), firstBuildingPos.getY(), 
+                            secondBuildingPos.getX(), secondBuildingPos.getY(), settlement.getCoordinates());
+                    if (clearPath) {
+                        validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
+                    }
+                }
+            }
+        }
+        
+        if (validLines.size() > 0) {
+            
+            // Find shortest valid line.
+            double shortestLineLength = Double.MAX_VALUE;
+            Line2D shortestLine = null;
+            Iterator<Line2D> i = validLines.iterator();
+            while (i.hasNext()) {
+                Line2D line = i.next();
+                double length = Point2D.distance(line.getX1(), line.getY1(), line.getX2(), line.getY2());
+                if (length < shortestLineLength) {
+                    shortestLine = line;
+                    shortestLineLength = length;
+                }
+            }
+            
+            // Create building template with position, facing, width and length for the connector building.
+            double shortestLineFacingDegrees = LocalAreaUtil.getDirection(shortestLine.getP1(), shortestLine.getP2());
+            Point2D p1 = adjustConnectorEndPoint(shortestLine.getP1(), shortestLineFacingDegrees, firstBuilding, width);
+            Point2D p2 = adjustConnectorEndPoint(shortestLine.getP2(), shortestLineFacingDegrees, secondBuilding, width);
+            double centerX = (p1.getX() + p2.getX()) / 2D;
+            double centerY = (p1.getY() + p2.getY()) / 2D;
+            double newLength = p1.distance(p2);
+            double facingDegrees = LocalAreaUtil.getDirection(p1, p2);
+            int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+            newPosition = new BuildingTemplate(buildingID, newBuildingType, width, newLength, centerX, 
+                    centerY, facingDegrees);
+        }
+        
+        return newPosition;
+    }
+    
+    /**
+     * Adjust the connector end point based on relative angle of the connection.
+     * @param point the initial connector location.
+     * @param lineFacing the facing of the connector line (degrees).
+     * @param building the existing building being connected to.
+     * @param connectorWidth the width of the new connector.
+     * @return point adjusted location for connector end point.
+     */
+    private Point2D adjustConnectorEndPoint(Point2D point, double lineFacing, Building building, double connectorWidth) {
+        
+        double lineFacingRad = Math.toRadians(lineFacing);
+        double angleFromBuildingCenterDegrees = LocalAreaUtil.getDirection(new Point2D.Double(building.getXLocation(), 
+                building.getYLocation()), point);
+        double angleFromBuildingCenterRad = Math.toRadians(angleFromBuildingCenterDegrees);
+        double offsetAngle = angleFromBuildingCenterRad - lineFacingRad;
+        double offsetDistance = Math.abs(Math.sin(offsetAngle)) * (connectorWidth / 2D);
+        
+        double newXLoc = (-1D * Math.sin(angleFromBuildingCenterRad) * offsetDistance) + point.getX();
+        double newYLoc = (Math.cos(angleFromBuildingCenterRad) * offsetDistance) + point.getY();
+        
+        return new Point2D.Double(newXLoc, newYLoc);
+    }
+    
+    /**
+     * Gets four positions surrounding a building with a given distance from its edge.
+     * @param building the building.
+     * @param distanceFromSide distance (distance) for positions from the edge of the building.
+     * @return list of four positions.
+     */
+    private List<Point2D> getFourPositionsSurroundingBuilding(Building building, double distanceFromSide) {
+        
+        List<Point2D> result = new ArrayList<Point2D>(4);
+        
+        final int front = 0;
+        final int back = 1;
+        final int right = 2;
+        final int left = 3;
+        
+        for (int x = 0; x < 4; x++) {
+            double xPos = 0D;
+            double yPos = 0D;
+            
+            switch(x) {
+                case front: xPos = 0D;
+                             yPos = (building.getLength() / 2D) + distanceFromSide;
+                             break;
+                case back:  xPos = 0D;
+                             yPos = 0D - (building.getLength() / 2D) - distanceFromSide;
+                             break;
+                case right: xPos = 0D - (building.getWidth() / 2D) - distanceFromSide;
+                             yPos = 0D;
+                             break;
+                case left:  xPos = (building.getWidth() / 2D) + distanceFromSide;
+                             yPos = 0D;
+                             break;
+            }
+            
+            Point2D position = LocalAreaUtil.getLocalRelativeLocation(xPos, yPos, building);
+            result.add(position);
+        }
+        
+        return result;
     }
 }

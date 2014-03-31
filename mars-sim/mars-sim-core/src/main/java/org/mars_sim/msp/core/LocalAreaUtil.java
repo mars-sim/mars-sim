@@ -342,7 +342,7 @@ public class LocalAreaUtil {
      * @param point2 the second point.
      * @return direction in degrees clockwise from North.
      */
-    private static double getDirection(Point2D point1, Point2D point2) {
+    public static double getDirection(Point2D point1, Point2D point2) {
         
         double radDir = Math.atan2(point1.getX() - point2.getX(), point2.getY() - point1.getY());
         

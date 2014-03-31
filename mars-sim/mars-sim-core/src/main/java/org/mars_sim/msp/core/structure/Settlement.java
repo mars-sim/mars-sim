@@ -510,6 +510,15 @@ implements LifeSupport {
 
 		return result;
 	}
+	
+	/**
+	 * Checks if a building has a walkable path from it to an airlock.
+	 * @param building the building.
+	 * @return true if an airlock is walkable from the building.
+	 */
+	public boolean hasWalkableAvailableAirlock(Building building) {
+	    return (getClosestWalkableAvailableAirlock(building, 0D, 0D) != null);
+	}
 
 	/**
 	 * Gets the number of airlocks at the settlement.
