@@ -1,40 +1,42 @@
 package org.mars_sim.msp.core.person;
 
+import org.mars_sim.msp.core.Msg;
+
 /**
  * @author stpa
  * 2014-03-21
  */
 public enum EventType {
 
-	MALFUNCTION_FIXED	("Malfunction fixed"),
-	MALFUNCTION_UNFIXED	("Malfunction occurred"),
+	MALFUNCTION_FIXED	(Msg.getString("EventType.malfunction.fixed")), //$NON-NLS-1$
+	MALFUNCTION_UNFIXED	(Msg.getString("EventType.malfunction.occured")), //$NON-NLS-1$
 
-	MEDICAL_CURED		("Illness Cured"),
-	MEDICAL_STARTS		("Illness Starts"),
-	MEDICAL_DEGRADES	("Illness Degrades"),
-	MEDICAL_RECOVERY	("Illness Recovering"),
-	MEDICAL_TREATED		("Illness Treated"),
-	MEDICAL_DEATH		("Person Dies"),
+	MEDICAL_CURED		(Msg.getString("EventType.illness.cured")), //$NON-NLS-1$
+	MEDICAL_STARTS		(Msg.getString("EventType.illness.starts")), //$NON-NLS-1$
+	MEDICAL_DEGRADES	(Msg.getString("EventType.illness.degrades")), //$NON-NLS-1$
+	MEDICAL_RECOVERY	(Msg.getString("EventType.illness.recovering")), //$NON-NLS-1$
+	MEDICAL_TREATED		(Msg.getString("EventType.illness.treated")), //$NON-NLS-1$
+	MEDICAL_DEATH		(Msg.getString("EventType.illness.dead")), //$NON-NLS-1$
 
-	MISSION_START					("Mission Started"),
-	MISSION_JOINING					("Mission Joined"),
-	MISSION_FINISH					("Mission Finished"),
-	MISSION_DEVELOPMENT				("Mission Development"),
-	MISSION_EMERGENCY_DESTINATION	("Changing To Emergency Destination"),
-	MISSION_EMERGENCY_BEACON		("Emergency Beacon Turned On"),
-	MISSION_RENDEZVOUS				("Rescue/Salvage Mission Rendezvous with Target Vehicle"),
-	MISSION_SALVAGE_VEHICLE			("Salvage Vehicle"),
-	MISSION_RESCUE_PERSON			("Rescue Person"),
+	MISSION_START					(Msg.getString("EventType.mission.started")), //$NON-NLS-1$
+	MISSION_JOINING					(Msg.getString("EventType.mission.joined")), //$NON-NLS-1$
+	MISSION_FINISH					(Msg.getString("EventType.mission.finished")), //$NON-NLS-1$
+	MISSION_DEVELOPMENT				(Msg.getString("EventType.mission.development")), //$NON-NLS-1$
+	MISSION_EMERGENCY_DESTINATION	(Msg.getString("EventType.mission.emergencyDestination")), //$NON-NLS-1$
+	MISSION_EMERGENCY_BEACON		(Msg.getString("EventType.mission.emergencyBeacon")), //$NON-NLS-1$
+	MISSION_RENDEZVOUS				(Msg.getString("EventType.mission.rendezvous")), //$NON-NLS-1$
+	MISSION_SALVAGE_VEHICLE			(Msg.getString("EventType.mission.salvageVehicle")), //$NON-NLS-1$
+	MISSION_RESCUE_PERSON			(Msg.getString("EventType.mission.rescuePerson")), //$NON-NLS-1$
 
-	TASK_START			("Task Starting"),
-	TASK_FINISH			("Task Finished"),
-	TASK_DEVELOPMENT	("Task Development"),
+	TASK_START			(Msg.getString("EventType.task.starting")), //$NON-NLS-1$
+	TASK_FINISH			(Msg.getString("EventType.task.finished")), //$NON-NLS-1$
+	TASK_DEVELOPMENT	(Msg.getString("EventType.task.development")), //$NON-NLS-1$
 
-	TRANSPORT_ITEM_CREATED		("Transport Item Created"),
-	TRANSPORT_ITEM_CANCELLED	("Transport Item Canceled"),
-	TRANSPORT_ITEM_LAUNCHED		("Transport Item Launched"),
-	TRANSPORT_ITEM_ARRIVED		("Transport Item Arrived"),
-	TRANSPORT_ITEM_MODIFIED		("Transport Item Modified"),
+	TRANSPORT_ITEM_CREATED		(Msg.getString("EventType.transportItem.created")), //$NON-NLS-1$
+	TRANSPORT_ITEM_CANCELLED	(Msg.getString("EventType.transportItem.canceled")), //$NON-NLS-1$
+	TRANSPORT_ITEM_LAUNCHED		(Msg.getString("EventType.transportItem.launched")), //$NON-NLS-1$
+	TRANSPORT_ITEM_ARRIVED		(Msg.getString("EventType.transportItem.arrived")), //$NON-NLS-1$
+	TRANSPORT_ITEM_MODIFIED		(Msg.getString("EventType.transportItem.modified")), //$NON-NLS-1$
 	;
 
 	private String name;
