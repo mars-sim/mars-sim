@@ -50,7 +50,7 @@ public class VehicleWindow extends UnitWindow {
         	// TODO: Add sickbay tab panel.
         }
         addTabPanel(new TabPanelMission(vehicle, desktop));
-        addTabPanel(new TowTabPanel(vehicle, desktop));
+        addTabPanel(new TabPanelTow(vehicle, desktop));
         
         salvaged = vehicle.isSalvaged();
         if (salvaged) addTabPanel(new SalvageTabPanel(vehicle, desktop));

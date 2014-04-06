@@ -9,8 +9,9 @@ package org.mars_sim.msp.core;
 import java.util.Iterator;
 import java.util.Map;
 
-/** The RandomUtil class is a library of various random-related
- *  methods
+/**
+ * The RandomUtil class is a library of various random-related
+ * methods.
  */
 public final class RandomUtil {
 
