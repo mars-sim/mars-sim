@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.06 2014-03-05
+ * @version 3.06 2014-04-11
  * @author Scott Davis
  */
 
@@ -105,7 +105,7 @@ implements Serializable {
 			Iterator<BuildingTemplate> i = buildingTemplates.iterator();
 			while (i.hasNext()) {
 				BuildingTemplate template = i.next();
-				addBuilding(template);
+				addBuilding(template, false);
 			}
 		}
 
@@ -125,12 +125,18 @@ implements Serializable {
 
 	/**
 	 * Adds a new building to the settlement.
-	 *
 	 * @param newBuilding the building to add.
+	 * @param createBuildingConnections true if automatically create building connections.
 	 */
-	public void addBuilding(Building newBuilding) {
+	public void addBuilding(Building newBuilding, boolean createBuildingConnections) {
 		if (!buildings.contains(newBuilding)) {
 			buildings.add(newBuilding);
+			
+			// Create new building connections if needed.
+			if (createBuildingConnections) {
+			    settlement.getBuildingConnectorManager().createBuildingConnections(newBuilding);
+			}
+			
 			settlement.fireUnitUpdate(UnitEventType.ADD_BUILDING_EVENT, newBuilding);
 		}
 	}
@@ -154,11 +160,11 @@ implements Serializable {
 	/**
 	 * Adds a building with a template to the settlement.
 	 * @param template the building template.
-	 * @throws Exception if error creating or adding building.
+	 * @param createBuildingConnections true if automatically create building connections.
 	 */
-	public void addBuilding(BuildingTemplate template) {
+	public void addBuilding(BuildingTemplate template, boolean createBuildingConnections) {
 		Building newBuilding = new Building(template, this);
-		addBuilding(newBuilding);
+		addBuilding(newBuilding, createBuildingConnections);
 	}
 
 	/**

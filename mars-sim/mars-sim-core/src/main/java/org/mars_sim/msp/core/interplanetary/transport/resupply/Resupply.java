@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.06 2014-03-30
+ * @version 3.06 2014-04-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -319,7 +319,7 @@ implements Serializable, Transportable {
                 
             // Determine location and facing for the new building.
             BuildingTemplate positionedTemplate = positionNewResupplyBuilding(type);
-            buildingManager.addBuilding(positionedTemplate);
+            buildingManager.addBuilding(positionedTemplate, true);
         }
         
         // Deliver vehicles.
@@ -611,6 +611,7 @@ implements Serializable, Transportable {
         
         double direction = 0D;
         double structureDistance = 0D;
+        double rectRotation = building.getFacing();
         
         for (int x = 0; x < directions.size(); x++) {
             switch (directions.get(x)) {
@@ -619,19 +620,33 @@ implements Serializable, Transportable {
                             break;
                 case back: direction = building.getFacing() + 180D;
                             structureDistance = (building.getLength() / 2D) + (length / 2D);
+                            if (faceAway) {
+                                rectRotation = building.getFacing() + 180D;
+                            }
                             break;
                 case right:  direction = building.getFacing() + 90D;
                             structureDistance = (building.getWidth() / 2D) + (width / 2D);
+                            if (faceAway) {
+                                structureDistance = (building.getWidth() / 2D) + (length / 2D);
+                                rectRotation = building.getFacing() + 90D;
+                            }
                             break;
                 case left:  direction = building.getFacing() + 270D;
                             structureDistance = (building.getWidth() / 2D) + (width / 2D);
+                            if (faceAway) {
+                                structureDistance = (building.getWidth() / 2D) + (length / 2D);
+                                rectRotation = building.getFacing() + 270D;
+                            }
+            }
+            
+            if (rectRotation > 360D) {
+                rectRotation -= 360D;
             }
             
             double distance = structureDistance + separationDistance;
             double radianDirection = Math.toRadians(direction);
             double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
-            double rectRotation = building.getFacing();
             
             // Check to see if proposed new building position intersects with any existing buildings 
             // or construction sites.
@@ -640,7 +655,7 @@ implements Serializable, Transportable {
                 // Set the new building here.
                 int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
                 newPosition = new BuildingTemplate(buildingID, newBuildingType, width, length, rectCenterX, 
-                        rectCenterY, building.getFacing());
+                        rectCenterY, rectRotation);
                 break;
             }
         }
@@ -679,8 +694,9 @@ implements Serializable, Transportable {
                 
                 if (distance > 1D) {
                     // Check line rect between positions for obstacle collision.
-                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(firstBuildingPos.getX(), firstBuildingPos.getY(), 
-                            secondBuildingPos.getX(), secondBuildingPos.getY(), settlement.getCoordinates());
+                    Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(), 
+                            secondBuildingPos.getX(), secondBuildingPos.getY());
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates());
                     if (clearPath) {
                         validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
                     }

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionSite.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-01
  * @author Scott Davis
  */
 
@@ -23,6 +23,9 @@ import java.util.List;
  * A building construction site.
  */
 public class ConstructionSite implements Serializable, LocalBoundedObject {
+    
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
     
     // Construction site events.
     public static final String START_UNDERGOING_CONSTRUCTION_EVENT = "start undergoing construction";
@@ -266,14 +269,14 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
                 width = stageWidth;
             }
             else if (width <= 0D) {
-                // TODO determine width of construction site.
+                // Use default width (may be modified later).
                 width = 10D;
             }
             if ((stageLength > 0D) && (stageLength != length)) {
                 length = stageLength;
             }
             else if (length <= 0D) {
-                // TODO determine length of construction site.
+                // Use default length (may be modified later).
                 length = 10D;
             }
         }
@@ -326,7 +329,7 @@ public class ConstructionSite implements Serializable, LocalBoundedObject {
         int id = manager.getUniqueBuildingIDNumber();
         Building newBuilding = new Building(id, buildingStage.getInfo().getName(), width, length, 
                 xLocation, yLocation, facing, manager);
-        manager.addBuilding(newBuilding);
+        manager.addBuilding(newBuilding, true);
         
         // Record completed building name.
         ConstructionManager constructionManager = manager.getSettlement().getConstructionManager();

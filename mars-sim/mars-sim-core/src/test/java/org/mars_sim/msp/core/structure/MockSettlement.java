@@ -22,7 +22,7 @@ public class MockSettlement extends Settlement {
 		
         // Initialize building manager
         buildingManager = new BuildingManager(this, null);
-        buildingManager.addBuilding(new MockBuilding(buildingManager));
+        buildingManager.addBuilding(new MockBuilding(buildingManager), false);
         
         // Initialize building connector manager.
         buildingConnectorManager = new BuildingConnectorManager(this, 
