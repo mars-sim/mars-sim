@@ -31,7 +31,7 @@ public class WalkInteriorTest extends TestCase {
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
-        settlement.getBuildingManager().addBuilding(building);
+        settlement.getBuildingManager().addBuilding(building, false);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
@@ -55,7 +55,7 @@ public class WalkInteriorTest extends TestCase {
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
-        settlement.getBuildingManager().addBuilding(building);
+        settlement.getBuildingManager().addBuilding(building, false);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
@@ -99,7 +99,7 @@ public class WalkInteriorTest extends TestCase {
         building0.setXLocation(0D);
         building0.setYLocation(0D);
         building0.setFacing(0D);
-        buildingManager.addBuilding(building0);
+        buildingManager.addBuilding(building0, false);
         
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
@@ -109,7 +109,7 @@ public class WalkInteriorTest extends TestCase {
         building1.setXLocation(-12D);
         building1.setYLocation(0D);
         building1.setFacing(270D);
-        buildingManager.addBuilding(building1);
+        buildingManager.addBuilding(building1, false);
         
         MockBuilding building2 = new MockBuilding(buildingManager);
         building2.setID(2);
@@ -119,7 +119,7 @@ public class WalkInteriorTest extends TestCase {
         building2.setXLocation(-6D);
         building2.setYLocation(0D);
         building2.setFacing(270D);
-        buildingManager.addBuilding(building2);
+        buildingManager.addBuilding(building2, false);
         
         connectorManager.addBuildingConnection(new BuildingConnector(building0, -4.5D, 0D, 90D, building2, -4.5D, 0D, 270D));
         connectorManager.addBuildingConnection(new BuildingConnector(building1, -7.5D, 0D, 270D, building2, -7.5D, 0D, 90D));

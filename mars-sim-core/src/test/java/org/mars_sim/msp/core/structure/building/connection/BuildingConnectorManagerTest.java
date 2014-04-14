@@ -46,7 +46,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         building0.setFacing(0D);
         BuildingTemplate buildingTemplate0 = new BuildingTemplate(0, "building 0", 9D, 9D, 0D, 0D, 0D);
         buildingTemplate0.addBuildingConnection(2, -4.5D, 0D);
-        buildingManager.addBuilding(building0);
+        buildingManager.addBuilding(building0, false);
         
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
@@ -58,7 +58,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         building1.setFacing(270D);
         BuildingTemplate buildingTemplate1 = new BuildingTemplate(1, "building 1", 6D, 9D, -12D, 0D, 270D);
         buildingTemplate1.addBuildingConnection(2, 0D, 4.5D);
-        buildingManager.addBuilding(building1);
+        buildingManager.addBuilding(building1, false);
         
         MockBuilding building2 = new MockBuilding(buildingManager);
         building2.setID(2);
@@ -71,7 +71,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingTemplate buildingTemplate2 = new BuildingTemplate(2, "building 2", 6D, 9D, -6D, 0D, 270D);
         buildingTemplate2.addBuildingConnection(0, 0D, 1.5D);
         buildingTemplate2.addBuildingConnection(1, 0D, -1.5D);
-        buildingManager.addBuilding(building2);
+        buildingManager.addBuilding(building2, false);
         
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>();
         buildingTemplates.add(buildingTemplate0);
@@ -147,7 +147,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         building0.setFacing(0D);
         BuildingTemplate buildingTemplate0 = new BuildingTemplate(0, "building 0", 9D, 9D, 0D, 0D, 0D);
         buildingTemplate0.addBuildingConnection(2, -4.5D, 0D);
-        buildingManager.addBuilding(building0);
+        buildingManager.addBuilding(building0, false);
         
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
@@ -159,7 +159,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         building1.setFacing(270D);
         BuildingTemplate buildingTemplate1 = new BuildingTemplate(1, "building 1", 6D, 9D, -12D, 0D, 270D);
         buildingTemplate1.addBuildingConnection(2, 0D, 4.5D);
-        buildingManager.addBuilding(building1);
+        buildingManager.addBuilding(building1, false);
         
         MockBuilding building2 = new MockBuilding(buildingManager);
         building2.setID(2);
@@ -172,7 +172,7 @@ public class BuildingConnectorManagerTest extends TestCase {
         BuildingTemplate buildingTemplate2 = new BuildingTemplate(2, "building 2", 6D, 9D, -6D, 0D, 270D);
         buildingTemplate2.addBuildingConnection(0, 0D, 1.5D);
         buildingTemplate2.addBuildingConnection(1, 0D, -1.5D);
-        buildingManager.addBuilding(building2);
+        buildingManager.addBuilding(building2, false);
         
         List<BuildingTemplate> buildingTemplates = new ArrayList<BuildingTemplate>();
         buildingTemplates.add(buildingTemplate0);

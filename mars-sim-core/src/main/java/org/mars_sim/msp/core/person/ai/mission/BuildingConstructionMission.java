@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.06 2014-03-30
+ * @version 3.06 2014-04-11
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -84,6 +84,10 @@ implements Serializable {
 	private static final double DEFAULT_INHABITABLE_BUILDING_DISTANCE = 5D;
 	private static final double DEFAULT_NONINHABITABLE_BUILDING_DISTANCE = 2D;
 	
+	// Default width and length for variable size buildings if not otherwise determined.
+    private static final double DEFAULT_VARIABLE_BUILDING_WIDTH = 10D;
+    private static final double DEFAULT_VARIABLE_BUILDING_LENGTH = 10D;
+	
 	// Data members
 	private Settlement settlement;
 	private ConstructionSite constructionSite;
@@ -143,8 +147,24 @@ implements Serializable {
                 // Determine construction site location and facing.
                 ConstructionStageInfo stageInfo = determineNewStageInfo(constructionSite, constructionSkill);
                 if (stageInfo != null) {
-                    constructionSite.setWidth(stageInfo.getWidth());
-                    constructionSite.setLength(stageInfo.getLength());
+                    
+                    // Set construction site size.
+                    if (stageInfo.getWidth() > 0D) {
+                        constructionSite.setWidth(stageInfo.getWidth());
+                    }
+                    else {
+                        // Set initial width value that may be modified later.
+                        constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
+                    }
+                    
+                    if (stageInfo.getLength() > 0D) {
+                        constructionSite.setLength(stageInfo.getLength());
+                    }
+                    else {
+                        // Set initial length value that may be modified later.
+                        constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+                    }
+                    
                     positionNewConstructionSite(constructionSite, stageInfo);
                        
                     logger.log(Level.INFO, "New construction site added at " + settlement.getName());
@@ -238,7 +258,7 @@ implements Serializable {
                 }
                 else {
                     // Set initial width value that may be modified later.
-                    constructionSite.setWidth(10D);
+                    constructionSite.setWidth(DEFAULT_VARIABLE_BUILDING_WIDTH);
                 }
                 
                 if (stageInfo.getLength() > 0D) {
@@ -246,7 +266,7 @@ implements Serializable {
                 }
                 else {
                     // Set initial length value that may be modified later.
-                    constructionSite.setLength(10D);
+                    constructionSite.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
                 }
                 
                 // Set new construction site location, length and facing.
@@ -861,7 +881,7 @@ implements Serializable {
                 Collections.shuffle(inhabitableBuildings);
                 Iterator<Building> i = inhabitableBuildings.iterator();
                 while (i.hasNext()) {
-                    goodPosition = positionNextToBuilding(site, i.next(), DEFAULT_INHABITABLE_BUILDING_DISTANCE);
+                    goodPosition = positionNextToBuilding(site, i.next(), DEFAULT_INHABITABLE_BUILDING_DISTANCE, false);
                     if (goodPosition) {
                         break;
                     }
@@ -873,7 +893,7 @@ implements Serializable {
                 Collections.shuffle(sameBuildings);
                 Iterator<Building> j = sameBuildings.iterator();
                 while (j.hasNext()) {
-                    goodPosition = positionNextToBuilding(site, j.next(), DEFAULT_NONINHABITABLE_BUILDING_DISTANCE);
+                    goodPosition = positionNextToBuilding(site, j.next(), DEFAULT_NONINHABITABLE_BUILDING_DISTANCE, false);
                     if (goodPosition) {
                         break;
                     }
@@ -892,8 +912,10 @@ implements Serializable {
                     Collections.shuffle(allBuildings);
                     Iterator<Building> i = allBuildings.iterator();
                     while (i.hasNext()) {
-                        goodPosition = positionNextToBuilding(site, i.next(), (double) x);
-                        if (goodPosition) break;
+                        goodPosition = positionNextToBuilding(site, i.next(), (double) x, false);
+                        if (goodPosition) {
+                            break;
+                        }
                     }
                 }
             }
@@ -996,11 +1018,18 @@ implements Serializable {
         
         // Try to find connection to existing inhabitable building.
         if (!result) {
+            
+            // If variable length, set construction site length to default.
+            BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+            if (buildingConfig.getLength(buildingType) == -1D) {
+                site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
+            }
+            
             Iterator<Building> l = inhabitableBuildings.iterator();
             while (l.hasNext()) {
                 Building building = l.next();
-                // Make connector building face away from building.
-                result = positionNextToBuilding(site, building, 0D);
+                // Make connector building face away from building.                
+                result = positionNextToBuilding(site, building, 0D, true);
 
                 if (result) {
                     break;
@@ -1043,8 +1072,9 @@ implements Serializable {
                 
                 if (distance > 1D) {
                     // Check line rect between positions for obstacle collision.
-                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(firstBuildingPos.getX(), firstBuildingPos.getY(), 
-                            secondBuildingPos.getX(), secondBuildingPos.getY(), settlement.getCoordinates());
+                    Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(), 
+                            secondBuildingPos.getX(), secondBuildingPos.getY());
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates());
                     if (clearPath) {
                         validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
                     }
@@ -1180,9 +1210,12 @@ implements Serializable {
      * @param site the new construction site.
      * @param building the existing building.
      * @param separationDistance the separation distance (meters) from the building.
+     * @param faceAway true if new building should face away from other building.
      * @return true if construction site could be positioned, false if not.
      */
-    private boolean positionNextToBuilding(ConstructionSite site, Building building, double separationDistance) {
+    private boolean positionNextToBuilding(ConstructionSite site, Building building, 
+            double separationDistance, boolean faceAway) {
+        
         boolean goodPosition = false;
         
         final int front = 0;
@@ -1199,6 +1232,7 @@ implements Serializable {
         
         double direction = 0D;
         double structureDistance = 0D;
+        double rectRotation = building.getFacing();
         
         for (int x = 0; x < directions.size(); x++) {
             switch (directions.get(x)) {
@@ -1207,19 +1241,33 @@ implements Serializable {
                             break;
                 case back: direction = building.getFacing() + 180D;
                             structureDistance = (building.getLength() / 2D) + (site.getLength() / 2D);
+                            if (faceAway) {
+                                rectRotation = building.getFacing() + 180D;
+                            }
                             break;
                 case right:  direction = building.getFacing() + 90D;
                             structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+                            if (faceAway) {
+                                structureDistance = (building.getWidth() / 2D) + (site.getLength() / 2D);
+                                rectRotation = building.getFacing() + 90D;
+                            }
                             break;
                 case left:  direction = building.getFacing() + 270D;
                             structureDistance = (building.getWidth() / 2D) + (site.getWidth() / 2D);
+                            if (faceAway) {
+                                structureDistance = (building.getWidth() / 2D) + (site.getLength() / 2D);
+                                rectRotation = building.getFacing() + 270D;
+                            }
+            }
+            
+            if (rectRotation > 360D) {
+                rectRotation -= 360D;
             }
             
             double distance = structureDistance + separationDistance;
             double radianDirection = Math.PI * direction / 180D;
             double rectCenterX = building.getXLocation() - (distance * Math.sin(radianDirection));
             double rectCenterY = building.getYLocation() + (distance * Math.cos(radianDirection));
-            double rectRotation = building.getFacing();
             
             // Check to see if proposed new site position intersects with any existing buildings 
             // or construction sites.
@@ -1228,7 +1276,7 @@ implements Serializable {
                 // Set the new site here.
                 site.setXLocation(rectCenterX);
                 site.setYLocation(rectCenterY);
-                site.setFacing(building.getFacing());
+                site.setFacing(rectRotation);
                 goodPosition = true;
                 break;
             }

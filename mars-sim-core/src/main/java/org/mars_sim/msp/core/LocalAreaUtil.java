@@ -56,7 +56,7 @@ public class LocalAreaUtil {
     public static Point2D.Double getLocalRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
         Point2D.Double result = new Point2D.Double();
         
-        double radianRotation = (boundedObject.getFacing() * (Math.PI / 180D));
+        double radianRotation = Math.toRadians(boundedObject.getFacing());
         double rotateX = (xLoc * Math.cos(radianRotation)) - (yLoc * Math.sin(radianRotation));
         double rotateY = (xLoc * Math.sin(radianRotation)) + (yLoc * Math.cos(radianRotation));
         
@@ -64,6 +64,21 @@ public class LocalAreaUtil {
         double translateY = rotateY + boundedObject.getYLocation();
         
         result.setLocation(translateX, translateY);
+        
+        return result;
+    }
+    
+    public static Point2D.Double getObjectRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
+        Point2D.Double result = new Point2D.Double();
+        
+        double translateX = xLoc - boundedObject.getXLocation();
+        double translateY = yLoc - boundedObject.getYLocation();
+        
+        double radianRotation = (Math.PI * 2D) - Math.toRadians(boundedObject.getFacing());
+        double rotateX = (translateX * Math.cos(radianRotation)) - (translateY * Math.sin(radianRotation));
+        double rotateY = (translateX * Math.sin(radianRotation)) + (translateY * Math.cos(radianRotation));
+        
+        result.setLocation(rotateX, rotateY);
         
         return result;
     }
@@ -291,23 +306,81 @@ public class LocalAreaUtil {
     /**
      * Checks if a line path collides with any existing vehicle, building, or 
      * construction site at a settlement.
-     * @param startXLoc the line path start X location.
-     * @param startYLoc the line path start Y location.
-     * @param endXLoc the line path end X location.
-     * @param endYLoc the line path end Y location.
+     * @param line the line.
      * @param coordinates the global coordinate location to check.
      * @return true if line path doesn't collide with anything.
      */
-    public static boolean checkLinePathCollision(double startXLoc, double startYLoc, 
-            double endXLoc, double endYLoc, Coordinates coordinates) {
+    public static boolean checkLinePathCollision(Line2D line, Coordinates coordinates) {
         
         boolean result = true;
         
-        // Create line.
-        Line2D line = new Line2D.Double(startXLoc, startYLoc, endXLoc, endYLoc);
+        // Create line path
         Path2D linePath = createLinePath(line);
         
         result = checkPathCollision(null, linePath, coordinates, true);
+        
+        return result;
+    }
+    
+    public static Set<Point2D> getLinePathCollisionPoints(Line2D line, LocalBoundedObject object) {
+        
+        Set<Point2D> result = new HashSet<Point2D>();
+        
+        Iterator<Line2D> i = getLocalBoundedObjectLineSegments(object).iterator();
+        while (i.hasNext()) {
+            Line2D lineSegment = i.next();
+            if (line.intersectsLine(lineSegment)) {
+                
+                Point2D intersectionPt = getLineIntersectionPoint(line, lineSegment);
+                result.add(intersectionPt);
+            }
+        }
+        
+        return result;
+    }
+    
+    public static Point2D getLineIntersectionPoint(Line2D line1, Line2D line2) {
+        
+        double x1 = line1.getX1(); 
+        double y1 = line1.getY1(); 
+        double x2 = line1.getX2(); 
+        double y2 = line1.getY2();
+        double x3 = line2.getX1(); 
+        double y3 = line2.getY1(); 
+        double x4 = line2.getX2(); 
+        double y4 = line2.getY2();
+        
+        double x = ((x2 - x1) * ((x3 * y4) - (x4 * y3)) - (x4 - x3) * ((x1 * y2) - (x2 * y1))) /
+                ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+        double y = ((y3 - y4) * ((x1 * y2) - (x2 * y1)) - (y1 - y2) * ((x3 * y4) - (x4 * y3))) /
+                ((x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4));
+
+        
+        return new Point2D.Double(x, y);
+    }
+    
+    private static Set<Line2D> getLocalBoundedObjectLineSegments(LocalBoundedObject object) {
+        
+        Set<Line2D> result = new HashSet<Line2D>(4);
+        
+        double width = object.getWidth();
+        double length = object.getLength();
+        
+        // Get four points.
+        Point2D frontLeftPt = getLocalRelativeLocation((width / 2D), (length / 2D), object);
+        Point2D frontRightPt = getLocalRelativeLocation((width / -2D), (length / 2D), object);
+        Point2D backLeftPt = getLocalRelativeLocation((width / 2D), (length / -2D), object);
+        Point2D backRightPt = getLocalRelativeLocation((width / -2D), (length / -2D), object);
+        
+        // Get four line segments.
+        Line2D frontLine = new Line2D.Double(frontLeftPt, frontRightPt);
+        result.add(frontLine);
+        Line2D rightLine = new Line2D.Double(frontRightPt, backRightPt);
+        result.add(rightLine);
+        Line2D backLine = new Line2D.Double(backRightPt, backLeftPt);
+        result.add(backLine);
+        Line2D leftLine = new Line2D.Double(backLeftPt, frontLeftPt);
+        result.add(leftLine);
         
         return result;
     }

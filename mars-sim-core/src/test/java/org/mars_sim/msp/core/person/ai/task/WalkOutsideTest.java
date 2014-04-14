@@ -49,7 +49,7 @@ extends TestCase {
 		building.setXLocation(0D);
 		building.setYLocation(0D);
 		building.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building);
+		settlement.getBuildingManager().addBuilding(building, false);
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -113,7 +113,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1);
+		settlement.getBuildingManager().addBuilding(building1, false);
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -155,7 +155,7 @@ extends TestCase {
 		building2.setXLocation(-12D);
 		building2.setYLocation(4D);
 		building2.setFacing(22D);
-		settlement.getBuildingManager().addBuilding(building2);
+		settlement.getBuildingManager().addBuilding(building2, false);
 
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();
@@ -210,7 +210,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1);
+		settlement.getBuildingManager().addBuilding(building1, false);
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -287,7 +287,7 @@ extends TestCase {
 		building1.setXLocation(0D);
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building1);
+		settlement.getBuildingManager().addBuilding(building1, false);
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -332,7 +332,7 @@ extends TestCase {
 		building2.setXLocation(-12D);
 		building2.setYLocation(4D);
 		building2.setFacing(0D);
-		settlement.getBuildingManager().addBuilding(building2);
+		settlement.getBuildingManager().addBuilding(building2, false);
 
 		// Clear obstacle cache.
 		LocalAreaUtil.clearObstacleCache();
