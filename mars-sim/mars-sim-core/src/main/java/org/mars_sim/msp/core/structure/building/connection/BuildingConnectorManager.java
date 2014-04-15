@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @version 3.06 2014-04-11
+ * @version 3.06 2014-04-14
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -230,6 +230,19 @@ public class BuildingConnectorManager implements Serializable {
         }
         else {
             throw new IllegalArgumentException("BuildingConnector does not exists.");
+        }
+    }
+    
+    /**
+     * Remove all building connectors to a given building.
+     * @param building the building.
+     */
+    public void removeAllConnectionsToBuilding(Building building) {
+        
+        Iterator<BuildingConnector> i = getConnectionsToBuilding(building).iterator();
+        while (i.hasNext()) {
+            BuildingConnector connector = i.next();
+            removeBuildingConnection(connector);
         }
     }
     
