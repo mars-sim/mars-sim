@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkingSteps.java
- * @version 3.06 2014-03-17
+ * @version 3.06 2014-04-15
  * @author Scott Davis
  */
 
@@ -261,7 +261,7 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from building interior to building interior.");
+                logger.fine("Cannot find walkable airlock from building interior to building interior.");
                 return;
             }
             
@@ -321,7 +321,7 @@ implements Serializable {
                     destinationWalkState.xLoc, destinationWalkState.yLoc);
             if (airlock == null) {
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from building interior to rover interior.");
+                logger.fine("Cannot find walkable airlock from building interior to rover interior.");
                 return;
             }
             
@@ -359,7 +359,7 @@ implements Serializable {
                 destinationWalkState.xLoc, destinationWalkState.yLoc);
         if (airlock == null) {
             canWalkAllSteps = false;
-            logger.severe("Cannot find walkable airlock from building interior to outside.");
+            logger.fine("Cannot find walkable airlock from building interior to outside.");
             return;
         }
         
@@ -852,7 +852,7 @@ implements Serializable {
                     
                     // Cannot walk to destination building.
                     canWalkAllSteps = false;
-                    logger.severe("Cannot find walkable airlock from building airlock exterior to building interior.");
+                    logger.fine("Cannot find walkable airlock from building airlock exterior to building interior.");
                 }
             }
         }
@@ -882,7 +882,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from rover airlock exterior to building interior.");
+                logger.fine("Cannot find walkable airlock from rover airlock exterior to building interior.");
             }
         }
         else {
@@ -945,7 +945,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from airlock exterior to rover in garage.");
+                logger.fine("Cannot find walkable airlock from airlock exterior to rover in garage.");
             }
         }
         else {
@@ -1055,7 +1055,7 @@ implements Serializable {
             
             // Cannot walk to destination building.
             canWalkAllSteps = false;
-            logger.severe("Cannot find walkable airlock from outside to building interior.");
+            logger.fine("Cannot find walkable airlock from outside to building interior.");
         }
     }
     
@@ -1095,7 +1095,7 @@ implements Serializable {
                 
                 // Cannot walk to destination building.
                 canWalkAllSteps = false;
-                logger.severe("Cannot find walkable airlock from outside to rover in garage.");
+                logger.fine("Cannot find walkable airlock from outside to rover in garage.");
             }
         }
         else {

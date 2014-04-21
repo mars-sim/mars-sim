@@ -74,7 +74,7 @@ implements Serializable, Transportable {
 	private TransitState state;
 	private MarsClock launchDate;
 	private MarsClock arrivalDate;
-	private List<String> newBuildings;
+	private List<BuildingTemplate> newBuildings;
 	private List<String> newVehicles;
 	private Map<String, Integer> newEquipment;
 	private int newImmigrantNum;
@@ -110,7 +110,7 @@ implements Serializable, Transportable {
      * Gets a list of the resupply buildings.
      * @return list of building types.
      */
-    public List<String> getNewBuildings() {
+    public List<BuildingTemplate> getNewBuildings() {
         return newBuildings;
     }
 
@@ -118,7 +118,7 @@ implements Serializable, Transportable {
      * Sets the list of resupply buildings. 
      * @param newBuildings list of building types.
      */
-    public void setNewBuildings(List<String> newBuildings) {
+    public void setNewBuildings(List<BuildingTemplate> newBuildings) {
         this.newBuildings = newBuildings;
     }
 
@@ -313,13 +313,45 @@ implements Serializable, Transportable {
         
         // Deliver buildings.
         BuildingManager buildingManager = settlement.getBuildingManager();
-        Iterator<String> buildingI = getNewBuildings().iterator();
+        Iterator<BuildingTemplate> buildingI = getNewBuildings().iterator();
         while (buildingI.hasNext()) {
-            String type = buildingI.next();
+            BuildingTemplate template = buildingI.next();
+            
+            
+            // Check if building template position/facing collides with any 
+            // existing buildings/vehicles/construction sites.
+            if (checkBuildingTemplatePosition(template)) {
                 
-            // Determine location and facing for the new building.
-            BuildingTemplate positionedTemplate = positionNewResupplyBuilding(type);
-            buildingManager.addBuilding(positionedTemplate, true);
+                // Correct length and width in building template.
+                int buildingID = settlement.getBuildingManager().getUniqueBuildingIDNumber();
+                
+                // Replace width and length defaults to deal with variable width and length buildings.
+                double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getType());
+                if (template.getWidth() > 0D) {
+                    width = template.getWidth();
+                }
+                if (width <= 0D) {
+                    width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+                }
+                
+                double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getType());
+                if (template.getLength() > 0D) {
+                    length = template.getLength();
+                }
+                if (length <= 0D) {
+                    length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+                }
+                
+                BuildingTemplate correctedTemplate = new BuildingTemplate(buildingID, template.getType(), width, 
+                        length, template.getXLoc(), template.getYLoc(), template.getFacing());
+                
+                buildingManager.addBuilding(correctedTemplate,  true);
+            }
+            else {
+                // Determine location and facing for the new building.
+                BuildingTemplate positionedTemplate = positionNewResupplyBuilding(template.getType());
+                buildingManager.addBuilding(positionedTemplate, true);
+            }
         }
         
         // Deliver vehicles.
@@ -386,6 +418,38 @@ implements Serializable, Transportable {
             immigrants.add(immigrant);
             logger.info(immigrantName + " arrives on Mars at " + settlement.getName());
         }
+    }
+    
+    /**
+     * Checks if a building template's position is clear of collisions with any existing structures.
+     * @param template the building template.
+     * @return true if building template position is clear.
+     */
+    private boolean checkBuildingTemplatePosition(BuildingTemplate template) {
+        
+        boolean result = true;
+        
+        // Replace width and length defaults to deal with variable width and length buildings.
+        double width = SimulationConfig.instance().getBuildingConfiguration().getWidth(template.getType());
+        if (template.getWidth() > 0D) {
+            width = template.getWidth();
+        }
+        if (width <= 0D) {
+            width = DEFAULT_VARIABLE_BUILDING_WIDTH;
+        }
+        
+        double length = SimulationConfig.instance().getBuildingConfiguration().getLength(template.getType());
+        if (template.getLength() > 0D) {
+            length = template.getLength();
+        }
+        if (length <= 0D) {
+            length = DEFAULT_VARIABLE_BUILDING_LENGTH;
+        }
+        
+        result = settlement.getBuildingManager().checkIfNewBuildingLocationOpen(template.getXLoc(), 
+                template.getYLoc(), width, length, template.getFacing());
+        
+        return result;
     }
     
     /**

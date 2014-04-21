@@ -3,6 +3,8 @@
 <!ATTLIST resupply name CDATA #REQUIRED>
 <!ELEMENT building EMPTY>
 <!ATTLIST building type CDATA #REQUIRED>
+<!ATTLIST building width CDATA #IMPLIED>
+<!ATTLIST building length CDATA #IMPLIED>
 <!ATTLIST building x-location CDATA #REQUIRED>
 <!ATTLIST building y-location CDATA #REQUIRED>
 <!ATTLIST building facing CDATA #REQUIRED>

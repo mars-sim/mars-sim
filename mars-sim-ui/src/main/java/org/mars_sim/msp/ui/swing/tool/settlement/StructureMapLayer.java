@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -36,7 +36,7 @@ public class StructureMapLayer implements SettlementMapLayer {
 	private static final Color BUILDING_COLOR = Color.GREEN;
 	private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
 	private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
-	private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.DARK_GRAY;
+	private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
 
 	// Data members
 	private SettlementMapPanel mapPanel;
