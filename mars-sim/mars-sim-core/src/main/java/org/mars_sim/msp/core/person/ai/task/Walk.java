@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.06 2014-03-12
+ * @version 3.06 2014-04-15
  * @author Scott Davis
  */
 
@@ -149,7 +149,7 @@ implements Serializable {
             endTask();
         }
         else if (!canWalkAllSteps(person, walkingSteps)) {
-            logger.severe("Valid Walking steps could not be determined for " + person.getName());
+            logger.fine("Valid Walking steps could not be determined for " + person.getName());
             endTask();
         }
         

@@ -385,7 +385,7 @@ extends VehicleMission {
             
             // Get random inhabitable building at settlement.
             Building destinationBuilding = disembarkSettlement.getBuildingManager().
-                    getRandomInhabitableBuilding();
+                    getRandomAirlockBuilding();
             if (destinationBuilding != null) {
                 Point2D destinationLoc = LocalAreaUtil.getRandomInteriorLocation(destinationBuilding);
                 Point2D adjustedLoc = LocalAreaUtil.getLocalRelativeLocation(destinationLoc.getX(), 

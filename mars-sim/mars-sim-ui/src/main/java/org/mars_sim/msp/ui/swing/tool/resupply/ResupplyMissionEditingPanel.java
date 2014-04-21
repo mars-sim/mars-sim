@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyMissionEditingPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -42,6 +42,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.ResupplyUtil;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -523,18 +524,28 @@ extends TransportItemEditingPanel {
         List<SupplyItem> supplyItems = supplyTableModel.getSupplyItems();
 
         // Set new buildings.
-        List<String> newBuildings = new ArrayList<String>();
-        Iterator<SupplyItem> i = supplyItems.iterator();
-        while (i.hasNext()) {
-            SupplyItem item = i.next();
-            if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
-                int num = item.number.intValue();
-                for (int x = 0; x < num; x++) {
-                    newBuildings.add(item.type.trim());
+        if (resupplyMission.getNewBuildings() != null) {
+            // Modify resupply mission buildings from table.
+            modifyNewBuildings(resupplyMission, supplyItems);
+        }
+        else {
+            // Create new buildings from table in resupply mission.
+            List<BuildingTemplate> newBuildings = new ArrayList<BuildingTemplate>();
+            Iterator<SupplyItem> i = supplyItems.iterator();
+            while (i.hasNext()) {
+                SupplyItem item = i.next();
+                if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
+                    int num = item.number.intValue();
+                    for (int x = 0; x < num; x++) {
+                        String type = item.type.trim();
+                        BuildingTemplate template = new BuildingTemplate(0, type, -1D, -1D, 
+                                -0D, 0D, 0D);
+                        newBuildings.add(template);
+                    }
                 }
             }
+            resupplyMission.setNewBuildings(newBuildings);
         }
-        resupplyMission.setNewBuildings(newBuildings);
 
         // Set new vehicles.
         List<String> newVehicles = new ArrayList<String>();
@@ -599,6 +610,95 @@ extends TransportItemEditingPanel {
             }
         }
         resupplyMission.setNewParts(newParts);
+    }
+    
+    /**
+     * Modify existing resupply mission new buildings based on supply table.
+     * @param resupplyMission resupply mission.
+     * @param supplyItems the supply items from the supply table.
+     */
+    private void modifyNewBuildings(Resupply resupplyMission, List<SupplyItem> supplyItems) {
+        
+        List<BuildingTemplate> newBuildings = resupplyMission.getNewBuildings();
+        
+        // Create map of resupply mission's buildings and numbers.
+        Map<String, Integer> oldBuildings = new HashMap<String, Integer>();
+        Iterator<BuildingTemplate> i = newBuildings.iterator();
+        while (i.hasNext()) {
+            BuildingTemplate template = i.next();
+            String type = template.getType();
+            if (oldBuildings.containsKey(type)) {
+                int num = oldBuildings.get(type);
+                oldBuildings.put(type, num + 1);
+            }
+            else {
+                oldBuildings.put(type,  1);
+            }
+        }
+        
+        // Go through every building row in the supply table.
+        Iterator<SupplyItem> j = supplyItems.iterator();
+        while (j.hasNext()) {
+            SupplyItem item = j.next();
+            if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
+                int num = item.number.intValue();
+                String type = item.type.trim();
+                
+                int existingNum = 0;
+                if (oldBuildings.containsKey(type)) {
+                    existingNum = oldBuildings.get(type);
+                }
+                
+                if (num > existingNum) {
+                    // Add new building templates.
+                    int diff = num - existingNum;
+                    for (int x = 0; x < diff; x++) {
+                        newBuildings.add(new BuildingTemplate(0, type, -1D, -1D, -0D, 0D, 0D));
+                    }
+                }
+                else if (num < existingNum) {
+                    // Remove old building templates.
+                    int diff = existingNum - num;
+                    for (int x = 0; x < diff; x++) {
+                        Iterator<BuildingTemplate> k = newBuildings.iterator();
+                        while (k.hasNext()) {
+                            BuildingTemplate template = k.next();
+                            if (template.getType().equals(type)) {
+                                k.remove();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Go through all of the old buildings in the map to make sure they exist in the supply table.
+        Iterator<String> k = oldBuildings.keySet().iterator();
+        while (k.hasNext()) {
+            String type = k.next();
+            boolean exists = false;
+            Iterator<SupplyItem> l = supplyItems.iterator();
+            while (l.hasNext() && !exists) {
+                SupplyItem item = l.next();
+                if (SupplyTableModel.BUILDING.equals(item.category.trim())) {
+                    if (type.equals(item.type.trim())) {
+                        exists = true;
+                    }
+                }
+            }
+            
+            // Remove building from new buildings if it doesn't exist in supply table.
+            if (!exists) {
+                Iterator<BuildingTemplate> m = newBuildings.iterator();
+                while (m.hasNext()) {
+                    BuildingTemplate template = m.next();
+                    if (template.getType().equals(type)) {
+                        m.remove();
+                    }
+                }
+            }
+        }
     }
     
     /**

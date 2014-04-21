@@ -218,7 +218,33 @@ implements Serializable {
         Iterator<Building> i = buildings.iterator();
         while (i.hasNext()) {
             Building building = i.next();
-            if (building.hasFunction(function)) functionBuildings.add(building);
+            if (building.hasFunction(function)) {
+                functionBuildings.add(building);
+            }
+        }
+        return functionBuildings;
+    }
+    
+    /**
+     * Gets the buildings in a settlement have have all of a given array of functions.
+     * @param functions the array of required functions {@link BuildingFunctions}.
+     * @return list of buildings.
+     */
+    public List<Building> getBuildings(BuildingFunction[] functions) {
+        
+        List<Building> functionBuildings = new ArrayList<Building>();
+        Iterator<Building> i = buildings.iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            boolean hasFunctions = true;
+            for (int x = 0; x < functions.length; x++) {
+                if (!building.hasFunction(functions[x])) {
+                    hasFunctions = false;
+                }
+            }
+            if (hasFunctions) {
+                functionBuildings.add(building);
+            }
         }
         return functionBuildings;
     }
@@ -276,6 +302,23 @@ implements Serializable {
 
         return result;
     }
+    
+    /**
+     * Gets a random building with an airlock.
+     * @return random building.
+     */
+    public Building getRandomAirlockBuilding() {
+        
+        Building result = null;
+        
+        List<Building> evaBuildings = getBuildings(BuildingFunction.EVA);
+        if (evaBuildings.size() > 0) {
+            int buildingIndex = RandomUtil.getRandomInt(evaBuildings.size() - 1);
+            result = evaBuildings.get(buildingIndex);
+        }
+        
+        return result;
+    }
 
     /**
      * Adds a person to a random inhabitable building within a settlement.
@@ -286,7 +329,9 @@ implements Serializable {
      */
     public static void addToRandomBuilding(Person person, Settlement settlement) {
 
-        List<Building> habs = settlement.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+        List<Building> habs = settlement.getBuildingManager().getBuildings(
+                new BuildingFunction[] { BuildingFunction.EVA, BuildingFunction.LIFE_SUPPORT });
+        
         List<Building> goodHabs = getLeastCrowdedBuildings(habs);
 
         Building building = null;
@@ -297,7 +342,9 @@ implements Serializable {
             Iterator<Building> i = goodHabs.iterator();
             while (i.hasNext()) {
                 Building tempBuilding = i.next();
-                if (count == rand) building = tempBuilding;
+                if (count == rand) {
+                    building = tempBuilding;
+                }
                 count++;
             }
         }

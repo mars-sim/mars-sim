@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SupplyTableModel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.equipment.EquipmentFactory;
 import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 
 public class SupplyTableModel extends AbstractTableModel {
 
@@ -60,7 +61,12 @@ public class SupplyTableModel extends AbstractTableModel {
     private void populateSupplies(Resupply resupply) {
         
         // Populate buildings.
-        populateSupplyTypeList(BUILDING, resupply.getNewBuildings());
+        List<String> buildingList = new ArrayList<String>(resupply.getNewBuildings().size());
+        Iterator<BuildingTemplate> l = resupply.getNewBuildings().iterator();
+        while(l.hasNext()) {
+            buildingList.add(l.next().getType());
+        }
+        populateSupplyTypeList(BUILDING, buildingList);
         
         // Populate vehicles.
         populateSupplyTypeList(VEHICLE, resupply.getNewVehicles());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConnectorManager.java
- * @version 3.06 2014-04-14
+ * @version 3.06 2014-04-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.connection;
@@ -409,8 +409,20 @@ public class BuildingConnectorManager implements Serializable {
             }
             
             // Make sure building or connection is not already in existing path.
-            if (existingPath.containsPathLocation(connectionBuilding) || 
-                    existingPath.containsPathLocation(connector)) {
+            boolean inExistingPath = false;
+            if (existingPath.containsPathLocation(connectionBuilding)) {
+                inExistingPath = true;
+            }
+            if (existingPath.containsPathLocation(connector)) {
+                inExistingPath = true;
+            }
+            if (existingPath.containsPathLocation(nearHatch)) {
+                inExistingPath = true;
+            }
+            if (existingPath.containsPathLocation(farHatch)) {
+                inExistingPath = true;
+            }
+            if (inExistingPath) {
                 continue;
             }
             

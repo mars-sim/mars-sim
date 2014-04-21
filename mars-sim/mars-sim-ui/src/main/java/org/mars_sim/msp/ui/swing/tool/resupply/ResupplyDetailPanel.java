@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyDetailPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -37,6 +37,7 @@ import org.mars_sim.msp.core.interplanetary.transport.resupply.Resupply;
 import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.time.ClockListener;
 import org.mars_sim.msp.core.time.MarsClock;
 import org.mars_sim.msp.ui.swing.MarsPanelBorder;
@@ -278,7 +279,7 @@ implements ClockListener, HistoricalEventListener {
 
         JPanel buildingsPanel = null;
 
-        List<String> buildings = resupply.getNewBuildings();
+        List<BuildingTemplate> buildings = resupply.getNewBuildings();
         if (buildings.size() > 0) {
             // Create buildings panel.
             buildingsPanel = new JPanel(new BorderLayout());
@@ -289,15 +290,15 @@ implements ClockListener, HistoricalEventListener {
 
             // Create table data.
             Map<String, Integer> buildingMap = new HashMap<String, Integer>(buildings.size());
-            Iterator<String> i = buildings.iterator();
+            Iterator<BuildingTemplate> i = buildings.iterator();
             while (i.hasNext()) {
-                String building = i.next();
-                if (buildingMap.containsKey(building)) {
-                    int num = buildingMap.get(building) + 1;
-                    buildingMap.put(building, num);
+                BuildingTemplate buildingTemplate = i.next();
+                if (buildingMap.containsKey(buildingTemplate.getType())) {
+                    int num = buildingMap.get(buildingTemplate.getType()) + 1;
+                    buildingMap.put(buildingTemplate.getType(), num);
                 }
                 else {
-                    buildingMap.put(building, 1);
+                    buildingMap.put(buildingTemplate.getType(), 1);
                 }
             }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -64,8 +64,7 @@ public class ResupplyConfig implements Serializable {
 	 * @throws Exception if error parsing XML.
 	 */
     @SuppressWarnings("unchecked")
-	private void loadResupplyTemplates(Document resupplyDoc, PartPackageConfig partPackageConfig) 
-			{
+	private void loadResupplyTemplates(Document resupplyDoc, PartPackageConfig partPackageConfig) {
 		
 		Element root = resupplyDoc.getRootElement();
 		List<Element> resupplyNodes = root.getChildren(RESUPPLY);
@@ -181,7 +180,9 @@ public class ResupplyConfig implements Serializable {
 		Iterator<ResupplyTemplate> i = resupplyTemplates.iterator();
 		while (i.hasNext()) {
 			ResupplyTemplate template = i.next();
-			if (template.name.equals(resupplyName)) result = template; 
+			if (template.name.equals(resupplyName)) {
+			    result = template; 
+			}
 		}
 		
 		if (result == null) throw new IllegalArgumentException("resupplyName: " 
@@ -191,18 +192,15 @@ public class ResupplyConfig implements Serializable {
 	}
 	
 	/**
-	 * Gets a list of all building in the resupply mission.
+	 * Gets a list of all building templates in the resupply mission.
 	 * @param resupplyName the resupply mission name.
-	 * @return list of building types.
+	 * @return list of building templates.
 	 */
-	public List<String> getResupplyBuildings(String resupplyName) {
-	    List<String> result = new ArrayList<String>();
+	public List<BuildingTemplate> getResupplyBuildings(String resupplyName) {
+	    List<BuildingTemplate> result = new ArrayList<BuildingTemplate>();
 	    ResupplyTemplate foundTemplate = getResupplyTemplate(resupplyName);
 	    if (foundTemplate != null) {
-	        Iterator<BuildingTemplate> i = foundTemplate.buildings.iterator();
-	        while (i.hasNext()) {
-	            result.add(i.next().getType());
-	        }
+	        result = new ArrayList<BuildingTemplate>(foundTemplate.buildings);
 	    }
 	    return result;
 	}
