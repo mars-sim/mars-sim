@@ -324,12 +324,12 @@ implements ClockListener {
 		this.showVehicleLabels = showLabels;
 		repaint();
 	}
-
+	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 
-		//long startTime = System.nanoTime();
+//		long startTime = System.nanoTime();
 
 		Graphics2D g2d = (Graphics2D) g;
 
@@ -344,9 +344,9 @@ implements ClockListener {
 			i.next().displayLayer(g2d, settlement, xPos, yPos, getWidth(), getHeight(), rotation, scale);
 		}
 
-		//long endTime = System.nanoTime();
-		//double timeDiff = (endTime - startTime) / 1000000D;
-		//System.out.println("SMT paint time: " + (int) timeDiff + " ms");
+//		long endTime = System.nanoTime();
+//		double timeDiff = (endTime - startTime) / 1000000D;
+//		System.out.println("SMT paint time: " + (int) timeDiff + " ms");
 	}
 
 	/**

@@ -32,389 +32,382 @@ import org.mars_sim.msp.core.structure.construction.ConstructionStage;
  */
 public class StructureMapLayer implements SettlementMapLayer {
 
-	// Static members
-	private static final Color BUILDING_COLOR = Color.GREEN;
-	private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
-	private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
-	private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
+    // Static members
+    private static final Color BUILDING_COLOR = Color.GREEN;
+    private static final Color CONSTRUCTION_SITE_COLOR = Color.BLACK;
+    private static final Color BUILDING_CONNECTOR_COLOR = Color.RED;
+    private static final Color BUILDING_SPLIT_CONNECTOR_COLOR = Color.WHITE;
 
-	// Data members
-	private SettlementMapPanel mapPanel;
-	private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
-	private double scale;
+    // Data members
+    private SettlementMapPanel mapPanel;
+    private Map<Double, Map<BuildingKey, BufferedImage>> svgImageCache;
+    private double scale;
 
-	/**
-	 * Constructor
-	 * @param mapPanel the settlement map panel.
-	 */
-	public StructureMapLayer(SettlementMapPanel mapPanel) {
+    /**
+     * Constructor
+     * @param mapPanel the settlement map panel.
+     */
+    public StructureMapLayer(SettlementMapPanel mapPanel) {
 
-		// Initialize data members.
-		this.mapPanel = mapPanel;
-		svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
+        // Initialize data members.
+        this.mapPanel = mapPanel;
+        svgImageCache = new HashMap<Double, Map<BuildingKey, BufferedImage>>(21);
 
-		// Set Apache Batik library system property so that it doesn't output: 
-		// "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
-		System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
-	}
+        // Set Apache Batik library system property so that it doesn't output: 
+        // "Graphics2D from BufferedImage lacks BUFFERED_IMAGE hint" in system err.
+        System.setProperty("org.apache.batik.warn_destination", "false"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
 
-	@Override
-	public void displayLayer(
-		Graphics2D g2d, Settlement settlement, double xPos, 
-		double yPos, int mapWidth, int mapHeight, double rotation, double scale
-	) {
+    @Override
+    public void displayLayer(
+            Graphics2D g2d, Settlement settlement, double xPos, 
+            double yPos, int mapWidth, int mapHeight, double rotation, double scale) {
 
-		this.scale = scale;
+        this.scale = scale;
 
-		// Save original graphics transforms.
-		AffineTransform saveTransform = g2d.getTransform();
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
 
-		// Get the map center point.
-		double mapCenterX = mapWidth / 2D;
-		double mapCenterY = mapHeight / 2D;
+        // Get the map center point.
+        double mapCenterX = mapWidth / 2D;
+        double mapCenterY = mapHeight / 2D;
 
-		// Translate map from settlement center point.
-		g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
+        // Translate map from settlement center point.
+        g2d.translate(mapCenterX + (xPos * scale), mapCenterY + (yPos * scale));
 
-		// Rotate map from North.
-		g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
+        // Rotate map from North.
+        g2d.rotate(rotation, 0D - (xPos * scale), 0D - (yPos * scale));
 
-		// Draw all buildings.
-		drawBuildings(g2d, settlement);
+        // Draw all buildings.
+        drawBuildings(g2d, settlement);
 
-		// Draw all construction sites.
-		drawConstructionSites(g2d, settlement);
+        // Draw all construction sites.
+        drawConstructionSites(g2d, settlement);
 
-		// Draw all building connectors.
-		drawBuildingConnectors(g2d, settlement);
+        // Draw all building connectors.
+        drawBuildingConnectors(g2d, settlement);
 
-		// Restore original graphic transforms.
-		g2d.setTransform(saveTransform);
-	}
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
 
-	/**
-	 * Draw all of the buildings in the settlement.
-	 * @param g2d the graphics context.
-	 * @param settlement the settlement.
-	 */
-	private void drawBuildings(Graphics2D g2d, Settlement settlement) {
-		if (settlement != null) {
-			Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
-			while (i.hasNext()) drawBuilding(i.next(), g2d);
-		}
-	}
+    /**
+     * Draw all of the buildings in the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawBuildings(Graphics2D g2d, Settlement settlement) {
+        if (settlement != null) {
+            Iterator<Building> i = settlement.getBuildingManager().getBuildings().iterator();
+            while (i.hasNext()) drawBuilding(i.next(), g2d);
+        }
+    }
 
-	/**
-	 * Draws a building on the map.
-	 * @param building the building.
-	 * @param g2d the graphics context.
-	 */
-	private void drawBuilding(Building building, Graphics2D g2d) {
+    /**
+     * Draws a building on the map.
+     * @param building the building.
+     * @param g2d the graphics context.
+     */
+    private void drawBuilding(Building building, Graphics2D g2d) {
 
-		// Use SVG image for building if available.
-		GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName().toLowerCase());
-		if (svg != null) {
+        // Use SVG image for building if available.
+        GraphicsNode svg = SVGMapUtil.getBuildingSVG(building.getName().toLowerCase());
+        if (svg != null) {
 
-			// Determine building pattern SVG image if available.
-			GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getName().toLowerCase());
+            // Determine building pattern SVG image if available.
+            GraphicsNode patternSVG = SVGMapUtil.getBuildingPatternSVG(building.getName().toLowerCase());
 
-			drawSVGStructure(
-				g2d, building.getXLocation(), building.getYLocation(), 
-				building.getWidth(), building.getLength(), building.getFacing(), svg, patternSVG
-			);
-		}
-		else {
-			// Otherwise draw colored rectangle for building.
-			drawRectangleStructure(
-				g2d, building.getXLocation(), building.getYLocation(), 
-				building.getWidth(), building.getLength(), building.getFacing(), 
-				BUILDING_COLOR
-			);
-		}
-	}
+            drawSVGStructure(
+                    g2d, building.getXLocation(), building.getYLocation(), 
+                    building.getWidth(), building.getLength(), building.getFacing(), svg, patternSVG
+                    );
+        }
+        else {
+            // Otherwise draw colored rectangle for building.
+            drawRectangleStructure(
+                    g2d, building.getXLocation(), building.getYLocation(), 
+                    building.getWidth(), building.getLength(), building.getFacing(), 
+                    BUILDING_COLOR
+                    );
+        }
+    }
 
-	/**
-	 * Draw all of the construction sites in the settlement.
-	 * @param g2d the graphics context.
-	 * @param settlement the settlement.
-	 */
-	private void drawConstructionSites(Graphics2D g2d, Settlement settlement) {
-		if (settlement != null) {
-			Iterator<ConstructionSite> i = settlement
-			.getConstructionManager()
-			.getConstructionSites()
-			.iterator();
-			while (i.hasNext()) drawConstructionSite(i.next(), g2d);
-		}
-	}
+    /**
+     * Draw all of the construction sites in the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawConstructionSites(Graphics2D g2d, Settlement settlement) {
+        if (settlement != null) {
+            Iterator<ConstructionSite> i = settlement
+                    .getConstructionManager()
+                    .getConstructionSites()
+                    .iterator();
+            while (i.hasNext()) drawConstructionSite(i.next(), g2d);
+        }
+    }
 
-	/**
-	 * Draws a construction site on the map.
-	 * @param site the construction site.
-	 * @param g2d the graphics context.
-	 */
-	private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
+    /**
+     * Draws a construction site on the map.
+     * @param site the construction site.
+     * @param g2d the graphics context.
+     */
+    private void drawConstructionSite(ConstructionSite site, Graphics2D g2d) {
 
-		// Use SVG image for construction site if available.
-		GraphicsNode svg = null;
-		ConstructionStage stage = site.getCurrentConstructionStage();
-		if (stage != null) {
-			svg = SVGMapUtil.getConstructionSiteSVG(stage.getInfo().getName().toLowerCase());
-		}
-		if (svg != null) {
+        // Use SVG image for construction site if available.
+        GraphicsNode svg = null;
+        ConstructionStage stage = site.getCurrentConstructionStage();
+        if (stage != null) {
+            svg = SVGMapUtil.getConstructionSiteSVG(stage.getInfo().getName().toLowerCase());
+        }
+        if (svg != null) {
 
-			// Determine construction site pattern SVG image if available.
-			GraphicsNode patternSVG = SVGMapUtil
-			.getConstructionSitePatternSVG(
-				stage.getInfo().getName().toLowerCase()
-			);
+            // Determine construction site pattern SVG image if available.
+            GraphicsNode patternSVG = SVGMapUtil
+                    .getConstructionSitePatternSVG(
+                            stage.getInfo().getName().toLowerCase()
+                            );
 
-			drawSVGStructure(
-				g2d, site.getXLocation(), site.getYLocation(), 
-				site.getWidth(), site.getLength(), site.getFacing(), svg, patternSVG
-			);
-		}
-		else {
-			// Else draw colored rectangle for construction site.
-			drawRectangleStructure(
-				g2d, site.getXLocation(), site.getYLocation(), 
-				site.getWidth(), site.getLength(), site.getFacing(), 
-				CONSTRUCTION_SITE_COLOR
-			);
-		}
-	}
+            drawSVGStructure(
+                    g2d, site.getXLocation(), site.getYLocation(), 
+                    site.getWidth(), site.getLength(), site.getFacing(), svg, patternSVG
+                    );
+        }
+        else {
+            // Else draw colored rectangle for construction site.
+            drawRectangleStructure(
+                    g2d, site.getXLocation(), site.getYLocation(), 
+                    site.getWidth(), site.getLength(), site.getFacing(), 
+                    CONSTRUCTION_SITE_COLOR
+                    );
+        }
+    }
 
-	/**
-	 * Draws all of the building connectors at the settlement.
-	 * @param g2d the graphics context.
-	 * @param settlement the settlement.
-	 */
-	private void drawBuildingConnectors(Graphics2D g2d, Settlement settlement) {
+    /**
+     * Draws all of the building connectors at the settlement.
+     * @param g2d the graphics context.
+     * @param settlement the settlement.
+     */
+    private void drawBuildingConnectors(Graphics2D g2d, Settlement settlement) {
 
-		if (settlement != null) {
-			Iterator<BuildingConnector> i = settlement
-			.getBuildingConnectorManager()
-			.getAllBuildingConnections()
-			.iterator();
-			while (i.hasNext()) {
-				drawBuildingConnector(i.next(), g2d);
-			}
-		}
-	}
+        if (settlement != null) {
+            Iterator<BuildingConnector> i = settlement
+                    .getBuildingConnectorManager()
+                    .getAllBuildingConnections()
+                    .iterator();
+            while (i.hasNext()) {
+                drawBuildingConnector(i.next(), g2d);
+            }
+        }
+    }
 
-	/**
-	 * Draws a building connector.
-	 * @param connector the building connector.
-	 * @param g2d the graphics context.
-	 */
-	private void drawBuildingConnector(BuildingConnector connector, Graphics2D g2d) {
+    /**
+     * Draws a building connector.
+     * @param connector the building connector.
+     * @param g2d the graphics context.
+     */
+    private void drawBuildingConnector(BuildingConnector connector, Graphics2D g2d) {
 
-		if (connector.isSplitConnection()) {
-			Hatch hatch1 = connector.getHatch1();
-			Hatch hatch2 = connector.getHatch2();
+        if (connector.isSplitConnection()) {
+            Hatch hatch1 = connector.getHatch1();
+            Hatch hatch2 = connector.getHatch2();
 
-			// Draw building connector area between two hatches.
-			Path2D.Double splitAreaPath = new Path2D.Double();
-			Point2D.Double leftHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / 2D, 0D, hatch1);
-			splitAreaPath.moveTo(leftHatch1Loc.getX(), leftHatch1Loc.getY());
-			Point2D.Double rightHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / -2D, 0D,  hatch2);
-			splitAreaPath.lineTo(rightHatch2Loc.getX(), rightHatch2Loc.getY());
-			Point2D.Double leftHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / 2D, 0D,  hatch2);
-			splitAreaPath.lineTo(leftHatch2Loc.getX(), leftHatch2Loc.getY());
-			Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
-			splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
-			splitAreaPath.closePath();
-			drawPathShape(splitAreaPath, g2d, BUILDING_SPLIT_CONNECTOR_COLOR);
+            // Draw building connector area between two hatches.
+            Path2D.Double splitAreaPath = new Path2D.Double();
+            Point2D.Double leftHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / 2D, 0D, hatch1);
+            splitAreaPath.moveTo(leftHatch1Loc.getX(), leftHatch1Loc.getY());
+            Point2D.Double rightHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / -2D, 0D,  hatch2);
+            splitAreaPath.lineTo(rightHatch2Loc.getX(), rightHatch2Loc.getY());
+            Point2D.Double leftHatch2Loc = LocalAreaUtil.getLocalRelativeLocation(hatch2.getWidth() / 2D, 0D,  hatch2);
+            splitAreaPath.lineTo(leftHatch2Loc.getX(), leftHatch2Loc.getY());
+            Point2D.Double rightHatch1Loc = LocalAreaUtil.getLocalRelativeLocation(hatch1.getWidth() / -2D, 0D, hatch1);
+            splitAreaPath.lineTo(rightHatch1Loc.getX(), rightHatch1Loc.getY());
+            splitAreaPath.closePath();
+            drawPathShape(splitAreaPath, g2d, BUILDING_SPLIT_CONNECTOR_COLOR);
 
-			// Use SVG image for hatch 1 if available.
-			// TODO: Use different connector names other than just "hatch".
-			GraphicsNode hatch1SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
-			if (hatch1SVG != null) {
+            // Use SVG image for hatch 1 if available.
+            GraphicsNode hatch1SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatch1SVG != null) {
 
-				// Draw hatch 1.
-				drawSVGStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
-						hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), hatch1SVG, null);
-			}
-			else {
-				// Otherwise draw colored rectangle for hatch 1.
-				drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
-						hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), 
-						BUILDING_CONNECTOR_COLOR);
-			}
+                // Draw hatch 1.
+                drawSVGStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
+                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), hatch1SVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch 1.
+                drawRectangleStructure(g2d, hatch1.getXLocation(), hatch1.getYLocation(), 
+                        hatch1.getWidth(), hatch1.getLength(), hatch1.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
 
-			// Use SVG image for hatch 2 if available.
-			// TODO: Use different connector names other than just "hatch".
-			GraphicsNode hatch2SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
-			if (hatch2SVG != null) {
+            // Use SVG image for hatch 2 if available.
+            GraphicsNode hatch2SVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatch2SVG != null) {
 
-				// Draw hatch 2.
-				drawSVGStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
-						hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), hatch2SVG, null);
-			}
-			else {
-				// Otherwise draw colored rectangle for hatch 2.
-				drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
-						hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), 
-						BUILDING_CONNECTOR_COLOR);
-			}
-		}
-		else {
+                // Draw hatch 2.
+                drawSVGStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
+                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), hatch2SVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch 2.
+                drawRectangleStructure(g2d, hatch2.getXLocation(), hatch2.getYLocation(), 
+                        hatch2.getWidth(), hatch2.getLength(), hatch2.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
+        }
+        else {
 
-			Hatch hatch = connector.getHatch1();
+            Hatch hatch = connector.getHatch1();
 
-			// Use SVG image for hatch if available.
-			// TODO: Use different connector names other than just "hatch".
-			GraphicsNode hatchSVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
-			if (hatchSVG != null) {
+            // Use SVG image for hatch if available.
+            GraphicsNode hatchSVG = SVGMapUtil.getBuildingConnectorSVG("hatch");
+            if (hatchSVG != null) {
 
-				// Draw hatch.
-				drawSVGStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
-						hatch.getWidth(), hatch.getLength(), hatch.getFacing(), hatchSVG, null);
-			}
-			else {
-				// Otherwise draw colored rectangle for hatch.
-				drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
-						hatch.getWidth(), hatch.getLength(), hatch.getFacing(), 
-						BUILDING_CONNECTOR_COLOR);
-			}
-		}
-	}
+                // Draw hatch.
+                drawSVGStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
+                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(), hatchSVG, null);
+            }
+            else {
+                // Otherwise draw colored rectangle for hatch.
+                drawRectangleStructure(g2d, hatch.getXLocation(), hatch.getYLocation(), 
+                        hatch.getWidth(), hatch.getLength(), hatch.getFacing(), 
+                        BUILDING_CONNECTOR_COLOR);
+            }
+        }
+    }
 
-	/**
-	 * Draws a structure as a SVG image on the map.
-	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the structure width (meters).
-	 * @param length the structure length (meters).
-	 * @param facing the structure facing (degrees from North clockwise).
-	 * @param svg the SVG graphics node.
-	 * @param patternSVG the pattern SVG graphics node (null if no pattern).
-	 */
-	private void drawSVGStructure(
-		Graphics2D g2d, double xLoc, double yLoc,
-		double width, double length, double facing, GraphicsNode svg, 
-		GraphicsNode patternSVG
-	) {
-		drawStructure(true, g2d, xLoc, yLoc, width, length, facing, svg, patternSVG, null);
-	}
+    /**
+     * Draws a structure as a SVG image on the map.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param facing the structure facing (degrees from North clockwise).
+     * @param svg the SVG graphics node.
+     * @param patternSVG the pattern SVG graphics node (null if no pattern).
+     */
+    private void drawSVGStructure(
+            Graphics2D g2d, double xLoc, double yLoc,
+            double width, double length, double facing, GraphicsNode svg, 
+            GraphicsNode patternSVG) {
+        drawStructure(true, g2d, xLoc, yLoc, width, length, facing, svg, patternSVG, null);
+    }
 
-	/**
-	 * Draws a structure as a rectangle on the map.
-	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the structure width (meters).
-	 * @param length the structure length (meters).
-	 * @param facing the structure facing (degrees from North clockwise).
-	 * @param color the color to draw the rectangle.
-	 */
-	private void drawRectangleStructure(
-		Graphics2D g2d, double xLoc, double yLoc, 
-		double width, double length, double facing, Color color
-	) {
-		drawStructure(false, g2d, xLoc, yLoc, width, length, facing, null, null, color);
-	}
+    /**
+     * Draws a structure as a rectangle on the map.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param facing the structure facing (degrees from North clockwise).
+     * @param color the color to draw the rectangle.
+     */
+    private void drawRectangleStructure(
+            Graphics2D g2d, double xLoc, double yLoc, 
+            double width, double length, double facing, Color color) {
+        drawStructure(false, g2d, xLoc, yLoc, width, length, facing, null, null, color);
+    }
 
-	/**
-	 * Draws a structure on the map.
-	 * @param isSVG true if using a SVG image.
-	 * @param g2d the graphics2D context.
-	 * @param xLoc the X location from center of settlement (meters).
-	 * @param yLoc the y Location from center of settlement (meters).
-	 * @param width the structure width (meters).
-	 * @param length the structure length (meters).
-	 * @param facing the structure facing (degrees from North clockwise).
-	 * @param svg the SVG graphics node.
-	 * @param patternSVG the pattern SVG graphics node (null if no pattern).
-	 * @param color the color to display the rectangle if no SVG image.
-	 */
-	private void drawStructure(
-		boolean isSVG, Graphics2D g2d, double xLoc, double yLoc,
-		double width, double length, double facing, GraphicsNode svg, 
-		GraphicsNode patternSVG, Color color
-	) {
+    /**
+     * Draws a structure on the map.
+     * @param isSVG true if using a SVG image.
+     * @param g2d the graphics2D context.
+     * @param xLoc the X location from center of settlement (meters).
+     * @param yLoc the y Location from center of settlement (meters).
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param facing the structure facing (degrees from North clockwise).
+     * @param svg the SVG graphics node.
+     * @param patternSVG the pattern SVG graphics node (null if no pattern).
+     * @param color the color to display the rectangle if no SVG image.
+     */
+    private void drawStructure(
+            boolean isSVG, Graphics2D g2d, double xLoc, double yLoc,
+            double width, double length, double facing, GraphicsNode svg, 
+            GraphicsNode patternSVG, Color color) {
 
-		// Save original graphics transforms.
-		AffineTransform saveTransform = g2d.getTransform();
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
 
-		// Determine bounds.
-		Rectangle2D bounds = null;
-		if (isSVG) bounds = svg.getBounds();
-		else bounds = new Rectangle2D.Double(0, 0, width, length);
+        // Determine bounds.
+        Rectangle2D bounds = null;
+        if (isSVG) bounds = svg.getBounds();
+        else bounds = new Rectangle2D.Double(0, 0, width, length);
 
-		// Determine transform information.
-		double scalingWidth = width / bounds.getWidth() * scale;
-		double scalingLength = length / bounds.getHeight() * scale;
-		double boundsPosX = bounds.getX() * scalingWidth;
-		double boundsPosY = bounds.getY() * scalingLength;
-		double centerX = width * scale / 2D;
-		double centerY = length * scale / 2D;
-		double translationX = (-1D * xLoc * scale) - centerX - boundsPosX;
-		double translationY = (-1D * yLoc * scale) - centerY - boundsPosY;
-		double facingRadian = facing / 180D * Math.PI;
+        // Determine transform information.
+        double scalingWidth = width / bounds.getWidth() * scale;
+        double scalingLength = length / bounds.getHeight() * scale;
+        double boundsPosX = bounds.getX() * scalingWidth;
+        double boundsPosY = bounds.getY() * scalingLength;
+        double centerX = width * scale / 2D;
+        double centerY = length * scale / 2D;
+        double translationX = (-1D * xLoc * scale) - centerX - boundsPosX;
+        double translationY = (-1D * yLoc * scale) - centerY - boundsPosY;
+        double facingRadian = facing / 180D * Math.PI;
 
-		// Apply graphic transforms for structure.
-		AffineTransform newTransform = new AffineTransform();
-		newTransform.translate(translationX, translationY);
-		newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
+        // Apply graphic transforms for structure.
+        AffineTransform newTransform = new AffineTransform();
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
 
-		if (isSVG) {
-			// Draw buffered image of structure.
-			BufferedImage image = getBufferedImage(svg, width, length, patternSVG);
-			if (image != null) {
-				g2d.transform(newTransform);
-				g2d.drawImage(image, 0, 0, mapPanel);
-			}
-		}
-		else {
-			// Draw filled rectangle.
-			newTransform.scale(scalingWidth, scalingLength);
-			g2d.transform(newTransform);
-			g2d.setColor(color);
-			g2d.fill(bounds);
-		}
+        if (isSVG) {
+            // Draw buffered image of structure.
+            BufferedImage image = getBufferedImage(svg, width, length, patternSVG);
+            if (image != null) {
+                g2d.transform(newTransform);
+                g2d.drawImage(image, 0, 0, mapPanel);
+            }
+        }
+        else {
+            // Draw filled rectangle.
+            newTransform.scale(scalingWidth, scalingLength);
+            g2d.transform(newTransform);
+            g2d.setColor(color);
+            g2d.fill(bounds);
+        }
 
-		// Restore original graphic transforms.
-		g2d.setTransform(saveTransform);
-	}
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
 
-	/**
-	 * Draws a path shape on the map.
-	 * @param g2d the graphics2D context.
-	 * @param color the color to display the path shape.
-	 */
-	private void drawPathShape(Path2D pathShape, Graphics2D g2d, Color color) {
+    /**
+     * Draws a path shape on the map.
+     * @param g2d the graphics2D context.
+     * @param color the color to display the path shape.
+     */
+    private void drawPathShape(Path2D pathShape, Graphics2D g2d, Color color) {
 
-		// Save original graphics transforms.
-		AffineTransform saveTransform = g2d.getTransform();
+        // Save original graphics transforms.
+        AffineTransform saveTransform = g2d.getTransform();
 
-		// Determine bounds.
-		Rectangle2D bounds = pathShape.getBounds2D();
+        // Determine bounds.
+        Rectangle2D bounds = pathShape.getBounds2D();
 
-		// Determine transform information.
-		double boundsPosX = bounds.getX() * scale;
-		double boundsPosY = bounds.getY() * scale;
-		double centerX = bounds.getWidth() * scale / 2D;
-		double centerY = bounds.getHeight() * scale / 2D;
-		double translationX = (-1D * bounds.getCenterX() * scale) - centerX - boundsPosX;
-		double translationY = (-1D * bounds.getCenterY() * scale) - centerY - boundsPosY;
-		double facingRadian = Math.PI;
+        // Determine transform information.
+        double boundsPosX = bounds.getX() * scale;
+        double boundsPosY = bounds.getY() * scale;
+        double centerX = bounds.getWidth() * scale / 2D;
+        double centerY = bounds.getHeight() * scale / 2D;
+        double translationX = (-1D * bounds.getCenterX() * scale) - centerX - boundsPosX;
+        double translationY = (-1D * bounds.getCenterY() * scale) - centerY - boundsPosY;
+        double facingRadian = Math.PI;
 
-		// Apply graphic transforms for path shape.
-		AffineTransform newTransform = new AffineTransform();
-		newTransform.translate(translationX, translationY);
-		newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
+        // Apply graphic transforms for path shape.
+        AffineTransform newTransform = new AffineTransform();
+        newTransform.translate(translationX, translationY);
+        newTransform.rotate(facingRadian, centerX + boundsPosX, centerY + boundsPosY);
 
-		// Draw filled path shape.
-		newTransform.scale(scale, scale);
-		g2d.transform(newTransform);
-		g2d.setColor(color);
-		g2d.fill(pathShape);
+        // Draw filled path shape.
+        newTransform.scale(scale, scale);
+        g2d.transform(newTransform);
+        g2d.setColor(color);
+        g2d.fill(pathShape);
 
-		// Restore original graphic transforms.
-		g2d.setTransform(saveTransform);
-	}
+        // Restore original graphic transforms.
+        g2d.setTransform(saveTransform);
+    }
 
     /**
      * Gets a buffered image for a given graphics node.
@@ -424,157 +417,157 @@ public class StructureMapLayer implements SettlementMapLayer {
      * @param patternSVG the pattern SVG graphics node (null if no pattern).
      * @return buffered image.
      */
-	private BufferedImage getBufferedImage(
-		GraphicsNode svg, double width, double length, 
-		GraphicsNode patternSVG
-	) {
+    private BufferedImage getBufferedImage(
+            GraphicsNode svg, double width, double length, 
+            GraphicsNode patternSVG) {
 
-		// Get image cache for current scale or create it if it doesn't exist.
-		Map<BuildingKey, BufferedImage> imageCache = null;
-		if (svgImageCache.containsKey(scale)) {
-			imageCache = svgImageCache.get(scale);
-		}
-		else {
-			imageCache = new HashMap<BuildingKey, BufferedImage>(100);
-			svgImageCache.put(scale, imageCache);
-		}
+        // Get image cache for current scale or create it if it doesn't exist.
+        Map<BuildingKey, BufferedImage> imageCache = null;
+        if (svgImageCache.containsKey(scale)) {
+            imageCache = svgImageCache.get(scale);
+        }
+        else {
+            imageCache = new HashMap<BuildingKey, BufferedImage>(100);
+            svgImageCache.put(scale, imageCache);
+        }
 
-		// Get image from image cache or create it if it doesn't exist.
-		BufferedImage image = null;
-		if (imageCache.containsKey(svg)) image = imageCache.get(svg);
-		else {
-			BuildingKey buildingKey = new BuildingKey(svg, width, length);
-			image = createBufferedImage(svg, width, length, patternSVG);
-			imageCache.put(buildingKey, image);
-		}
+        // Get image from image cache or create it if it doesn't exist.
+        BufferedImage image = null;
+        BuildingKey buildingKey = new BuildingKey(svg, width, length);
+        if (imageCache.containsKey(buildingKey)) {
+            image = imageCache.get(buildingKey);
+        }
+        else {
+            image = createBufferedImage(svg, width, length, patternSVG);
+            imageCache.put(buildingKey, image);
+        }
 
-		return image;
-	}
+        return image;
+    }
 
-	/**
-	 * Creates a buffered image from a SVG graphics node.
-	 * @param svg the SVG graphics node.
-	 * @param width the structure width (meters).
-	 * @param length the structure length (meters).
-	 * @param patternSVG the pattern SVG graphics node (null if no pattern).
-	 * @return the created buffered image.
-	 */
-	private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length, 
-			GraphicsNode patternSVG) {
+    /**
+     * Creates a buffered image from a SVG graphics node.
+     * @param svg the SVG graphics node.
+     * @param width the structure width (meters).
+     * @param length the structure length (meters).
+     * @param patternSVG the pattern SVG graphics node (null if no pattern).
+     * @return the created buffered image.
+     */
+    private BufferedImage createBufferedImage(GraphicsNode svg, double width, double length, 
+            GraphicsNode patternSVG) {
 
-		int imageWidth = (int) (width * scale);
-		if (imageWidth <= 0) {
-			imageWidth = 1;
-		}
-		int imageLength = (int) (length * scale);
-		if (imageLength <= 0) {
-			imageLength = 1;
-		}
-		BufferedImage bufferedImage = new BufferedImage(
-			imageWidth, imageLength, 
-			BufferedImage.TYPE_INT_ARGB
-		);
+        int imageWidth = (int) (width * scale);
+        if (imageWidth <= 0) {
+            imageWidth = 1;
+        }
+        int imageLength = (int) (length * scale);
+        if (imageLength <= 0) {
+            imageLength = 1;
+        }
+        BufferedImage bufferedImage = new BufferedImage(
+                imageWidth, imageLength, 
+                BufferedImage.TYPE_INT_ARGB
+                );
 
-		// Determine bounds.
-		Rectangle2D bounds = svg.getBounds();
+        // Determine bounds.
+        Rectangle2D bounds = svg.getBounds();
 
-		// Determine transform information.
-		double scalingWidth = width / bounds.getWidth() * scale;
-		double scalingLength = length / bounds.getHeight() * scale;
+        // Determine transform information.
+        double scalingWidth = width / bounds.getWidth() * scale;
+        double scalingLength = length / bounds.getHeight() * scale;
 
-		// Draw the SVG image on the buffered image.
-		Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		svg.setTransform(AffineTransform.getScaleInstance(scalingWidth, scalingLength));
-		svg.paint(g2d);
+        // Draw the SVG image on the buffered image.
+        Graphics2D g2d = (Graphics2D) bufferedImage.getGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        svg.setTransform(AffineTransform.getScaleInstance(scalingWidth, scalingLength));
+        svg.paint(g2d);
 
-		// Draw repeating pattern SVG image on the buffered image.
-		if (patternSVG != null) {
-			double patternScaling = 0D;
-			double patternWidth = 0D;
-			double patternLength = 0D;
+        // Draw repeating pattern SVG image on the buffered image.
+        if (patternSVG != null) {
+            double patternScaling = 0D;
+            double patternWidth = 0D;
+            double patternLength = 0D;
 
-			double originalProportions = bounds.getWidth() / bounds.getHeight();
-			double finalProportions = width / length;
-			Rectangle2D patternBounds = patternSVG.getBounds();
-			if ((finalProportions / originalProportions) >= 1D) {
-				patternScaling = scalingLength;
-				patternLength = length * (patternBounds.getHeight() / bounds.getHeight());
-				patternWidth = patternLength * (patternBounds.getWidth() / patternBounds.getHeight());
-			}
-			else {
-				patternScaling = scalingWidth;
-				patternWidth = width * (patternBounds.getWidth() / bounds.getWidth());
-				patternLength = patternWidth * (patternBounds.getHeight() / patternBounds.getWidth());
-			}
+            double originalProportions = bounds.getWidth() / bounds.getHeight();
+            double finalProportions = width / length;
+            Rectangle2D patternBounds = patternSVG.getBounds();
+            if ((finalProportions / originalProportions) >= 1D) {
+                patternScaling = scalingLength;
+                patternLength = length * (patternBounds.getHeight() / bounds.getHeight());
+                patternWidth = patternLength * (patternBounds.getWidth() / patternBounds.getHeight());
+            }
+            else {
+                patternScaling = scalingWidth;
+                patternWidth = width * (patternBounds.getWidth() / bounds.getWidth());
+                patternLength = patternWidth * (patternBounds.getHeight() / patternBounds.getWidth());
+            }
 
-			AffineTransform patternTransform = new AffineTransform();
-			patternTransform.scale(patternScaling, patternScaling);
-			for (double x = 0D; x < length; x += patternLength) {
-				patternTransform.translate(0D, x * bounds.getHeight() / 2D);
-				double y = 0D;
-				for (; y < width; y += patternWidth) {
-					patternTransform.translate(y * bounds.getWidth() / 2D, 0D);
-					patternSVG.setTransform(patternTransform);
-					patternSVG.paint(g2d);
-					patternTransform.translate(y * bounds.getWidth() / -2D, 0D);
-				}
-				patternTransform.translate(0D,  x * bounds.getHeight() / -2D);
-			}
-		}
+            AffineTransform patternTransform = new AffineTransform();
+            patternTransform.scale(patternScaling, patternScaling);
+            for (double x = 0D; x < length; x += patternLength) {
+                patternTransform.translate(0D, x * bounds.getHeight() / 2D);
+                double y = 0D;
+                for (; y < width; y += patternWidth) {
+                    patternTransform.translate(y * bounds.getWidth() / 2D, 0D);
+                    patternSVG.setTransform(patternTransform);
+                    patternSVG.paint(g2d);
+                    patternTransform.translate(y * bounds.getWidth() / -2D, 0D);
+                }
+                patternTransform.translate(0D,  x * bounds.getHeight() / -2D);
+            }
+        }
 
-		// Cleanup and return image
-		g2d.dispose();
+        // Cleanup and return image
+        g2d.dispose();
 
-		return bufferedImage;
-	}
+        return bufferedImage;
+    }
 
-	@Override
-	public void destroy() {
-		// Clear all buffered image caches.
-		Iterator<Map<BuildingKey, BufferedImage>> i = svgImageCache.values().iterator();
-		while (i.hasNext()) {
-			i.next().clear();
-		}
-		svgImageCache.clear();
-	}
+    @Override
+    public void destroy() {
+        // Clear all buffered image caches.
+        Iterator<Map<BuildingKey, BufferedImage>> i = svgImageCache.values().iterator();
+        while (i.hasNext()) {
+            i.next().clear();
+        }
+        svgImageCache.clear();
+    }
 
-	/**
-	 * Inner class to serve as map key for building images.
-	 */
-	private class BuildingKey {
+    /**
+     * Inner class to serve as map key for building images.
+     */
+    private class BuildingKey {
 
-		private GraphicsNode svg;
-		private double width;
-		private double length;
+        private GraphicsNode svg;
+        private double width;
+        private double length;
 
-		BuildingKey(GraphicsNode svg, double width, double length) {
-			this.svg = svg;
-			this.width = width;
-			this.length = length;
-		}
+        BuildingKey(GraphicsNode svg, double width, double length) {
+            this.svg = svg;
+            this.width = width;
+            this.length = length;
+        }
 
-		@Override
-		public boolean equals(Object object) {
+        @Override
+        public boolean equals(Object object) {
 
-			boolean result = false;
-			if (object instanceof BuildingKey) {
-				BuildingKey buildingKeyObject = (BuildingKey) object;
-				if (
-					svg.equals(buildingKeyObject.svg) &&
-					(width == buildingKeyObject.width) && 
-					(length == buildingKeyObject.length)
-				) {
-					result = true;
-				}
-			}
+            boolean result = false;
+            if (object instanceof BuildingKey) {
+                BuildingKey buildingKeyObject = (BuildingKey) object;
+                if (
+                        svg.equals(buildingKeyObject.svg) &&
+                        (width == buildingKeyObject.width) && 
+                        (length == buildingKeyObject.length)) {
+                    result = true;
+                }
+            }
 
-			return result;
-		}
+            return result;
+        }
 
-		@Override
-		public int hashCode() {
-			return svg.hashCode() + (int) ((width + length) * 10D);
-		}
-	}
+        @Override
+        public int hashCode() {
+            return svg.hashCode() + (int) ((width + length) * 10D);
+        }
+    }
 }
