@@ -812,7 +812,7 @@ implements Serializable {
 		Iterator<Unit> i = units.iterator();
 		while (i.hasNext() && (result == null)) {
 			Unit unit = i.next();
-			if (unit.getName().equals(name)) {
+			if (unit.getName().equalsIgnoreCase(name)) {
 				result = unit;
 			}
 		}

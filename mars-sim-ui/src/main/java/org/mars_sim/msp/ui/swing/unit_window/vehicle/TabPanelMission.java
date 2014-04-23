@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MissionTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-23
  * @author Scott Davis
  */
 
@@ -197,25 +197,41 @@ extends TabPanel {
 		Vehicle vehicle = (Vehicle) unit;
 		Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
 
-		if (mission != null) missionCache = mission.getDescription();
-		else missionCache = null;
-		if (!missionCache.equals(missionTextArea.getText())) 
+		if (mission != null) {
+		    missionCache = mission.getDescription();
+		}
+		else {
+		    missionCache = null;
+		}
+		if (!missionTextArea.getText().equals(missionCache)) {
 			missionTextArea.setText(missionCache);
+		}
 
-		if (mission != null) missionPhaseCache = mission.getPhaseDescription();
-		else missionPhaseCache = null;
-		if (!missionPhaseCache.equals(missionPhaseTextArea.getText())) 
+		if (mission != null) {
+		    missionPhaseCache = mission.getPhaseDescription();
+		}
+		else {
+		    missionPhaseCache = null;
+		}
+		if (!missionPhaseTextArea.getText().equals(missionPhaseCache)) {
 			missionPhaseTextArea.setText(missionPhaseCache);
+		}
 
 		// Update member list
 		Collection<Person> tempCollection = null;
-		if (mission != null) tempCollection = mission.getPeople();
-		else tempCollection = new ConcurrentLinkedQueue<Person>();
+		if (mission != null) {
+		    tempCollection = mission.getPeople();
+		}
+		else {
+		    tempCollection = new ConcurrentLinkedQueue<Person>();
+		}
 		if (!Arrays.equals(memberCache.toArray(), tempCollection.toArray())) {
 			memberCache = tempCollection;
 			memberListModel.clear();
 			Iterator<Person> i = memberCache.iterator();
-			while (i.hasNext()) memberListModel.addElement(i.next());
+			while (i.hasNext()) {
+			    memberListModel.addElement(i.next());
+			}
 		}
 
 		// Update mission and monitor buttons.

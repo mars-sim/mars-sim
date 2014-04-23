@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-23
  * @author Scott Davis
  */
 
@@ -187,26 +187,32 @@ implements Serializable {
             Settlement settlement = person.getSettlement();
 
             // Check if available rover.
-            if (!areVehiclesAvailable(settlement, false))
+            if (!areVehiclesAvailable(settlement, false)) {
                 missionPossible = false;
+            }
 
             // Check if available backup rover.
-            if (!hasBackupRover(settlement))
+            if (!hasBackupRover(settlement)) {
                 missionPossible = false;
+            }
 
             // Check if minimum number of people are available at the
             // settlement.
             // Plus one to hold down the fort.
-            if (!minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1)))
+            if (!minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1))) {
                 missionPossible = false;
+            }
 
             // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE)
+            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
+                    RoverMission.MIN_PEOPLE) {
                 missionPossible = false;
+            }
 
             // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement))
+            if (!RoverMission.hasEnoughBasicResources(settlement)) {
                 missionPossible = false;
+            }
 
             // Check if there are any desirable settlements within range.
             double topSettlementDesirability = 0D;
@@ -214,22 +220,23 @@ implements Serializable {
             if (vehicle != null) {
                 Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
                         person, settlement, vehicle.getRange());
-                if (desirableSettlements.size() == 0)
+                if (desirableSettlements.size() == 0) {
                     missionPossible = false;
-                Iterator<Settlement> i = desirableSettlements.keySet()
-                        .iterator();
+                }
+                Iterator<Settlement> i = desirableSettlements.keySet().iterator();
                 while (i.hasNext()) {
                     Settlement desirableSettlement = i.next();
-                    double desirability = desirableSettlements
-                            .get(desirableSettlement);
-                    if (desirability > topSettlementDesirability)
+                    double desirability = desirableSettlements.get(desirableSettlement);
+                    if (desirability > topSettlementDesirability) {
                         topSettlementDesirability = desirability;
+                    }
                 }
             }
 
             // Check for embarking missions.
-            if (VehicleMission.hasEmbarkingMissions(settlement))
+            if (VehicleMission.hasEmbarkingMissions(settlement)) {
                 missionPossible = false;
+            }
             
             // Check if starting settlement has minimum amount of methane fuel.
             AmountResource methane = AmountResource.findAmountResource("methane");
@@ -246,14 +253,16 @@ implements Serializable {
                 // Crowding modifier.
                 int crowding = settlement.getCurrentPopulationNum()
                         - settlement.getPopulationCapacity();
-                if (crowding > 0)
+                if (crowding > 0) {
                     missionProbability *= (crowding + 1);
-
+                }
+                    
                 // Job modifier.
                 Job job = person.getMind().getJob();
-                if (job != null)
-                    missionProbability *= job
-                            .getStartMissionProbabilityModifier(TravelToSettlement.class);
+                if (job != null) {
+                    missionProbability *= job.getStartMissionProbabilityModifier(
+                            TravelToSettlement.class);
+                }
             }
         }
 
@@ -346,15 +355,40 @@ implements Serializable {
             Settlement settlement = i.next();
             double distance = startingSettlement.getCoordinates().getDistance(
                     settlement.getCoordinates());
-            if ((startingSettlement != settlement)
-                    && (distance <= (range * RANGE_BUFFER))) {
-                double desirability = getDestinationSettlementDesirability(
-                        person, startingSettlement, settlement);
+            boolean isTravelDestination = isCurrentTravelDestination(settlement);
+            if ((startingSettlement != settlement) && (distance <= (range * RANGE_BUFFER)) 
+                    && !isTravelDestination) {
+                
+                double desirability = getDestinationSettlementDesirability(person, 
+                        startingSettlement, settlement);
                 if (desirability > 0D)
                     result.put(settlement, desirability);
             }
         }
 
+        return result;
+    }
+    
+    /**
+     * Checks if a settlement is the destination of a current travel to settlement mission.
+     * @param settlement the settlement.
+     * @return true if settlement is a travel destination.
+     */
+    private static boolean isCurrentTravelDestination(Settlement settlement) {
+        
+        boolean result = false;
+        
+        Iterator<Mission> i = Simulation.instance().getMissionManager().getMissions().iterator();
+        while (i.hasNext()) {
+            Mission mission = i.next();
+            if (mission instanceof TravelToSettlement) {
+                Settlement destination = ((TravelToSettlement) mission).getDestinationSettlement();
+                if (settlement.equals(destination)) {
+                    result = true;
+                }
+            }
+        }
+        
         return result;
     }
 
