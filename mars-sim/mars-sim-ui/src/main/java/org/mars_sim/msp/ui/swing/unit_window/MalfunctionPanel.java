@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MalfunctionPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-23
  * @author Scott Davis
  */
 
@@ -28,7 +28,7 @@ public class MalfunctionPanel extends JPanel {
     private JLabel partsLabel; // The repair parts label.
     
     /** 
-     * Constructs a MalfunctionPanel object with a name prefex..
+     * Constructs a MalfunctionPanel object with a name prefix.
      * @param malfunction the malfunction to display 
      */
     public MalfunctionPanel(Malfunction malfunction) {

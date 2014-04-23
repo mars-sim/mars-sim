@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ArrivingSettlement.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.settlement;
@@ -317,6 +317,7 @@ implements Transportable, Serializable {
 				Equipment equipment = EquipmentFactory.getEquipment(equipmentType, 
 						newSettlement.getCoordinates(), false);
 				equipment.setName(unitManager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+				unitManager.addUnit(equipment);
 				newSettlement.getInventory().storeUnit(equipment);
 			}
 		}

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.06 2014-03-14
+ * @version 3.06 2014-04-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -422,11 +422,15 @@ implements Serializable {
         // Check if EVA suit is available.
         if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
             result = false;
+            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+                    " due to not able to find good EVA suit.");
         }
         
         // Check if person is incapacitated.
         if (person.getPerformanceRating() == 0D) {
             result = false;
+            logger.severe(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
+                    " due to performance rating is 0.");
         }
         
         return result;

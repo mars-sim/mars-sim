@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.06 2014-04-15
+ * @version 3.06 2014-04-22
  * @author Scott Davis
  */
 
@@ -540,7 +540,7 @@ implements Serializable {
             }
             else {
                 endTask();
-                throw new IllegalStateException(person.getName() + " unable to exit airlock of " + 
+                logger.severe(person.getName() + " unable to exit airlock of " + 
                         airlock.getEntityName());
             }
         }
@@ -576,7 +576,7 @@ implements Serializable {
             }
             else {
                 endTask();
-                throw new IllegalStateException(person.getName() + " unable to enter airlock of " + 
+                logger.severe(person.getName() + " unable to enter airlock of " + 
                         airlock.getEntityName());
             }
         }
