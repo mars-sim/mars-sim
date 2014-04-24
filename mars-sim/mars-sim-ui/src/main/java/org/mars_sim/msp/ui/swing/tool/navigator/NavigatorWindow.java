@@ -9,6 +9,7 @@ package org.mars_sim.msp.ui.swing.tool.navigator;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -185,6 +186,7 @@ implements ActionListener {
 		rightTopPane.add(mapPane);
 		JPanel mapPaneInner = new JPanel(new BorderLayout(0, 0));
 		mapPaneInner.setBackground(Color.black);
+		mapPaneInner.setCursor(new Cursor(java.awt.Cursor.CROSSHAIR_CURSOR));
 
 		map = new MapPanel();
 		map.addMouseListener(new mapClickListener());
