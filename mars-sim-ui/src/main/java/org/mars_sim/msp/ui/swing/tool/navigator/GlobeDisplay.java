@@ -213,7 +213,7 @@ implements Runnable {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				navwin.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				navwin.setCursor(new Cursor(Cursor.MOVE_CURSOR));
 				super.mouseReleased(e);
 			}
 
