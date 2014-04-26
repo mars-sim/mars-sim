@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.06 2014-02-09
+ * @version 3.06 2014-04-24
  * @author Scott Davis
  */
 
@@ -355,7 +355,9 @@ implements Serializable {
         super.destroy();
         
         destBuilding = null;
-        walkingPath.destroy();
-        walkingPath = null;
+        if (walkingPath != null) {
+            walkingPath.destroy();
+            walkingPath = null;
+        }
     }
 }

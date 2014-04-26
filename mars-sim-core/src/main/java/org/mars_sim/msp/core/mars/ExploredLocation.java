@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploredLocation.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-24
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ public class ExploredLocation implements Serializable {
 	private boolean explored;
 	private boolean reserved;
 	private Settlement settlement;
+	private int numEstimationImprovement;
 	
 	/**
 	 * Constructor
@@ -45,6 +46,7 @@ public class ExploredLocation implements Serializable {
 		mined = false;
 		explored = false;
 		reserved = false;
+		numEstimationImprovement = 0;
 	}
 	
 	/**
@@ -62,6 +64,21 @@ public class ExploredLocation implements Serializable {
 	 */
 	public Map<String, Double> getEstimatedMineralConcentrations() {
 		return estimatedMineralConcentrations;
+	}
+	
+	/**
+	 * Get the number of times the mineral concentration estimation has been improved.
+	 * @return number of times.
+	 */
+	public int getNumEstimationImprovement() {
+	    return numEstimationImprovement;
+	}
+	
+	/**
+	 * Add an mineral concentration estimation improvement.
+	 */
+	public void addEstimationImprovement() {
+	    numEstimationImprovement++;
 	}
 	
 	/**
