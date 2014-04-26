@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExploreSite.java
- * @version 3.06 2014-02-25
+ * @version 3.06 2014-04-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -239,6 +239,11 @@ implements Serializable {
 				else estimatedConcentration -= estimationImprovement;
 				estimatedMineralConcentrations.put(mineralType, estimatedConcentration);
 			}
+			
+			// Add to site mineral concentration estimation improvement number.
+			site.addEstimationImprovement();
+			logger.fine("Explored site " + site.getLocation().getFormattedString() + " estimation improvement: " + 
+			        site.getNumEstimationImprovement() + " from exploring site");
 		}
 	}
 	

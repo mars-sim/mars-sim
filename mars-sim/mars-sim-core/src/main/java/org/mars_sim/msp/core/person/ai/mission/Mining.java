@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.06 2014-03-17
+ * @version 3.06 2014-04-24
  * @author Scott Davis
  */
 
@@ -71,6 +71,10 @@ extends RoverMission {
 
 	/** Minimum amount (kg) of an excavated mineral that can be collected. */
 	private static final double MINIMUM_COLLECT_AMOUNT = 10D;
+	
+	/** The minimum number of mineral concentration estimation improvements for 
+	 * an exploration site for it to be considered mature enough to mine. */
+	private static final int MATURE_ESTIMATE_NUM = 10;
 
 	// Light utility vehicle attachment parts for mining.
 	public static final String PNEUMATIC_DRILL = "pneumatic drill";
@@ -668,10 +672,9 @@ extends RoverMission {
 
     /**
      * Determines the best available mining site.
-     * @param roverRange the range of the mission rover (km).
+     * @param rover the mission rover.
      * @param homeSettlement the mission home settlement.
      * @return best explored location for mining, or null if none found.
-     * @throws MissionException if error determining mining site.
      */
     private static ExploredLocation determineBestMiningSite(Rover rover,
             Settlement homeSettlement) {
@@ -694,7 +697,10 @@ extends RoverMission {
                     .getSurfaceFeatures().getExploredLocations().iterator();
             while (i.hasNext()) {
                 ExploredLocation site = i.next();
-                if (!site.isMined() && !site.isReserved() && site.isExplored()) {
+                
+                boolean isMature = (site.getNumEstimationImprovement() >= MATURE_ESTIMATE_NUM);
+                
+                if (!site.isMined() && !site.isReserved() && site.isExplored() && isMature) {
                     // Only mine from sites explored from home settlement.
                     if (homeSettlement.equals(site.getSettlement())) {
                         Coordinates siteLocation = site.getLocation();
