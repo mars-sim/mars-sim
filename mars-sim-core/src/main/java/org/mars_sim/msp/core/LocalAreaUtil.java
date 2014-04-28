@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 
@@ -89,10 +89,24 @@ public class LocalAreaUtil {
      * @return random X/Y location relative to the center of the bounded object.
      */
     public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject) {
+        return getRandomInteriorLocation(boundedObject, true);
+    }
+    
+    /**
+     * Gets a random location inside a local bounded object.
+     * @param boundedObject the local bounded object.
+     * @param useBoundary true if inner boundary distance should be used.
+     * @return random X/Y location relative to the center of the bounded object.
+     */
+    public static Point2D.Double getRandomInteriorLocation(LocalBoundedObject boundedObject, 
+            boolean useBoundary) {
         
         Point2D.Double result = new Point2D.Double(0D, 0D);
         
-        double xRange = boundedObject.getWidth() - (INNER_BOUNDARY_DISTANCE * 2D);
+        double xRange = boundedObject.getWidth();
+        if (useBoundary) {
+            xRange -= (INNER_BOUNDARY_DISTANCE * 2D);
+        }
         if (xRange > 0D) {
             result.x = RandomUtil.getRandomDouble(xRange) - (xRange / 2D);
         }
@@ -100,7 +114,10 @@ public class LocalAreaUtil {
             result.x = 0D;
         }
         
-        double yRange = boundedObject.getLength() - (INNER_BOUNDARY_DISTANCE * 2D);
+        double yRange = boundedObject.getLength();
+        if (useBoundary) {
+            yRange -= (INNER_BOUNDARY_DISTANCE * 2D);
+        }
         if (yRange > 0D) {
             result.y = RandomUtil.getRandomDouble(yRange) - (yRange / 2D);
         }

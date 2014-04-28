@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructBuilding.java
- * @version 3.06 2014-02-24
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,17 +11,25 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.job.Job;
+import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
+import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionManager;
+import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.construction.ConstructionSite;
 import org.mars_sim.msp.core.structure.construction.ConstructionStage;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
@@ -37,6 +45,9 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+    private static Logger logger = Logger.getLogger(ConstructBuilding.class.getName());
+	
 	// TODO Task phases should be enums
 	private static final String CONSTRUCTION = "Construction";
 
@@ -47,10 +58,37 @@ implements Serializable {
 	private ConstructionStage stage;
 	private ConstructionSite site;
 	private List<GroundVehicle> vehicles;
-	private Airlock airlock;
 	private LightUtilityVehicle luv;
 	private boolean operatingLUV;
 
+	/**
+     * Constructor.
+     * @param person the person performing the task.
+     */
+    public ConstructBuilding(Person person) {
+        // Use EVAOperation parent constructor.
+        super("Construct Building", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        
+        BuildingConstructionMission mission = getMissionNeedingAssistance();
+        if ((mission != null) && canConstruct(person, mission.getConstructionSite())) {
+            
+            // Initialize data members.
+            this.stage = mission.getConstructionStage();
+            this.site = mission.getConstructionSite();
+            this.vehicles = mission.getConstructionVehicles();
+            
+            // Determine location for construction site.
+            Point2D constructionSiteLoc = determineConstructionLocation();
+            setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
+            
+            // Add task phase
+            addPhase(CONSTRUCTION);
+        }
+        else {
+            endTask();
+        }
+    }
+	
 	/**
 	 * Constructor.
 	 * @param person the person performing the task.
@@ -68,19 +106,67 @@ implements Serializable {
         this.site = site;
         this.vehicles = vehicles;
         
-        // Get an available airlock.
-        airlock = getClosestWalkableAvailableAirlock(person, site.getXLocation(), 
-                site.getYLocation());
-        if (airlock == null) {
-            endTask();
-        }
-        
         // Determine location for construction site.
         Point2D constructionSiteLoc = determineConstructionLocation();
         setOutsideSiteLocation(constructionSiteLoc.getX(), constructionSiteLoc.getY());
         
         // Add task phase
         addPhase(CONSTRUCTION);
+    }
+	
+    /** 
+     * Returns the weighted probability that a person might perform this task.
+     * It should return a 0 if there is no chance to perform this task given the 
+     * person and his/her situation.
+     * @param person the person to perform the task
+     * @return the weighted probability that a person might perform this task
+     */
+    public static double getProbability(Person person) {
+        double result = 0D;
+
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            // Check all building construction missions occurring at the settlement.
+            try {
+                List<BuildingConstructionMission> missions = getAllMissionsNeedingAssistance(
+                        person.getSettlement());
+                result = 50D * missions.size();
+            }
+            catch (Exception e) {
+                logger.log(Level.SEVERE, "Error finding building construction missions.", e);
+            }
+        }
+
+        // Check if an airlock is available
+        if (getWalkableAvailableAirlock(person) == null) {
+            result = 0D;
+        }
+
+        // Check if it is night time.
+        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
+            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+                result = 0D;
+        } 
+        
+        // Crowded settlement modifier
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Settlement settlement = person.getSettlement();
+            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
+                result *= 2D;
+            }
+        }
+        
+        // Effort-driven task modifier.
+        result *= person.getPerformanceRating();
+        
+        // Job modifier.
+        Job job = person.getMind().getJob();
+        if (job != null) {
+            result *= job.getStartTaskProbabilityModifier(ConstructBuilding.class);        
+        }
+    
+        return result;
     }
     
     /**
@@ -111,12 +197,53 @@ implements Serializable {
     }
     
     /**
+     * Gets a random building construction mission that needs assistance.
+     * @return construction mission or null if none found.
+     */
+    private BuildingConstructionMission getMissionNeedingAssistance() {
+        
+        BuildingConstructionMission result = null;
+        
+        List<BuildingConstructionMission> constructionMissions = getAllMissionsNeedingAssistance(
+                person.getSettlement());
+        
+        if (constructionMissions.size() > 0) {
+            int index = RandomUtil.getRandomInt(constructionMissions.size() - 1);
+            result = (BuildingConstructionMission) constructionMissions.get(index);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of all building construction missions that need assistance at a settlement.
+     * @param settlement the settlement.
+     * @return list of building construction missions.
+     */
+    private static List<BuildingConstructionMission> getAllMissionsNeedingAssistance(
+            Settlement settlement) {
+        
+        List<BuildingConstructionMission> result = new ArrayList<BuildingConstructionMission>();
+        
+        MissionManager manager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = manager.getMissionsForSettlement(settlement).iterator();
+        while (i.hasNext()) {
+            Mission mission = (Mission) i.next();
+            if (mission instanceof BuildingConstructionMission) {
+                result.add((BuildingConstructionMission) mission);
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Determine location to go to at construction site.
      * @return location.
      */
     private Point2D determineConstructionLocation() {
         
-        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site);
+        Point2D.Double relativeLocSite = LocalAreaUtil.getRandomInteriorLocation(site, false);
         Point2D.Double settlementLocSite = LocalAreaUtil.getLocalRelativeLocation(relativeLocSite.getX(), 
                 relativeLocSite.getY(), site);
         
@@ -341,7 +468,6 @@ implements Serializable {
             vehicles.clear();
         }
         vehicles = null;
-        airlock = null;
         luv = null;
     }
 }

@@ -61,7 +61,7 @@ implements Serializable {
         currentTask = null;
 
         // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[41];
+        availableTasks = (Class<? extends Task>[]) new Class[43];
         availableTasks[0] = Relax.class;
         availableTasks[1] = Yoga.class;
         availableTasks[2] = TendGreenhouse.class;
@@ -103,6 +103,8 @@ implements Serializable {
         availableTasks[38] = DigLocalIce.class;
         availableTasks[39] = ConsolidateContainers.class;
         availableTasks[40] = Walk.class;
+        availableTasks[41] = ConstructBuilding.class;
+        availableTasks[42] = SalvageBuilding.class;
 
         // Initialize cache values.
         timeCache = null;
