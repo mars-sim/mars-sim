@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleAirlock.java
- * @version 3.06 2014-03-14
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 
@@ -82,7 +82,7 @@ public class VehicleAirlock extends Airlock {
                     // Exit person to inside vehicle.
                     vehicle.getInventory().storeUnit(person);
                 }
-                else {
+                else if (LocationSituation.BURIED != person.getLocationSituation()) {
                     throw new IllegalStateException(person + " is entering " + getEntityName() + 
                             " from an airlock but is not outside.");
                 }
@@ -92,7 +92,7 @@ public class VehicleAirlock extends Airlock {
                     // Exit person outside vehicle.  
                     vehicle.getInventory().retrieveUnit(person);
                 }
-                else {
+                else if (LocationSituation.BURIED != person.getLocationSituation()) {
                     throw new IllegalStateException(person + " is exiting " + getEntityName() + 
                             " from an airlock but is not inside.");
                 }

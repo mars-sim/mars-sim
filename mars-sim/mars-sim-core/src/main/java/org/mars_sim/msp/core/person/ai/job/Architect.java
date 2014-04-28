@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Architect.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -17,9 +17,11 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
+import org.mars_sim.msp.core.person.ai.task.ConstructBuilding;
 import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
 import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.ManufactureConstructionMaterials;
+import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.structure.Settlement;
 
 /** 
@@ -44,6 +46,8 @@ implements Serializable {
 		jobTasks.add(DigLocalRegolith.class);
 		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(ManufactureConstructionMaterials.class);
+		jobTasks.add(ConstructBuilding.class);
+		jobTasks.add(SalvageBuilding.class);
 
 		// Add architect-related missions.
 		jobMissionStarts.add(BuildingConstructionMission.class);

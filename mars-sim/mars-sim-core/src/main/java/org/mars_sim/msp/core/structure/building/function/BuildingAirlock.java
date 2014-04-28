@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-03-14
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 
@@ -73,7 +73,7 @@ public class BuildingAirlock extends Airlock {
                     BuildingManager.addPersonToBuildingSameLocation(person, building);
                     inv.storeUnit(person);
                 }
-                else {
+                else if (LocationSituation.BURIED != person.getLocationSituation()) {
                     throw new IllegalStateException(person + " is entering " + getEntityName() + 
                             " from an airlock but is not outside.");
                 }
@@ -84,7 +84,7 @@ public class BuildingAirlock extends Airlock {
                     BuildingManager.removePersonFromBuilding(person, building);
                     inv.retrieveUnit(person);
                 }
-                else {
+                else if (LocationSituation.BURIED != person.getLocationSituation()) {
                     throw new IllegalStateException(person + " is exiting " + getEntityName() + 
                             " from an airlock but is not inside.");
                 }
