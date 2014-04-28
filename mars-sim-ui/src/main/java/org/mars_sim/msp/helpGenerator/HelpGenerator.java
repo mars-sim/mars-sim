@@ -65,7 +65,7 @@ public class HelpGenerator {
 	private static int filesNotGenerated = 0;
 
 	/**
-	 * insert html header with given page title into given stringbuffer.
+	 * insert html header with given page title into given string buffer.
 	 * @param s {@link StringBuffer}
 	 * @param title {@link String}
 	 */
