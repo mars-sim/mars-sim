@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TempSimulationConfigEditor.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.configeditor;
@@ -193,7 +193,7 @@ extends JDialog {
 	}
 
 	/**
-	 * Adds a new settlement  with default values.
+	 * Adds a new settlement with default values.
 	 */
 	private void addNewSettlement() {
 		SettlementInfo settlement = determineNewSettlementConfiguration();
@@ -387,7 +387,7 @@ extends JDialog {
 		String formattedLatitude = Coordinates.getFormattedLatitudeString(phi);
 		int degreeIndex = formattedLatitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 		return
-			formattedLatitude.substring(0, degreeIndex) +
+			formattedLatitude.substring(0, degreeIndex) + " " +
 			formattedLatitude.substring(degreeIndex + 1, formattedLatitude.length())
 		;
 	}
@@ -401,7 +401,7 @@ extends JDialog {
 		String formattedLongitude = Coordinates.getFormattedLongitudeString(theta);
 		int degreeIndex = formattedLongitude.indexOf(Msg.getString("direction.degreeSign")); //$NON-NLS-1$
 		return
-			formattedLongitude.substring(0, degreeIndex) +
+			formattedLongitude.substring(0, degreeIndex) + " " +
 			formattedLongitude.substring(degreeIndex + 1, formattedLongitude.length())
 		;
 	}
@@ -435,7 +435,12 @@ extends JDialog {
 			super();
 
 			// Add table columns.
-			columns = new String[] { Msg.getString("TempSimulationConfigEditor.column.name"), Msg.getString("TempSimulationConfigEditor.column.template"), Msg.getString("TempSimulationConfigEditor.column.population"), Msg.getString("TempSimulationConfigEditor.column.latitude"), Msg.getString("TempSimulationConfigEditor.column.longitude") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+			columns = new String[] { Msg.getString("TempSimulationConfigEditor.column.name"), 
+			        Msg.getString("TempSimulationConfigEditor.column.template"), 
+			        Msg.getString("TempSimulationConfigEditor.column.population"), 
+			        Msg.getString("TempSimulationConfigEditor.column.latitude"), 
+			        Msg.getString("TempSimulationConfigEditor.column.longitude") 
+			        }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
 			// Load default settlements.
 			settlements = new ArrayList<SettlementInfo>();
@@ -529,7 +534,7 @@ extends JDialog {
 						break;
 					case 1:
 						info.template = (String) aValue;
-						// info.population = determineNewSettlementPopulation(info.template);
+						info.population = determineNewSettlementPopulation(info.template);
 						break;
 					case 2:
 						info.population = (String) aValue;
@@ -543,6 +548,7 @@ extends JDialog {
 				}
 
 				checkForErrors();
+				fireTableDataChanged();
 			}
 		}
 
@@ -610,7 +616,8 @@ extends JDialog {
 					setError(Msg.getString("TempSimulationConfigEditor.error.latitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLatitude = settlement.latitude.trim().toUpperCase();
-					if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) && !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (!cleanLatitude.endsWith(Msg.getString("direction.northShort")) && 
+					        !cleanLatitude.endsWith(Msg.getString("direction.southShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(
 								"TempSimulationConfigEditor.error.latitudeEndWith", //$NON-NLS-1$
@@ -638,7 +645,8 @@ extends JDialog {
 					setError(Msg.getString("TempSimulationConfigEditor.error.longitudeMissing")); //$NON-NLS-1$
 				} else {
 					String cleanLongitude = settlement.longitude.trim().toUpperCase();
-					if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) && !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
+					if (!cleanLongitude.endsWith(Msg.getString("direction.westShort")) && 
+					        !cleanLongitude.endsWith(Msg.getString("direction.eastShort"))) { //$NON-NLS-1$ //$NON-NLS-2$
 						setError(
 							Msg.getString(
 								"TempSimulationConfigEditor.error.longitudeEndWith", //$NON-NLS-1$
