@@ -24,9 +24,9 @@ implements Serializable {
 	private static final double SEA_LEVEL_AIR_PRESSURE = .009D;
 	/** Sea level air density in kg/m^3. */
 	private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
-	/** Mar's gravitational acceleration at sea level in m/sec^2. */
+	/** Mars' gravitational acceleration at sea level in m/sec^2. */
 	private static final double SEA_LEVEL_GRAVITY = 3.0D;
-	/** exreme cold temperatures at Mars. */
+	/** extreme cold temperatures at Mars. */
 	private static final double EXTREME_COLD = -120D;
 
 	/** Constructs a Weather object */
@@ -54,7 +54,7 @@ implements Serializable {
 
 	/**
 	 * Gets the surface temperature at a given location.
-	 * @return temperature in celsius.
+	 * @return temperature in Celsius.
 	 */
 	public double getTemperature(Coordinates location) {
 		// easy implementation, needs revision for phi
@@ -76,7 +76,7 @@ implements Serializable {
 
 			// + getSurfaceSunlight * (80D / 127D (max sun))
 			// if sun full we will get -40D the avg, if night or twilight we will get 
-			// a smoth temperature change and in the night -120D
+			// a smooth temperature change and in the night -120D
 
 			temperature = temperature + surfaceFeatures.getSurfaceSunlight(location) * 0.629921D;
 
@@ -86,7 +86,7 @@ implements Serializable {
 			temperature = temperature - (terrainElevation.getElevation(location) * 5D);
 
 			// - ((math.pi/2) / (phi of location)) * 20
-			// guess, but could work, later we can implement real physic
+			// guess, but could work, later we can implement real physics
 
 			double piHalf = Math.PI / 2.0;
 			double degrees = 0;
