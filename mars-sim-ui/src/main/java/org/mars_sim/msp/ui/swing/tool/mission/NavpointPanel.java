@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * NavpointPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-26
  * @author Scott Davis
  */
 
@@ -225,11 +225,9 @@ implements ListSelectionListener, MissionListener {
 						trailLayer.setSingleVehicle(((VehicleMission) mission).getVehicle());
                     }
                     
-					if (mission instanceof TravelMission) {
-						navpointLayer.setSingleMission(mission);
-						navpointLayer.setSelectedNavpoint(null);
-						navpointTableModel.updateNavpoints();
-					}
+					navpointLayer.setSingleMission(mission);
+					navpointLayer.setSelectedNavpoint(null);
+					navpointTableModel.updateNavpoints();
                     
                     if ((mission instanceof Exploration) || (mission instanceof Mining)) {
                         if (!mapPane.hasMapLayer(mineralLayer)) mapPane.addMapLayer(mineralLayer);
@@ -342,6 +340,7 @@ implements ListSelectionListener, MissionListener {
 		 * Updates the navpoints for the table.
 		 */
 		public void updateNavpoints() {
+		    
 			if ((currentMission != null) && (currentMission instanceof TravelMission)) {
 				navpoints.clear();
 				TravelMission travelMission = (TravelMission) currentMission;
