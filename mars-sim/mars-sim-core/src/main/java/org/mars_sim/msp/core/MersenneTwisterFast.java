@@ -8,7 +8,7 @@ import java.util.Random;
 
 /** 
  * <h3>MersenneTwister and MersenneTwisterFast</h3>
- * <p><b>Version 16</b>, based on version MT199937(99/10/29)
+ * <p><b>Version 20</b>, based on version MT199937(99/10/29)
  * of the Mersenne Twister algorithm found at 
  * <a href="http://www.math.keio.ac.jp/matumoto/emt.html">
  * The Mersenne Twister Home Page</a>, with the initialization
@@ -45,6 +45,21 @@ import java.util.Random;
  * Vol. 8, No. 1, January 1998, pp 3--30.
  *
  * <h3>About this Version</h3>
+ *
+ * <p><b>Changes since V19:</b> nextFloat(boolean, boolean) now returns float,
+ * not double.
+ *
+ * <p><b>Changes since V18:</b> Removed old final declarations, which used to
+ * potentially speed up the code, but no longer.
+ *
+ * <p><b>Changes since V17:</b> Removed vestigial references to &= 0xffffffff
+ * which stemmed from the original C code.  The C code could not guarantee that
+ * ints were 32 bit, hence the masks.  The vestigial references in the Java
+ * code were likely optimized out anyway.
+ *
+ * <p><b>Changes since V16:</b> Added nextDouble(includeZero, includeOne) and
+ * nextFloat(includeZero, includeOne) to allow for half-open, fully-closed, and
+ * fully-open intervals.
  *
  * <p><b>Changes Since V15:</b> Added serialVersionUID to quiet compiler warnings
  * from Sun's overly verbose compilers as of JDK 1.5.
@@ -154,8 +169,9 @@ import java.util.Random;
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE.
  *
- @version 16
+ @version 20
 */
+
 
 // Note: this class is hard-inlined in all of its methods.  This makes some of
 // the methods well-nigh unreadable in their complexity.  In fact, the Mersenne
@@ -163,34 +179,29 @@ import java.util.Random;
 // on the code, I strongly suggest looking at MersenneTwister.java first.
 // -- Sean
 
-public strictfp class MersenneTwisterFast
-implements Serializable, Cloneable {
-
-	/** Serialization id, locked as of Version 15. */
-	private static final long serialVersionUID = -8219700664442619525L;
-
-	// Period parameters
-	private static final int N = 624;
-	private static final int M = 397;
-	private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant vector a
-	/** most significant w-r bits. */
-	private static final int UPPER_MASK = 0x80000000;
-	/** least significant r bits. */
-	private static final int LOWER_MASK = 0x7fffffff;
+public strictfp class MersenneTwisterFast implements Serializable, Cloneable
+    {
+    // Serialization
+    private static final long serialVersionUID = -8219700664442619525L;  // locked as of Version 15
+    
+    // Period parameters
+    private static final int N = 624;
+    private static final int M = 397;
+    private static final int MATRIX_A = 0x9908b0df;   //    private static final * constant vector a
+    private static final int UPPER_MASK = 0x80000000; // most significant w-r bits
+    private static final int LOWER_MASK = 0x7fffffff; // least significant r bits
 
 
-	// Tempering parameters
-	private static final int TEMPERING_MASK_B = 0x9d2c5680;
-	private static final int TEMPERING_MASK_C = 0xefc60000;
-
-	/** the array for the state vector. */
-	private int mt[];
-	/** mti==N+1 means mt[N] is not initialized. */
-	private int mti;
-	private int mag01[];
-
-	///** a good initial seed (of int size, though stored in a long). */
-	//private static final long GOOD_SEED = 4357;
+    // Tempering parameters
+    private static final int TEMPERING_MASK_B = 0x9d2c5680;
+    private static final int TEMPERING_MASK_C = 0xefc60000;
+    
+    private int mt[]; // the array for the state vector
+    private int mti; // mti==N+1 means mt[N] is not initialized
+    private int mag01[];
+    
+    // a good initial seed (of int size, though stored in a long)
+    //private static final long GOOD_SEED = 4357;
 
     private double __nextNextGaussian;
     private boolean __haveNextNextGaussian;
@@ -201,8 +212,8 @@ implements Serializable, Cloneable {
         try
             {
             MersenneTwisterFast f = (MersenneTwisterFast)(super.clone());
-            f.mt = mt.clone();
-            f.mag01 = mag01.clone();
+            f.mt = (int[])(mt.clone());
+            f.mag01 = (int[])(mag01.clone());
             return f;
             }
         catch (CloneNotSupportedException e) { throw new InternalError(); } // should never happen
@@ -263,7 +274,7 @@ implements Serializable, Cloneable {
      * as a long, it's best to make sure it's actually an integer.
      *
      */
-    public MersenneTwisterFast(final long seed)
+    public MersenneTwisterFast(long seed)
         {
         setSeed(seed);
         }
@@ -275,7 +286,7 @@ implements Serializable, Cloneable {
      * in the array are used; if the array is shorter than this then
      * integers are repeatedly used in a wrap-around fashion.
      */
-    public MersenneTwisterFast(final int[] array)
+    public MersenneTwisterFast(int[] array)
         {
         setSeed(array);
         }
@@ -287,7 +298,7 @@ implements Serializable, Cloneable {
      * only uses the first 32 bits for its seed).   
      */
 
-    synchronized public void setSeed(final long seed)
+    synchronized public void setSeed(long seed)
         {
         // Due to a bug in java.util.Random clear up to 1.2, we're
         // doing our own Gaussian variable.
@@ -308,7 +319,7 @@ implements Serializable, Cloneable {
             /* In the previous versions, MSBs of the seed affect   */
             /* only MSBs of the array mt[].                        */
             /* 2002/01/09 modified by Makoto Matsumoto             */
-            mt[mti] &= 0xffffffff;
+            // mt[mti] &= 0xffffffff;
             /* for >32 bit machines */
             }
         }
@@ -321,7 +332,7 @@ implements Serializable, Cloneable {
      * integers are repeatedly used in a wrap-around fashion.
      */
 
-    synchronized public void setSeed(final int[] array)
+    synchronized public void setSeed(int[] array)
         {
         if (array.length == 0)
             throw new IllegalArgumentException("Array length must be greater than zero");
@@ -332,7 +343,7 @@ implements Serializable, Cloneable {
         for (; k!=0; k--) 
             {
             mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >>> 30)) * 1664525)) + array[j] + j; /* non linear */
-            mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
+            // mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
             i++;
             j++;
             if (i>=N) { mt[0] = mt[N-1]; i=1; }
@@ -341,7 +352,7 @@ implements Serializable, Cloneable {
         for (k=N-1; k!=0; k--) 
             {
             mt[i] = (mt[i] ^ ((mt[i-1] ^ (mt[i-1] >>> 30)) * 1566083941)) - i; /* non linear */
-            mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
+            // mt[i] &= 0xffffffff; /* for WORDSIZE > 32 machines */
             i++;
             if (i>=N) 
                 {
@@ -352,7 +363,7 @@ implements Serializable, Cloneable {
         }
 
 
-    public final int nextInt()
+    public int nextInt()
         {
         int y;
         
@@ -389,7 +400,7 @@ implements Serializable, Cloneable {
 
 
 
-    public final short nextShort()
+    public short nextShort()
         {
         int y;
         
@@ -426,7 +437,7 @@ implements Serializable, Cloneable {
 
 
 
-    public final char nextChar()
+    public char nextChar()
         {
         int y;
         
@@ -462,7 +473,7 @@ implements Serializable, Cloneable {
         }
 
 
-    public final boolean nextBoolean()
+    public boolean nextBoolean()
         {
         int y;
         
@@ -494,7 +505,7 @@ implements Serializable, Cloneable {
         y ^= (y << 15) & TEMPERING_MASK_C;      // TEMPERING_SHIFT_T(y)
         y ^= (y >>> 18);                        // TEMPERING_SHIFT_L(y)
 
-        return (y >>> 31) != 0;
+        return (boolean)((y >>> 31) != 0);
         }
 
 
@@ -505,7 +516,7 @@ implements Serializable, Cloneable {
         event as nextBoolean(double), but twice as fast. To explicitly
         use this, remember you may need to cast to float first. */
 
-    public final boolean nextBoolean(final float probability)
+    public boolean nextBoolean(float probability)
         {
         int y;
         
@@ -549,7 +560,7 @@ implements Serializable, Cloneable {
         of returning true, else returning false.  <tt>probability</tt> must
         be between 0.0 and 1.0, inclusive. */
 
-    public final boolean nextBoolean(final double probability)
+    public boolean nextBoolean(double probability)
         {
         int y;
         int z;
@@ -619,7 +630,7 @@ implements Serializable, Cloneable {
         }
 
 
-    public final byte nextByte()
+    public byte nextByte()
         {
         int y;
         
@@ -655,7 +666,7 @@ implements Serializable, Cloneable {
         }
 
 
-    public final void nextBytes(byte[] bytes)
+    public void nextBytes(byte[] bytes)
         {
         int y;
         
@@ -694,7 +705,7 @@ implements Serializable, Cloneable {
         }
 
 
-    public final long nextLong()
+    public long nextLong()
         {
         int y;
         int z;
@@ -762,10 +773,10 @@ implements Serializable, Cloneable {
 
     /** Returns a long drawn uniformly from 0 to n-1.  Suffice it to say,
         n must be > 0, or an IllegalArgumentException is raised. */
-    public final long nextLong(final long n)
+    public long nextLong(long n)
         {
         if (n<=0)
-            throw new IllegalArgumentException("n must be positive");
+            throw new IllegalArgumentException("n must be positive, got: " + n);
         
         long bits, val;
         do 
@@ -837,7 +848,7 @@ implements Serializable, Cloneable {
 
     /** Returns a random double in the half-open range from [0.0,1.0).  Thus 0.0 is a valid
         result but 1.0 is not. */
-    public final double nextDouble()
+    public double nextDouble()
         {
         int y;
         int z;
@@ -904,9 +915,34 @@ implements Serializable, Cloneable {
 
 
 
+    /** Returns a double in the range from 0.0 to 1.0, possibly inclusive of 0.0 and 1.0 themselves.  Thus:
+
+        <p><table border=0>
+        <th><td>Expression<td>Interval
+        <tr><td>nextDouble(false, false)<td>(0.0, 1.0)
+        <tr><td>nextDouble(true, false)<td>[0.0, 1.0)
+        <tr><td>nextDouble(false, true)<td>(0.0, 1.0]
+        <tr><td>nextDouble(true, true)<td>[0.0, 1.0]
+        </table>
+        
+        <p>This version preserves all possible random values in the double range.
+    */
+    public double nextDouble(boolean includeZero, boolean includeOne)
+        {
+        double d = 0.0;
+        do
+            {
+            d = nextDouble();                           // grab a value, initially from half-open [0.0, 1.0)
+            if (includeOne && nextBoolean()) d += 1.0;  // if includeOne, with 1/2 probability, push to [1.0, 2.0)
+            } 
+        while ( (d > 1.0) ||                            // everything above 1.0 is always invalid
+            (!includeZero && d == 0.0));            // if we're not including zero, 0.0 is invalid
+        return d;
+        }
 
 
-    public final double nextGaussian()
+
+    public double nextGaussian()
         {
         if (__haveNextNextGaussian)
             {
@@ -1056,7 +1092,7 @@ implements Serializable, Cloneable {
 
     /** Returns a random float in the half-open range from [0.0f,1.0f).  Thus 0.0f is a valid
         result but 1.0f is not. */
-    public final float nextFloat()
+    public float nextFloat()
         {
         int y;
         
@@ -1092,13 +1128,39 @@ implements Serializable, Cloneable {
         }
 
 
+    /** Returns a float in the range from 0.0f to 1.0f, possibly inclusive of 0.0f and 1.0f themselves.  Thus:
+
+        <p><table border=0>
+        <th><td>Expression<td>Interval
+        <tr><td>nextFloat(false, false)<td>(0.0f, 1.0f)
+        <tr><td>nextFloat(true, false)<td>[0.0f, 1.0f)
+        <tr><td>nextFloat(false, true)<td>(0.0f, 1.0f]
+        <tr><td>nextFloat(true, true)<td>[0.0f, 1.0f]
+        </table>
+        
+        <p>This version preserves all possible random values in the float range.
+    */
+    public float nextFloat(boolean includeZero, boolean includeOne)
+        {
+        float d = 0.0f;
+        do
+            {
+            d = nextFloat();                            // grab a value, initially from half-open [0.0f, 1.0f)
+            if (includeOne && nextBoolean()) d += 1.0f; // if includeOne, with 1/2 probability, push to [1.0f, 2.0f)
+            } 
+        while ( (d > 1.0f) ||                           // everything above 1.0f is always invalid
+            (!includeZero && d == 0.0f));           // if we're not including zero, 0.0f is invalid
+        return d;
+        }
+
+
 
     /** Returns an integer drawn uniformly from 0 to n-1.  Suffice it to say,
         n must be > 0, or an IllegalArgumentException is raised. */
-    public final int nextInt(final int n)
+    public int nextInt(int n)
         {
         if (n<=0)
-            throw new IllegalArgumentException("n must be positive");
+            throw new IllegalArgumentException("n must be positive, got: " + n);
         
         if ((n & -n) == n)  // i.e., n is a power of 2
             {
@@ -1237,7 +1299,7 @@ implements Serializable, Cloneable {
         r = new MersenneTwisterFast(SEED);
         for (j = 0; j < 1000; j++)
             {
-            System.out.print(r.nextBoolean(j/999.0) + " ");
+            System.out.print(r.nextBoolean((double)(j/999.0)) + " ");
             if (j%8==7) System.out.println();
             }
         if (!(j%8==7)) System.out.println();
@@ -1246,7 +1308,7 @@ implements Serializable, Cloneable {
         r = new MersenneTwisterFast(SEED);
         for (j = 0; j < 1000; j++)
             {
-            System.out.print(r.nextBoolean(j/999.0f) + " ");
+            System.out.print(r.nextBoolean((float)(j/999.0f)) + " ");
             if (j%8==7) System.out.println();
             }
         if (!(j%8==7)) System.out.println();
