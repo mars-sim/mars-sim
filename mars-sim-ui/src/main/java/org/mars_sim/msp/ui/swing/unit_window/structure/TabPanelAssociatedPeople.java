@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssociatedPeopleTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -13,17 +13,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -46,9 +46,9 @@ implements MouseListener, ActionListener {
 	private static final long serialVersionUID = 1L;
 
 	// Data members
-	private DefaultListModel<Person> populationListModel;
+	private AssociatedPopulationListModel populationListModel;
 	private JList<Person> populationList;
-	private Collection<Person> populationCache;
+	private JScrollPane populationScrollPanel;
 
 	/**
 	 * Constructor.
@@ -80,15 +80,12 @@ implements MouseListener, ActionListener {
 		topContentPanel.add(populationDisplayPanel);
 
 		// Create scroll panel for population list.
-		JScrollPane populationScrollPanel = new JScrollPane();
+		populationScrollPanel = new JScrollPane();
 		populationScrollPanel.setPreferredSize(new Dimension(175, 250));
 		populationDisplayPanel.add(populationScrollPanel);
 
 		// Create population list model
-		populationListModel = new DefaultListModel<Person>();
-		populationCache = settlement.getAllAssociatedPeople();
-		Iterator<Person> i = populationCache.iterator();
-		while (i.hasNext()) populationListModel.addElement(i.next());
+		populationListModel = new AssociatedPopulationListModel(settlement);
 
 		// Create population list
 		populationList = new JList<Person>(populationListModel);
@@ -107,16 +104,67 @@ implements MouseListener, ActionListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		Settlement settlement = (Settlement) unit;
 
 		// Update population list
-		if (!CollectionUtils.isEqualCollection(populationCache, settlement.getAllAssociatedPeople())) {
-			populationCache = settlement.getAllAssociatedPeople();
-			populationListModel.clear();
-			Iterator<Person> i = populationCache.iterator();
-			while (i.hasNext()) populationListModel.addElement(i.next());
-		}
+		populationListModel.update();
+		populationScrollPanel.validate();
 	}
+	
+	/**
+     * List model for settlement population.
+     */
+    private class AssociatedPopulationListModel extends AbstractListModel<Person> {
+
+        /** default serial id. */
+        private static final long serialVersionUID = 1L;
+        
+        private Settlement settlement;
+        private List<Person> populationList;
+        
+        private AssociatedPopulationListModel(Settlement settlement) {
+            this.settlement = settlement;
+            
+            populationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
+            Collections.sort(populationList);
+        }
+        
+        @Override
+        public Person getElementAt(int index) {
+            
+            Person result = null;
+            
+            if ((index >= 0) && (index < populationList.size())) {
+                result = populationList.get(index);
+            }
+            
+            return result;
+        }
+
+        @Override
+        public int getSize() {
+            return populationList.size();
+        }
+        
+        /**
+         * Update the population list model.
+         */
+        public void update() {
+            
+            if (!populationList.containsAll(settlement.getAllAssociatedPeople()) || 
+                    !settlement.getAllAssociatedPeople().containsAll(populationList)) {
+                
+                List<Person> oldPopulationList = populationList;
+                
+                List<Person> tempPopulationList = new ArrayList<Person>(settlement.getAllAssociatedPeople());
+                Collections.sort(tempPopulationList);
+                
+                populationList = tempPopulationList;
+                fireContentsChanged(this, 0, getSize());
+                
+                oldPopulationList.clear();
+            }
+        }
+    }
 
 	/** 
 	 * Mouse clicked event occurs.
