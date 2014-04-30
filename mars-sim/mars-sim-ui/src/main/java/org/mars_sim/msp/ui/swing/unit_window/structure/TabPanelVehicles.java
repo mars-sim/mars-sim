@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-04-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.unit_window.structure;
@@ -11,16 +11,15 @@ import java.awt.FlowLayout;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.Collections;
+import java.util.List;
 
-import javax.swing.DefaultListModel;
+import javax.swing.AbstractListModel;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -39,9 +38,9 @@ implements MouseListener {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	private DefaultListModel<Vehicle> vehicleListModel;
+	private VehicleListModel vehicleListModel;
 	private JList<Vehicle> vehicleList;
-	private Collection<Vehicle> vehicleCache;
+	private JScrollPane vehicleScrollPanel;
 
 	/**
 	 * Constructor.
@@ -73,15 +72,12 @@ implements MouseListener {
 		topContentPanel.add(vehicleDisplayPanel);
 
 		// Create scroll panel for vehicle list.
-		JScrollPane vehicleScrollPanel = new JScrollPane();
+		vehicleScrollPanel = new JScrollPane();
 		vehicleScrollPanel.setPreferredSize(new Dimension(175, 200));
 		vehicleDisplayPanel.add(vehicleScrollPanel);
 
 		// Create vehicle list model
-		vehicleListModel = new DefaultListModel<Vehicle>();
-		vehicleCache = settlement.getParkedVehicles();
-		Iterator<Vehicle> i = vehicleCache.iterator();
-		while (i.hasNext()) vehicleListModel.addElement(i.next());
+		vehicleListModel = new VehicleListModel(settlement);
 
 		// Create vehicle list
 		vehicleList = new JList<Vehicle>(vehicleListModel);
@@ -93,16 +89,67 @@ implements MouseListener {
 	 * Updates the info on this panel.
 	 */
 	public void update() {
-		Settlement settlement = (Settlement) unit;
 
 		// Update vehicle list
-		if (!CollectionUtils.isEqualCollection(vehicleCache, settlement.getParkedVehicles())) {
-			vehicleCache = new ArrayList<Vehicle>(settlement.getParkedVehicles());
-			vehicleListModel.clear();
-			Iterator<Vehicle> i = vehicleCache.iterator();
-			while (i.hasNext()) vehicleListModel.addElement(i.next());
-		}
+		vehicleListModel.update();
+		vehicleScrollPanel.validate();
 	}
+	
+	/**
+     * List model for settlement vehicles.
+     */
+    private class VehicleListModel extends AbstractListModel<Vehicle> {
+
+        /** default serial id. */
+        private static final long serialVersionUID = 1L;
+        
+        private Settlement settlement;
+        private List<Vehicle> vehicleList;
+        
+        private VehicleListModel(Settlement settlement) {
+            this.settlement = settlement;
+            
+            vehicleList = new ArrayList<Vehicle>(settlement.getParkedVehicles());
+            Collections.sort(vehicleList);
+        }
+        
+        @Override
+        public Vehicle getElementAt(int index) {
+            
+            Vehicle result = null;
+            
+            if ((index >= 0) && (index < vehicleList.size())) {
+                result = vehicleList.get(index);
+            }
+            
+            return result;
+        }
+
+        @Override
+        public int getSize() {
+            return vehicleList.size();
+        }
+        
+        /**
+         * Update the population list model.
+         */
+        public void update() {
+            
+            if (!vehicleList.containsAll(settlement.getParkedVehicles()) || 
+                    !settlement.getParkedVehicles().containsAll(vehicleList)) {
+                
+                List<Vehicle> oldVehicleList = vehicleList;
+                
+                List<Vehicle> tempVehicleList = new ArrayList<Vehicle>(settlement.getParkedVehicles());
+                Collections.sort(tempVehicleList);
+                
+                vehicleList = tempVehicleList;
+                fireContentsChanged(this, 0, getSize());
+                
+                oldVehicleList.clear();
+            }
+        }
+    }
 
 	/** 
 	 * Mouse clicked event occurs.
