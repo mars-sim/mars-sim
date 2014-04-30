@@ -107,7 +107,7 @@ extends Function {
 		observerNum--;
 		if (observerNum < 0) {
 			observerNum = 0;
-			logger.log(Level.SEVERE, "addObserver(): " + "Observatory is already empty of observers.");
+			logger.log(Level.SEVERE, "removeObserver(): " + "Observatory is already empty of observers.");
 			throw new IllegalStateException("Observatory is already empty of observers.");
 		}
 	}

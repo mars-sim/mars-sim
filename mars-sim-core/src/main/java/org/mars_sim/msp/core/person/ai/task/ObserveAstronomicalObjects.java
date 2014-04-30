@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.06 2014-02-26
+ * @version 3.06 2014-04-29
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -59,6 +59,8 @@ implements ResearchScientificStudy, Serializable {
 	private AstronomicalObservation observatory;
 	/** The research assistant. */
 	private Person researchAssistant;
+	/** True if person is active observer. */
+	private boolean isActiveObserver = false;
 
 	/**
 	 * Constructor.
@@ -79,6 +81,7 @@ implements ResearchScientificStudy, Serializable {
 				// Walk to observatory building.
 				walkToObservatoryBuilding(observatory.getBuilding());
 				observatory.addObserver();
+				isActiveObserver = true;
 			}
 			else {
 				logger.info("observatory could not be determined.");
@@ -494,16 +497,15 @@ implements ResearchScientificStudy, Serializable {
 		}
 	}
 
-	/**
-	 * Ends the task and performs any final actions.
-	 */
+	@Override
 	public void endTask() {
 		super.endTask();
 
 		// Remove person from observatory so others can use it.
 		try {
-			if (observatory != null) {
-				observatory.removeObserver();
+			if ((observatory != null) && isActiveObserver) {
+			    observatory.removeObserver();
+			    isActiveObserver = false;
 			}
 		}
 		catch(Exception e) {}
