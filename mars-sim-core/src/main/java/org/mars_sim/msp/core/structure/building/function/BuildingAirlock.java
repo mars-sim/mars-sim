@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingAirlock.java
- * @version 3.06 2014-04-26
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -70,6 +70,7 @@ public class BuildingAirlock extends Airlock {
             if (PRESSURIZED.equals(getState())) {
                 if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
                     // Exit person to inside building.
+                    logger.fine(person + " entering " + building + " via airlock.");
                     BuildingManager.addPersonToBuildingSameLocation(person, building);
                     inv.storeUnit(person);
                 }
@@ -81,6 +82,7 @@ public class BuildingAirlock extends Airlock {
             else if (DEPRESSURIZED.equals(getState())) {
                 if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
                     // Exit person to outside building.
+                    logger.fine(person + " exiting " + building + " via airlock.");
                     BuildingManager.removePersonFromBuilding(person, building);
                     inv.retrieveUnit(person);
                 }

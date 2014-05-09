@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -442,7 +442,8 @@ implements Serializable {
 		boolean result = false;
 		Iterator<Person> i = people.iterator();
 		while (i.hasNext()) {
-			if (i.next().getPhysicalCondition().hasSeriousMedicalProblems()) {
+		    Person person = i.next();
+			if (person.getPhysicalCondition().hasSeriousMedicalProblems()) {
 				result = true;
 			}
 		}

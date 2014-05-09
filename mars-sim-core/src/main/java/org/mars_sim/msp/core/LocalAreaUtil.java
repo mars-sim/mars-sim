@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.06 2014-04-26
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -32,6 +32,9 @@ public class LocalAreaUtil {
 
     /** Distance from edge of boundary when determining internal locations. */
     private static final double INNER_BOUNDARY_DISTANCE = 1.5D;
+    
+    /** A very small distance (meters) for measuring how close two locations are. */
+    private static final double VERY_SMALL_DISTANCE = .00001D;
     
     /** Cache for total area containing obstacles for a given coordinate location. */
     private static final Map<Coordinates, Area> obstacleAreaCache = new HashMap<Coordinates, Area>();
@@ -559,8 +562,20 @@ public class LocalAreaUtil {
      * @param point2 the second point.
      * @return distance (meters).
      */
-    public static double getDistance(Point2D.Double point1, Point2D.Double point2) {
+    public static double getDistance(Point2D point1, Point2D point2) {
         
         return Point2D.Double.distance(point1.getX(), point1.getY(), point2.getX(), point2.getY());
+    }
+    
+    /**
+     * Checks if two locations are very close together.
+     * @param point1 the first point.
+     * @param point2 the second point.
+     * @return true if very close together
+     */
+    public static boolean areLocationsClose(Point2D point1, Point2D point2) {
+        
+        double distance = getDistance(point1, point2);
+        return (distance < VERY_SMALL_DISTANCE);
     }
 }

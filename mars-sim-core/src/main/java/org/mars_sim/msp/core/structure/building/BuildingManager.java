@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.06 2014-04-14
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -396,7 +396,15 @@ implements Serializable {
                 Building building = i.next();
                 try {
                     LifeSupport lifeSupport = (LifeSupport) building.getFunction(BuildingFunction.LIFE_SUPPORT);
-                    if (lifeSupport.containsPerson(person)) result = building;
+                    if (lifeSupport.containsPerson(person)) {
+                        if (result == null) { 
+                            result = building;
+                        }
+                        else {
+                            throw new IllegalStateException(person + " is located in more than one building: " + result + 
+                                    " and " + building);
+                        }
+                    }
                 }
                 catch (Exception e) {
                     logger.log(Level.SEVERE,"BuildingManager.getBuilding(): " + e.getMessage());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.06 2014-04-22
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -422,8 +422,9 @@ implements Serializable {
         // Check if person has reached destination location.
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
         Building building = BuildingManager.getBuilding(person);
-        if (step.building.equals(building) && (person.getXLocation() == step.xLoc) && 
-                (person.getYLocation() == step.yLoc)) {
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+        if (step.building.equals(building) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                 walkingStepIndex++;
                 setPhase(getWalkingStepPhase());
@@ -464,8 +465,9 @@ implements Serializable {
             step.yLoc = relativeRoverLoc.getY();
         }
         
-        if (step.rover.equals(rover) && (person.getXLocation() == step.xLoc) && 
-                (person.getYLocation() == step.yLoc)) {
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+        if (step.rover.equals(rover) && LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                 walkingStepIndex++;
                 setPhase(getWalkingStepPhase());
@@ -475,6 +477,7 @@ implements Serializable {
             }
         }
         else {
+            logger.finer("Starting walk rover interior from Walk.walkingRoverInteriorPhase.");
             addSubTask(new WalkRoverInterior(person, step.rover, step.xLoc, step.yLoc));
         }
         
@@ -494,7 +497,9 @@ implements Serializable {
         
         // Check if person has reached destination location.
         WalkingSteps.WalkStep step = walkingSteps.getWalkingStepsList().get(walkingStepIndex);
-        if ((person.getXLocation() == step.xLoc) && (person.getYLocation() == step.yLoc)) {
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        Point2D stepLocation = new Point2D.Double(step.xLoc, step.yLoc);
+        if (LocalAreaUtil.areLocationsClose(personLocation, stepLocation)) {
             if (walkingStepIndex < (walkingSteps.getWalkingStepsNumber() - 1)) {
                 walkingStepIndex++;
                 setPhase(getWalkingStepPhase());

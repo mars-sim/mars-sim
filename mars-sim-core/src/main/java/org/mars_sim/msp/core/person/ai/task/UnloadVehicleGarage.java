@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.06 2014-02-27
+ * @version 3.06 2014-05-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
@@ -215,13 +216,17 @@ implements Serializable {
     			Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
     			if (!vehicle.isReserved()) {
-    			    if (BuildingManager.getBuilding(vehicle) != null) {
-    			        if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
-    			            needsUnloading = true;
-    			        }
-    			        if (vehicle instanceof Towing) {
-    			            if (((Towing) vehicle).getTowedVehicle() != null) {
+    			    int peopleOnboard = CollectionUtils.getPerson(
+                            vehicle.getInventory().getContainedUnits()).size();
+    			    if (peopleOnboard == 0) {
+    			        if (BuildingManager.getBuilding(vehicle) != null) {
+    			            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
     			                needsUnloading = true;
+    			            }
+    			            if (vehicle instanceof Towing) {
+    			                if (((Towing) vehicle).getTowedVehicle() != null) {
+    			                    needsUnloading = true;
+    			                }
     			            }
     			        }
     			    }
@@ -254,11 +259,15 @@ implements Serializable {
     				if (vehicleMission.hasVehicle()) {
     					Vehicle vehicle = vehicleMission.getVehicle();
     					if (settlement == vehicle.getSettlement()) {
-    						if (!isFullyUnloaded(vehicle)) {
-    						    if (BuildingManager.getBuilding(vehicle) != null) {
-                                    result.add(vehicleMission);
+    					    int peopleOnboard = CollectionUtils.getPerson(
+                                    vehicle.getInventory().getContainedUnits()).size();
+                            if (peopleOnboard == 0) {
+                                if (!isFullyUnloaded(vehicle)) {
+                                    if (BuildingManager.getBuilding(vehicle) != null) {
+                                        result.add(vehicleMission);
+                                    }
                                 }
-    						}
+                            }
     					}
     				}
     			}

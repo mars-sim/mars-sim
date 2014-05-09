@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkingSteps.java
- * @version 3.06 2014-04-15
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -108,14 +109,26 @@ implements Serializable {
             
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
+            
+            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(), 
+                    person.getYLocation(), building)) {
+                throw new IllegalStateException(person.getName() + " has invalid walk start location. (" + 
+                    person.getXLocation() + ", " + person.getYLocation() + ") is not within building " + building);
+            }
         }
-        else if (LocationSituation.IN_VEHICLE  == locationSituation) {
+        else if (LocationSituation.IN_VEHICLE == locationSituation) {
             
             Vehicle vehicle = person.getVehicle();
             
             if (vehicle instanceof Rover) {
                 result = new WalkState(WalkState.ROVER_LOC);
                 result.rover = (Rover) vehicle;
+                
+                if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(person.getXLocation(), 
+                        person.getYLocation(), vehicle)) {
+                    throw new IllegalStateException(person.getName() + " has invalid walk start location. (" + 
+                        person.getXLocation() + ", " + person.getYLocation() + ") is not within vehicle " + vehicle);
+                }
             }
             else {
                 result = new WalkState(WalkState.OUTSIDE_LOC); 
@@ -157,11 +170,21 @@ implements Serializable {
             Building building = (Building) interiorObject;
             result = new WalkState(WalkState.BUILDING_LOC);
             result.building = building;
+            
+            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, building)) {
+                throw new IllegalStateException("Invalid walk destination location. (" + 
+                    xLoc + ", " + yLoc + ") is not within building " + building);
+            }
         }
         else if (interiorObject instanceof Rover) {
             Rover rover = (Rover) interiorObject;
             result = new WalkState(WalkState.ROVER_LOC);
             result.rover = rover;
+            
+            if (!LocalAreaUtil.checkLocationWithinLocalBoundedObject(xLoc, yLoc, rover)) {
+                throw new IllegalStateException("Invalid walk destination location. (" + 
+                    xLoc + ", " + yLoc + ") is not within rover " + rover);
+            }
         }
         else {
             result = new WalkState(WalkState.OUTSIDE_LOC);

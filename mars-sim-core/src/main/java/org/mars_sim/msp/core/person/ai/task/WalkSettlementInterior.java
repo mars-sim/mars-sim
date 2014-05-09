@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.06 2014-04-24
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -183,7 +183,7 @@ implements Serializable {
         
         // If path destination is reached, end task.
         if (getRemainingPathDistance() <= VERY_SMALL_DISTANCE) {
-            logger.fine(person.getName() + " walked from " + startBuilding.getName() + " to " + 
+            logger.finer(person.getName() + " walked from " + startBuilding.getName() + " to " + 
                     destBuilding.getName());
             InsidePathLocation location = walkingPath.getNextPathLocation();
             person.setXLocation(location.getXLocation());
@@ -327,6 +327,9 @@ implements Serializable {
                     newBuilding = connector.getBuilding1();
                 }
                 else {
+                    logger.severe("Connector from " + connector.getBuilding1() + " to " + 
+                            connector.getBuilding2() + " not connected to current building " + 
+                            currentBuilding);
                     throw new IllegalStateException("Connector not connected to " + currentBuilding);
                 }
                 BuildingManager.addPersonToBuildingSameLocation(person, newBuilding);

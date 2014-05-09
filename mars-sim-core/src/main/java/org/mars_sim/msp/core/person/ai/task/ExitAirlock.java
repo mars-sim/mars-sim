@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.06 2014-04-22
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -234,12 +235,17 @@ implements Serializable {
             insideAirlockPos = airlock.getAvailableAirlockPosition();
         }
         
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        
         if (airlock.inAirlock(person)) {
             logger.finer(person + " is entering airlock, but is already in airlock.");
             setPhase(WAITING_INSIDE_AIRLOCK);
         }
-        else if ((person.getXLocation() == insideAirlockPos.getX()) && 
-                (person.getYLocation() == insideAirlockPos.getY())) {
+        else if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
+            logger.finer(person + " is entering airlock, but is already outside.");
+            endTask();
+        }
+        else if (LocalAreaUtil.areLocationsClose(personLocation,  insideAirlockPos)) {
             
             logger.finer(person + " is at inside airlock location.");
             
@@ -297,13 +303,10 @@ implements Serializable {
                 else if (airlock.getEntity() instanceof Rover) {
 
                     Rover airlockRover = (Rover) airlock.getEntity();
+                    
                     addSubTask(new WalkRoverInterior(person, airlockRover, 
                             insideAirlockPos.getX(), insideAirlockPos.getY()));
                 }
-            }
-            else {
-                logger.finer(person + " is entering airlock, but is already inside.");
-                setPhase(WAITING_INSIDE_AIRLOCK);
             }
         }
         
@@ -372,8 +375,9 @@ implements Serializable {
             exteriorAirlockPos = airlock.getAvailableExteriorPosition();
         }
         
-        if ((person.getXLocation() == exteriorAirlockPos.getX()) && 
-                (person.getYLocation() == exteriorAirlockPos.getY())) {
+        
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {
             
             logger.finer(person + " has exited airlock outside.");
             endTask();

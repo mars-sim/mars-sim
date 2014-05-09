@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.06 2014-03-17
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -436,6 +436,7 @@ implements UnitListener {
         // Check if enough resources for remaining trip
         // or if there is an emergency medical problem.
         if (!hasEnoughResourcesForRemainingMission(false) || hasEmergency()) {
+            
             // If not, determine an emergency destination.
             determineEmergencyDestination(person);
         }
@@ -671,7 +672,7 @@ implements UnitListener {
                     sameDestination = true;
 
                 if (!sameDestination) {
-                    logger.info(vehicle.getName()
+                    logger.severe(vehicle.getName()
                             + " setting emergency destination to "
                             + newDestination.getName() + ".");
 
