@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Airlock.java
- * @version 3.06 2014-03-14
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -239,8 +239,11 @@ public abstract class Airlock implements Serializable {
 
             Iterator<Person> i = occupants.iterator();
             while (i.hasNext()) {
-                exitAirlock(i.next());
+                Person occupant = i.next();
+                logger.finest(occupant.getName() + " exiting airlock at " + getEntity() + " state: " + getState());
+                exitAirlock(occupant);
             }
+            
             occupants.clear();
 
             operator = null;

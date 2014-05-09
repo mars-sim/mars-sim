@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.06 2014-03-03
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -377,7 +377,7 @@ extends VehicleMission {
             garageBuilding = BuildingManager.getBuilding(getVehicle());
             if (garageBuilding != null)
                 garage = (VehicleMaintenance) garageBuilding
-				.getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+				        .getFunction(BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         }
 
         // Have person exit rover if necessary.
@@ -396,6 +396,10 @@ extends VehicleMission {
                 }
                 else {
                     logger.severe(person + " unable to walk to building " + destinationBuilding);
+                    logger.severe(person + " emergency moved to building " + destinationBuilding);
+                    getRover().getInventory().retrieveUnit(person);
+                    disembarkSettlement.getInventory().storeUnit(person);
+                    BuildingManager.addPersonToBuilding(person, destinationBuilding, adjustedLoc.getX(), adjustedLoc.getY());
                 }
             }
             else {
@@ -412,6 +416,7 @@ extends VehicleMission {
                 Iterator<Person> i = rover.getCrew().iterator();
                 while (i.hasNext()) {
                     Person crewmember = i.next();
+                    logger.severe(crewmember + " emergency moved to settlement " + disembarkSettlement);
                     rover.getInventory().retrieveUnit(crewmember);
                     disembarkSettlement.getInventory().storeUnit(crewmember);
                     BuildingManager.addToRandomBuilding(crewmember,

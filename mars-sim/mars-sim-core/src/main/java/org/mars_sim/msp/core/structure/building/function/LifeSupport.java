@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LifeSupport.java
- * @version 3.06 2014-03-08
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -188,7 +188,8 @@ implements Serializable {
 				}
 			}
 
-			// Add person to this building.            
+			// Add person to this building.
+			logger.finest("Adding " + person + " to " + getBuilding() + " life support.");
 			occupants.add(person);
 		}
 		else {
@@ -202,7 +203,10 @@ implements Serializable {
 	 * @throws BuildingException if person is not building occupant.
 	 */
 	public void removePerson(Person occupant) {
-		if (occupants.contains(occupant)) occupants.remove(occupant);
+		if (occupants.contains(occupant)) {
+		    occupants.remove(occupant);
+		    logger.finest("Removing " + occupant + " from " + getBuilding() + " life support.");
+		}
 		else {
 			throw new IllegalStateException("Person does not occupy building.");
 		} 

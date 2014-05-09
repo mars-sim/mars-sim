@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalCare.java
- * @version 3.06 2014-03-08
+ * @version 3.06 2014-05-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingConfig;
 import org.mars_sim.msp.core.structure.building.BuildingException;
-import org.mars_sim.msp.core.structure.building.BuildingManager;
 
 /**
  * The MedicalCare class represents a building function for providing medical care.
@@ -192,12 +191,13 @@ implements MedicalAid, Serializable {
 	public void requestTreatment(HealthProblem problem) {
 		medicalStation.requestTreatment(problem);
 
-		// Add person to building if possible.
-		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			// TODO: Try to walk to this location.
-			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-					getBuilding());
-		}
+		// TODO: Replace with task for sufferer to walk to medical building and stay there until treated.
+//		// Add person to building if possible.
+//		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+//			// TODO: Replace with walk to building task.
+//			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
+//					getBuilding());
+//		}
 	}
 
 	/**
@@ -210,12 +210,13 @@ implements MedicalAid, Serializable {
 	public void startTreatment(HealthProblem problem, double treatmentDuration) {
 		medicalStation.startTreatment(problem, treatmentDuration);
 
-		// Add person to building if possible.
-		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
-			// TODO: Try to walk to this location.
-			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
-					getBuilding());
-		}
+		// TODO: Replace with task for sufferer to walk to medical building and stay there until treated.
+//		// Add person to building if possible.
+//		if (getBuilding().hasFunction(BuildingFunction.LIFE_SUPPORT)) {
+//			// TODO: Try to walk to this location.
+//			BuildingManager.addPersonToBuildingRandomLocation(problem.getSufferer(), 
+//					getBuilding());
+//		}
 	}
 
 	/**

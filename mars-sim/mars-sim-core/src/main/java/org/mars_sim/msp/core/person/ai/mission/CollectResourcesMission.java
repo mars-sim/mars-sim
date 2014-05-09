@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResourcesMission.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -57,7 +57,7 @@ implements Serializable {
 	/** Mission phase. */
 	final public static String COLLECT_RESOURCES = "Collecting Resources";
 
-	/** Estimated collection time multiplyer for EVA. */
+	/** Estimated collection time multiplier for EVA. */
 	final public static double EVA_COLLECTION_OVERHEAD = 20D;
 
 	// Data members
@@ -340,8 +340,9 @@ implements Serializable {
         Iterator<Person> i = getPeople().iterator();
         while (i.hasNext()) {
             Task task = i.next().getMind().getTaskManager().getTask();
-            if (task instanceof CollectResources)
+            if (task instanceof CollectResources) {
                 ((CollectResources) task).endEVA();
+            }
         }
     }
 

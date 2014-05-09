@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.06 2014-03-01
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -58,8 +58,7 @@ implements Serializable {
 	private double siteDuration;
 	private double timeOnSite;
 	private LocalBoundedObject interiorObject;
-	private double returnInsideXLoc;
-	private double returnInsideYLoc;
+	private Point2D returnInsideLoc;
 	private double outsideSiteXLoc;
 	private double outsideSiteYLoc;
 
@@ -96,15 +95,6 @@ implements Serializable {
             throw new IllegalStateException(person.getName() + 
                     " not in a value location situation to start EVA task: " + 
                     person.getLocationSituation());
-        }
-        
-        // Set return location.
-        if (interiorObject != null) {
-            Point2D returnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
-            Point2D adjustedReturnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(returnInsideLoc.getX(), 
-                    returnInsideLoc.getY(), interiorObject);
-            returnInsideXLoc = adjustedReturnInsideLoc.getX();
-            returnInsideYLoc = adjustedReturnInsideLoc.getY();
         }
         
         // Add task phases.
@@ -181,8 +171,11 @@ implements Serializable {
     private double walkToOutsideSitePhase(double time) {
         
         // If not at field work site location, create walk outside subtask.
-        if (LocationSituation.OUTSIDE != person.getLocationSituation() || 
-                (person.getXLocation() != outsideSiteXLoc) || (person.getYLocation() != outsideSiteYLoc)) {
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        Point2D outsideLocation = new Point2D.Double(outsideSiteXLoc, outsideSiteYLoc);
+        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, outsideLocation);
+        
+        if (LocationSituation.OUTSIDE != person.getLocationSituation() || !closeToLocation) {
             if (Walk.canWalkAllSteps(person, outsideSiteXLoc, outsideSiteYLoc, null)) {
                 Task walkingTask = new Walk(person, outsideSiteXLoc, outsideSiteYLoc, null);
                 addSubTask(walkingTask);
@@ -206,11 +199,21 @@ implements Serializable {
      */
     private double walkBackInsidePhase(double time) {
         
-        // If not at field work site location, create walk outside subtask.
-        if (LocationSituation.OUTSIDE == person.getLocationSituation() || 
-                (person.getXLocation() != returnInsideXLoc) || (person.getYLocation() != returnInsideYLoc)) {
-            if (Walk.canWalkAllSteps(person, returnInsideXLoc, returnInsideYLoc, interiorObject)) {
-                Task walkingTask = new Walk(person, returnInsideXLoc, returnInsideYLoc, interiorObject);
+        if ((returnInsideLoc == null) || !LocalAreaUtil.checkLocationWithinLocalBoundedObject(
+                returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+            // Set return location.        
+            Point2D rawReturnInsideLoc = LocalAreaUtil.getRandomInteriorLocation(interiorObject);
+            returnInsideLoc = LocalAreaUtil.getLocalRelativeLocation(rawReturnInsideLoc.getX(), 
+                    rawReturnInsideLoc.getY(), interiorObject);
+        }
+        
+        // If not at return inside location, create walk inside subtask.
+        Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
+        boolean closeToLocation = LocalAreaUtil.areLocationsClose(personLocation, returnInsideLoc);
+        
+        if (LocationSituation.OUTSIDE == person.getLocationSituation() || !closeToLocation) {
+            if (Walk.canWalkAllSteps(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject)) {
+                Task walkingTask = new Walk(person, returnInsideLoc.getX(), returnInsideLoc.getY(), interiorObject);
                 addSubTask(walkingTask);
             }
             else {

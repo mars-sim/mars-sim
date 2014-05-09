@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -387,7 +387,6 @@ implements Serializable {
 		double timeRange = getTripTimeRange(tripTimeLimit, true);
 		if (timeRange < range) range = timeRange;
 
-		//        try {
 		// Get the current location.
 		Coordinates startingLocation = getCurrentMissionLocation();
 
@@ -397,10 +396,6 @@ implements Serializable {
 		double siteDistance = RandomUtil.getRandomDouble(limit);
 		fieldSite = startingLocation.getNewLocation(direction, siteDistance);
 		addNavpoint(new NavPoint(fieldSite, "field research site"));
-		//        }
-		//        catch (Exception e) {
-		//            throw new MissionException(getPhase(), e);
-		//        }
 	}
 
 	/**

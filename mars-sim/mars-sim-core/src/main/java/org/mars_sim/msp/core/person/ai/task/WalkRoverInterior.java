@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkRoverInterior.java
- * @version 3.06 2014-03-05
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -40,6 +39,7 @@ implements Serializable {
 	/** km per hour. */
 	private static final double WALKING_SPEED = 5D;
 	private static final double STRESS_MODIFIER = -.1D;
+	private static final double VERY_SMALL_DISTANCE = .00001D;
 
 	// Data members
 	private Rover rover;
@@ -66,6 +66,9 @@ implements Serializable {
         // Initialize task phase.
         addPhase(WALKING);
         setPhase(WALKING);
+        
+        logger.finer(person.getName() + " starting to walk to new location in " + rover.getName() + 
+                " to (" + destinationXLocation + ", " + destinationYLocation + ")");
     }
     
     @Override
@@ -87,41 +90,56 @@ implements Serializable {
      * @return the amount of time (millisol) left after performing the walking phase.
      */
     double walkingPhase(double time) {
-        
+
         // Determine walking distance.
         double timeHours = MarsClock.convertMillisolsToSeconds(time) / 60D / 60D;
         double distanceKm = WALKING_SPEED * timeHours;
         double distanceMeters = distanceKm * 1000D;
         double remainingWalkingDistance = Point2D.Double.distance(person.getXLocation(), 
                 person.getYLocation(), destXLoc, destYLoc);
-        
-        // Determine time left after walking.
+
         double timeLeft = 0D;
-        if (distanceMeters > remainingWalkingDistance) {
-            double overDistance = distanceMeters - remainingWalkingDistance;
-            timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / WALKING_SPEED * 60D * 60D);
-            distanceMeters = remainingWalkingDistance;
-        }
-        
-        if (distanceMeters < remainingWalkingDistance) {
-            
-            // Determine direction to destination.
-            double direction = determineDirection(destXLoc, destYLoc);
-            
-            // Determine person's new location at distance and direction.
-            walkInDirection(direction, distanceMeters);
+        if (remainingWalkingDistance > VERY_SMALL_DISTANCE) {
+
+            // Determine time left after walking.
+            if (distanceMeters > remainingWalkingDistance) {
+                double overDistance = distanceMeters - remainingWalkingDistance;
+                timeLeft = MarsClock.convertSecondsToMillisols(overDistance / 1000D / WALKING_SPEED * 60D * 60D);
+                distanceMeters = remainingWalkingDistance;
+            }
+
+            if (distanceMeters < remainingWalkingDistance) {
+
+                // Determine direction to destination.
+                double direction = determineDirection(destXLoc, destYLoc);
+
+                // Determine person's new location at distance and direction.
+                walkInDirection(direction, distanceMeters);
+            }
+            else {
+
+                // Set person's location at destination.
+                person.setXLocation(destXLoc);
+                person.setYLocation(destYLoc);
+                
+                logger.finer(person.getName() + " walked to new location in " + rover.getName());
+
+                endTask();
+            }
         }
         else {
+
+            timeLeft = time;
             
             // Set person's location at destination.
             person.setXLocation(destXLoc);
             person.setYLocation(destYLoc);
-            
-            logger.fine(person.getName() + " walked to new location in " + rover.getName());
-            
+
+            logger.finer(person.getName() + " walked to new location in " + rover.getName());
+
             endTask();
         }
-        
+
         return timeLeft; 
     }
     
