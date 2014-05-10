@@ -350,9 +350,9 @@ implements LifeSupport {
 	}
 
 	private void updateGoodsManager(double time) {
-
+	    
 		// Randomly update goods manager 1 time per Sol.
-		if (!goodsManager.isInitialized() || (time >= RandomUtil.getRandomDouble(800D) + 200D)) {
+		if (!goodsManager.isInitialized() || (time >= RandomUtil.getRandomDouble(1000D))) {
 			goodsManager.timePassing(time);
 		}
 	}
