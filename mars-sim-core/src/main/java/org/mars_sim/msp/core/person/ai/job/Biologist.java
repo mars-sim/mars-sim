@@ -16,6 +16,8 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
@@ -67,8 +69,6 @@ implements Serializable {
 		// Add biologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(InviteStudyCollaborator.class);
 		jobTasks.add(PeerReviewStudyPaper.class);
 		jobTasks.add(PerformLaboratoryExperiment.class);
@@ -79,6 +79,9 @@ implements Serializable {
 		jobTasks.add(StudyFieldSamples.class);
 
 		// Add biologist-related missions.
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionStarts.add(BiologyStudyFieldMission.class);
+		jobMissionJoins.add(BiologyStudyFieldMission.class);
 		jobMissionJoins.add(Exploration.class);
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);  

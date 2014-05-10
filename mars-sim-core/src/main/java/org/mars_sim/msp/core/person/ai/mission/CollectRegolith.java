@@ -101,8 +101,8 @@ extends CollectResourcesMission {
 		    AmountResource regolithResource = AmountResource.findAmountResource("regolith");
 		    double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(regolithResource));
 		    result *= value;
-		    if (result > 100D) {
-		        result = 100D;
+		    if (result > 10D) {
+		        result = 10D;
 		    }
 			
             // Don't start mission until after first Sol of the simulation.

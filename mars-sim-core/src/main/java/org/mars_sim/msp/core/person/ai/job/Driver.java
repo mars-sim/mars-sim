@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Driver.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -14,6 +14,8 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
@@ -27,9 +29,6 @@ import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.EnterAirlock;
-import org.mars_sim.msp.core.person.ai.task.ExitAirlock;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
@@ -66,20 +65,19 @@ implements Serializable {
 		jobTasks.add(UnloadVehicleGarage.class);
 		jobTasks.add(LoadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleEVA.class);
-		jobTasks.add(EnterAirlock.class);
-		jobTasks.add(ExitAirlock.class);
-		jobTasks.add(DigLocalIce.class);
 
 		// Add driver-related mission joins.
 		jobMissionJoins.add(Exploration.class);
 		jobMissionJoins.add(CollectIce.class);
 		jobMissionJoins.add(CollectRegolith.class);
 		jobMissionJoins.add(Trade.class);
+		jobMissionJoins.add(Mining.class);
+		jobMissionJoins.add(AreologyStudyFieldMission.class);
+		jobMissionJoins.add(BiologyStudyFieldMission.class);
 		jobMissionStarts.add(TravelToSettlement.class);
 		jobMissionJoins.add(TravelToSettlement.class);
 		jobMissionStarts.add(RescueSalvageVehicle.class);
 		jobMissionJoins.add(RescueSalvageVehicle.class);
-		jobMissionJoins.add(Mining.class);
 		jobMissionJoins.add(BuildingConstructionMission.class);
 		jobMissionJoins.add(BuildingSalvageMission.class);
 		jobMissionStarts.add(EmergencySupplyMission.class);

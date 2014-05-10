@@ -289,8 +289,8 @@ extends RoverMission {
                                 rover, settlement);
                         if (miningSite != null) {
                             result = getMiningSiteValue(miningSite, settlement);
-                            if (result > 100D) {
-                                result = 100D;
+                            if (result > 10D) {
+                                result = 10D;
                             }
                         }
                     }
