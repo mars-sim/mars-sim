@@ -319,7 +319,7 @@ extends VehicleMission {
                     endMission(person.getName() + " unable to enter rover " + getVehicle());
                 }
                 
-                if (isRoverInAGarage()) {
+                if (!isDone() && isRoverInAGarage()) {
                     
                     // Store one EVA suit for person (if possible).
                     if (settlement.getInventory().findNumUnitsOfClass(EVASuit.class) > 0) {
