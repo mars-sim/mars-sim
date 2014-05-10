@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Technician.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 
@@ -18,12 +18,15 @@ import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.MaintainGroundVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Maintenance;
 import org.mars_sim.msp.core.person.ai.task.MaintenanceEVA;
 import org.mars_sim.msp.core.person.ai.task.RepairEVAMalfunction;
+import org.mars_sim.msp.core.person.ai.task.RepairEmergencyMalfunction;
 import org.mars_sim.msp.core.person.ai.task.RepairMalfunction;
 import org.mars_sim.msp.core.person.ai.task.ToggleFuelPowerSource;
 import org.mars_sim.msp.core.person.ai.task.ToggleResourceProcess;
@@ -52,11 +55,14 @@ implements Serializable {
 		jobTasks.add(MaintainGroundVehicleEVA.class);
 		jobTasks.add(RepairMalfunction.class);
 		jobTasks.add(RepairEVAMalfunction.class);
+		jobTasks.add(RepairEmergencyMalfunction.class);
 		jobTasks.add(ToggleResourceProcess.class);
 		jobTasks.add(ToggleFuelPowerSource.class);
+		jobTasks.add(LoadVehicleEVA.class);
+        jobTasks.add(LoadVehicleGarage.class);
 		jobTasks.add(UnloadVehicleEVA.class);
 		jobTasks.add(UnloadVehicleGarage.class);
-		jobTasks.add(DigLocalIce.class);
+		jobTasks.add(ConsolidateContainers.class);
 
 		// Add engineer-related missions.
 		jobMissionStarts.add(TravelToSettlement.class);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Areologist.java
- * @version 3.06 2014-02-27
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -17,6 +17,7 @@ import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.AreologyStudyFieldMission;
+import org.mars_sim.msp.core.person.ai.mission.BiologyStudyFieldMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingConstructionMission;
 import org.mars_sim.msp.core.person.ai.mission.BuildingSalvageMission;
 import org.mars_sim.msp.core.person.ai.mission.CollectIce;
@@ -31,8 +32,6 @@ import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
 import org.mars_sim.msp.core.person.ai.task.AssistScientificStudyResearcher;
 import org.mars_sim.msp.core.person.ai.task.CompileScientificStudyResults;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
-import org.mars_sim.msp.core.person.ai.task.DigLocalRegolith;
 import org.mars_sim.msp.core.person.ai.task.InviteStudyCollaborator;
 import org.mars_sim.msp.core.person.ai.task.PeerReviewStudyPaper;
 import org.mars_sim.msp.core.person.ai.task.PerformLaboratoryResearch;
@@ -70,8 +69,6 @@ implements Serializable {
 		// Add areologist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(InviteStudyCollaborator.class);
 		jobTasks.add(PeerReviewStudyPaper.class);
 		jobTasks.add(PerformLaboratoryResearch.class);
@@ -97,6 +94,7 @@ implements Serializable {
         jobMissionJoins.add(BuildingSalvageMission.class);
         jobMissionStarts.add(AreologyStudyFieldMission.class);
         jobMissionJoins.add(AreologyStudyFieldMission.class);
+        jobMissionJoins.add(BiologyStudyFieldMission.class);
         jobMissionStarts.add(EmergencySupplyMission.class);
         jobMissionJoins.add(EmergencySupplyMission.class);
 	}

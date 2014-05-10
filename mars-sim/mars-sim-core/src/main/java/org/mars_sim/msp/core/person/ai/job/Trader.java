@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trader.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -19,7 +19,11 @@ import org.mars_sim.msp.core.person.ai.mission.EmergencySupplyMission;
 import org.mars_sim.msp.core.person.ai.mission.RescueSalvageVehicle;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.TravelToSettlement;
-import org.mars_sim.msp.core.person.ai.task.DigLocalIce;
+import org.mars_sim.msp.core.person.ai.task.ConsolidateContainers;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
+import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.structure.Settlement;
 
 public class Trader
@@ -40,7 +44,11 @@ implements Serializable {
 		super(Trader.class);
 		
 		// Add trader-related tasks.
-		jobTasks.add(DigLocalIce.class);
+		jobTasks.add(LoadVehicleEVA.class);
+        jobTasks.add(LoadVehicleGarage.class);
+        jobTasks.add(UnloadVehicleEVA.class);
+        jobTasks.add(UnloadVehicleGarage.class);
+        jobTasks.add(ConsolidateContainers.class);
 		
 		// Add trader-related missions.
 		jobMissionStarts.add(Trade.class);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Chemist.java
- * @version 3.06 2014-02-27
+ * @version 3.06 2014-05-09
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.job;
@@ -59,8 +59,6 @@ implements Serializable {
 		// Add chemist-related tasks.
 		jobTasks.add(AssistScientificStudyResearcher.class);
 		jobTasks.add(CompileScientificStudyResults.class);
-		jobTasks.add(DigLocalRegolith.class);
-		jobTasks.add(DigLocalIce.class);
 		jobTasks.add(InviteStudyCollaborator.class);
 		jobTasks.add(PeerReviewStudyPaper.class);
 		jobTasks.add(PerformLaboratoryExperiment.class);
