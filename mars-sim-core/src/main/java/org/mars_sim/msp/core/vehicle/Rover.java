@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.06 2014-03-17
+ * @version 3.06 2014-05-10
  * @author Scott Davis
  */
 
@@ -405,10 +405,8 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
             if (towedVehicle instanceof Rover) {
                 // Towed rovers should be located behind this rover with same facing.
                 double distance = (getLength() + towedVehicle.getLength()) / 2D;
-                double angle = getFacing() + 180D;
-                double radAngle = angle * (Math.PI / 180D);
-                double towedX = 0D - (distance * Math.sin(radAngle));
-                double towedY = distance * Math.cos(radAngle);
+                double towedX = 0D;
+                double towedY = 0D - distance;
                 Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
                 towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing());
             }
@@ -416,10 +414,8 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
                 // Towed light utility vehicles should be attached to back of the rover
                 // sideways and facing to the right.
                 double distance = (getLength() + towedVehicle.getWidth()) / 2D;
-                double angle = getFacing() + 180D;
-                double radAngle = angle * (Math.PI / 180D);
-                double towedX = 0D - (distance * Math.sin(radAngle));
-                double towedY = distance * Math.cos(radAngle);
+                double towedX = 0D;
+                double towedY = 0D - distance;
                 Point2D.Double towedLoc = LocalAreaUtil.getLocalRelativeLocation(towedX, towedY, this);
                 towedVehicle.setParkedLocation(towedLoc.getX(), towedLoc.getY(), getFacing() + 90D);
             }
