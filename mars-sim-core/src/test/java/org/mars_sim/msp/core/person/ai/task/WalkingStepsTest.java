@@ -44,6 +44,9 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
         
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
+        
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
         building1.setName("building 1");
@@ -74,7 +77,7 @@ public class WalkingStepsTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, -6D, 1D, building2);
+        WalkingSteps walkingSteps = new WalkingSteps(person, -6D, .5D, building2);
         assertNotNull(walkingSteps);
         
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -89,7 +92,7 @@ public class WalkingStepsTest extends TestCase {
         
         assertEquals(-6D, walkStep1.xLoc);
         
-        assertEquals(1D, walkStep1.yLoc);
+        assertEquals(.5D, walkStep1.yLoc);
     }
     
     /**
@@ -113,6 +116,9 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
         
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
+        
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
         building1.setName("building 1");
@@ -128,16 +134,16 @@ public class WalkingStepsTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 6D, 9D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
         assertNotNull(walkingSteps);
         
         assertFalse(walkingSteps.canWalkAllSteps());
         
         assertNotNull(walkingSteps.getWalkingStepsList());
         
-        assertEquals(0, walkingSteps.getWalkingStepsNumber());
+        assertEquals(2, walkingSteps.getWalkingStepsNumber());
         
-        assertEquals(0, walkingSteps.getWalkingStepsList().size());
+        assertEquals(2, walkingSteps.getWalkingStepsList().size());
     }
     
     /**
@@ -182,7 +188,7 @@ public class WalkingStepsTest extends TestCase {
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 6D, 9D, building1);
+        WalkingSteps walkingSteps = new WalkingSteps(person, -12D, 0D, building1);
         assertNotNull(walkingSteps);
         
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -290,10 +296,16 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
         
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        EVA eva = new EVA(building0, airlock0);
+        building0.addFunction(eva);
+        
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        
+        building0.removeFunction(eva);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 10D, 15D, null);
         assertNotNull(walkingSteps);
@@ -313,6 +325,22 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToExterior() {
         
         Settlement settlement = new MockSettlement();
+        
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addBuilding(building0, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        EVA eva = new EVA(building0, airlock0);
+        building0.addFunction(eva);
         
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);
@@ -501,10 +529,16 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
         
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        EVA eva = new EVA(building0, airlock0);
+        building0.addFunction(eva);
+        
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building0);
+        
+        building0.removeFunction(eva);
         
         WalkingSteps walkingSteps = new WalkingSteps(person, 15D, -10D, rover);
         assertNotNull(walkingSteps);
@@ -524,6 +558,20 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsRoverToRover() {
         
         Settlement settlement = new MockSettlement();
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addBuilding(building0, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
         
         Rover rover1 = new Rover("Test Rover 1", "Explorer Rover", settlement);
         rover1.setParkedLocation(15D, -10D, 0D);
@@ -720,7 +768,7 @@ public class WalkingStepsTest extends TestCase {
         person.setYLocation(50D);
         settlement.getInventory().retrieveUnit(person);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 5D, 5D, building0);
+        WalkingSteps walkingSteps = new WalkingSteps(person, 4D, 4D, building0);
         assertNotNull(walkingSteps);
         
         assertTrue(walkingSteps.canWalkAllSteps());
@@ -743,9 +791,9 @@ public class WalkingStepsTest extends TestCase {
         
         assertEquals(WalkStep.SETTLEMENT_INTERIOR_WALK, walkStep3.stepType);
         
-        assertEquals(5D, walkStep3.xLoc);
+        assertEquals(4D, walkStep3.xLoc);
         
-        assertEquals(5D, walkStep3.yLoc);
+        assertEquals(4D, walkStep3.yLoc);
     }
     
     /**
@@ -768,12 +816,18 @@ public class WalkingStepsTest extends TestCase {
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
         
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        EVA eva = new EVA(building0, airlock0);
+        building0.addFunction(eva);
+        
         Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
         person.setXLocation(0D);
         person.setYLocation(0D);
         settlement.getInventory().retrieveUnit(person);
         
-        WalkingSteps walkingSteps = new WalkingSteps(person, 5D, 5D, building0);
+        building0.removeFunction(eva);
+        
+        WalkingSteps walkingSteps = new WalkingSteps(person, 3D, 3D, building0);
         assertNotNull(walkingSteps);
         
         assertFalse(walkingSteps.canWalkAllSteps());
@@ -791,6 +845,21 @@ public class WalkingStepsTest extends TestCase {
     public void testWalkingStepsExteriorToRover() {
         
         Settlement settlement = new MockSettlement();
+        BuildingManager buildingManager = settlement.getBuildingManager();
+        
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addBuilding(building0, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        EVA eva = new EVA(building0, airlock0);
+        building0.addFunction(eva);
         
         Rover rover = new Rover("Test Rover", "Explorer Rover", settlement);
         rover.setParkedLocation(15D, -10D, 0D);

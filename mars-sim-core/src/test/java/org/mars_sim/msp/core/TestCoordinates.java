@@ -286,11 +286,11 @@ public class TestCoordinates extends TestCase {
      */
     public void testParseLongitude() {
         
-        String lonString1 = "0.0\u00BA E";
+        String lonString1 = "0.0" + Msg.getString("direction.degreeSign") + " E";
         double lon1 = Coordinates.parseLongitude(lonString1);
         assertEquals(0D, lon1);
         
-        String lonString2 = "90.0\u00BA W";
+        String lonString2 = "90.0" + Msg.getString("direction.degreeSign") + " W";
         double lon2 = Coordinates.parseLongitude(lonString2);
         assertEquals(3D * Math.PI / 2D, lon2);
         
@@ -308,11 +308,11 @@ public class TestCoordinates extends TestCase {
      */
     public void testParseLatitude() {
         
-        String latString1 = "0.0\u00BA N";
+        String latString1 = "0.0" + Msg.getString("direction.degreeSign") + " N";
         double lat1 = Coordinates.parseLatitude(latString1);
         assertEquals(Math.PI / 2D, lat1);
         
-        String latString2 = "90.0\u00BA S";
+        String latString2 = "90.0" + Msg.getString("direction.degreeSign") + " S";
         double lat2 = Coordinates.parseLatitude(latString2);
         assertEquals(Math.PI, lat2);
         
@@ -334,7 +334,7 @@ public class TestCoordinates extends TestCase {
         String lonString1 = loc1.getFormattedLongitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        assertEquals("0" + decimalPoint + "0\u00BAE", lonString1);
+        assertEquals("0" + decimalPoint + "0" + Msg.getString("direction.degreeSign") + "E", lonString1);
     }
     
     /**
@@ -346,6 +346,6 @@ public class TestCoordinates extends TestCase {
         String latString1 = loc1.getFormattedLatitudeString();
         DecimalFormat format = new DecimalFormat();
         char decimalPoint = format.getDecimalFormatSymbols().getDecimalSeparator();
-        assertEquals("90"+ decimalPoint + "0\u00BAN", latString1);
+        assertEquals("90"+ decimalPoint + "0" + Msg.getString("direction.degreeSign") + "N", latString1);
     }
 }

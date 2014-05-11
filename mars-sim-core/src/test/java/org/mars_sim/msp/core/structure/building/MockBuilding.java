@@ -51,4 +51,10 @@ public class MockBuilding extends Building {
 	public void addFunction(Function function) {
 	    functions.add(function);
 	}
+	
+	public void removeFunction(Function function) {
+	    if (functions.contains(function)) {
+	        functions.remove(function);
+	    }
+	}
 }

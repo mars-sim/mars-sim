@@ -15,6 +15,8 @@ import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 
 /**
  * A unit test suite for the WalkOutside task class.
@@ -50,6 +52,9 @@ extends TestCase {
 		building.setYLocation(0D);
 		building.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building, false);
+		
+		BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building.addFunction(new EVA(building, airlock0));
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -114,6 +119,9 @@ extends TestCase {
 		building1.setYLocation(0D);
 		building1.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building1, false);
+		
+		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building1.addFunction(new EVA(building1, airlock0));
 
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
@@ -212,6 +220,9 @@ extends TestCase {
 		building1.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building1, false);
 
+		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building1.addFunction(new EVA(building1, airlock0));
+		
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
 		settlement.getInventory().retrieveUnit(person);
@@ -289,6 +300,9 @@ extends TestCase {
 		building1.setFacing(0D);
 		settlement.getBuildingManager().addBuilding(building1, false);
 
+		BuildingAirlock airlock0 = new BuildingAirlock(building1, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building1.addFunction(new EVA(building1, airlock0));
+		
 		// Create test person.
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
 		settlement.getInventory().retrieveUnit(person);
