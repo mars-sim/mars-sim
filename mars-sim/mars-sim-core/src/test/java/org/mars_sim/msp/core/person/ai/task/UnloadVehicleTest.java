@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleTest.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-05-10
  * @author Scott Davis
  */
 
@@ -19,6 +19,10 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.MockSettlement;
 import org.mars_sim.msp.core.structure.Settlement;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.MockBuilding;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 import org.mars_sim.msp.core.vehicle.MockVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -63,6 +67,20 @@ extends TestCase {
 		for (int x = 0; x < 5; x++) {
 			vehicleInv.storeUnit(new SpecimenContainer(settlement.getCoordinates()));
 		}
+		
+		BuildingManager buildingManager = settlement.getBuildingManager();
+        MockBuilding building0 = new MockBuilding(buildingManager);
+        building0.setID(0);
+        building0.setName("building 0");
+        building0.setWidth(9D);
+        building0.setLength(9D);
+        building0.setXLocation(0D);
+        building0.setYLocation(0D);
+        building0.setFacing(0D);
+        buildingManager.addBuilding(building0, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
 		
 		Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
 		person.getNaturalAttributeManager().setAttribute(NaturalAttribute.STRENGTH, 100);

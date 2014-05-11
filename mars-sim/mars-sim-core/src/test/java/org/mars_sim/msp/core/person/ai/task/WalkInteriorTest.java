@@ -10,6 +10,8 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.MockBuilding;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnector;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingAirlock;
+import org.mars_sim.msp.core.structure.building.function.EVA;
 
 /**
  * A unit test suite for the WalkInterior task class.
@@ -24,14 +26,18 @@ public class WalkInteriorTest extends TestCase {
     public void testDetermineDirection() {
         
         Settlement settlement = new MockSettlement();
-        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
-        person.setXLocation(0D);
-        person.setYLocation(0D);
         
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
         settlement.getBuildingManager().addBuilding(building, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building.addFunction(new EVA(building, airlock0));
+        
+        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
+        person.setXLocation(0D);
+        person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
@@ -48,14 +54,18 @@ public class WalkInteriorTest extends TestCase {
     public void testWalkInDirection() {
         
         Settlement settlement = new MockSettlement();
-        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
-        person.setXLocation(0D);
-        person.setYLocation(0D);
         
         MockBuilding building = new MockBuilding(settlement.getBuildingManager());
         building.setWidth(10D);
         building.setLength(10D);
         settlement.getBuildingManager().addBuilding(building, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building.addFunction(new EVA(building, airlock0));
+        
+        Person person = new Person("test person", PersonGender.MALE, "Earth", settlement);
+        person.setXLocation(0D);
+        person.setYLocation(0D);
         BuildingManager.addPersonToBuildingSameLocation(person, building);
         
         WalkSettlementInterior walkTask = new WalkSettlementInterior(person, building, 0D, 0D);
@@ -100,6 +110,9 @@ public class WalkInteriorTest extends TestCase {
         building0.setYLocation(0D);
         building0.setFacing(0D);
         buildingManager.addBuilding(building0, false);
+        
+        BuildingAirlock airlock0 = new BuildingAirlock(building0, 1, 0D, 0D, 0D, 0D, 0D, 0D);
+        building0.addFunction(new EVA(building0, airlock0));
         
         MockBuilding building1 = new MockBuilding(buildingManager);
         building1.setID(1);
