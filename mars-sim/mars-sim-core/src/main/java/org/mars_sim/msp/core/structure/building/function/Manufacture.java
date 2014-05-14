@@ -493,6 +493,74 @@ implements Serializable {
 				}
 			}
 		}
+		else {
+		    
+		    // Premature end of process.  Return all input materials.
+		    Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+            UnitManager manager = Simulation.instance().getUnitManager();
+            Inventory inv = getBuilding().getInventory();
+
+            Iterator<ManufactureProcessItem> j = process.getInfo().getInputList().iterator();
+            while (j.hasNext()) {
+                ManufactureProcessItem item = j.next();
+                if (ManufactureUtil.getManufactureProcessItemValue(item, settlement) > 0D) {
+                    if (Type.AMOUNT_RESOURCE.equals(item.getType())) {
+                        // Produce amount resources.
+                        AmountResource resource = AmountResource.findAmountResource(item.getName());
+                        double amount = item.getAmount();
+                        double capacity = inv.getAmountResourceRemainingCapacity(resource, true, false);
+                        if (item.getAmount() > capacity) {
+                            double overAmount = item.getAmount() - capacity;
+                            logger.severe("Not enough storage capacity to store " + overAmount + " of " + 
+                                    item.getName() + " from " + process.getInfo().getName() + " at " + 
+                                    settlement.getName());
+                            amount = capacity;
+                        }
+                        inv.storeAmountResource(resource, amount, true);
+                    }
+                    else if (Type.PART.equals(item.getType())) {
+                        // Produce parts.
+                        Part part = (Part) ItemResource.findItemResource(item.getName());
+                        double mass = item.getAmount() * part.getMassPerItem();
+                        double capacity = inv.getGeneralCapacity();
+                        if (mass <= capacity) {
+                            inv.storeItemResources(part, (int) item.getAmount());
+                        }
+                    }
+                    else if (Type.EQUIPMENT.equals(item.getType())) {
+                        // Produce equipment.
+                        String equipmentType = item.getName();
+                        int number = (int) item.getAmount();
+                        for (int x = 0; x < number; x++) {
+                            Equipment equipment = EquipmentFactory.getEquipment(equipmentType, settlement.getCoordinates(), false);
+                            equipment.setName(manager.getNewName(UnitType.EQUIPMENT, equipmentType, null));
+                            inv.storeUnit(equipment);
+                        }
+                    }
+                    else if (Type.VEHICLE.equals(item.getType())) {
+                        // Produce vehicles.
+                        String vehicleType = item.getName();
+                        int number = (int) item.getAmount();
+                        for (int x = 0; x < number; x++) {
+                            if (LightUtilityVehicle.NAME.equalsIgnoreCase(vehicleType)) {
+                                String name = manager.getNewName(UnitType.VEHICLE, "LUV", null);
+                                manager.addUnit(new LightUtilityVehicle(name, vehicleType, settlement));
+                            }
+                            else {
+                                String name = manager.getNewName(UnitType.VEHICLE, null, null);
+                                manager.addUnit(new Rover(name, vehicleType, settlement));
+                            }
+                        }
+                    }
+                    else throw new IllegalStateException("Manufacture.addProcess(): output: " +
+                            item.getType() + " not a valid type.");
+
+                    // Recalculate settlement good value for output item.
+                    GoodsManager goodsManager = getBuilding().getBuildingManager().getSettlement().getGoodsManager();
+                    goodsManager.updateGoodValue(ManufactureUtil.getGood(item), false);
+                }
+            }
+		}
 
 		processes.remove(process);
 
