@@ -40,6 +40,9 @@ import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
 import org.mars_sim.msp.core.manufacture.SalvageProcessInfo;
+import org.mars_sim.msp.core.person.Person;
+import org.mars_sim.msp.core.person.ai.SkillManager;
+import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -416,13 +419,27 @@ extends TabPanel {
 
 		try {
 			if (manufactureBuilding != null) {
+			    
+			    // Determine highest materials science skill level at settlement.
+	            Settlement settlement = manufactureBuilding.getBuildingManager().getSettlement();
+	            int highestSkillLevel = 0;
+	            Iterator<Person> i = settlement.getAllAssociatedPeople().iterator();
+	            while (i.hasNext()) {
+	                Person tempPerson = i.next();
+	                SkillManager skillManager = tempPerson.getMind().getSkillManager();
+	                int skill = skillManager.getSkillLevel(SkillType.MATERIALS_SCIENCE);
+	                if (skill > highestSkillLevel) {
+	                    highestSkillLevel = skill;
+	                }
+	            }
+			    
 				Manufacture workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 				if (workshop.getProcesses().size() < workshop.getConcurrentProcesses()) {
-					Iterator<ManufactureProcessInfo> i = 
-							ManufactureUtil.getManufactureProcessesForTechLevel(
-									workshop.getTechLevel()).iterator();
-					while (i.hasNext()) {
-						ManufactureProcessInfo process = i.next();
+					Iterator<ManufactureProcessInfo> j = 
+							ManufactureUtil.getManufactureProcessesForTechSkillLevel(
+									workshop.getTechLevel(), highestSkillLevel).iterator();
+					while (j.hasNext()) {
+						ManufactureProcessInfo process = j.next();
 						if (ManufactureUtil.canProcessBeStarted(process, workshop)) 
 							result.add(process);
 					}
