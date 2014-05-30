@@ -182,7 +182,7 @@ implements Serializable {
 	
 	/**
 	 * Gets the required air pressure.
-	 * @return air pressure in atm.
+	 * @return air pressure in Pa.
 	 * @throws Exception if air pressure could not be found.
 	 */
 	public double getMinAirPressure() {

@@ -29,8 +29,8 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	private static final long serialVersionUID = 1L;
 
 	// Static data members
-	/** Normal air pressure (atm.). */
-	private double NORMAL_AIR_PRESSURE = 1D;
+	/** Normal air pressure (Pa). */
+	private double NORMAL_AIR_PRESSURE = 101325D;
 	/** Normal temperature (celsius). */
 	private double NORMAL_TEMP = 25D;
 
@@ -226,7 +226,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
     }
 
     /** Gets the air pressure of the life support system.
-     *  @return air pressure (atm)
+     *  @return air pressure (Pa)
      */
     public double getAirPressure() {
         double result = NORMAL_AIR_PRESSURE * 

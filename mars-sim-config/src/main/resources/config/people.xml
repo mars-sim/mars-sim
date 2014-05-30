@@ -34,9 +34,9 @@
 	<!-- Default: 3.0 -->
 	<starvation-start-time value="3.0" />
 
-	<!-- Minimum air pressure (atm) a person can withstand without harm -->
-	<!-- Default: .25 -->
-	<min-air-pressure value=".25" />
+	<!-- Minimum air pressure (Pa) a person can withstand without harm -->
+	<!-- Default: 25331.25 -->
+	<min-air-pressure value="25331.25" />
 
 	<!-- Number of millisols a person can survive in decompression -->
 	<!-- Note: 1 millisol = 88.77 seconds -->

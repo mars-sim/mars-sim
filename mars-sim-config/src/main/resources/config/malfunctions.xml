@@ -47,8 +47,8 @@
 			<effect type="life-support" name="Oxygen" change-rate="-.01" />
 			
 			<!-- Life support effects have a change rate in life support provided. -->
-			<!-- Values: Change rate of life support. (atm/millisol) -->
-			<effect type="life-support" name="Air Pressure" change-rate="-.01" />
+			<!-- Values: Change rate of life support. (Pa/millisol) -->
+			<effect type="life-support" name="Air Pressure" change-rate="-1013.25" />
 		</effect-list>
 		
 		<!-- List of medical injuries that can be immediately caused by this malfunction. (optional) -->
