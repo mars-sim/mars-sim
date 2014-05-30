@@ -20,8 +20,8 @@ implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	// Static data
-	/** Sea level air pressure in atm. */
-	private static final double SEA_LEVEL_AIR_PRESSURE = .009D;
+	/** Sea level air pressure in Pa. */
+	private static final double SEA_LEVEL_AIR_PRESSURE = 911.925D;
 	/** Sea level air density in kg/m^3. */
 	private static final double SEA_LEVEL_AIR_DENSITY = .0115D;
 	/** Mars' gravitational acceleration at sea level in m/sec^2. */
@@ -34,7 +34,7 @@ implements Serializable {
 
 	/**
 	 * Gets the air pressure at a given location.
-	 * @return air pressure in atm.
+	 * @return air pressure in Pa.
 	 */
 	public double getAirPressure(Coordinates location) {
 

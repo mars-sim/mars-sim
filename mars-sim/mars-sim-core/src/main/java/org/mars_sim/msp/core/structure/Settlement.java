@@ -54,8 +54,8 @@ implements LifeSupport {
 	/* default logger.
 	private static Logger logger = Logger.getLogger(Settlement.class.getName());
 	*/
-	/** Normal air pressure (atm.) */
-	private static final double NORMAL_AIR_PRESSURE = 1D;
+	/** Normal air pressure (Pa) */
+	private static final double NORMAL_AIR_PRESSURE = 101325D;
 	/** Normal temperature (celsius) */
 	private static final double NORMAL_TEMP = 25D;
 
@@ -287,7 +287,7 @@ implements LifeSupport {
 
 	/**
 	 * Gets the air pressure of the life support system.
-	 * @return air pressure (atm)
+	 * @return air pressure (Pa)
 	 */
 	public double getAirPressure() {
 		double result = NORMAL_AIR_PRESSURE;

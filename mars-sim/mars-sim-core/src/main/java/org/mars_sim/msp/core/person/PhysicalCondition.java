@@ -330,7 +330,7 @@ implements Serializable {
     /**
      * Person requires minimum air pressure.
      * @param support Life support system providing air pressure.
-     * @param pressure minimum air pressure person requires (in atm)
+     * @param pressure minimum air pressure person requires (in Pa)
      * @return new problem added.
      */
     private boolean requireAirPressure(LifeSupport support, double pressure) {

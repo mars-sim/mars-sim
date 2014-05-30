@@ -42,7 +42,7 @@ public interface LifeSupport {
 	public double provideWater(double amountRequested);
 
 	/** Gets the air pressure of the life support system.
-	 *  @return air pressure (atm)
+	 *  @return air pressure (Pa)
 	 */
 	public double getAirPressure();
 
