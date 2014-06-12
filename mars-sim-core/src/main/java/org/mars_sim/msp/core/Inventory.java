@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Inventory.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-06-12
  * @author Scott Davis 
  */
 package org.mars_sim.msp.core;
@@ -173,6 +173,21 @@ implements Serializable {
         }
 		 */
 		return getAmountResourceCapacityCacheValue(resource, allowDirty);
+	}
+	
+	/**
+	 * Gets the storage capacity for a resource not counting containers.
+	 * @param resource the resource.
+	 * @return capacity amount (kg).
+	 */
+	public double getAmountResourceCapacityNoContainers(AmountResource resource) {
+	    double result = 0D;
+	    
+	    if (resourceStorage != null) {
+	        result = resourceStorage.getAmountResourceCapacity(resource);
+	    }
+	    
+	    return result;
 	}
 
 	/**
