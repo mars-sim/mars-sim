@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GoodsManager.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.goods;
@@ -26,6 +26,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.Container;
+import org.mars_sim.msp.core.equipment.ContainerUtil;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.SpecimenContainer;
@@ -53,6 +54,7 @@ import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
+import org.mars_sim.msp.core.resource.Phase;
 import org.mars_sim.msp.core.resource.Type;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -142,11 +144,6 @@ implements Serializable {
 	 */
 	private void populateGoodsValues() {
 		List<Good> goods = GoodsUtil.getGoodsList();
-		/*
-        goodsValues = new HashMap<Good, Double>(goods.size());
-        goodsDemandCache = new HashMap<Good, Double>(goods.size());
-        goodsTradeCache = new HashMap<Good, Double>(goods.size());
-		 */
 		goodsValues = new TreeMap<Good, Double>();
 		goodsDemandCache = new TreeMap<Good, Double>();
 		goodsTradeCache = new TreeMap<Good, Double>();
@@ -309,10 +306,6 @@ implements Serializable {
 
 			// Add trade value.
 			demand += determineTradeDemand(resourceGood, useCache);
-
-			// Limit demand by storage capacity.
-			double capacity = settlement.getInventory().getAmountResourceCapacity(resource, false);
-			if (demand > capacity) demand = capacity;
 
 			goodsDemandCache.put(resourceGood, demand);
 		}
@@ -477,8 +470,7 @@ implements Serializable {
 	 * @return value (value points / kg)
 	 * @throws exception if error getting good value.
 	 */
-	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) 
-	{
+	private double getResourceProcessValue(ResourceProcess process, AmountResource resource) {
 		double value = 0D;
 
 		Set<AmountResource> inputResources = process.getInputResources();
@@ -490,23 +482,23 @@ implements Serializable {
 			while (i.hasNext()) {
 				AmountResource output = i.next();
 				double outputRate = process.getMaxOutputResourceRate(output); 
-				if (!process.isWasteOutputResource(resource))
+				if (!process.isWasteOutputResource(resource)) {
 					outputValue += (getGoodValuePerItem(GoodsUtil.getResourceGood(output)) * outputRate);
+				}
 			}
 
 			double totalInputRate = 0D;
 			Iterator<AmountResource> j = process.getInputResources().iterator();
 			while (j.hasNext()) {
 				AmountResource inputResource = j.next();
-				if (!process.isAmbientInputResource(inputResource))
+				if (!process.isAmbientInputResource(inputResource)) {
 					totalInputRate += process.getMaxInputResourceRate(inputResource);
+				}
 			}
-
-			double resourceRate = process.getMaxInputResourceRate(resource);
 
 			double totalInputsValue = outputValue * RESOURCE_PROCESSING_INPUT_FACTOR;
 
-			value = (resourceRate / totalInputRate) * totalInputsValue;
+			value = (1D / totalInputRate) * totalInputsValue;
 		}
 
 		return value;
@@ -523,7 +515,8 @@ implements Serializable {
 		while (i.hasNext()) {
 			Building building = i.next();
 			if (building.hasFunction(BuildingFunction.RESOURCE_PROCESSING)) {
-				ResourceProcessing processing = (ResourceProcessing) building.getFunction(BuildingFunction.RESOURCE_PROCESSING);
+				ResourceProcessing processing = (ResourceProcessing) building.getFunction(
+				        BuildingFunction.RESOURCE_PROCESSING);
 				processes.addAll(processing.getProcesses());
 			}
 		}
@@ -580,18 +573,19 @@ implements Serializable {
 		if (resourceInput != null) {
 			double outputsValue = 0D;
 			Iterator<ManufactureProcessItem> j = process.getOutputList().iterator();
-			while (j.hasNext()) 
+			while (j.hasNext()) {
 				outputsValue += ManufactureUtil.getManufactureProcessItemValue(j.next(), settlement);
+			}
 
 			double totalItems = 0D;
 			Iterator<ManufactureProcessItem> k = process.getInputList().iterator();
-			while (k.hasNext()) totalItems += k.next().getAmount();
-
-			double resourceItems = resourceInput.getAmount();
+			while (k.hasNext()) {
+			    totalItems += k.next().getAmount();
+			}
 
 			double totalInputsValue = outputsValue * MANUFACTURING_INPUT_FACTOR;
 
-			demand = (resourceItems / totalItems) * totalInputsValue;
+			demand = (1D / totalItems) * totalInputsValue;
 		}
 
 		return demand;
@@ -682,16 +676,18 @@ implements Serializable {
 			double totalItems = 0D;
 
 			Iterator<AmountResource> i = resources.keySet().iterator();
-			while (i.hasNext()) totalItems += resources.get(i.next());
+			while (i.hasNext()) {
+			    totalItems += resources.get(i.next());
+			}
 
 			Iterator<Part> j = parts.keySet().iterator();
-			while (j.hasNext()) totalItems += parts.get(j.next());
-
-			double resourceItems = resources.get(resource);
+			while (j.hasNext()) {
+			    totalItems += parts.get(j.next());
+			}
 
 			double totalInputsValue = stageValue * CONSTRUCTING_INPUT_FACTOR;
 
-			demand = (resourceItems / totalItems) * totalInputsValue;
+			demand = (1D / totalItems) * totalInputsValue;
 		}
 
 		return demand;
@@ -1238,14 +1234,39 @@ implements Serializable {
 		 double numDemand = 0D;
 
 		 // Determine number of EVA suits that are needed
-		 if (EVASuit.class.equals(equipmentClass)) numDemand += 2D * 
-				 settlement.getAllAssociatedPeople().size() * EVA_SUIT_FACTOR;
+		 if (EVASuit.class.equals(equipmentClass)) {
+		     numDemand += 2D * settlement.getAllAssociatedPeople().size() * EVA_SUIT_FACTOR;
+		 }
 
 		 // Determine the number of containers that are needed.
-		 if (Container.class.isAssignableFrom(equipmentClass)) {
-			 numDemand = 10D * settlement.getBuildingManager().getBuildingNum();
-			 // Add all non-empty containers.
-			 numDemand += getNonEmptyContainers(equipmentClass);
+		 if (Container.class.isAssignableFrom(equipmentClass) && 
+		         !SpecimenContainer.class.equals(equipmentClass)) {
+		     
+		     Phase containerPhase = ContainerUtil.getContainerPhase((Class<? extends 
+		             Container>) equipmentClass);
+		     double containerCapacity = ContainerUtil.getContainerCapacity((Class<? 
+		             extends Container>) equipmentClass);
+		     
+		     double totalPhaseOverfill = 0D;
+		     Iterator<AmountResource> i = AmountResource.getAmountResources().iterator();
+		     while (i.hasNext()) {
+		         AmountResource resource = i.next();
+		         if (resource.getPhase() == containerPhase) {
+		             double settlementCapacity = settlement.getInventory().
+		                     getAmountResourceCapacityNoContainers(resource);
+		             Good resourceGood = GoodsUtil.getResourceGood(resource);
+		             double resourceDemand = 0D;
+		             if (goodsDemandCache.containsKey(resourceGood)) {
+		                 resourceDemand = goodsDemandCache.get(resourceGood);
+		             }
+		             if (resourceDemand > settlementCapacity) {
+		                 double resourceOverfill = resourceDemand - settlementCapacity;
+		                 totalPhaseOverfill += resourceOverfill;
+		             }
+		         }
+		     }
+		     
+		     numDemand = totalPhaseOverfill * containerCapacity / 10000D;
 		 }
 
 		 int areologistNum = getAreologistNum();
@@ -1261,8 +1282,9 @@ implements Serializable {
 		 }
 
 		 // Determine number of specimen containers that are needed.
-		 if (SpecimenContainer.class.equals(equipmentClass)) 
+		 if (SpecimenContainer.class.equals(equipmentClass)) {
 			 numDemand +=  Exploration.REQUIRED_SPECIMEN_CONTAINERS * areologistNum;
+		 }
 
 		 return numDemand;
 	 }

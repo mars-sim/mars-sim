@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Storage.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -115,18 +115,8 @@ implements Serializable {
 			if (currentStorageDemand < 0D) currentStorageDemand = 0D;
 
 			double buildingStorageNeeded = currentStorageDemand;
-			if (buildingStorageNeeded > storageAmount) buildingStorageNeeded = storageAmount;
 
-			result += buildingStorageNeeded / 1000D;
-
-			// Add overflow storage demand.
-			double overflowAmount = resourceStored - existingStorage;
-			if (overflowAmount > 0D) {
-				if (overflowAmount > storageAmount) {
-					overflowAmount = storageAmount;
-				}
-				result += overflowAmount;
-			}
+			result += buildingStorageNeeded / 10000D;
 		}
 
 		return result;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ContainerUtil.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-06-12
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.equipment;
@@ -66,5 +66,23 @@ public final class ContainerUtil {
 		}
 
 		return result;
+	}
+	
+	/**
+	 * Gets the phase of amount resource that a container can hold.
+	 * @param containerClass the container class.
+	 * @return amount resource phase.
+	 */
+	public static Phase getContainerPhase(Class<? extends Container> containerClass) {
+	    
+	    Phase result = null;
+	    
+	    Class<? extends Equipment> equipmentClass = (Class<? extends Equipment>) containerClass;
+	    Container container = (Container) EquipmentFactory.getEquipment(equipmentClass, coordinates, true);
+        if (container != null) {
+            result = container.getContainingResourcePhase();
+        }
+	    
+        return result;
 	}
 }
