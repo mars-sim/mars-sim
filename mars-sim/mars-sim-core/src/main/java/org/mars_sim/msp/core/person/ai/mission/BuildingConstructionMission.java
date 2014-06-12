@@ -370,8 +370,8 @@ implements Serializable {
                         ConstructionValues values =  settlement.getConstructionManager().getConstructionValues();
                         double constructionProfit = values.getSettlementConstructionProfit(constructionSkill);
                         result = constructionProfit;
-                        if (result > 100D) {
-                            result = 100D;
+                        if (result > 10D) {
+                            result = 10D;
                         }
                     }
                 }

@@ -93,8 +93,8 @@ implements Serializable {
 
 		double result = 0D;
 
-		int areologySkill = person.getMind().getSkillManager().getSkillLevel(SkillType.DRIVING);
-		result = areologySkill;
+		int drivingSkill = person.getMind().getSkillManager().getSkillLevel(SkillType.DRIVING);
+		result = drivingSkill;
 
 		NaturalAttributeManager attributes = person.getNaturalAttributeManager();
 		int experienceAptitude = attributes.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
@@ -113,17 +113,9 @@ implements Serializable {
 	public double getSettlementNeed(Settlement settlement) {
 
 		double result = 0D;
-
+		
 		// Get number of vehicles parked at a settlement.
-		double settlementVehicleNum = settlement.getParkedVehicleNum();
-
-		// Add number of vehicles out on missions for the settlement.
-		MissionManager missionManager = Simulation.instance().getMissionManager();
-		Iterator<Mission> i = missionManager.getMissionsForSettlement(settlement).iterator();
-		while (i.hasNext()) {
-			Mission mission = i.next();
-			if (mission instanceof VehicleMission) settlementVehicleNum++;
-		}
+		double settlementVehicleNum = settlement.getAllAssociatedVehicles().size();
 
 		result = settlementVehicleNum;
 
