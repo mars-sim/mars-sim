@@ -253,7 +253,7 @@ implements Serializable {
                     if (rover != null) {
                         // Check if any mineral locations within rover range.
                         if (hasNearbyMineralLocations(rover, settlement)) {
-                            result = 5D;
+                            result = 1D;
                         }
                     }
                 } catch (Exception e) {

@@ -356,7 +356,7 @@ implements Serializable {
 
     /**
      * Get the details of this Person's death.
-     * @return Deatial of the death, will be null if person os still alive.
+     * @return Detail of the death, will be null if person is still alive.
      */
     public DeathInfo getDeathDetails() {
         return deathDetails;

@@ -234,7 +234,7 @@ implements Serializable {
 						if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
 							if (!primaryStudy.isPrimaryResearchCompleted()) {
 								if (areology == primaryStudy.getScience()) 
-									result += 10D;
+									result += 2D;
 							}
 						}
 
@@ -245,7 +245,7 @@ implements Serializable {
 							if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
 								if (!collabStudy.isCollaborativeResearchCompleted(person)) {
 									if (areology == collabStudy.getCollaborativeResearchers().get(person))
-										result += 5D;
+										result += 1D;
 								}
 							}
 						}

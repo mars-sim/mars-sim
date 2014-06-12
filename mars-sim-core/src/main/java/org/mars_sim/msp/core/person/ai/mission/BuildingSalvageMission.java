@@ -338,8 +338,8 @@ implements Serializable {
                     double salvageProfit = values
                             .getSettlementSalvageProfit(constructionSkill);
                     result = salvageProfit;
-                    if (result > 100D) {
-                        result = 100D;
+                    if (result > 10D) {
+                        result = 10D;
                     }
                 } catch (Exception e) {
                     logger.log(Level.SEVERE,

@@ -265,7 +265,7 @@ implements Serializable {
 
             if (reservableRover && backupRover && minNum && enoughContainers
                     && !embarkingMissions && hasBasicResources && enoughMethane)
-                result = 5D;
+                result = 1D;
 
             // Crowding modifier
             int crowding = settlement.getCurrentPopulationNum()

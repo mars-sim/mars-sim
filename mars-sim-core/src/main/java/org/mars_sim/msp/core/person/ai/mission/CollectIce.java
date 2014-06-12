@@ -97,8 +97,8 @@ public class CollectIce extends CollectResourcesMission {
 		    AmountResource iceResource = AmountResource.findAmountResource("ice");
 		    double value = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(iceResource));
 		    result *= value;
-		    if (result > 10D) {
-		        result = 10D;
+		    if (result > 1D) {
+		        result = 1D;
 		    }
 
 		    // Don't start mission until after first Sol of the simulation.
