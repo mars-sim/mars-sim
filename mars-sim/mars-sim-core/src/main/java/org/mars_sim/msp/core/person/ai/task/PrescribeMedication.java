@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.06 2014-02-26
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -120,7 +120,6 @@ implements Serializable {
     private void walkToPatientBuilding(Building patientBuilding) {
         
         // Determine location within patient's building.
-        // TODO: Use action point rather than random internal location.
         Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(patientBuilding);
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), patientBuilding);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.06 2014-03-06
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -105,7 +106,9 @@ public class BuildingConfig implements Serializable {
     private static final String MANAGEMENT = "management";
     private static final String POPULATION_SUPPORT = "population-support";
     private static final String BUILDING_CONNECTION = "building-connection";
-	
+	private static final String ACTIVITY = "activity";
+	private static final String ACTIVITY_SPOT = "activity-spot";
+    
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
 	private static final String SOLAR_POWER_SOURCE = "Solar Power Source";
@@ -926,6 +929,173 @@ public class BuildingConfig implements Serializable {
 	 */
 	public boolean hasBuildingConnection(String buildingName) {
 	    return hasElements(buildingName, FUNCTIONS, BUILDING_CONNECTION);
+	}
+	
+	/**
+     * Gets a list of activity spots for the astronomical observation building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getAstronomicalObservationActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, ASTRONOMICAL_OBSERVATION);
+    }
+	
+	/**
+	 * Gets a list of activity spots for the communication building function.
+	 * @param buildingName the name of the building.
+	 * @return list of activity spots as Point2D objects.
+	 */
+	public List<Point2D> getCommunicationActivitySpots(String buildingName) {
+	    return getActivitySpots(buildingName, COMMUNICATION);
+	}
+	
+	/**
+     * Gets a list of activity spots for the cooking building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getCookingActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, COOKING);
+    }
+    
+    /**
+     * Gets a list of activity spots for the dining building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getDiningActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, DINING);
+    }
+    
+    /**
+     * Gets a list of activity spots for the exercise building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getExerciseActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, EXERCISE);
+    }
+    
+    /**
+     * Gets a list of activity spots for the farming building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getFarmingActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, FARMING);
+    }
+    
+    /**
+     * Gets a list of activity spots for the ground vehicle maintenance building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getGroundVehicleMaintenanceActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, GROUND_VEHICLE_MAINTENANCE);
+    }
+    
+    /**
+     * Gets a list of activity spots for the living accommodations building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getLivingAccommodationsActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, LIVING_ACCOMMODATIONS);
+    }
+    
+    /**
+     * Gets a list of activity spots for the management building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getManagementActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, MANAGEMENT);
+    }
+    
+    /**
+     * Gets a list of activity spots for the manufacture building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getManufactureActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, MANUFACTURE);
+    }
+    
+    /**
+     * Gets a list of activity spots for the medical care building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getMedicalCareActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, MEDICAL_CARE);
+    }
+    
+    /**
+     * Gets a list of activity spots for the recreation building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getRecreationActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, RECREATION);
+    }
+    
+    /**
+     * Gets a list of activity spots for the research building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getResearchActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, RESEARCH);
+    }
+    
+    /**
+     * Gets a list of activity spots for the resource processing building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getResourceProcessingActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, RESOURCE_PROCESSING);
+    }
+	
+	/**
+	 * Checks if the building function has activity spots.
+	 * @param buildingName the name of the building.
+	 * @param functionName the name of the building function.
+	 * @return true if building function has activity spots.
+	 */
+	private boolean hasActivitySpots(String buildingName, String functionName) {
+	    Element buildingElement = getBuildingElement(buildingName);
+        Element functionsElement = buildingElement.getChild(FUNCTIONS);
+        Element functionElement = functionsElement.getChild(functionName);
+        List<?> activityElements = functionElement.getChildren(ACTIVITY);
+        return (activityElements.size() > 0);
+	}
+	
+	/**
+	 * Gets a list of activity spots for a building's function.
+	 * @param buildingName the name of the building.
+	 * @param functionName the name of the building function.
+	 * @return list of activity spots as Point2D objects.
+	 */
+	@SuppressWarnings("unchecked")
+	private List<Point2D> getActivitySpots(String buildingName, String functionName) {
+	    List<Point2D> result = new ArrayList<Point2D>();
+	    
+	    if (hasActivitySpots(buildingName, functionName)) {
+	        Element buildingElement = getBuildingElement(buildingName);
+	        Element functionsElement = buildingElement.getChild(FUNCTIONS);
+	        Element functionElement = functionsElement.getChild(functionName);
+	        Element activityElement = functionElement.getChild(ACTIVITY);
+	        Iterator<Element> i = activityElement.getChildren(ACTIVITY_SPOT).iterator();
+	        while (i.hasNext()) {
+	            Element activitySpot = i.next();
+	            double xLocation = Double.parseDouble(activitySpot.getAttributeValue(X_LOCATION));
+	            double yLocation = Double.parseDouble(activitySpot.getAttributeValue(Y_LOCATION));
+	            result.add(new Point2D.Double(xLocation, yLocation));
+	        }
+	    }
+	    
+	    return result;
 	}
 	
 	private int getValueAsInteger(String buildingName, String child, 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -202,10 +202,17 @@ implements Serializable {
 	private void walkToProcessBuilding(Building processBuilding) {
 
 		// Determine location within process toggle building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(processBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), processBuilding);
+	    ResourceProcessing resourceProcessing = (ResourceProcessing) processBuilding.getFunction(
+	            BuildingFunction.RESOURCE_PROCESSING);
+
+	    // Find available activity spot in building.
+	    Point2D settlementLoc = resourceProcessing.getAvailableActivitySpot(person);
+	    if (settlementLoc == null) {
+	        // If no available activity spot, go to random location in building.
+	        Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(processBuilding);
+	        settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+	                buildingLoc.getY(), processBuilding);
+	    }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				processBuilding)) {

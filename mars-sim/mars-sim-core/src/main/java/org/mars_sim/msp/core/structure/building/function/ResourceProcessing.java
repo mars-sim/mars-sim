@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResourceProcessing.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-20
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -52,6 +52,9 @@ implements Serializable {
 
 		powerDownProcessingLevel = config.getResourceProcessingPowerDown(building.getName());
 		resourceProcesses = config.getResourceProcesses(building.getName());
+		
+		// Load activity spots
+        loadActivitySpots(config.getResourceProcessingActivitySpots(building.getName()));
 	}
 
 	/**

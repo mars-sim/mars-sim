@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -205,7 +205,7 @@ implements ResearchScientificStudy, Serializable {
      * @return list of sciences.
      */
 	private static List<ScienceType> getExperimentalSciences() {
-		// TODO Create list of possible sciences for laboratory experimentation dircetly in {@link ScienceType}.
+		// TODO Create list of possible sciences for laboratory experimentation directly in {@link ScienceType}.
 		List<ScienceType> experimentalSciences = new ArrayList<ScienceType>();
 		experimentalSciences.add(ScienceType.BOTANY);
 		experimentalSciences.add(ScienceType.BIOLOGY);
@@ -467,10 +467,16 @@ implements ResearchScientificStudy, Serializable {
     private void walkToLabBuilding(Building labBuilding) {
         
         // Determine location within lab building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), labBuilding);
+        Research research = (Research) labBuilding.getFunction(BuildingFunction.RESEARCH);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = research.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), labBuilding);
+        }
         
         if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
                 labBuilding)) {

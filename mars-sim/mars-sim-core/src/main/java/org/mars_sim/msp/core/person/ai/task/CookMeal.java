@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -149,10 +149,16 @@ implements Serializable {
     private void walkToKitchenBuilding(Building kitchenBuilding) {
 
         // Determine location within kitchen building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(kitchenBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), kitchenBuilding);
+        Cooking cooking = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = cooking.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(kitchenBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), kitchenBuilding);
+        }
 
         if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
                 kitchenBuilding)) {
