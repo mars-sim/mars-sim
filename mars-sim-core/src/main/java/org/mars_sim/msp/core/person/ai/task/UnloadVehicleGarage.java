@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.06 2014-05-08
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -34,6 +34,8 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.Towing;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -183,10 +185,17 @@ implements Serializable {
     private void walkToGarageBuilding(Building garageBuilding) {
         
         // Determine location within garage building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), garageBuilding);
+        GroundVehicleMaintenance gvMaint = (GroundVehicleMaintenance) garageBuilding.getFunction(
+                BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = gvMaint.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), garageBuilding);
+        }
         
         if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
                 garageBuilding)) {

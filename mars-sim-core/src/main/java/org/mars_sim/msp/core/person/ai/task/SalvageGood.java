@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -168,10 +168,16 @@ implements Serializable {
 	private void walkToWorkshopBuilding(Building workshopBuilding) {
 
 		// Determine location within workshop building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), workshopBuilding);
+	    Manufacture manufacture = (Manufacture) workshopBuilding.getFunction(BuildingFunction.MANUFACTURE);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = manufacture.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), workshopBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				workshopBuilding)) {

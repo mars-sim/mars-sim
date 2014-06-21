@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.structure.building.function.Dining;
 
 /**
  * The EatMeal class is a task for eating a meal.
@@ -129,10 +130,16 @@ implements Serializable {
 	private void walkToDiningBuilding(Building diningBuilding) {
 
 		// Determine location within dining building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(diningBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), diningBuilding);
+	    Dining dining = (Dining) diningBuilding.getFunction(BuildingFunction.DINING);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = dining.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(diningBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), diningBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				diningBuilding)) {

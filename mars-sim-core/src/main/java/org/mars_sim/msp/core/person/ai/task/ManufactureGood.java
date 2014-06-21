@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 
@@ -155,10 +155,17 @@ implements Serializable {
 	private void walkToManufacturingBuilding(Building manufactureBuilding) {
 
 		// Determine location within manufacturing building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(manufactureBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), manufactureBuilding);
+        Manufacture manufacture = (Manufacture) manufactureBuilding.getFunction(
+                BuildingFunction.MANUFACTURE);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = manufacture.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(manufactureBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), manufactureBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				manufactureBuilding)) {

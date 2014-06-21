@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -62,6 +62,9 @@ implements Serializable {
 		powerSustainingCrop = config.getPowerForSustainingCrop(building.getName());
 		growingArea = config.getCropGrowingArea(building.getName());
 
+        // Load activity spots
+        loadActivitySpots(config.getFarmingActivitySpots(building.getName()));
+		
 		// Determine maximum harvest.
 		maxHarvest = growingArea * HARVEST_MULTIPLIER;
 

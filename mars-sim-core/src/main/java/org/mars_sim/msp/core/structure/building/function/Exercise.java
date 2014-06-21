@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exercise.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -22,131 +22,134 @@ public class Exercise
 extends Function
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	private static final BuildingFunction FUNCTION = BuildingFunction.EXERCISE;
+    private static final BuildingFunction FUNCTION = BuildingFunction.EXERCISE;
 
-	// Data members
-	private int exercisers;
-	private int exerciserCapacity;
+    // Data members
+    private int exercisers;
+    private int exerciserCapacity;
 
-	/**
-	 * Constructor.
-	 * @param building the building this function is for.
-	 * @throws BuildingException if error in constructing function.
-	 */
-	public Exercise(Building building) {
-		// Use Function constructor.
-		super(FUNCTION, building);
+    /**
+     * Constructor.
+     * @param building the building this function is for.
+     * @throws BuildingException if error in constructing function.
+     */
+    public Exercise(Building building) {
+        // Use Function constructor.
+        super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		this.exerciserCapacity = config.getExerciseCapacity(building.getName());
-	}
+        this.exerciserCapacity = config.getExerciseCapacity(building.getName());
 
-	/**
-	 * Gets the value of the function for a named building.
-	 * @param buildingName the building name.
-	 * @param newBuilding true if adding a new building.
-	 * @param settlement the settlement.
-	 * @return value (VP) of building function.
-	 * @throws Exception if error getting function value.
-	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding,
-			Settlement settlement) {
+        // Load activity spots
+        loadActivitySpots(config.getExerciseActivitySpots(building.getName()));
+    }
 
-		// Demand is one exerciser capacity for every four inhabitants.
-		double demand = settlement.getAllAssociatedPeople().size() / 4D;
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     * @throws Exception if error getting function value.
+     */
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
 
-		double supply = 0D;
-		boolean removedBuilding = false;
-		Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-		while (i.hasNext()) {
-			Building building = i.next();
-			if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
-				removedBuilding = true;
-			}
-			else {
-				Exercise exerciseFunction = (Exercise) building.getFunction(FUNCTION);
-				double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-				supply += exerciseFunction.exerciserCapacity * wearModifier;
-			}
-		}
+        // Demand is one exerciser capacity for every four inhabitants.
+        double demand = settlement.getAllAssociatedPeople().size() / 4D;
 
-		double valueExerciser = demand / (supply + 1D);
+        double supply = 0D;
+        boolean removedBuilding = false;
+        Iterator<Building> i = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+        while (i.hasNext()) {
+            Building building = i.next();
+            if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+                removedBuilding = true;
+            }
+            else {
+                Exercise exerciseFunction = (Exercise) building.getFunction(FUNCTION);
+                double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                supply += exerciseFunction.exerciserCapacity * wearModifier;
+            }
+        }
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		double exerciserCapacity = config.getExerciseCapacity(buildingName);
+        double valueExerciser = demand / (supply + 1D);
 
-		return exerciserCapacity * valueExerciser;
-	}
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        double exerciserCapacity = config.getExerciseCapacity(buildingName);
 
-	/**
-	 * Gets the number of people who can use the exercise facility at once.
-	 * @return number of people.
-	 */
-	public int getExerciserCapacity() {
-		return exerciserCapacity;
-	}
+        return exerciserCapacity * valueExerciser;
+    }
 
-	/**
-	 * Gets the current number of people using the exercise facility.
-	 * @return number of people.
-	 */
-	public int getNumExercisers() {
-		return exercisers;
-	}
+    /**
+     * Gets the number of people who can use the exercise facility at once.
+     * @return number of people.
+     */
+    public int getExerciserCapacity() {
+        return exerciserCapacity;
+    }
 
-	/**
-	 * Adds a person to the exercise facility.
-	 * @throws BuildingException if person would exceed exercise facility capacity.
-	 */
-	public void addExerciser() {
-		exercisers++;
-		if (exercisers > exerciserCapacity) {
-			exercisers = exerciserCapacity;
-			throw new IllegalStateException("Exercise facility in use.");
-		}
-	}
+    /**
+     * Gets the current number of people using the exercise facility.
+     * @return number of people.
+     */
+    public int getNumExercisers() {
+        return exercisers;
+    }
 
-	/**
-	 * Removes a person from the exercise facility.
-	 * @throws BuildingException if nobody is using the exercise facility.
-	 */
-	public void removeExerciser() {
-		exercisers--;
-		if (exercisers < 0) {
-			exercisers = 0;
-			throw new IllegalStateException("Exercise facility empty.");
-		}
-	}
+    /**
+     * Adds a person to the exercise facility.
+     * @throws BuildingException if person would exceed exercise facility capacity.
+     */
+    public void addExerciser() {
+        exercisers++;
+        if (exercisers > exerciserCapacity) {
+            exercisers = exerciserCapacity;
+            throw new IllegalStateException("Exercise facility in use.");
+        }
+    }
 
-	/**
-	 * Time passing for the building.
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {}
+    /**
+     * Removes a person from the exercise facility.
+     * @throws BuildingException if nobody is using the exercise facility.
+     */
+    public void removeExerciser() {
+        exercisers--;
+        if (exercisers < 0) {
+            exercisers = 0;
+            throw new IllegalStateException("Exercise facility empty.");
+        }
+    }
 
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
+    /**
+     * Time passing for the building.
+     * @param time amount of time passing (in millisols)
+     * @throws BuildingException if error occurs.
+     */
+    public void timePassing(double time) {}
 
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * @return power (kW)
-	 */
-	public double getPowerDownPowerRequired() {
-		return 0D;
-	}
+    /**
+     * Gets the amount of power required when function is at full power.
+     * @return power (kW)
+     */
+    public double getFullPowerRequired() {
+        return 0D;
+    }
 
-	@Override
-	public double getMaintenanceTime() {
-		return exerciserCapacity * 5D;
-	}
+    /**
+     * Gets the amount of power required when function is at power down level.
+     * @return power (kW)
+     */
+    public double getPowerDownPowerRequired() {
+        return 0D;
+    }
+
+    @Override
+    public double getMaintenanceTime() {
+        return exerciserCapacity * 5D;
+    }
 }

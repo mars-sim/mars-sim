@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-19
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -177,10 +177,17 @@ implements Serializable {
 	private void walkToMedicalCareBuilding(Building medicalBuilding) {
 
 		// Determine location within medical care building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(medicalBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), medicalBuilding);
+        MedicalCare medicalCare = (MedicalCare) medicalBuilding.getFunction(
+                BuildingFunction.MEDICAL_CARE);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = medicalCare.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(medicalBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), medicalBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				medicalBuilding)) {

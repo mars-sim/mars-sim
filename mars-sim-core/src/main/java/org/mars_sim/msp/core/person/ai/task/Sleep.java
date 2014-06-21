@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 
@@ -128,10 +128,17 @@ class Sleep extends Task implements Serializable {
     private void walkToQuartersBuilding(Building quartersBuilding) {
         
         // Determine location within sleeping quarters building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(quartersBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), quartersBuilding);
+        LivingAccommodations livingAccommodations = (LivingAccommodations) quartersBuilding.getFunction(
+                BuildingFunction.LIVING_ACCOMODATIONS);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = livingAccommodations.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(quartersBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), quartersBuilding);
+        }
         
         if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
                 quartersBuilding)) {

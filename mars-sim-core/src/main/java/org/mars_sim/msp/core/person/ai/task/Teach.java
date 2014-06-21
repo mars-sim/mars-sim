@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.06 2014-02-26
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -127,7 +127,6 @@ implements Serializable {
     private void walkToStudentBuilding(Building studentBuilding) {
         
         // Determine location within student's building.
-        // TODO: Use action point rather than random internal location.
         Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(studentBuilding);
         Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
                 buildingLoc.getY(), studentBuilding);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Research.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -26,191 +26,194 @@ public class Research
 extends Function
 implements Lab, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	private static final BuildingFunction FUNCTION = BuildingFunction.RESEARCH;
+    private static final BuildingFunction FUNCTION = BuildingFunction.RESEARCH;
 
-	private int techLevel;
-	private int researcherCapacity;
-	private List<ScienceType> researchSpecialties;
-	private int researcherNum;
+    private int techLevel;
+    private int researcherCapacity;
+    private List<ScienceType> researchSpecialties;
+    private int researcherNum;
 
-	/**
-	 * Constructor.
-	 * @param building the building this function is for.
-	 */
-	public Research(Building building) {
-		// Use Function constructor
-		super(FUNCTION, building);
+    /**
+     * Constructor.
+     * @param building the building this function is for.
+     */
+    public Research(Building building) {
+        // Use Function constructor
+        super(FUNCTION, building);
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
 
-		techLevel = config.getResearchTechLevel(building.getName());
-		researcherCapacity = config.getResearchCapacity(building.getName());
-		researchSpecialties = config.getResearchSpecialties(building.getName());
-	}
+        techLevel = config.getResearchTechLevel(building.getName());
+        researcherCapacity = config.getResearchCapacity(building.getName());
+        researchSpecialties = config.getResearchSpecialties(building.getName());
 
-	/**
-	 * Gets the value of the function for a named building.
-	 * @param buildingName the building name.
-	 * @param newBuilding true if adding a new building.
-	 * @param settlement the settlement.
-	 * @return value (VP) of building function.
-	 */
-	public static double getFunctionValue(String buildingName, boolean newBuilding,
-			Settlement settlement) {
+        // Load activity spots
+        loadActivitySpots(config.getResearchActivitySpots(building.getName()));
+    }
 
-		double result = 0D;
+    /**
+     * Gets the value of the function for a named building.
+     * @param buildingName the building name.
+     * @param newBuilding true if adding a new building.
+     * @param settlement the settlement.
+     * @return value (VP) of building function.
+     */
+    public static double getFunctionValue(String buildingName, boolean newBuilding,
+            Settlement settlement) {
 
-		BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
-		List<ScienceType> specialties = config.getResearchSpecialties(buildingName);
+        double result = 0D;
 
-		for (ScienceType specialty : specialties) {
-			double researchDemand = 0D;
-			Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
-			while (j.hasNext()) 
-				researchDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
+        BuildingConfig config = SimulationConfig.instance().getBuildingConfiguration();
+        List<ScienceType> specialties = config.getResearchSpecialties(buildingName);
 
-			double researchSupply = 0D;
-			boolean removedBuilding = false;
-			Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
-			while (k.hasNext()) {
-				Building building = k.next();
-				if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
-					removedBuilding = true;
-				}
-				else {
-					Research researchFunction = (Research) building.getFunction(FUNCTION);
-					int techLevel = researchFunction.techLevel;
-					int labSize = researchFunction.researcherCapacity;
-					double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
-					for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
-						ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
-						if (specialty.equals(researchSpecialty)) {
-							researchSupply += techLevel * labSize * wearModifier;
-						}
-					}
-				}
-			}
+        for (ScienceType specialty : specialties) {
+            double researchDemand = 0D;
+            Iterator<Person> j = settlement.getAllAssociatedPeople().iterator();
+            while (j.hasNext()) 
+                researchDemand += j.next().getMind().getSkillManager().getSkillLevel(specialty.getSkill());
 
-			double existingResearchValue = researchDemand / (researchSupply + 1D);
+            double researchSupply = 0D;
+            boolean removedBuilding = false;
+            Iterator<Building> k = settlement.getBuildingManager().getBuildings(FUNCTION).iterator();
+            while (k.hasNext()) {
+                Building building = k.next();
+                if (!newBuilding && building.getName().equalsIgnoreCase(buildingName) && !removedBuilding) {
+                    removedBuilding = true;
+                }
+                else {
+                    Research researchFunction = (Research) building.getFunction(FUNCTION);
+                    int techLevel = researchFunction.techLevel;
+                    int labSize = researchFunction.researcherCapacity;
+                    double wearModifier = (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+                    for (int x = 0; x < researchFunction.getTechSpecialties().length; x++) {
+                        ScienceType researchSpecialty = researchFunction.getTechSpecialties()[x];
+                        if (specialty.equals(researchSpecialty)) {
+                            researchSupply += techLevel * labSize * wearModifier;
+                        }
+                    }
+                }
+            }
 
-			int techLevel = config.getResearchTechLevel(buildingName);
-			int labSize = config.getResearchCapacity(buildingName);
-			double buildingResearchSupply = techLevel * labSize;
+            double existingResearchValue = researchDemand / (researchSupply + 1D);
 
-			result += buildingResearchSupply * existingResearchValue;
-		}
+            int techLevel = config.getResearchTechLevel(buildingName);
+            int labSize = config.getResearchCapacity(buildingName);
+            double buildingResearchSupply = techLevel * labSize;
 
-		return result;
-	}
+            result += buildingResearchSupply * existingResearchValue;
+        }
 
-	/**
-	 * Gets the research tech level of this building.
-	 * @return tech level
-	 */
-	public int getTechnologyLevel() {
-		return techLevel;
-	}
+        return result;
+    }
 
-	/**
-	 * Gets the number of researchers who can use the laboratory at once.
-	 * @return capacity
-	 */
-	public int getLaboratorySize() {
-		return researcherCapacity;
-	}
+    /**
+     * Gets the research tech level of this building.
+     * @return tech level
+     */
+    public int getTechnologyLevel() {
+        return techLevel;
+    }
 
-	/**
-	 * Gets an array of the building's research tech specialties.
-	 * @return array of specialties.
-	 */
-	public ScienceType[] getTechSpecialties() {
-		return researchSpecialties.toArray(new ScienceType[] {});
-	}
+    /**
+     * Gets the number of researchers who can use the laboratory at once.
+     * @return capacity
+     */
+    public int getLaboratorySize() {
+        return researcherCapacity;
+    }
 
-	/**
-	 * Checks to see if the laboratory has a given tech specialty.
-	 * @return true if lab has tech specialty
-	 */
-	public boolean hasSpecialty(ScienceType specialty) {
-		return researchSpecialties.contains(specialty);
-	}
+    /**
+     * Gets an array of the building's research tech specialties.
+     * @return array of specialties.
+     */
+    public ScienceType[] getTechSpecialties() {
+        return researchSpecialties.toArray(new ScienceType[] {});
+    }
 
-	/**
-	 * Gets the number of people currently researching in the laboratory.
-	 * @return number of researchers
-	 */
-	public int getResearcherNum() {
-		return researcherNum;
-	}
+    /**
+     * Checks to see if the laboratory has a given tech specialty.
+     * @return true if lab has tech specialty
+     */
+    public boolean hasSpecialty(ScienceType specialty) {
+        return researchSpecialties.contains(specialty);
+    }
 
-	/**
-	 * Adds a researcher to the laboratory.
-	 * @throws Exception if person cannot be added.
-	 */
-	public void addResearcher() {
-		researcherNum ++;
-		if (researcherNum > researcherCapacity) {
-			researcherNum = researcherCapacity;
-			throw new IllegalStateException("Lab already full of researchers.");
-		}
-	}
+    /**
+     * Gets the number of people currently researching in the laboratory.
+     * @return number of researchers
+     */
+    public int getResearcherNum() {
+        return researcherNum;
+    }
 
-	/**
-	 * Removes a researcher from the laboratory.
-	 * @throws Exception if person cannot be removed.
-	 */
-	public void removeResearcher() {
-		researcherNum --;
-		if (researcherNum < 0) {
-			researcherNum = 0; 
-			throw new IllegalStateException("Lab is already empty of researchers.");
-		}
-	}
+    /**
+     * Adds a researcher to the laboratory.
+     * @throws Exception if person cannot be added.
+     */
+    public void addResearcher() {
+        researcherNum ++;
+        if (researcherNum > researcherCapacity) {
+            researcherNum = researcherCapacity;
+            throw new IllegalStateException("Lab already full of researchers.");
+        }
+    }
 
-	/**
-	 * Time passing for the building.
-	 * @param time amount of time passing (in millisols)
-	 * @throws BuildingException if error occurs.
-	 */
-	public void timePassing(double time) {}
+    /**
+     * Removes a researcher from the laboratory.
+     * @throws Exception if person cannot be removed.
+     */
+    public void removeResearcher() {
+        researcherNum --;
+        if (researcherNum < 0) {
+            researcherNum = 0; 
+            throw new IllegalStateException("Lab is already empty of researchers.");
+        }
+    }
 
-	/**
-	 * Gets the amount of power required when function is at full power.
-	 * @return power (kW)
-	 */
-	public double getFullPowerRequired() {
-		return 0D;
-	}
+    /**
+     * Time passing for the building.
+     * @param time amount of time passing (in millisols)
+     * @throws BuildingException if error occurs.
+     */
+    public void timePassing(double time) {}
 
-	/**
-	 * Gets the amount of power required when function is at power down level.
-	 * @return power (kW)
-	 */
-	public double getPowerDownPowerRequired() {
-		return 0D;
-	}
+    /**
+     * Gets the amount of power required when function is at full power.
+     * @return power (kW)
+     */
+    public double getFullPowerRequired() {
+        return 0D;
+    }
 
-	@Override
-	public double getMaintenanceTime() {
+    /**
+     * Gets the amount of power required when function is at power down level.
+     * @return power (kW)
+     */
+    public double getPowerDownPowerRequired() {
+        return 0D;
+    }
 
-		double result = 0D;
+    @Override
+    public double getMaintenanceTime() {
 
-		// Add maintenance for tech level.
-		result += techLevel * 10D;
+        double result = 0D;
 
-		// Add maintenance for researcher capacity.
-		result += researcherCapacity * 10D;
+        // Add maintenance for tech level.
+        result += techLevel * 10D;
 
-		return result;
-	}
+        // Add maintenance for researcher capacity.
+        result += researcherCapacity * 10D;
 
-	@Override
-	public void destroy() {
-		super.destroy();
-		researchSpecialties.clear();
-		researchSpecialties = null;
-	}
+        return result;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+        researchSpecialties.clear();
+        researchSpecialties = null;
+    }
 }

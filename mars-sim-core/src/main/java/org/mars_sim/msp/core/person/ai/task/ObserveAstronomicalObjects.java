@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.06 2014-04-29
+ * @version 3.07 2014-06-19
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -196,10 +196,17 @@ implements ResearchScientificStudy, Serializable {
 	private void walkToObservatoryBuilding(Building observatoryBuilding) {
 
 		// Determine location within observatory building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(observatoryBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), observatoryBuilding);
+        AstronomicalObservation observation = (AstronomicalObservation) observatoryBuilding.getFunction(
+                BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = observation.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(observatoryBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), observatoryBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				observatoryBuilding)) {

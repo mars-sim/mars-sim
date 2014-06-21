@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.06 2014-02-26
+ * @version 3.07 2014-06-19
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Recreation;
 
 /** 
  * The Relax class is a simple task that implements resting and doing nothing for a while.
@@ -108,10 +109,16 @@ implements Serializable {
 	private void walkToRecreationBuilding(Building recreationBuilding) {
 
 		// Determine location within recreation building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(recreationBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), recreationBuilding);
+	    Recreation recreation = (Recreation) recreationBuilding.getFunction(BuildingFunction.RECREATION);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = recreation.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(recreationBuilding);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), recreationBuilding);
+        }
 
 		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
 				recreationBuilding)) {
