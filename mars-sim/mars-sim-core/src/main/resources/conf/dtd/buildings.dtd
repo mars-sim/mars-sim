@@ -11,15 +11,15 @@ cooking?, dining?, earth-return?, EVA?, exercise?, farming?, ground-vehicle-main
 life-support?, living-accommodations?, manufacture?, management?, medical-care?, 
 power-generation?, power-storage?, recreation?, research?, resource-processing?, 
 storage? )>
-<!ELEMENT astronomical-observation EMPTY>
+<!ELEMENT astronomical-observation (activity?)>
 <!ATTLIST astronomical-observation tech-level CDATA #REQUIRED>
 <!ATTLIST astronomical-observation capacity CDATA #REQUIRED>
 <!ATTLIST astronomical-observation power-required CDATA #REQUIRED>
 <!ELEMENT building-connection EMPTY>
-<!ELEMENT communication EMPTY>
-<!ELEMENT cooking EMPTY>
+<!ELEMENT communication (activity?)>
+<!ELEMENT cooking (activity?)>
 <!ATTLIST cooking capacity CDATA #REQUIRED>
-<!ELEMENT dining EMPTY>
+<!ELEMENT dining (activity?)>
 <!ATTLIST dining capacity CDATA #REQUIRED>
 <!ELEMENT earth-return EMPTY>
 <!ATTLIST earth-return crew-capacity CDATA #REQUIRED>
@@ -31,14 +31,14 @@ storage? )>
 <!ATTLIST EVA interior-yloc CDATA #REQUIRED>
 <!ATTLIST EVA exterior-xloc CDATA #REQUIRED>
 <!ATTLIST EVA exterior-yloc CDATA #REQUIRED>
-<!ELEMENT exercise EMPTY>
+<!ELEMENT exercise (activity?)>
 <!ATTLIST exercise capacity CDATA #REQUIRED>
-<!ELEMENT farming EMPTY>
+<!ELEMENT farming (activity?)>
 <!ATTLIST farming crops CDATA #REQUIRED>
 <!ATTLIST farming power-growing-crop CDATA #REQUIRED>
 <!ATTLIST farming power-sustaining-crop CDATA #REQUIRED>
 <!ATTLIST farming growing-area CDATA #REQUIRED>
-<!ELEMENT ground-vehicle-maintenance (parking-location+)>
+<!ELEMENT ground-vehicle-maintenance (parking-location+, activity?)>
 <!ATTLIST ground-vehicle-maintenance vehicle-capacity CDATA #REQUIRED>
 <!ELEMENT parking-location EMPTY>
 <!ATTLIST parking-location xloc CDATA #REQUIRED>
@@ -46,14 +46,14 @@ storage? )>
 <!ELEMENT life-support EMPTY>
 <!ATTLIST life-support capacity CDATA #REQUIRED>
 <!ATTLIST life-support power-required CDATA #REQUIRED>
-<!ELEMENT living-accommodations EMPTY>
+<!ELEMENT living-accommodations (activity?)>
 <!ATTLIST living-accommodations beds CDATA #REQUIRED>
-<!ELEMENT management EMPTY>
+<!ELEMENT management (activity?)>
 <!ATTLIST management population-support CDATA #REQUIRED>
-<!ELEMENT manufacture EMPTY>
+<!ELEMENT manufacture (activity?)>
 <!ATTLIST manufacture tech-level CDATA #REQUIRED>
 <!ATTLIST manufacture concurrent-processes CDATA #REQUIRED>
-<!ELEMENT medical-care EMPTY>
+<!ELEMENT medical-care (activity?)>
 <!ATTLIST medical-care tech-level CDATA #REQUIRED>
 <!ATTLIST medical-care beds CDATA #REQUIRED>
 <!ELEMENT power-generation (power-source+)>
@@ -65,14 +65,14 @@ storage? )>
 <!ATTLIST power-source consumption-rate CDATA #IMPLIED>
 <!ELEMENT power-storage EMPTY>
 <!ATTLIST power-storage capacity CDATA #REQUIRED>
-<!ELEMENT recreation EMPTY>
+<!ELEMENT recreation (activity?)>
 <!ATTLIST recreation population-support CDATA #REQUIRED>
-<!ELEMENT research (research-specialty+)>
+<!ELEMENT research (research-specialty+, activity?)>
 <!ATTLIST research tech-level CDATA #REQUIRED>
 <!ATTLIST research capacity CDATA #REQUIRED>
 <!ELEMENT research-specialty EMPTY>
 <!ATTLIST research-specialty name CDATA #REQUIRED>
-<!ELEMENT resource-processing (process+)>
+<!ELEMENT resource-processing (process+, activity?)>
 <!ATTLIST resource-processing power-down-level CDATA #REQUIRED>
 <!ELEMENT process (input+, output+)>
 <!ATTLIST process name CDATA #REQUIRED>
@@ -93,3 +93,7 @@ storage? )>
 <!ELEMENT resource-initial EMPTY>
 <!ATTLIST resource-initial resource CDATA #REQUIRED>
 <!ATTLIST resource-initial amount CDATA #REQUIRED>
+<!ELEMENT activity (activity-spot+)>
+<!ELEMENT activity-spot EMPTY>
+<!ATTLIST activity-spot xloc CDATA #REQUIRED>
+<!ATTLIST activity-spot yloc CDATA #REQUIRED>
