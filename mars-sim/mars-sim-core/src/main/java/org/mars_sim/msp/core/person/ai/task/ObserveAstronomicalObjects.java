@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -14,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -79,7 +77,8 @@ implements ResearchScientificStudy, Serializable {
 			if (observatory != null) {
 
 				// Walk to observatory building.
-				walkToObservatoryBuilding(observatory.getBuilding());
+			    walkToActivitySpotInBuilding(observatory.getBuilding(), 
+			            BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
 				observatory.addObserver();
 				isActiveObserver = true;
 			}
@@ -187,39 +186,6 @@ implements ResearchScientificStudy, Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Walk to observatory building.
-	 * @param observatoryBuilding the observatory building.
-	 */
-	private void walkToObservatoryBuilding(Building observatoryBuilding) {
-
-		// Determine location within observatory building.
-        AstronomicalObservation observation = (AstronomicalObservation) observatoryBuilding.getFunction(
-                BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = observation.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(observatoryBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), observatoryBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				observatoryBuilding)) {
-
-			// Add subtask for walking to observatory building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					observatoryBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to observatory building " + 
-					observatoryBuilding.getName());
-			endTask();
-		}
 	}
 
 	/**

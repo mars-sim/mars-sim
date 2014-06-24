@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +15,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -31,7 +29,6 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
-import org.mars_sim.msp.core.structure.building.function.Research;
 import org.mars_sim.msp.core.vehicle.Crewable;
 
 /**
@@ -84,7 +81,7 @@ implements Serializable {
                     if (researcherBuilding != null) {
                         
                         // Walk to researcher
-                        walkToResearcherBuilding(researcherBuilding);
+                        walkToRandomLocInBuilding(researcherBuilding);
                     }
                 }
             }
@@ -153,38 +150,6 @@ implements Serializable {
         }
         
         return result;
-    }
-    
-    /**
-     * Walk to researcher's building.
-     * @param researcherBuilding the researcher's building.
-     */
-    private void walkToResearcherBuilding(Building researcherBuilding) {
-        
-        // Determine location within researcher's building.
-        Research research = (Research) researcherBuilding.getFunction(BuildingFunction.RESEARCH);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = research.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(researcherBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), researcherBuilding);
-        }
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                researcherBuilding)) {
-            
-            // Add subtask for walking to researcher building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                researcherBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to research building " + 
-                    researcherBuilding.getName());
-            endTask();
-        }
     }
     
     /**

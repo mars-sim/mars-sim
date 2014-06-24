@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-22
  * @author Sebastien Venot
  */
 
@@ -40,6 +40,9 @@ implements Serializable {
         super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(30D));
 
+        // Walk to location to do yoga.
+        walkToRandomLocation();
+        
         // Initialize phase
         addPhase(DOING_YOGA);
         setPhase(DOING_YOGA);

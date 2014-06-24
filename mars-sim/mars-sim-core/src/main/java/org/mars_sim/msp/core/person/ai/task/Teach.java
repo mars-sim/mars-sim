@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -76,8 +74,9 @@ implements Serializable {
 
             // If in settlement, move teacher to building student is in.
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                
                 // Walk to student's building.
-                walkToStudentBuilding(BuildingManager.getBuilding(student));
+                walkToRandomLocInBuilding(BuildingManager.getBuilding(student));
             }
         } else {
             endTask();
@@ -118,31 +117,6 @@ implements Serializable {
         }
 
         return result;
-    }
-    
-    /**
-     * Walk to student's building.
-     * @param studentBuilding the student's building.
-     */
-    private void walkToStudentBuilding(Building studentBuilding) {
-        
-        // Determine location within student's building.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(studentBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), studentBuilding);
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                studentBuilding)) {
-            
-            // Add subtask for walking to student building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    studentBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to student building " + 
-                    studentBuilding.getName());
-            endTask();
-        }
     }
 
     @Override

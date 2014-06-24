@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -76,7 +74,7 @@ implements Serializable {
 			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 
 			// Walk to manufacturing workshop.
-			walkToWorkshopBuilding(manufactureBuilding);
+			walkToActivitySpotInBuilding(manufactureBuilding, BuildingFunction.MANUFACTURE);
 		}
 		else {
 			endTask();
@@ -159,38 +157,6 @@ implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Walk to workshop building.
-	 * @param workshopBuilding the workshop building.
-	 */
-	private void walkToWorkshopBuilding(Building workshopBuilding) {
-
-		// Determine location within workshop building.
-	    Manufacture manufacture = (Manufacture) workshopBuilding.getFunction(BuildingFunction.MANUFACTURE);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = manufacture.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(workshopBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), workshopBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				workshopBuilding)) {
-
-			// Add subtask for walking to workshop building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					workshopBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to workshop building " + 
-					workshopBuilding.getName());
-			endTask();
-		}
 	}
 
 	@Override

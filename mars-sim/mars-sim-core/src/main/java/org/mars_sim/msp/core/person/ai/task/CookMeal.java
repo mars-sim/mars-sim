@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -85,7 +83,7 @@ implements Serializable {
             kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
             // Walk to kitchen building.
-            walkToKitchenBuilding(kitchenBuilding);
+            walkToActivitySpotInBuilding(kitchenBuilding, BuildingFunction.COOKING);
         }
         else endTask();
 
@@ -140,38 +138,6 @@ implements Serializable {
         }
 
         return result;
-    }
-
-    /**
-     * Walk to kitchen building.
-     * @param kitchenBuilding the kitchen building.
-     */
-    private void walkToKitchenBuilding(Building kitchenBuilding) {
-
-        // Determine location within kitchen building.
-        Cooking cooking = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = cooking.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(kitchenBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), kitchenBuilding);
-        }
-
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                kitchenBuilding)) {
-            
-            // Add subtask for walking to kitchen building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    kitchenBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to kitchen building " + 
-                    kitchenBuilding.getName());
-            endTask();
-        }
     }
 
     /**

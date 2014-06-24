@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LifeSupport;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -67,8 +65,8 @@ implements Repair, Serializable {
 		// Get the malfunctioning entity.
 		entity = getMalfunctionEntity(person);
         if (entity != null) {
-            // Add person to building if malfunctionable is a building with life support.
-            addPersonToMalfunctionableBuilding(entity); 
+            // Add person to location of malfunction if possible.
+            addPersonToMalfunctionLocation(entity);
         }
         else {
             endTask();
@@ -328,41 +326,21 @@ implements Repair, Serializable {
      * Otherwise does nothing.
      * @param malfunctionable the malfunctionable the person is repairing.
      */
-    private void addPersonToMalfunctionableBuilding(Malfunctionable malfunctionable) {
+    private void addPersonToMalfunctionLocation(Malfunctionable malfunctionable) {
 
+        boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
             if (building instanceof LifeSupport) {
 
                 // Walk to malfunctioning building.
-                walkToMalfunctioningBuilding(building);
+                walkToRandomLocInBuilding(building);
+                isWalk = true;
             }
         }
-    }
-
-    /**
-     * Walk to malfunctioning building.
-     * @param malfunctioningBuilding the malfunctioning building.
-     */
-    private void walkToMalfunctioningBuilding(Building malfunctioningBuilding) {
-
-        // Determine location within malfunctioning building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(malfunctioningBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), malfunctioningBuilding);
-
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                malfunctioningBuilding)) {
-            
-            // Add subtask for walking to malfunctioning building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    malfunctioningBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to malfunctioning building " + 
-                    malfunctioningBuilding.getName());
-            endTask();
+        
+        if (!isWalk) {
+            walkToRandomLocation();
         }
     }
 

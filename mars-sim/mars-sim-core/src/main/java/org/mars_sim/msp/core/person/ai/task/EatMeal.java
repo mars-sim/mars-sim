@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -32,7 +30,6 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
-import org.mars_sim.msp.core.structure.building.function.Dining;
 
 /**
  * The EatMeal class is a task for eating a meal.
@@ -74,7 +71,7 @@ implements Serializable {
 			if (diningBuilding != null) {
 
 				// Walk to dining building.
-				walkToDiningBuilding(diningBuilding);
+			    walkToActivitySpotInBuilding(diningBuilding, BuildingFunction.DINING);
 			}
 
 			// If cooked meal in a local kitchen available, take it to eat.
@@ -121,38 +118,6 @@ implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Walk to dining building.
-	 * @param diningBuilding the dining building.
-	 */
-	private void walkToDiningBuilding(Building diningBuilding) {
-
-		// Determine location within dining building.
-	    Dining dining = (Dining) diningBuilding.getFunction(BuildingFunction.DINING);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = dining.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(diningBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), diningBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				diningBuilding)) {
-
-			// Add subtask for walking to dining building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					diningBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to dining building " + 
-					diningBuilding.getName());
-			endTask();
-		}
 	}
 
 	/**

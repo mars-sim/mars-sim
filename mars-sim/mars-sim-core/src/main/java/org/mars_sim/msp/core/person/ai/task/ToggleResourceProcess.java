@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.07 2014-06-20
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,7 +81,7 @@ implements Serializable {
 			// If habitable building, add person to building.
 			if (!isEVA) {
 				// Walk to building.
-				walkToProcessBuilding(building);
+			    walkToActivitySpotInBuilding(building, BuildingFunction.RESOURCE_PROCESSING);
 			}
 			else {
 				// Determine location for toggling power source.
@@ -193,39 +193,6 @@ implements Serializable {
 		}
 
 		return newLocation;
-	}
-
-	/**
-	 * Walk to process toggle building.
-	 * @param processBuilding the process toggle building.
-	 */
-	private void walkToProcessBuilding(Building processBuilding) {
-
-		// Determine location within process toggle building.
-	    ResourceProcessing resourceProcessing = (ResourceProcessing) processBuilding.getFunction(
-	            BuildingFunction.RESOURCE_PROCESSING);
-
-	    // Find available activity spot in building.
-	    Point2D settlementLoc = resourceProcessing.getAvailableActivitySpot(person);
-	    if (settlementLoc == null) {
-	        // If no available activity spot, go to random location in building.
-	        Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(processBuilding);
-	        settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-	                buildingLoc.getY(), processBuilding);
-	    }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				processBuilding)) {
-
-			// Add subtask for walking to process building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					processBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to process building " + 
-					processBuilding.getName());
-			endTask();
-		}
 	}
 
 	/**

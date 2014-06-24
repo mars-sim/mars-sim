@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -69,7 +67,7 @@ class Sleep extends Task implements Serializable {
             Building quarters = getAvailableLivingQuartersBuilding(person);
             if (quarters != null) {
                 // Walk to quarters.
-                walkToQuartersBuilding(quarters);
+                walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations = (LivingAccommodations) quarters.getFunction(
                         BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations.addSleeper();
@@ -119,39 +117,6 @@ class Sleep extends Task implements Serializable {
         }
 
         return result;
-    }
-    
-    /**
-     * Walk to sleeping quarters building.
-     * @param quartersBuilding the quarters building.
-     */
-    private void walkToQuartersBuilding(Building quartersBuilding) {
-        
-        // Determine location within sleeping quarters building.
-        LivingAccommodations livingAccommodations = (LivingAccommodations) quartersBuilding.getFunction(
-                BuildingFunction.LIVING_ACCOMODATIONS);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = livingAccommodations.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(quartersBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), quartersBuilding);
-        }
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                quartersBuilding)) {
-            
-            // Add subtask for walking to quarters building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    quartersBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to quarters building " + 
-                    quartersBuilding.getName());
-            endTask();
-        }
     }
     
     @Override

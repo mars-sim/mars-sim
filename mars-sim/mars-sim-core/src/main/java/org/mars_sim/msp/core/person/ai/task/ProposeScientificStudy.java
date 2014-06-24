@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.06 2014-03-04
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,6 +62,10 @@ implements Serializable {
                 SkillType skill = science.getSkill();
                 int level = person.getMind().getSkillManager().getSkillLevel(skill);
                 study = manager.createScientificStudy(person, science, level);
+                
+                // TODO Replace with administration building function walk.
+                // Walk to location to propose study.
+                walkToRandomLocation();
             }
             else {
                 logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");

@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -17,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Lab;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -470,49 +468,21 @@ implements ResearchScientificStudy, Serializable {
 				Building labBuilding = ((Research) lab).getBuilding();
 
 				// Walk to lab building.
-				walkToLabBuilding(labBuilding);
+				walkToActivitySpotInBuilding(labBuilding, BuildingFunction.RESEARCH);
 				lab.addResearcher();
 				malfunctions = labBuilding.getMalfunctionManager();
 			}
 			else if (location == LocationSituation.IN_VEHICLE) {
+			    
+			    // Walk to lab internal location in rover.
+                // TODO Add activity spot for rover lab work.
+			    walkToRandomLocInRover((Rover) person.getVehicle());
 				lab.addResearcher();
 				malfunctions = person.getVehicle().getMalfunctionManager();
 			}
 		}
 		catch (Exception e) {
 			logger.log(Level.SEVERE,"addPersonToLab(): " + e.getMessage());
-		}
-	}
-
-	/**
-	 * Walk to lab building.
-	 * @param labBuilding the lab building.
-	 */
-	private void walkToLabBuilding(Building labBuilding) {
-
-		// Determine location within lab building.
-	    Research research = (Research) labBuilding.getFunction(BuildingFunction.RESEARCH);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = research.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(labBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), labBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				labBuilding)) {
-
-			// Add subtask for walking to lab building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					labBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to lab building " + 
-					labBuilding.getName());
-			endTask();
 		}
 	}
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -60,6 +60,10 @@ implements Serializable {
         study = determineStudy();
         if (study != null) {
             setDescription("Compiling Data Results for " + study.toString());
+            
+            // TODO Replace with administration building function walk.
+            // Walk to location to compile study results.
+            walkToRandomLocation();
         }
         else {
             logger.severe("Study could not be determined");

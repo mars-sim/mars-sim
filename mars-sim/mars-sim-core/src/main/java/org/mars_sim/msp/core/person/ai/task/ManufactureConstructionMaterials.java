@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -94,7 +92,7 @@ implements Serializable {
                     .getFunction(BuildingFunction.MANUFACTURE);
             
             // Walk to manufacturing building.
-            walkToManufacturingBuilding(manufactureBuilding);
+            walkToActivitySpotInBuilding(manufactureBuilding, BuildingFunction.MANUFACTURE);
         } 
         else {
             endTask();
@@ -165,39 +163,6 @@ implements Serializable {
         }
 
         return result;
-    }
-    
-    /**
-     * Walk to manufacturing building.
-     * @param manufactureBuilding the manufacturing building.
-     */
-    private void walkToManufacturingBuilding(Building manufactureBuilding) {
-        
-        // Determine location within manufacturing building.
-        Manufacture manufacture = (Manufacture) manufactureBuilding.getFunction(
-                BuildingFunction.MANUFACTURE);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = manufacture.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(manufactureBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), manufactureBuilding);
-        }
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                manufactureBuilding)) {
-            
-            // Add subtask for walking to manufacture building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    manufactureBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to manufacture building " + 
-                    manufactureBuilding.getName());
-            endTask();
-        }
     }
 
     /**
