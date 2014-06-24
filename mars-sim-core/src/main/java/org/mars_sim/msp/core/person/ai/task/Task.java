@@ -1,20 +1,26 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.06 2014-02-20
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
 import org.mars_sim.msp.core.person.EventType;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
@@ -25,7 +31,9 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.structure.building.function.Function;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
  * The Task class is an abstract parent class for tasks that allow people to do various things.
@@ -38,6 +46,9 @@ implements Serializable, Comparable<Task> {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
+	/** default logger. */
+    private static Logger logger = Logger.getLogger(Task.class.getName());
+	
 	private static final double JOB_STRESS_MODIFIER = .5D;
 	private static final double SKILL_STRESS_MODIFIER = .1D;
 
@@ -592,6 +603,105 @@ implements Serializable, Comparable<Task> {
      */
     protected double getTimeCompleted() {
         return timeCompleted;
+    }
+    
+    /**
+     * Walk to an available activity spot in a building.
+     * @param building the destination building.
+     * @param functionType the building function type for the activity.
+     */
+    protected void walkToActivitySpotInBuilding(Building building, BuildingFunction functionType) {
+        
+        Function buildingFunction = building.getFunction(functionType);
+        
+        // Find available activity spot in building.
+        Point2D settlementLoc = buildingFunction.getAvailableActivitySpot(person);
+        if (settlementLoc == null) {
+            // If no available activity spot, go to random location in building.
+            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
+            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                    buildingLoc.getY(), building);
+        }
+
+        // Create subtask for walking to destination.
+        createWalkingSubtask(building, settlementLoc);
+    }
+    
+    /**
+     * Walk to a random interior location in a building.
+     * @param building the destination building.
+     */
+    protected void walkToRandomLocInBuilding(Building building) {
+        
+        Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(building);
+        Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                interiorPos.getX(), interiorPos.getY(), building);
+        
+        // Create subtask for walking to destination.
+        createWalkingSubtask(building, adjustedInteriorPos);
+    }
+    
+    /**
+     * Walk to a random interior location in a rover.
+     * @param rover the destination rover.
+     */
+    protected void walkToRandomLocInRover(Rover rover) {
+        
+        Point2D interiorPos = LocalAreaUtil.getRandomInteriorLocation(rover);
+        Point2D adjustedInteriorPos = LocalAreaUtil.getLocalRelativeLocation(
+                interiorPos.getX(), interiorPos.getY(), rover);
+        
+        // Create subtask for walking to destination.
+        createWalkingSubtask(rover, adjustedInteriorPos);
+    }
+    
+    /**
+     * Walk to a random location.
+     */
+    protected void walkToRandomLocation() {
+        
+        // If person is in a settlement, walk to random building.
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            
+            Building currentBuilding = BuildingManager.getBuilding(person);
+            List<Building> buildingList = currentBuilding.getBuildingManager().getBuildings(BuildingFunction.LIFE_SUPPORT);
+            if (buildingList.size() > 0) {
+                int buildingIndex = RandomUtil.getRandomInt(buildingList.size() - 1);
+                Building building = buildingList.get(buildingIndex);
+                
+                walkToRandomLocInBuilding(building);
+            }
+        }
+        // If person is in a vehicle, walk to random location within vehicle.
+        else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            
+            // Walk to random location within rover.
+            if (person.getVehicle() instanceof Rover) {
+                Rover rover = (Rover) person.getVehicle();
+                
+                walkToRandomLocInRover(rover);
+            }
+        }
+    }
+    
+    /**
+     * Create a walk to an interior position in a building or vehicle.
+     * @param interiorObject the destination interior object.
+     * @param settlementPos the settlement local position destination.
+     */
+    private void createWalkingSubtask(LocalBoundedObject interiorObject, Point2D settlementPos) {
+        
+        if (Walk.canWalkAllSteps(person, settlementPos.getX(), settlementPos.getY(), 
+                interiorObject)) {
+            
+            // Add subtask for walking to destination.
+            addSubTask(new Walk(person, settlementPos.getX(), settlementPos.getY(), 
+                    interiorObject));
+        }
+        else {
+            logger.fine(person.getName() + " unable to walk to " + interiorObject);
+            endTask();
+        }
     }
 
     /**

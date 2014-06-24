@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -68,7 +68,13 @@ implements Serializable {
             // Determine best invitee.
             invitee = determineBestInvitee();
             
-            if (invitee == null) {
+            if (invitee != null) {
+                
+                // TODO Replace with administration building function walk.
+                // Walk to location to invite study collaborator.
+                walkToRandomLocation();
+            }
+            else {
                 logger.severe("No available collaborative researchers available for invitation.");
                 endTask();
             }

@@ -64,7 +64,12 @@ implements Serializable {
         setDescription("Consolidating containers");
         
         topInventory = person.getTopContainerUnit().getInventory();
-        if (topInventory == null) {
+        if (topInventory != null) {
+            
+            // Walk to location to consolidate containers.
+            walkToRandomLocation();
+        }
+        else {
             logger.severe("A top inventory could not be determined for consolidating containers for " + 
                     person.getName());
             endTask();

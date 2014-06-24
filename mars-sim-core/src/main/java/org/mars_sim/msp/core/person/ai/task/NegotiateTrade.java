@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -146,32 +144,7 @@ implements Serializable {
         if ((sellerBuilding != null) && (!sellerBuilding.equals(personBuilding))) {
             
             // Walk to seller trader's building.
-            walkToSellerTraderBuilding(sellerBuilding);
-        }
-    }
-    
-    /**
-     * Walk to seller trader's building.
-     * @param sellerBuilding the seller trader's building.
-     */
-    private void walkToSellerTraderBuilding(Building sellerBuilding) {
-        
-        // Determine location within seller trader's building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(sellerBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), sellerBuilding);
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                sellerBuilding)) {
-            
-            // Add subtask for walking to seller building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    sellerBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to seller building " + 
-                    sellerBuilding.getName());
+            walkToRandomLocInBuilding(sellerBuilding);
         }
     }
 

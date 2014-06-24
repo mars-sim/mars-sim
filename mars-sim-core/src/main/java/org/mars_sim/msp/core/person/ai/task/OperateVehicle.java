@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.06 2014-02-26
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.time.MarsClock;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 import org.mars_sim.msp.core.vehicle.VehicleOperator;
 
@@ -85,6 +86,12 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.destination = destination;
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
+		
+		// TODO walk to operation activity spot in vehicle.
+		if (vehicle instanceof Rover) {
+		    walkToRandomLocInRover((Rover) vehicle);
+		}
+		
 		addPhase(MOBILIZE);
 		
 		// Set initial phase

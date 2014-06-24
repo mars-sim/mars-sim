@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -22,7 +20,6 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.Recreation;
 
 /** 
  * The Relax class is a simple task that implements resting and doing nothing for a while.
@@ -59,7 +56,7 @@ implements Serializable {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-					walkToRecreationBuilding(recBuilding);
+				    walkToActivitySpotInBuilding(recBuilding, BuildingFunction.RECREATION);
 				}
 			}
 			catch (Exception e) {
@@ -100,38 +97,6 @@ implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Walk to recreation building.
-	 * @param recreationBuilding the recreation building.
-	 */
-	private void walkToRecreationBuilding(Building recreationBuilding) {
-
-		// Determine location within recreation building.
-	    Recreation recreation = (Recreation) recreationBuilding.getFunction(BuildingFunction.RECREATION);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = recreation.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(recreationBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), recreationBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				recreationBuilding)) {
-
-			// Add subtask for walking to recreation building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					recreationBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to recreation building " + 
-					recreationBuilding.getName());
-			endTask();
-		}
 	}
 
 	@Override

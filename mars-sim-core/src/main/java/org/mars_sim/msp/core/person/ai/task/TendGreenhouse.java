@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,7 +14,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
@@ -76,8 +74,9 @@ implements Serializable {
 		Building farmBuilding = getAvailableGreenhouse(person);
 		if (farmBuilding != null) {
 			greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
+			
 			// Walk to greenhouse.
-			walkToGreenhouseBuilding(farmBuilding);
+			walkToActivitySpotInBuilding(farmBuilding, BuildingFunction.FARMING);
 		}
 		else {
 			endTask();
@@ -132,38 +131,6 @@ implements Serializable {
 		}
 
 		return result;
-	}
-
-	/**
-	 * Walk to greenhouse building.
-	 * @param greenhouseBuilding the greenhouse building.
-	 */
-	private void walkToGreenhouseBuilding(Building greenhouseBuilding) {
-
-		// Determine location within greenhouse building.
-        Farming farming = (Farming) greenhouseBuilding.getFunction(BuildingFunction.FARMING);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = farming.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(greenhouseBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), greenhouseBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				greenhouseBuilding)) {
-
-			// Add subtask for walking to greenhouse building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					greenhouseBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to greenhouse building " + 
-					greenhouseBuilding.getName());
-			endTask();
-		}
 	}
 
 	@Override

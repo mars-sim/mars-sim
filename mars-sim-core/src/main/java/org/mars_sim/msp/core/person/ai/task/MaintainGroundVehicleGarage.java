@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -34,7 +32,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.GroundVehicleMaintenance;
 import org.mars_sim.msp.core.structure.building.function.VehicleMaintenance;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -89,7 +86,7 @@ implements Serializable {
         			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         			
         			// Walk to garage.
-        			walkToGarageBuilding(building);
+        			walkToActivitySpotInBuilding(building, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         		}
         		catch (Exception e) {
         		    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
@@ -110,7 +107,7 @@ implements Serializable {
         					garage.addVehicle(vehicle);
         					
         					// Walk to garage.
-                            walkToGarageBuilding(garageBuilding);
+        					walkToActivitySpotInBuilding(building, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         				} 
         			}
         			catch (Exception e) {
@@ -206,39 +203,6 @@ implements Serializable {
 		}
 	
         return result;
-    }
-    
-    /**
-     * Walk to garage building.
-     * @param garageBuilding the garage building.
-     */
-    private void walkToGarageBuilding(Building garageBuilding) {
-        
-        // Determine location within garage building.
-        GroundVehicleMaintenance gvMaint = (GroundVehicleMaintenance) garageBuilding.getFunction(
-                BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = gvMaint.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(garageBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), garageBuilding);
-        }
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                garageBuilding)) {
-            
-            // Add subtask for walking to garage building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    garageBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to garage building " + 
-                    garageBuilding.getName());
-            endTask();
-        }
     }
     
     @Override

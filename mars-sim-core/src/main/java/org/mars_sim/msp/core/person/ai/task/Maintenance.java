@@ -1,13 +1,12 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,7 +17,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -69,7 +67,11 @@ implements Serializable {
 
         try {
             entity = getMaintenanceMalfunctionable();
-            if (entity == null) {
+            if (entity != null) {
+                // Walk to random location.
+                walkToRandomLocation();
+            }
+            else {
                 endTask();
             }
         }
@@ -294,41 +296,9 @@ implements Serializable {
 
         if (result != null) {
             setDescription("Performing maintenance on " + result.getName());
-
-            if ((result instanceof Building) && isInhabitableBuilding(result)) {
-                
-                // Walk to maintenance building.
-                walkToMaintenanceBuilding((Building) result);
-            }
         }
 
         return result;
-    }
-    
-    /**
-     * Walk to maintenance building.
-     * @param maintenanceBuilding the maintenance building.
-     */
-    private void walkToMaintenanceBuilding(Building maintenanceBuilding) {
-        
-        // Determine location within maintenance building.
-        // TODO: Use action point rather than random internal location.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(maintenanceBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), maintenanceBuilding);
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                maintenanceBuilding)) {
-            
-            // Add subtask for walking to maintenance building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    maintenanceBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to maintenance building " + 
-                    maintenanceBuilding.getName());
-            endTask();
-        }
     }
 
     /**

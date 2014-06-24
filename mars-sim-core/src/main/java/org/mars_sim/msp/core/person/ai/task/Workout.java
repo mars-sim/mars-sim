@@ -1,19 +1,17 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -63,7 +61,8 @@ implements Serializable {
 			Building gymBuilding = getAvailableGym(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
-				walkToGymBuilding(gymBuilding);
+			    walkToActivitySpotInBuilding(gymBuilding, BuildingFunction.EXERCISE);
+			    
 				gym = (Exercise) gymBuilding.getFunction(BuildingFunction.EXERCISE);
 			} 
 			else {
@@ -113,38 +112,6 @@ implements Serializable {
 		result *= person.getPerformanceRating();
 
 		return result;
-	}
-
-	/**
-	 * Walk to gym building.
-	 * @param gymBuilding the gym building.
-	 */
-	private void walkToGymBuilding(Building gymBuilding) {
-
-		// Determine location within gym building.
-        Exercise exercise = (Exercise) gymBuilding.getFunction(BuildingFunction.EXERCISE);
-        
-        // Find available activity spot in building.
-        Point2D settlementLoc = exercise.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
-            // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(gymBuilding);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), gymBuilding);
-        }
-
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				gymBuilding)) {
-
-			// Add subtask for walking to gym building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					gymBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to gym building " + 
-					gymBuilding.getName());
-			endTask();
-		}
 	}
 
 	@Override

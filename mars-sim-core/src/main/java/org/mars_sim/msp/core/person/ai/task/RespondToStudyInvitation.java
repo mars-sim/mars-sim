@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitation.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -62,6 +62,10 @@ implements Serializable {
         List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
         if (invitedStudies.size() > 0) {
             study = invitedStudies.get(0);
+            
+            // TODO Replace with administration building function walk.
+            // Walk to location to respond to study.
+            walkToRandomLocation();
         }
         else {
             logger.severe(person.getName() + " does not have any open invited studies.");

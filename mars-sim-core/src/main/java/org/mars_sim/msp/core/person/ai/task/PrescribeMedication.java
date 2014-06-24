@@ -1,12 +1,11 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-06-23
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
-import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -25,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
-import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Vehicle;
@@ -71,7 +68,7 @@ implements Serializable {
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 
                 // Walk to patient's building.
-                walkToPatientBuilding(BuildingManager.getBuilding(patient));
+                walkToRandomLocInBuilding(BuildingManager.getBuilding(patient));
             }
             
             logger.info(person.getName() + " prescribing " + medication.getName() + 
@@ -111,31 +108,6 @@ implements Serializable {
         result *= person.getPerformanceRating();
 
         return result;
-    }
-    
-    /**
-     * Walk to patient's building.
-     * @param patientBuilding the patient's building.
-     */
-    private void walkToPatientBuilding(Building patientBuilding) {
-        
-        // Determine location within patient's building.
-        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(patientBuilding);
-        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                buildingLoc.getY(), patientBuilding);
-        
-        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-                patientBuilding)) {
-            
-            // Add subtask for walking to patient building.
-            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-                    patientBuilding));
-        }
-        else {
-            logger.fine(person.getName() + " unable to walk to patient building " + 
-                    patientBuilding.getName());
-            endTask();
-        }
     }
     
     /**

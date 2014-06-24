@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.06 2014-02-26
+ * @version 3.07 2014-06-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -58,6 +58,10 @@ implements Serializable {
         study = determineStudy();
         if (study != null) {
             setDescription("Peer Review " + study.toString());
+            
+            // TODO Replace with administration building function walk.
+            // Walk to location to review study.
+            walkToRandomLocation();
         }
         else {
             logger.info("study could not be determined");
