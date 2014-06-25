@@ -631,6 +631,24 @@
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="METEOROLOGY" />
+				<activity>
+					<activity-spot xloc="1.55" yloc="2.87" />
+					<activity-spot xloc="1.55" yloc="1.38" />
+					<activity-spot xloc=".3" yloc="2.42" />
+					<activity-spot xloc=".3" yloc="1.11" />
+					<activity-spot xloc="-1.01" yloc="3.28" />
+					<activity-spot xloc="-.51" yloc="1.55" />
+					<activity-spot xloc="-1.71" yloc="2.63" />
+					<activity-spot xloc="-1.72" yloc="1.1" />
+					<activity-spot xloc="1.49" yloc="-.62" />
+					<activity-spot xloc="1.48" yloc="-2.02" />
+					<activity-spot xloc=".29" yloc="-.9" />
+					<activity-spot xloc=".28" yloc="-2.72" />
+					<activity-spot xloc="-.51" yloc="-.75" />
+					<activity-spot xloc="-.51" yloc="-2.31" />
+					<activity-spot xloc="-1.62" yloc="-1.12" />
+					<activity-spot xloc="-1.61" yloc="-2.19" />
+				</activity>
 			</research>
 		</functions>
 	</building>
@@ -644,6 +662,14 @@
 			<ground-vehicle-maintenance vehicle-capacity="2" >
 		        <parking-location xloc="2.60" yloc="2.0" />
 		        <parking-location xloc="-2.60" yloc="2.0" />
+		        <activity>
+					<activity-spot xloc="1.75" yloc="-3.5" />
+					<activity-spot xloc="0.0" yloc="-3.5" />
+					<activity-spot xloc="-1.75" yloc="-3.5" />
+					<activity-spot xloc="0.0" yloc="-2.0" />
+					<activity-spot xloc=".75" yloc="1.0" />
+					<activity-spot xloc="-.75" yloc="1.0" />
+				</activity>
 			</ground-vehicle-maintenance>
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
@@ -657,7 +683,17 @@
 		<power-required base-power="7.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
-			<manufacture tech-level="4" concurrent-processes="4" />
+			<manufacture tech-level="4" concurrent-processes="4">
+				<activity>
+					<activity-spot xloc=".6" yloc="2.9" />
+					<activity-spot xloc="-2.0" yloc="-.7" />
+					<activity-spot xloc="-.6" yloc="-2.9" />
+					<activity-spot xloc="1.7" yloc="0.0" />
+					<activity-spot xloc="-.5" yloc="1.1" />
+					<activity-spot xloc=".7" yloc="-1.3" />
+					<activity-spot xloc=".7" yloc=".4" />
+				</activity>
+			</manufacture>
 			<storage>
 				<resource-storage resource="Regolith" capacity="1000.0" />
 				<resource-storage resource="Carbon" capacity="500.0" />
@@ -824,7 +860,13 @@
 		<power-required base-power="3.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
-			<manufacture tech-level="2" concurrent-processes="2" />
+			<manufacture tech-level="2" concurrent-processes="2">
+				<activity>
+					<activity-spot xloc=".95" yloc="1.05" />
+					<activity-spot xloc="-.8" yloc="-.1" />
+					<activity-spot xloc=".2" yloc="-1.1" />
+				</activity>
+			</manufacture>
 			<storage>
 				<resource-storage resource="Regolith" capacity="500.0" />
 				<resource-storage resource="Carbon" capacity="250.0" />
@@ -846,7 +888,12 @@
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
-			<living-accommodations beds="2" />
+			<living-accommodations beds="2">
+				<activity>
+					<activity-spot xloc="1.35" yloc="-1.35" />
+					<activity-spot xloc="-1.35" yloc="-1.35" />
+				</activity>
+			</living-accommodations>
 		</functions>
 	</building>
 	
@@ -878,7 +925,11 @@
 	<building name="Astronomy Observatory" width="7.0" length="7.0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
-			<astronomical-observation tech-level="2" capacity="1" power-required="4.0"/>
+			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
+				<activity>
+					<activity-spot xloc="0.0" yloc="0.0" />
+				</activity>
+			</astronomical-observation>
 			<EVA airlock-capacity="1" xloc="0.0" yloc="3.0" interior-xloc="0.0" interior-yloc="2.5" 
 			exterior-xloc="0.0" exterior-yloc="4.5" />
 			<life-support capacity="4" power-required="8.0" />
@@ -886,6 +937,12 @@
 				<research-specialty name="ASTRONOMY" />
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
+				<activity>
+					<activity-spot xloc="1.45" yloc="1.35" />
+					<activity-spot xloc="-1.45" yloc="1.4" />
+					<activity-spot xloc="1.45" yloc="-1.35" />
+					<activity-spot xloc="-1.35" yloc="-1.4" />
+				</activity>
 			</research>
 		</functions>
 	</building>

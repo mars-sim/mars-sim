@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * GroundVehicleMaintenance.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -45,6 +45,9 @@ implements Serializable {
 			Point2D.Double parkingLocationPoint = config.getParkingLocation(building.getName(), x);
 			addParkingLocation(parkingLocationPoint.getX(), parkingLocationPoint.getY());
 		}
+		
+		// Load activity spots
+        loadActivitySpots(config.getGroundVehicleMaintenanceActivitySpots(building.getName()));
 	}
 
 	/**
