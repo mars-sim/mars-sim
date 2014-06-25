@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-24
  * @author Scott Davis
  */
 
@@ -68,8 +68,14 @@ implements Serializable {
         try {
             entity = getMaintenanceMalfunctionable();
             if (entity != null) {
-                // Walk to random location.
-                walkToRandomLocation();
+                if (isInhabitableBuilding(entity)) {
+                    // Walk to random location in building.
+                    walkToRandomLocInBuilding((Building) entity);
+                }
+                else {
+                    // Walk to random location.
+                    walkToRandomLocation();
+                }
             }
             else {
                 endTask();

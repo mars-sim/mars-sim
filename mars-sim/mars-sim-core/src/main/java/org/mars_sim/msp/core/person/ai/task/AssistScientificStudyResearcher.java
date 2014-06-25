@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,8 +81,12 @@ implements Serializable {
                     if (researcherBuilding != null) {
                         
                         // Walk to researcher
-                        walkToRandomLocInBuilding(researcherBuilding);
+                        walkToActivitySpotInBuilding(researcherBuilding, BuildingFunction.RESEARCH);
                     }
+                }
+                else {
+                    // Walk to random location.
+                    walkToRandomLocation();
                 }
             }
             else {

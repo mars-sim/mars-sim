@@ -617,6 +617,7 @@ implements Serializable, Comparable<Task> {
         // Find available activity spot in building.
         Point2D settlementLoc = buildingFunction.getAvailableActivitySpot(person);
         if (settlementLoc == null) {
+            
             // If no available activity spot, go to random location in building.
             Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
             settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
