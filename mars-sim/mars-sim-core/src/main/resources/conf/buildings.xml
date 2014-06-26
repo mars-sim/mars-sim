@@ -988,6 +988,12 @@
 				<research-specialty name="PHYSICS" />
 				<research-specialty name="MATHEMATICS" />
 				<research-specialty name="METEOROLOGY" />
+				<activity>
+					<activity-spot xloc=".4" yloc="3.05" />
+					<activity-spot xloc="-2.73" yloc="-.15" />
+					<activity-spot xloc="2.67" yloc="-.25" />
+					<activity-spot xloc="-.77" yloc="-2.52" />
+				</activity>
 			</research>
 		</functions>
 	</building>
@@ -999,7 +1005,15 @@
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="8" power-required="16.0" />
-			<living-accommodations beds="8" />
+			<living-accommodations beds="8">
+				<activity>
+					<activity-spot xloc="1.13" yloc="2.67" />
+					<activity-spot xloc="2.89" yloc=".31" />
+					<activity-spot xloc="2.67" yloc="-.92" />
+					<activity-spot xloc="-.18" yloc="-2.97" />
+					<activity-spot xloc="-2.82" yloc="-1.14" />
+				</activity>
+			</living-accommodations>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
@@ -1013,12 +1027,20 @@
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
-			<medical-care tech-level="4" beds="4" />
+			<medical-care tech-level="4" beds="4">
+				<activity>
+					<activity-spot xloc="3.04" yloc="-1.3" />
+				</activity>
+			</medical-care>
 			<power-generation>
 				<power-source type="Solar Power Source" power="5.0" />
 			</power-generation>
 			<research tech-level="2" capacity="2">
 				<research-specialty name="MEDICINE" />
+				<activity>
+					<activity-spot xloc=".77" yloc="-2.52" />
+					<activity-spot xloc="-2.09" yloc="2.06" />
+				</activity>
 			</research>
 		</functions>
 	</building>
@@ -1030,7 +1052,13 @@
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
 			exterior-xloc="5.5" exterior-yloc="0.0" />
 			<life-support capacity="4" power-required="8.0" />
-			<manufacture tech-level="2" concurrent-processes="3" />
+			<manufacture tech-level="2" concurrent-processes="3">
+				<activity>
+					<activity-spot xloc="2.16" yloc="1.45" />
+					<activity-spot xloc="-.26" yloc=".29" />
+					<activity-spot xloc="-2.52" yloc=".99" />
+				</activity>
+			</manufacture>
 			<storage>
 				<resource-storage resource="Regolith" capacity="500.0" />
 				<resource-storage resource="Carbon" capacity="250.0" />
@@ -1055,12 +1083,45 @@
 	<building name="Outpost Hub" width="10.0" length="10.0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
-			<communication />
-			<cooking capacity="1" />
-			<dining capacity="4" />
+			<communication>
+				<activity>
+					<activity-spot xloc="3.2" yloc="-3.6" />
+				</activity>
+			</communication>
+			<cooking capacity="1">
+				<activity>
+					<activity-spot xloc="-1.3" yloc="3.7" />
+				</activity>
+			</cooking>
+			<dining capacity="6">
+				<activity>
+					<activity-spot xloc="-.75" yloc="2.67" />
+					<activity-spot xloc="-3.73" yloc="2.67" />
+					<activity-spot xloc="-1.65" yloc="3.05" />
+					<activity-spot xloc="-2.8" yloc="3.05" />
+					<activity-spot xloc="-1.65" yloc="2.3" />
+					<activity-spot xloc="-2.8" yloc="2.3" />
+				</activity>
+			</dining>
 			<life-support capacity="6" power-required="12.0" />
-			<medical-care tech-level="2" beds="1" />
-			<recreation population-support="4" />
+			<medical-care tech-level="2" beds="1">
+				<activity>
+					<activity-spot xloc="3.7" yloc="4.2" />
+				</activity>
+			</medical-care>
+			<recreation population-support="4">
+				<activity>
+					<activity-spot xloc="-2.15" yloc="1.35" />
+					<activity-spot xloc="-1.9" yloc=".5" />
+					<activity-spot xloc="-1.9" yloc="0.0" />
+					<activity-spot xloc="-1.9" yloc="-.5" />
+					<activity-spot xloc="-2.15" yloc="-1.35" />
+					<activity-spot xloc="3.17" yloc="1.22" />
+					<activity-spot xloc="3.17" yloc="-1.02" />
+					<activity-spot xloc="4.05" yloc=".18" />
+					<activity-spot xloc="2.36" yloc=".18" />
+				</activity>
+			</recreation>
 			<storage>
 				<resource-storage resource="Oxygen" capacity="1000.0" />
 				<resource-storage resource="Water" capacity="5000.0" />
@@ -1096,6 +1157,12 @@
 			<ground-vehicle-maintenance vehicle-capacity="2" >
                 <parking-location xloc="4.5" yloc="-3.2" />
                 <parking-location xloc="-4.5" yloc="-3.2" />
+                <activity>
+					<activity-spot xloc="-.5" yloc="-2.25" />
+					<activity-spot xloc="2.25" yloc="-3.25" />
+					<activity-spot xloc="-2.25" yloc="-4.75" />
+					<activity-spot xloc="1.0" yloc="-6.25" />
+				</activity>
 			</ground-vehicle-maintenance>
 			<life-support capacity="4" power-required="8.0" />
 			<storage>
@@ -1113,6 +1180,13 @@
 				<research-specialty name="AREOLOGY" />
 				<research-specialty name="BIOLOGY" />
 				<research-specialty name="CHEMISTRY" />
+				<activity>
+					<activity-spot xloc="1.58" yloc=".82" />
+					<activity-spot xloc=".62" yloc=".28" />
+					<activity-spot xloc=".67" yloc="-1.24" />
+					<activity-spot xloc="-.62" yloc=".54" />
+					<activity-spot xloc="-.62" yloc="-.77" />
+				</activity>
 			</research>
 		</functions>
 	</building>
@@ -1121,16 +1195,30 @@
 	<building name="Inground Greenhouse" width="5.0" length="10.0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>		
-			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0" />
+			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0">
+				<activity>
+					<activity-spot xloc="0.0" yloc="3.75" />
+					<activity-spot xloc="0.0" yloc="1.87" />
+					<activity-spot xloc="0.0" yloc="0.0" />
+					<activity-spot xloc="0.0" yloc="-1.87" />
+					<activity-spot xloc="0.0" yloc="-3.75" />
+				</activity>
+			</farming>
 			<life-support capacity="3" power-required="6.0" />
 			<research tech-level="1" capacity="1">
 				<research-specialty name="BOTANY" />
+				<activity>
+					<activity-spot xloc="-.5" yloc="4.0" />
+				</activity>
 			</research>	
 			<resource-processing power-down-level=".5">
 				<process name="Carbon Dioxide Pump" power-required="2.0" default="on">
 					<input resource="Carbon Dioxide" rate="20.0" ambient="true" />
 					<output resource="Carbon Dioxide" rate="20.0" ambient="false" />
 				</process>
+				<activity>
+					<activity-spot xloc="2.0" yloc="4.5" />
+				</activity>
 			</resource-processing>
 			<storage>
 				<resource-storage resource="Water" capacity="500.0" />
