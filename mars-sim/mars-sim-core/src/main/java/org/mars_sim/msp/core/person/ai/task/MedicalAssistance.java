@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -100,8 +100,7 @@ implements Serializable {
 					MedicalCare medicalCare = (MedicalCare) medical;
 
 					// Walk to medical care building.
-					walkToActivitySpotInBuilding(medicalCare.getBuilding(), 
-					        BuildingFunction.MEDICAL_CARE);
+					walkToActivitySpotInBuilding(medicalCare.getBuilding());
 				}
 
 				// Create starting task event if needed.
@@ -168,6 +167,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.MEDICAL_CARE;
+    }
 
 	@Override
 	protected double performMappedPhase(double time) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2014-06-22
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -606,6 +606,32 @@ implements Serializable, Comparable<Task> {
     }
     
     /**
+     * Gets the related building function for this task.
+     * Override as necessary.
+     * @return building function or null if none.
+     */
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return null;
+    }
+    
+    /**
+     * Walk to an available activity spot in a building.
+     * @param building the destination building.
+     */
+    protected void walkToActivitySpotInBuilding(Building building) {
+        
+        BuildingFunction functionType = getRelatedBuildingFunction();
+        
+        if (functionType != null) {
+            walkToActivitySpotInBuilding(building, functionType);
+        }
+        else {
+            // If no available activity spot, go to random location in building.
+            walkToRandomLocInBuilding(building);
+        }
+    }
+    
+    /**
      * Walk to an available activity spot in a building.
      * @param building the destination building.
      * @param functionType the building function type for the activity.
@@ -616,16 +642,16 @@ implements Serializable, Comparable<Task> {
         
         // Find available activity spot in building.
         Point2D settlementLoc = buildingFunction.getAvailableActivitySpot(person);
-        if (settlementLoc == null) {
+        if (settlementLoc != null) {
+            
+            // Create subtask for walking to destination.
+            createWalkingSubtask(building, settlementLoc);
+        }
+        else {
             
             // If no available activity spot, go to random location in building.
-            Point2D buildingLoc = LocalAreaUtil.getRandomInteriorLocation(building);
-            settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-                    buildingLoc.getY(), building);
+            walkToRandomLocInBuilding(building);
         }
-
-        // Create subtask for walking to destination.
-        createWalkingSubtask(building, settlementLoc);
     }
     
     /**
@@ -640,6 +666,25 @@ implements Serializable, Comparable<Task> {
         
         // Create subtask for walking to destination.
         createWalkingSubtask(building, adjustedInteriorPos);
+    }
+    
+    /**
+     * Walk to an available activity spot in a rover.
+     * @param rover the destination rover.
+     * @param activitySpot the activity spot as a Point2D object.
+     */
+    protected void walkToActivitySpotInVehicle(Rover rover, Point2D activitySpot) {
+        
+        if (activitySpot != null) {
+            
+            // Create subtask for walking to destination.
+            createWalkingSubtask(rover, activitySpot);
+        }
+        else {
+            
+            // Walk to a random location in the rover.
+            walkToRandomLocInRover(rover);
+        }
     }
     
     /**

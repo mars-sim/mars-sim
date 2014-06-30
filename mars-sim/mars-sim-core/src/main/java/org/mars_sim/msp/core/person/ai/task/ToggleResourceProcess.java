@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -81,7 +81,7 @@ implements Serializable {
 			// If habitable building, add person to building.
 			if (!isEVA) {
 				// Walk to building.
-			    walkToActivitySpotInBuilding(building, BuildingFunction.RESOURCE_PROCESSING);
+			    walkToActivitySpotInBuilding(building);
 			}
 			else {
 				// Determine location for toggling power source.
@@ -174,6 +174,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.RESOURCE_PROCESSING;
+    }
 
 	/**
 	 * Determine location to toggle power source.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -83,7 +83,7 @@ implements Serializable {
             kitchen = (Cooking) kitchenBuilding.getFunction(BuildingFunction.COOKING);
 
             // Walk to kitchen building.
-            walkToActivitySpotInBuilding(kitchenBuilding, BuildingFunction.COOKING);
+            walkToActivitySpotInBuilding(kitchenBuilding);
         }
         else endTask();
 
@@ -138,6 +138,11 @@ implements Serializable {
         }
 
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.COOKING;
     }
 
     /**

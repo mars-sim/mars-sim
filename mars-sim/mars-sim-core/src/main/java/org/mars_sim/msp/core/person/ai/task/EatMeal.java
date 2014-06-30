@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -71,7 +71,7 @@ implements Serializable {
 			if (diningBuilding != null) {
 
 				// Walk to dining building.
-			    walkToActivitySpotInBuilding(diningBuilding, BuildingFunction.DINING);
+			    walkToActivitySpotInBuilding(diningBuilding);
 			}
 
 			// If cooked meal in a local kitchen available, take it to eat.
@@ -119,6 +119,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.DINING;
+    }
 
 	/**
 	 * Performs the method mapped to the task's current phase.

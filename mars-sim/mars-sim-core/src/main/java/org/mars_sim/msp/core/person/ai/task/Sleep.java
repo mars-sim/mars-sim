@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 
@@ -67,7 +67,7 @@ class Sleep extends Task implements Serializable {
             Building quarters = getAvailableLivingQuartersBuilding(person);
             if (quarters != null) {
                 // Walk to quarters.
-                walkToActivitySpotInBuilding(quarters, BuildingFunction.LIVING_ACCOMODATIONS);
+                walkToActivitySpotInBuilding(quarters);
                 accommodations = (LivingAccommodations) quarters.getFunction(
                         BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations.addSleeper();
@@ -117,6 +117,11 @@ class Sleep extends Task implements Serializable {
         }
 
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.LIVING_ACCOMODATIONS;
     }
     
     @Override

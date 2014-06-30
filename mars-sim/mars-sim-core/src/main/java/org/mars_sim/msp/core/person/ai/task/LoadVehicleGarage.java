@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 
@@ -112,8 +112,7 @@ implements Serializable {
             if (garageBuilding != null) {
                 
                 // Walk to garage.
-                walkToActivitySpotInBuilding(garageBuilding, 
-                        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                walkToActivitySpotInBuilding(garageBuilding);
             }
             
             // End task if vehicle or garage not available.
@@ -168,8 +167,7 @@ implements Serializable {
         if (garage != null) {
             
             // Walk to garage.
-            walkToActivitySpotInBuilding(garage, 
-                    BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+            walkToActivitySpotInBuilding(garage);
         }
         
         // Initialize task phase
@@ -208,6 +206,11 @@ implements Serializable {
 		}
 	
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     }
     
     /**

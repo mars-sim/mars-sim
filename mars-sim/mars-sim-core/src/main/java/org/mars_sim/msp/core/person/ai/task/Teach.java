@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.07 2014-06-24
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -71,14 +71,28 @@ implements Serializable {
             teachingTask.setTeacher(person);
             setDescription("Teaching " + teachingTask.getName(false) + " to "
                     + student.getName());
-
+            
+            boolean walkToBuilding = false;
             // If in settlement, move teacher to building student is in.
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
                 
-                // Walk to student's building.
-                walkToRandomLocInBuilding(BuildingManager.getBuilding(student));
+                Building studentBuilding = BuildingManager.getBuilding(student);
+                
+                if (studentBuilding != null) {
+                    BuildingFunction teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
+                    if (teachingBuildingFunction != null) {
+                        // Walk to relevant activity spot in student's building.
+                        walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction);
+                    }
+                    else {
+                        // Walk to random location in student's building.
+                        walkToRandomLocInBuilding(BuildingManager.getBuilding(student));
+                    }
+                    walkToBuilding = true;
+                }
             }
-            else {
+            
+            if (!walkToBuilding) {
                 // Walk to random location.
                 walkToRandomLocation();
             }
