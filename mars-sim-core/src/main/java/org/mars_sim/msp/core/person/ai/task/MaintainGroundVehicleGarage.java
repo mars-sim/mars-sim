@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -86,7 +86,7 @@ implements Serializable {
         			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
         			
         			// Walk to garage.
-        			walkToActivitySpotInBuilding(building, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        			walkToActivitySpotInBuilding(building);
         		}
         		catch (Exception e) {
         		    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
@@ -107,7 +107,7 @@ implements Serializable {
         					garage.addVehicle(vehicle);
         					
         					// Walk to garage.
-        					walkToActivitySpotInBuilding(building, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+        					walkToActivitySpotInBuilding(building);
         				} 
         			}
         			catch (Exception e) {
@@ -203,6 +203,11 @@ implements Serializable {
 		}
 	
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     }
     
     @Override

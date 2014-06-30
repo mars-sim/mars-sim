@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -61,7 +61,7 @@ implements Serializable {
 			Building gymBuilding = getAvailableGym(person);
 			if (gymBuilding != null) {
 				// Walk to gym building.
-			    walkToActivitySpotInBuilding(gymBuilding, BuildingFunction.EXERCISE);
+			    walkToActivitySpotInBuilding(gymBuilding);
 			    
 				gym = (Exercise) gymBuilding.getFunction(BuildingFunction.EXERCISE);
 			} 
@@ -113,6 +113,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.EXERCISE;
+    }
 
 	@Override
 	protected double performMappedPhase(double time) {

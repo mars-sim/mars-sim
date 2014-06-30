@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 
@@ -77,7 +77,7 @@ implements Serializable {
 			workshop = (Manufacture) manufactureBuilding.getFunction(BuildingFunction.MANUFACTURE);
 
 			// Walk to manufacturing building.
-			walkToActivitySpotInBuilding(manufactureBuilding, BuildingFunction.MANUFACTURE);
+			walkToActivitySpotInBuilding(manufactureBuilding);
 		} 
 		else {
 			endTask();
@@ -145,6 +145,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.MANUFACTURE;
+    }
 
 	/** 
 	 * Cancel any manufacturing processes that's beyond the skill of any people 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -77,8 +77,7 @@ implements ResearchScientificStudy, Serializable {
 			if (observatory != null) {
 
 				// Walk to observatory building.
-			    walkToActivitySpotInBuilding(observatory.getBuilding(), 
-			            BuildingFunction.ASTRONOMICAL_OBSERVATIONS);
+			    walkToActivitySpotInBuilding(observatory.getBuilding());
 				observatory.addObserver();
 				isActiveObserver = true;
 			}
@@ -187,6 +186,11 @@ implements ResearchScientificStudy, Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.ASTRONOMICAL_OBSERVATIONS;
+    }
 
 	/**
 	 * Gets the preferred local astronomical observatory for an observer.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -96,7 +96,7 @@ implements Serializable {
             Building garageBuilding = BuildingManager.getBuilding(vehicle);
             if (garageBuilding != null) {
                 // Walk to garage building.
-                walkToActivitySpotInBuilding(garageBuilding, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+                walkToActivitySpotInBuilding(garageBuilding);
             }
             
             // End task if vehicle or garage not available.
@@ -129,7 +129,7 @@ implements Serializable {
         Building garageBuilding = BuildingManager.getBuilding(vehicle);
         if (garageBuilding != null) {
             // Walk to garage building.
-            walkToActivitySpotInBuilding(garageBuilding, BuildingFunction.GROUND_VEHICLE_MAINTENANCE);
+            walkToActivitySpotInBuilding(garageBuilding);
         }
         
         // Initialize phase
@@ -173,6 +173,11 @@ implements Serializable {
 		}
 	
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     }
     
     /**

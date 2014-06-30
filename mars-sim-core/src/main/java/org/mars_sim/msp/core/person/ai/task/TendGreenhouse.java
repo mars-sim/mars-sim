@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,7 +76,7 @@ implements Serializable {
 			greenhouse = (Farming) farmBuilding.getFunction(BuildingFunction.FARMING);
 			
 			// Walk to greenhouse.
-			walkToActivitySpotInBuilding(farmBuilding, BuildingFunction.FARMING);
+			walkToActivitySpotInBuilding(farmBuilding);
 		}
 		else {
 			endTask();
@@ -132,6 +132,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.FARMING;
+    }
 
 	@Override
 	protected double performMappedPhase(double time) {

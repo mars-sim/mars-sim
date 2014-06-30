@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -56,7 +56,7 @@ implements Serializable {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
-				    walkToActivitySpotInBuilding(recBuilding, BuildingFunction.RECREATION);
+				    walkToActivitySpotInBuilding(recBuilding);
 				}
 			}
 			catch (Exception e) {
@@ -98,6 +98,11 @@ implements Serializable {
 
 		return result;
 	}
+	
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.RECREATION;
+    }
 
 	@Override
 	protected double performMappedPhase(double time) {

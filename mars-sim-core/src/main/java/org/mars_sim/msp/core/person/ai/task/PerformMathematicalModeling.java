@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformMathematicalModeling.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -184,6 +184,11 @@ implements ResearchScientificStudy, Serializable {
         }
         
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.RESEARCH;
     }
     
     /**
@@ -381,7 +386,7 @@ implements ResearchScientificStudy, Serializable {
                 Building labBuilding = ((Research) lab).getBuilding();
                 
                 // Walk to lab building.
-                walkToActivitySpotInBuilding(labBuilding, BuildingFunction.RESEARCH);
+                walkToActivitySpotInBuilding(labBuilding);
                 
                 lab.addResearcher();
                 malfunctions = labBuilding.getMalfunctionManager();

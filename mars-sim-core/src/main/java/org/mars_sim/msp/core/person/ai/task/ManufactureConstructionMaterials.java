@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-06-28
  * @author Scott Davis
  */
 
@@ -92,7 +92,7 @@ implements Serializable {
                     .getFunction(BuildingFunction.MANUFACTURE);
             
             // Walk to manufacturing building.
-            walkToActivitySpotInBuilding(manufactureBuilding, BuildingFunction.MANUFACTURE);
+            walkToActivitySpotInBuilding(manufactureBuilding);
         } 
         else {
             endTask();
@@ -163,6 +163,11 @@ implements Serializable {
         }
 
         return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.MANUFACTURE;
     }
 
     /**
