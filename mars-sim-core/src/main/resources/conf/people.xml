@@ -372,7 +372,7 @@
 		</person>
 		<person name="Rik Declercq" gender="male"/>
 
-        <person name="Leonardo DaVinci" gender="male" settlement="Alpha Basis" job="Engineer">
+        <person name="Leonardo DaVinci" gender="male" settlement="Alpha Base" job="Engineer">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
@@ -391,7 +391,7 @@
                 <relationship person-name="Lena LaGranda" opinion="100"/>
             </relationship-list>
         </person>
-        <person name="Lena LaGranda" gender="female" settlement="Alpha Basis" job="Engineer">
+        <person name="Lena LaGranda" gender="female" settlement="Alpha Base" job="Engineer">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
