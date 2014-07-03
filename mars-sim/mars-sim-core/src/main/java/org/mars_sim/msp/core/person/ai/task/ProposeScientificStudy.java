@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.07 2014-06-22
+ * @version 3.07 2014-07-03
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -9,10 +9,12 @@ package org.mars_sim.msp.core.person.ai.task;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -21,6 +23,9 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
+import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 
 /**
  * A task for proposing a new scientific study.
@@ -55,6 +60,7 @@ implements Serializable {
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         study = manager.getOngoingPrimaryStudy(person);
         if (study == null) {
+            
             // Create new scientific study.
             Job job = person.getMind().getJob();
             ScienceType science = ScienceType.getJobScience(job);
@@ -62,10 +68,6 @@ implements Serializable {
                 SkillType skill = science.getSkill();
                 int level = person.getMind().getSkillManager().getSkillLevel(skill);
                 study = manager.createScientificStudy(person, science, level);
-                
-                // TODO Replace with administration building function walk.
-                // Walk to location to propose study.
-                walkToRandomLocation();
             }
             else {
                 logger.severe("Person's job: " + job.getName(person.getGender()) + " not scientist.");
@@ -75,6 +77,25 @@ implements Serializable {
         
         if (study != null) {
             setDescription("Proposing a " + study.getScience().getName() + " study");
+            
+            // If person is in a settlement, try to find an administration building.
+            boolean adminWalk = false;
+            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {         
+                Building adminBuilding = getAvailableAdministrationBuilding(person);
+                if (adminBuilding != null) {
+                    // Walk to administration building.
+                    walkToActivitySpotInBuilding(adminBuilding);
+                    adminWalk = true;
+                }
+            }
+            
+            if (!adminWalk) {
+                // Walk to random location.
+                walkToRandomLocation();
+            }
+        }
+        else {
+            endTask();
         }
         
         // Initialize phase
@@ -108,8 +129,7 @@ implements Serializable {
                 }
             }
         }
-        else {
-            
+        else {           
             // Probability of starting a new scientific study.
             
             // Check if scientist job.
@@ -122,6 +142,15 @@ implements Serializable {
             result /= (numCollabStudies + 1D);
         }
         
+        // Crowding modifier
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            Building adminBuilding = getAvailableAdministrationBuilding(person);
+            if (adminBuilding != null) {
+                result *= Task.getCrowdingProbabilityModifier(person, adminBuilding);
+                result *= Task.getRelationshipModifier(person, adminBuilding);
+            }
+        }
+        
         // Job modifier.
         Job job = person.getMind().getJob();
         if (job != null) {
@@ -129,6 +158,36 @@ implements Serializable {
         }
         
         return result;
+    }
+    
+    /**
+     * Gets an available administration building that the person can use.
+     * @param person the person
+     * @return available administration building or null if none.
+     */
+    private static Building getAvailableAdministrationBuilding(Person person) {
+
+        Building result = null;
+
+        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+            BuildingManager manager = person.getSettlement().getBuildingManager();
+            List<Building> administrationBuildings = manager.getBuildings(BuildingFunction.ADMINISTRATION);
+            administrationBuildings = BuildingManager.getNonMalfunctioningBuildings(administrationBuildings);
+            administrationBuildings = BuildingManager.getLeastCrowdedBuildings(administrationBuildings);
+
+            if (administrationBuildings.size() > 0) {
+                Map<Building, Double> administrationBuildingProbs = BuildingManager.getBestRelationshipBuildings(
+                        person, administrationBuildings);
+                result = RandomUtil.getWeightedRandomObject(administrationBuildingProbs);
+            }
+        }
+
+        return result;
+    }
+    
+    @Override
+    protected BuildingFunction getRelatedBuildingFunction() {
+        return BuildingFunction.ADMINISTRATION;
     }
     
     /**

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-07-02
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -108,6 +108,7 @@ public class BuildingConfig implements Serializable {
     private static final String BUILDING_CONNECTION = "building-connection";
 	private static final String ACTIVITY = "activity";
 	private static final String ACTIVITY_SPOT = "activity-spot";
+	private static final String ADMINISTRATION = "administration";
     
 	// Power source types
 	private static final String STANDARD_POWER_SOURCE = "Standard Power Source";
@@ -905,6 +906,24 @@ public class BuildingConfig implements Serializable {
 	}
 	
 	/**
+	 * Checks if the building has the administration function.
+	 * @param buildingName the name of the building.
+	 * @return true if building has administration function.
+	 */
+	public boolean hasAdministration(String buildingName) {
+	    return hasElements(buildingName, FUNCTIONS, ADMINISTRATION);
+	}
+	
+	/**
+     * Gets the administration population support for a building. 
+     * @param buildingName the name of the building.
+     * @return population support
+     */
+    public int getAdministrationPopulationSupport(String buildingName) {
+        return getValueAsInteger(buildingName, FUNCTIONS, ADMINISTRATION, POPULATION_SUPPORT);
+    }
+	
+	/**
 	 * Checks if the building has an Earth return function.
 	 * @param buildingName the name of the building.
 	 * @return true if building has earth return function.
@@ -930,6 +949,15 @@ public class BuildingConfig implements Serializable {
 	public boolean hasBuildingConnection(String buildingName) {
 	    return hasElements(buildingName, FUNCTIONS, BUILDING_CONNECTION);
 	}
+	
+    /**
+     * Gets a list of activity spots for the administration building function.
+     * @param buildingName the name of the building.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getAdministrationActivitySpots(String buildingName) {
+        return getActivitySpots(buildingName, ADMINISTRATION);
+    }
 	
 	/**
      * Gets a list of activity spots for the astronomical observation building function.

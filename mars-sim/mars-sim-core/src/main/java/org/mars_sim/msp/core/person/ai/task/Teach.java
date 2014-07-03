@@ -80,7 +80,7 @@ implements Serializable {
                 
                 if (studentBuilding != null) {
                     BuildingFunction teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
-                    if (teachingBuildingFunction != null) {
+                    if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
                         // Walk to relevant activity spot in student's building.
                         walkToActivitySpotInBuilding(studentBuilding, teachingBuildingFunction);
                     }

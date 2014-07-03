@@ -8,6 +8,7 @@ import org.mars_sim.msp.core.Msg;
  */
 public enum BuildingFunction {
 
+    ADMINISTRATION              (Msg.getString("BuildingFunction.administration")), //$NON-NLS=1$
 	ASTRONOMICAL_OBSERVATIONS	(Msg.getString("BuildingFunction.astronomicalObservations")), //$NON-NLS-1$
 	BUILDING_CONNECTION			(Msg.getString("BuildingFunction.buildingConnection")), //$NON-NLS-1$
 	COMMUNICATION				(Msg.getString("BuildingFunction.communication")), //$NON-NLS-1$
