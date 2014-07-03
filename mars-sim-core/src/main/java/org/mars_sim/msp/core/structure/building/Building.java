@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.06 2014-03-08
+ * @version 3.07 2014-07-02
  * @author Scott Davis
  */
 
@@ -25,6 +25,7 @@ import org.mars_sim.msp.core.person.ai.task.Repair;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.building.connection.InsidePathLocation;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -247,6 +248,9 @@ LocalBoundedObject, InsidePathLocation {
 		// Set building connection function.
 		if (config.hasBuildingConnection(name)) buildingFunctions.add(new BuildingConnection(this));
 
+		// Set administration function.
+		if (config.hasAdministration(name)) buildingFunctions.add(new Administration(this));
+		
 		return buildingFunctions;
 	}
 

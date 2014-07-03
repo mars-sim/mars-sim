@@ -523,6 +523,22 @@
 	<building name="Command and Control" width="7.0" length="9.0">
 		<power-required base-power="50.0" base-power-down-power="10.0" />
 		<functions>
+			<administration population-support="25">
+				<activity>
+					<activity-spot xloc="1.56" yloc="3.33" />
+					<activity-spot xloc="1.56" yloc="2.85" />
+					<activity-spot xloc="-1.62" yloc="3.33" />
+					<activity-spot xloc="-1.62" yloc="2.85" />
+					<activity-spot xloc="1.56" yloc="-2.91" />
+					<activity-spot xloc="1.56" yloc="-3.37" />
+					<activity-spot xloc="-1.62" yloc="-2.91" />
+					<activity-spot xloc="-1.62" yloc="-3.37" />
+					<activity-spot xloc="-1.88" yloc="1.21" />
+					<activity-spot xloc="-1.88" yloc=".4" />
+					<activity-spot xloc="-1.88" yloc="-.45" />
+					<activity-spot xloc="-1.88" yloc="-1.34" />
+				</activity>
+			</administration>
 			<communication>
 				<activity>
 					<activity-spot xloc="1.75" yloc="1.4" />

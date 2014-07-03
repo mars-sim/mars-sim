@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-07-02
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ import org.mars_sim.msp.core.structure.BuildingTemplate;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.connection.BuildingConnectorManager;
 import org.mars_sim.msp.core.structure.building.connection.InsideBuildingPath;
+import org.mars_sim.msp.core.structure.building.function.Administration;
 import org.mars_sim.msp.core.structure.building.function.AstronomicalObservation;
 import org.mars_sim.msp.core.structure.building.function.BuildingConnection;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -780,6 +781,8 @@ implements Serializable {
                 result += EarthReturn.getFunctionValue(buildingName, newBuilding, settlement);
             if (config.hasBuildingConnection(buildingName))
                 result += BuildingConnection.getFunctionValue(buildingName, newBuilding, settlement);
+            if (config.hasAdministration(buildingName))
+                result += Administration.getFunctionValue(buildingName, newBuilding, settlement);
 
             // Multiply value.
             result *= 1000D;
