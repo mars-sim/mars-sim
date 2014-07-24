@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
-import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -29,6 +28,8 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The RepairMalfunction class is a task to repair a malfunction.
@@ -323,7 +324,7 @@ implements Repair, Serializable {
 
     /**
      * Adds the person to building if malfunctionable is a building with life support.
-     * Otherwise does nothing.
+     * Otherwise walk to random location.
      * @param malfunctionable the malfunctionable the person is repairing.
      */
     private void addPersonToMalfunctionLocation(Malfunctionable malfunctionable) {
@@ -331,12 +332,17 @@ implements Repair, Serializable {
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building instanceof LifeSupport) {
+            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 
                 // Walk to malfunctioning building.
                 walkToRandomLocInBuilding(building);
                 isWalk = true;
             }
+        }
+        else if (malfunctionable instanceof Rover) {
+            // Walk to malfunctioning rover.
+            walkToRandomLocInRover((Rover) malfunctionable);
+            isWalk = true;
         }
         
         if (!isWalk) {

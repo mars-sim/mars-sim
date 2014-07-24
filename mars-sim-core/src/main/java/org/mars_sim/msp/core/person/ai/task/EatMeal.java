@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.CookedMeal;
 import org.mars_sim.msp.core.structure.building.function.Cooking;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The EatMeal class is a task for eating a meal.
@@ -64,6 +65,8 @@ implements Serializable {
 		super("Eating a meal", person, false, false, STRESS_MODIFIER, true, 10D + 
 				RandomUtil.getRandomDouble(30D));
 
+		boolean walkSite = false;
+		
 		LocationSituation location = person.getLocationSituation();
 		if (location == LocationSituation.IN_SETTLEMENT) {
 			// If person is in a settlement, try to find a dining area.
@@ -72,6 +75,7 @@ implements Serializable {
 
 				// Walk to dining building.
 			    walkToActivitySpotInBuilding(diningBuilding);
+			    walkSite = true;
 			}
 
 			// If cooked meal in a local kitchen available, take it to eat.
@@ -85,6 +89,19 @@ implements Serializable {
 		}
 		else if (location == LocationSituation.OUTSIDE) {
 			endTask();
+		}
+		
+		if (!walkSite) {
+		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+		        // If person is in rover, walk to passenger activity spot.
+		        if (person.getVehicle() instanceof Rover) {
+		            walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+		        }
+		    }
+		    else {
+		        // Walk to random location.
+		        walkToRandomLocation();
+		    }
 		}
 
 		// Initialize task phase.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -622,7 +622,7 @@ implements Serializable, Comparable<Task> {
         
         BuildingFunction functionType = getRelatedBuildingFunction();
         
-        if (functionType != null) {
+        if ((functionType != null) && (building.hasFunction(functionType))) {
             walkToActivitySpotInBuilding(building, functionType);
         }
         else {
@@ -669,11 +669,100 @@ implements Serializable, Comparable<Task> {
     }
     
     /**
+     * Walk to an available operator activity spot in a rover.
+     * @param rover the rover.
+     */
+    protected void walkToOperatorActivitySpotInRover(Rover rover) {
+        walkToActivitySpotInRover(rover, rover.getOperatorActivitySpots());
+    }
+    
+    /**
+     * Walk to an available passenger activity spot in a rover.
+     * @param rover the rover.
+     */
+    protected void walkToPassengerActivitySpotInRover(Rover rover) {
+        walkToActivitySpotInRover(rover, rover.getPassengerActivitySpots());
+    }
+    
+    /**
+     * Walk to an available lab activity spot in a rover.
+     * @param rover the rover.
+     */
+    protected void walkToLabActivitySpotInRover(Rover rover) {
+        walkToActivitySpotInRover(rover, rover.getLabActivitySpots());
+    }
+    
+    /**
+     * Walk to an available sick bay activity spot in a rover.
+     * @param rover the rover.
+     */
+    protected void walkToSickBayActivitySpotInRover(Rover rover) {
+        walkToActivitySpotInRover(rover, rover.getSickBayActivitySpots());
+    }
+    
+    /**
+     * Walk to an available activity spot in a rover from a list of activity spots.
+     * @param rover the rover.
+     * @param activitySpots list of activity spots.
+     */
+    private void walkToActivitySpotInRover(Rover rover, List<Point2D> activitySpots) {
+        
+        // Determine available operator activity spots.
+        Point2D activitySpot = null;
+        if ((activitySpots != null) && (activitySpots.size() > 0)) {
+            
+            List<Point2D> availableSpots = new ArrayList<Point2D>();
+            Iterator<Point2D> i = activitySpots.iterator();
+            while (i.hasNext()) {
+                Point2D spot = i.next();
+                Point2D localSpot = LocalAreaUtil.getLocalRelativeLocation(spot.getX(), spot.getY(), rover);
+                if (isActivitySpotAvailable(rover, localSpot)) {
+                    availableSpots.add(localSpot);
+                }
+            }
+            
+            // Randomly select an activity spot from available spots.
+            if (availableSpots.size() > 0) {
+                activitySpot = availableSpots.get(RandomUtil.getRandomInt(availableSpots.size() - 1));
+            }
+        }
+        
+        walkToActivitySpotInRover(rover, activitySpot);
+    }
+    
+    /**
+     * Checks if an activity spot is available (unoccupied).
+     * @param rover the rover.
+     * @param activitySpot the activity spot (local-relative)
+     * @return true if activity spot is unoccupied.
+     */
+    private boolean isActivitySpotAvailable(Rover rover, Point2D activitySpot) {
+        
+        boolean result = true;
+        
+        // Check all crew members other than person doing task.
+        Iterator<Person> i = rover.getCrew().iterator();
+        while (i.hasNext()) {
+            Person crewmember = i.next();
+            if (!crewmember.equals(person)) {
+                
+                // Check if crew member's location is very close to activity spot.
+                Point2D crewmemberLoc = new Point2D.Double(crewmember.getXLocation(), crewmember.getYLocation());
+                if (LocalAreaUtil.areLocationsClose(activitySpot, crewmemberLoc)) {
+                    result = false;
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
      * Walk to an available activity spot in a rover.
      * @param rover the destination rover.
      * @param activitySpot the activity spot as a Point2D object.
      */
-    protected void walkToActivitySpotInVehicle(Rover rover, Point2D activitySpot) {
+    private void walkToActivitySpotInRover(Rover rover, Point2D activitySpot) {
         
         if (activitySpot != null) {
             
@@ -721,11 +810,9 @@ implements Serializable, Comparable<Task> {
         // If person is in a vehicle, walk to random location within vehicle.
         else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
             
-            // Walk to random location within rover.
+            // Walk to a random location within rover if possible.
             if (person.getVehicle() instanceof Rover) {
-                Rover rover = (Rover) person.getVehicle();
-                
-                walkToRandomLocInRover(rover);
+                walkToRandomLocInRover((Rover) person.getVehicle());
             }
         }
     }

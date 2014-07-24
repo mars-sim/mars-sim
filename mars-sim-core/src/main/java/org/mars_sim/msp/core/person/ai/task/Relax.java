@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,6 +20,7 @@ import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
  * The Relax class is a simple task that implements resting and doing nothing for a while.
@@ -51,18 +52,33 @@ implements Serializable {
 				RandomUtil.getRandomDouble(40D));
 
 		// If person is in a settlement, try to find a place to relax.
+		boolean walkSite = false;
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {      	
 			try {
 				Building recBuilding = getAvailableRecreationBuilding(person);
 				if (recBuilding != null) {
 					// Walk to recreation building.
 				    walkToActivitySpotInBuilding(recBuilding);
+				    walkSite = true;
 				}
 			}
 			catch (Exception e) {
 				logger.log(Level.SEVERE,"Relax.constructor(): " + e.getMessage());
 				endTask();
 			}
+		}
+		
+		if (!walkSite) {
+		    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If person is in rover, walk to passenger activity spot.
+                if (person.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                }
+            }
+		    else {
+                // Walk to random location.
+                walkToRandomLocation();
+            }
 		}
 
 		// Initialize phase

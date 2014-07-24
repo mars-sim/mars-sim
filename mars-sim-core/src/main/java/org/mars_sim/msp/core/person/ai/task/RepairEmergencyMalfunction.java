@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -13,19 +13,19 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.mars_sim.msp.core.LifeSupport;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
 import org.mars_sim.msp.core.person.EventType;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * The RepairEmergencyMalfunction class is a task to repair an emergency malfunction.
@@ -61,17 +61,14 @@ implements Repair, Serializable {
         super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
-
-		// Add person to malfunctioning building if necessary.
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-	        if (entity != null) {
-	         // Add person to location of malfunction if possible.
-	            addPersonToMalfunctionLocation(entity);
-	        }
-	        else {
-	            endTask();
-			}
-		}
+		
+        if (entity != null) {
+            // Add person to location of malfunction if possible.
+            addPersonToMalfunctionLocation(entity);
+        }
+        else {
+            endTask();
+        }
 
 		// Create starting task event if needed.
 		if (getCreateEvents()) {
@@ -202,7 +199,7 @@ implements Repair, Serializable {
     
     /**
      * Adds the person to building if malfunctionable is a building with life support.
-     * Otherwise does nothing.
+     * Otherwise walk to random location.
      * @param malfunctionable the malfunctionable the person is repairing.
      */
     private void addPersonToMalfunctionLocation(Malfunctionable malfunctionable) {
@@ -210,12 +207,17 @@ implements Repair, Serializable {
         boolean isWalk = false;
         if (malfunctionable instanceof Building) {
             Building building = (Building) malfunctionable;
-            if (building instanceof LifeSupport) {
+            if (building.hasFunction(BuildingFunction.LIFE_SUPPORT)) {
 
                 // Walk to malfunctioning building.
                 walkToRandomLocInBuilding(building);
                 isWalk = true;
             }
+        }
+        else if (malfunctionable instanceof Rover) {
+            // Walk to malfunctioning rover.
+            walkToRandomLocInRover((Rover) malfunctionable);
+            isWalk = true;
         }
         
         if (!isWalk) {

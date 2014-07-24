@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -101,6 +101,14 @@ implements Serializable {
 
 					// Walk to medical care building.
 					walkToActivitySpotInBuilding(medicalCare.getBuilding());
+				}
+				else if (medical instanceof SickBay) {
+				    Vehicle vehicle = ((SickBay) medical).getVehicle();
+				    if (vehicle instanceof Rover) {
+				        
+				        // Walk to rover sick bay activity spot.
+				        walkToSickBayActivitySpotInRover((Rover) vehicle);
+				    }
 				}
 
 				// Create starting task event if needed.

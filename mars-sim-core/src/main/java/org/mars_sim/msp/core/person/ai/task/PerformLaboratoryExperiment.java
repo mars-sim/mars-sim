@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperiment.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -452,8 +452,7 @@ implements ResearchScientificStudy, Serializable {
             else if (location == LocationSituation.IN_VEHICLE) {
                 
                 // Walk to lab internal location in rover.
-                // TODO Add activity spot for rover lab work.
-                walkToRandomLocInRover((Rover) person.getVehicle());
+                walkToLabActivitySpotInRover((Rover) person.getVehicle());
                 
                 lab.addResearcher();
                 malfunctions = person.getVehicle().getMalfunctionManager();

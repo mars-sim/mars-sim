@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -87,9 +87,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
 		this.startTripTime = startTripTime;
 		this.startTripDistance = startTripDistance;
 		
-		// TODO walk to operation activity spot in vehicle.
+		// Walk to operation activity spot in vehicle.
 		if (vehicle instanceof Rover) {
-		    walkToRandomLocInRover((Rover) vehicle);
+		    walkToOperatorActivitySpotInRover((Rover) vehicle);
 		}
 		
 		addPhase(MOBILIZE);
