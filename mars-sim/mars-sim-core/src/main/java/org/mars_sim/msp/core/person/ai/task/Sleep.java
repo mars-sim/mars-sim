@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -24,6 +24,7 @@ import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LivingAccommodations;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
  * The Sleep class is a task for sleeping.
@@ -61,6 +62,8 @@ class Sleep extends Task implements Serializable {
         super("Sleeping", person, false, false, STRESS_MODIFIER, true, 
                 (250D + RandomUtil.getRandomDouble(80D)));
 
+        boolean walkSite = false;
+        
         // If person is in a settlement, try to find a living accommodations building.
         if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 
@@ -71,8 +74,24 @@ class Sleep extends Task implements Serializable {
                 accommodations = (LivingAccommodations) quarters.getFunction(
                         BuildingFunction.LIVING_ACCOMODATIONS);
                 accommodations.addSleeper();
+                walkSite = true;
             }
         }
+        
+        if (!walkSite) {
+            
+            if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If person is in rover, walk to passenger activity spot.
+                if (person.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                }
+            }
+            else {
+                // Walk to random location.
+                walkToRandomLocation();
+            }
+        }
+        
         
         previousTime = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
         

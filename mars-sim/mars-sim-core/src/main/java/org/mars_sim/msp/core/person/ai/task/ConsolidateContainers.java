@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.resource.AmountResource;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
  * A task for consolidating the resources stored in local containers.
@@ -66,8 +67,16 @@ implements Serializable {
         topInventory = person.getTopContainerUnit().getInventory();
         if (topInventory != null) {
             
-            // Walk to location to consolidate containers.
-            walkToRandomLocation();
+            if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                // If person is in rover, walk to passenger activity spot.
+                if (person.getVehicle() instanceof Rover) {
+                    walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                }
+            }
+            else {
+                // Walk to location to consolidate containers.
+                walkToRandomLocation();
+            }
         }
         else {
             logger.severe("A top inventory could not be determined for consolidating containers for " + 

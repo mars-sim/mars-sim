@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Rover.java
- * @version 3.06 2014-05-10
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -14,8 +14,10 @@ import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 /** 
  * The Rover class represents the rover type of ground vehicle.  It
@@ -40,7 +42,7 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	public static final double LIFE_SUPPORT_RANGE_ERROR_MARGIN = 3.0D;
 
 	// Data members
-	/** The rover's capacity for crewmembers. */
+	/** The rover's capacity for crew members. */
 	private int crewCapacity = 0;
 	/** The rover's airlock. */
 	private Airlock airlock;
@@ -50,6 +52,9 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	private SickBay sickbay;
 	/** The vehicle the rover is currently towing. */
 	private Vehicle towedVehicle;
+	
+	private List<Point2D> labActivitySpots;
+	private List<Point2D> sickBayActivitySpots;
 
     /** 
      * Constructs a Rover object at a given settlement
@@ -93,15 +98,22 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 		inv.addAmountResourceTypeCapacity(rockSamples, config.getCargoCapacity(description, "rock samples"));
 		AmountResource ice = AmountResource.findAmountResource("ice");
 		inv.addAmountResourceTypeCapacity(ice, config.getCargoCapacity(description, "ice"));
-	
-		// Construct sickbay.
-		if (config.hasSickbay(description)) 
+		
+		// Construct sick bay.
+		if (config.hasSickbay(description)) {
 			sickbay = new SickBay(this, config.getSickbayTechLevel(description), config.getSickbayBeds(description));
-		
+			
+			// Initialize sick bay activity spots.
+			sickBayActivitySpots = new ArrayList<Point2D>(config.getSickBayActivitySpots(description));
+		}
+			
 		// Construct lab.
-		if (config.hasLab(description)) 
+		if (config.hasLab(description)) {
 			lab = new MobileLaboratory(1, config.getLabTechLevel(description), config.getLabTechSpecialties(description));
-		
+			
+			// Initialize lab activity spots.
+            labActivitySpots = new ArrayList<Point2D>(config.getLabActivitySpots(description));
+		}
 		// Set rover terrain modifier
 		setTerrainHandlingCapability(0D);
 
@@ -300,20 +312,36 @@ implements Crewable, LifeSupport, Airlockable, Medical, Towing {
 	}
 	
 	/**
-	 * Checks if the rover has a sickbay.
-	 * @return true if sickbay
+     * Gets a list of lab activity spots.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getLabActivitySpots() {
+        return labActivitySpots;
+    }
+	
+	/**
+	 * Checks if the rover has a sick bay.
+	 * @return true if sick bay
 	 */
 	public boolean hasSickBay() {
         return sickbay != null;
 	}
 	
 	/**
-	 * Gets the rover's sickbay.
-	 * @return sickbay
+	 * Gets the rover's sick bay.
+	 * @return sick bay
 	 */
 	public SickBay getSickBay() {
 		return sickbay;
 	}
+	
+	/**
+     * Gets a list of sick bay activity spots.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getSickBayActivitySpots() {
+        return sickBayActivitySpots;
+    }
 	
     /**
      * Checks if a particular operator is appropriate for a vehicle.

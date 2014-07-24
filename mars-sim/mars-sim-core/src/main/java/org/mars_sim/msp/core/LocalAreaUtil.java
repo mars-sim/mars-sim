@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -71,6 +71,13 @@ public class LocalAreaUtil {
         return result;
     }
     
+    /**
+     * Gets a object relative location for a given location and an object.
+     * @param xLoc the X location relative to the local area.
+     * @param yLoc the Y location relative to the local area.
+     * @param boundedObject the local bounded object.
+     * @return Point containing the X and Y locations relative to the object.
+     */
     public static Point2D.Double getObjectRelativeLocation(double xLoc, double yLoc, LocalBoundedObject boundedObject) {
         Point2D.Double result = new Point2D.Double();
         

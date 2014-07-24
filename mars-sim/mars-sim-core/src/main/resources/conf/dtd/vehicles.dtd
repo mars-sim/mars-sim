@@ -1,6 +1,7 @@
 <!ELEMENT vehicle-configuration (vehicle*, rover-name-list)>
 <!ELEMENT vehicle (description?, fuel-efficiency, base-speed, 
-empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?, airlock?)>
+empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?, 
+airlock?, activity?)>
 <!ATTLIST vehicle type CDATA #REQUIRED>
 <!ATTLIST vehicle width CDATA #REQUIRED>
 <!ATTLIST vehicle length CDATA #REQUIRED>
@@ -36,6 +37,11 @@ empty-mass, crew-size?, cargo?, part-attachment?, sickbay?, lab?, airlock?)>
 <!ATTLIST airlock interior-yloc CDATA #REQUIRED>
 <!ATTLIST airlock exterior-xloc CDATA #REQUIRED>
 <!ATTLIST airlock exterior-yloc CDATA #REQUIRED>
+<!ELEMENT activity (activity-spot+)>
+<!ELEMENT activity-spot EMPTY>
+<!ATTLIST activity-spot type CDATA #REQUIRED>
+<!ATTLIST activity-spot xloc CDATA #REQUIRED>
+<!ATTLIST activity-spot yloc CDATA #REQUIRED>
 <!ELEMENT rover-name-list (rover-name*)>
 <!ELEMENT rover-name EMPTY>
 <!ATTLIST rover-name value CDATA #REQUIRED>

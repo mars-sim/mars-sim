@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * VehicleConfig.java
- * @version 3.06 2014-03-06
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.vehicle;
 
+import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -62,6 +63,12 @@ implements Serializable {
     private static final String EXTERIOR_Y_LOCATION = "exterior-yloc";
 	private static final String ROVER_NAME_LIST = "rover-name-list";
 	private static final String ROVER_NAME = "rover-name";
+	private static final String ACTIVITY = "activity";
+	private static final String ACTIVITY_SPOT = "activity-spot";
+	private static final String OPERATOR_TYPE = "operator";
+	private static final String PASSENGER_TYPE = "passenger";
+	private static final String SICKBAY_TYPE = "sickbay";
+	private static final String LAB_TYPE = "lab";
 
 	private Document vehicleDoc;
 	private List<String> roverNames;
@@ -80,7 +87,7 @@ implements Serializable {
 	 */
 	@SuppressWarnings("unchecked")
 	private void parseIfNeccessary() {
-		// only parse when neccessary (i.e. when not yet parsed)
+		// only parse when necessary (i.e. when not yet parsed)
 		if (map == null) {
 			map = new HashMap<String,VehicleDescription>();
 			Element root = vehicleDoc.getRootElement();
@@ -174,6 +181,37 @@ implements Serializable {
 				    v.airlockInteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(INTERIOR_Y_LOCATION));
 				    v.airlockExteriorXLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_X_LOCATION));
                     v.airlockExteriorYLoc = Double.parseDouble(airlockElement.getAttributeValue(EXTERIOR_Y_LOCATION));
+				}
+				
+				// Activity spots.
+				Element activityElement = vehicleElement.getChild(ACTIVITY);
+				if (activityElement != null) {
+				    
+				    // Initialize activity spot lists.
+				    v.operatorActivitySpots = new ArrayList<Point2D>();
+				    v.passengerActivitySpots = new ArrayList<Point2D>();
+				    v.sickBayActivitySpots = new ArrayList<Point2D>();
+				    v.labActivitySpots = new ArrayList<Point2D>();
+				    
+				    for (Object activitySpot : activityElement.getChildren(ACTIVITY_SPOT)) {
+				        Element activitySpotElement = (Element) activitySpot;
+				        double xLoc = Double.parseDouble(activitySpotElement.getAttributeValue(X_LOCATION));
+				        double yLoc = Double.parseDouble(activitySpotElement.getAttributeValue(Y_LOCATION));
+				        Point2D spot = new Point2D.Double(xLoc, yLoc);
+				        String activitySpotType = activitySpotElement.getAttributeValue(TYPE);
+				        if (OPERATOR_TYPE.equals(activitySpotType)) {
+				            v.operatorActivitySpots.add(spot);
+				        }
+				        else if (PASSENGER_TYPE.equals(activitySpotType)) {
+                            v.passengerActivitySpots.add(spot);
+                        }
+				        else if (SICKBAY_TYPE.equals(activitySpotType)) {
+                            v.sickBayActivitySpots.add(spot);
+                        }
+				        else if (LAB_TYPE.equals(activitySpotType)) {
+                            v.labActivitySpots.add(spot);
+                        }
+				    }
 				}
 
 				// and keep results for later use
@@ -435,6 +473,70 @@ implements Serializable {
         parseIfNeccessary();
         return map.get(vehicleType.toLowerCase()).getAirlockExteriorYLoc();
     }
+    
+    /**
+     * Gets a list of operator activity spots for the vehicle.
+     * @param vehicleType the vehicle type.
+     * @return list of activity spots and Point2D objects.
+     */
+    public List<Point2D> getOperatorActivitySpots(String vehicleType) {
+        parseIfNeccessary();
+        VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
+        List<Point2D> result = vehicle.getOperatorActivitySpots();
+        if (result == null) {
+            result = new ArrayList<Point2D>(0);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of passenger activity spots for the vehicle.
+     * @param vehicleType the vehicle type.
+     * @return list of activity spots and Point2D objects.
+     */
+    public List<Point2D> getPassengerActivitySpots(String vehicleType) {
+        parseIfNeccessary();
+        VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
+        List<Point2D> result = vehicle.getPassengerActivitySpots();
+        if (result == null) {
+            result = new ArrayList<Point2D>(0);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of sick bay activity spots for the vehicle.
+     * @param vehicleType the vehicle type.
+     * @return list of activity spots and Point2D objects.
+     */
+    public List<Point2D> getSickBayActivitySpots(String vehicleType) {
+        parseIfNeccessary();
+        VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
+        List<Point2D> result = vehicle.getSickBayActivitySpots();
+        if (result == null) {
+            result = new ArrayList<Point2D>(0);
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of lab activity spots for the vehicle.
+     * @param vehicleType the vehicle type.
+     * @return list of activity spots and Point2D objects.
+     */
+    public List<Point2D> getLabActivitySpots(String vehicleType) {
+        parseIfNeccessary();
+        VehicleDescription vehicle = map.get(vehicleType.toLowerCase());
+        List<Point2D> result = vehicle.getLabActivitySpots();
+        if (result == null) {
+            result = new ArrayList<Point2D>(0);
+        }
+        
+        return result;
+    }
 
 	/**
 	 * Gets a list of rover names.
@@ -495,6 +597,10 @@ implements Serializable {
 		private double airlockInteriorYLoc;
 		private double airlockExteriorXLoc;
 		private double airlockExteriorYLoc;
+		private List<Point2D> operatorActivitySpots;
+		private List<Point2D> passengerActivitySpots;
+		private List<Point2D> sickBayActivitySpots;
+		private List<Point2D> labActivitySpots;
 
 		/**
 		 * get <code>0.0d</code> or capacity for given cargo.
@@ -604,6 +710,21 @@ implements Serializable {
         public final double getAirlockExteriorYLoc() {
             return airlockExteriorYLoc;
         }
+        /** @return the operator activity spots. */
+        public final List<Point2D> getOperatorActivitySpots() {
+            return operatorActivitySpots;
+        }
+        /** @return the passenger activity spots. */
+        public final List<Point2D> getPassengerActivitySpots() {
+            return passengerActivitySpots;
+        }
+        /** @return the sick bay activity spots. */
+        public final List<Point2D> getSickBayActivitySpots() {
+            return sickBayActivitySpots;
+        }
+        /** @return the lab activity spots. */
+        public final List<Point2D> getLabActivitySpots() {
+            return labActivitySpots;
+        }
 	}
-
 }

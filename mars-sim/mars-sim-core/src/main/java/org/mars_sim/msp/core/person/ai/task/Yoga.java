@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.07 2014-06-22
+ * @version 3.07 2014-07-27
  * @author Sebastien Venot
  */
 
@@ -15,6 +15,7 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /** 
  * The Yoga class is a task for practicing yoga to reduce stress.
@@ -40,8 +41,16 @@ implements Serializable {
         super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(30D));
 
-        // Walk to location to do yoga.
-        walkToRandomLocation();
+        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+            // If person is in rover, walk to passenger activity spot.
+            if (person.getVehicle() instanceof Rover) {
+                walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+            }
+        }
+        else {
+            // Walk to random location.
+            walkToRandomLocation();
+        }
         
         // Initialize phase
         addPhase(DOING_YOGA);

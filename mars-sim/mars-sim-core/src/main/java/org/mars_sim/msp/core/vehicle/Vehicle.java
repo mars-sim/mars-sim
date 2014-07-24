@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Vehicle.java
- * @version 3.06 2014-03-10
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -11,7 +11,10 @@ import java.awt.geom.Point2D;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -82,6 +85,8 @@ public abstract class Vehicle extends Unit implements Serializable,
     private double xLocParked; // Parked X location (meters) from center of settlement.
     private double yLocParked; // Parked Y location (meters) from center of settlement.
     private double facingParked; // Parked facing (degrees clockwise from North).
+    private List<Point2D> operatorActivitySpots; // List of operator activity spots.
+    private List<Point2D> passengerActivitySpots; // List of passenger activity spots
 
     /**
      * Constructor to be used for testing.
@@ -158,14 +163,20 @@ public abstract class Vehicle extends Unit implements Serializable,
 	    // Set base speed.
 	    setBaseSpeed(config.getBaseSpeed(description));
 
-	    // Set the empty mass of the rover.
+	    // Set the empty mass of the vehicle.
 	    setBaseMass(config.getEmptyMass(description));
 	    
-	    // Set the fuel efficiency of the rover.
+	    // Set the fuel efficiency of the vehicle.
 	    fuelEfficiency = config.getFuelEfficiency(getDescription());
 	    
 	    // Set initial parked location and facing at settlement.
 	    determinedSettlementParkedLocationAndFacing();
+	    
+	    // Initialize operator activity spots.
+        operatorActivitySpots = new ArrayList<Point2D>(config.getOperatorActivitySpots(description));
+        
+        // Initialize passenger activity spots.
+        passengerActivitySpots = new ArrayList<Point2D>(config.getPassengerActivitySpots(description));
     }
     
     @Override
@@ -194,24 +205,63 @@ public abstract class Vehicle extends Unit implements Serializable,
     }
     
     /**
+     * Gets a list of operator activity spots.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getOperatorActivitySpots() {
+        return operatorActivitySpots;
+    }
+    
+    /**
+     * Gets a list of passenger activity spots.
+     * @return list of activity spots as Point2D objects.
+     */
+    public List<Point2D> getPassengerActivitySpots() {
+        return passengerActivitySpots;
+    }
+    
+    /**
      * Sets the location and facing of the vehicle when parked at a settlement.
      * @param xLocation the x location (meters from settlement center - West: positive, East: negative).
      * @param yLocation the y location (meters from settlement center - North: positive, South: negative).
      * @param facing (degrees from North clockwise).
      */
     public void setParkedLocation(double xLocation, double yLocation, double facing) {
+        
+        Map<Person, Point2D> currentCrewPositions = getCurrentCrewPositions();
+        
         this.xLocParked = xLocation;
         this.yLocParked = yLocation;
         this.facingParked = facing;
         
         // Set the crew members' (if any) location to vehicle's new parked location.
-        setCrewLocation();
+        setCrewPositions(currentCrewPositions);
+    }
+    
+    private Map<Person, Point2D> getCurrentCrewPositions() {
+        
+        Map<Person, Point2D> result = null;
+        
+        // Record current object-relative crew positions if vehicle is crewable.
+        if (this instanceof Crewable) {
+            Crewable crewable = (Crewable) this;
+            result = new HashMap<Person, Point2D>(crewable.getCrewNum());
+            Iterator<Person> i = ((Crewable) this).getCrew().iterator();
+            while (i.hasNext()) {
+                Person crewmember = i.next();
+                Point2D crewPos = LocalAreaUtil.getObjectRelativeLocation(crewmember.getXLocation(), 
+                        crewmember.getYLocation(), this);
+                result.put(crewmember, crewPos);
+            }
+        }
+        
+        return result;
     }
     
     /**
-     * Sets the location of all crew members (if any) to the vehicle's location.
+     * Sets the positions of all crew members (if any) to the vehicle's location.
      */
-    private void setCrewLocation() {
+    private void setCrewPositions(Map<Person, Point2D> currentCrewPositions) {
         
         // Only move crew if vehicle is Crewable.
         if (this instanceof Crewable) {
@@ -219,11 +269,9 @@ public abstract class Vehicle extends Unit implements Serializable,
             while (i.hasNext()) {
                 Person crewmember = i.next();
                 
-                // TODO: Deal with crew members at particular action spots within vehicle.
-                
-                Point2D.Double vehicleLoc = LocalAreaUtil.getRandomInteriorLocation(this);
-                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(vehicleLoc.getX(), 
-                        vehicleLoc.getY(), this);
+                Point2D currentCrewPos = currentCrewPositions.get(crewmember);
+                Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(currentCrewPos.getX(), 
+                        currentCrewPos.getY(), this);
                 crewmember.setXLocation(settlementLoc.getX());
                 crewmember.setYLocation(settlementLoc.getY());
             }

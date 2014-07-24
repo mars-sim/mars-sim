@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.07 2014-06-24
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 
@@ -22,6 +22,7 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
+import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -30,6 +31,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -73,8 +75,17 @@ implements Serializable {
                     walkToRandomLocInBuilding((Building) entity);
                 }
                 else {
-                    // Walk to random location.
-                    walkToRandomLocation();
+                    
+                    if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
+                        // If person is in rover, walk to passenger activity spot.
+                        if (person.getVehicle() instanceof Rover) {
+                            walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
+                        }
+                    }
+                    else {
+                        // Walk to random location.
+                        walkToRandomLocation();
+                    }
                 }
             }
             else {

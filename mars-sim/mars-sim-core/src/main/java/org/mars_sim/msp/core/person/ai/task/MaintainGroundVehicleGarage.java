@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -89,7 +89,7 @@ implements Serializable {
         			walkToActivitySpotInBuilding(building);
         		}
         		catch (Exception e) {
-        		    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
+        		    logger.log(Level.SEVERE, "MaintainGroundVehicleGarage.constructor: " + e.getMessage(), e);
         		}
         	}
         	else {
@@ -111,7 +111,7 @@ implements Serializable {
         				} 
         			}
         			catch (Exception e) {
-        			    logger.log(Level.SEVERE,"MaintainGroundVehicleGarage.constructor: ",e);
+        			    logger.log(Level.SEVERE, "MaintainGroundVehicleGarage.constructor: " + e.getMessage(), e);
         			}
         		}
 			}

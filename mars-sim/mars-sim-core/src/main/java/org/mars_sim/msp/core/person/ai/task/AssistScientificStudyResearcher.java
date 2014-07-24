@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -30,6 +30,7 @@ import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.LifeSupport;
 import org.mars_sim.msp.core.vehicle.Crewable;
+import org.mars_sim.msp.core.vehicle.Rover;
 
 /**
  * Task for assisting a scientific study researcher.
@@ -82,6 +83,12 @@ implements Serializable {
                         
                         // Walk to researcher
                         walkToActivitySpotInBuilding(researcherBuilding);
+                    }
+                }
+                else if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {            
+                    // If person is in rover, walk to passenger activity spot.
+                    if (person.getVehicle() instanceof Rover) {
+                        walkToPassengerActivitySpotInRover((Rover) person.getVehicle());
                     }
                 }
                 else {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-07-24
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -76,7 +76,7 @@ implements Serializable {
 
         // Initialize data members
         setDescription("Cooking " + getMealName());
-
+        
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);
         if (kitchenBuilding != null) {
