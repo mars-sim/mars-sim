@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LocalAreaUtil.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-07
  * @author Scott Davis
  */
 
@@ -335,16 +335,17 @@ public class LocalAreaUtil {
      * construction site at a settlement.
      * @param line the line.
      * @param coordinates the global coordinate location to check.
+     * @param useCache true if caching should be used.
      * @return true if line path doesn't collide with anything.
      */
-    public static boolean checkLinePathCollision(Line2D line, Coordinates coordinates) {
+    public static boolean checkLinePathCollision(Line2D line, Coordinates coordinates, boolean useCache) {
         
         boolean result = true;
         
         // Create line path
         Path2D linePath = createLinePath(line);
         
-        result = checkPathCollision(null, linePath, coordinates, true);
+        result = checkPathCollision(null, linePath, coordinates, useCache);
         
         return result;
     }
@@ -464,6 +465,7 @@ public class LocalAreaUtil {
      * @param object the object being checked (may be null if no object).
      * @param path the path to check.
      * @param coordinates the global coordinate location to check.
+     * @param useCache true if caching should be used.
      * @return true if path doesn't collide with anything.
      */
     private static boolean checkPathCollision(Object object, Path2D path, Coordinates coordinates, boolean useCache) {
