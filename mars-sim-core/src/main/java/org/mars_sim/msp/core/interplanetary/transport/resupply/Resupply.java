@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.06 2014-04-11
+ * @version 3.07 2014-08-07
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -552,14 +552,17 @@ implements Serializable, Transportable {
         // Try to find a connection between an inhabitable building without access to airlock and
         // another inhabitable building with access to an airlock.
         if (settlement.getAirlockNum() > 0) {
+            
+            Building closestStartingBuilding = null;
+            Building closestEndingBuilding = null;
+            double leastDistance = Double.MAX_VALUE;
+            
             Iterator<Building> i = inhabitableBuildings.iterator();
             while (i.hasNext()) {
                 Building startingBuilding = i.next();
                 if (!settlement.hasWalkableAvailableAirlock(startingBuilding)) {
 
                     // Find a different inhabitable building that has walkable access to an airlock.
-                    double leastDistance = Double.MAX_VALUE;
-                    Building endingBuilding = null;
                     Iterator<Building> k = inhabitableBuildings.iterator();
                     while (k.hasNext()) {
                         Building building = k.next();
@@ -569,56 +572,113 @@ implements Serializable, Transportable {
                                         startingBuilding.getYLocation(), building.getXLocation(), 
                                         building.getYLocation());
                                 if ((distance < leastDistance) && (distance >= 1D)) {
-                                    endingBuilding = building;
-                                    leastDistance = distance;
+                                    
+                                    // Check that new building can be placed between the two buildings.
+                                    if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
+                                            building) != null) {
+                                        closestStartingBuilding = startingBuilding;
+                                        closestEndingBuilding = building;
+                                        leastDistance = distance;
+                                    }
                                 }
                             }
                         }
                     }
+                }
                     
-                    if (endingBuilding != null) {
-                        
-                        // Determine new location/length between the two buildings.
-                        newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
-                                endingBuilding);
-                        break;
-                    }
+                if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
+
+                    // Determine new location/length between the two buildings.
+                    newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding, 
+                            closestEndingBuilding);
                 }
             }
         }
         
-        // Try to find valid connection location between two inhabitable buildings that are not directly connected.
+        // Try to find valid connection location between two inhabitable buildings with no joining walking path.
         if (newTemplate == null) {
+            
+            Building closestStartingBuilding = null;
+            Building closestEndingBuilding = null;
+            double leastDistance = Double.MAX_VALUE;
+            
             Iterator<Building> j = inhabitableBuildings.iterator();
             while (j.hasNext()) {
                 Building startingBuilding = j.next();
                 
                 // Find a different inhabitable building.
-                double leastDistance = Double.MAX_VALUE;
-                Building endingBuilding = null;
+                Iterator<Building> k = inhabitableBuildings.iterator();
+                while (k.hasNext()) {
+                    Building building = k.next();
+                    boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(startingBuilding, building);
+                    if (!building.equals(startingBuilding) && !hasWalkingPath) {
+                        
+                        double distance = Point2D.distance(startingBuilding.getXLocation(), 
+                                startingBuilding.getYLocation(), building.getXLocation(), 
+                                building.getYLocation());
+                        if ((distance < leastDistance) && (distance >= 1D)) {
+                            
+                            // Check that new building can be placed between the two buildings.
+                            if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
+                                    building) != null) {
+                                closestStartingBuilding = startingBuilding;
+                                closestEndingBuilding = building;
+                                leastDistance = distance;
+                            }
+                        }
+                    }
+                }
+            }
+                
+            if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
+
+                // Determine new location/length between the two buildings.
+                newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding, 
+                        closestEndingBuilding);
+            }
+        }
+        
+        // Try to find valid connection location between two inhabitable buildings that are not directly connected.
+        if (newTemplate == null) {
+            
+            Building closestStartingBuilding = null;
+            Building closestEndingBuilding = null;
+            double leastDistance = Double.MAX_VALUE;
+            
+            Iterator<Building> j = inhabitableBuildings.iterator();
+            while (j.hasNext()) {
+                Building startingBuilding = j.next();
+                
+                // Find a different inhabitable building.
                 Iterator<Building> k = inhabitableBuildings.iterator();
                 while (k.hasNext()) {
                     Building building = k.next();
                     boolean directlyConnected = (settlement.getBuildingConnectorManager().getBuildingConnections(
                             startingBuilding, building).size() > 0);
                     if (!building.equals(startingBuilding) && !directlyConnected) {
+                        
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
                                 building.getYLocation());
-                        if ((distance < leastDistance) && (distance >= 1D)) {
-                            endingBuilding = building;
-                            leastDistance = distance;
+                        if ((distance < leastDistance) && (distance >= 5D)) {
+                            
+                            // Check that new building can be placed between the two buildings.
+                            if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
+                                    building) != null) {
+                                closestStartingBuilding = startingBuilding;
+                                closestEndingBuilding = building;
+                                leastDistance = distance;
+                            }
                         }
                     }
                 }
+            }
                 
-                if (endingBuilding != null) {
-                    
-                    // Determine new location/length between the two buildings.
-                    newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
-                            endingBuilding);
-                    break;
-                }
+            if ((closestStartingBuilding != null) && (closestEndingBuilding != null)) {
+
+                // Determine new location/length between the two buildings.
+                newTemplate = positionConnectorBetweenTwoBuildings(newBuildingType, closestStartingBuilding, 
+                        closestEndingBuilding);
             }
         }
         
@@ -760,7 +820,7 @@ implements Serializable, Transportable {
                     // Check line rect between positions for obstacle collision.
                     Line2D line = new Line2D.Double(firstBuildingPos.getX(), firstBuildingPos.getY(), 
                             secondBuildingPos.getX(), secondBuildingPos.getY());
-                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates());
+                    boolean clearPath = LocalAreaUtil.checkLinePathCollision(line, settlement.getCoordinates(), false);
                     if (clearPath) {
                         validLines.add(new Line2D.Double(firstBuildingPos, secondBuildingPos));
                     }
