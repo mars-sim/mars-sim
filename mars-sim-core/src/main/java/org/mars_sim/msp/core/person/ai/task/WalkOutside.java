@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * WalkOutside.java
- * @version 3.06 2014-04-08
+ * @version 3.07 2014-08-07
  * @author Scott Davis
  */
 
@@ -143,7 +143,7 @@ implements Serializable {
         // Check if direct walking path to destination is free of obstacles.
         Line2D line = new Line2D.Double(startXLocation, startYLocation, destinationXLocation, 
                 destinationYLocation);
-        boolean freePath = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates());
+        boolean freePath = LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
         
         if (freePath) {
             result.add(destinationLoc);
@@ -291,7 +291,7 @@ implements Serializable {
         
         Line2D line = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), endLoc.getX(), 
                 endLoc.getY());
-        return LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates());
+        return LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true);
     }
     
     /**
@@ -347,7 +347,7 @@ implements Serializable {
                 // remove this location from path.
                 Line2D line = new Line2D.Double(prevLoc.getX(), prevLoc.getY(), 
                         nextLoc.getX(), nextLoc.getY());
-                if (LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates())) {
+                if (LocalAreaUtil.checkLinePathCollision(line, person.getCoordinates(), true)) {
                     i.remove();
                 }
             }
@@ -395,7 +395,7 @@ implements Serializable {
         Point2D northLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() + NEIGHBOR_DISTANCE);
         Line2D northLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), northLoc.getX(), 
                 northLoc.getY());
-        if (LocalAreaUtil.checkLinePathCollision(northLine, person.getCoordinates())) {
+        if (LocalAreaUtil.checkLinePathCollision(northLine, person.getCoordinates(), true)) {
             result.add(northLoc);
         }
 
@@ -403,7 +403,7 @@ implements Serializable {
         Point2D eastLoc = new Point2D.Double(currentLoc.getX() - NEIGHBOR_DISTANCE, currentLoc.getY());
         Line2D eastLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), eastLoc.getX(), 
                 eastLoc.getY());
-        if (LocalAreaUtil.checkLinePathCollision(eastLine, person.getCoordinates())) {
+        if (LocalAreaUtil.checkLinePathCollision(eastLine, person.getCoordinates(), true)) {
             result.add(eastLoc);
         }
 
@@ -411,7 +411,7 @@ implements Serializable {
         Point2D southLoc = new Point2D.Double(currentLoc.getX(), currentLoc.getY() - NEIGHBOR_DISTANCE);
         Line2D southLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), southLoc.getX(), 
                 southLoc.getY());
-        if (LocalAreaUtil.checkLinePathCollision(southLine, person.getCoordinates())) {
+        if (LocalAreaUtil.checkLinePathCollision(southLine, person.getCoordinates(), true)) {
             result.add(southLoc);
         }
 
@@ -419,7 +419,7 @@ implements Serializable {
         Point2D westLoc = new Point2D.Double(currentLoc.getX() + NEIGHBOR_DISTANCE, currentLoc.getY());
         Line2D westLine = new Line2D.Double(currentLoc.getX(), currentLoc.getY(), westLoc.getX(), 
                 westLoc.getY());
-        if (LocalAreaUtil.checkLinePathCollision(westLine, person.getCoordinates())) {
+        if (LocalAreaUtil.checkLinePathCollision(westLine, person.getCoordinates(), true)) {
             result.add(westLoc);
         }
 
