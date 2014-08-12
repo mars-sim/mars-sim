@@ -49,36 +49,36 @@ public class TestLocalAreaUtil extends TestCase {
         building.setFacing(0D);
         settlement.getBuildingManager().addBuilding(building, false);
         
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 0D, 10D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 0D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 0D, 5D, 10D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 10D, -5D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 0D, 10D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 0D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 0D, 5D, 10D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 10D, -5D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc, true));
         
         building.setFacing(45D);
         
         // Clear obstacle cache.
         LocalAreaUtil.clearObstacleCache();
         
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 0D, 10D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 0D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 0D, 5D, 10D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 10D, -5D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 0D, 10D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 0D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -5D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 0D, 5D, 10D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 10D, -5D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 10D, -6D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 10D, 6D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 6D, 10D, 6D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, -6D, 10D, -6D), loc, true));
         
         building.setFacing(0D);
         building.setXLocation(10D);
@@ -86,18 +86,18 @@ public class TestLocalAreaUtil extends TestCase {
         // Clear obstacle cache.
         LocalAreaUtil.clearObstacleCache();
         
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 20D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(20D, 0D, 10D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, -5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(15D, 0D, 15D, 10D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(4D, 10D, 4D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(16D, 10D, 16D, 0D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 6D, 20D, 6D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -6D, 20D, -6D), loc));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 0D, 20D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(20D, 0D, 10D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -5D, 20D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 5D, 20D, -5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(15D, 0D, 15D, 10D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(4D, 10D, 4D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(16D, 10D, 16D, 0D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 6D, 20D, 6D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, -6D, 20D, -6D), loc, true));
         
         building.setXLocation(0D);
         building.setYLocation(10D);
@@ -105,18 +105,18 @@ public class TestLocalAreaUtil extends TestCase {
         // Clear obstacle cache.
         LocalAreaUtil.clearObstacleCache();
         
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 10D, 20D, 0D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 10D, 0D, 10D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 15D, 10D, 15D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 15D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 15D, 10D, 5D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 20D), loc));
-        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 20D, -5D, 10D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 20D, -6D, 10D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 20D, 6D, 10D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 16D, 10D, 16D), loc));
-        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 4D, 10D, 4D), loc));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 10D, 20D, 0D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(10D, 10D, 0D, 10D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 15D, 10D, 15D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 5D, 10D, 15D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 15D, 10D, 5D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(5D, 10D, 5D, 20D), loc, true));
+        assertFalse(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-5D, 20D, -5D, 10D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(-6D, 20D, -6D, 10D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(6D, 20D, 6D, 10D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 16D, 10D, 16D), loc, true));
+        assertTrue(LocalAreaUtil.checkLinePathCollision(new Line2D.Double(0D, 4D, 10D, 4D), loc, true));
         
         // Clear obstacle cache.
         LocalAreaUtil.clearObstacleCache();
