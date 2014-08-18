@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.RandomUtil;
@@ -37,15 +36,12 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The duration of the task is 40 millisols.
  * Note: Eating a meal reduces hunger to 0.
  */
-class EatMeal 
+public class EatMeal 
 extends Task 
 implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(EatMeal.class.getName());
 
 	// TODO Task phase should be an enum
 	private static final String EATING = "Eating";
@@ -107,34 +103,6 @@ implements Serializable {
 		// Initialize task phase.
 		addPhase(EATING);
 		setPhase(EATING);
-	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-
-		double result = person.getPhysicalCondition().getHunger() - 250D;
-		if (result < 0D) result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.OUTSIDE) result = 0D;
-
-		Building building = getAvailableDiningBuilding(person);
-		if (building != null) {
-			result *= Task.getCrowdingProbabilityModifier(person, building);
-			result *= Task.getRelationshipModifier(person, building);
-		}
-
-		// Check if there's a cooked meal at a local kitchen.
-		if (getKitchenWithFood(person) != null) result *= 5D;
-		else {
-			// Check if there is food available to eat.
-			if (!isFoodAvailable(person)) result = 0D;
-		}
-
-		return result;
 	}
 	
     @Override
@@ -205,7 +173,7 @@ implements Serializable {
 	 * @return available dining building
 	 * @throws BuildingException if error finding dining building.
 	 */
-	private static Building getAvailableDiningBuilding(Person person) {
+	public static Building getAvailableDiningBuilding(Person person) {
 
 		Building result = null;
 
@@ -232,7 +200,7 @@ implements Serializable {
 	 * @param person the person to check for
 	 * @return the kitchen or null if none.
 	 */
-	private static Cooking getKitchenWithFood(Person person) {
+	public static Cooking getKitchenWithFood(Person person) {
 		Cooking result = null;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -255,7 +223,7 @@ implements Serializable {
 	 * @param person the person to check.
 	 * @return true if food is available.
 	 */
-	private static boolean isFoodAvailable(Person person) {
+	public static boolean isFoodAvailable(Person person) {
 		boolean result = false;
 		Unit containerUnit = person.getContainerUnit();
 		if (containerUnit != null) {

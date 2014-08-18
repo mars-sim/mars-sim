@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Person.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
-import org.mars_sim.msp.core.structure.building.function.MedicalCare;
 import org.mars_sim.msp.core.time.EarthClock;
 import org.mars_sim.msp.core.vehicle.Crewable;
 import org.mars_sim.msp.core.vehicle.Medical;
@@ -269,24 +268,27 @@ implements VehicleOperator, Serializable {
 	 * @param time amount of time passing (in millisols).
 	 */
 	public void timePassing(double time) {
-
+	    
 		// If Person is dead, then skip
 		if (health.getDeathDetails() == null) {
 
 			PersonConfig config = SimulationConfig.instance()
 					.getPersonConfiguration();
 			LifeSupport support = getLifeSupport();
-
+            
 			// Pass the time in the physical condition first as this may
 			// result in death.
 			if (health.timePassing(time, support, config)) {
-				// Mental changes with time passing.
+				
+			    // Mental changes with time passing.
 				mind.timePassing(time);
-			} else {
+			} 
+			else {
 				// Person has died as a result of physical condition
 				setDead();
 			}
 		}
+		
 	}
 
 	/**

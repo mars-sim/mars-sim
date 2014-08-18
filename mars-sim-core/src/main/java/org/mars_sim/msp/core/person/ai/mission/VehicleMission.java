@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-08-13
  * @author Scott Davis
  */
 
@@ -847,7 +847,7 @@ implements UnitListener {
      * @param settlement the settlement.
      * @return true if embarking missions.
      */
-    protected static boolean hasEmbarkingMissions(Settlement settlement) {
+    public static boolean hasEmbarkingMissions(Settlement settlement) {
         boolean result = false;
 
         MissionManager manager = Simulation.instance().getMissionManager();

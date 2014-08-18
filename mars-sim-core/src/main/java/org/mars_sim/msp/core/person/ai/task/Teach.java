@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
@@ -37,9 +36,6 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(Teach.class.getName());
 
 	// Task phase
 	private static final String TEACHING = "Teaching";
@@ -116,38 +112,6 @@ implements Serializable {
         setPhase(TEACHING);
     }
 
-    /**
-     * Gets the weighted probability that a person might perform this task. It should return a 0 
-     * if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        // Find potential students.
-        Collection<Person> potentialStudents = getBestStudents(person);
-        if (potentialStudents.size() > 0) {
-            result = 50D;
-
-            // If teacher is in a settlement, use crowding modifier.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                Person student = (Person) potentialStudents.toArray()[0];
-                Building building = BuildingManager.getBuilding(student);
-                if (building != null) {
-                    result *= Task.getCrowdingProbabilityModifier(person,
-                            building);
-                    result *= Task.getRelationshipModifier(person, building);
-                } 
-                else {
-                    result = 0D;
-                }
-            }
-        }
-
-        return result;
-    }
-
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -218,7 +182,7 @@ implements Serializable {
      * @param teacher the teacher looking for students.
      * @return collection of the best students
      */
-    private static Collection<Person> getBestStudents(Person teacher) {
+    public static Collection<Person> getBestStudents(Person teacher) {
         Collection<Person> result = new ConcurrentLinkedQueue<Person>();
         Collection<Person> students = getTeachableStudents(teacher);
 

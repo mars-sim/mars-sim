@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -89,35 +89,12 @@ implements Serializable {
         setPhase(CONSOLIDATING);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation() || 
-                LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
-        
-            // Check if there are local containers that need resource consolidation.
-            if (needResourceConsolidation(person)) {
-                result = 10D;
-            }
-        
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-        }
-
-        return result;
-    }
-    
     /**
      * Checks if containers need resource consolidation at the person's location.
      * @param person the person.
      * @return true if containers need resource consolidation.
      */
-    private static boolean needResourceConsolidation(Person person) {
+    public static boolean needResourceConsolidation(Person person) {
         boolean result = false;
         
         Set<AmountResource> partialResources = new HashSet<AmountResource>();

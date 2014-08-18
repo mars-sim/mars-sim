@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -98,50 +98,6 @@ implements Serializable {
         // Initialize phase
         addPhase(REVIEW);
         setPhase(REVIEW);
-    }
-    
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        // Get all studies in the peer review phase.
-        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-        Iterator<ScientificStudy> i = studyManager.getOngoingStudies().iterator();
-        while (i.hasNext()) {
-            ScientificStudy study = i.next();
-            if (ScientificStudy.PEER_REVIEW_PHASE.equals(study.getPhase())) {
-                
-                // Check that person isn't a researcher in the study.
-                if (!person.equals(study.getPrimaryResearcher()) && 
-                        !study.getCollaborativeResearchers().keySet().contains(person)) {
-                
-                    // If person's current job is related to study primary science, 
-                    // add chance to review.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-						ScienceType jobScience = ScienceType.getJobScience(job);
-						if (study.getScience().equals(jobScience)) {
-						    result += 50D;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(PeerReviewStudyPaper.class);
-        }
-        
-        return result;
     }
     
     /**

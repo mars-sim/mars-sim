@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.SalvageBuilding;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -67,7 +66,7 @@ implements Serializable {
 	final public static String SALVAGE_PHASE = "Salvage";
 
 	// Number of mission members.
-	private static final int MIN_PEOPLE = 3;
+	public static final int MIN_PEOPLE = 3;
 	private static final int MAX_PEOPLE = 10;
 
 	/** Time (millisols) required to prepare construction site for salvaging stage. */
@@ -291,79 +290,6 @@ implements Serializable {
     }
 
     /**
-     * Gets the weighted probability that a given person would start this mission.
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-        double result = 0D;
-
-        // Check if person is in a settlement.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-
-            // Check if available light utility vehicles.
-            boolean reservableLUV = isLUVAvailable(settlement);
-
-            // Check if enough available people at settlement for mission.
-            int availablePeopleNum = 0;
-            Iterator<Person> i = settlement.getInhabitants().iterator();
-            while (i.hasNext()) {
-                Person member = i.next();
-                boolean noMission = !member.getMind().hasActiveMission();
-                boolean isFit = !member.getPhysicalCondition()
-                        .hasSeriousMedicalProblems();
-                if (noMission && isFit) {
-                    availablePeopleNum++;
-                }
-            }
-            boolean enoughPeople = (availablePeopleNum >= MIN_PEOPLE);
-            
-            // No salvaging goods until after the first month of the simulation.
-        	MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-        	MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-        	double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-        	double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-        	boolean firstMonth = (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG);
-            
-            // Check if settlement has construction override flag set.
-            boolean constructionOverride = settlement.getConstructionOverride();
-
-            if (reservableLUV && enoughPeople && !constructionOverride && !firstMonth) {
-                try {
-                    int constructionSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.CONSTRUCTION);
-                    SalvageValues values = settlement.getConstructionManager()
-                            .getSalvageValues();
-                    double salvageProfit = values
-                            .getSettlementSalvageProfit(constructionSkill);
-                    result = salvageProfit;
-                    if (result > 10D) {
-                        result = 10D;
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE,
-                            "Error getting salvage construction site.", e);
-                }
-            }
-
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < MIN_PEOPLE) {
-            	result = 0D;
-            }
-            
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(BuildingSalvageMission.class);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Determines the most profitable salvage construction site at the settlement.
      * @param settlement the settlement
      * @param constructionSkill the architect's construction skill.
@@ -567,7 +493,7 @@ implements Serializable {
      * @param settlement the settlement to check.
      * @return true if LUV available.
      */
-    private static boolean isLUVAvailable(Settlement settlement) {
+    public static boolean isLUVAvailable(Settlement settlement) {
         boolean result = false;
 
         Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();

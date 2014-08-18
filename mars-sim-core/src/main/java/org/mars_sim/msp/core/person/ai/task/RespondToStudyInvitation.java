@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitation.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -102,46 +102,14 @@ implements Serializable {
         // Initialize phase
         addPhase(RESPONDING_INVITATION);
         setPhase(RESPONDING_INVITATION);
-    }
-    
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        List<ScientificStudy> invitedStudies = manager.getOpenInvitationStudies(person);
-        if (invitedStudies.size() > 0) {
-            result = 50D;
-        }
-        
-        // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= Task.getRelationshipModifier(person, adminBuilding);
-            }
-        }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(RespondToStudyInvitation.class);
-        }
-        
-        return result;
-    }
+	}
     
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
      * @return available administration building or null if none.
      */
-    private static Building getAvailableAdministrationBuilding(Person person) {
+    public static Building getAvailableAdministrationBuilding(Person person) {
 
         Building result = null;
 

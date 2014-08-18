@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -198,31 +198,6 @@ implements Serializable {
         addPhase(ENTERING_ROVER_GARAGE);
         
         setPhase(getWalkingStepPhase());
-    }
-    
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        // If person is outside, give high probability to walk to emergency airlock location.
-        if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
-            result = 1000D;
-        }
-        else if (LocationSituation.IN_SETTLEMENT == person.getLocationSituation()) {
-            // If person is inside a settlement building, may walk to a random location within settlement.
-            result = 10D;
-        }
-        else if (LocationSituation.IN_VEHICLE == person.getLocationSituation()) {
-            // If person is inside a rover, may walk to random location within rover.
-            result = 10D;
-        }
-        
-        return result;
     }
     
     /**

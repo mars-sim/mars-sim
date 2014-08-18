@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMission.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -59,7 +59,7 @@ implements Serializable {
 	final public static String RESEARCH_SITE = "Researching Field Site";
 
 	/** Minimum number of people to do mission. */
-	private final static int MIN_PEOPLE = 2;
+	public final static int MIN_PEOPLE = 2;
 
 	/** Amount of time to field a site. */
 	public final static double FIELD_SITE_TIME = 1000D;
@@ -174,90 +174,6 @@ implements Serializable {
 		// Check if vehicle can carry enough supplies for the mission.
 		if (hasVehicle() && !isVehicleLoadable()) 
 			endMission("Vehicle is not loadable. (BiologyStudyFieldMission)");
-	}
-
-	/** 
-	 * Gets the weighted probability that a given person would start this mission.
-	 * @param person the given person
-	 * @return the weighted probability
-	 */
-	public static double getNewMissionProbability(Person person) {
-
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = person.getSettlement();
-
-			// Check if a mission-capable rover is available.
-			boolean reservableRover = RoverMission.areVehiclesAvailable(settlement, false);
-
-			// Check if available backup rover.
-			boolean backupRover = hasBackupRover(settlement);
-
-			// Check if minimum number of people are available at the settlement.
-			// Plus one to hold down the fort.
-			boolean minNum = RoverMission.minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1));
-
-			// Check for embarking missions.
-			boolean embarkingMissions = VehicleMission.hasEmbarkingMissions(settlement);
-
-			// Check if settlement has enough basic resources for a rover mission.
-			boolean hasBasicResources = RoverMission.hasEnoughBasicResources(settlement);
-
-			// Check if min number of EVA suits at settlement.
-			boolean enoughSuits = (Mission.getNumberAvailableEVASuitsAtSettlement(person.getSettlement()) 
-					> MIN_PEOPLE); 
-
-			// Check if starting settlement has minimum amount of methane fuel.
-			AmountResource methane = AmountResource.findAmountResource("methane");
-			boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-					RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-
-			if (reservableRover && backupRover && minNum && !embarkingMissions && hasBasicResources 
-					&& enoughSuits && enoughMethane) {
-
-				// Get available rover.
-				Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
-				if (rover != null) {
-
-					ScienceType biology = ScienceType.BIOLOGY;
-
-					// Add probability for researcher's primary study (if any).
-					ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-					ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-					if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-						if (!primaryStudy.isPrimaryResearchCompleted()) {
-							if (biology == primaryStudy.getScience()) 
-								result += 2D;
-						}
-					}
-
-					// Add probability for each study researcher is collaborating on.
-					Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-					while (i.hasNext()) {
-						ScientificStudy collabStudy = i.next();
-						if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-							if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-								if (biology == collabStudy.getCollaborativeResearchers().get(person))
-									result += 1D;
-							}
-						}
-					}
-				}
-			}
-
-			// Crowding modifier
-			int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-			if (crowding > 0) result *= (crowding + 1);  
-
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartMissionProbabilityModifier(BiologyStudyFieldMission.class);
-			}
-		}
-
-		return result;
 	}
 
 	/**

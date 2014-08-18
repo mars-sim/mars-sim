@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.06 2014-04-23
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.ai.job.Driver;
 import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.vehicle.Rover;
@@ -47,7 +46,7 @@ implements Serializable {
 	public static final String DEFAULT_DESCRIPTION = "Travel To Settlement";
 
 	// Static members
-	private static final double BASE_MISSION_WEIGHT = 1D;
+	public static final double BASE_MISSION_WEIGHT = 1D;
 
     private static final double RELATIONSHIP_MODIFIER = 10D;
 
@@ -170,106 +169,6 @@ implements Serializable {
     }
 
     /**
-     * Gets the weighted probability that a given person would start this mission.
-     * 
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-        double missionProbability = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check if mission is possible for person based on their
-            // circumstance.
-            boolean missionPossible = true;
-            Settlement settlement = person.getSettlement();
-
-            // Check if available rover.
-            if (!areVehiclesAvailable(settlement, false)) {
-                missionPossible = false;
-            }
-
-            // Check if available backup rover.
-            if (!hasBackupRover(settlement)) {
-                missionPossible = false;
-            }
-
-            // Check if minimum number of people are available at the
-            // settlement.
-            // Plus one to hold down the fort.
-            if (!minAvailablePeopleAtSettlement(settlement, (MIN_PEOPLE + 1))) {
-                missionPossible = false;
-            }
-
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < 
-                    RoverMission.MIN_PEOPLE) {
-                missionPossible = false;
-            }
-
-            // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement)) {
-                missionPossible = false;
-            }
-
-            // Check if there are any desirable settlements within range.
-            double topSettlementDesirability = 0D;
-            Vehicle vehicle = getVehicleWithGreatestRange(settlement, false);
-            if (vehicle != null) {
-                Map<Settlement, Double> desirableSettlements = getDestinationSettlements(
-                        person, settlement, vehicle.getRange());
-                if (desirableSettlements.size() == 0) {
-                    missionPossible = false;
-                }
-                Iterator<Settlement> i = desirableSettlements.keySet().iterator();
-                while (i.hasNext()) {
-                    Settlement desirableSettlement = i.next();
-                    double desirability = desirableSettlements.get(desirableSettlement);
-                    if (desirability > topSettlementDesirability) {
-                        topSettlementDesirability = desirability;
-                    }
-                }
-            }
-
-            // Check for embarking missions.
-            if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                missionPossible = false;
-            }
-            
-            // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            if (settlement.getInventory().getAmountResourceStored(methane, false) < 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-                missionPossible = false;
-            }
-
-            // Determine mission probability.
-            if (missionPossible) {
-                missionProbability = BASE_MISSION_WEIGHT
-                        + (topSettlementDesirability / 100D);
-
-                // Crowding modifier.
-                int crowding = settlement.getCurrentPopulationNum()
-                        - settlement.getPopulationCapacity();
-                if (crowding > 0) {
-                    missionProbability *= (crowding + 1);
-                }
-                    
-                // Job modifier.
-                Job job = person.getMind().getJob();
-                if (job != null) {
-                    missionProbability *= job.getStartMissionProbabilityModifier(
-                            TravelToSettlement.class);
-                }
-            }
-        }
-
-        return missionProbability;
-    }
-
-    /**
      * Determines a new phase for the mission when the current phase has ended.
      * 
      * @throws MissionException if problem setting a new phase.
@@ -344,7 +243,7 @@ implements Serializable {
      * @param range the range (km) that can be travelled.
      * @return map of destination settlements.
      */
-    private static Map<Settlement, Double> getDestinationSettlements(
+    public static Map<Settlement, Double> getDestinationSettlements(
             Person person, Settlement startingSettlement, double range) {
         Map<Settlement, Double> result = new HashMap<Settlement, Double>();
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,7 +11,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
@@ -21,14 +20,11 @@ import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Equipment;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -126,70 +122,12 @@ implements Serializable {
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
 
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given 
-     * the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                int numVehicles = 0;
-                numVehicles += getAllMissionsNeedingUnloading(person.getSettlement()).size();
-                numVehicles += getNonMissionVehiclesNeedingUnloading(person.getSettlement()).size();
-                result = 50D * numVehicles;
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"Error finding unloading missions. " + e.getMessage());
-                e.printStackTrace(System.err);
-            }
-        }
-
-        // Check if an airlock is available
-        if (getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
-            }
-        } 
-
-        // Crowded settlement modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(UnloadVehicleEVA.class);        
-        }
-
-        return result;
-    }
-
     /**
      * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.
      * @return list of vehicles.
      */
-    private static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
+    public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
         List<Vehicle> result = new ArrayList<Vehicle>();
 
         if (settlement != null) {
@@ -227,7 +165,7 @@ implements Serializable {
      * @param settlement the settlement.
      * @return list of vehicle missions.
      */
-    private static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
+    public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
 
         List<Mission> result = new ArrayList<Mission>();
 

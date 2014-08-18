@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.06 2014-04-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -26,7 +26,6 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.CollectMinedMinerals;
 import org.mars_sim.msp.core.person.ai.task.MineSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -61,7 +60,7 @@ extends RoverMission {
 	final public static String MINING_SITE = "Mining Site";
 
 	/** Number of bags needed for mission. */
-	private static final int NUMBER_OF_BAGS = 20;
+	public static final int NUMBER_OF_BAGS = 20;
 
 	/** Base amount (kg) of a type of mineral at a site. */
 	private static final double MINERAL_BASE_AMOUNT = 1000D;
@@ -225,111 +224,11 @@ extends RoverMission {
     }
 
     /**
-     * Gets the weighted probability that a given person would start this mission.
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-        double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-
-            // Check if a mission-capable rover is available.
-            boolean reservableRover = RoverMission.areVehiclesAvailable(
-                    settlement, false);
-
-            // Check if available backup rover.
-            boolean backupRover = hasBackupRover(settlement);
-
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
-                    settlement, (MIN_PEOPLE + 1));
-
-            // Check if there are enough bags at the settlement for collecting minerals.
-            boolean enoughBags = false;
-
-            int numBags = settlement.getInventory().findNumEmptyUnitsOfClass(
-                    Bag.class, false);
-            enoughBags = (numBags >= NUMBER_OF_BAGS);
-
-            // Check for embarking missions.
-            boolean embarkingMissions = VehicleMission
-                    .hasEmbarkingMissions(settlement);
-
-            // Check if settlement has enough basic resources for a rover mission.
-            boolean hasBasicResources = RoverMission
-                    .hasEnoughBasicResources(settlement);
-
-            // Check if available light utility vehicles.
-            boolean reservableLUV = isLUVAvailable(settlement);
-
-            // Check if LUV attachment parts available.
-            boolean availableAttachmentParts = areAvailableAttachmentParts(settlement);
-
-            // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-            
-            if (reservableRover && backupRover && minNum && enoughBags
-                    && !embarkingMissions && reservableLUV
-                    && availableAttachmentParts && hasBasicResources && enoughMethane) {
-
-                try {
-                    // Get available rover.
-                    Rover rover = (Rover) getVehicleWithGreatestRange(
-                            settlement, false);
-                    if (rover != null) {
-
-                        // Find best mining site.
-                        ExploredLocation miningSite = determineBestMiningSite(
-                                rover, settlement);
-                        if (miningSite != null) {
-                            result = getMiningSiteValue(miningSite, settlement);
-                            if (result > 1D) {
-                                result = 1D;
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE, "Error getting mining site.", e);
-                }
-            }
-
-            // Crowding modifier
-            int crowding = settlement.getCurrentPopulationNum()
-                    - settlement.getPopulationCapacity();
-            if (crowding > 0) {
-                result *= (crowding + 1);
-            }
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) {
-                result *= job.getStartMissionProbabilityModifier(Mining.class);
-            }
-        }
-
-        if (result > 0D) {
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < MIN_PEOPLE) {
-                result = 0D;
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * Checks if a light utility vehicle (LUV) is available for the mission.
      * @param settlement the settlement to check.
      * @return true if LUV available.
      */
-    private static boolean isLUVAvailable(Settlement settlement) {
+    public static boolean isLUVAvailable(Settlement settlement) {
         boolean result = false;
 
         Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
@@ -361,7 +260,7 @@ extends RoverMission {
      * @param settlement the settlement to check.
      * @return true if available attachment parts.
      */
-    private static boolean areAvailableAttachmentParts(Settlement settlement) {
+    public static boolean areAvailableAttachmentParts(Settlement settlement) {
         boolean result = true;
 
         Inventory inv = settlement.getInventory();
@@ -676,7 +575,7 @@ extends RoverMission {
      * @param homeSettlement the mission home settlement.
      * @return best explored location for mining, or null if none found.
      */
-    private static ExploredLocation determineBestMiningSite(Rover rover,
+    public static ExploredLocation determineBestMiningSite(Rover rover,
             Settlement homeSettlement) {
 
         ExploredLocation result = null;
@@ -729,7 +628,7 @@ extends RoverMission {
      * @return estimated value of the minerals at the site (VP).
      * @throws MissionException if error determining the value.
      */
-    private static double getMiningSiteValue(ExploredLocation site,
+    public static double getMiningSiteValue(ExploredLocation site,
             Settlement settlement) {
 
         double result = 0D;

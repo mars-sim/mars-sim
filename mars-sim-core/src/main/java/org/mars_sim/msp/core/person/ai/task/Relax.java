@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,7 +26,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The Relax class is a simple task that implements resting and doing nothing for a while.
  * The duration of the task is by default chosen randomly, up to 100 millisols.
  */
-class Relax
+public class Relax
 extends Task
 implements Serializable {
 
@@ -85,35 +85,6 @@ implements Serializable {
 		addPhase(RELAXING);
 		setPhase(RELAXING);
 	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 10D;
-
-		// Stress modifier
-		result += person.getPhysicalCondition().getStress();
-
-		// Crowding modifier
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			try {
-				Building recBuilding = getAvailableRecreationBuilding(person);
-				if (recBuilding != null) {
-					result *= Task.getCrowdingProbabilityModifier(person, recBuilding);
-					result *= Task.getRelationshipModifier(person, recBuilding);
-				}
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"Relax.getProbability(): " + e.getMessage());
-			}
-		}
-
-		return result;
-	}
 	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -154,7 +125,7 @@ implements Serializable {
 	 * @param person the person
 	 * @return available recreation building
 	 */
-	private static Building getAvailableRecreationBuilding(Person person) {
+	public static Building getAvailableRecreationBuilding(Person person) {
 
 		Building result = null;
 

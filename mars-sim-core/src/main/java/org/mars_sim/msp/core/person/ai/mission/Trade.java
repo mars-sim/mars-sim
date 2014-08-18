@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.06 2014-03-03
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.NegotiateTrade;
@@ -71,11 +70,11 @@ implements Serializable {
 
 	// Static members
 	static final int MAX_MEMBERS = 2;
-	private static final double MAX_STARTING_PROBABILITY = 10D;
+	public static final double MAX_STARTING_PROBABILITY = 10D;
 
 	// Static cache for holding trade profit info.
-	private static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
-	private static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
+	public static final Map<Settlement, TradeProfitInfo> TRADE_PROFIT_CACHE = new HashMap<Settlement, TradeProfitInfo>();
+	public static final Map<Settlement, Settlement> TRADE_SETTLEMENT_CACHE = new HashMap<Settlement, Settlement>();
 
 	// Data members.
 	private Settlement tradingSettlement;
@@ -238,124 +237,6 @@ implements Serializable {
                 logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
             }
         }
-    }
-
-    /** 
-     * Gets the weighted probability that a given person would start this mission.
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-        double missionProbability = 0D;
-
-        // Check if person is in a settlement.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-            // Check if mission is possible for person based on their circumstance.
-            boolean missionPossible = true;
-            Settlement settlement = person.getSettlement();
-
-            // Check if available rover.
-            if (!areVehiclesAvailable(settlement, false)) {
-                missionPossible = false;
-            }
-
-            // Check if available backup rover.
-            if (!hasBackupRover(settlement)) {
-                missionPossible = false;
-            }
-
-            // Check if minimum number of people are available at the settlement.
-            // Plus one to hold down the fort.
-            if (!minAvailablePeopleAtSettlement(settlement, RoverMission.MIN_PEOPLE + 1)) {
-                missionPossible = false;
-            }
-
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < RoverMission.MIN_PEOPLE) {
-                missionPossible = false;
-            }
-
-            // Check for the best trade settlement within range.
-            double tradeProfit = 0D;
-            try {
-                Rover rover = (Rover) getVehicleWithGreatestRange(settlement, false);
-                if (rover != null) {
-                    // Only check every couple of Sols, else use cache.
-                    // Note: this method is very CPU intensive.
-                    boolean useCache = false;
-                    MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-                    if (TRADE_PROFIT_CACHE.containsKey(settlement)) {
-                        TradeProfitInfo profitInfo = TRADE_PROFIT_CACHE.get(settlement);
-                        double timeDiff = MarsClock.getTimeDiff(currentTime, profitInfo.time);
-                        if (timeDiff < 2000D) {
-                            tradeProfit = profitInfo.profit;
-                            useCache = true;
-                        }
-                    }
-                    else {
-                        TRADE_PROFIT_CACHE.put(settlement, new TradeProfitInfo(tradeProfit,
-                                (MarsClock) currentTime.clone()));
-                        useCache = true;
-                    }
-
-                    if (!useCache) {
-                        double startTime = System.currentTimeMillis();
-                        tradeProfit = TradeUtil.getBestTradeProfit(settlement, rover);
-                        double endTime = System.currentTimeMillis();
-                        logger.info(settlement.getName() + " getBestTradeProfit: " + (endTime - startTime)
-                                + " milliseconds - TP: " + (int) tradeProfit + " VP");
-                        TRADE_PROFIT_CACHE.put(settlement, new TradeProfitInfo(tradeProfit,
-                                (MarsClock) currentTime.clone()));
-                        TRADE_SETTLEMENT_CACHE.put(settlement, TradeUtil.bestTradeSettlementCache);
-                    }
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding vehicles at settlement.", e);
-            }
-
-            // Check for embarking missions.
-            if (VehicleMission.hasEmbarkingMissions(settlement)) {
-                missionPossible = false;
-            }
-
-            // Check if settlement has enough basic resources for a rover mission.
-            if (!RoverMission.hasEnoughBasicResources(settlement)) {
-                missionPossible = false;
-            }
-            
-            // Check if starting settlement has minimum amount of methane fuel.
-            AmountResource methane = AmountResource.findAmountResource("methane");
-            if (settlement.getInventory().getAmountResourceStored(methane, false) < 
-                    RoverMission.MIN_STARTING_SETTLEMENT_METHANE) {
-                missionPossible = false;
-            }
-
-            // Determine mission probability.
-            if (missionPossible) {
-
-                // Trade value modifier.
-                missionProbability = tradeProfit / 1000D;
-                if (missionProbability > MAX_STARTING_PROBABILITY) {
-                    missionProbability = MAX_STARTING_PROBABILITY;
-                }
-
-                // Crowding modifier.
-                int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-                if (crowding > 0) {
-                    missionProbability *= (crowding + 1);
-                }
-
-                // Job modifier.
-                Job job = person.getMind().getJob();
-                if (job != null) {
-                    missionProbability *= job.getStartMissionProbabilityModifier(Trade.class);
-                }
-            }
-        }
-
-        return missionProbability;
     }
 
     /**
@@ -1076,12 +957,12 @@ implements Serializable {
     /**
      * Inner class for storing trade profit info.
      */
-    private static class TradeProfitInfo {
+    public static class TradeProfitInfo {
 
-        private double profit;
-        private MarsClock time;
+        public double profit;
+        public MarsClock time;
 
-        private TradeProfitInfo(double profit, MarsClock time) {
+        public TradeProfitInfo(double profit, MarsClock time) {
             this.profit = profit;
             this.time = time;
         }

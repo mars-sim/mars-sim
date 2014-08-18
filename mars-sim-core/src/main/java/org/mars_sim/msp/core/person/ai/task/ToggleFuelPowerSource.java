@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,15 +15,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -102,78 +98,6 @@ implements Serializable {
 		}
 	}
 
-	/** 
-	 * Gets the weighted probability that a person might perform this task.
-	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			boolean isEVA = false;
-
-			Settlement settlement = person.getSettlement();
-
-			try {
-				Building building = getFuelPowerSourceBuilding(person);
-				if (building != null) {
-					FuelPowerSource powerSource = getFuelPowerSource(building);
-					isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
-					double diff = getValueDiff(settlement, powerSource);
-					double baseProb = diff * 10000D;
-					if (baseProb > 100D) {
-						baseProb = 100D;
-					}
-					result += baseProb;
-
-					if (!isEVA) {
-						// Factor in building crowding and relationship factors.
-						result *= Task.getCrowdingProbabilityModifier(person, building);
-						result *= Task.getRelationshipModifier(person, building);
-					}
-				}
-			}
-			catch (Exception e) {
-				e.printStackTrace(System.err);
-			}
-
-			if (isEVA) {
-				// Check if an airlock is available
-				if (getWalkableAvailableAirlock(person) == null) {
-					result = 0D;
-				}
-
-				// Check if it is night time.
-				SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-				if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-					if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-						result = 0D;
-					}
-				} 
-
-				// Crowded settlement modifier
-				if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-					if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-						result *= 2D;
-					}
-				}
-			}
-
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(ToggleFuelPowerSource.class);
-			}
-		}
-
-		return result;
-	}
-
 	/**
 	 * Determine location to toggle power source.
 	 * @return location.
@@ -225,7 +149,7 @@ implements Serializable {
 	 * @param person the person.
 	 * @return building with fuel power source to toggle, or null if none.
 	 */
-	private static Building getFuelPowerSourceBuilding(Person person) {
+	public static Building getFuelPowerSourceBuilding(Person person) {
 		Building result = null;
 
 		Settlement settlement = person.getSettlement();
@@ -254,7 +178,7 @@ implements Serializable {
 	 * @param building the building
 	 * @return the fuel power source to toggle or null if none.
 	 */
-	private static FuelPowerSource getFuelPowerSource(Building building) {
+	public static FuelPowerSource getFuelPowerSource(Building building) {
 		FuelPowerSource result = null;
 
 		Settlement settlement = building.getBuildingManager().getSettlement();
@@ -284,7 +208,7 @@ implements Serializable {
 	 * @param fuelSource the fuel power source.
 	 * @return the value diff (value points)
 	 */
-	private static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) {
+	public static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) {
 
 		double inputValue = getInputResourcesValue(settlement, fuelSource);
 		double outputValue = getPowerOutputValue(settlement, fuelSource);

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcess.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,15 +15,11 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -99,81 +95,6 @@ implements Serializable {
 			setPhase(TOGGLE_PROCESS);
 		}
 	}
-
-	/** 
-	 * Gets the weighted probability that a person might perform this task.
-	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			boolean isEVA = false;
-
-			Settlement settlement = person.getSettlement();
-
-			// Check if settlement has resource process override set.
-			if (!settlement.getResourceProcessOverride()) {
-				try {
-					Building building = getResourceProcessingBuilding(person);
-					if (building != null) {
-						ResourceProcess process = getResourceProcess(building);
-						isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
-						double diff = getResourcesValueDiff(settlement, process);
-						double baseProb = diff * 10000D;
-						if (baseProb > 100D) {
-							baseProb = 100D;
-						}
-						result += baseProb;
-
-						if (!isEVA) {
-							// Factor in building crowding and relationship factors.
-							result *= Task.getCrowdingProbabilityModifier(person, building);
-							result *= Task.getRelationshipModifier(person, building);
-						}
-					}
-				}
-				catch (Exception e) {
-					e.printStackTrace(System.err);
-				}
-			}
-
-			if (isEVA) {
-				// Check if an airlock is available
-				if (getWalkableAvailableAirlock(person) == null) {
-					result = 0D;
-				}
-
-				// Check if it is night time.
-				SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-				if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-					if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-						result = 0D;
-					}
-				} 
-
-				// Crowded settlement modifier
-				if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-					if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-						result *= 2D;
-					}
-				}
-			}
-
-			// Effort-driven task modifier.
-			result *= person.getPerformanceRating();
-
-			// Job modifier.
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(ToggleResourceProcess.class);    
-			}
-		}
-
-		return result;
-	}
 	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -205,7 +126,7 @@ implements Serializable {
 	 * @param person the person.
 	 * @return building with resource process to toggle, or null if none.
 	 */
-	private static Building getResourceProcessingBuilding(Person person) {
+	public static Building getResourceProcessingBuilding(Person person) {
 		Building result = null;
 
 		Settlement settlement = person.getSettlement();
@@ -234,7 +155,7 @@ implements Serializable {
 	 * @param building the building
 	 * @return the resource process to toggle or null if none.
 	 */
-	private static ResourceProcess getResourceProcess(Building building) {
+	public static ResourceProcess getResourceProcess(Building building) {
 		ResourceProcess result = null;
 
 		Settlement settlement = building.getBuildingManager().getSettlement();
@@ -261,7 +182,7 @@ implements Serializable {
 	 * @param process the resource process.
 	 * @return the resource value diff (value points)
 	 */
-	private static double getResourcesValueDiff(Settlement settlement, 
+	public static double getResourcesValueDiff(Settlement settlement, 
 			ResourceProcess process) {
 		double inputValue = getResourcesValue(settlement, process, true);
 		double outputValue = getResourcesValue(settlement, process, false);

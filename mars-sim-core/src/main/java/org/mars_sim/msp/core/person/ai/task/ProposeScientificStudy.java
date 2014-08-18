@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -113,69 +113,12 @@ implements Serializable {
         setPhase(PROPOSAL_PHASE);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
-        if (study != null) {
-            
-            // Check if study is in proposal phase.
-            if (study.getPhase().equals(ScientificStudy.PROPOSAL_PHASE)) {
-                
-                // Increase probability if person's current job is related to study's science.
-                Job job = person.getMind().getJob();
-                ScienceType science = study.getScience();
-                if ((job != null) && science == ScienceType.getJobScience(job)) {
-                    result = 50D;
-                }
-                else {
-                    result = 10D;
-                }
-            }
-        }
-        else {           
-            // Probability of starting a new scientific study.
-            
-            // Check if scientist job.
-            if (ScienceType.isScienceJob(person.getMind().getJob())) {
-                result = 1D;
-            }
-            
-            // Modify if researcher is already collaborating in studies.
-            int numCollabStudies = manager.getOngoingCollaborativeStudies(person).size();
-            result /= (numCollabStudies + 1D);
-        }
-        
-        // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= Task.getRelationshipModifier(person, adminBuilding);
-            }
-        }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(ProposeScientificStudy.class);
-        }
-        
-        return result;
-    }
-    
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
      * @return available administration building or null if none.
      */
-    private static Building getAvailableAdministrationBuilding(Person person) {
+    public static Building getAvailableAdministrationBuilding(Person person) {
 
         Building result = null;
 

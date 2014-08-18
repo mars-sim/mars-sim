@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-08-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -689,7 +689,7 @@ implements Serializable {
 	 * @param settlement the settlement to check.
 	 * @return number of available suits.
 	 */
-	static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
+	public static int getNumberAvailableEVASuitsAtSettlement(Settlement settlement) {
 		int result = 0;
 
 		result = settlement.getInventory().findNumUnitsOfClass(EVASuit.class);

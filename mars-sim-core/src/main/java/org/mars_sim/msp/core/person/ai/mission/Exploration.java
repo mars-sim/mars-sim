@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Exploration.java
- * @version 3.06 2014-03-17
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
@@ -32,7 +31,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.task.ExploreSite;
 import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -202,97 +200,13 @@ implements Serializable {
     }
 
     /**
-     * Gets the weighted probability that a given person would start this mission.
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-    	double result = 0D;
-
-    	if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-    		Settlement settlement = person.getSettlement();
-
-    		// Check if a mission-capable rover is available.
-    		boolean reservableRover = RoverMission.areVehiclesAvailable(
-    				settlement, false);
-
-    		// Check if available backup rover.
-    		boolean backupRover = hasBackupRover(settlement);
-
-    		// Check if minimum number of people are available at the settlement.
-    		// Plus one to hold down the fort.
-    		boolean minNum = RoverMission.minAvailablePeopleAtSettlement(
-    				settlement, (MIN_PEOPLE + 1));
-
-    		// Check if there are enough specimen containers at the settlement for collecting rock samples.
-    		boolean enoughContainers = false;
-    		int numContainers = settlement.getInventory()
-    				.findNumEmptyUnitsOfClass(SpecimenContainer.class, false);
-    		enoughContainers = (numContainers >= REQUIRED_SPECIMEN_CONTAINERS);
-
-    		// Check for embarking missions.
-    		boolean embarkingMissions = VehicleMission
-    				.hasEmbarkingMissions(settlement);
-
-    		// Check if settlement has enough basic resources for a rover mission.
-    		boolean hasBasicResources = RoverMission
-    				.hasEnoughBasicResources(settlement);
-
-    		// Check if starting settlement has minimum amount of methane fuel.
-    		AmountResource methane = AmountResource.findAmountResource("methane");
-    		boolean enoughMethane = settlement.getInventory().getAmountResourceStored(methane, false) >= 
-    				RoverMission.MIN_STARTING_SETTLEMENT_METHANE;
-
-            if (reservableRover && backupRover && minNum && enoughContainers
-                    && !embarkingMissions && hasBasicResources && enoughMethane) {
-                try {
-                    // Get available rover.
-                    Rover rover = (Rover) getVehicleWithGreatestRange(
-                            settlement, false);
-                    if (rover != null) {
-                        // Check if any mineral locations within rover range.
-                        if (hasNearbyMineralLocations(rover, settlement)) {
-                            result = 1D;
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.log(Level.SEVERE,
-                            "Error determining mineral locations.", e);
-                }
-            }
-
-            // Crowding modifier
-            int crowding = settlement.getCurrentPopulationNum()
-                    - settlement.getPopulationCapacity();
-            if (crowding > 0)
-                result *= (crowding + 1);
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null)
-                result *= job
-                        .getStartMissionProbabilityModifier(Exploration.class);
-        }
-
-        if (result > 0D) {
-            // Check if min number of EVA suits at settlement.
-            if (Mission.getNumberAvailableEVASuitsAtSettlement(person
-                    .getSettlement()) < MIN_PEOPLE)
-                result = 0D;
-        }
-
-        return result;
-    }
-
-    /**
      * Checks of there are any mineral locations within rover/mission range.
      * @param rover the rover to use.
      * @param homeSettlement the starting settlement.
      * @return true if mineral locations.
      * @throws Exception if error determining mineral locations.
      */
-    private static boolean hasNearbyMineralLocations(Rover rover,
+    public static boolean hasNearbyMineralLocations(Rover rover,
             Settlement homeSettlement) {
 
         double roverRange = rover.getRange();

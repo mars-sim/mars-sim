@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,8 +19,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.medical.AntiStressMedication;
 import org.mars_sim.msp.core.person.medical.Medication;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -83,39 +81,12 @@ implements Serializable {
         setPhase(MEDICATING);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given 
-     * the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        // Only doctor job allowed to perform this task.
-        Job job = person.getMind().getJob();
-        if (job instanceof Doctor) {
-            
-            // Determine patient needing medication.
-            Person patient = determinePatient(person);
-            if (patient != null) {
-                result = 100D;
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        return result;
-    }
-    
     /**
      * Determines if there is a patient nearby needing medication.
      * @param doctor the doctor prescribing the medication.
      * @return patient if one found, null otherwise.
      */
-    private static Person determinePatient(Person doctor) {
+    public static Person determinePatient(Person doctor) {
         Person result = null;
         
         // Get possible patient list.

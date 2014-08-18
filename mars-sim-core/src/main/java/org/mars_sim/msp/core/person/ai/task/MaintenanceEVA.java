@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,18 +20,14 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.Structure;
@@ -89,76 +85,6 @@ implements Serializable {
 		addPhase(MAINTAIN);
 		
 		logger.finest(person.getName() + " is starting " + getDescription());
-	}
-	
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		try {
-			// Total probabilities for all malfunctionable entities in person's local.
-			Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-			while (i.hasNext()) {
-				Malfunctionable entity = i.next();
-				boolean isStructure = (entity instanceof Structure);
-				boolean uninhabitableBuilding = false;
-				if (entity instanceof Building) {
-					uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
-				}
-				MalfunctionManager manager = entity.getMalfunctionManager();
-				boolean hasMalfunction = manager.hasMalfunction();
-				boolean hasParts = Maintenance.hasMaintenanceParts(person, entity);
-				double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-				boolean minTime = (effectiveTime >= 1000D);
-				if ((isStructure || uninhabitableBuilding) && !hasMalfunction && minTime && hasParts) {
-					double entityProb = manager.getEffectiveTimeSinceLastMaintenance() / 1000D;
-					if (entityProb > 100D) {
-					    entityProb = 100D;
-					}
-					result += entityProb;
-				}
-			}   
-		}
-		catch (Exception e) {
-		    logger.log(Level.SEVERE,"getProbability()",e);
-    	}
-		
-		// Check if an airlock is available
-		if (getWalkableAvailableAirlock(person) == null) {
-		    result = 0D;
-		}
-
-		// Check if it is night time.
-		SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-			if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-				result = 0D;
-			}
-		} 
-		
-		// Crowded settlement modifier
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = person.getSettlement();
-			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-			    result *= 2D;
-			}
-		}
-	
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-        
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-		    result *= job.getStartTaskProbabilityModifier(MaintenanceEVA.class);
-		}
-	
-		return result;
 	}
 	
     /**

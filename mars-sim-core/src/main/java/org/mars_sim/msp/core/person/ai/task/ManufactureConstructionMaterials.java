@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterials.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
@@ -26,7 +25,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -102,68 +100,6 @@ implements Serializable {
         addPhase(MANUFACTURE);
         setPhase(MANUFACTURE);
     }
-
-    /**
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            try {
-                // See if there is an available manufacturing building.
-                Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-                if (manufacturingBuilding != null) {
-                    result = 1D;
-
-                    // Crowding modifier.
-                    result *= Task.getCrowdingProbabilityModifier(person,
-                            manufacturingBuilding);
-                    result *= Task.getRelationshipModifier(person,
-                            manufacturingBuilding);
-
-                    // Manufacturing good value modifier.
-                    result *= getHighestManufacturingProcessValue(person,
-                            manufacturingBuilding);
-
-                    if (result > 100D) {
-                        result = 100D;
-                    }
-
-                    // If manufacturing building has process requiring work, add
-                    // modifier.
-                    SkillManager skillManager = person.getMind().getSkillManager();
-					int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-                    if (hasProcessRequiringWork(manufacturingBuilding, skill)) {
-                        result += 10D;
-                    }
-                    
-                    // If settlement has manufacturing override, no new
-                    // manufacturing processes can be created.
-                    else if (person.getSettlement().getManufactureOverride()) {
-                        result = 0;
-                    }
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE,
-                        "ManufactureConstructionMaterials.getProbability()", e);
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(
-                    ManufactureConstructionMaterials.class);
-        }
-
-        return result;
-    }
     
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -176,7 +112,7 @@ implements Serializable {
      * @param person the person
      * @return available manufacturing building
      */
-    private static Building getAvailableManufacturingBuilding(Person person) {
+    public static Building getAvailableManufacturingBuilding(Person person) {
 
         Building result = null;
 
@@ -267,7 +203,7 @@ implements Serializable {
      * @param skill the materials science skill level of the person.
      * @return true if processes requiring work.
      */
-    private static boolean hasProcessRequiringWork(
+    public static boolean hasProcessRequiringWork(
             Building manufacturingBuilding, int skill) {
 
         boolean result = false;
@@ -342,7 +278,7 @@ implements Serializable {
      * @param manufacturingBuilding the manufacturing building.
      * @return highest process good value.
      */
-    private static double getHighestManufacturingProcessValue(Person person,
+    public static double getHighestManufacturingProcessValue(Person person,
             Building manufacturingBuilding) {
 
         double highestProcessValue = 0D;
