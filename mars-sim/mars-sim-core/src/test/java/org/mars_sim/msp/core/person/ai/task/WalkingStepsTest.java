@@ -1,7 +1,11 @@
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
+import java.util.Iterator;
 
+import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.SimulationConfig;
+import org.mars_sim.msp.core.UnitManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonGender;
 import org.mars_sim.msp.core.person.ai.task.WalkingSteps.WalkStep;
@@ -28,6 +32,17 @@ public class WalkingStepsTest extends TestCase {
      * valid walking path between them.
      */
     public void testWalkingStepsBuildingToBuildingPath() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -101,6 +116,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToBuildingNoPath() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -151,6 +177,17 @@ public class WalkingStepsTest extends TestCase {
      * valid walking path between them and airlocks.
      */
     public void testWalkingStepsBuildingToBuildingNoPathAirlocks() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -225,6 +262,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToExteriorAirlock() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -281,6 +329,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToExteriorNoAirlock() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -323,6 +382,17 @@ public class WalkingStepsTest extends TestCase {
      * Test constructing walking steps from a rover to exterior.
      */
     public void testWalkingStepsRoverToExterior() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         
@@ -383,6 +453,17 @@ public class WalkingStepsTest extends TestCase {
      * Test constructing walking steps from a rover to a building.
      */
     public void testWalkingStepsRoverToBuilding() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -448,6 +529,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToRover() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -511,6 +603,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToRoverNoAirlock() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+    	
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -556,6 +659,17 @@ public class WalkingStepsTest extends TestCase {
      * Test constructing walking steps from a rover to a rover.
      */
     public void testWalkingStepsRoverToRover() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -622,6 +736,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsBuildingToRoverInGarage() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -682,6 +807,17 @@ public class WalkingStepsTest extends TestCase {
      * Test constructing walking steps from a rover in a garage to a building.
      */
     public void testWalkingStepsRoverToBuildingInGarage() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
@@ -745,6 +881,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsExteriorToBuildingAirlock() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -801,6 +948,17 @@ public class WalkingStepsTest extends TestCase {
      */
     public void testWalkingStepsExteriorToBuildingNoAirlock() {
         
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
+        
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
         BuildingConnectorManager connectorManager = settlement.getBuildingConnectorManager();
@@ -843,6 +1001,17 @@ public class WalkingStepsTest extends TestCase {
      * Test constructing walking steps from exterior to a rover.
      */
     public void testWalkingStepsExteriorToRover() {
+        
+        // Create new simulation instance.
+        SimulationConfig.loadConfig();
+        Simulation.createNewSimulation();
+
+        // Clear out existing settlements in simulation.
+        UnitManager unitManager = Simulation.instance().getUnitManager();
+        Iterator<Settlement> i = unitManager.getSettlements().iterator();
+        while (i.hasNext()) {
+            unitManager.removeUnit(i.next());
+        }
         
         Settlement settlement = new MockSettlement();
         BuildingManager buildingManager = settlement.getBuildingManager();
