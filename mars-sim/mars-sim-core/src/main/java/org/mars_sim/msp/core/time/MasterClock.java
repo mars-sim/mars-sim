@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MasterClock.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -268,9 +268,12 @@ public class MasterClock implements Runnable, Serializable {
         // Keep running until told not to
         while (keepRunning) {
 
+            // Pause simulation to allow other threads to complete.
             try {
                 Thread.yield();
-            } catch (Exception e) {
+                Thread.sleep(SLEEP_TIME);
+            } 
+            catch (Exception e) {
                 logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
             }
 
@@ -292,25 +295,10 @@ public class MasterClock implements Runnable, Serializable {
                 // Fire clock pulse to all clock listeners.
                 fireClockPulse(timePulse);
                 
-                // Pause simulation to allow other threads to complete.
-                try {
-                    Thread.sleep(SLEEP_TIME);
-                } catch (Exception e) {
-                    logger.fine("Problem with Thread.yield() in MasterClock.run() ");
-                }
-                
                 long endTime = System.nanoTime();
-                lastTimeDiff = (endTime - startTime) / 1000000L;
+                lastTimeDiff = (long) ((endTime - startTime) / 1000000D);
 
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest("time: " + lastTimeDiff);
-                }
-                
-                try {
-                    Thread.yield();
-                } catch (Exception e) {
-                    logger.fine("Problem with Thread.yield() in MasterClock.run() ");
-                }
+                logger.finest("time: " + lastTimeDiff + " ms");
             }
             
             if (saveSimulation) {
@@ -324,12 +312,14 @@ public class MasterClock implements Runnable, Serializable {
                     e.printStackTrace();
                 }
                 saveSimulation = false;
-            } else if (loadSimulation) {
+            } 
+            else if (loadSimulation) {
                 // Load the simulation from a file.
                 if (file.exists() && file.canRead()) {
                     Simulation.instance().loadSimulation(file);
                     Simulation.instance().start();
-                } else {
+                } 
+                else {
                     logger.warning("Cannot access file " + file.getPath() + ", not reading");
                 }
                 loadSimulation = false;
@@ -355,6 +345,12 @@ public class MasterClock implements Runnable, Serializable {
                 ClockListener cl = i.next();
                 try {
                     cl.clockPulse(time);
+                    try {
+                        Thread.yield();
+                    } 
+                    catch (Exception e) {
+                        logger.log(Level.WARNING, "Problem with Thread.yield() in MasterClock.run() ", e);
+                    }
                 } catch (Exception e) {
             		throw new IllegalStateException("Error while firing clock pulse", e);
                 }

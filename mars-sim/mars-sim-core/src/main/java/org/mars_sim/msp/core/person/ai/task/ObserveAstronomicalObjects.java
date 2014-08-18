@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ObserveAstronomicalObjects.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -91,101 +90,6 @@ implements ResearchScientificStudy, Serializable {
 		addPhase(OBSERVING);
 		setPhase(OBSERVING);
 	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		// Get local observatory if available.
-		AstronomicalObservation observatory = determineObservatory(person);
-		if (observatory != null) {
-
-			// Check if it is completely dark outside.
-			SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-			double sunlight = surface.getSurfaceSunlight(person.getCoordinates());
-			if (sunlight == 0D) {
-
-				ScienceType astronomy = ScienceType.ASTRONOMY;
-
-				// Add probability for researcher's primary study (if any).
-				ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-				ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-				if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(
-						primaryStudy.getPhase())) {
-					if (!primaryStudy.isPrimaryResearchCompleted() && 
-							astronomy == primaryStudy.getScience()) {
-						try {
-							double primaryResult = 100D;
-
-							// Get observatory building crowding modifier.
-							primaryResult *= getObservatoryCrowdingModifier(person, observatory);
-
-							// If researcher's current job isn't related to astronomy, divide by two.
-							Job job = person.getMind().getJob();
-							if (job != null) {
-								ScienceType jobScience = ScienceType.getJobScience(job);
-								if (astronomy != jobScience) {
-									primaryResult /= 2D;
-								}
-							}
-
-							result += primaryResult;
-						}
-						catch (Exception e) {
-							logger.severe("getProbability(): " + e.getMessage());
-						}
-					}
-				}
-
-				// Add probability for each study researcher is collaborating on.
-				Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-				while (i.hasNext()) {
-					ScientificStudy collabStudy = i.next();
-					if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-						if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-							if (astronomy == collabStudy.getCollaborativeResearchers().get(person)) {
-								try {
-									double collabResult = 50D;
-
-									// Get observatory building crowding modifier.
-									collabResult *= getObservatoryCrowdingModifier(person, observatory);
-
-									// If researcher's current job isn't related to astronomy, divide by two.
-									Job job = person.getMind().getJob();
-									if (job != null) {
-										ScienceType jobScience = ScienceType.getJobScience(job);
-										if (astronomy != jobScience) {
-											collabResult /= 2D;
-										}
-									}
-
-									result += collabResult;
-								}
-								catch (Exception e) {
-									logger.severe("getProbability(): " + e.getMessage());
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-			result *= job.getStartTaskProbabilityModifier(ObserveAstronomicalObjects.class);
-		}
-
-		return result;
-	}
 	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -197,7 +101,7 @@ implements ResearchScientificStudy, Serializable {
 	 * @param observer the observer.
 	 * @return observatory or null if none found.
 	 */
-	private static AstronomicalObservation determineObservatory(Person observer) {
+	public static AstronomicalObservation determineObservatory(Person observer) {
 		AstronomicalObservation result = null;
 
 		if (LocationSituation.IN_SETTLEMENT == observer.getLocationSituation()) {
@@ -225,7 +129,7 @@ implements ResearchScientificStudy, Serializable {
 	 * @param observatory the astronomical observatory.
 	 * @return crowding modifier.
 	 */
-	private static double getObservatoryCrowdingModifier(Person observer, 
+	public static double getObservatoryCrowdingModifier(Person observer, 
 			AstronomicalObservation observatory) {
 		double result = 1D;
 		if (observer.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

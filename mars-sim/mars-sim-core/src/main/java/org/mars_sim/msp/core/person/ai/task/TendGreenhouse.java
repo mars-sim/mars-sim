@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TendGreenhouse.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
@@ -20,7 +19,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -85,52 +83,6 @@ implements Serializable {
 		// Initialize phase
 		addPhase(TENDING);
 		setPhase(TENDING);
-	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			try {
-				// See if there is an available greenhouse.
-				Building farmingBuilding = getAvailableGreenhouse(person);
-				if (farmingBuilding != null) {
-					result = 100D;
-
-					int needyCropsNum = getCropsNeedingTending(person.getSettlement());
-					result += needyCropsNum * 10D;
-
-					// Crowding modifier.
-					result *= Task.getCrowdingProbabilityModifier(person, farmingBuilding);
-					result *= Task.getRelationshipModifier(person, farmingBuilding);
-				}
-
-				// Food value modifier.
-				//GoodsManager manager = person.getSettlement().getGoodsManager();
-				//AmountResource foodResource = AmountResource.findAmountResource("food");
-				//double foodValue = manager.getGoodValuePerItem(GoodsUtil.getResourceGood(foodResource));
-				//result *= foodValue;
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"TendGreenhouse.getProbability(): " + e.getMessage());
-			}
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-			result *= job.getStartTaskProbabilityModifier(TendGreenhouse.class);
-		}
-
-		return result;
 	}
 	
     @Override
@@ -238,7 +190,7 @@ implements Serializable {
 	 * @param person the person
 	 * @return available greenhouse
 	 */
-	private static Building getAvailableGreenhouse(Person person) {
+	public static Building getAvailableGreenhouse(Person person) {
 
 		Building result = null;
 
@@ -285,7 +237,7 @@ implements Serializable {
 	 * @param settlement the settlement.
 	 * @return number of crops.
 	 */
-	private static int getCropsNeedingTending(Settlement settlement) {
+	public static int getCropsNeedingTending(Settlement settlement) {
 
 		int result = 0;
 

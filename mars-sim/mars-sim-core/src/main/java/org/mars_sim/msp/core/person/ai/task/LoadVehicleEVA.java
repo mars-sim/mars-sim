@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -26,15 +26,12 @@ import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.equipment.Equipment;
 import org.mars_sim.msp.core.equipment.EquipmentFactory;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.mission.MissionManager;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -162,66 +159,13 @@ implements Serializable {
         addPhase(LOADING);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            
-            // Check all vehicle missions occurring at the settlement.
-            try {
-                List<Mission> missions = getAllMissionsNeedingLoading(person.getSettlement());
-                result = 50D * missions.size();
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE, "Error finding loading missions.", e);
-            }
-        }
-
-        // Check if an airlock is available
-        if (getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
-                result = 0D;
-        } 
-        
-        // Crowded settlement modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Settlement settlement = person.getSettlement();
-            if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-                result *= 2D;
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(LoadVehicleEVA.class);        
-        }
-    
-        return result;
-    }
-    
     /**
      * Gets a list of all embarking vehicle missions at a settlement with vehicle 
      * currently in a garage.
      * @param settlement the settlement.
      * @return list of vehicle missions.
      */
-    private static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
+    public static List<Mission> getAllMissionsNeedingLoading(Settlement settlement) {
         
         List<Mission> result = new ArrayList<Mission>();
         

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,20 +11,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PersonConfig;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingException;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -94,50 +89,6 @@ implements Serializable {
         String jobName = person.getMind().getJob().getName(person.getGender());
         logger.finest(jobName + " " + person.getName() + " cooking at " + kitchen.getBuilding().getName() + 
                 " in " + person.getSettlement());
-    }
-
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        if (isMealTime(person)) {
-
-            try {
-                // See if there is an available kitchen.
-                Building kitchenBuilding = getAvailableKitchen(person);
-                if (kitchenBuilding != null) {
-                    result = 200D;
-
-                    // Crowding modifier.
-                    result *= Task.getCrowdingProbabilityModifier(person, kitchenBuilding);
-                    result *= Task.getRelationshipModifier(person, kitchenBuilding);
-
-                    // Check if there is enough food available to cook.
-                    PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-                    double foodRequired = config.getFoodConsumptionRate() * (1D / 3D);
-                    AmountResource food = AmountResource.findAmountResource("food");
-                    double foodAvailable = person.getSettlement().getInventory().getAmountResourceStored(
-                            food, false);
-                    if (foodAvailable < foodRequired) result = 0D;
-                }
-            }
-            catch (Exception e) {
-                logger.log(Level.SEVERE,"CookMeal.getProbability()" ,e);
-            }
-
-            // Effort-driven task modifier.
-            result *= person.getPerformanceRating();
-
-            // Job modifier.
-            Job job = person.getMind().getJob();
-            if (job != null) result *= job.getStartTaskProbabilityModifier(CookMeal.class);
-        }
-
-        return result;
     }
     
     @Override
@@ -252,7 +203,7 @@ implements Serializable {
      * @param person the person to check for.
      * @return true if meal time
      */
-    private static boolean isMealTime(Person person) {
+    public static boolean isMealTime(Person person) {
         boolean result = false;
 
         double timeOfDay = Simulation.instance().getMasterClock().getMarsClock().getMillisol();
@@ -307,7 +258,7 @@ implements Serializable {
      * @param person the person to check for.
      * @return kitchen or null if none available.
      */
-    private static Building getAvailableKitchen(Person person) {
+    public static Building getAvailableKitchen(Person person) {
         Building result = null;
 
         LocationSituation location = person.getLocationSituation();

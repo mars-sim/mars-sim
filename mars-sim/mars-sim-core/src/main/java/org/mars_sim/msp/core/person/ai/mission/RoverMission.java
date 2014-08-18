@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-08-13
  * @author Scott Davis
  */
 
@@ -52,8 +52,8 @@ extends VehicleMission {
 	private static Logger logger = Logger.getLogger(RoverMission.class.getName());
 
 	// Static members
-	protected static final int MIN_PEOPLE = 2;
-	protected static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
+	public static final int MIN_PEOPLE = 2;
+	public static final double MIN_STARTING_SETTLEMENT_METHANE = 1000D;
 
 	// Data members
 	private Settlement startingSettlement;
@@ -137,7 +137,7 @@ extends VehicleMission {
      * @return vehicle or null if none available.
      * @throws Exception if error finding vehicles.
      */
-    protected static Vehicle getVehicleWithGreatestRange(Settlement settlement,
+    public static Vehicle getVehicleWithGreatestRange(Settlement settlement,
             boolean allowMaintReserved) {
         Vehicle result = null;
 
@@ -174,7 +174,7 @@ extends VehicleMission {
      * @param allowMaintReserved allow vehicles that are reserved for maintenance.
      * @return true if vehicles are available.
      */
-    protected static boolean areVehiclesAvailable(Settlement settlement,
+    public static boolean areVehiclesAvailable(Settlement settlement,
             boolean allowMaintReserved) {
 
         boolean result = false;
@@ -521,7 +521,7 @@ extends VehicleMission {
      * @param minNum minimum number of people required.
      * @return true if minimum people available.
      */
-    protected static boolean minAvailablePeopleAtSettlement(
+    public static boolean minAvailablePeopleAtSettlement(
             Settlement settlement, int minNum) {
         boolean result = false;
 
@@ -623,7 +623,7 @@ extends VehicleMission {
      * @param settlement the settlement to check.
      * @return true if available backup rover.
      */
-    protected static boolean hasBackupRover(Settlement settlement) {
+    public static boolean hasBackupRover(Settlement settlement) {
         int availableVehicleNum = 0;
         Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
         while (i.hasNext()) {
@@ -639,7 +639,7 @@ extends VehicleMission {
      * @param settlement the starting settlement.
      * @return true if enough resources.
      */
-    protected static boolean hasEnoughBasicResources(Settlement settlement) {
+    public static boolean hasEnoughBasicResources(Settlement settlement) {
         boolean hasBasicResources = true;
         
         Inventory inv = settlement.getInventory();

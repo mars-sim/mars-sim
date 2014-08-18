@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;

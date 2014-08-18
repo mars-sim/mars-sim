@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Workout.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
-import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
@@ -31,9 +29,6 @@ implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
-
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(Workout.class.getName());
 
 	// TODO Task phase should be an enum.
 	private static final String EXERCISING = "Exercising";
@@ -76,42 +71,6 @@ implements Serializable {
 		// Initialize phase
 		addPhase(EXERCISING);
 		setPhase(EXERCISING);
-	}
-
-	/**
-	 * Returns the weighted probability that a person might perform this task. It should return a 0 if there is no
-	 * chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			// Probability affected by the person's stress and fatigue.
-			PhysicalCondition condition = person.getPhysicalCondition();
-			result = condition.getStress() - (condition.getFatigue() / 10D)
-					+ 20D;
-			if (result < 0D) {
-				result = 0D;
-			}
-
-			// Get an available gym.
-			Building building = getAvailableGym(person);
-			if (building != null) {
-				result *= Task.getCrowdingProbabilityModifier(person, building);
-				result *= Task.getRelationshipModifier(person, building);
-			} 
-			else {
-				result = 0D;
-			}
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		return result;
 	}
 	
     @Override
@@ -164,7 +123,7 @@ implements Serializable {
 	 * @param person the person looking for the gym.
 	 * @return an available exercise building or null if none found.
 	 */
-	private static Building getAvailableGym(Person person) {
+	public static Building getAvailableGym(Person person) {
 		Building result = null;
 
 		// If person is in a settlement, try to find a building with a gym.

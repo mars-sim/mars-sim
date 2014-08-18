@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Maintenance.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -27,7 +27,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -100,54 +99,6 @@ implements Serializable {
         // Initialize phase.
         addPhase(MAINTAIN);
         setPhase(MAINTAIN);
-    }
-
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        try {
-            // Total probabilities for all malfunctionable entities in person's local.
-            Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-            while (i.hasNext()) {
-                Malfunctionable entity = i.next();
-                boolean isVehicle = (entity instanceof Vehicle);
-                boolean uninhabitableBuilding = false;
-                if (entity instanceof Building) 
-                    uninhabitableBuilding = !((Building) entity).hasFunction(BuildingFunction.LIFE_SUPPORT);
-                MalfunctionManager manager = entity.getMalfunctionManager();
-                boolean hasMalfunction = manager.hasMalfunction();
-                boolean hasParts = hasMaintenanceParts(person, entity);
-                double effectiveTime = manager.getEffectiveTimeSinceLastMaintenance();
-                boolean minTime = (effectiveTime >= 1000D);
-                if (!hasMalfunction && !isVehicle && !uninhabitableBuilding && hasParts && minTime) {
-                    double entityProb = effectiveTime / 1000D;
-                    if (entityProb > 100D) {
-                        entityProb = 100D;
-                    }
-                    result += entityProb;
-                }
-            }
-        }
-        catch (Exception e) {
-            logger.log(Level.SEVERE,"getProbability()",e);
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(Maintenance.class);        
-        }
-
-        return result;
     }
 
     @Override
@@ -371,7 +322,7 @@ implements Serializable {
      * @return true if enough parts.
      * @throws Exception if error checking parts availability.
      */
-    static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
+    public static boolean hasMaintenanceParts(Person person, Malfunctionable malfunctionable) {
         Inventory inv = null;
         if (person.getTopContainerUnit() != null) inv = person.getTopContainerUnit().getInventory();
         else inv = person.getInventory();

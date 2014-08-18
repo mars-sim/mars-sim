@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVA.java
- * @version 3.06 2014-02-25
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -21,20 +21,15 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
-import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.vehicle.GroundVehicle;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
@@ -86,67 +81,6 @@ implements Serializable {
         addPhase(MAINTAIN_VEHICLE);
         
         logger.finest(person.getName() + " starting MaintainGroundVehicleEVA task.");
-    }
-    
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-		// Get all vehicles needing maintenance.
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Iterator<Vehicle> i = getAllVehicleCandidates(person).iterator();
-			while (i.hasNext()) {
-				MalfunctionManager manager = i.next().getMalfunctionManager();
-				double entityProb = (manager.getEffectiveTimeSinceLastMaintenance() / 20D);
-				if (entityProb > 100D) entityProb = 100D;
-				result += entityProb;
-			}
-		}
-
-		// Determine if settlement has a garage.
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {	
-			if (person.getSettlement().getBuildingManager().getBuildings(
-			        BuildingFunction.GROUND_VEHICLE_MAINTENANCE).size() > 0) {
-				result = 0D;
-			}
-        }
-
-        // Check if an airlock is available
-        if (getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-        	if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-        		result = 0D;
-        	}
-        } 
-        
-		// Crowded settlement modifier
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			Settlement settlement = person.getSettlement();
-			if (settlement.getCurrentPopulationNum() > settlement.getPopulationCapacity()) {
-			    result *= 2D;
-			}
-		}
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-		// Job modifier.
-        Job job = person.getMind().getJob();
-		if (job != null) {
-		    result *= job.getStartTaskProbabilityModifier(MaintainGroundVehicleEVA.class);        
-		}
-	
-        return result;
     }
     
     /**
@@ -308,7 +242,7 @@ implements Serializable {
      * @param person person checking.
      * @return collection of ground vehicles available for maintenance.
      */
-    private static Collection<Vehicle> getAllVehicleCandidates(Person person) {
+    public static Collection<Vehicle> getAllVehicleCandidates(Person person) {
         Collection<Vehicle> result = new ConcurrentLinkedQueue<Vehicle>();
         
         Settlement settlement = person.getSettlement();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.07 2014-07-27
+ * @version 3.07 2014-08-15
  * @author Sebastien Venot
  */
 
@@ -55,27 +55,6 @@ implements Serializable {
         // Initialize phase
         addPhase(DOING_YOGA);
         setPhase(DOING_YOGA);
-    }
-
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-
-        double result = 0D;
-
-        // Stress modifier
-        result += person.getPhysicalCondition().getStress() / 2D;
-        
-        // No yoga outside.
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-            result = 0D;
-        }
-
-        return result;
-
     }
 
     @Override

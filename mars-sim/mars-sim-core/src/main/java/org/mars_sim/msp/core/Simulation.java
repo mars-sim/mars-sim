@@ -336,7 +336,7 @@ implements ClockListener, Serializable {
 		final UpTimer ut = masterClock.getUpTimer();
 
 		ut.updateTime();
-
+		
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -348,9 +348,9 @@ implements ClockListener, Serializable {
 		}
 		mars.timePassing(time);
 		ut.updateTime();
-
+		
 		if (debug) {
-			logger.fine(
+			logger.fine (
 				Msg.getString(
 					"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
 					masterClock.getUpTimer().getUptime(),
@@ -360,7 +360,7 @@ implements ClockListener, Serializable {
 		}
 		missionManager.timePassing(time);
 		ut.updateTime();
-
+		
 		if (debug) {
 			logger.fine(
 				Msg.getString(
@@ -372,11 +372,11 @@ implements ClockListener, Serializable {
 		}
 		unitManager.timePassing(time);
 		ut.updateTime();
-
+		
 		if (debug) {
 			logger.fine(
 				Msg.getString(
-					"Simulation.log.clockPulseMissionManager", //$NON-NLS-1$
+					"Simulation.log.clockPulseScientificStudyManager", //$NON-NLS-1$
 					masterClock.getUpTimer().getUptime(),
 					scientificStudyManager.toString()
 				)
@@ -384,7 +384,7 @@ implements ClockListener, Serializable {
 		}
 		scientificStudyManager.updateStudies();
 		ut.updateTime();
-
+		
 		if (debug) {
 			logger.fine(
 				Msg.getString(

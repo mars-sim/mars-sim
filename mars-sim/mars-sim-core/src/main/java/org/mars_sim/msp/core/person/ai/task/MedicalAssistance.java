@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MedicalAssistance.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
@@ -24,7 +23,6 @@ import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.medical.HealthProblem;
 import org.mars_sim.msp.core.person.medical.MedicalAid;
 import org.mars_sim.msp.core.person.medical.Treatment;
@@ -130,51 +128,6 @@ implements Serializable {
 		addPhase(TREATMENT);
 		setPhase(TREATMENT);
 	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		// Get the local medical aids to use.
-		if (getNeedyMedicalAids(person).size() > 0) {
-			result = 150D;
-		}
-
-		// Crowding task modifier.
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-			try {
-				Building building = getMedicalAidBuilding(person);
-				if (building != null) {
-					result *= Task.getCrowdingProbabilityModifier(person, building);
-					result *= Task.getRelationshipModifier(person, building);
-				} 
-				else {
-					result = 0D;
-				}
-			}
-			catch (Exception e) {
-				logger.log(Level.SEVERE,"MedicalAssistance.getProbability(): " + e.getMessage());
-			}
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier if there is a nearby doctor.
-		if (isThereADoctorInTheHouse(person)) {
-			Job job = person.getMind().getJob();
-			if (job != null) {
-				result *= job.getStartTaskProbabilityModifier(MedicalAssistance.class);
-			}
-		}        
-
-		return result;
-	}
 	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -241,7 +194,7 @@ implements Serializable {
 	 * Gets the local medical aids that have patients waiting.
 	 * @return List of medical aids
 	 */
-	private static List<MedicalAid> getNeedyMedicalAids(Person person) {
+	public static List<MedicalAid> getNeedyMedicalAids(Person person) {
 		List<MedicalAid> result = new ArrayList<MedicalAid>();
 
 		LocationSituation location = person.getLocationSituation();
@@ -358,7 +311,7 @@ implements Serializable {
 	 * @param person the person looking for a medical care building.
 	 * @return medical care building or null if none found.
 	 */
-	private static Building getMedicalAidBuilding(Person person) {
+	public static Building getMedicalAidBuilding(Person person) {
 		Building result = null;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
@@ -397,7 +350,7 @@ implements Serializable {
 	 * @param person the person checking.
 	 * @return true if a doctor nearby.
 	 */
-	private static boolean isThereADoctorInTheHouse(Person person) {
+	public static boolean isThereADoctorInTheHouse(Person person) {
 		boolean result = false;
 
 		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {

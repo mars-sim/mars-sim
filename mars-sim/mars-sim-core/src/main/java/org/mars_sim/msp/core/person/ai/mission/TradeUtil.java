@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-13
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -62,7 +62,7 @@ public final class TradeUtil {
 	private final static Map <Class, Equipment> equipmentGoodCache = new HashMap<Class, Equipment>(5);
 
 	/** Cache for the best trade settlement. */
-	static Settlement bestTradeSettlementCache = null;
+	public static Settlement bestTradeSettlementCache = null;
 
 	/** Cache for container types. */
 	private final static Map <Class, Equipment> containerTypeCache = new HashMap<Class, Equipment>(3);
@@ -79,7 +79,7 @@ public final class TradeUtil {
 	 * @return the best value (value points) for trade.
 	 * @throws Exception if error while getting best trade profit.
 	 */
-	static double getBestTradeProfit(Settlement startingSettlement, Rover rover) {
+	public static double getBestTradeProfit(Settlement startingSettlement, Rover rover) {
 		double bestProfit = 0D;
 		Settlement bestSettlement = null;
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryResearch.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -107,92 +106,6 @@ implements ResearchScientificStudy, Serializable {
         setPhase(RESEARCHING);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        // Add probability for researcher's primary study (if any).
-        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-        if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-            if (!primaryStudy.isPrimaryResearchCompleted()) {
-                try {
-                    Lab lab = getLocalLab(person, primaryStudy.getScience());
-                    if (lab != null) {
-                        double primaryResult = 50D;
-                    
-                        // Get lab building crowding modifier.
-                        primaryResult *= getLabCrowdingModifier(person, lab);
-                    
-                        // If researcher's current job isn't related to study science, divide by two.
-                        Job job = person.getMind().getJob();
-                        if (job != null) {
-                            ScienceType jobScience = ScienceType.getJobScience(job);
-                            if (!primaryStudy.getScience().equals(jobScience)) {
-                                primaryResult /= 2D;
-                            }
-                        }
-                    
-                        result += primaryResult;
-                    }
-                }
-                catch (Exception e) {
-                    logger.severe("getProbability(): " + e.getMessage());
-                }
-            }
-        }
-        
-        // Add probability for each study researcher is collaborating on.
-        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-        while (i.hasNext()) {
-            ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-                if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-                    try {
-                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                    
-                        Lab lab = getLocalLab(person, collabScience);
-                        if (lab != null) {
-                            double collabResult = 25D;
-                        
-                            // Get lab building crowding modifier.
-                            collabResult *= getLabCrowdingModifier(person, lab);
-                        
-                            // If researcher's current job isn't related to study science, divide by two.
-                            Job job = person.getMind().getJob();
-                            if (job != null) {
-                                ScienceType jobScience = ScienceType.getJobScience(job);
-                                if (!collabScience.equals(jobScience)) {
-                                    collabResult /= 2D;
-                                }
-                            }
-                        
-                            result += collabResult;
-                        }
-                    }
-                    catch (Exception e) {
-                        logger.severe("getProbability(): " + e.getMessage());
-                    }
-                }
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(PerformLaboratoryResearch.class);
-        }
-        
-        return result;
-    }
-    
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.RESEARCH;
@@ -204,7 +117,7 @@ implements ResearchScientificStudy, Serializable {
      * @param lab the laboratory.
      * @return crowding modifier.
      */
-    private static double getLabCrowdingModifier(Person researcher, Lab lab) {
+    public static double getLabCrowdingModifier(Person researcher, Lab lab) {
         double result = 1D;
         if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
             Building labBuilding = ((Research) lab).getBuilding();  
@@ -296,7 +209,7 @@ implements ResearchScientificStudy, Serializable {
      * @return laboratory found or null if none.
      * @throws Exception if error getting a lab.
      */
-    private static Lab getLocalLab(Person person, ScienceType science) {
+    public static Lab getLocalLab(Person person, ScienceType science) {
         Lab result = null;
         
         LocationSituation location = person.getLocationSituation();

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Sleep.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -31,7 +30,7 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * The duration of the task is by default chosen randomly, between 250 - 330 millisols.
  * Note: Sleeping reduces fatigue and stress.
  */
-class Sleep extends Task implements Serializable {
+public class Sleep extends Task implements Serializable {
 
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
@@ -98,44 +97,6 @@ class Sleep extends Task implements Serializable {
         // Initialize phase
         addPhase(SLEEPING);
         setPhase(SLEEPING);
-    }
-
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-		// Fatigue modifier.
-		double fatigue = person.getPhysicalCondition().getFatigue();
-        if (fatigue > 500D) {
-            result = (fatigue - 500D) / 4D;
-        }
-        
-        // Dark outside modifier.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-		if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-		    result *= 2D;
-		}
-        
-        // Crowding modifier.
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-		    Building building = getAvailableLivingQuartersBuilding(person);
-		    if (building != null) {
-		        result *= Task.getCrowdingProbabilityModifier(person, building);
-		        result *= Task.getRelationshipModifier(person, building);
-		    }
-		}
-        
-        // No sleeping outside.
-        if (person.getLocationSituation() == LocationSituation.OUTSIDE) {
-            result = 0D;
-        }
-
-        return result;
     }
     
     @Override
@@ -206,7 +167,7 @@ class Sleep extends Task implements Serializable {
 	 * @param person the person
 	 * @return available living accommodations building
 	 */
-	private static Building getAvailableLivingQuartersBuilding(Person person) {
+	public static Building getAvailableLivingQuartersBuilding(Person person) {
      
 		Building result = null;
         

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ReturnLightUtilityVehicle.java
- * @version 3.06 2014-02-27
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
@@ -122,26 +121,6 @@ implements Serializable {
             logger.fine(person.getName() + " is starting to return light utility vehicle: " + luv.getName() + 
                     " to " + returnContainer.getName());
         }
-    }
-    
-    
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
-            
-            if (person.getVehicle() instanceof LightUtilityVehicle) {
-                result = 500D;
-            }
-        }
-
-        return result;
     }
     
     @Override

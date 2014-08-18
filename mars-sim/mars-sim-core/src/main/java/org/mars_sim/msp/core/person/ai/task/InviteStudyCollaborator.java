@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.science.ScienceType;
@@ -117,66 +116,12 @@ implements Serializable {
         setPhase(WRITING_INVITATION);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy study = manager.getOngoingPrimaryStudy(person);
-        if (study != null) {
-            
-            // Check if study is in invitation phase.
-            if (study.getPhase().equals(ScientificStudy.INVITATION_PHASE)) {
-                
-                // Check that there isn't a full set of open invitations already sent out.
-                int collabNum = study.getCollaborativeResearchers().size();
-                int openInvites = study.getNumOpenResearchInvitations();
-                if ((openInvites + collabNum) < ScientificStudy.MAX_NUM_COLLABORATORS) {
-                    
-                    // Check that there's scientists available for invitation.
-                    if (ScientificStudyUtil.getAvailableCollaboratorsForInvite(study).size() > 0) {
-                        
-                        result = 25D;
-                        
-                        // Increase probability if person's current job is related to study's science.
-                        Job job = person.getMind().getJob();
-                        ScienceType science = study.getScience();
-                        if (science == ScienceType.getJobScience(job)) {
-                            result*= 2D;
-                        }
-                    }
-                }
-            }
-        }
-        
-        // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= Task.getRelationshipModifier(person, adminBuilding);
-            }
-        }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(InviteStudyCollaborator.class);
-        }
-        
-        return result;
-    }
-    
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
      * @return available administration building or null if none.
      */
-    private static Building getAvailableAdministrationBuilding(Person person) {
+    public static Building getAvailableAdministrationBuilding(Person person) {
 
         Building result = null;
 

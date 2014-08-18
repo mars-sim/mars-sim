@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -20,7 +20,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.science.ScienceType;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.science.ScientificStudyManager;
@@ -102,91 +101,12 @@ implements Serializable {
         setPhase(COMPILING_PHASE);
     }
     
-    /** 
-     * Returns the weighted probability that a person might perform this task.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        // Add probability for researcher's primary study (if any).
-        ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-        ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-        if ((primaryStudy != null) && ScientificStudy.PAPER_PHASE.equals(primaryStudy.getPhase())) {
-            if (!primaryStudy.isPrimaryPaperCompleted()) {
-                try {
-                    double primaryResult = 50D;
-                    
-                    // If researcher's current job isn't related to study science, divide by two.
-                    Job job = person.getMind().getJob();
-                    if (job != null) {
-                        ScienceType jobScience = ScienceType.getJobScience(job);
-                        if (!primaryStudy.getScience().equals(jobScience)) primaryResult /= 2D;
-                    }
-                    
-                    result += primaryResult;
-                }
-                catch (Exception e) {
-                    logger.severe("getProbability(): " + e.getMessage());
-                }
-            }
-        }
-        
-        // Add probability for each study researcher is collaborating on.
-        Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-        while (i.hasNext()) {
-            ScientificStudy collabStudy = i.next();
-            if (ScientificStudy.PAPER_PHASE.equals(collabStudy.getPhase())) {
-                if (!collabStudy.isCollaborativePaperCompleted(person)) {
-                    try {
-                        ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
-                    
-                        double collabResult = 25D;
-                        
-                        // If researcher's current job isn't related to study science, divide by two.
-                        Job job = person.getMind().getJob();
-                        if (job != null) {
-                            ScienceType jobScience = ScienceType.getJobScience(job);
-                            if (!collabScience.equals(jobScience)) collabResult /= 2D;
-                        }
-                        
-                        result += collabResult;
-                    }
-                    catch (Exception e) {
-                        logger.severe("getProbability(): " + e.getMessage());
-                    }
-                }
-            }
-        }
-        
-        // Crowding modifier
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-            Building adminBuilding = getAvailableAdministrationBuilding(person);
-            if (adminBuilding != null) {
-                result *= Task.getCrowdingProbabilityModifier(person, adminBuilding);
-                result *= Task.getRelationshipModifier(person, adminBuilding);
-            }
-        }
-        
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(CompileScientificStudyResults.class);
-        }
-        
-        return result;
-    }
-    
     /**
      * Gets an available administration building that the person can use.
      * @param person the person
      * @return available administration building or null if none.
      */
-    private static Building getAvailableAdministrationBuilding(Person person) {
+    public static Building getAvailableAdministrationBuilding(Person person) {
 
         Building result = null;
 

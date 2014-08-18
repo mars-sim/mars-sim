@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-07-30
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -217,10 +217,9 @@ implements Serializable {
 	/**
 	 * Time passing for crop.
 	 * @param time - amount of time passing (millisols)
-	 * @throws Exception if error during time.
 	 */
 	public void timePassing(double time) {
-
+	    
 		if (time > 0D) {
 			if (phase.equals(GROWING)) {
 				growingTimeCompleted += time;
@@ -280,7 +279,7 @@ implements Serializable {
 					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * 
 							.5D) + .5D);   
 
-					// Modifiy harvest amount.
+					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
 
 					// Check if crop is dying if it's at least 25% along on it's growing time and its condition 

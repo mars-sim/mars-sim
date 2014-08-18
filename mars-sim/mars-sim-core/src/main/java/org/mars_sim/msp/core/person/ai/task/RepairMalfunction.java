@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -25,7 +25,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
@@ -123,7 +122,7 @@ implements Repair, Serializable {
      * @param malfunction the malfunction.
      * @return true if enough repair parts to fix malfunction.
      */
-    private static boolean hasRepairPartsForMalfunction(Person person, 
+    public static boolean hasRepairPartsForMalfunction(Person person, 
             Malfunction malfunction) {
         if (person == null) {
             throw new IllegalArgumentException("person is null");
@@ -148,45 +147,6 @@ implements Repair, Serializable {
                     result = false;
                 }
             }
-        }
-
-        return result;
-    }
-
-    /** 
-     *  Returns the weighted probability that a person might perform this task.
-     *  @param person the person to perform the task
-     *  @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        // Total probabilities for all malfunctionable entities in person's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            Malfunctionable entity = i.next();
-            MalfunctionManager manager = entity.getMalfunctionManager();
-            Iterator<Malfunction> j = manager.getNormalMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                try {
-                    if (hasRepairPartsForMalfunction(person, malfunction)) {
-                        result += 100D;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(RepairMalfunction.class);        
         }
 
         return result;

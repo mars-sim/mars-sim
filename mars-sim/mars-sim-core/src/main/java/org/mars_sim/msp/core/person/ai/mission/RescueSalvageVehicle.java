@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RescueSalvageVehicle.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -24,7 +24,6 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PhysicalCondition;
 import org.mars_sim.msp.core.person.ai.job.Driver;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
@@ -52,10 +51,10 @@ implements Serializable {
 	public static final String DEFAULT_DESCRIPTION = "Rescue/Salvage Vehicle";
 
 	// Static members
-	private static final int MISSION_MIN_MEMBERS = 2;
+	public static final int MISSION_MIN_MEMBERS = 2;
 	private static final int MISSION_MAX_MEMBERS = 3;
-	private static final double BASE_RESCUE_MISSION_WEIGHT = 1000D;
-	private static final double BASE_SALVAGE_MISSION_WEIGHT = 5D;
+	public static final double BASE_RESCUE_MISSION_WEIGHT = 1000D;
+	public static final double BASE_SALVAGE_MISSION_WEIGHT = 5D;
 	private static final double RESCUE_RESOURCE_BUFFER = 1D;
 	
 	// Mission phases
@@ -155,79 +154,6 @@ implements Serializable {
         
     	// Check if vehicle can carry enough supplies for the mission.
     	if (hasVehicle() && !isVehicleLoadable()) endMission("Vehicle is not loadable. (RescueSalvageVehicle)");
-    }
-    
-    /** 
-     * Gets the weighted probability that a given person would start this mission.
-     * @param person the given person
-     * @return the weighted probability
-     */
-    public static double getNewMissionProbability(Person person) {
-
-    	double missionProbability = 0D;
-    
-        if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-        	
-        	// Check if mission is possible for person based on their circumstance.
-        	boolean missionPossible = true;
-            Settlement settlement = person.getSettlement();
-	    
-	    	// Check if available rover.
-	    	if (!areVehiclesAvailable(settlement, true)) missionPossible = false;
-	    	
-			// Check if min number of EVA suits at settlement.
-			if (Mission.getNumberAvailableEVASuitsAtSettlement(settlement) < MISSION_MIN_MEMBERS) 
-				missionPossible = false;
-	    	
-	    	// Check if there are any beacon vehicles within range that need help.
-	    	Vehicle vehicleTarget = null;
-	    	try {
-	    		Vehicle vehicle = getVehicleWithGreatestRange(settlement, true);
-		    	if (vehicle != null) {
-		    		vehicleTarget = findAvailableBeaconVehicle(settlement, vehicle.getRange());
-		    		if (vehicleTarget == null) missionPossible = false;
-		    		else if (!isClosestCapableSettlement(settlement, vehicleTarget)) missionPossible = false;
-		    	}
-	    	}
-	    	catch (Exception e) {}
-	    	
-	    	// Check if person is last remaining person at settlement (for salvage mission but not rescue mission).
-            // Also check for backup rover for salvage mission.
-	    	boolean rescue = false;
-	    	if (vehicleTarget != null) {
-	    		rescue = (getRescuePeopleNum(vehicleTarget) > 0);
-	    		if (rescue) {
-	    			// if (!atLeastOnePersonRemainingAtSettlement(settlement, person)) missionPossible = false;
-	    		}
-		    	else {
-					// Check if minimum number of people are available at the settlement.
-					// Plus one to hold down the fort.
-					if (!minAvailablePeopleAtSettlement(settlement, (MISSION_MIN_MEMBERS + 1))) missionPossible = false;
-                    
-                    // Check if available backup rover.
-                    if (!hasBackupRover(settlement)) missionPossible = false;
-		    	}
-	    	}
-	    	
-			// Check for embarking missions.
-			if (VehicleMission.hasEmbarkingMissions(settlement)) missionPossible = false;
-	    	
-	    	// Determine mission probability.
-	        if (missionPossible) {
-	        	if (rescue) missionProbability = BASE_RESCUE_MISSION_WEIGHT;
-	        	else missionProbability = BASE_SALVAGE_MISSION_WEIGHT;
-	            
-	            // Crowding modifier.
-	            int crowding = settlement.getCurrentPopulationNum() - settlement.getPopulationCapacity();
-	            if (crowding > 0) missionProbability *= (crowding + 1);
-	        	
-	    		// Job modifier.
-	        	Job job = person.getMind().getJob();
-	        	if (job != null) missionProbability *= job.getStartMissionProbabilityModifier(RescueSalvageVehicle.class);	
-	        }
-        }
-
-        return missionProbability;
     }
     
     @Override
@@ -544,7 +470,7 @@ implements Serializable {
      * @param vehicle the vehicle.
      * @return number of people.
      */
-    private static int getRescuePeopleNum(Vehicle vehicle) {
+    public static int getRescuePeopleNum(Vehicle vehicle) {
     	int result = 0;
     	
     	if (vehicle instanceof Crewable) {

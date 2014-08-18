@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.07 2014-06-28
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
 import org.mars_sim.msp.core.manufacture.SalvageProcess;
@@ -25,13 +24,11 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
 import org.mars_sim.msp.core.structure.building.function.BuildingFunction;
 import org.mars_sim.msp.core.structure.building.function.Manufacture;
-import org.mars_sim.msp.core.time.MarsClock;
 
 /**
  * A task for salvaging a malfunctionable piece of equipment back down
@@ -94,69 +91,6 @@ implements Serializable {
 		// Initialize phase
 		addPhase(SALVAGE);
 		setPhase(SALVAGE);
-	}
-
-	/**
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-
-			// See if there is an available manufacturing building.
-			Building manufacturingBuilding = getAvailableManufacturingBuilding(person);
-			if (manufacturingBuilding != null) {
-				result = 1D;
-
-				// No salvaging goods until after the first month of the simulation.
-				MarsClock startTime = Simulation.instance().getMasterClock().getInitialMarsTime();
-				MarsClock currentTime = Simulation.instance().getMasterClock().getMarsClock();
-				double totalTimeMillisols = MarsClock.getTimeDiff(currentTime, startTime);
-				double totalTimeOrbits = totalTimeMillisols / 1000D / MarsClock.SOLS_IN_ORBIT_NON_LEAPYEAR;
-				if (totalTimeOrbits < MarsClock.SOLS_IN_MONTH_LONG) {
-					result = 0D;
-				}
-
-				// Crowding modifier.
-				result *= Task.getCrowdingProbabilityModifier(person, manufacturingBuilding);
-				result *= Task.getRelationshipModifier(person, manufacturingBuilding);
-
-				// Salvaging good value modifier.
-				result *= getHighestSalvagingProcessValue(person, manufacturingBuilding);
-
-				if (result > 100D) {
-					result = 100D;
-				}
-
-				// If manufacturing building has salvage process requiring work, add
-				// modifier.
-				SkillManager skillManager = person.getMind().getSkillManager();
-				int skill = skillManager.getEffectiveSkillLevel(SkillType.MATERIALS_SCIENCE);
-				if (hasSalvageProcessRequiringWork(manufacturingBuilding, skill)) {
-					result += 10D;
-				}
-
-				// If settlement has manufacturing override, no new
-				// salvage processes can be created.
-				else if (person.getSettlement().getManufactureOverride()) {
-					result = 0;
-				}
-			}
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-			result *= job.getStartTaskProbabilityModifier(SalvageGood.class);
-		}
-
-		return result;
 	}
 	
     @Override
@@ -286,7 +220,7 @@ implements Serializable {
 	 * @param person the person
 	 * @return available manufacturing building
 	 */
-	private static Building getAvailableManufacturingBuilding(Person person) {
+	public static Building getAvailableManufacturingBuilding(Person person) {
 
 		Building result = null;
 
@@ -370,7 +304,7 @@ implements Serializable {
 	 * @param skill the materials science skill level of the person.
 	 * @return true if processes requiring work.
 	 */
-	private static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
+	public static boolean hasSalvageProcessRequiringWork(Building manufacturingBuilding, 
 			int skill) {
 
 		boolean result = false;
@@ -429,7 +363,7 @@ implements Serializable {
 	 * @param manufacturingBuilding the manufacturing building.
 	 * @return highest process good value.
 	 */
-	private static double getHighestSalvagingProcessValue(Person person, 
+	public static double getHighestSalvagingProcessValue(Person person, 
 			Building manufacturingBuilding) {
 
 		double highestProcessValue = 0D;

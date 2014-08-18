@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingManager.java
- * @version 3.07 2014-07-02
+ * @version 3.07 2014-07-30
  * @author Scott Davis
  */
 
@@ -284,7 +284,9 @@ implements Serializable {
      */
     public void timePassing(double time) {
         Iterator<Building> i = buildings.iterator();
-        while (i.hasNext()) i.next().timePassing(time);
+        while (i.hasNext()) {
+            i.next().timePassing(time);
+        }
     }
 
     /**

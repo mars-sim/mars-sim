@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -22,7 +22,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.social.Relationship;
 import org.mars_sim.msp.core.person.ai.social.RelationshipManager;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -111,42 +110,6 @@ implements Serializable {
         setPhase(ASSISTING);
     }
     
-    /** 
-     * Gets the weighted probability that a person might perform this task.
-     * It should return a 0 if there is no chance to perform this task given the person and his/her situation.
-     * @param person the person to perform the task
-     * @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-        
-        // Find potential researchers.
-        Collection<Person> potentialResearchers = getBestResearchers(person);
-        if (potentialResearchers.size() > 0) {
-            result = 50D; 
-        
-            // If assistant is in a settlement, use crowding modifier.
-            if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                Person researcher = (Person) potentialResearchers.toArray()[0];
-
-                Building building = BuildingManager.getBuilding(researcher);
-                if (building != null) {
-                    result *= Task.getCrowdingProbabilityModifier(person, building);
-                    result *= Task.getRelationshipModifier(person, building);
-                }
-                else result = 0D;
-            }
-        }
-        
-        // Job modifier.
-        Job job = person.getMind().getJob();
-        if (job != null) {
-            result *= job.getStartTaskProbabilityModifier(AssistScientificStudyResearcher.class);
-        }
-        
-        return result;
-    }
-    
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.RESEARCH;
@@ -172,7 +135,7 @@ implements Serializable {
      * Gets a list of the most preferred researchers to assist.
      * @return collection of preferred researchers, empty of none available.
      */
-    private static Collection<Person> getBestResearchers(Person assistant) {
+    public static Collection<Person> getBestResearchers(Person assistant) {
         Collection<Person> result = null;
         
         // Get all available researchers.

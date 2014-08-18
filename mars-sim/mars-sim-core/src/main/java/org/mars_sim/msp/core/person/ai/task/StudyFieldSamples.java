@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StudyFieldSamples.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -28,7 +28,6 @@ import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.mission.Exploration;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -63,7 +62,7 @@ implements ResearchScientificStudy, Serializable {
 	private static final String STUDYING_SAMPLES = "Studying Samples";
 
 	/** Mass (kg) of field sample to study. */
-	private static final double SAMPLE_MASS = 1D;
+	public static final double SAMPLE_MASS = 1D;
 
 	private static final double ESTIMATE_IMPROVEMENT_FACTOR = 5D;
 
@@ -133,113 +132,6 @@ implements ResearchScientificStudy, Serializable {
 		addPhase(STUDYING_SAMPLES);
 		setPhase(STUDYING_SAMPLES);
 	}
-
-	/** 
-	 * Returns the weighted probability that a person might perform this task.
-	 * @param person the person to perform the task
-	 * @return the weighted probability that a person might perform this task
-	 */
-	public static double getProbability(Person person) {
-		double result = 0D;
-
-		// Create list of possible sciences for studying field samples.
-		List<ScienceType> fieldSciences = getFieldSciences();
-
-		// Add probability for researcher's primary study (if any).
-		ScientificStudyManager studyManager = Simulation.instance().getScientificStudyManager();
-		ScientificStudy primaryStudy = studyManager.getOngoingPrimaryStudy(person);
-		if ((primaryStudy != null) && ScientificStudy.RESEARCH_PHASE.equals(primaryStudy.getPhase())) {
-			if (!primaryStudy.isPrimaryResearchCompleted()) {
-				if (fieldSciences.contains(primaryStudy.getScience())) {
-					try {
-						Lab lab = getLocalLab(person, primaryStudy.getScience());
-						if (lab != null) {
-							double primaryResult = 50D;
-
-							// Get lab building crowding modifier.
-							primaryResult *= getLabCrowdingModifier(person, lab);
-
-							// If researcher's current job isn't related to study science, divide by two.
-							Job job = person.getMind().getJob();
-							if (job != null) {
-								ScienceType jobScience = ScienceType.getJobScience(job);
-								if (!primaryStudy.getScience().equals(jobScience)) {
-									primaryResult /= 2D;
-								}
-							}
-
-							result += primaryResult;
-						}
-					}
-					catch (Exception e) {
-						logger.severe("getProbability(): " + e.getMessage());
-					}
-				}
-			}
-		}
-
-		// Add probability for each study researcher is collaborating on.
-		Iterator<ScientificStudy> i = studyManager.getOngoingCollaborativeStudies(person).iterator();
-		while (i.hasNext()) {
-			ScientificStudy collabStudy = i.next();
-			if (ScientificStudy.RESEARCH_PHASE.equals(collabStudy.getPhase())) {
-				if (!collabStudy.isCollaborativeResearchCompleted(person)) {
-					ScienceType collabScience = collabStudy.getCollaborativeResearchers().get(person);
-					if (fieldSciences.contains(collabScience)) {
-						try {
-							Lab lab = getLocalLab(person, collabScience);
-							if (lab != null) {
-								double collabResult = 25D;
-
-								// Get lab building crowding modifier.
-								collabResult *= getLabCrowdingModifier(person, lab);
-
-								// If researcher's current job isn't related to study science, divide by two.
-								Job job = person.getMind().getJob();
-								if (job != null) {
-									ScienceType jobScience = ScienceType.getJobScience(job);
-									if (!collabScience.equals(jobScience)) {
-										collabResult /= 2D;
-									}
-								}
-
-								result += collabResult;
-							}
-						}
-						catch (Exception e) {
-							logger.severe("getProbability(): " + e.getMessage());
-						}
-					}
-				}
-			}
-		}
-
-		// Check that there are available field samples to study.
-		try {
-			Unit container = person.getContainerUnit();
-			if (container != null) {
-				Inventory inv = container.getInventory();
-				AmountResource rockSamples = AmountResource.findAmountResource("rock samples");
-				if (inv.getAmountResourceStored(rockSamples, false) < SAMPLE_MASS) {
-					result = 0D;
-				}
-			}
-		}
-		catch (Exception e) {
-			logger.severe("getProbability(): " + e.getMessage());
-		}
-
-		// Effort-driven task modifier.
-		result *= person.getPerformanceRating();
-
-		// Job modifier.
-		Job job = person.getMind().getJob();
-		if (job != null) {
-			result *= job.getStartTaskProbabilityModifier(StudyFieldSamples.class);
-		}
-
-		return result;
-	}
 	
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
@@ -250,7 +142,7 @@ implements ResearchScientificStudy, Serializable {
 	 * Gets all the sciences related to studying field samples.
 	 * @return list of sciences.
 	 */
-	private static List<ScienceType> getFieldSciences() {
+	public static List<ScienceType> getFieldSciences() {
 
 		// Create list of possible sciences for studying field samples.
 		List<ScienceType> fieldSciences = new ArrayList<ScienceType>(3);
@@ -267,7 +159,7 @@ implements ResearchScientificStudy, Serializable {
 	 * @param lab the laboratory.
 	 * @return crowding modifier.
 	 */
-	private static double getLabCrowdingModifier(Person researcher, Lab lab) {
+	public static double getLabCrowdingModifier(Person researcher, Lab lab) {
 		double result = 1D;
 		if (researcher.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
 			Building labBuilding = ((Research) lab).getBuilding();  
@@ -352,7 +244,7 @@ implements ResearchScientificStudy, Serializable {
 	 * @param science the science to research.
 	 * @return laboratory found or null if none.
 	 */
-	private static Lab getLocalLab(Person person, ScienceType science) {
+	public static Lab getLocalLab(Person person, ScienceType science) {
 		Lab result = null;
 
 		LocationSituation location = person.getLocationSituation();

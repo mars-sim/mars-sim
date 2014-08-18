@@ -1,26 +1,23 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.06 2014-02-21
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
-import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.Mind;
+import org.mars_sim.msp.core.person.ai.task.meta.MetaTask;
+import org.mars_sim.msp.core.person.ai.task.meta.MetaTaskUtil;
 import org.mars_sim.msp.core.time.MarsClock;
 
 /** 
@@ -44,12 +41,11 @@ implements Serializable {
 	private Task currentTask;
 	/** The mind of the person the task manager is responsible for. */
 	private Mind mind;
-	/** Array of available tasks. */
-	private Class<? extends Task>[] availableTasks = null;
+
 	// Cache variables.
-	private MarsClock timeCache;
-	private Map<Class<? extends Task>, Double> taskProbCache;
-	private double totalProbCache;
+	private transient MarsClock timeCache;
+	private transient double totalProbCache;
+	private transient Map<MetaTask, Double> taskProbCache;
 
 	/** 
 	 * Constructor.
@@ -60,55 +56,9 @@ implements Serializable {
         this.mind = mind;
         currentTask = null;
 
-        // Initialize available tasks.
-        availableTasks = (Class<? extends Task>[]) new Class[43];
-        availableTasks[0] = Relax.class;
-        availableTasks[1] = Yoga.class;
-        availableTasks[2] = TendGreenhouse.class;
-        availableTasks[3] = Maintenance.class;
-        availableTasks[4] = MaintainGroundVehicleGarage.class;
-        availableTasks[5] = MaintainGroundVehicleEVA.class;
-        availableTasks[6] = Sleep.class;
-        availableTasks[7] = EatMeal.class;
-        availableTasks[8] = MedicalAssistance.class;
-        availableTasks[9] = RepairMalfunction.class;
-        availableTasks[10] = RepairEVAMalfunction.class;
-        availableTasks[11] = Workout.class;
-        availableTasks[12] = Teach.class;
-        availableTasks[13] = CookMeal.class;
-        availableTasks[14] = MaintenanceEVA.class;
-        availableTasks[15] = LoadVehicleGarage.class;
-        availableTasks[16] = UnloadVehicleGarage.class;
-        availableTasks[17] = ToggleResourceProcess.class;
-        availableTasks[18] = ManufactureGood.class;
-        availableTasks[19] = ToggleFuelPowerSource.class;
-        availableTasks[20] = DigLocalRegolith.class;
-        availableTasks[21] = PrescribeMedication.class;
-        availableTasks[22] = ProposeScientificStudy.class;
-        availableTasks[23] = InviteStudyCollaborator.class;
-        availableTasks[24] = RespondToStudyInvitation.class;
-        availableTasks[25] = PerformLaboratoryResearch.class;
-        availableTasks[26] = ObserveAstronomicalObjects.class;
-        availableTasks[27] = StudyFieldSamples.class;
-        availableTasks[28] = PerformLaboratoryExperiment.class;
-        availableTasks[29] = PerformMathematicalModeling.class;
-        availableTasks[30] = CompileScientificStudyResults.class;
-        availableTasks[31] = PeerReviewStudyPaper.class;
-        availableTasks[32] = AssistScientificStudyResearcher.class;
-        availableTasks[33] = SalvageGood.class;
-        availableTasks[34] = ManufactureConstructionMaterials.class;
-        availableTasks[35] = ReturnLightUtilityVehicle.class;
-        availableTasks[36] = LoadVehicleEVA.class;
-        availableTasks[37] = UnloadVehicleEVA.class;
-        availableTasks[38] = DigLocalIce.class;
-        availableTasks[39] = ConsolidateContainers.class;
-        availableTasks[40] = Walk.class;
-        availableTasks[41] = ConstructBuilding.class;
-        availableTasks[42] = SalvageBuilding.class;
-
         // Initialize cache values.
         timeCache = null;
-        taskProbCache = new HashMap<Class<? extends Task>, Double>(availableTasks.length);
+        taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
         totalProbCache = 0D;
     }
 
@@ -226,73 +176,76 @@ implements Serializable {
 
         // Check for emergency malfunction.
         if (RepairEmergencyMalfunction.hasEmergencyMalfunction(mind.getPerson())) {
-            boolean hasEmergencyRepair = false;
+            boolean hasEmergencyRepair = ((currentTask != null) && (currentTask 
+                    instanceof RepairEmergencyMalfunction));
+            
+            boolean hasAirlockTask = false;
             Task task = currentTask;
             while (task != null) {
-                if (task instanceof RepairEmergencyMalfunction) {
-                    hasEmergencyRepair = true;
+                if ((task instanceof EnterAirlock) && (task instanceof ExitAirlock)) {
+                    hasAirlockTask = true;
                 }
                 task = task.getSubTask();
             }
 
-            if (!hasEmergencyRepair) {
+            if (!hasEmergencyRepair && !hasAirlockTask) {
+                logger.fine(mind.getPerson() + " cancelling task " + currentTask + 
+                        " due to emergency repairs.");
+                clearTask();
                 addTask(new RepairEmergencyMalfunction(mind.getPerson()));
             }
         }
     }
-
+    
     /** 
      * Gets a new task for the person based on tasks available.
      * @return new task
-     * @throws Exception if new task could not be found.
      */
     public Task getNewTask() {
+
+        Task result = null;
 
         // If cache is not current, calculate the probabilities.
         if (!useCache()) {
             calculateProbability();
         }
-
+        
         // Get a random number from 0 to the total weight
         double totalProbability = getTotalTaskProbability(true);
+
+        if (totalProbability == 0D) {
+            throw new IllegalStateException(mind.getPerson() + 
+                    " has zero total task probability weight.");
+        }
+
         double r = RandomUtil.getRandomDouble(totalProbability);
 
         // Determine which task is selected.
-        Class<? extends Task> selectedTask = null;
-        Iterator<Class<? extends Task>> i = taskProbCache.keySet().iterator();
-        while (i.hasNext()) {
-            Class<? extends Task> task = i.next();
-            double probWeight = (Double) taskProbCache.get(task);
-            if (selectedTask == null) {
-                if (r < probWeight) {
-                    selectedTask = task;
-                } else {
-                    r -= probWeight;
-                }
+        MetaTask selectedMetaTask = null;
+        Iterator<MetaTask> i = taskProbCache.keySet().iterator();
+        while (i.hasNext() && (selectedMetaTask == null)) {
+            MetaTask metaTask = i.next();
+            double probWeight = taskProbCache.get(metaTask);
+            if (r <= probWeight) {
+                selectedMetaTask = metaTask;
+            } 
+            else {
+                r -= probWeight;
             }
         }
 
-        // Construct the task
-        Class[] parametersForFindingMethod = {Person.class};
-        Object[] parametersForInvokingMethod = {mind.getPerson()};
-
-        Constructor construct;
-        try {
-            construct = selectedTask.getConstructor(parametersForFindingMethod);
-            return (Task) construct.newInstance(parametersForInvokingMethod);
-        } catch (NoSuchMethodException ex) {
-            throw new IllegalStateException(ex);
-        } catch (SecurityException ex) {
-            throw new IllegalStateException(ex);
-        } catch (InstantiationException ex) {
-            throw new IllegalStateException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new IllegalStateException(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new IllegalStateException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new IllegalStateException(ex);
+        if (selectedMetaTask == null) {
+            throw new IllegalStateException(mind.getPerson() + 
+                    " could not determine a new task.");
         }
+
+        // Construct the task
+        result = selectedMetaTask.constructInstance(mind.getPerson());
+
+        // Clear time cache.
+        timeCache = null;
+
+        return result;
     }
 
     /** 
@@ -308,35 +261,32 @@ implements Serializable {
 
         return totalProbCache;
     }
-
+    
     /**
      * Calculates and caches the probabilities.
      */
     private void calculateProbability() {
-        // Initialize parameters.
-        Class[] parametersForFindingMethod = {Person.class};
-        Object[] parametersForInvokingMethod = {mind.getPerson()};
 
+        if (taskProbCache == null) {
+            taskProbCache = new HashMap<MetaTask, Double>(MetaTaskUtil.getMetaTasks().size());
+        }
+        
         // Clear total probabilities.
         totalProbCache = 0D;
 
         // Determine probabilities.
-        for (Class<? extends Task> availableTask : availableTasks) {
-            try {
-                Class<? extends Task> probabilityClass = availableTask;
-                Method probabilityMethod = probabilityClass.getMethod("getProbability", parametersForFindingMethod);
-                Double probability = (Double) probabilityMethod.invoke(null, parametersForInvokingMethod);
-                if ((probability >= 0D) && (probability != Double.NaN) && (probability != Double.POSITIVE_INFINITY)) {
-                    taskProbCache.put(probabilityClass, probability);
-                    totalProbCache += probability;
-                }
-                else {
-                    taskProbCache.put(probabilityClass, 0D);
-                    logger.severe(mind.getPerson().getName() + " bad task probability: " +  availableTask.getName() + 
-                            " probability: " + probability);
-                }
-            } catch (Exception e) {
-                logger.log(Level.SEVERE, "Error calculating task probabilities.", e);
+        Iterator<MetaTask> i = MetaTaskUtil.getMetaTasks().iterator();
+        while (i.hasNext()) {
+            MetaTask metaTask = i.next();
+            double probability = metaTask.getProbability(mind.getPerson());
+            if ((probability >= 0D) && (probability != Double.NaN) && (probability != Double.POSITIVE_INFINITY)) {
+                taskProbCache.put(metaTask, probability);
+                totalProbCache += probability;
+            }
+            else {
+                taskProbCache.put(metaTask, 0D);
+                logger.severe(mind.getPerson().getName() + " bad task probability: " +  metaTask.getName() + 
+                        " probability: " + probability);
             }
         }
 
@@ -357,9 +307,10 @@ implements Serializable {
      * Prepare object for garbage collection.
      */
     public void destroy() {
-        if (currentTask != null) currentTask.destroy();
+        if (currentTask != null) {
+            currentTask.destroy();
+        }
         mind = null;
-        availableTasks = null;
         timeCache = null;
         taskProbCache.clear();
         taskProbCache = null;

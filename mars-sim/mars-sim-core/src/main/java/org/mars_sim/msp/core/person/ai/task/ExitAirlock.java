@@ -66,7 +66,7 @@ implements Serializable {
 	 * @param airlock the airlock to use.
 	 */
 	public ExitAirlock(Person person, Airlock airlock) {
-        super("Exiting airlock for EVA", person, true, false, STRESS_MODIFIER, false, 0D);
+        super("Exiting airlock for EVA", person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
         setDescription("Exiting " + airlock.getEntityName() + " for EVA");
@@ -371,10 +371,14 @@ implements Serializable {
         
         logger.finer(person + " exiting airlock outside.");
         
+        if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
+            throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() + 
+                    " but is not outside.");
+        }
+        
         if (exteriorAirlockPos == null) {
             exteriorAirlockPos = airlock.getAvailableExteriorPosition();
         }
-        
         
         Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
         if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {

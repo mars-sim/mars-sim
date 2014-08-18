@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.06 2014-03-04
+ * @version 3.07 2014-08-15
  * @author Scott Davis
  */
 
@@ -21,20 +21,16 @@ import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
-import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
-import org.mars_sim.msp.core.mars.SurfaceFeatures;
-import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
 import org.mars_sim.msp.core.person.ai.SkillType;
-import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.resource.Part;
 import org.mars_sim.msp.core.structure.Settlement;
 
@@ -144,7 +140,7 @@ implements Repair, Serializable {
      * @param malfunction the malfunction.
      * @return true if enough repair parts to fix malfunction.
      */
-    private static boolean hasRepairPartsForMalfunction(Person person, Unit containerUnit, 
+    public static boolean hasRepairPartsForMalfunction(Person person, Unit containerUnit, 
             Malfunction malfunction) {
         if (person == null) {
             throw new IllegalArgumentException("person is null");
@@ -167,60 +163,6 @@ implements Repair, Serializable {
             if (inv.getItemResourceNum(part) < number) {
                 result = false;
             }
-        }
-
-        return result;
-    }
-
-    /** Returns the weighted probability that a person might perform this task.
-     *  @param person the person to perform the task
-     *  @return the weighted probability that a person might perform this task
-     */
-    public static double getProbability(Person person) {
-        double result = 0D;
-
-        // Total probabilities for all malfunctionable entities in person's local.
-        Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
-        while (i.hasNext()) {
-            MalfunctionManager manager = i.next().getMalfunctionManager();
-            Iterator<Malfunction> j = manager.getEVAMalfunctions().iterator();
-            while (j.hasNext()) {
-                Malfunction malfunction = j.next();
-                try {
-                    if (hasRepairPartsForMalfunction(person, person.getTopContainerUnit(), 
-                            malfunction)) {
-                        result += 100D;
-                    }
-                }
-                catch (Exception e) {
-                    e.printStackTrace(System.err);
-                }
-            }
-        }
-
-        // Check if an airlock is available
-        if (getWalkableAvailableAirlock(person) == null) {
-            result = 0D;
-        }
-
-        // Check if it is night time.
-        SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-        if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
-                result = 0D;
-            }
-        } 
-
-        // Effort-driven task modifier.
-        result *= person.getPerformanceRating();
-
-        // Check if person is in vehicle.
-        boolean inVehicle = LocationSituation.IN_VEHICLE == person.getLocationSituation();
-
-        // Job modifier if not in vehicle.
-        Job job = person.getMind().getJob();
-        if ((job != null) && !inVehicle) {
-            result *= job.getStartTaskProbabilityModifier(RepairEVAMalfunction.class);        
         }
 
         return result;
