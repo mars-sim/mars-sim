@@ -64,7 +64,7 @@ implements Serializable {
 		.append("job."); //$NON-NLS-1$
 		switch (gender) {
 			case MALE : key.append("male."); break; //$NON-NLS-1$
-			case FEMALE : key.append("male."); break; //$NON-NLS-1$
+			case FEMALE : key.append("female."); break; //$NON-NLS-1$
 			default : key.append("unknown."); break; //$NON-NLS-1$
 		}
 		key.append(jobClass.getSimpleName());

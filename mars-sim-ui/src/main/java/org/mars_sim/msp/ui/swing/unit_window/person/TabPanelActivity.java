@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelActivity.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-20
  * @author Scott Davis
  */
 
@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -243,7 +244,9 @@ implements ActionListener {
 			jobComboBox.setEnabled(false);
 		} 
 		else jobCache = mind.getJob().getName(person.getGender());
-		if (!jobCache.equals(jobComboBox.getSelectedItem())) jobComboBox.setSelectedItem(jobCache);
+		if (!jobCache.equals(jobComboBox.getSelectedItem())) {
+		    jobComboBox.setSelectedItem(jobCache);
+		}
 
 		TaskManager taskManager = null;
 		Mission mission = null;
@@ -305,9 +308,18 @@ implements ActionListener {
 			}
 		}
 		else if (source == jobComboBox) {
-			int jobIndex = jobComboBox.getSelectedIndex();
-			Job job = JobManager.getJobs().get(jobIndex);
-			((Person) unit).getMind().setJob(job, true);
+		    Person person = (Person) unit;
+			String jobName = (String) jobComboBox.getSelectedItem();
+			Job selectedJob = null;
+			Iterator<Job> i = JobManager.getJobs().iterator();
+			while (i.hasNext() && (selectedJob == null)) {
+			    Job job = i.next();
+			    if (jobName.equals(job.getName(person.getGender()))) {
+			        selectedJob = job;
+			    }
+			}
+			
+			person.getMind().setJob(selectedJob, true);
 		}
 	}
 }       
