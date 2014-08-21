@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InventoryTabPanel.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-21
  * @author Scott Davis
  */
 
@@ -11,8 +11,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -72,18 +69,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         // Create inventory label
         JLabel inventoryLabel = new JLabel("Inventory", JLabel.CENTER);
         inventoryLabelPanel.add(inventoryLabel);
-        
-        JButton btnUpdate = new JButton("↻");
-        btnUpdate.setToolTipText("update");
-        btnUpdate.addActionListener(
-        	new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					update();
-				}
-        	}
-        );
-        inventoryLabelPanel.add(btnUpdate);
         
         // Create inventory content panel
         JPanel inventoryContentPanel = new JPanel(new GridLayout(2, 1, 0, 0));
@@ -227,7 +212,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
         public void update() {
         	try {
         		List<Resource> newResourceKeys = new ArrayList<Resource>();
-        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(true));
+        		newResourceKeys.addAll(inventory.getAllAmountResourcesStored(false));
         		Map<Resource, Number> newResources = new HashMap<Resource, Number>();
         		Map<Resource, Number> newCapacity = new HashMap<Resource, Number>();
         		Iterator<Resource> i = newResourceKeys.iterator();
@@ -250,6 +235,7 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 Collections.sort(newResourceKeys);
             
         		if (!resources.equals(newResources)) {
+        		    System.out.println("Inventory table update");
         			resources = newResources;
         			capacity = newCapacity;
         			keys = newResourceKeys;
