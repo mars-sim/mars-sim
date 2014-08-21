@@ -235,7 +235,6 @@ public class InventoryTabPanel extends TabPanel implements ListSelectionListener
                 Collections.sort(newResourceKeys);
             
         		if (!resources.equals(newResources)) {
-        		    System.out.println("Inventory table update");
         			resources = newResources;
         			capacity = newCapacity;
         			keys = newResourceKeys;
