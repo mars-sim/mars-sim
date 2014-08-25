@@ -467,6 +467,7 @@ implements Serializable {
     		stress = newStress;
     		if (stress > 100D) stress = 100D;
     		else if (stress < 0D) stress = 0D;
+    		else if (Double.isNaN(stress)) stress = 0D;
     		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
     	}
     }

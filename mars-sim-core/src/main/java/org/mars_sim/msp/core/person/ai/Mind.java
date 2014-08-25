@@ -268,8 +268,8 @@ implements Serializable {
             weightSum += missionWeights;
         }
 
-        if ((weightSum <= 0D) || (weightSum == Double.NaN) || 
-                (weightSum == Double.POSITIVE_INFINITY)) {
+        if ((weightSum <= 0D) || (Double.isNaN(weightSum)) || 
+                (Double.isInfinite(weightSum))) {
             throw new IllegalStateException("Mind.getNewAction(): weight sum: "
                     + weightSum);
         }
