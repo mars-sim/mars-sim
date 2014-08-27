@@ -369,7 +369,7 @@ public class MissionManager implements Serializable {
         while (i.hasNext()) {
             MetaMission metaMission = i.next();
             double probability = metaMission.getProbability(person);
-            if ((probability >= 0D) && (!Double.isNaN(probability)) && (Double.isFinite(probability))) {
+            if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
                 missionProbCache.put(metaMission, probability);
                 totalProbCache += probability;
             }

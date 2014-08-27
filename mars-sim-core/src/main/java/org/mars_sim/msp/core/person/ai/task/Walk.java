@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Walk.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-08-26
  * @author Scott Davis
  */
 
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -105,8 +106,16 @@ implements Serializable {
             
             Vehicle vehicle = person.getVehicle();
             
+            // Check if person has a good EVA suit available if in a rover.
+            boolean goodEVASuit = true;
+            if (vehicle instanceof Rover) {
+                boolean roverSuit = ExitAirlock.goodEVASuitAvailable(vehicle.getInventory());
+                boolean wearingSuit = person.getInventory().containsUnitClass(EVASuit.class);
+                goodEVASuit = roverSuit || wearingSuit;
+            }
+            
             // If no mission and vehicle is at a settlement location, enter settlement.
-            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null)) {
+            if ((person.getMind().getMission() == null) && (vehicle.getSettlement() != null) && goodEVASuit) {
                 
                 Settlement settlement = vehicle.getSettlement();
                 
