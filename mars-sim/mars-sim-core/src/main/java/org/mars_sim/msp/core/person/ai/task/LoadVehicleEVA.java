@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVA.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -40,6 +40,7 @@ import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Resource;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.BuildingManager;
+import org.mars_sim.msp.core.vehicle.Rover;
 import org.mars_sim.msp.core.vehicle.Vehicle;
 
 /** 
@@ -87,8 +88,21 @@ implements Serializable {
         // Use Task constructor
         super("Loading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
+        List<Rover> roversNeedingEVASuits = getRoversNeedingEVASuits(person.getSettlement());
+        if (roversNeedingEVASuits.size() > 0) {
+            int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
+            vehicle = roversNeedingEVASuits.get(roverIndex);
+            setDescription("Loading " + vehicle.getName());
+            requiredResources = new HashMap<Resource, Number>(0);
+            optionalResources = new HashMap<Resource, Number>(0);
+            requiredEquipment = new HashMap<Class, Integer>(1);
+            requiredEquipment.put(EVASuit.class, 1);
+            optionalEquipment = new HashMap<Class, Integer>(0);
+            settlement = person.getSettlement();
+        }
+        
         VehicleMission mission = getMissionNeedingLoading();
-        if (mission != null) {
+        if ((vehicle == null) && (mission != null)) {
             vehicle = mission.getVehicle();
             setDescription("Loading " + vehicle.getName());
             requiredResources = mission.getRequiredResourcesToLoad();
@@ -96,19 +110,12 @@ implements Serializable {
             requiredEquipment = mission.getRequiredEquipmentToLoad();
             optionalEquipment = mission.getOptionalEquipmentToLoad();
             settlement = person.getSettlement();
-            if (settlement == null) {
-                endTask();
-            }
-            
-            // End task if vehicle not available.
-            if (vehicle == null) {
-                endTask();
-            }
-            else {
-                // Determine location for loading.
-                Point2D loadingLoc = determineLoadingLocation();
-                setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
-            }
+        }
+        
+        if (vehicle != null) {
+            // Determine location for loading.
+            Point2D loadingLoc = determineLoadingLocation();
+            setOutsideSiteLocation(loadingLoc.getX(), loadingLoc.getY());
             
             // Initialize task phase
             addPhase(LOADING);
@@ -184,6 +191,35 @@ implements Serializable {
                                     result.add(vehicleMission);
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Gets a list of rovers with crew who are missing EVA suits.
+     * @param settlement the settlement.
+     * @return list of rovers.
+     */
+    public static List<Rover> getRoversNeedingEVASuits(Settlement settlement) {
+        
+        List<Rover> result = new ArrayList<Rover>();
+        
+        Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+        while (i.hasNext()) {
+            Vehicle vehicle = i.next();
+            if (vehicle instanceof Rover) {
+                Rover rover = (Rover) vehicle;
+                if (!rover.isReservedForMission()) {
+                    if (BuildingManager.getBuilding(rover) == null) {
+                        int peopleOnboard = rover.getInventory().findNumUnitsOfClass(Person.class);
+                        int numSuits = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
+                        if ((peopleOnboard > 0) && (numSuits == 0)) {
+                            result.add(rover);
                         }
                     }
                 }

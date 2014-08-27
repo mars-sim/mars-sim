@@ -279,7 +279,7 @@ implements Serializable {
         while (i.hasNext()) {
             MetaTask metaTask = i.next();
             double probability = metaTask.getProbability(mind.getPerson());
-            if ((probability >= 0D) && (!Double.isNaN(probability)) && (Double.isFinite(probability))) {
+            if ((probability >= 0D) && (!Double.isNaN(probability)) && (!Double.isInfinite(probability))) {
                 taskProbCache.put(metaTask, probability);
                 totalProbCache += probability;
             }

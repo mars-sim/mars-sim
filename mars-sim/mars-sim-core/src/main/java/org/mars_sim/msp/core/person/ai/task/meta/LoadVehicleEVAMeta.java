@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * LoadVehicleEVAMeta.java
- * @version 3.07 2014-08-11
+ * @version 3.07 2014-08-26
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Simulation;
+import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -52,10 +53,17 @@ public class LoadVehicleEVAMeta implements MetaTask {
             // Check all vehicle missions occurring at the settlement.
             try {
                 List<Mission> missions = LoadVehicleEVA.getAllMissionsNeedingLoading(person.getSettlement());
-                result = 50D * missions.size();
+                result += 50D * missions.size();
             }
             catch (Exception e) {
                 logger.log(Level.SEVERE, "Error finding loading missions.", e);
+            }
+            
+            if (LoadVehicleEVA.getRoversNeedingEVASuits(person.getSettlement()).size() > 0) {
+                int numEVASuits = person.getSettlement().getInventory().findNumEmptyUnitsOfClass(EVASuit.class, false);
+                if (numEVASuits >= 2) {
+                    result += 100D;
+                }
             }
         }
 
@@ -67,8 +75,9 @@ public class LoadVehicleEVAMeta implements MetaTask {
         // Check if it is night time.
         SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
         if (surface.getSurfaceSunlight(person.getCoordinates()) == 0) {
-            if (!surface.inDarkPolarRegion(person.getCoordinates()))
+            if (!surface.inDarkPolarRegion(person.getCoordinates())) {
                 result = 0D;
+            }
         } 
         
         // Crowded settlement modifier
