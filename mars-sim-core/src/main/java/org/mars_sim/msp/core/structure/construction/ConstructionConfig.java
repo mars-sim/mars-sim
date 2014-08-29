@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-22
  * @author Scott Davis
  */
 
@@ -32,6 +32,7 @@ public class ConstructionConfig implements Serializable {
     private static final String NAME = "name";
     private static final String WIDTH = "width";
     private static final String LENGTH = "length";
+    private static final String BASE_LEVEL = "base-level";
     private static final String CONSTRUCTABLE = "constructable";
     private static final String SALVAGABLE = "salvagable";
     private static final String WORK_TIME = "work-time";
@@ -135,6 +136,9 @@ public class ConstructionConfig implements Serializable {
                     unsetDimensions = true;
                 }
                 
+                String baseLevelStr = stageInfoElement.getAttributeValue(BASE_LEVEL);
+                int baseLevel = Integer.parseInt(baseLevelStr);
+                
                 // Get constructable.
                 // Note should be false if constructable attribute doesn't exist.
                 boolean constructable = Boolean.parseBoolean(stageInfoElement.getAttributeValue(CONSTRUCTABLE));
@@ -203,8 +207,8 @@ public class ConstructionConfig implements Serializable {
                 }
                     
                 ConstructionStageInfo stageInfo = new ConstructionStageInfo(name, stageType, width, length, 
-                        unsetDimensions, constructable, salvagable, workTime, skillRequired, prerequisiteStage, 
-                        parts, resources, vehicles);
+                        unsetDimensions, baseLevel, constructable, salvagable, workTime, skillRequired, 
+                        prerequisiteStage, parts, resources, vehicles);
                 stageInfoList.add(stageInfo);
             }
             catch (Exception e) {

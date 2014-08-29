@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConfig.java
- * @version 3.07 2014-07-02
+ * @version 3.07 2014-08-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building;
@@ -44,6 +44,7 @@ public class BuildingConfig implements Serializable {
 	private static final String NAME = "name";
 	private static final String WIDTH = "width";
 	private static final String LENGTH = "length";
+	private static final String BASE_LEVEL = "base-level";
 	private static final String POWER_REQUIRED = "power-required";
 	private static final String BASE_POWER = "base-power";
 	private static final String BASE_POWER_DOWN_POWER = "base-power-down-power";
@@ -194,6 +195,16 @@ public class BuildingConfig implements Serializable {
     public double getLength(String buildingName) {
         Element buildingElement = getBuildingElement(buildingName);
         return Double.parseDouble(buildingElement.getAttributeValue(LENGTH));
+    }
+    
+    /**
+     * Gets the base level of the building.
+     * @param buildingName the name of the building.
+     * @return -1 for in-ground, 0 for above-ground.
+     */
+    public int getBaseLevel(String buildingName) {
+        Element buildingElement = getBuildingElement(buildingName);
+        return Integer.parseInt(buildingElement.getAttributeValue(BASE_LEVEL));
     }
 	
 	/**

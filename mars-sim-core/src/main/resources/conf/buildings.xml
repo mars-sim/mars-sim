@@ -10,7 +10,8 @@
 	<!-- name: the name of the building. -->
 	<!-- width: the width of the building in meters. -->
 	<!-- length: the length of the building in meters. -->
-	<building name="Lander Hab" width="9.0" length="9.0">
+	<!-- base-level: 0 for above-ground building, -1 for in-ground building. -->
+	<building name="Lander Hab" width="9.0" length="9.0" base-level="0">
 		
 		<!-- The power requirements of the building. -->
 		<!-- base-power: The baseline power (kW) required by this building in 'full power' mode. -->
@@ -197,7 +198,7 @@
 	</building>
 	
 	<!-- The inflatable greenhouse is a small building for growing various plant crops. --> 
-	<building name="Inflatable Greenhouse" width="6.0" length="9.0">
+	<building name="Inflatable Greenhouse" width="6.0" length="9.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>		
 			
@@ -245,7 +246,7 @@
 	</building>
 	
 	<!-- A small, self-contained 80kW nuclear reactor that requires minimum maintenance. -->
-	<building name="MD1 Nuclear Reactor" width="4.0" length="6.0">
+	<building name="MD1 Nuclear Reactor" width="4.0" length="6.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -257,7 +258,7 @@
 	<!-- A ERV (Earth Return Vehicle) base building with Sabatier chemical reactor. -->
 	<!-- The starting ERV base has a full load of hydrogen and has not generated any -->
 	<!-- carbon dioxide, water or oxygen yet. -->
-	<building name="Starting ERV Base" width="10.0" length="10.0">
+	<building name="Starting ERV Base" width="10.0" length="10.0" base-level="0">
 		<power-required base-power="2.0" base-power-down-power="1.0" />
 		<functions>
 			<earth-return crew-capacity="4" />
@@ -295,7 +296,7 @@
 	<!-- A ERV (Earth Return Vehicle) base building with Sabatier chemical reactor. -->
 	<!-- The ERV base has already converted its initial load of hydrogen into carbon dioxide, 
 	     water and oxygen. -->
-	<building name="ERV Base" width="10.0" length="10.0">
+	<building name="ERV Base" width="10.0" length="10.0" base-level="0">
 		<power-required base-power="8.0" base-power-down-power="1.0" />
 		<functions>
 			<earth-return crew-capacity="4" />
@@ -333,7 +334,7 @@
 	</building>
 	
 	<!-- A medium-sized, self-contained 200kW nuclear reactor that requires minimum maintenance. -->
-	<building name="MD4 Nuclear Reactor" width="10.0" length="15.0">
+	<building name="MD4 Nuclear Reactor" width="10.0" length="15.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -343,7 +344,7 @@
 	</building>	
 	
 	<!-- An uninhabitable specialized building for water and air processing and recycling. -->
-	<building name="Atmospheric Processor" width="8.0" length="11.0">
+	<building name="Atmospheric Processor" width="8.0" length="11.0" base-level="0">
 		<power-required base-power="5.0" base-power-down-power="1.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
@@ -384,7 +385,7 @@
 	</building>		
 	
 	<!-- A specialized living accommodations building for 12 people -->
-	<building name="Residential Quarters" width="7.0" length="9.0">
+	<building name="Residential Quarters" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="20.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="12" power-required="24.0" />
@@ -408,7 +409,7 @@
 	</building>
 	
 	<!-- A specialized rest and relaxation building with dining tables and exercise equipment. -->
-	<building name="Lounge" width="7.0" length="9.0">
+	<building name="Lounge" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<cooking capacity="4">
@@ -493,7 +494,7 @@
 	</building>
 	
 	<!-- A medical building for medical care and research. -->
-	<building name="Infirmary" width="7.0" length="9.0">
+	<building name="Infirmary" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
@@ -520,7 +521,7 @@
 	</building>
 	
 	<!-- A specialized building for communications and EVA operations. -->
-	<building name="Command and Control" width="7.0" length="9.0">
+	<building name="Command and Control" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="50.0" base-power-down-power="10.0" />
 		<functions>
 			<administration population-support="25">
@@ -568,7 +569,7 @@
 	</building>
 
 	<!-- A large greenhouse and botany lab. -->
-	<building name="Large Greenhouse" width="12.0" length="18.0">
+	<building name="Large Greenhouse" width="12.0" length="18.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<farming crops="15" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="200.0">
@@ -636,7 +637,7 @@
 	</building>
 	-->
 	<!-- A general scientific laboratory. -->
-	<building name="Laboratory" width="7.0" length="9.0">
+	<building name="Laboratory" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="30.0" base-power-down-power="10.0" />
 		<functions>
 			<life-support capacity="10" power-required="20.0" />
@@ -670,7 +671,7 @@
 	</building>
 	
 	<!-- A maintenance garage for rovers. -->
-	<building name="Garage" width="12.0" length="16.0">
+	<building name="Garage" width="12.0" length="16.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="7.5" interior-xloc="0.0" interior-yloc="7.0" 
@@ -695,7 +696,7 @@
 	</building>
 	
 	<!-- A manufacturing workshop -->
-	<building name="Workshop" width="7.0" length="9.0">
+	<building name="Workshop" width="7.0" length="9.0" base-level="0">
 		<power-required base-power="7.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="4" power-required="8.0" />
@@ -731,7 +732,7 @@
 	</building>
 	
 	<!-- Methane-powered power generator. -->
-	<building name="Methane Power Generator" width="5.0" length="5.0">
+	<building name="Methane Power Generator" width="5.0" length="5.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -742,7 +743,7 @@
 	</building>
 
 	<!-- Wind turbine power generator. -->
-	<building name="Wind Turbine" width="5.0" length="5.0">
+	<building name="Wind Turbine" width="5.0" length="5.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -752,7 +753,7 @@
 	</building>
 	
 	<!-- Array of solar photovoltaic panels. -->
-	<building name="Solar Photovoltaic Array" width="5.0" length="10.0">
+	<building name="Solar Photovoltaic Array" width="5.0" length="10.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -762,7 +763,7 @@
 	</building>
 	
 	<!-- Array of solar thermal mirrors with steam power generator. -->
-	<building name="Solar Thermal Array" width="5.0" length="10.0">
+	<building name="Solar Thermal Array" width="5.0" length="10.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -772,7 +773,7 @@
 	</building>
 	
 	<!-- A small areothermal electrical generator. -->
-	<building name="Small Areothermal Well" width="5.0" length="10.0">
+	<building name="Small Areothermal Well" width="5.0" length="10.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -782,7 +783,7 @@
 	</building>
 	
 	<!-- A large areothermal electrical generator. -->
-	<building name="Large Areothermal Well" width="10.0" length="15.0">
+	<building name="Large Areothermal Well" width="10.0" length="15.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<power-generation>
@@ -792,7 +793,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing dry concrete. -->
-	<building name="Concrete Storage Bin" width="2.0" length="3.0">
+	<building name="Concrete Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -802,7 +803,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing dry cement. -->
-	<building name="Cement Storage Bin" width="2.0" length="3.0">
+	<building name="Cement Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -812,7 +813,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing dry mortar. -->
-	<building name="Mortar Storage Bin" width="2.0" length="3.0">
+	<building name="Mortar Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -822,7 +823,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing lime. -->
-	<building name="Lime Storage Bin" width="2.0" length="3.0">
+	<building name="Lime Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -832,7 +833,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing carbon. -->
-	<building name="Carbon Storage Bin" width="2.0" length="3.0">
+	<building name="Carbon Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -842,7 +843,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing regolith. -->
-	<building name="Regolith Storage Bin" width="2.0" length="3.0">
+	<building name="Regolith Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -852,7 +853,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing sand. -->
-	<building name="Sand Storage Bin" width="2.0" length="3.0">
+	<building name="Sand Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -862,7 +863,7 @@
 	</building>
 	
 	<!-- A small brick bin for storing ice. -->
-	<building name="Ice Storage Bin" width="2.0" length="3.0">
+	<building name="Ice Storage Bin" width="2.0" length="3.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<storage>
@@ -872,7 +873,7 @@
 	</building>
 	
 	<!-- A small brick manufacturing building. -->
-	<building name="Manufacturing Shed" width="5.0" length="5.0">
+	<building name="Manufacturing Shed" width="5.0" length="5.0" base-level="-1">
 		<power-required base-power="3.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
@@ -900,7 +901,7 @@
 	</building>
 	
 	<!-- A small brick building containing two living quarters. -->
-	<building name="Bunkhouse" width="5.0" length="5.0">
+	<building name="Bunkhouse" width="5.0" length="5.0" base-level="-1">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
@@ -914,7 +915,7 @@
 	</building>
 	
 	<!-- A small sabatier processor building. -->
-	<building name="Small Sabatier Processor" width="5.0" length="5.0">
+	<building name="Small Sabatier Processor" width="5.0" length="5.0" base-level="0">
 		<power-required base-power="5.0" base-power-down-power="2.0" />
 		<functions>
 			<resource-processing power-down-level=".5">
@@ -929,7 +930,7 @@
 	</building>
 	
 	<!-- Array of rover batteries -->
-	<building name="Small Battery Array" width="5.0" length="10.0">
+	<building name="Small Battery Array" width="5.0" length="10.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<!-- power storage capacity in kW hr. -->
@@ -938,7 +939,7 @@
 	</building>
 	
 	<!-- A small optical telescope observatory with an astronomy laboratory -->
-	<building name="Astronomy Observatory" width="7.0" length="7.0">
+	<building name="Astronomy Observatory" width="7.0" length="7.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<astronomical-observation tech-level="2" capacity="1" power-required="4.0">
@@ -964,7 +965,7 @@
 	</building>
 	
 	<!-- A lander hab refitted for storage. -->
-	<building name="Storage Hab" width="9.0" length="9.0">
+	<building name="Storage Hab" width="9.0" length="9.0" base-level="0">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
@@ -988,7 +989,7 @@
 	</building>
 	
 	<!-- A lander hab refitted as a laboratory. -->
-	<building name="Research Hab" width="9.0" length="9.0">
+	<building name="Research Hab" width="9.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
@@ -1015,7 +1016,7 @@
 	</building>
 	
 	<!-- A lander hab refitted as a residence. -->
-	<building name="Residential Hab" width="9.0" length="9.0">
+	<building name="Residential Hab" width="9.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
@@ -1037,7 +1038,7 @@
 	</building>
 	
 	<!-- A lander hab refitted as a medical facility. -->
-	<building name="Medical Hab" width="9.0" length="9.0">
+	<building name="Medical Hab" width="9.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
@@ -1062,7 +1063,7 @@
 	</building>
 	
 	<!-- A lander hab refitted as a manufacturing workshop. -->
-	<building name="Machinery Hab" width="9.0" length="9.0">
+	<building name="Machinery Hab" width="9.0" length="9.0" base-level="0">
 		<power-required base-power="10.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="4" xloc="4.0" yloc="0.0" interior-xloc="3.5" interior-yloc="0.0" 
@@ -1096,7 +1097,7 @@
 	</building>
 	
 	<!-- A vaulted brick building used as the main hub of a trading or mining outpost. -->
-	<building name="Outpost Hub" width="10.0" length="10.0">
+	<building name="Outpost Hub" width="10.0" length="10.0" base-level="-1">
 		<power-required base-power="2.0" base-power-down-power="0.0" />
 		<functions>
 			<communication>
@@ -1147,7 +1148,7 @@
 	</building>
 	
 	<!-- An small brick building used for storage. -->
-	<building name="Storage Shed" width="5.0" length="5.0">
+	<building name="Storage Shed" width="5.0" length="5.0" base-level="-1">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
@@ -1165,7 +1166,7 @@
 	</building>
 	
 	<!-- A brick loading dock and maintenance garage for rovers. -->
-	<building name="Loading Dock Garage" width="15.0" length="18.0">
+	<building name="Loading Dock Garage" width="15.0" length="18.0" base-level="-1">
 		<power-required base-power="8.0" base-power-down-power="0.0" />
 		<functions>
 			<EVA airlock-capacity="8" xloc="0.0" yloc="1.0" interior-xloc="0.0" interior-yloc=".5" 
@@ -1188,7 +1189,7 @@
 	</building>
 	
 	<!-- A small brick laboratory for mining-related sciences. -->
-	<building name="Mining Lab" width="5.0" length="5.0">
+	<building name="Mining Lab" width="5.0" length="5.0" base-level="-1">
 		<power-required base-power="3.0" base-power-down-power="0.0" />
 		<functions>
 			<life-support capacity="2" power-required="4.0" />
@@ -1208,7 +1209,7 @@
 	</building>
 	
 	<!-- A small inground greenhouse with a glass vaulted roof. --> 
-	<building name="Inground Greenhouse" width="5.0" length="10.0">
+	<building name="Inground Greenhouse" width="5.0" length="10.0" base-level="-1">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>		
 			<farming crops="5" power-growing-crop=".04" power-sustaining-crop=".04" growing-area="75.0">
@@ -1246,12 +1247,22 @@
 	</building>
 	
 	<!-- A pressurized hallway connecting two inhabitable buildings. -->
-	<!-- A hallways length is variable and determined in templates or during construction. -->
-	<building name="Hallway" width="2.0" length="-1.0">
+	<!-- A hallway's length is variable and determined in templates or during construction. -->
+	<building name="Hallway" width="2.0" length="-1.0" base-level="0">
 		<power-required base-power="0.0" base-power-down-power="0.0" />
 		<functions>
 			<building-connection />
 			<life-support capacity="1" power-required=".5" />
+		</functions>
+	</building>
+	
+	<!-- A pressurized underground tunnel connecting two inhabitable buildings. -->
+	<!-- A tunnel's length is variable and determined in templates or during construction. -->
+	<building name="Tunnel" width="3.0" length="-1.0" base-level="-1">
+		<power-required base-power="0.0" base-power-down-power="0.0" />
+		<functions>
+			<building-connection />
+			<life-support capacity="1" power-required=".2" />
 		</functions>
 	</building>
 	

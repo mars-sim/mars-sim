@@ -14,7 +14,7 @@
    height="500"
    id="svg3239"
    version="1.1"
-   inkscape:version="0.48.3.1 r9886"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="bunkhouse.svg">
   <defs
      id="defs3241">
@@ -220,7 +220,7 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1580042"
-     inkscape:cx="120.6364"
+     inkscape:cx="-32.212787"
      inkscape:cy="231.90975"
      inkscape:document-units="px"
      inkscape:current-layer="layer3"
@@ -283,8 +283,8 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="frame"
-     sodipodi:insensitive="true"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <rect
        style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#010000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4073"
@@ -329,8 +329,8 @@
        id="rect4027"
        width="480"
        height="480"
-       x="33.485592"
-       y="28.090254" />
+       x="9.3060598"
+       y="9.0920496" />
     <rect
        style="fill:#a8b27b;fill-opacity:1;fill-rule:nonzero;stroke:#3e3f43;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect6346"
@@ -988,7 +988,6 @@
      inkscape:groupmode="layer"
      id="layer3"
      inkscape:label="roof"
-     sodipodi:insensitive="true"
      style="display:inline">
     <g
        id="g5750"

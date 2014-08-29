@@ -435,69 +435,115 @@
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
-					<connection id="2" x-location="-5.0" y-location="-2.5" />
-					<connection id="3" x-location="5.0" y-location="2.5" />
-					<connection id="4" x-location="5.0" y-location="-2.5" />
-					<connection id="7" x-location="0.0" y-location="-5.0" />
+					<connection id="3" x-location="-5.0" y-location="-2.5" />
+					<connection id="5" x-location="5.0" y-location="2.5" />
+					<connection id="9" x-location="5.0" y-location="-2.5" />
+					<connection id="13" x-location="0.0" y-location="-5.0" />
 				</connection-list>
 			</building>
-			<building id="1" type="Bunkhouse" x-location="-7.5" y-location="2.5" facing="270.0">
+			<building id="1" type="Tunnel" length="3.0" x-location="-6.5" y-location="2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="2" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="2" type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0">
+			<building id="2" type="Bunkhouse" x-location="-10.5" y-location="2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
+					<connection id="1" x-location="0.0" y-location="2.5" />
 				</connection-list>
 			</building>
-			<building id="3" type="Storage Shed" x-location="7.5" y-location="2.5" facing="90.0">
+			<building id="3" type="Tunnel" length="3.0" x-location="-6.5" y-location="-2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
-					<connection id="5" x-location="0.0" y-location="-2.5" />
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="4" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="4" type="Storage Shed" x-location="7.5" y-location="-2.5" facing="90.0">
-				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
-					<connection id="6" x-location="0.0" y-location="-2.5" />
-				</connection-list>
-			</building>
-			<building id="5" type="Storage Shed" x-location="12.5" y-location="2.5" facing="90.0">
+			<building id="4" type="Bunkhouse" x-location="-10.5" y-location="-2.5" facing="270.0">
 				<connection-list>
 					<connection id="3" x-location="0.0" y-location="2.5" />
 				</connection-list>
 			</building>
-            <building id="6" type="Storage Shed" x-location="12.5" y-location="-2.5" facing="90.0">
-            	<connection-list>
-            		<connection id="4" x-location="0.0" y-location="2.5" />
-				</connection-list>
-			</building>
-			<building id="7" type="Loading Dock Garage" x-location="0.0" y-location="-14.0" facing="180.0">
+			<building id="5" type="Tunnel" length="2.0" x-location="6.0" y-location="2.5" facing="90.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="-9.0" />
+					<connection id="0" x-location="0.0" y-location="1.0" />
+					<connection id="6" x-location="0.0" y-location="-1.0" />
 				</connection-list>
 			</building>
-			<building id="8" type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
-			<building id="9" type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
-			<building id="10" type="Solar Photovoltaic Array" x-location="-50.5" y-location="62.0" facing="0.0" />
-			<building id="11" type="Solar Photovoltaic Array" x-location="-38.5" y-location="51.0" facing="0.0" />
-			<building id="12" type="Solar Photovoltaic Array" x-location="-44.5" y-location="51.0" facing="0.0" />
-			<building id="13" type="Solar Photovoltaic Array" x-location="-50.5" y-location="51.0" facing="0.0" />
-			<building id="14" type="Solar Photovoltaic Array" x-location="-38.5" y-location="40.0" facing="0.0" />
-			<building id="15" type="Solar Photovoltaic Array" x-location="-44.5" y-location="40.0" facing="0.0" />
-			<building id="16" type="Solar Photovoltaic Array" x-location="-50.5" y-location="40.0" facing="0.0" />
-			<building id="17" type="Solar Thermal Array" x-location="-35.5" y-location="28.0" facing="0.0" />
-			<building id="18" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
-			<building id="19" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
-			<building id="20" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
-			<building id="21" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
-			<building id="22" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
-			<building id="23" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
-			<building id="24" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
-			<building id="25" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
-			<building id="26" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
-			<building id="27" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
+			<building id="6" type="Storage Shed" x-location="9.5" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="2.5" />
+					<connection id="7" x-location="0.0" y-location="-2.5" />
+					<connection id="10" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="7" type="Tunnel" length="2.0" x-location="13.0" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="6" x-location="0.0" y-location="1.0" />
+					<connection id="8" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="8" type="Storage Shed" x-location="16.5" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="7" x-location="0.0" y-location="2.5" />
+					<connection id="12" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="9" type="Tunnel" length="2.0" x-location="6.0" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.0" />
+					<connection id="10" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="10" type="Storage Shed" x-location="9.5" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="9" x-location="0.0" y-location="2.5" />
+					<connection id="11" x-location="0.0" y-location="-2.5" />
+					<connection id="6" x-location="2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="11" type="Tunnel" length="2.0" x-location="13.0" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="10" x-location="0.0" y-location="1.0" />
+					<connection id="12" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+            <building id="12" type="Storage Shed" x-location="16.5" y-location="-2.5" facing="90.0">
+            	<connection-list>
+            		<connection id="11" x-location="0.0" y-location="2.5" />
+            		<connection id="8" x-location="2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="13" type="Tunnel" length="4.0" x-location="0.0" y-location="-7.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="2.0" />
+					<connection id="14" x-location="0.0" y-location="-2.0" />
+				</connection-list>
+			</building>
+			<building id="14" type="Loading Dock Garage" x-location="0.0" y-location="-18.0" facing="180.0">
+				<connection-list>
+					<connection id="13" x-location="0.0" y-location="-9.0" />
+				</connection-list>
+			</building>
+			<building id="15" type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
+			<building id="16" type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
+			<building id="17" type="Solar Photovoltaic Array" x-location="-50.5" y-location="62.0" facing="0.0" />
+			<building id="18" type="Solar Photovoltaic Array" x-location="-38.5" y-location="51.0" facing="0.0" />
+			<building id="19" type="Solar Photovoltaic Array" x-location="-44.5" y-location="51.0" facing="0.0" />
+			<building id="20" type="Solar Photovoltaic Array" x-location="-50.5" y-location="51.0" facing="0.0" />
+			<building id="21" type="Solar Photovoltaic Array" x-location="-38.5" y-location="40.0" facing="0.0" />
+			<building id="22" type="Solar Photovoltaic Array" x-location="-44.5" y-location="40.0" facing="0.0" />
+			<building id="23" type="Solar Photovoltaic Array" x-location="-50.5" y-location="40.0" facing="0.0" />
+			<building id="24" type="Solar Thermal Array" x-location="-35.5" y-location="28.0" facing="0.0" />
+			<building id="25" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
+			<building id="26" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
+			<building id="27" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
+			<building id="28" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
+			<building id="29" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
+			<building id="30" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
+			<building id="31" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
+			<building id="32" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
+			<building id="33" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
+			<building id="34" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
 			<vehicle type="Cargo Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="1" />
 			<equipment type="EVA Suit" number="8" />
@@ -516,77 +562,129 @@
 			<building id="0" type="Outpost Hub" x-location="0.0" y-location="0.0" facing="0.0">
 				<connection-list>
 					<connection id="1" x-location="-5.0" y-location="2.5" />
-					<connection id="2" x-location="-5.0" y-location="-2.5" />
-					<connection id="3" x-location="5.0" y-location="2.5" />
-					<connection id="4" x-location="5.0" y-location="-2.5" />
-					<connection id="8" x-location="0.0" y-location="-5.0" />
+					<connection id="3" x-location="-5.0" y-location="-2.5" />
+					<connection id="5" x-location="5.0" y-location="2.5" />
+					<connection id="9" x-location="5.0" y-location="-2.5" />
+					<connection id="15" x-location="0.0" y-location="-5.0" />
 				</connection-list>
 			</building>
-			<building id="1" type="Bunkhouse" x-location="-7.5" y-location="2.5" facing="270.0">
+			<building id="1" type="Tunnel" length="3.0" x-location="-6.5" y-location="2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="2" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="2" type="Bunkhouse" x-location="-7.5" y-location="-2.5" facing="270.0">
+			<building id="2" type="Bunkhouse" x-location="-10.5" y-location="2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
+					<connection id="1" x-location="0.0" y-location="2.5" />
 				</connection-list>
 			</building>
-			<building id="3" type="Mining Lab" x-location="7.5" y-location="2.5" facing="90.0">
+			<building id="3" type="Tunnel" length="3.0" x-location="-6.5" y-location="-2.5" facing="270.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
-					<connection id="7" x-location="0.0" y-location="-2.5" />
+					<connection id="0" x-location="0.0" y-location="1.5" />
+					<connection id="4" x-location="0.0" y-location="-1.5" />
 				</connection-list>
 			</building>
-			<building id="4" type="Storage Shed" x-location="7.5" y-location="-2.5" facing="90.0">
-				<connection-list>
-					<connection id="0" x-location="0.0" y-location="2.5" />
-					<connection id="5" x-location="0.0" y-location="-2.5" />
-				</connection-list>
-			</building>
-			<building id="5" type="Storage Shed" x-location="12.5" y-location="-2.5" facing="90.0">
-				<connection-list>
-					<connection id="4" x-location="0.0" y-location="2.5" />
-					<connection id="6" x-location="0.0" y-location="-2.5" />
-				</connection-list>
-			</building>
-			<building id="6" type="Storage Shed" x-location="17.5" y-location="-2.5" facing="90.0">
-				<connection-list>
-					<connection id="5" x-location="0.0" y-location="2.5" />
-				</connection-list>
-			</building>
-			<building id="7" type="Manufacturing Shed" x-location="12.5" y-location="2.5" facing="90.0">
+			<building id="4" type="Bunkhouse" x-location="-10.5" y-location="-2.5" facing="270.0">
 				<connection-list>
 					<connection id="3" x-location="0.0" y-location="2.5" />
 				</connection-list>
 			</building>
-			<building id="8" type="Loading Dock Garage" x-location="0.0" y-location="-14.0" facing="180.0">
+			<building id="5" type="Tunnel" length="2.0" x-location="6.0" y-location="2.5" facing="90.0">
 				<connection-list>
-					<connection id="0" x-location="0.0" y-location="-9.0" />
+					<connection id="0" x-location="0.0" y-location="1.0" />
+					<connection id="6" x-location="0.0" y-location="-1.0" />
 				</connection-list>
 			</building>
-			<building id="9" type="Regolith Storage Bin" x-location="9.5" y-location="-12.5" facing="270.0" />
-			<building id="10" type="Sand Storage Bin" x-location="9.5" y-location="-15.0" facing="270.0" />
-			<building id="11" type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
-			<building id="12" type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
-			<building id="13" type="Solar Photovoltaic Array" x-location="-50.5" y-location="62.0" facing="0.0" />
-			<building id="14" type="Solar Photovoltaic Array" x-location="-38.5" y-location="51.0" facing="0.0" />
-			<building id="15" type="Solar Photovoltaic Array" x-location="-44.5" y-location="51.0" facing="0.0" />
-			<building id="16" type="Solar Photovoltaic Array" x-location="-50.5" y-location="51.0" facing="0.0" />
-			<building id="17" type="Solar Photovoltaic Array" x-location="-38.5" y-location="40.0" facing="0.0" />
-			<building id="18" type="Solar Photovoltaic Array" x-location="-44.5" y-location="40.0" facing="0.0" />
-			<building id="19" type="Solar Photovoltaic Array" x-location="-50.5" y-location="40.0" facing="0.0" />
-			<building id="20" type="Solar Thermal Array" x-location="-35.5" y-location="28.0" facing="0.0" />
-			<building id="21" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
-			<building id="22" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
-			<building id="23" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
-			<building id="24" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
-			<building id="25" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
-			<building id="26" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
-			<building id="27" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
-			<building id="28" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
-			<building id="29" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
-			<building id="30" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
+			<building id="6" type="Mining Lab" x-location="9.5" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="5" x-location="0.0" y-location="2.5" />
+					<connection id="7" x-location="0.0" y-location="-2.5" />
+					<connection id="10" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="7" type="Tunnel" length="2.0" x-location="13.0" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="6" x-location="0.0" y-location="1.0" />
+					<connection id="8" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="8" type="Manufacturing Shed" x-location="16.5" y-location="2.5" facing="90.0">
+				<connection-list>
+					<connection id="7" x-location="0.0" y-location="2.5" />
+					<connection id="12" x-location="-2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="9" type="Tunnel" length="2.0" x-location="6.0" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="1.0" />
+					<connection id="10" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="10" type="Storage Shed" x-location="9.5" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="9" x-location="0.0" y-location="2.5" />
+					<connection id="11" x-location="0.0" y-location="-2.5" />
+					<connection id="6" x-location="2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="11" type="Tunnel" length="2.0" x-location="13.0" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="10" x-location="0.0" y-location="1.0" />
+					<connection id="12" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="12" type="Storage Shed" x-location="16.5" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="11" x-location="0.0" y-location="2.5" />
+					<connection id="13" x-location="0.0" y-location="-2.5" />
+					<connection id="8" x-location="2.5" y-location="0.0" />
+				</connection-list>
+			</building>
+			<building id="13" type="Tunnel" length="2.0" x-location="20.0" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="12" x-location="0.0" y-location="1.0" />
+					<connection id="14" x-location="0.0" y-location="-1.0" />
+				</connection-list>
+			</building>
+			<building id="14" type="Storage Shed" x-location="23.5" y-location="-2.5" facing="90.0">
+				<connection-list>
+					<connection id="13" x-location="0.0" y-location="2.5" />
+				</connection-list>
+			</building>
+			<building id="15" type="Tunnel" length="4.0" x-location="0.0" y-location="-7.0" facing="0.0">
+				<connection-list>
+					<connection id="0" x-location="0.0" y-location="2.0" />
+					<connection id="16" x-location="0.0" y-location="-2.0" />
+				</connection-list>
+			</building>
+			<building id="16" type="Loading Dock Garage" x-location="0.0" y-location="-18.0" facing="180.0">
+				<connection-list>
+					<connection id="15" x-location="0.0" y-location="-9.0" />
+				</connection-list>
+			</building>
+			<building id="17" type="Regolith Storage Bin" x-location="9.5" y-location="-12.5" facing="270.0" />
+			<building id="18" type="Sand Storage Bin" x-location="9.5" y-location="-15.0" facing="270.0" />
+			<building id="19" type="Solar Photovoltaic Array" x-location="-38.5" y-location="62.0" facing="0.0" />
+			<building id="20" type="Solar Photovoltaic Array" x-location="-44.5" y-location="62.0" facing="0.0" />
+			<building id="21" type="Solar Photovoltaic Array" x-location="-50.5" y-location="62.0" facing="0.0" />
+			<building id="22" type="Solar Photovoltaic Array" x-location="-38.5" y-location="51.0" facing="0.0" />
+			<building id="23" type="Solar Photovoltaic Array" x-location="-44.5" y-location="51.0" facing="0.0" />
+			<building id="24" type="Solar Photovoltaic Array" x-location="-50.5" y-location="51.0" facing="0.0" />
+			<building id="25" type="Solar Photovoltaic Array" x-location="-38.5" y-location="40.0" facing="0.0" />
+			<building id="26" type="Solar Photovoltaic Array" x-location="-44.5" y-location="40.0" facing="0.0" />
+			<building id="27" type="Solar Photovoltaic Array" x-location="-50.5" y-location="40.0" facing="0.0" />
+			<building id="28" type="Solar Thermal Array" x-location="-35.5" y-location="28.0" facing="0.0" />
+			<building id="29" type="Solar Thermal Array" x-location="-41.5" y-location="28.0" facing="0.0" />
+			<building id="30" type="Solar Thermal Array" x-location="-47.5" y-location="28.0" facing="0.0" />
+			<building id="31" type="Solar Thermal Array" x-location="-53.5" y-location="28.0" facing="0.0" />
+			<building id="32" type="Small Battery Array" x-location="-38.5" y-location="16.0" facing="0.0" />
+			<building id="33" type="Small Battery Array" x-location="-44.5" y-location="16.0" facing="0.0" />
+			<building id="34" type="Small Battery Array" x-location="-50.5" y-location="16.0" facing="0.0" />
+			<building id="35" type="Wind Turbine" x-location="-24.0" y-location="60.0" facing="270.0" />
+			<building id="36" type="Wind Turbine" x-location="-24.0" y-location="30.0" facing="270.0" />
+			<building id="37" type="Methane Power Generator" x-location="-44.5" y-location="5.0" facing="270.0" />
+			<building id="38" type="Methane Power Generator" x-location="-44.5" y-location="0.0" facing="270.0" />
 			<vehicle type="Explorer Rover" number="2" />
 			<vehicle type="Light Utility Vehicle" number="2" />
 			<equipment type="EVA Suit" number="8" />
