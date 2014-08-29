@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * StructureMapLayer.java
- * @version 3.06 2014-04-15
+ * @version 3.07 2014-08-28
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -505,15 +505,15 @@ public class StructureMapLayer implements SettlementMapLayer {
             AffineTransform patternTransform = new AffineTransform();
             patternTransform.scale(patternScaling, patternScaling);
             for (double x = 0D; x < length; x += patternLength) {
-                patternTransform.translate(0D, x * bounds.getHeight() / 2D);
+                patternTransform.translate(0D, x * bounds.getHeight());
                 double y = 0D;
                 for (; y < width; y += patternWidth) {
-                    patternTransform.translate(y * bounds.getWidth() / 2D, 0D);
+                    patternTransform.translate(y * bounds.getWidth(), 0D);
                     patternSVG.setTransform(patternTransform);
                     patternSVG.paint(g2d);
-                    patternTransform.translate(y * bounds.getWidth() / -2D, 0D);
+                    patternTransform.translate(y * bounds.getWidth() * -1D, 0D);
                 }
-                patternTransform.translate(0D,  x * bounds.getHeight() / -2D);
+                patternTransform.translate(0D, x * bounds.getHeight() * -1D);
             }
         }
 

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfoTest.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-22
  * @author Scott Davis
  */
 
@@ -45,7 +45,7 @@ public class ConstructionStageInfoTest extends TestCase {
         vehicles.add(new ConstructionVehicleType("Light Utility Vehicle", LightUtilityVehicle.class, 
                 attachments));
         
-        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 
+        info = new ConstructionStageInfo("test stage", ConstructionStageInfo.FOUNDATION, 10D, 10D, false, 0,
                 false, false, 10000D, 1, null, parts, resources, vehicles);
     }
     

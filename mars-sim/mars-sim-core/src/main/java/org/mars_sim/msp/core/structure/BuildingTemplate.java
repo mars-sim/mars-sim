@@ -32,12 +32,10 @@ implements Serializable {
 	private List<BuildingConnectionTemplate> connectionList;
 
 	/** constructor. */
-	public BuildingTemplate(
-		int id, String type,
-		double width, double length, 
-		double xLoc, double yLoc,
-		double facing
-	) {
+	public BuildingTemplate(int id, String type,
+		double width, double length, double xLoc, 
+		double yLoc, double facing) {
+	    
 		this.id = id;
 		this.type = type;
 		this.width = width;

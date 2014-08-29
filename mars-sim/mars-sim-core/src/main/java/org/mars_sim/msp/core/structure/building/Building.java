@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Building.java
- * @version 3.07 2014-07-02
+ * @version 3.07 2014-08-22
  * @author Scott Davis
  */
 
@@ -73,6 +73,7 @@ LocalBoundedObject, InsidePathLocation {
 	protected String name;
 	protected double width;
 	protected double length;
+	protected int baseLevel;
 	protected double xLoc;
 	protected double yLoc;
 	protected double facing;
@@ -89,12 +90,10 @@ LocalBoundedObject, InsidePathLocation {
 	 * @throws BuildingException if building can not be created.
 	 */
 	public Building(BuildingTemplate template, BuildingManager manager) {
-		this(
-				template.getID(), template.getType(),
-				template.getWidth(), template.getLength(), 
-				template.getXLoc(), template.getYLoc(),
-				template.getFacing(), manager
-				);
+	    
+		this(template.getID(), template.getType(), template.getWidth(), 
+		        template.getLength(), template.getXLoc(), template.getYLoc(),
+				template.getFacing(), manager);
 	}
 
 	/**
@@ -109,8 +108,8 @@ LocalBoundedObject, InsidePathLocation {
 	 * @param manager the building's building manager.
 	 * @throws BuildingException if building can not be created.
 	 */
-	public Building(int id, String name, double width, double length, double xLoc, 
-			double yLoc, double facing, BuildingManager manager) {
+	public Building(int id, String name, double width, double length, 
+	        double xLoc, double yLoc, double facing, BuildingManager manager) {
 
 		this.id = id;
 		this.name = name;
@@ -143,6 +142,8 @@ LocalBoundedObject, InsidePathLocation {
 			throw new IllegalStateException("Invalid building length: " + this.length + " m. for new building " + name);
 		}
 
+		baseLevel = config.getBaseLevel(name);
+		
 		// Get the building's functions
 		functions = determineFunctions();
 
@@ -332,7 +333,7 @@ LocalBoundedObject, InsidePathLocation {
 	public double getLength() {
 		return length;
 	}
-
+	
 	@Override
 	public double getXLocation() {
 		return xLoc;
@@ -348,6 +349,14 @@ LocalBoundedObject, InsidePathLocation {
 		return facing;
 	}
 
+	/**
+     * Gets the base level of the building.
+     * @return -1 for in-ground, 0 for above-ground.
+     */
+    public int getBaseLevel() {
+        return baseLevel;
+    }
+	
 	/**
 	 * Time passing for building.
 	 * @param time amount of time passing (in millisols)

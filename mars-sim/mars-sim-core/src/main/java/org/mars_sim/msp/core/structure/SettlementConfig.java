@@ -142,8 +142,8 @@ implements Serializable {
 				double yLoc = Double.parseDouble(buildingElement.getAttributeValue(Y_LOCATION));
 				double facing = Double.parseDouble(buildingElement.getAttributeValue(FACING));
 				
-				BuildingTemplate buildingTemplate = new BuildingTemplate(id, buildingType, width, length, xLoc, 
-                        yLoc, facing);
+				BuildingTemplate buildingTemplate = new BuildingTemplate(id, buildingType, width, length, 
+				        xLoc, yLoc, facing);
 				template.addBuildingTemplate(buildingTemplate);
 				
 				// Create building connection templates.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConstructionStageInfo.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-08-22
  * @author Scott Davis
  */
 
@@ -29,6 +29,7 @@ public class ConstructionStageInfo implements Serializable {
     private String type;
     private double width;
     private double length;
+    private int baseLevel;
     private boolean unsetDimensions;
     private boolean constructable;
     private boolean salvagable;
@@ -46,6 +47,7 @@ public class ConstructionStageInfo implements Serializable {
      * @param width the construction stage width (meters).
      * @param length the construction stage length (meters).
      * @param unsetDimensions true if stage dimensions are not initially set.
+     * @param baseLevel -1 for in-ground, 0 for above-ground.
      * @param constructable true if stage can be constructed.
      * @param salvagable true if stage can be salvaged.
      * @param workTime the work time (millisols) required for construction.
@@ -56,10 +58,10 @@ public class ConstructionStageInfo implements Serializable {
      * @param vehicles list of construction vehicles required.
      */
     ConstructionStageInfo(String name, String type, double width, double length, 
-    		boolean unsetDimensions, boolean constructable, boolean salvagable, 
-    		double workTime, int architectConstructionSkill, String prerequisiteStage, 
-            Map<Part, Integer> parts, Map<AmountResource, Double> resources, 
-            List<ConstructionVehicleType> vehicles) {
+    		boolean unsetDimensions, int baseLevel, boolean constructable, 
+    		boolean salvagable, double workTime, int architectConstructionSkill, 
+    		String prerequisiteStage, Map<Part, Integer> parts, Map<AmountResource, 
+    		Double> resources, List<ConstructionVehicleType> vehicles) {
         
         this.name = name;
         this.type = type;
@@ -114,6 +116,14 @@ public class ConstructionStageInfo implements Serializable {
      */
     public boolean isUnsetDimensions() {
         return unsetDimensions;
+    }
+    
+    /**
+     * Gets the base level of the building.
+     * @return -1 for in-ground, 0 for above-ground.
+     */
+    public int getBaseLevel() {
+        return baseLevel;
     }
     
     /**
