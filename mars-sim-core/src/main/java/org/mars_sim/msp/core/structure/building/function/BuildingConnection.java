@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConnection.java
- * @version 3.06 2014-03-20
+ * @version 3.07 2014-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -9,8 +9,10 @@ package org.mars_sim.msp.core.structure.building.function;
 import java.io.Serializable;
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
+import org.mars_sim.msp.core.structure.building.BuildingConfig;
 
 public class BuildingConnection
 extends Function
@@ -37,6 +39,11 @@ implements Serializable {
 	public static double getFunctionValue(String buildingName, boolean newBuilding,
 			Settlement settlement) {
 	    
+	    // Determine building base level.
+	    // Should only determine supply and demand of connectors with same base level.
+	    BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        int baseLevel = buildingConfig.getBaseLevel(buildingName);
+	    
 	    // Determine demand.
 	    double demand = 0D;
 	    Iterator<Building> i = settlement.getBuildingManager().getBuildings(
@@ -45,14 +52,18 @@ implements Serializable {
 	        Building building = i.next();
 	        // Demand based on life support buildings that are not building connections.
 	        if (!building.hasFunction(BuildingFunction.BUILDING_CONNECTION)) {
-	            demand += 1D;
 	            
-	            // If building is not EVA and does not have a walkable airlock path, add more demand.
-	            if ((settlement.getAirlockNum() > 0) && !building.hasFunction(BuildingFunction.EVA)){
-	                
-	                if (!settlement.hasWalkableAvailableAirlock(building)) {
-	                    
-	                    demand += 100D;
+	            // Only add demand from buildings with same base level as this one.
+	            if (building.getBaseLevel() == baseLevel) {
+	                demand += 1D;
+
+	                // If building is not EVA and does not have a walkable airlock path, add more demand.
+	                if ((settlement.getAirlockNum() > 0) && !building.hasFunction(BuildingFunction.EVA)){
+
+	                    if (!settlement.hasWalkableAvailableAirlock(building)) {
+
+	                        demand += 100D;
+	                    }
 	                }
 	            }
 	        }
@@ -63,7 +74,12 @@ implements Serializable {
 	    Iterator<Building> j = settlement.getBuildingManager().getBuildings(
 	            BuildingFunction.BUILDING_CONNECTION).iterator();
         while (j.hasNext()) {
-            supply += (j.next().getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+            Building building = j.next();
+            
+            // Only add supply from connector buildings with same base level as this one.
+            if (building.getBaseLevel() == baseLevel) {
+                supply += (building.getMalfunctionManager().getWearCondition() / 100D) * .75D + .25D;
+            }
         }
 	    
         if (!newBuilding) {
