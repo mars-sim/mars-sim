@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -879,6 +879,9 @@ implements Serializable {
         List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
         Collections.shuffle(inhabitableBuildings);
         
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        int baseLevel = buildingConfig.getBaseLevel(buildingType);
+        
         // Try to find a connection between an inhabitable building without access to airlock and
         // another inhabitable building with access to an airlock.
         if (settlement.getAirlockNum() > 0) {
@@ -897,7 +900,12 @@ implements Serializable {
                     while (k.hasNext()) {
                         Building building = k.next();
                         if (!building.equals(startingBuilding)) {
-                            if (settlement.hasWalkableAvailableAirlock(building)) {
+                            
+                            // Check if connector base level matches either building.
+                            boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                                    (baseLevel == building.getBaseLevel());
+                            
+                            if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
                                 double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                         startingBuilding.getYLocation(), building.getXLocation(), 
                                         building.getYLocation());
@@ -942,7 +950,12 @@ implements Serializable {
                     Building building = k.next();
                     boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(
                             startingBuilding, building);
-                    if (!building.equals(startingBuilding) && !hasWalkingPath) {
+                    
+                    // Check if connector base level matches either building.
+                    boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                            (baseLevel == building.getBaseLevel());
+                    
+                    if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
                         
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
@@ -986,7 +999,12 @@ implements Serializable {
                     Building building = k.next();
                     boolean directlyConnected = (settlement.getBuildingConnectorManager().getBuildingConnections(
                             startingBuilding, building).size() > 0);
-                    if (!building.equals(startingBuilding) && !directlyConnected) {
+                    
+                    // Check if connector base level matches either building.
+                    boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                            (baseLevel == building.getBaseLevel());
+                    
+                    if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
                                 building.getYLocation());
@@ -1016,7 +1034,6 @@ implements Serializable {
         if (!result) {
             
             // If variable length, set construction site length to default.
-            BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
             if (buildingConfig.getLength(buildingType) == -1D) {
                 site.setLength(DEFAULT_VARIABLE_BUILDING_LENGTH);
             }

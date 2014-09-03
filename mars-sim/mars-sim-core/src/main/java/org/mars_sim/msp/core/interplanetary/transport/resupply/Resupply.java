@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Resupply.java
- * @version 3.07 2014-08-07
+ * @version 3.07 2014-09-01
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport.resupply;
@@ -544,6 +544,9 @@ implements Serializable, Transportable {
     private BuildingTemplate positionNewBuildingConnectorBuilding(String newBuildingType) {
         
         BuildingTemplate newTemplate = null;
+        
+        BuildingConfig buildingConfig = SimulationConfig.instance().getBuildingConfiguration();
+        int baseLevel = buildingConfig.getBaseLevel(newBuildingType);
        
         BuildingManager manager = settlement.getBuildingManager();
         List<Building> inhabitableBuildings = manager.getBuildings(BuildingFunction.LIFE_SUPPORT);
@@ -567,12 +570,18 @@ implements Serializable, Transportable {
                     while (k.hasNext()) {
                         Building building = k.next();
                         if (!building.equals(startingBuilding)) {
-                            if (settlement.hasWalkableAvailableAirlock(building)) {
+                            
+                            // Check if connector base level matches either building.
+                            boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                                    (baseLevel == building.getBaseLevel());
+                            
+                            if (settlement.hasWalkableAvailableAirlock(building) && matchingBaseLevel) {
+
                                 double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                         startingBuilding.getYLocation(), building.getXLocation(), 
                                         building.getYLocation());
                                 if ((distance < leastDistance) && (distance >= 1D)) {
-                                    
+
                                     // Check that new building can be placed between the two buildings.
                                     if (positionConnectorBetweenTwoBuildings(newBuildingType, startingBuilding, 
                                             building) != null) {
@@ -611,7 +620,12 @@ implements Serializable, Transportable {
                 while (k.hasNext()) {
                     Building building = k.next();
                     boolean hasWalkingPath = settlement.getBuildingConnectorManager().hasValidPath(startingBuilding, building);
-                    if (!building.equals(startingBuilding) && !hasWalkingPath) {
+                    
+                    // Check if connector base level matches either building.
+                    boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                            (baseLevel == building.getBaseLevel());
+                    
+                    if (!building.equals(startingBuilding) && !hasWalkingPath && matchingBaseLevel) {
                         
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
@@ -655,7 +669,12 @@ implements Serializable, Transportable {
                     Building building = k.next();
                     boolean directlyConnected = (settlement.getBuildingConnectorManager().getBuildingConnections(
                             startingBuilding, building).size() > 0);
-                    if (!building.equals(startingBuilding) && !directlyConnected) {
+                    
+                    // Check if connector base level matches either building.
+                    boolean matchingBaseLevel = (baseLevel == startingBuilding.getBaseLevel()) || 
+                            (baseLevel == building.getBaseLevel());
+                    
+                    if (!building.equals(startingBuilding) && !directlyConnected && matchingBaseLevel) {
                         
                         double distance = Point2D.distance(startingBuilding.getXLocation(), 
                                 startingBuilding.getYLocation(), building.getXLocation(), 
