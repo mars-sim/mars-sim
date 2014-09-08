@@ -102,6 +102,7 @@ implements Serializable {
      * @return true if person can research a site.
      */
     public static boolean canResearchSite(Person person, Rover rover) {
+        
         // Check if person can exit the rover.
         boolean exitable = ExitAirlock.canExitAirlock(person, rover.getAirlock());
 
