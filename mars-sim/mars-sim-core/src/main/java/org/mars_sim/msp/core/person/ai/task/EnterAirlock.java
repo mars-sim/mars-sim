@@ -421,7 +421,16 @@ implements Serializable {
      * @return true if person can enter the airlock 
      */
     public static boolean canEnterAirlock(Person person, Airlock airlock) {
-        return true;
+        
+        boolean result = true;
+        
+        if (!person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
+            logger.fine(person.getName() + " cannot enter airlock to " + airlock.getEntityName() + 
+                    " due to not being outside.");
+            result = false;
+        }
+        
+        return result;
     }
     
     @Override

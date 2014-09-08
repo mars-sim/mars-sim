@@ -93,7 +93,9 @@ implements Serializable {
             int roverIndex = RandomUtil.getRandomInt(roversNeedingEVASuits.size() - 1);
             vehicle = roversNeedingEVASuits.get(roverIndex);
             setDescription("Loading " + vehicle.getName());
-            requiredResources = new HashMap<Resource, Number>(0);
+            requiredResources = new HashMap<Resource, Number>(2);
+            requiredResources.put(AmountResource.findAmountResource("water"), 40D);
+            requiredResources.put(AmountResource.findAmountResource("oxygen"), 10D);
             optionalResources = new HashMap<Resource, Number>(0);
             requiredEquipment = new HashMap<Class, Integer>(1);
             requiredEquipment.put(EVASuit.class, 1);
@@ -216,10 +218,15 @@ implements Serializable {
                 Rover rover = (Rover) vehicle;
                 if (!rover.isReservedForMission()) {
                     if (BuildingManager.getBuilding(rover) == null) {
-                        int peopleOnboard = rover.getInventory().findNumUnitsOfClass(Person.class);
-                        int numSuits = rover.getInventory().findNumUnitsOfClass(EVASuit.class);
-                        if ((peopleOnboard > 0) && (numSuits == 0)) {
-                            result.add(rover);
+                        Inventory roverInv = rover.getInventory();
+                        int peopleOnboard = roverInv.findNumUnitsOfClass(Person.class);
+                        if ((peopleOnboard > 0)) {
+                            int numSuits = roverInv.findNumUnitsOfClass(EVASuit.class);
+                            double water = roverInv.getAmountResourceStored(AmountResource.findAmountResource("water"), false);
+                            double oxygen = roverInv.getAmountResourceStored(AmountResource.findAmountResource("oxygen"), false);
+                            if ((numSuits == 0) || (water < 40D) || (oxygen < 10D)) {
+                                result.add(rover);
+                            }
                         }
                     }
                 }

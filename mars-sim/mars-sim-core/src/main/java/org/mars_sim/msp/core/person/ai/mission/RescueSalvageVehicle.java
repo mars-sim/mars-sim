@@ -328,7 +328,7 @@ implements Serializable {
 					disembarkSettlement.getInventory().storeUnit(crewmember);
 					BuildingManager.addToRandomBuilding(crewmember, disembarkSettlement);
         			crewmember.setAssociatedSettlement(disembarkSettlement);
-        		        logger.info(crewmember.getName() + " rescued.");
+        		    logger.info(crewmember.getName() + " rescued.");
         			HistoricalEvent rescueEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_RESCUE_PERSON);
         			Simulation.instance().getEventManager().registerNewEvent(rescueEvent);
         		}

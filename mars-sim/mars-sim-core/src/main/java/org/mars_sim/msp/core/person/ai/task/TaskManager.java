@@ -125,6 +125,7 @@ implements Serializable {
      * Sets the current task to null.
      */
     public void clearTask() {
+        currentTask.endTask();
         currentTask = null;
         mind.getPerson().fireUnitUpdate(UnitEventType.TASK_EVENT);
     }
