@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeUtil.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -646,7 +646,8 @@ public final class TradeUtil {
 			Iterator<Unit> i = inventory.findAllUnitsOfClass(good.getClassType()).iterator();
 			while (i.hasNext()) {
 				Vehicle vehicle = (Vehicle) i.next();
-				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved()) {
+				boolean isEmpty = vehicle.getInventory().isEmpty(false);
+				if (vehicle.getDescription().equalsIgnoreCase(good.getName()) && !vehicle.isReserved() && isEmpty) {
 					count++;
 				}
 			}

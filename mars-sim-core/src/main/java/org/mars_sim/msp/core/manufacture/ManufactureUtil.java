@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureUtil.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-09-10
  * @author Scott Davis
  */
 
@@ -565,7 +565,8 @@ public final class ManufactureUtil {
             Iterator<Unit> i = salvagableUnits.iterator();
             while (i.hasNext()) {
                 Vehicle vehicle = (Vehicle) i.next();
-                if (vehicle.isReserved()) i.remove();
+                boolean isEmpty = vehicle.getInventory().isEmpty(false);
+                if (vehicle.isReserved() || !isEmpty) i.remove();
             }
         }
         else if (info.getType().equalsIgnoreCase("equipment")) {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -658,8 +658,9 @@ implements Serializable {
             Iterator<Vehicle> j = settlement.getParkedVehicles().iterator();
             while (j.hasNext()) {
                 Vehicle vehicle = j.next();
+                boolean isEmpty = vehicle.getInventory().isEmpty(false);
                 if (vehicleType.equalsIgnoreCase(vehicle.getDescription())) {
-                    if ((vehicle != getVehicle()) && !vehicle.isReserved()) {
+                    if ((vehicle != getVehicle()) && !vehicle.isReserved() && isEmpty) {
                         result = vehicle;
                     }
                 }
