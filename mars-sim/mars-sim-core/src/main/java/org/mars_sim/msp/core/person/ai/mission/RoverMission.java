@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-10
  * @author Scott Davis
  */
 
@@ -278,22 +278,24 @@ extends VehicleMission {
             else {
                 // Check if vehicle can hold enough supplies for mission.
                 if (isVehicleLoadable()) {
-                    // Load rover
-                    // Random chance of having person load (this allows person to do other things sometimes)
-                    if (RandomUtil.lessThanRandPercent(75)) {
-                        if (BuildingManager.getBuilding(getVehicle()) != null) {
-                            assignTask(person, new LoadVehicleGarage(person, getVehicle(), 
-                                    getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
-                                    getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
-                        }
-                        else {
-                            // Check if it is day time.
-                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
-                                    surface.inDarkPolarRegion(person.getCoordinates())) {
-                                assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
+                    if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                        // Load rover
+                        // Random chance of having person load (this allows person to do other things sometimes)
+                        if (RandomUtil.lessThanRandPercent(75)) {
+                            if (BuildingManager.getBuilding(getVehicle()) != null) {
+                                assignTask(person, new LoadVehicleGarage(person, getVehicle(), 
                                         getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
                                         getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                            }
+                            else {
+                                // Check if it is day time.
+                                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                                if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                                        surface.inDarkPolarRegion(person.getCoordinates())) {
+                                    assignTask(person, new LoadVehicleEVA(person, getVehicle(), 
+                                            getRequiredResourcesToLoad(), getOptionalResourcesToLoad(), 
+                                            getRequiredEquipmentToLoad(), getOptionalEquipmentToLoad()));
+                                }
                             }
                         }
                     }
@@ -430,21 +432,23 @@ extends VehicleMission {
                 // Unload rover if necessary.
                 boolean roverUnloaded = rover.getInventory().getTotalInventoryMass(false) == 0D;
                 if (!roverUnloaded) {
-                    // Random chance of having person unload (this allows person to do other things sometimes)
-                    if (RandomUtil.lessThanRandPercent(50)) {
-                        if (BuildingManager.getBuilding(rover) != null) {
-                            assignTask(person, new UnloadVehicleGarage(person, rover));
-                        }
-                        else {
-                            // Check if it is day time.
-                            SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
-                            if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
-                                    surface.inDarkPolarRegion(person.getCoordinates())) {
-                                assignTask(person, new UnloadVehicleEVA(person, rover));
+                    if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
+                        // Random chance of having person unload (this allows person to do other things sometimes)
+                        if (RandomUtil.lessThanRandPercent(50)) {
+                            if (BuildingManager.getBuilding(rover) != null) {
+                                assignTask(person, new UnloadVehicleGarage(person, rover));
                             }
+                            else {
+                                // Check if it is day time.
+                                SurfaceFeatures surface = Simulation.instance().getMars().getSurfaceFeatures();
+                                if ((surface.getSurfaceSunlight(person.getCoordinates()) > 0D) || 
+                                        surface.inDarkPolarRegion(person.getCoordinates())) {
+                                    assignTask(person, new UnloadVehicleEVA(person, rover));
+                                }
+                            }
+
+                            return;
                         }
-                    
-                        return;
                     }
                 }
                 else {

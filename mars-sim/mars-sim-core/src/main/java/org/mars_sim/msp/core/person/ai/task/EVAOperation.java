@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-09-10
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -93,7 +93,7 @@ implements Serializable {
         }
         else {
             throw new IllegalStateException(person.getName() + 
-                    " not in a value location situation to start EVA task: " + 
+                    " not in a valid location situation to start EVA task: " + 
                     person.getLocationSituation());
         }
         
