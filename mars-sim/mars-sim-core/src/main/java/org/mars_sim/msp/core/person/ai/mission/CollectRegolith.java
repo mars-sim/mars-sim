@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectRegolith.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-08-17
  * @author Sebastien Venot
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.resource.AmountResource;
@@ -29,7 +30,8 @@ extends CollectResourcesMission {
     //	private static Logger logger = Logger.getLogger(CollectRegolith.class.getName());
 
     /** Default description. */
-    public static final String DEFAULT_DESCRIPTION = "Regolith Prospecting";
+    public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.collectRegolith"); //$NON-NLS-1$
 
     /** Amount of regolith to be gathered at a given site (kg). */
     private static final double SITE_GOAL = 1000D;

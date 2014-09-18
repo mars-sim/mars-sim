@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingSalvageMission.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEventType;
@@ -58,12 +59,15 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(BuildingSalvageMission.class.getName());
 
-	/** TODO Default description should be internationalized. */
-	public static final String DEFAULT_DESCRIPTION = "Salvage Building";
+	/** Default description. */
+	public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.salvageBuilding"); //$NON-NLS-1$
 
-	// TODO Mission phases should be enums
-	final public static String PREPARE_SITE_PHASE = "Prepare Site";
-	final public static String SALVAGE_PHASE = "Salvage";
+	/** Mission phases. */
+	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(Msg.getString(
+            "Mission.phase.prepareSalvageSite")); //$NON-NLS-1$
+    final public static MissionPhase SALVAGE_PHASE = new MissionPhase(Msg.getString(
+            "Mission.phase.salvage")); //$NON-NLS-1$
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
@@ -102,8 +106,9 @@ implements Serializable {
             setMissionCapacity(MAX_PEOPLE);
             int availableSuitNum = Mission
                     .getNumberAvailableEVASuitsAtSettlement(settlement);
-            if (availableSuitNum < getMissionCapacity())
+            if (availableSuitNum < getMissionCapacity()) {
                 setMissionCapacity(availableSuitNum);
+            }
 
             // Recruit additional people to mission.
             recruitPeopleForMission(startingPerson);
@@ -158,13 +163,15 @@ implements Serializable {
                         constructionStage.setSalvaging(true);
                         logger.log(Level.INFO, "Starting salvage construction stage: "
                                 + constructionStage);
-                    } else
+                    } else {
                         endMission("Salvage construction stage could not be found.");
+                    }
                 }
 
                 // Mark construction site as undergoing salvage.
-                if (constructionStage != null)
+                if (constructionStage != null) {
                     constructionSite.setUndergoingSalvage(true);
+                }
             } else {
                 endMission("Salvage construction site could not be found or created.");
             }
@@ -182,8 +189,8 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription("Preparing salvage construction site at "
-                + settlement.getName());
+        setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description", 
+                settlement.getName())); //$NON-NLS-1$
     }
 
     /**
@@ -285,8 +292,8 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription("Preparing salvage construction site at "
-                + settlement.getName());
+        setPhaseDescription(Msg.getString("Mission.phase.prepareSalvageSite.description", 
+                settlement.getName())); //$NON-NLS-1$
     }
 
     /**
@@ -352,8 +359,8 @@ implements Serializable {
     protected void determineNewPhase() {
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(SALVAGE_PHASE);
-            setPhaseDescription("Salvage Construction Site Stage: "
-                    + constructionStage.getInfo().getName());
+            setPhaseDescription(Msg.getString("Mission.phase.salvage.description", 
+                    constructionStage.getInfo().getName())); //$NON-NLS-1$
         } else if (SALVAGE_PHASE.equals(getPhase()))
             endMission("Successfully ended salvage");
     }

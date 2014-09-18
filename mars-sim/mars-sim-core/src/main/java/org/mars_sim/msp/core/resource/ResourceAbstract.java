@@ -1,7 +1,7 @@
 package org.mars_sim.msp.core.resource;
 
 /**
- * to avoid code repition in implementors of {@link Resource}.
+ * to avoid code repetition in implementors of {@link Resource}.
  * @author stpa
  * 2014-01-30
  */

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EmergencySupplyMission.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -66,7 +67,8 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(EmergencySupplyMission.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = "Deliver Emergency Supplies";
+	public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Static members
 	private static final int MAX_MEMBERS = 2;
@@ -75,11 +77,15 @@ implements Serializable {
 	private static final double VEHICLE_FUEL_REMAINING_MODIFIER = 2D;
 	private static final double MINIMUM_EMERGENCY_SUPPLY_AMOUNT = 100D;
 
-	// TODO Mission phases should be an enum.
-	public static final String SUPPLY_DELIVERY_DISEMBARKING = "Supply Delivery Disembarking";
-	public static final String SUPPLY_DELIVERY = "Unload Supply Goods";
-	public static final String LOAD_RETURN_TRIP_SUPPLIES = "Load Return Trip Supplies";
-	public static final String RETURN_TRIP_EMBARKING = "Return Trip Embarking";
+	/** Mission phases. */
+	final public static MissionPhase SUPPLY_DELIVERY_DISEMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.supplyDeliveryDisembarking")); //$NON-NLS-1$
+	final public static MissionPhase SUPPLY_DELIVERY = new MissionPhase(Msg.getString(
+            "Mission.phase.supplyDelivery")); //$NON-NLS-1$
+	final public static MissionPhase LOAD_RETURN_TRIP_SUPPLIES = new MissionPhase(Msg.getString(
+            "Mission.phase.loadReturnTripSupplies")); //$NON-NLS-1$
+	final public static MissionPhase RETURN_TRIP_EMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.returnTripEmbarking")); //$NON-NLS-1$
 
 	// Data members.
 	private Settlement emergencySettlement;
@@ -141,7 +147,8 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingPerson != null && getRover() != null) {
                 logger.info(startingPerson.getName() + " starting emergency supply mission from " + getStartingSettlement() + 
@@ -231,7 +238,8 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
             if (startingPerson != null && getRover() != null) {
@@ -246,30 +254,37 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 if (outbound) {
                     setPhase(SUPPLY_DELIVERY_DISEMBARKING);
-                    setPhaseDescription("Disembarking at " + emergencySettlement);
+                    setPhaseDescription(Msg.getString("Mission.phase.supplyDeliveryDisembarking.description", 
+                            emergencySettlement.getName())); //$NON-NLS-1$
                 } else {
                     setPhase(VehicleMission.DISEMBARKING);
-                    setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                            getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 }
             }
         } else if (SUPPLY_DELIVERY_DISEMBARKING.equals(getPhase())) {
             setPhase(SUPPLY_DELIVERY);
-            setPhaseDescription("Delivering emergency supplies to " + emergencySettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.supplyDelivery.description", 
+                    emergencySettlement.getName())); //$NON-NLS-1$
         } else if (SUPPLY_DELIVERY.equals(getPhase())) {
             setPhase(LOAD_RETURN_TRIP_SUPPLIES);
-            setPhaseDescription("Loading return trip supplies at " + emergencySettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.loadReturnTripSupplies.description", 
+                    emergencySettlement.getName())); //$NON-NLS-1$
         } else if (LOAD_RETURN_TRIP_SUPPLIES.equals(getPhase())) {
             setPhase(RETURN_TRIP_EMBARKING);
-            setPhaseDescription("Embarking at " + emergencySettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.returnTripEmbarking.description", 
+                    emergencySettlement.getName())); //$NON-NLS-1$
         } else if (RETURN_TRIP_EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");
         }

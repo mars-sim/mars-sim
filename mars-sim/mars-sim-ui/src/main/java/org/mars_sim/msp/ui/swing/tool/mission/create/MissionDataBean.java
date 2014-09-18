@@ -1,18 +1,17 @@
 /**
  * Mars Simulation Project
  * MissionDataBean.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-09-17
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.ui.swing.tool.mission.create;
 
 import org.mars_sim.msp.core.Coordinates;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.*;
-import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.science.ScientificStudy;
 import org.mars_sim.msp.core.structure.Settlement;
 import org.mars_sim.msp.core.structure.building.Building;
@@ -31,18 +30,18 @@ import java.util.*;
 class MissionDataBean {
 
 	// Mission type strings.
-	final static String TRAVEL_MISSION = "Travel to Settlement";
-	final static String EXPLORATION_MISSION = "Mineral Exploration";
-	final static String ICE_MISSION = "Ice Prospecting";
-	final static String REGOLITH_MISSION = "Regolith Prospecting";
-	final static String RESCUE_MISSION = "Rescue/Salvage Vehicle";
-	final static String TRADE_MISSION = "Trade";
-	final static String MINING_MISSION = "Mining";
-    final static String CONSTRUCTION_MISSION = "Building Construction";
-    final static String AREOLOGY_FIELD_MISSION = "Areology Study Field Mission";
-    final static String BIOLOGY_FIELD_MISSION = "Biology Study Field Mission";
-    final static String SALVAGE_MISSION = "Building Salvage";
-    final static String EMERGENCY_SUPPLY_MISSION = "Emergency Supply Mission";
+	final static String TRAVEL_MISSION = Msg.getString("Mission.description.travelToSettlement"); //$NON-NLS-1$
+	final static String EXPLORATION_MISSION = Msg.getString("Mission.description.exploration"); //$NON-NLS-1$
+	final static String ICE_MISSION = Msg.getString("Mission.description.collectIce"); //$NON-NLS-1$
+	final static String REGOLITH_MISSION = Msg.getString("Mission.description.collectRegolith"); //$NON-NLS-1$
+	final static String RESCUE_MISSION = Msg.getString("Mission.description.rescueSalvageVehicle"); //$NON-NLS-1$
+	final static String TRADE_MISSION = Msg.getString("Mission.description.trade"); //$NON-NLS-1$
+	final static String MINING_MISSION = Msg.getString("Mission.description.mining"); //$NON-NLS-1$
+    final static String CONSTRUCTION_MISSION = Msg.getString("Mission.description.buildingConstructionMission"); //$NON-NLS-1$
+    final static String AREOLOGY_FIELD_MISSION = Msg.getString("Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
+    final static String BIOLOGY_FIELD_MISSION = Msg.getString("Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
+    final static String SALVAGE_MISSION = Msg.getString("Mission.description.salvageBuilding"); //$NON-NLS-1$
+    final static String EMERGENCY_SUPPLY_MISSION = Msg.getString("Mission.description.emergencySupplyMission"); //$NON-NLS-1$
 
 	// Data members.
 	private String type;

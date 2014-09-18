@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.util.Collection;
@@ -16,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.UnitEvent;
@@ -49,10 +49,13 @@ implements UnitListener {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(VehicleMission.class.getName());
 
-	// TODO Mission phases should be an enum.
-	public static final String EMBARKING = "Embarking";
-	public static final String TRAVELLING = "Travelling";
-	public static final String DISEMBARKING = "Disembarking";
+	/** Mission phases. */
+	final public static MissionPhase EMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.embarking")); //$NON-NLS-1$
+	final public static MissionPhase TRAVELLING = new MissionPhase(Msg.getString(
+            "Mission.phase.travelling")); //$NON-NLS-1$
+	final public static MissionPhase DISEMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.disembarking")); //$NON-NLS-1$
 
     // Static members
 
@@ -65,7 +68,7 @@ implements UnitListener {
     private VehicleOperator lastOperator;
     /** True if vehicle has been loaded. */
     protected boolean loadedFlag = false;
-    /** Vehicle travelled distance at start of mission. */
+    /** Vehicle traveled distance at start of mission. */
     private double startingTravelledDistance;
 
     // Mission tasks tracked
@@ -92,8 +95,9 @@ implements UnitListener {
         addPhase(DISEMBARKING);
 
         // Reserve a vehicle.
-        if (!reserveVehicle(startingPerson))
+        if (!reserveVehicle(startingPerson)) {
             endMission("No reservable vehicles.");
+        }
     }
 
     /**
@@ -142,11 +146,13 @@ implements UnitListener {
                 vehicle.addUnitListener(this);
                 fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
             }
-            if (!usable)
+            if (!usable) {
                 throw new IllegalStateException(getPhase()
                         + " : newVehicle is not usable for this mission.");
-        } else
+            }
+        } else {
             throw new IllegalArgumentException("newVehicle is null.");
+        }
     }
 
     /**
@@ -179,16 +185,20 @@ implements UnitListener {
     protected boolean isUsableVehicle(Vehicle newVehicle) {
         if (newVehicle != null) {
             boolean usable = true;
-            if (newVehicle.isReserved())
+            if (newVehicle.isReserved()) {
                 usable = false;
-            if (!newVehicle.getStatus().equals(Vehicle.PARKED))
+            }
+            if (!newVehicle.getStatus().equals(Vehicle.PARKED)) {
                 usable = false;
-            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D)
+            }
+            if (newVehicle.getInventory().getTotalInventoryMass(false) > 0D) {
                 usable = false;
+            }
             return usable;
-        } else
+        } else {
             throw new IllegalArgumentException(
                     "isUsableVehicle: newVehicle is null.");
+        }
     }
 
     /**
@@ -201,15 +211,19 @@ implements UnitListener {
      */
     protected int compareVehicles(Vehicle firstVehicle, Vehicle secondVehicle) {
         if (isUsableVehicle(firstVehicle)) {
-            if (isUsableVehicle(secondVehicle))
+            if (isUsableVehicle(secondVehicle)) {
                 return 0;
-            else
+            }
+            else {
                 return 1;
+            }
         } else {
-            if (isUsableVehicle(secondVehicle))
+            if (isUsableVehicle(secondVehicle)) {
                 return -1;
-            else
+            }
+            else {
                 return 0;
+            }
         }
     }
 
@@ -231,8 +245,9 @@ implements UnitListener {
             if (bestVehicles.size() > 0) {
                 int comparison = compareVehicles(availableVehicle,
                         (Vehicle) bestVehicles.toArray()[0]);
-                if (comparison == 0)
+                if (comparison == 0) {
                     bestVehicles.add(availableVehicle);
+                }
                 else if (comparison == 1) {
                     bestVehicles.clear();
                     bestVehicles.add(availableVehicle);
@@ -266,8 +281,9 @@ implements UnitListener {
         Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
         while (i.hasNext()) {
             Vehicle vehicle = i.next();
-            if (isUsableVehicle(vehicle))
+            if (isUsableVehicle(vehicle)) {
                 result.add(vehicle);
+            }
         }
 
         return result;
@@ -281,8 +297,9 @@ implements UnitListener {
 
         // Set emergency beacon if vehicle is not at settlement.
         if (hasVehicle()) {
-            if (vehicle.getSettlement() == null)
+            if (vehicle.getSettlement() == null) {
                 setEmergencyBeacon(null, vehicle, true);
+            }
         }
 
         leaveVehicle();
@@ -295,14 +312,16 @@ implements UnitListener {
      * @throws MissionException if error checking vehicle.
      */
     public final boolean isVehicleLoaded() {
-        if (vehicle == null)
+        if (vehicle == null) {
             throw new IllegalStateException(getPhase() + " : vehicle is null");
+        }
+        
         try {
             return LoadVehicleGarage.isFullyLoaded(getRequiredResourcesToLoad(), 
                     getOptionalResourcesToLoad(), getRequiredEquipmentToLoad(), 
                     getOptionalEquipmentToLoad(), vehicle, vehicle.getSettlement());
         } catch (Exception e) {
-            throw new IllegalStateException(getPhase(), e);
+            throw new IllegalStateException(getPhase().getName(), e);
         }
     }
 
@@ -358,16 +377,17 @@ implements UnitListener {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Travelling to "
-                    + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription("Disembarking at "
-                        + getCurrentNavpoint().getDescription());
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                        getCurrentNavpoint().getDescription())); //$NON-NLS-1$
             }
-        } else if (DISEMBARKING.equals(getPhase()))
+        } else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");
+        }
     }
 
     /**
@@ -377,13 +397,16 @@ implements UnitListener {
      */
     protected void performPhase(Person person) {
         super.performPhase(person);
-        if (EMBARKING.equals(getPhase()))
+        if (EMBARKING.equals(getPhase())) {
             performEmbarkFromSettlementPhase(person);
-        else if (TRAVELLING.equals(getPhase()))
+        }
+        else if (TRAVELLING.equals(getPhase())) {
             performTravelPhase(person);
-        else if (DISEMBARKING.equals(getPhase()))
+        }
+        else if (DISEMBARKING.equals(getPhase())) {
             performDisembarkToSettlementPhase(person, getCurrentNavpoint()
                     .getSettlement());
+        }
     }
 
     /**
@@ -418,8 +441,8 @@ implements UnitListener {
                             destination.getLocation())) {
                         operateVehicleTask.setDestination(destination
                                 .getLocation());
-                        setPhaseDescription("Driving to "
-                                + getNextNavpoint().getDescription());
+                        setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                                getNextNavpoint().getDescription())); //$NON-NLS-1$
                     }
                 }
             } else {
@@ -442,8 +465,9 @@ implements UnitListener {
         }
 
         // If vehicle has unrepairable malfunction, end mission.
-        if (hasUnrepairableMalfunction())
+        if (hasUnrepairableMalfunction()) {
             endMission("unrepairable malfunction");
+        }
     }
 
     /**
@@ -476,10 +500,12 @@ implements UnitListener {
      * @return time (MarsClock) or null if not applicable.
      */
     public final MarsClock getLegETA() {
-        if (TRAVELLING.equals(getPhase()) && (operateVehicleTask != null))
+        if (TRAVELLING.equals(getPhase()) && (operateVehicleTask != null)) {
             return operateVehicleTask.getETA();
-        else
+        }
+        else {
             return null;
+        }
     }
 
     /**
@@ -499,8 +525,9 @@ implements UnitListener {
         double result = distance / averageSpeedMillisol;
 
         // If buffer, add one sol.
-        if (useBuffer)
+        if (useBuffer) {
             result += 1000D;
+        }
 
         return result;
     }
@@ -523,8 +550,9 @@ implements UnitListener {
 
         double totalSpeed = 0D;
         Iterator<Person> i = getPeople().iterator();
-        while (i.hasNext())
+        while (i.hasNext()) {
             totalSpeed += getAverageVehicleSpeedForOperator(i.next());
+        }
 
         return totalSpeed / getPeopleNumber();
     }
@@ -587,8 +615,9 @@ implements UnitListener {
                 Part part = i.next();
                 int number = (int) Math.round(parts.get(part)
                         * numberMalfunctions * PARTS_NUMBER_MODIFIER);
-                if (number > 0)
+                if (number > 0) {
                     result.put(part, number);
+                }
             }
         }
 
@@ -667,9 +696,9 @@ implements UnitListener {
                 // Check if closest settlement is already the next navpoint.
                 boolean sameDestination = false;
                 NavPoint nextNav = getNextNavpoint();
-                if ((nextNav != null)
-                        && (newDestination == nextNav.getSettlement()))
+                if ((nextNav != null) && (newDestination == nextNav.getSettlement())) {
                     sameDestination = true;
+                }
 
                 if (!sameDestination) {
                     logger.severe(vehicle.getName()
@@ -690,10 +719,12 @@ implements UnitListener {
                                     + newDestination.getName()));
                     associateAllMembersWithSettlement(newDestination);
                 }
-            } else
+            } else {
                 endMission("Not enough resources to continue.");
-        } else
+            }
+        } else {
             endMission("No emergency settlement destination found.");
+        }
     }
 
     /**
@@ -707,10 +738,12 @@ implements UnitListener {
         // Creating mission emergency beacon event.
         HistoricalEvent newEvent = new MissionHistoricalEvent(person, this, EventType.MISSION_EMERGENCY_BEACON);
         Simulation.instance().getEventManager().registerNewEvent(newEvent);
-        if (beaconOn)
+        if (beaconOn) {
             logger.info("Emergency beacon activated on " + vehicle.getName());
-        else
+        }
+        else {
             logger.info("Emergency beacon deactivated on " + vehicle.getName());
+        }
 
         vehicle.setEmergencyBeacon(beaconOn);
     }
@@ -719,9 +752,11 @@ implements UnitListener {
      * Update mission to the next navpoint destination.
      */
     public void updateTravelDestination() {
-        if (operateVehicleTask != null)
+        if (operateVehicleTask != null) {
             operateVehicleTask.setDestination(getNextNavpoint().getLocation());
-        setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+        }
+        setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                getNextNavpoint().getDescription())); //$NON-NLS-1$
     }
 
     /**
@@ -752,11 +787,13 @@ implements UnitListener {
      * @return distance (km)
      */
     public final double getTotalDistanceTravelled() {
-        if (vehicle != null)
+        if (vehicle != null) {
             return vehicle.getTotalDistanceTraveled()
                     - startingTravelledDistance;
-        else
+        }
+        else {
             return 0D;
+        }
     }
 
     /**
@@ -767,8 +804,9 @@ implements UnitListener {
         // Add this mission as a vehicle listener (does nothing if already listening to vehicle).
         // Note this is needed so that mission will reattach itself as a vehicle listener after deserialization
         // since listener collection is transient. - Scott
-        if (hasVehicle() && !vehicle.hasUnitListener(this))
+        if (hasVehicle() && !vehicle.hasUnitListener(this)) {
             vehicle.addUnitListener(this);
+        }
     }
 
     /**
@@ -777,10 +815,12 @@ implements UnitListener {
      */
     public void unitUpdate(UnitEvent event) {
     	UnitEventType type = event.getType();
-        if (type == UnitEventType.LOCATION_EVENT)
+        if (type == UnitEventType.LOCATION_EVENT) {
             fireMissionUpdate(MissionEventType.DISTANCE_EVENT);
-        else if (type == UnitEventType.NAME_EVENT)
+        }
+        else if (type == UnitEventType.NAME_EVENT) {
             fireMissionUpdate(MissionEventType.VEHICLE_EVENT);
+        }
     }
 
     /**
@@ -833,8 +873,9 @@ implements UnitListener {
                 while (j.hasNext()) {
                     Part part = j.next();
                     int number = parts.get(part);
-                    if (vehicle.getInventory().getItemResourceNum(part) < number)
+                    if (vehicle.getInventory().getItemResourceNum(part) < number) {
                         result = true;
+                    }
                 }
             }
         }
@@ -854,8 +895,9 @@ implements UnitListener {
         Iterator<Mission> i = manager.getMissionsForSettlement(settlement)
                 .iterator();
         while (i.hasNext()) {
-            if (EMBARKING.equals(i.next().getPhase()))
+            if (EMBARKING.equals(i.next().getPhase())) {
                 result = true;
+            }
         }
 
         return result;
@@ -868,7 +910,9 @@ implements UnitListener {
         vehicle = null;
         lastOperator = null;
         operateVehicleTask = null;
-        if (equipmentNeededCache != null) equipmentNeededCache.clear();
+        if (equipmentNeededCache != null) {
+            equipmentNeededCache.clear();
+        }
         equipmentNeededCache = null;
     }
 }

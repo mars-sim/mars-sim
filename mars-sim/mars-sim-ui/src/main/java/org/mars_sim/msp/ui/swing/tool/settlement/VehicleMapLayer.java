@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMapLayer.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.settlement;
@@ -21,6 +21,7 @@ import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.Trade;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -200,7 +201,7 @@ public class VehicleMapLayer implements SettlementMapLayer {
 		Mission mission = Simulation.instance().getMissionManager().getMissionForVehicle(vehicle);
 		if ((mission != null) && (mission instanceof VehicleMission)) {
 			VehicleMission vehicleMission = (VehicleMission) mission;
-			String missionPhase = vehicleMission.getPhase();
+			MissionPhase missionPhase = vehicleMission.getPhase();
 			if ((RoverMission.EMBARKING.equals(missionPhase) || Trade.LOAD_GOODS.equals(missionPhase)) && 
 					!mission.getPhaseEnded()) {
 				result = true;
