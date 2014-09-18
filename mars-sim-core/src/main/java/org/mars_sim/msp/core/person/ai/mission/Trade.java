@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Trade.java
- * @version 3.07 2014-09-10
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -16,6 +16,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -59,14 +60,20 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(Trade.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = "Trade with Settlement";
+	public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.trade"); //$NON-NLS-1$
 
-	// TODO Mission phases should be enums.
-	public static final String TRADE_DISEMBARKING = "Trade Disembarking";
-	public static final String TRADE_NEGOTIATING = "Trade Negotiating";
-	public static final String UNLOAD_GOODS = "Unload Goods";
-	public static final String LOAD_GOODS = "Load Goods";
-	public static final String TRADE_EMBARKING = "Trade Embarking";
+	/** Mission phases. */
+	final public static MissionPhase TRADE_DISEMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.tradeDisembarking")); //$NON-NLS-1$
+	final public static MissionPhase TRADE_NEGOTIATING = new MissionPhase(Msg.getString(
+            "Mission.phase.tradeNegotiating")); //$NON-NLS-1$
+	final public static MissionPhase UNLOAD_GOODS = new MissionPhase(Msg.getString(
+            "Mission.phase.unloadGoods")); //$NON-NLS-1$
+	final public static MissionPhase LOAD_GOODS = new MissionPhase(Msg.getString(
+            "Mission.phase.loadGoods")); //$NON-NLS-1$
+	final public static MissionPhase TRADE_EMBARKING = new MissionPhase(Msg.getString(
+            "Mission.phase.tradeEmbarking")); //$NON-NLS-1$
 
 	// Static members
 	static final int MAX_MEMBERS = 2;
@@ -116,7 +123,8 @@ implements Serializable {
             if ((tradingSettlement != null) && (tradingSettlement != getStartingSettlement())) {
                 addNavpoint(new NavPoint(tradingSettlement.getCoordinates(), tradingSettlement,
                         tradingSettlement.getName()));
-                setDescription("Trade with " + tradingSettlement.getName());
+                setDescription(Msg.getString("Mission.description.trade.detail", 
+                        tradingSettlement.getName())); //$NON-NLS-1$
                 TRADE_PROFIT_CACHE.remove(getStartingSettlement());
                 TRADE_PROFIT_CACHE.remove(tradingSettlement);
                 TRADE_SETTLEMENT_CACHE.remove(getStartingSettlement());
@@ -167,7 +175,8 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             if (startingPerson != null && getRover() != null) {
                 logger.info(startingPerson.getName() + " starting Trade mission on " + getRover().getName());
@@ -230,7 +239,8 @@ implements Serializable {
 
         // Set initial phase
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
         if (logger.isLoggable(Level.INFO)) {
             Person startingPerson = (Person) members.toArray()[0];
             if (startingPerson != null && getRover() != null) {
@@ -246,33 +256,41 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 if (outbound) {
                     setPhase(TRADE_DISEMBARKING);
-                    setPhaseDescription("Disembarking at " + tradingSettlement);
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                            tradingSettlement.getName())); //$NON-NLS-1$
                 } else {
                     setPhase(VehicleMission.DISEMBARKING);
-                    setPhaseDescription("Disembarking at " + getCurrentNavpoint().getDescription());
+                    setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                            getCurrentNavpoint().getDescription())); //$NON-NLS-1$
                 }
             }
         } else if (TRADE_DISEMBARKING.equals(getPhase())) {
             setPhase(TRADE_NEGOTIATING);
-            setPhaseDescription("Negotiating trade at " + tradingSettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.tradeNegotiating.description", 
+                    tradingSettlement.getName())); //$NON-NLS-1$
         } else if (TRADE_NEGOTIATING.equals(getPhase())) {
             setPhase(UNLOAD_GOODS);
-            setPhaseDescription("Unloading sell goods at " + tradingSettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.unloadGoods.description", 
+                    tradingSettlement.getName())); //$NON-NLS-1$
         } else if (UNLOAD_GOODS.equals(getPhase())) {
             setPhase(LOAD_GOODS);
-            setPhaseDescription("Loading buy goods at " + tradingSettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.loadGoods.description", 
+                    tradingSettlement.getName())); //$NON-NLS-1$
         } else if (LOAD_GOODS.equals(getPhase())) {
             setPhase(TRADE_EMBARKING);
-            setPhaseDescription("Embarking at " + tradingSettlement);
+            setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                    tradingSettlement.getName())); //$NON-NLS-1$
         } else if (TRADE_EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");
         }

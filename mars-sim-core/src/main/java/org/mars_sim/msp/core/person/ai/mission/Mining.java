@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mining.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -54,10 +55,12 @@ extends RoverMission {
 	private static Logger logger = Logger.getLogger(Mining.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = "Mining";
+	public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.mining"); //$NON-NLS-1$
 
 	/** Mission phases */
-	final public static String MINING_SITE = "Mining Site";
+	final public static MissionPhase MINING_SITE = new MissionPhase(Msg.getString(
+            "Mission.phase.miningSite")); //$NON-NLS-1$
 
 	/** Number of bags needed for mission. */
 	public static final int NUMBER_OF_BAGS = 20;
@@ -152,8 +155,8 @@ extends RoverMission {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from "
-                + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
     }
 
     /**
@@ -219,8 +222,8 @@ extends RoverMission {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from "
-                + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
     }
 
     /**
@@ -286,23 +289,23 @@ extends RoverMission {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to "
-                    + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription("Disembarking at "
-                        + getCurrentNavpoint().getSettlement().getName());
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                        getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             } else {
                 setPhase(MINING_SITE);
-                setPhaseDescription("Mining at "
-                        + getCurrentNavpoint().getDescription());
+                setPhaseDescription(Msg.getString("Mission.phase.miningSite.description", 
+                        getCurrentNavpoint().getDescription())); //$NON-NLS-1$
             }
         } else if (MINING_SITE.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to "
-                    + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         } else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");
         }

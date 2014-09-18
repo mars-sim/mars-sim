@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AreologyStudyFieldMission.java
- * @version 3.07 2014-09-05
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -53,10 +54,12 @@ implements Serializable {
     private static Logger logger = Logger.getLogger(AreologyStudyFieldMission.class.getName());
 
     /** Default description. */
-    public static final String DEFAULT_DESCRIPTION = "Areology Study Field Mission";
+    public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.areologyStudyFieldMission"); //$NON-NLS-1$
 
-    /** Mission phases. */
-    final public static String RESEARCH_SITE = "Researching Field Site";
+    /** Mission phase. */
+    final public static MissionPhase RESEARCH_SITE = new MissionPhase(Msg.getString(
+            "Mission.phase.researchingFieldSite")); //$NON-NLS-1$
 
     /** Minimum number of people to do mission. */
     public final static int MIN_PEOPLE = 2;
@@ -124,7 +127,8 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
     }
 
     /**
@@ -175,7 +179,8 @@ implements Serializable {
 
         // Set initial mission phase.
         setPhase(VehicleMission.EMBARKING);
-        setPhaseDescription("Embarking from " + getStartingSettlement().getName());
+        setPhaseDescription(Msg.getString("Mission.phase.embarking.description", 
+                getStartingSettlement().getName())); //$NON-NLS-1$
 
         // Check if vehicle can carry enough supplies for the mission.
         if (hasVehicle() && !isVehicleLoadable()) {
@@ -416,22 +421,26 @@ implements Serializable {
         if (EMBARKING.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         }
         else if (TRAVELLING.equals(getPhase())) {
             if (getCurrentNavpoint().isSettlementAtNavpoint()) {
                 setPhase(VehicleMission.DISEMBARKING);
-                setPhaseDescription("Disembarking at " + getCurrentNavpoint().getSettlement().getName());
+                setPhaseDescription(Msg.getString("Mission.phase.disembarking.description", 
+                        getCurrentNavpoint().getSettlement().getName())); //$NON-NLS-1$
             }
             else {
                 setPhase(RESEARCH_SITE);
-                setPhaseDescription("Researching field site at " + getCurrentNavpoint().getDescription());
+                setPhaseDescription(Msg.getString("Mission.phase.researchingFieldSite.description", 
+                        getCurrentNavpoint().getDescription())); //$NON-NLS-1$
             }
         }
         else if (RESEARCH_SITE.equals(getPhase())) {
             startTravelToNextNode();
             setPhase(VehicleMission.TRAVELLING);
-            setPhaseDescription("Driving to " + getNextNavpoint().getDescription());
+            setPhaseDescription(Msg.getString("Mission.phase.travelling.description", 
+                    getNextNavpoint().getDescription())); //$NON-NLS-1$
         }
         else if (DISEMBARKING.equals(getPhase())) {
             endMission("Successfully disembarked.");

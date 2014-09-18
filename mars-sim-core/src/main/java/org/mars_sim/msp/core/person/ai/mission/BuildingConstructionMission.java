@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMission.java
- * @version 3.07 2014-09-01
+ * @version 3.07 2014-09-17
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.SimulationConfig;
@@ -66,11 +67,14 @@ implements Serializable {
 	private static Logger logger = Logger.getLogger(BuildingConstructionMission.class.getName());
 
 	/** Default description. */
-	public static final String DEFAULT_DESCRIPTION = "Construct Building";
+	public static final String DEFAULT_DESCRIPTION = Msg.getString(
+            "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
 
-	// TODO Mission phases should be enums
-	final public static String PREPARE_SITE_PHASE = "Prepare Site";
-	final public static String CONSTRUCTION_PHASE = "Construction";
+	/** Mission phases. */
+	final public static MissionPhase PREPARE_SITE_PHASE = new MissionPhase(Msg.getString(
+            "Mission.phase.prepareConstructionSite")); //$NON-NLS-1$
+	final public static MissionPhase CONSTRUCTION_PHASE = new MissionPhase(Msg.getString(
+            "Mission.phase.construction")); //$NON-NLS-1$
 
 	// Number of mission members.
 	public static final int MIN_PEOPLE = 3;
@@ -113,7 +117,9 @@ implements Serializable {
             // Sets the mission capacity.
             setMissionCapacity(MAX_PEOPLE);
             int availableSuitNum = Mission.getNumberAvailableEVASuitsAtSettlement(settlement);
-            if (availableSuitNum < getMissionCapacity()) setMissionCapacity(availableSuitNum);
+            if (availableSuitNum < getMissionCapacity()) {
+                setMissionCapacity(availableSuitNum);
+            }
             
             // Recruit additional people to mission.
             recruitPeopleForMission(startingPerson);
@@ -196,7 +202,9 @@ implements Serializable {
                 }
                     
                 // Mark site as undergoing construction.
-                if (constructionStage != null) constructionSite.setUndergoingConstruction(true);
+                if (constructionStage != null) {
+                    constructionSite.setUndergoingConstruction(true);
+                }
             }
             else {
                 endMission("Construction site could not be found or created.");
@@ -219,7 +227,8 @@ implements Serializable {
         
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription("Preparing construction site at " + settlement.getName());
+        setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description", 
+                settlement.getName())); //$NON-NLS-1$
     }
     
     /**
@@ -328,7 +337,8 @@ implements Serializable {
         
         // Set initial mission phase.
         setPhase(PREPARE_SITE_PHASE);
-        setPhaseDescription("Preparing construction site at " + settlement.getName());
+        setPhaseDescription(Msg.getString("Mission.phase.prepareConstructionSite.description", 
+                settlement.getName())); //$NON-NLS-1$
     }
     
     /**
@@ -428,10 +438,18 @@ implements Serializable {
             
             if (vehicle instanceof LightUtilityVehicle) {
                 boolean usable = true;
-                if (vehicle.isReserved()) usable = false;
-                if (!vehicle.getStatus().equals(Vehicle.PARKED)) usable = false;
-                if (((Crewable) vehicle).getCrewNum() > 0) usable = false;
-                if (usable) result = true;
+                if (vehicle.isReserved()) {
+                    usable = false;
+                }
+                if (!vehicle.getStatus().equals(Vehicle.PARKED)) {
+                    usable = false;
+                }
+                if (((Crewable) vehicle).getCrewNum() > 0) {
+                    usable = false;
+                }
+                if (usable) {
+                    result = true;
+                }
             }
         }
         
@@ -442,16 +460,23 @@ implements Serializable {
     protected void determineNewPhase() {
         if (PREPARE_SITE_PHASE.equals(getPhase())) {
             setPhase(CONSTRUCTION_PHASE);
-            setPhaseDescription("Constructing Site Stage: " + constructionStage.getInfo().getName());
+            setPhaseDescription(Msg.getString("Mission.phase.construction.description", 
+                    constructionStage.getInfo().getName())); //$NON-NLS-1$
         }
-        else if (CONSTRUCTION_PHASE.equals(getPhase())) endMission("Successfully ended construction");
+        else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+            endMission("Successfully ended construction");
+        }
     }
 
     @Override
     protected void performPhase(Person person) {
         super.performPhase(person);
-        if (PREPARE_SITE_PHASE.equals(getPhase())) prepareSitePhase(person);
-        else if (CONSTRUCTION_PHASE.equals(getPhase())) constructionPhase(person);
+        if (PREPARE_SITE_PHASE.equals(getPhase())) {
+            prepareSitePhase(person);
+        }
+        else if (CONSTRUCTION_PHASE.equals(getPhase())) {
+            constructionPhase(person);
+        }
     }
     
     /**

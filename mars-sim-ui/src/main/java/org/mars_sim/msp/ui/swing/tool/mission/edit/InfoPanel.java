@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InfoDialog.java
- * @version 3.06 2014-01-29
+ * @version 3.07 2014-09-15
  * @author Scott Davis
  */
 
@@ -36,6 +36,7 @@ import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.mission.CollectResourcesMission;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
+import org.mars_sim.msp.core.person.ai.mission.MissionPhase;
 import org.mars_sim.msp.core.person.ai.mission.RoverMission;
 import org.mars_sim.msp.core.person.ai.mission.TravelMission;
 import org.mars_sim.msp.core.person.ai.mission.VehicleMission;
@@ -222,7 +223,7 @@ extends JPanel {
 		Vector<String> actions = new Vector<String>();
 		actions.add(ACTION_NONE);
 		
-		String phase = mission.getPhase();
+		MissionPhase phase = mission.getPhase();
 		
 		// Check if continue action can be added.
 		if (phase.equals(CollectResourcesMission.COLLECT_RESOURCES)) {
@@ -267,7 +268,7 @@ extends JPanel {
 		// Add people in the settlement or rover.
 		if (mission instanceof RoverMission) {
 			Rover rover = ((RoverMission) mission).getRover();
-			String phase = mission.getPhase();
+			MissionPhase phase = mission.getPhase();
 			Collection<Person> peopleAtLocation = null;
 			if (rover != null) {
 				if (phase.equals(RoverMission.EMBARKING) || 

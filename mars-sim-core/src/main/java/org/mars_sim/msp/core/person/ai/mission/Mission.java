@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Mission.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-15
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -55,9 +55,9 @@ implements Serializable {
 	/** True if mission is completed. */
 	private boolean done;
 	/** A collection of the mission's phases. */
-	private Collection<String> phases;
+	private Collection<MissionPhase> phases;
 	/** The current phase of the mission. */
-	private String phase;
+	private MissionPhase phase;
 	/** The description of the current phase of operation. */
 	private String phaseDescription;
 	/** Has the current phase ended? */
@@ -83,7 +83,7 @@ implements Serializable {
 		done = false;
 		phase = null;
 		phaseDescription = null;
-		phases = new ArrayList<String>();
+		phases = new ArrayList<MissionPhase>();
 		phaseEnded = false;
 		this.minPeople = minPeople;
 		missionCapacity = Integer.MAX_VALUE;
@@ -285,7 +285,7 @@ implements Serializable {
 	 * Gets the current phase of the mission.
 	 * @return phase
 	 */
-	public final String getPhase() {
+	public final MissionPhase getPhase() {
 		return phase;
 	}
 
@@ -294,7 +294,7 @@ implements Serializable {
 	 * @param newPhase the new mission phase.
 	 * @throws MissionException if newPhase is not in the mission's collection of phases.
 	 */
-	protected final void setPhase(String newPhase) {
+	protected final void setPhase(MissionPhase newPhase) {
 		if (newPhase == null) throw new IllegalArgumentException("newPhase is null");
 		else if (phases.contains(newPhase)) {
 			phase = newPhase;
@@ -311,7 +311,7 @@ implements Serializable {
 	 * Adds a phase to the mission's collection of phases.
 	 * @param newPhase the new phase to add.
 	 */
-	public final void addPhase(String newPhase) {
+	public final void addPhase(MissionPhase newPhase) {
 		if (newPhase == null) {
 			throw new IllegalArgumentException("newPhase is null");
 		}
@@ -329,7 +329,7 @@ implements Serializable {
 			return phaseDescription;
 		}
 		else {
-			return phase;
+			return phase.toString();
 		}
 	}
 
