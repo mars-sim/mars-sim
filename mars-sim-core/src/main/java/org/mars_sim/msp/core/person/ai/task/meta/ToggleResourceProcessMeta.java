@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ToggleResourceProcessMeta.java
- * @version 3.07 2014-08-06
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -23,9 +24,10 @@ import org.mars_sim.msp.core.structure.building.function.ResourceProcess;
  * Meta task for the ToggleResourceProcess task.
  */
 public class ToggleResourceProcessMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Toggling resource process";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.toggleResourceProcess"); //$NON-NLS-1$
     
     @Override
     public String getName() {

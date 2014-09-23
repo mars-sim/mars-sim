@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaper.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -42,11 +43,16 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PeerReviewStudyPaper.class.getName());
 
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 0D;
 
-	// TODO Task phase should be an enum.
-	private static final String REVIEW = "Reviewing Study Paper";
+	/** Task phases. */
+    private static final TaskPhase REVIEW = new TaskPhase(Msg.getString(
+            "Task.phase.review")); //$NON-NLS-1$
 
 	/** The scientific study to review. */
 	private ScientificStudy study;
@@ -57,13 +63,14 @@ implements Serializable {
 	 */
 	public PeerReviewStudyPaper(Person person) {
         // Use task constructor.
-        super("Peer Review Compiled Study Paper", person, true, false, 
-                STRESS_MODIFIER, true, 10D + RandomUtil.getRandomDouble(300D));
+        super(NAME, person, true, false, STRESS_MODIFIER, true, 
+                10D + RandomUtil.getRandomDouble(300D));
         
         // Determine study to review.
         study = determineStudy();
         if (study != null) {
-            setDescription("Peer Review " + study.toString());
+            setDescription(Msg.getString("Task.description.peerReviewStudyPaper.detail", 
+                    study.toString())); //$NON-NLS-1$
             
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;

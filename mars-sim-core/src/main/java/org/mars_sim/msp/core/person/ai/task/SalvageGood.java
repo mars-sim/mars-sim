@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageGood.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.manufacture.ManufactureUtil;
@@ -44,8 +45,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SalvageGood.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String SALVAGE = "Salvage";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.salvageGood"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase SALVAGE = new TaskPhase(Msg.getString(
+            "Task.phase.salvage")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -62,7 +68,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public SalvageGood(Person person) {
-		super("Salvage Good", person, true, false, STRESS_MODIFIER, 
+		super(NAME, person, true, false, STRESS_MODIFIER, 
 				true, 10D + RandomUtil.getRandomDouble(40D));
 
 		// Get available manufacturing workshop if any.

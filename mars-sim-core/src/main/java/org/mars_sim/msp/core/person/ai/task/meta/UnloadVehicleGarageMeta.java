@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarageMeta.java
- * @version 3.07 2014-08-06
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -19,9 +20,10 @@ import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
  * Meta task for the UnloadVehicleGarage task.
  */
 public class UnloadVehicleGarageMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Unloading Vehicle";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(RelaxMeta.class.getName());

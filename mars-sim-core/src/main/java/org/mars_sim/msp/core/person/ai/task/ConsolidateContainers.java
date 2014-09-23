@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ConsolidateContainers.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Container;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -37,8 +38,13 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(ConsolidateContainers.class.getName());
     
-    // TODO Task phase should be an enum
-    private static final String CONSOLIDATING = "Consolidating Containers";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.consolidateContainers"); //$NON-NLS-1$
+    
+    /** Task phases. */
+    private static final TaskPhase CONSOLIDATING = new TaskPhase(Msg.getString(
+            "Task.phase.consolidating")); //$NON-NLS-1$
     
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = -.1D;
@@ -59,11 +65,8 @@ implements Serializable {
      */
     public ConsolidateContainers(Person person) {
         // Use Task constructor
-        super("Consolidate Containers", person, true, false, STRESS_MODIFIER, true, DURATION);
-        
-        // Initialize data members
-        setDescription("Consolidating containers");
-        
+        super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
+                
         topInventory = person.getTopContainerUnit().getInventory();
         if (topInventory != null) {
             

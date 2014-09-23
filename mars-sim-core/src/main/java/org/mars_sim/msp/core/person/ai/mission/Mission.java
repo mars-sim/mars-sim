@@ -72,7 +72,6 @@ implements Serializable {
 	 * @param name the name of the mission
 	 * @param startingPerson the person starting the mission.
 	 * @param minPeople the minimum number of people required for mission.
-	 * @throws MissionException if error constructing mission.
 	 */
 	public Mission(String name, Person startingPerson, int minPeople) {
 

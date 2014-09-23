@@ -1,16 +1,16 @@
 /**
  * Mars Simulation Project
  * Yoga.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Sebastien Venot
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -24,21 +24,26 @@ public class Yoga
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	// TODO Task phase should be an enum.
-	private static final String DOING_YOGA = "Doing Yoga";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.yoga"); //$NON-NLS-1$
 
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.7D;
+    /** Task phases. */
+    private static final TaskPhase DOING_YOGA = new TaskPhase(Msg.getString(
+            "Task.phase.doingYoga")); //$NON-NLS-1$
 
-	/** 
-	 * constructor.
-	 * @param person the person to perform the task
-	 */
-	public Yoga(Person person) {
-        super(DOING_YOGA, person, false, false, STRESS_MODIFIER, true, 
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.7D;
+
+    /** 
+     * constructor.
+     * @param person the person to perform the task
+     */
+    public Yoga(Person person) {
+        super(NAME, person, false, false, STRESS_MODIFIER, true, 
                 10D + RandomUtil.getRandomDouble(30D));
 
         if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
@@ -51,7 +56,7 @@ implements Serializable {
             // Walk to random location.
             walkToRandomLocation();
         }
-        
+
         // Initialize phase
         addPhase(DOING_YOGA);
         setPhase(DOING_YOGA);

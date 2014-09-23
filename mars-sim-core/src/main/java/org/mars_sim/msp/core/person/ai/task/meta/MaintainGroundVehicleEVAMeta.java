@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleEVAMeta.java
- * @version 3.07 2014-08-05
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -25,9 +26,10 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  * Meta task for the MaintainGroundVehicleEVA task.
  */
 public class MaintainGroundVehicleEVAMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Performing Vehicle Maintenance";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.maintainGroundVehicleEVA"); //$NON-NLS-1$
     
     @Override
     public String getName() {

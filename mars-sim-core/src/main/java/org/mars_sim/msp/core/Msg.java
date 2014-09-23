@@ -62,7 +62,7 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurances of "{0}" with the given parameter.
+	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @return {@link String}
@@ -76,7 +76,7 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurances of "{0}" with the given parameter.
+	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link Integer}
 	 * @return {@link String}
@@ -90,7 +90,7 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurances of "{0}" with the given parameter.
+	 * replaces all occurrences of "{0}" with the given parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link Double}
 	 * @return {@link String}
@@ -104,8 +104,8 @@ public class Msg {
 	}
 
 	/**
-	 * replaces all occurances of "{0}" with the given parameter.
-	 * replaces all occurances of "{1}" with the given second parameter.
+	 * replaces all occurrences of "{0}" with the given parameter.
+	 * replaces all occurrences of "{1}" with the given second parameter.
 	 * @param key {@link String}
 	 * @param param1 {@link String}
 	 * @param param2 {@link String}

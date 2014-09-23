@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ManufactureGood.java
- * @version 3.07 2014-07-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.manufacture.ManufactureProcess;
 import org.mars_sim.msp.core.manufacture.ManufactureProcessInfo;
@@ -43,8 +43,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ManufactureGood.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String MANUFACTURE = "Manufacture";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.manufactureGood"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase MANUFACTURE = new TaskPhase(Msg.getString(
+            "Task.phase.manufacture")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -59,12 +64,13 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public ManufactureGood(Person person) {
-		super("Manufacturing", person, true, false, STRESS_MODIFIER, true, 
+		super(NAME, person, true, false, STRESS_MODIFIER, true, 
 				10D + RandomUtil.getRandomDouble(50D));
 
 		// Initialize data members
 		if (person.getSettlement() != null) {
-			setDescription("Manufacturing at " + person.getSettlement().getName());
+		    setDescription(Msg.getString("Task.description.manufactureGood.detail", 
+                    person.getSettlement().getName())); //$NON-NLS-1$
 		}
 		else {
 			endTask();

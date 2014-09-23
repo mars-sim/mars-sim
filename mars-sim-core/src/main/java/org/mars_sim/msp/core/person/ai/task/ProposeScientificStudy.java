@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ProposeScientificStudy.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -41,11 +42,16 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(ProposeScientificStudy.class.getName());
 
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.proposeScientificStudy"); //$NON-NLS-1$
+	
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 0D;
 
-	// TODO Task phase should be an enum.
-	private static final String PROPOSAL_PHASE = "Writing Study Proposal";
+	/** Task phases. */
+    private static final TaskPhase PROPOSAL_PHASE = new TaskPhase(Msg.getString(
+            "Task.phase.proposalPhase")); //$NON-NLS-1$
 
 	/** The scientific study to propose. */
 	private ScientificStudy study;
@@ -55,7 +61,7 @@ implements Serializable {
      * @param person the person performing the task.
      */
     public ProposeScientificStudy(Person person) {
-        super("Proposing a Scientific Study", person, false, true, STRESS_MODIFIER, 
+        super(NAME, person, false, true, STRESS_MODIFIER, 
                 true, 10D + RandomUtil.getRandomDouble(50D));
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
@@ -77,7 +83,8 @@ implements Serializable {
         }
         
         if (study != null) {
-            setDescription("Proposing a " + study.getScience().getName() + " study");
+            setDescription(Msg.getString("Task.description.proposeScientificStudy.detail", 
+                    study.getScience().getName())); //$NON-NLS-1$
             
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;

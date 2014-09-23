@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * ReturnLightUtilityVehicleMeta.java
- * @version 3.07 2014-08-11
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.ReturnLightUtilityVehicle;
@@ -16,9 +17,10 @@ import org.mars_sim.msp.core.vehicle.LightUtilityVehicle;
  * Meta task for the ReturnLightUtilityVehicle task.
  */
 public class ReturnLightUtilityVehicleMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Returning Light Utility Vehicle";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$
     
     @Override
     public String getName() {

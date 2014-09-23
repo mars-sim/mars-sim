@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * WalkSettlementInterior.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -15,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -43,8 +43,9 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(WalkSettlementInterior.class.getName());
 
-	// TODO Task phase should be an enum
-	private static final String WALKING = "Walking";
+	/** Task phases. */
+    private static final TaskPhase WALKING = new TaskPhase(Msg.getString(
+            "Task.phase.walking")); //$NON-NLS-1$
 
 	// Static members
 	private static final double WALKING_SPEED = 5D; // km / hr.

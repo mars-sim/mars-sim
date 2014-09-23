@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMeal.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -41,8 +42,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CookMeal.class.getName());
 
-	// TODO Task phase should be an enum
-	private static final String COOKING = "Cooking";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.cookMeal"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase COOKING = new TaskPhase(Msg.getString(
+            "Task.phase.cooking")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -67,10 +73,11 @@ implements Serializable {
 	 */
 	public CookMeal(Person person) {
         // Use Task constructor
-        super("Cooking", person, true, false, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
-        setDescription("Cooking " + getMealName());
+        setDescription(Msg.getString("Task.description.cookMeal.detail", 
+                getMealName())); //$NON-NLS-1$
         
         // Get available kitchen if any.
         Building kitchenBuilding = getAvailableKitchen(person);

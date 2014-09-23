@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ManufactureConstructionMaterialsMeta.java
- * @version 3.07 2014-08-11
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillManager;
@@ -22,9 +23,10 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the ManufactureConstructionMaterials task.
  */
 public class ManufactureConstructionMaterialsMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Manufacturing Construction Materials";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.manufactureConstructionMaterials"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(ManufactureConstructionMaterialsMeta.class.getName());

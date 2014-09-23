@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * InviteStudyCollaborator.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -45,14 +46,19 @@ implements Serializable {
     /** default logger. */
     private static Logger logger = Logger.getLogger(InviteStudyCollaborator.class.getName());
     
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.inviteStudyCollaborator"); //$NON-NLS-1$
+    
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = 0D;
     
     /** Duration (millisols) of task. */
     private static final double DURATION = 25D;
     
-    // TODO Task phase should be an enum.
-    private static final String WRITING_INVITATION = "Writing Invitation";
+    /** Task phases. */
+    private static final TaskPhase WRITING_INVITATION = new TaskPhase(Msg.getString(
+            "Task.phase.writingInvitation")); //$NON-NLS-1$
     
     /** The scientific study. */
     private ScientificStudy study;
@@ -64,8 +70,7 @@ implements Serializable {
      * @param person the person performing the task.
      */
     public InviteStudyCollaborator(Person person) {
-        super("Writing Study Collaboration Invitation", person, false, true, 
-                STRESS_MODIFIER, true, DURATION);
+        super(NAME, person, false, true, STRESS_MODIFIER, true, DURATION);
         
         ScientificStudyManager manager = Simulation.instance().getScientificStudyManager();
         study = manager.getOngoingPrimaryStudy(person);

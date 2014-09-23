@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Teach.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -34,29 +35,34 @@ public class Teach
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	// Task phase
-	private static final String TEACHING = "Teaching";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.teach"); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = -.1D;
+    /** Task phases. */
+    private static final TaskPhase TEACHING = new TaskPhase(Msg.getString(
+            "Task.phase.teaching")); //$NON-NLS-1$
 
-	/** The improvement in relationship opinion of the teacher from the student per millisol. */
-	private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = -.1D;
 
-	// Data members
-	private Person student;
-	private Task teachingTask;
+    /** The improvement in relationship opinion of the teacher from the student per millisol. */
+    private static final double BASE_RELATIONSHIP_MODIFIER = .2D;
 
-	/**
-	 * Constructor.
-	 * @param person the person performing the task.
-	 */
-	public Teach(Person person) {
-		super("Teaching", person, false, false, STRESS_MODIFIER, false, 0D);
+    // Data members
+    private Person student;
+    private Task teachingTask;
+
+    /**
+     * Constructor.
+     * @param person the person performing the task.
+     */
+    public Teach(Person person) {
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Randomly get a student.
         Collection<Person> students = getBestStudents(person);
@@ -66,15 +72,15 @@ implements Serializable {
             student = (Person) array[rand];
             teachingTask = student.getMind().getTaskManager().getTask();
             teachingTask.setTeacher(person);
-            setDescription("Teaching " + teachingTask.getName(false) + " to "
-                    + student.getName());
-            
+            setDescription(Msg.getString("Task.description.teach.detail", 
+                    teachingTask.getName(false), student.getName())); //$NON-NLS-1$
+
             boolean walkToBuilding = false;
             // If in settlement, move teacher to building student is in.
             if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
-                
+
                 Building studentBuilding = BuildingManager.getBuilding(student);
-                
+
                 if (studentBuilding != null) {
                     BuildingFunction teachingBuildingFunction = teachingTask.getRelatedBuildingFunction();
                     if ((teachingBuildingFunction != null) && (studentBuilding.hasFunction(teachingBuildingFunction))) {
@@ -88,9 +94,9 @@ implements Serializable {
                     walkToBuilding = true;
                 }
             }
-            
+
             if (!walkToBuilding) {
-                
+
                 if (person.getLocationSituation() == LocationSituation.IN_VEHICLE) {
                     // If person is in rover, walk to passenger activity spot.
                     if (person.getVehicle() instanceof Rover) {
@@ -338,11 +344,11 @@ implements Serializable {
         List<SkillType> results = new ArrayList<SkillType>(0);
         return results;
     }
-    
+
     @Override
     public void destroy() {
         super.destroy();
-        
+
         student = null;
         teachingTask = null;
     }

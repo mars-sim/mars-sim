@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BuildingConstructionMissionMeta.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.SkillType;
@@ -24,8 +25,9 @@ import org.mars_sim.msp.core.structure.construction.ConstructionValues;
  */
 public class BuildingConstructionMissionMeta implements MetaMission {
 
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Construct Building";
+    /** Mission name */
+    private static final String NAME = Msg.getString(
+            "Mission.description.buildingConstructionMission"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());

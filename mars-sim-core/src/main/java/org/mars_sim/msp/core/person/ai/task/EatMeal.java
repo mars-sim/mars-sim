@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EatMeal.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.Unit;
@@ -43,8 +44,13 @@ implements Serializable {
 	/** default serial id. */
 	private static final long serialVersionUID = 1L;
 
-	// TODO Task phase should be an enum
-	private static final String EATING = "Eating";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.eatMeal"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase EATING = new TaskPhase(Msg.getString(
+            "Task.phase.eating")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -58,7 +64,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public EatMeal(Person person) {
-		super("Eating a meal", person, false, false, STRESS_MODIFIER, true, 10D + 
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
 				RandomUtil.getRandomDouble(30D));
 
 		boolean walkSite = false;
@@ -80,7 +86,7 @@ implements Serializable {
 				meal = kitchen.getCookedMeal();
 			}
 			if (meal != null) {
-				setDescription("Eating a cooked meal");
+				setDescription(Msg.getString("Task.description.eatMeal.cooked")); //$NON-NLS-1$
 			}
 		}
 		else if (location == LocationSituation.OUTSIDE) {

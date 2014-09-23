@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CookMealMeta.java
- * @version 3.07 2014-08-05
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.SimulationConfig;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.PersonConfig;
@@ -22,9 +23,10 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the CookMeal task.
  */
 public class CookMealMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Cooking";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.cookMeal"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(CookMealMeta.class.getName());

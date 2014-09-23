@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.07 2014-08-11
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.task.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -23,9 +24,10 @@ import org.mars_sim.msp.core.structure.Settlement;
  * Meta task for the UnloadVehicleEVA task.
  */
 public class UnloadVehicleEVAMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Unloading vehicle EVA";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.unloadVehicleEVA"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(UnloadVehicleEVAMeta.class.getName());

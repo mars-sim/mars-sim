@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * EVAOperation.java
- * @version 3.07 2014-09-10
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,6 +14,7 @@ import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -41,9 +42,11 @@ implements Serializable {
 	/** default serial id. */
 	private static Logger logger = Logger.getLogger(EVAOperation.class.getName());
 
-	// TODO Task phase names should be an enum
-	protected static final String WALK_TO_OUTSIDE_SITE = "Walk to Outside Site";
-	protected static final String WALK_BACK_INSIDE = "Walk Back Inside";
+	/** Task phases. */
+	protected static final TaskPhase WALK_TO_OUTSIDE_SITE = new TaskPhase(Msg.getString(
+	        "Task.phase.walkToOutsideSite")); //$NON-NLS-1$
+	protected static final TaskPhase WALK_BACK_INSIDE = new TaskPhase(Msg.getString(
+            "Task.phase.walkBackInside")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -131,10 +134,10 @@ implements Serializable {
     }
     
     /**
-     * Gets the phase string for the outside site phase.
-     * @return phase string.
+     * Gets the outside site phase.
+     * @return task phase.
      */
-    protected abstract String getOutsideSitePhase();
+    protected abstract TaskPhase getOutsideSitePhase();
     
     /**
      * Set the outside side local location.

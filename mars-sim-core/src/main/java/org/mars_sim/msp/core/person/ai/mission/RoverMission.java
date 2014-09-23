@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * RoverMission.java
- * @version 3.07 2014-09-10
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.mission;
 
 import java.awt.geom.Point2D;
@@ -25,6 +24,7 @@ import org.mars_sim.msp.core.person.ai.task.DriveGroundVehicle;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleEVA;
 import org.mars_sim.msp.core.person.ai.task.UnloadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.Walk;
@@ -480,7 +480,7 @@ extends VehicleMission {
      * @throws MissionException if error creating OperateVehicle task.
      */
     protected OperateVehicle getOperateVehicleTask(Person person,
-            String lastOperateVehicleTaskPhase) {
+            TaskPhase lastOperateVehicleTaskPhase) {
         OperateVehicle result = null;
         if (lastOperateVehicleTaskPhase != null) {
             result = new DriveGroundVehicle(person, getRover(),

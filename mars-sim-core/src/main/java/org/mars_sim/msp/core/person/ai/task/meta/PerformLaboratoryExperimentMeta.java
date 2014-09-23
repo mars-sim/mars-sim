@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PerformLaboratoryExperimentMeta.java
- * @version 3.07 2014-08-08
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Lab;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -24,9 +25,10 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
  * Meta task for the PerformLaboratoryExperiment task.
  */
 public class PerformLaboratoryExperimentMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Perform Laboratory Experiment";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(PerformLaboratoryExperimentMeta.class.getName());

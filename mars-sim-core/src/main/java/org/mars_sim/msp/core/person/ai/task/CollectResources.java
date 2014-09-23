@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectResources.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -41,8 +42,9 @@ implements Serializable {
     
     private static Logger logger = Logger.getLogger(CollectResources.class.getName());
     
-	// TODO Task phases should be enums.
-    private static final String COLLECT_RESOURCES = "Collecting Resources";
+    /** Task phases. */
+    private static final TaskPhase COLLECT_RESOURCES = new TaskPhase(Msg.getString(
+            "Task.phase.collectResources")); //$NON-NLS-1$
 
     // Data members
     /** Rover used. */
@@ -130,7 +132,7 @@ implements Serializable {
     }
     
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return COLLECT_RESOURCES;
     }
 

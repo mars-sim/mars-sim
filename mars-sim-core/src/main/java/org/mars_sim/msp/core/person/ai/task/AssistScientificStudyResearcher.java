@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * AssistScientificStudyResearcher.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -44,8 +45,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(AssistScientificStudyResearcher.class.getName());
 
-	/** Task phase. */
-	private static final String ASSISTING = "Assisting Researcher";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.assistScientificStudyResearcher"); //$NON-NLS-1$
+	
+	/** Task phases. */
+	private static final TaskPhase ASSISTING = new TaskPhase(Msg.getString(
+            "Task.phase.assisting")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -64,7 +70,7 @@ implements Serializable {
      */
     public AssistScientificStudyResearcher(Person person) {
         // Use Task constructor.
-        super("Assisting researcher", person, true, false, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, true, false, STRESS_MODIFIER, false, 0D);
         
         // Determine researcher
         researcher = determineResearcher();
@@ -72,7 +78,8 @@ implements Serializable {
             researchTask = (ResearchScientificStudy) researcher.getMind().getTaskManager().getTask();
             if (researchTask != null) {
                 researchTask.setResearchAssistant(person);
-                setDescription("Assisting researcher " + researcher.getName());
+                setDescription(Msg.getString("Task.description.assistScientificStudyResearcher.detail", 
+                        researcher.getName())); //$NON-NLS-1$
                 
                 // If in settlement, move assistant to building researcher is in.
                 if (person.getLocationSituation() == LocationSituation.IN_SETTLEMENT) {
