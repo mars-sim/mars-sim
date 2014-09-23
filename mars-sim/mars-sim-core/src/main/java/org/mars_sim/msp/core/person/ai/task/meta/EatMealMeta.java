@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * EatMealMeta.java
- * @version 3.07 2014-08-05
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.EatMeal;
@@ -13,9 +14,10 @@ import org.mars_sim.msp.core.person.ai.task.Task;
 import org.mars_sim.msp.core.structure.building.Building;
 
 public class EatMealMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Eating a meal";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.eatMeal"); //$NON-NLS-1$
     
     @Override
     public String getName() {

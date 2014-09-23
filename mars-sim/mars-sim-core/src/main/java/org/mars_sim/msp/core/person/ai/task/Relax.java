@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Relax.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -36,8 +37,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(Relax.class.getName());
 
-	// Task phase
-	private static final String RELAXING = "Relaxing";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.relax"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase RELAXING = new TaskPhase(Msg.getString(
+            "Task.phase.relaxing")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -48,7 +54,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public Relax(Person person) {
-		super("Relaxing", person, false, false, STRESS_MODIFIER, true, 10D + 
+		super(NAME, person, false, false, STRESS_MODIFIER, true, 10D + 
 				RandomUtil.getRandomDouble(40D));
 
 		// If person is in a settlement, try to find a place to relax.

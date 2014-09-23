@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * DigLocalIce.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -17,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -44,8 +44,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalIce.class.getName());
 
-	// TODO Phase name should be an enum
-	private static final String COLLECT_ICE = "Collecting Ice";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.digLocalIce"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase COLLECT_ICE = new TaskPhase(Msg.getString(
+            "Task.phase.collectIce")); //$NON-NLS-1$
 
 	/**  Collection rate of ice during EVA (kg/millisol). */
 	private static final double COLLECTION_RATE = 2D;
@@ -64,7 +69,7 @@ implements Serializable {
 	 */
 	public DigLocalIce(Person person) {
         // Use EVAOperation constructor.
-        super("Digging local ice", person, false, 0D);
+        super(NAME, person, false, 0D);
         
         settlement = person.getSettlement();
         
@@ -132,7 +137,7 @@ implements Serializable {
     }
 
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return COLLECT_ICE;
     }
     

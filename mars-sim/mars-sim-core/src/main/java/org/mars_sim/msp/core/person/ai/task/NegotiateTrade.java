@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * NegotiateTrade.java
- * @version 3.07 2014-06-23
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -36,42 +36,47 @@ public class NegotiateTrade
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
+    private static Logger logger = Logger.getLogger(NegotiateTrade.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String NEGOTIATING = "Negotiating";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.negotiateTrade"); //$NON-NLS-1$
 
-	/** The predetermined duration of task in millisols. */
-	private static final double DURATION = 50D;
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 0D;
+    /** Task phases. */
+    private static final TaskPhase NEGOTIATING = new TaskPhase(Msg.getString(
+            "Task.phase.negotiating")); //$NON-NLS-1$
 
-	// Data members.
-	private Map<Good, Integer> buyLoad;
-	private Settlement sellingSettlement;
-	private Settlement buyingSettlement;
-	private Rover rover;
-	private Map<Good, Integer> soldLoad;
-	private Person buyingTrader;
-	private Person sellingTrader;
+    /** The predetermined duration of task in millisols. */
+    private static final double DURATION = 50D;
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = 0D;
 
-	/**
-	 * Constructor.
-	 * @param sellingSettlement the selling settlement.
-	 * @param buyingSettlement the buying settlement.
-	 * @param rover the rover to transport the goods.
-	 * @param soldLoad the goods sold.
-	 * @param buyingTrader the buying trader.
-	 * @param sellingTrader the selling trader.
-	 */
+    // Data members.
+    private Map<Good, Integer> buyLoad;
+    private Settlement sellingSettlement;
+    private Settlement buyingSettlement;
+    private Rover rover;
+    private Map<Good, Integer> soldLoad;
+    private Person buyingTrader;
+    private Person sellingTrader;
+
+    /**
+     * Constructor.
+     * @param sellingSettlement the selling settlement.
+     * @param buyingSettlement the buying settlement.
+     * @param rover the rover to transport the goods.
+     * @param soldLoad the goods sold.
+     * @param buyingTrader the buying trader.
+     * @param sellingTrader the selling trader.
+     */
     public NegotiateTrade(Settlement sellingSettlement, Settlement buyingSettlement, Rover rover, 
             Map<Good, Integer> soldLoad, Person buyingTrader, Person sellingTrader) {
 
         // Use trade constructor.
-        super("Negotiation Trade", buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
+        super(NAME, buyingTrader, false, false, STRESS_MODIFIER, true, DURATION);
 
         // Initialize data members.
         this.sellingSettlement = sellingSettlement;
@@ -142,7 +147,7 @@ implements Serializable {
         Building sellerBuilding = BuildingManager.getBuilding(sellingTrader);
         Building personBuilding = BuildingManager.getBuilding(person);
         if ((sellerBuilding != null) && (!sellerBuilding.equals(personBuilding))) {
-            
+
             // Walk to seller trader's building.
             walkToRandomLocInBuilding(sellerBuilding);
         }

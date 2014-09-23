@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * RelaxMeta.java
- * @version 3.07 2014-08-04
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.Task;
@@ -15,9 +16,10 @@ import org.mars_sim.msp.core.person.ai.task.Yoga;
  * Meta task for the Yoga task.
  */
 public class YogaMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Doing Yoga";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.yoga"); //$NON-NLS-1$
     
     @Override
     public String getName() {

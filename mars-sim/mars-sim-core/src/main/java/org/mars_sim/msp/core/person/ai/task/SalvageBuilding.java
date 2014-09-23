@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SalvageBuilding.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -45,8 +46,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(SalvageBuilding.class.getName());
 
-	// TODO Task phases should be an enum.
-	private static final String SALVAGE = "Salvage";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.salvageBuilding"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase SALVAGE = new TaskPhase(Msg.getString(
+            "Task.phase.salvage")); //$NON-NLS-1$
 
 	/** The base chance of an accident while operating LUV per millisol. */
 	public static final double BASE_LUV_ACCIDENT_CHANCE = .001;
@@ -64,7 +70,7 @@ implements Serializable {
      */
     public SalvageBuilding(Person person) {
         // Use EVAOperation parent constructor.
-        super("Salvage Building", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         BuildingSalvageMission mission = getMissionNeedingAssistance();
         if ((mission != null) && canSalvage(person)) {
@@ -97,7 +103,7 @@ implements Serializable {
 	public SalvageBuilding(Person person, ConstructionStage stage, 
 			ConstructionSite site, List<GroundVehicle> vehicles) {
 		// Use EVAOperation parent constructor.
-        super("Salvage Building", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
         
         // Initialize data members.
         this.stage = stage;
@@ -248,7 +254,7 @@ implements Serializable {
     }
 
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return SALVAGE;
     }
     

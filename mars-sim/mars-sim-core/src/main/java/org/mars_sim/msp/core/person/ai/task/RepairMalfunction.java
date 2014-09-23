@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * RepairMalfunction.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -37,33 +38,38 @@ public class RepairMalfunction
 extends Task
 implements Repair, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(RepairMalfunction.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(RepairMalfunction.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String REPAIRING = "Repairing";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.repairMalfunction"); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .3D;
+    /** Task phases. */
+    private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString(
+            "Task.phase.repairing")); //$NON-NLS-1$
 
-	// Data members
-	/** Entity being repaired. */
-	private Malfunctionable entity;
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .3D;
 
-	/**
-	 * Constructor
-	 * @param person the person to perform the task
-	 */
-	public RepairMalfunction(Person person) {
-		super("Repairing Malfunction", person, true, false, STRESS_MODIFIER, true, 10D + 
-				RandomUtil.getRandomDouble(50D));
+    // Data members
+    /** Entity being repaired. */
+    private Malfunctionable entity;
 
-		// Get the malfunctioning entity.
-		entity = getMalfunctionEntity(person);
+    /**
+     * Constructor
+     * @param person the person to perform the task
+     */
+    public RepairMalfunction(Person person) {
+        super(NAME, person, true, false, STRESS_MODIFIER, true, 10D + 
+                RandomUtil.getRandomDouble(50D));
+
+        // Get the malfunctioning entity.
+        entity = getMalfunctionEntity(person);
         if (entity != null) {
             // Add person to location of malfunction if possible.
             addPersonToMalfunctionLocation(entity);
@@ -198,7 +204,8 @@ implements Repair, Serializable {
             Malfunction tempMalfunction = i.next();
             if (hasRepairPartsForMalfunction(person, tempMalfunction)) {
                 malfunction = tempMalfunction;
-                setDescription("Repairing " + malfunction.getName() + " on " + entity.getName());
+                setDescription(Msg.getString("Task.description.repairMalfunction.detail", 
+                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
             }
         }
 
@@ -304,7 +311,7 @@ implements Repair, Serializable {
             walkToRandomLocInRover((Rover) malfunctionable);
             isWalk = true;
         }
-        
+
         if (!isWalk) {
             walkToRandomLocation();
         }
@@ -313,13 +320,13 @@ implements Repair, Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+        return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
     }  
 
     @Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MECHANICS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MECHANICS);
         return results;
     }
 

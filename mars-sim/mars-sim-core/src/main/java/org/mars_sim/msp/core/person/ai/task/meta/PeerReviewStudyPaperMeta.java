@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * PeerReviewStudyPaperMeta.java
- * @version 3.07 2014-08-08
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -21,9 +22,10 @@ import org.mars_sim.msp.core.science.ScientificStudyManager;
  * Meta task for the PeerReviewStudyPaper task.
  */
 public class PeerReviewStudyPaperMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Peer Review Compiled Study Paper";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.peerReviewStudyPaper"); //$NON-NLS-1$
     
     @Override
     public String getName() {

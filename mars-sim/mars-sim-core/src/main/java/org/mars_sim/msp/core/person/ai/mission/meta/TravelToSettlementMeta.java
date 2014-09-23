@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlementMeta.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -25,8 +26,9 @@ import org.mars_sim.msp.core.vehicle.Vehicle;
  */
 public class TravelToSettlementMeta implements MetaMission {
 
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Travel To Settlement";
+    /** Mission name */
+    private static final String NAME = Msg.getString(
+            "Mission.description.travelToSettlement"); //$NON-NLS-1$
     
     @Override
     public String getName() {

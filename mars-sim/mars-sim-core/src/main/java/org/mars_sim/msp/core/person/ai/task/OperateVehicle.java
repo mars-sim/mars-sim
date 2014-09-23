@@ -1,15 +1,15 @@
 /**
  * Mars Simulation Project
  * OperateVehicle.java
- * @version 3.07 2014-07-24
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
 import org.mars_sim.msp.core.person.Person;
@@ -23,7 +23,6 @@ import org.mars_sim.msp.core.vehicle.VehicleOperator;
 import java.io.Serializable;
 import java.util.Iterator;
 
-
 /**
  * The OperateVehicle class is an abstract task for operating a vehicle, 
  * driving/flying it to a destination.
@@ -33,8 +32,9 @@ public abstract class OperateVehicle extends Task implements Serializable {
     /** default serial id. */
     private static final long serialVersionUID = 1L;
     
-	// Task phases
-	public final static String MOBILIZE = "Mobilize Vehicle";
+    /** Task phases. */
+    protected static final TaskPhase MOBILIZE = new TaskPhase(Msg.getString(
+            "Task.phase.mobilize")); //$NON-NLS-1$
 	
     // Distance buffer for arriving at destination (km).
     private final static double DESTINATION_BUFFER = .001D;

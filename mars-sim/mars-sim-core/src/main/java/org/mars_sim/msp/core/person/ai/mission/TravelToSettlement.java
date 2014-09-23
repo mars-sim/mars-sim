@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TravelToSettlement.java
- * @version 3.07 2014-09-17
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 

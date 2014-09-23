@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolith.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.Bag;
@@ -43,8 +44,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DigLocalRegolith.class.getName());
 
-	// Phase name
-	private static final String COLLECT_REGOLITH = "Collecting Regolith";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.digLocalRegolith"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase COLLECT_REGOLITH = new TaskPhase(Msg.getString(
+            "Task.phase.collectRegolith")); //$NON-NLS-1$
 
 	/** Collection rate of regolith during EVA (kg/millisol). */
 	private static final double COLLECTION_RATE = 20D;
@@ -62,7 +68,7 @@ implements Serializable {
 	 */
 	public DigLocalRegolith(Person person) {
         // Use EVAOperation constructor.
-        super("Digging local regolith", person, false, 0D);
+        super(NAME, person, false, 0D);
         
         settlement = person.getSettlement();
         
@@ -130,7 +136,7 @@ implements Serializable {
     }
     
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return COLLECT_REGOLITH;
     }
     

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * ReturnLightUtilityVehicle.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -14,6 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.person.Person;
@@ -35,30 +35,35 @@ public class ReturnLightUtilityVehicle
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(ReturnLightUtilityVehicle.class.getName());
 
-	// TODO Task phase should be an enum
-	private static final String RETURN_LUV = "Returning Light Utility Vehicle";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.returnLightUtilityVehicle"); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .5D;
+    /** Task phases. */
+    private static final TaskPhase RETURN_LUV = new TaskPhase(Msg.getString(
+            "Task.phase.returnLUV")); //$NON-NLS-1$
 
-	// Data members.
-	LightUtilityVehicle luv = null;
-	Unit returnContainer = null;
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .5D;
 
-	/**
-	 * Constructor.
-	 * @param person the person starting the task.
-	 */
+    // Data members.
+    LightUtilityVehicle luv = null;
+    Unit returnContainer = null;
+
+    /**
+     * Constructor.
+     * @param person the person starting the task.
+     */
     public ReturnLightUtilityVehicle(Person person) {
-        super("Returning light utility vehicle", person, false, false, STRESS_MODIFIER, false, 0D);
-        
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
+
         Vehicle personVehicle = person.getVehicle();
         if ((personVehicle != null) && (personVehicle instanceof LightUtilityVehicle)) {
             luv = (LightUtilityVehicle) personVehicle;
@@ -67,10 +72,10 @@ implements Serializable {
             endTask();
             logger.severe(person.getName() + " is not in a light utility vehicle.");
         }
-        
+
         // Return container may be settlement or rover.
         returnContainer = null;
-        
+
         // Attempt to determine return container based on mission.
         Mission mission = person.getMind().getMission();
         if (mission != null) {
@@ -82,7 +87,7 @@ implements Serializable {
                 returnContainer = mission.getAssociatedSettlement();
             }
         }
-        
+
         // If returnContainer hasn't been found, look for local settlement.
         if (returnContainer == null) {
             Iterator<Settlement> i = Simulation.instance().getUnitManager().getSettlements().iterator();
@@ -94,7 +99,7 @@ implements Serializable {
                 }
             }
         }
-        
+
         // If returnContainer hasn't been found, look for local rover.
         if (returnContainer == null) {
             Iterator<Vehicle> i = Simulation.instance().getUnitManager().getVehicles().iterator();
@@ -106,23 +111,24 @@ implements Serializable {
                 }
             }
         }
-        
+
         // Initialize task phase
         addPhase(RETURN_LUV);
         setPhase(RETURN_LUV);
-        
+
         // If returnContainer still hasn't been found, end task.
         if (returnContainer == null) {
             endTask();
             logger.severe(person.getName() + " cannot find a settlement or rover to return light utility vehicle.");
         }
         else {
-            setDescription("Returning " + luv.getName() + " to " + returnContainer.getName());
+            setDescription(Msg.getString("Task.description.returnLightUtilityVehicle.detail", 
+                    luv.getName(), returnContainer.getName())); //$NON-NLS-1$
             logger.fine(person.getName() + " is starting to return light utility vehicle: " + luv.getName() + 
                     " to " + returnContainer.getName());
         }
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
         if (getPhase() == null) {
@@ -135,18 +141,18 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Perform the return LUV phase.
      * @param time the time to perform the task phase.
      * @return remaining time after performing the phase.
      */
     private double returnLUVPhase(double time) {
-        
+
         // Remove person from light utility vehicle.
         luv.getInventory().retrieveUnit(person);
         luv.setOperator(null);
-        
+
         // If not in a mission, return vehicle and unload attachment parts.
         Mission mission = person.getMind().getMission();
         if (mission == null) {
@@ -154,31 +160,31 @@ implements Serializable {
             if (returnContainer.getInventory().canStoreUnit(luv, false)) {
                 returnContainer.getInventory().storeUnit(luv);
                 if (returnContainer instanceof Settlement) {
-                	luv.determinedSettlementParkedLocationAndFacing();
+                    luv.determinedSettlementParkedLocationAndFacing();
                 }
             }
             else {
                 logger.severe("Light utility vehicle: " + luv.getName() + 
                         " could not be stored in " + returnContainer.getName());
             }
-        
+
             // Unload any attachment parts or inventory from light utility vehicle.
             unloadLUVInventory();
         }
-        
+
         endTask();
-        
+
         return time;
     }
-    
+
     /**
      * Unload all attachment parts and inventory from light utility vehicle.
      */
     private void unloadLUVInventory() {
-        
+
         Inventory luvInv = luv.getInventory();
         Inventory rcInv = returnContainer.getInventory();
-        
+
         // Unload all units.
         Iterator<Unit> j = luvInv.getContainedUnits().iterator();
         while (j.hasNext()) {
@@ -191,7 +197,7 @@ implements Serializable {
                 logger.severe(unit.getName() + " cannot be stored in " + returnContainer.getName());
             }
         }
-        
+
         // Unload all parts.
         Iterator<ItemResource> i = luvInv.getAllItemResourcesStored().iterator();
         while (i.hasNext()) {
@@ -207,7 +213,7 @@ implements Serializable {
                         returnContainer.getName() + " due to insufficient remaining general capacity.");
             }
         }
-        
+
         // Unload all amount resources.
         Iterator<AmountResource> k = luvInv.getAllAmountResourcesStored(false).iterator();
         while (k.hasNext()) {

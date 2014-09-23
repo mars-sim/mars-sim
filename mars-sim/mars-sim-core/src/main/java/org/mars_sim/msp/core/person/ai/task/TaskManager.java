@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TaskManager.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -100,16 +100,16 @@ implements Serializable {
         }
     }
 
-    /** Returns the name of current task phase if there is one.
-     *  Returns blank string if current task has no phase.
-     *  Returns blank string if there is no current task.
-     *  @return the name of the current task phase
+    /** Returns the current task phase if there is one.
+     *  Returns null if current task has no phase.
+     *  Returns null if there is no current task.
+     *  @return the current task phase
      */
-    public String getPhase() {
+    public TaskPhase getPhase() {
         if (currentTask != null) {
             return currentTask.getPhase();
         } else {
-            return "";
+            return null;
         }
     }
 

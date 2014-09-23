@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * VehicleMission.java
- * @version 3.07 2014-09-17
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission;
@@ -27,6 +27,7 @@ import org.mars_sim.msp.core.person.EventType;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.task.LoadVehicleGarage;
 import org.mars_sim.msp.core.person.ai.task.OperateVehicle;
+import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.resource.AmountResource;
 import org.mars_sim.msp.core.resource.ItemResource;
 import org.mars_sim.msp.core.resource.Part;
@@ -477,7 +478,7 @@ implements UnitListener {
      * @throws MissionException if error creating OperateVehicle task.
      */
     protected abstract OperateVehicle getOperateVehicleTask(Person person,
-            String lastOperateVehicleTaskPhase);
+            TaskPhase lastOperateVehicleTaskPhase);
 
     /**
      * Performs the embark from settlement phase of the mission.

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CollectMinedMinerals.java
- * @version 3.06 2014-02-24
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -43,8 +44,13 @@ implements Serializable {
     
     private static Logger logger = Logger.getLogger(CollectMinedMinerals.class.getName());
     
-	// TODO Task phases should be enums
-    private static final String COLLECT_MINERALS = "Collecting Minerals";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.collectMinedMinerals"); //$NON-NLS-1$
+    
+    /** Task phases. */
+    private static final TaskPhase COLLECT_MINERALS = new TaskPhase(Msg.getString(
+            "Task.phase.collectMinerals")); //$NON-NLS-1$
     
     /** Rate of mineral collection (kg/millisol). */
     private static final double MINERAL_COLLECTION_RATE = 10D;
@@ -62,7 +68,7 @@ implements Serializable {
     public CollectMinedMinerals(Person person, Rover rover, AmountResource mineralType) {
 
         // Use EVAOperation parent constructor.
-        super("Collect Minerals", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
         // Initialize data members.
         this.rover = rover;
@@ -162,7 +168,7 @@ implements Serializable {
     }
     
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return COLLECT_MINERALS;
     }
     

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DigLocalRegolithMeta.java
- * @version 3.07 2014-08-06
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
@@ -10,6 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.equipment.EVASuit;
@@ -29,9 +30,10 @@ import org.mars_sim.msp.core.structure.goods.GoodsUtil;
  * Meta task for the DigLocalRegolith task.
  */
 public class DigLocalRegolithMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Digging Local Regolith";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.digLocalRegolith"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(DigLocalRegolithMeta.class.getName());

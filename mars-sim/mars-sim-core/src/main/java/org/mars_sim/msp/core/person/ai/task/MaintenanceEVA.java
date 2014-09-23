@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintenanceEVA.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -19,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
@@ -48,8 +49,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintenanceEVA.class.getName());
 
-	// TODO Task phases should be an enum.
-	private static final String MAINTAIN = "Maintenance";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.maintenanceEVA"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase MAINTAIN = new TaskPhase(Msg.getString(
+            "Task.phase.maintain")); //$NON-NLS-1$
 
 	// Data members
 	/** Entity to be maintained. */
@@ -61,7 +67,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public MaintenanceEVA(Person person) {
-		super("Performing EVA Maintenance", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+		super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 		
 		settlement = person.getSettlement();
 		
@@ -111,7 +117,7 @@ implements Serializable {
     }
     
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return MAINTAIN;
     }
 	
@@ -259,7 +265,8 @@ implements Serializable {
         }
 		
 		if (result != null) {
-		    setDescription("Performing maintenance on " + result.getName());
+		    setDescription(Msg.getString("Task.description.maintenanceEVA.detail", 
+                    result.getName())); //$NON-NLS-1$;
 		}
     	
 		return result;

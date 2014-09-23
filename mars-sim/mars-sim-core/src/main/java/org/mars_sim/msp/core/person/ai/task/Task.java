@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Task.java
- * @version 3.07 2014-08-04
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -70,7 +70,7 @@ implements Serializable, Comparable<Task> {
 	/** Sub-task of the current task. */
 	protected Task subTask;
 	/** Phase of task completion. */
-	private String phase;
+	private TaskPhase phase;
 	/** Amount of time required to complete current phase. (in millisols) */
 	protected double phaseTimeRequired;
 	/** Amount of time completed on the current phase. (in millisols) */
@@ -84,7 +84,7 @@ implements Serializable, Comparable<Task> {
 	/** The person teaching this task if any. */
 	private Person teacher;
 	/** A collection of the task's phases. */
-	private Collection<String> phases;
+	private Collection<TaskPhase> phases;
 
 	/** 
 	 * Constructs a Task object.
@@ -95,8 +95,6 @@ implements Serializable, Comparable<Task> {
 	 * @param stressModifier stress modified by person performing task per millisol.
 	 * @param hasDuration Does the task have a time duration?
 	 * @param duration the time duration (in millisols) of the task (or 0 if none)
-	 * @throws Exception if task could not be constructed.
-	 * @deprecated use enum instead of localized string names
 	 */
 	public Task(
 		String name, Person person, boolean effort, boolean createEvents, 
@@ -116,7 +114,7 @@ implements Serializable, Comparable<Task> {
 		subTask = null;
 		phase = null;
 		effortDriven = effort;
-		phases = new ArrayList<String>();
+		phases = new ArrayList<TaskPhase>();
 	}
 
     /**
@@ -221,7 +219,7 @@ implements Serializable, Comparable<Task> {
      * Gets a string of the current phase of the task.
      * @return the current phase of the task
      */
-    public String getPhase() {
+    public TaskPhase getPhase() {
         if ((subTask != null) && !subTask.done) {
             return subTask.getPhase();
         }
@@ -232,7 +230,7 @@ implements Serializable, Comparable<Task> {
      * Gets a string of the current phase of this task, ignoring subtasks.
      * @return the current phase of this task.
      */
-    public String getTopPhase() {
+    public TaskPhase getTopPhase() {
         return phase;
     }
 
@@ -240,9 +238,8 @@ implements Serializable, Comparable<Task> {
      * Sets the task's current phase.
      * @param newPhase the phase to set the a task at.
      * @throws Exception if newPhase is not in the task's collection of phases.
-     * @deprecated use enum instead of localized strings
      */
-    protected void setPhase(String newPhase) {
+    protected void setPhase(TaskPhase newPhase) {
         if (newPhase == null) {
             throw new IllegalArgumentException("newPhase is null");
         }
@@ -251,16 +248,16 @@ implements Serializable, Comparable<Task> {
             person.fireUnitUpdate(UnitEventType.TASK_PHASE_EVENT, newPhase);
         }
         else {
-            throw new IllegalStateException("newPhase: " + newPhase + " is not a valid phase for this task.");
+            throw new IllegalStateException("newPhase: " + newPhase + 
+                    " is not a valid phase for this task.");
         }
     }
 
     /**
      * Adds a phase to the task's collection of phases.
      * @param newPhase the new phase to add.
-     * @deprecated use enum instead of localized strings
      */
-    protected void addPhase(String newPhase) {
+    protected void addPhase(TaskPhase newPhase) {
         if (newPhase == null) {
             throw new IllegalArgumentException("newPhase is null");
         }

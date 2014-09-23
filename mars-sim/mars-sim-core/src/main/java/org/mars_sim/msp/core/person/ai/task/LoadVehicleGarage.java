@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * LoadVehicleGarage.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -19,6 +18,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -55,11 +55,16 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(LoadVehicleGarage.class.getName());
 
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.loadVehicleGarage"); //$NON-NLS-1$
+	
 	/** Comparison to indicate a small but non-zero amount. */
 	private static final double SMALL_AMOUNT_COMPARISON = .0000001D;
 
-	// TODO Task phase should be an enum.
-	private static final String LOADING = "Loading";
+	/** Task phases. */
+    private static final TaskPhase LOADING = new TaskPhase(Msg.getString(
+            "Task.phase.loading")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
@@ -90,12 +95,13 @@ implements Serializable {
 	 */
 	public LoadVehicleGarage(Person person) {
     	// Use Task constructor
-    	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
+    	super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
     	
     	VehicleMission mission = getMissionNeedingLoading();
     	if (mission != null) {
     		vehicle = mission.getVehicle();
-    		setDescription("Loading " + vehicle.getName());
+    		setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
+    		        vehicle.getName())); //$NON-NLS-1$
     		requiredResources = mission.getRequiredResourcesToLoad();
     		optionalResources = mission.getOptionalResourcesToLoad();
     		requiredEquipment = mission.getRequiredEquipmentToLoad();
@@ -142,7 +148,8 @@ implements Serializable {
     	// Use Task constructor.
     	super("Loading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
     	
-    	setDescription("Loading " + vehicle.getName());
+    	setDescription(Msg.getString("Task.description.loadVehicleGarage.detail", 
+                vehicle.getName())); //$NON-NLS-1$
         this.vehicle = vehicle;
         
         if (requiredResources != null) {

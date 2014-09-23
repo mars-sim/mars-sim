@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * RepairEmergencyMalfunction.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.io.Serializable;
@@ -13,6 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.malfunction.Malfunction;
 import org.mars_sim.msp.core.malfunction.MalfunctionFactory;
@@ -34,34 +34,39 @@ public class RepairEmergencyMalfunction
 extends Task
 implements Repair, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(RepairEmergencyMalfunction.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(RepairEmergencyMalfunction.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String REPAIRING = "Repairing";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.repairEmergencyMalfunction"); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = 2D;
+    /** Task phases. */
+    private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString(
+            "Task.phase.repairing")); //$NON-NLS-1$
 
-	// Data members
-	/** The entity being repaired. */
-	private Malfunctionable entity;
-	/** Problem being fixed. */
-	private Malfunction malfunction;
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = 2D;
 
-	/**
-	 * Constructs a RepairEmergencyMalfunction object.
-	 * @param person the person to perform the task
-	 */
+    // Data members
+    /** The entity being repaired. */
+    private Malfunctionable entity;
+    /** Problem being fixed. */
+    private Malfunction malfunction;
+
+    /**
+     * Constructs a RepairEmergencyMalfunction object.
+     * @param person the person to perform the task
+     */
     public RepairEmergencyMalfunction(Person person) {
-        super("Repairing Emergency Malfunction", person, true, true, STRESS_MODIFIER, false, 0D);
+        super(NAME, person, true, true, STRESS_MODIFIER, false, 0D);
 
         claimMalfunction();
-		
+
         if (entity != null) {
             // Add person to location of malfunction if possible.
             addPersonToMalfunctionLocation(entity);
@@ -70,45 +75,45 @@ implements Repair, Serializable {
             endTask();
         }
 
-		// Create starting task event if needed.
-		if (getCreateEvents()) {
-			TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
-			Simulation.instance().getEventManager().registerNewEvent(startingEvent);
-		}
-		
-		// Initialize task phase
-		addPhase(REPAIRING);
-		setPhase(REPAIRING);
+        // Create starting task event if needed.
+        if (getCreateEvents()) {
+            TaskEvent startingEvent = new TaskEvent(person, this, EventType.TASK_START, "");
+            Simulation.instance().getEventManager().registerNewEvent(startingEvent);
+        }
+
+        // Initialize task phase
+        addPhase(REPAIRING);
+        setPhase(REPAIRING);
 
         if (malfunction != null) {
             logger.fine(person.getName() + " starting work on emergency malfunction: " + 
                     malfunction.getName() + "@" + Integer.toHexString(malfunction.hashCode()));
         }
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) {
-    	    throw new IllegalArgumentException("Task phase is null");
-    	}
-    	else if (REPAIRING.equals(getPhase())) {
-    	    return repairingPhase(time);
-    	}
-    	else {
-    	    return time;
-    	}
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (REPAIRING.equals(getPhase())) {
+            return repairingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
-    
+
     /**
      * Performs the repairing phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) left after performing the phase.
      */
     private double repairingPhase(double time) {
-    	
+
         // Check if there emergency malfunction work is fixed.
         double workTimeLeft = malfunction.getEmergencyWorkTime() -
-             malfunction.getCompletedEmergencyWorkTime();
+                malfunction.getCompletedEmergencyWorkTime();
         if (workTimeLeft == 0) {
             endTask();
         }
@@ -138,19 +143,19 @@ implements Repair, Serializable {
 
         return (time * (remainingWorkTime / workTime));
     }
-    
-	@Override
-	protected void addExperience(double time) {
-		// Add experience to "Mechanics" skill
-		// (1 base experience point per 20 millisols of work)
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
+
+    @Override
+    protected void addExperience(double time) {
+        // Add experience to "Mechanics" skill
+        // (1 base experience point per 20 millisols of work)
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
         double newPoints = time / 20D;
         int experienceAptitude = person.getNaturalAttributeManager().getAttribute(
-        	NaturalAttribute.EXPERIENCE_APTITUDE);
+                NaturalAttribute.EXPERIENCE_APTITUDE);
         newPoints += newPoints * ((double) experienceAptitude - 50D) / 100D;
-		newPoints *= getTeachingExperienceModifier();
+        newPoints *= getTeachingExperienceModifier();
         person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, newPoints);
-	}
+    }
 
     /**
      * Checks if the person has a local emergency malfunction.
@@ -172,9 +177,9 @@ implements Repair, Serializable {
         return result;
     }
 
-	/**
-	 * Gets a local emergency malfunction.
-	 */
+    /**
+     * Gets a local emergency malfunction.
+     */
     private void claimMalfunction() {
         malfunction = null;
         Iterator<Malfunctionable> i = MalfunctionFactory.getMalfunctionables(person).iterator();
@@ -184,7 +189,8 @@ implements Repair, Serializable {
             if (manager.hasEmergencyMalfunction()) {
                 malfunction = manager.getMostSeriousEmergencyMalfunction();
                 entity = e;
-                setDescription("Emergency repair " + malfunction.getName() + " on " + entity);
+                setDescription(Msg.getString("Task.description.repairEmergencyMalfunction.detail", 
+                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
             }
         }
     }
@@ -196,7 +202,7 @@ implements Repair, Serializable {
     public Malfunctionable getEntity() {
         return entity;
     }
-    
+
     /**
      * Adds the person to building if malfunctionable is a building with life support.
      * Otherwise walk to random location.
@@ -219,30 +225,30 @@ implements Repair, Serializable {
             walkToRandomLocInRover((Rover) malfunctionable);
             isWalk = true;
         }
-        
+
         if (!isWalk) {
             walkToRandomLocation();
         }
     }
-    
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-	}  
-	
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(1);
-		results.add(SkillType.MECHANICS);
-		return results;
-	}
-	
-	@Override
-	public void destroy() {
-	    super.destroy();
-	    
-	    entity = null;
-	    malfunction = null;
-	}
+
+    @Override
+    public int getEffectiveSkillLevel() {
+        SkillManager manager = person.getMind().getSkillManager();
+        return manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+    }  
+
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(1);
+        results.add(SkillType.MECHANICS);
+        return results;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        entity = null;
+        malfunction = null;
+    }
 }

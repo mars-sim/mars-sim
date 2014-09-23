@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * DriveGroundVehicle.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Coordinates;
 import org.mars_sim.msp.core.Direction;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -36,9 +37,15 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(DriveGroundVehicle.class.getName());
 
-	// TODO Task phases should be an enum
-	public final static String AVOID_OBSTACLE = "Avoiding Obstacle";
-	public final static String WINCH_VEHICLE = "Winching Stuck Vehicle";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.driveGroundVehicle"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase AVOID_OBSTACLE = new TaskPhase(Msg.getString(
+            "Task.phase.avoidObstacle")); //$NON-NLS-1$
+    private static final TaskPhase WINCH_VEHICLE = new TaskPhase(Msg.getString(
+            "Task.phase.winchVehicle")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = .1D;
@@ -62,12 +69,13 @@ implements Serializable {
 	public DriveGroundVehicle(Person person, GroundVehicle vehicle,
             Coordinates destination, MarsClock startTripTime, double startTripDistance) {
     	
-    	// User OperateVehicle constructor
-        super("Driving vehicle", person, vehicle, destination, startTripTime, 
+    	// Use OperateVehicle constructor
+        super(NAME, person, vehicle, destination, startTripTime, 
         		startTripDistance, STRESS_MODIFIER, true, (300D + RandomUtil.getRandomDouble(100D)));
 
         // Set initial parameters
-        setDescription("Driving " + vehicle.getName());
+        setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+                vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
 
@@ -84,17 +92,18 @@ implements Serializable {
      * @param startingPhase the starting phase for the task
      */
     public DriveGroundVehicle(Person person, GroundVehicle vehicle, Coordinates destination, 
-            MarsClock startTripTime, double startTripDistance, String startingPhase) {
+            MarsClock startTripTime, double startTripDistance, TaskPhase startingPhase) {
     	
-        // Use OperateVehicle constuctor
-    	super("Driving vehicle", person, vehicle, destination, startTripTime, 
+        // Use OperateVehicle constructor
+    	super(NAME, person, vehicle, destination, startTripTime, 
         		startTripDistance, STRESS_MODIFIER, true, (100D + RandomUtil.getRandomDouble(100D)));
     	
         // Set initial parameters
-        setDescription("Driving " + vehicle.getName());
+    	setDescription(Msg.getString("Task.description.driveGroundVehicle.detail", 
+                vehicle.getName())); //$NON-NLS-1$
         addPhase(AVOID_OBSTACLE);
         addPhase(WINCH_VEHICLE);
-		if ((startingPhase != null) && startingPhase.length() != 0) setPhase(startingPhase);
+		if (startingPhase != null) setPhase(startingPhase);
 
         logger.fine(person.getName() + " is driving " + vehicle.getName());
     }

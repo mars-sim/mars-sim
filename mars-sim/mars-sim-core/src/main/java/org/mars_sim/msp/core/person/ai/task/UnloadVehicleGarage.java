@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleGarage.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -41,164 +42,171 @@ public class UnloadVehicleGarage
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(UnloadVehicleGarage.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String UNLOADING = "Unloading";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.unloadVehicleGarage"); //$NON-NLS-1$
 
-	/** The amount of resources (kg) one person of average strength can unload per millisol. */
-	private static double UNLOAD_RATE = 20D;
+    /** Task phases. */
+    private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString(
+            "Task.phase.unloading")); //$NON-NLS-1$
 
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .1D;
+    /** The amount of resources (kg) one person of average strength can unload per millisol. */
+    private static double UNLOAD_RATE = 20D;
 
-	/** The duration of the task (millisols). */
-	private static final double DURATION = RandomUtil.getRandomDouble(40D) + 10D;
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .1D;
 
-	// Data members
-	/** The vehicle that needs to be unloaded. */
-	private Vehicle vehicle;
-	/** The settlement the person is unloading to. */
-	private Settlement settlement;
+    /** The duration of the task (millisols). */
+    private static final double DURATION = RandomUtil.getRandomDouble(40D) + 10D;
 
-	/**
-	 * Constructor.
-	 * @param person the person to perform the task.
-	 */
+    // Data members
+    /** The vehicle that needs to be unloaded. */
+    private Vehicle vehicle;
+    /** The settlement the person is unloading to. */
+    private Settlement settlement;
+
+    /**
+     * Constructor.
+     * @param person the person to perform the task.
+     */
     public UnloadVehicleGarage(Person person) {
-    	// Use Task constructor.
-    	super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
-    	
-    	settlement = person.getSettlement();
-    	
-    	VehicleMission mission = getMissionNeedingUnloading();
-    	if (mission != null) {
-    	    vehicle = mission.getVehicle();
-    	}
-    	else {
-    	    List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
-    	    if (nonMissionVehicles.size() > 0) {
-    	        vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
-    	    }
-    	}
-    	
-    	if (vehicle != null) {
-    		setDescription("Unloading " + vehicle.getName());
-    		
-    		// If vehicle is in a garage, add person to garage.
+        // Use Task constructor.
+        super(NAME, person, true, false, STRESS_MODIFIER, true, DURATION);
+
+        settlement = person.getSettlement();
+
+        VehicleMission mission = getMissionNeedingUnloading();
+        if (mission != null) {
+            vehicle = mission.getVehicle();
+        }
+        else {
+            List<Vehicle> nonMissionVehicles = getNonMissionVehiclesNeedingUnloading(settlement);
+            if (nonMissionVehicles.size() > 0) {
+                vehicle = nonMissionVehicles.get(RandomUtil.getRandomInt(nonMissionVehicles.size() - 1));
+            }
+        }
+
+        if (vehicle != null) {
+            setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", 
+                    vehicle.getName()));  //$NON-NLS-1$
+
+            // If vehicle is in a garage, add person to garage.
             Building garageBuilding = BuildingManager.getBuilding(vehicle);
             if (garageBuilding != null) {
                 // Walk to garage building.
                 walkToActivitySpotInBuilding(garageBuilding);
             }
-            
+
             // End task if vehicle or garage not available.
             if ((vehicle == null) || (garageBuilding == null)) {
                 endTask();    
             }
-    		
-    		// Initialize task phase
+
+            // Initialize task phase
             addPhase(UNLOADING);
             setPhase(UNLOADING);
-    	}
-    	else endTask();
+        }
+        else endTask();
     }
-    
+
     /** 
      * Constructor
      * @param person the person to perform the task
      * @param vehicle the vehicle to be unloaded
      */
     public UnloadVehicleGarage(Person person, Vehicle vehicle) {
-    	// Use Task constructor.
+        // Use Task constructor.
         super("Unloading vehicle", person, true, false, STRESS_MODIFIER, true, DURATION);
 
-	    setDescription("Unloading " + vehicle.getName());
+        setDescription(Msg.getString("Task.description.unloadVehicleGarage.detail", 
+                vehicle.getName()));  //$NON-NLS-1$;
         this.vehicle = vehicle;
 
         settlement = person.getSettlement();
-        
+
         // If vehicle is in a garage, add person to garage.
         Building garageBuilding = BuildingManager.getBuilding(vehicle);
         if (garageBuilding != null) {
             // Walk to garage building.
             walkToActivitySpotInBuilding(garageBuilding);
         }
-        
+
         // Initialize phase
         addPhase(UNLOADING);
         setPhase(UNLOADING);
 
         logger.fine(person.getName() + " is unloading " + vehicle.getName());
     }
-    
+
     @Override
     protected BuildingFunction getRelatedBuildingFunction() {
         return BuildingFunction.GROUND_VEHICLE_MAINTENANCE;
     }
-    
+
     /**
      * Gets a list of vehicles that need unloading and aren't reserved for a mission.
      * @param settlement the settlement the vehicle is at.
      * @return list of vehicles.
      */
     public static List<Vehicle> getNonMissionVehiclesNeedingUnloading(Settlement settlement) {
-    	List<Vehicle> result = new ArrayList<Vehicle>();
-    	
-    	if (settlement != null) {
-    		Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
-    		while (i.hasNext()) {
-    			Vehicle vehicle = i.next();
+        List<Vehicle> result = new ArrayList<Vehicle>();
+
+        if (settlement != null) {
+            Iterator<Vehicle> i = settlement.getParkedVehicles().iterator();
+            while (i.hasNext()) {
+                Vehicle vehicle = i.next();
                 boolean needsUnloading = false;
-    			if (!vehicle.isReserved()) {
-    			    int peopleOnboard = CollectionUtils.getPerson(
+                if (!vehicle.isReserved()) {
+                    int peopleOnboard = CollectionUtils.getPerson(
                             vehicle.getInventory().getContainedUnits()).size();
-    			    if (peopleOnboard == 0) {
-    			        if (BuildingManager.getBuilding(vehicle) != null) {
-    			            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
-    			                needsUnloading = true;
-    			            }
-    			            if (vehicle instanceof Towing) {
-    			                if (((Towing) vehicle).getTowedVehicle() != null) {
-    			                    needsUnloading = true;
-    			                }
-    			            }
-    			        }
-    			    }
+                    if (peopleOnboard == 0) {
+                        if (BuildingManager.getBuilding(vehicle) != null) {
+                            if (vehicle.getInventory().getTotalInventoryMass(false) > 0D) {
+                                needsUnloading = true;
+                            }
+                            if (vehicle instanceof Towing) {
+                                if (((Towing) vehicle).getTowedVehicle() != null) {
+                                    needsUnloading = true;
+                                }
+                            }
+                        }
+                    }
                 }
                 if (needsUnloading) {
                     result.add(vehicle);
                 }
-    		}
-    	}
-    	
-    	return result;
+            }
+        }
+
+        return result;
     }
-    
+
     /**
      * Gets a list of all disembarking vehicle missions at a settlement.
      * @param settlement the settlement.
      * @return list of vehicle missions.
      */
     public static List<Mission> getAllMissionsNeedingUnloading(Settlement settlement) {
-    	
-    	List<Mission> result = new ArrayList<Mission>();
-    	
-    	MissionManager manager = Simulation.instance().getMissionManager();
-    	Iterator<Mission> i = manager.getMissions().iterator();
-    	while (i.hasNext()) {
-    		Mission mission = (Mission) i.next();
-    		if (mission instanceof VehicleMission) {
-    			if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
-    				VehicleMission vehicleMission = (VehicleMission) mission;
-    				if (vehicleMission.hasVehicle()) {
-    					Vehicle vehicle = vehicleMission.getVehicle();
-    					if (settlement == vehicle.getSettlement()) {
-    					    int peopleOnboard = CollectionUtils.getPerson(
+
+        List<Mission> result = new ArrayList<Mission>();
+
+        MissionManager manager = Simulation.instance().getMissionManager();
+        Iterator<Mission> i = manager.getMissions().iterator();
+        while (i.hasNext()) {
+            Mission mission = (Mission) i.next();
+            if (mission instanceof VehicleMission) {
+                if (VehicleMission.DISEMBARKING.equals(mission.getPhase())) {
+                    VehicleMission vehicleMission = (VehicleMission) mission;
+                    if (vehicleMission.hasVehicle()) {
+                        Vehicle vehicle = vehicleMission.getVehicle();
+                        if (settlement == vehicle.getSettlement()) {
+                            int peopleOnboard = CollectionUtils.getPerson(
                                     vehicle.getInventory().getContainedUnits()).size();
                             if (peopleOnboard == 0) {
                                 if (!isFullyUnloaded(vehicle)) {
@@ -207,33 +215,33 @@ implements Serializable {
                                     }
                                 }
                             }
-    					}
-    				}
-    			}
-    		}
-    	}
-    	
-    	return result;
+                        }
+                    }
+                }
+            }
+        }
+
+        return result;
     }
-    
+
     /**
      * Gets a random vehicle mission unloading at the settlement.
      * @return vehicle mission.
      */
     private VehicleMission getMissionNeedingUnloading() {
-    	
-    	VehicleMission result = null;
-    	
-    	List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
-    	
-    	if (unloadingMissions.size() > 0) {
-    		int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
-    		result = (VehicleMission) unloadingMissions.get(index);
-    	}
-    	
-    	return result;
+
+        VehicleMission result = null;
+
+        List<Mission> unloadingMissions = getAllMissionsNeedingUnloading(person.getSettlement());
+
+        if (unloadingMissions.size() > 0) {
+            int index = RandomUtil.getRandomInt(unloadingMissions.size() - 1);
+            result = (VehicleMission) unloadingMissions.get(index);
+        }
+
+        return result;
     }
-    
+
     /**
      * Gets the vehicle being unloaded.
      * @return vehicle
@@ -241,54 +249,54 @@ implements Serializable {
     public Vehicle getVehicle() {
         return vehicle;
     }
-    
+
     @Override
     protected double performMappedPhase(double time) {
-    	if (getPhase() == null) {
-    	    throw new IllegalArgumentException("Task phase is null");
-    	}
-    	else if (UNLOADING.equals(getPhase())) {
-    	    return unloadingPhase(time);
-    	}
-    	else {
-    	    return time;
-    	}
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (UNLOADING.equals(getPhase())) {
+            return unloadingPhase(time);
+        }
+        else {
+            return time;
+        }
     }
-    
+
     /**
      * Perform the unloading phase of the task.
      * @param time the amount of time (millisol) to perform the phase.
      * @return the amount of time (millisol) after performing the phase.
      */
     protected double unloadingPhase(double time) {
-    	
+
         // Determine unload rate.
-		int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
-		double strengthModifier = .1D + (strength * .018D);
+        int strength = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRENGTH);
+        double strengthModifier = .1D + (strength * .018D);
         double amountUnloading = UNLOAD_RATE * strengthModifier * time;
-        
+
         Inventory vehicleInv = vehicle.getInventory();
         if (settlement == null) {
-        	endTask();
-        	return 0D;
+            endTask();
+            return 0D;
         }
         Inventory settlementInv = settlement.getInventory();
-        
+
         // Unload equipment.
         if (amountUnloading > 0D) {
-        	Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
-        	while (k.hasNext() && (amountUnloading > 0D)) {
-        		Equipment equipment = (Equipment) k.next();
-        		
-        		// Unload inventories of equipment (if possible)
-        		unloadEquipmentInventory(equipment);
-        		
-        		vehicleInv.retrieveUnit(equipment);
-        		settlementInv.storeUnit(equipment);
-        		amountUnloading -= equipment.getMass();
-        	}
+            Iterator<Unit> k = vehicleInv.findAllUnitsOfClass(Equipment.class).iterator();
+            while (k.hasNext() && (amountUnloading > 0D)) {
+                Equipment equipment = (Equipment) k.next();
+
+                // Unload inventories of equipment (if possible)
+                unloadEquipmentInventory(equipment);
+
+                vehicleInv.retrieveUnit(equipment);
+                settlementInv.storeUnit(equipment);
+                amountUnloading -= equipment.getMass();
+            }
         }
-        
+
         // Unload amount resources.
         Iterator<AmountResource> i = vehicleInv.getAllAmountResourcesStored(false).iterator();
         while (i.hasNext() && (amountUnloading > 0D)) {
@@ -307,25 +315,25 @@ implements Serializable {
             catch (Exception e) {}
             amountUnloading -= amount;
         }
-        
+
         // Unload item resources.
         if (amountUnloading > 0D) {
-        	Iterator<ItemResource> j = vehicleInv.getAllItemResourcesStored().iterator();
-        	while (j.hasNext() && (amountUnloading > 0D)) {
-        		ItemResource resource = j.next();
-        		int num = vehicleInv.getItemResourceNum(resource);
-        		if ((num * resource.getMassPerItem()) > amountUnloading) {
-        			num = (int) Math.round(amountUnloading / resource.getMassPerItem());
-        			if (num == 0) {
-        			    num = 1;
-        			}
-        		}
-        		vehicleInv.retrieveItemResources(resource, num);
-        		settlementInv.storeItemResources(resource, num);
-        		amountUnloading -= (num * resource.getMassPerItem());
-        	}
+            Iterator<ItemResource> j = vehicleInv.getAllItemResourcesStored().iterator();
+            while (j.hasNext() && (amountUnloading > 0D)) {
+                ItemResource resource = j.next();
+                int num = vehicleInv.getItemResourceNum(resource);
+                if ((num * resource.getMassPerItem()) > amountUnloading) {
+                    num = (int) Math.round(amountUnloading / resource.getMassPerItem());
+                    if (num == 0) {
+                        num = 1;
+                    }
+                }
+                vehicleInv.retrieveItemResources(resource, num);
+                settlementInv.storeItemResources(resource, num);
+                amountUnloading -= (num * resource.getMassPerItem());
+            }
         }
-        
+
         // Unload towed vehicles.
         if (vehicle instanceof Towing) {
             Towing towingVehicle = (Towing) vehicle;
@@ -339,42 +347,42 @@ implements Serializable {
                 }
             }
         }
-		
+
         if (isFullyUnloaded(vehicle)) {
             endTask();
         }
-        
+
         return 0D;
     }
-    
+
     /**
      * Unload the inventory from a piece of equipment.
      * @param equipment the equipment.
      */
     private void unloadEquipmentInventory(Equipment equipment) {
-    	Inventory eInv = equipment.getInventory();
-    	Inventory sInv = settlement.getInventory();
-    	
+        Inventory eInv = equipment.getInventory();
+        Inventory sInv = settlement.getInventory();
+
         // Unload amount resources.
-    	// Note: only unloading amount resources at the moment.
-    	Iterator<AmountResource> i = eInv.getAllAmountResourcesStored(false).iterator();
-    	while (i.hasNext()) {
-    	    AmountResource resource = i.next();
-    	    double amount = eInv.getAmountResourceStored(resource, false);
-    	    double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
-    	    if (amount < capacity) amount = capacity;
-    	    try {
-    	        eInv.retrieveAmountResource(resource, amount);
-    	        sInv.storeAmountResource(resource, amount, true);
-    	    }
-    	    catch (Exception e) {}
-    	}
+        // Note: only unloading amount resources at the moment.
+        Iterator<AmountResource> i = eInv.getAllAmountResourcesStored(false).iterator();
+        while (i.hasNext()) {
+            AmountResource resource = i.next();
+            double amount = eInv.getAmountResourceStored(resource, false);
+            double capacity = sInv.getAmountResourceRemainingCapacity(resource, true, false);
+            if (amount < capacity) amount = capacity;
+            try {
+                eInv.retrieveAmountResource(resource, amount);
+                sInv.storeAmountResource(resource, amount, true);
+            }
+            catch (Exception e) {}
+        }
     }
-    
-	@Override
-	protected void addExperience(double time) {
-		// This task adds no experience.
-	}
+
+    @Override
+    protected void addExperience(double time) {
+        // This task adds no experience.
+    }
 
     /** 
      * Returns true if the vehicle is fully unloaded.
@@ -384,23 +392,23 @@ implements Serializable {
     static public boolean isFullyUnloaded(Vehicle vehicle) {
         return (vehicle.getInventory().getTotalInventoryMass(false) == 0D);
     }
-    
-	@Override
-	public int getEffectiveSkillLevel() {
-		return 0;	
-	}
-	
-	@Override
-	public List<SkillType> getAssociatedSkills() {
+
+    @Override
+    public int getEffectiveSkillLevel() {
+        return 0;	
+    }
+
+    @Override
+    public List<SkillType> getAssociatedSkills() {
         List<SkillType> results = new ArrayList<SkillType>(0);
-		return results;
-	}
-	
-	@Override
-	public void destroy() {
-	    super.destroy();
-	    
-	    vehicle = null;
-	    settlement = null;
-	}
+        return results;
+    }
+
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        vehicle = null;
+        settlement = null;
+    }
 }

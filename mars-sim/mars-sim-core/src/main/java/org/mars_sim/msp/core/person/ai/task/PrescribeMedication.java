@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PrescribeMedication.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.Person;
@@ -38,8 +39,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(PrescribeMedication.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String MEDICATING = "Medicating";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.prescribeMedication"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase MEDICATING = new TaskPhase(Msg.getString(
+            "Task.phase.medicating")); //$NON-NLS-1$
 
 	/** The stress modified per millisol. */
 	private static final double STRESS_MODIFIER = 0D;
@@ -54,7 +60,7 @@ implements Serializable {
 	 */
 	public PrescribeMedication(Person person) {
         // Use task constructor.
-        super("Prescribing Medication", person, true, false, STRESS_MODIFIER, true, 10D);
+        super(NAME, person, true, false, STRESS_MODIFIER, true, 10D);
         
         // Determine patient needing medication.
         patient = determinePatient(person);

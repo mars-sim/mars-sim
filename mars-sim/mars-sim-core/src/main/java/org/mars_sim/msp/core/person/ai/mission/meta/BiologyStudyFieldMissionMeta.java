@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * BiologyStudyFieldMissionMeta.java
- * @version 3.07 2014-08-14
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
 
 import java.util.Iterator;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -27,9 +28,10 @@ import org.mars_sim.msp.core.vehicle.Rover;
  * A meta mission for the BiologyStudyFieldMission mission.
  */
 public class BiologyStudyFieldMissionMeta implements MetaMission {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Biology Study Field Mission";
+    
+    /** Mission name */
+    private static final String NAME = Msg.getString(
+            "Mission.description.biologyStudyFieldMission"); //$NON-NLS-1$
     
     @Override
     public String getName() {

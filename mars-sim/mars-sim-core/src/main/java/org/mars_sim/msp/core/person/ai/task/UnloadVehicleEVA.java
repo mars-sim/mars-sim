@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * UnloadVehicleEVA.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.CollectionUtils;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.Unit;
@@ -43,33 +44,38 @@ public class UnloadVehicleEVA
 extends EVAOperation
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(UnloadVehicleEVA.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String UNLOADING = "Unloading";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.unloadVehicleEVA"); //$NON-NLS-1$
 
-	/** The amount of resources (kg) one person of average strength can unload per millisol. */
-	private static double UNLOAD_RATE = 20D;
+    /** Task phases. */
+    private static final TaskPhase UNLOADING = new TaskPhase(Msg.getString(
+            "Task.phase.unloading")); //$NON-NLS-1$
 
-	// Data members
-	/** The vehicle that needs to be unloaded. */
-	private Vehicle vehicle;
-	/** The settlement the person is unloading to. */
-	private Settlement settlement;
+    /** The amount of resources (kg) one person of average strength can unload per millisol. */
+    private static double UNLOAD_RATE = 20D;
 
-	/**
-	 * Constructor
-	 * @param person the person to perform the task.
-	 */
-	public UnloadVehicleEVA(Person person) {
-		// Use EVAOperation constructor.
-		super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+    // Data members
+    /** The vehicle that needs to be unloaded. */
+    private Vehicle vehicle;
+    /** The settlement the person is unloading to. */
+    private Settlement settlement;
 
-		settlement = person.getSettlement();
+    /**
+     * Constructor
+     * @param person the person to perform the task.
+     */
+    public UnloadVehicleEVA(Person person) {
+        // Use EVAOperation constructor.
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
+
+        settlement = person.getSettlement();
 
         VehicleMission mission = getMissionNeedingUnloading();
         if (mission != null) {
@@ -88,7 +94,8 @@ implements Serializable {
             Point2D unloadingLoc = determineUnloadingLocation();
             setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
 
-            setDescription("Unloading " + vehicle.getName());
+            setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+                    vehicle.getName()));  //$NON-NLS-1$
 
             // Initialize task phase
             addPhase(UNLOADING);
@@ -107,13 +114,14 @@ implements Serializable {
         // Use EVAOperation constructor.
         super("Unloading vehicle EVA", person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
-        setDescription("Unloading " + vehicle.getName());
+        setDescription(Msg.getString("Task.description.unloadVehicleEVA.detail", 
+                vehicle.getName()));  //$NON-NLS-1$
         this.vehicle = vehicle;
 
         // Determine location for unloading.
         Point2D unloadingLoc = determineUnloadingLocation();
         setOutsideSiteLocation(unloadingLoc.getX(), unloadingLoc.getY());
-        
+
         settlement = person.getSettlement();
 
         // Initialize phase
@@ -222,13 +230,13 @@ implements Serializable {
     public Vehicle getVehicle() {
         return vehicle;
     }
-    
+
     /**
      * Determine location to unload the vehicle.
      * @return location.
      */
     private Point2D determineUnloadingLocation() {
-        
+
         Point2D.Double newLocation = null;
         boolean goodLocation = false;
         for (int x = 0; (x < 50) && !goodLocation; x++) {
@@ -238,20 +246,20 @@ implements Serializable {
             goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
                     person.getCoordinates());
         }
-        
+
         return newLocation;
     }
-    
+
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return UNLOADING;
     }
 
     @Override
     protected double performMappedPhase(double time) {
-        
+
         time = super.performMappedPhase(time);
-        
+
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }

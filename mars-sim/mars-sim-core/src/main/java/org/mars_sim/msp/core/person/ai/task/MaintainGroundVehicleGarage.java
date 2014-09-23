@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MaintainGroundVehicleGarage.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -18,6 +18,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.Inventory;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.malfunction.MalfunctionManager;
 import org.mars_sim.msp.core.malfunction.Malfunctionable;
@@ -49,8 +50,13 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(MaintainGroundVehicleGarage.class.getName());
 
-	// TODO Task phase should be an enum
-	private static final String MAINTAIN_VEHICLE = "Maintaining Vehicle";
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.maintainGroundVehicleGarage"); //$NON-NLS-1$
+	
+    /** Task phases. */
+    private static final TaskPhase MAINTAIN_VEHICLE = new TaskPhase(Msg.getString(
+            "Task.phase.maintainVehicle")); //$NON-NLS-1$
 
 	// Static members
 	/** The stress modified per millisol. */
@@ -67,7 +73,7 @@ implements Serializable {
 	 * @param person the person to perform the task
 	 */
 	public MaintainGroundVehicleGarage(Person person) {
-        super("Performing Vehicle Maintenance", person, true, false, STRESS_MODIFIER, 
+        super(NAME, person, true, false, STRESS_MODIFIER, 
         		true, 10D + RandomUtil.getRandomDouble(40D));
 
         // Choose an available needy ground vehicle.
@@ -324,7 +330,8 @@ implements Serializable {
         }
         
         if (result != null) {
-            setDescription("Performing maintenance on " + result.getName());
+            setDescription(Msg.getString("Task.description.maintainGroundVehicleGarage.detail", 
+                    result.getName())); //$NON-NLS-1$
         }
         
         return result;

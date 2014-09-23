@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * PrescribeMedicationMeta.java
- * @version 3.07 2014-08-06
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.person.Person;
 import org.mars_sim.msp.core.person.ai.job.Doctor;
 import org.mars_sim.msp.core.person.ai.job.Job;
@@ -16,9 +17,10 @@ import org.mars_sim.msp.core.person.ai.task.Task;
  * Meta task for the PrescribeMedication task.
  */
 public class PrescribeMedicationMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Prescribing Medication";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.prescribeMedication"); //$NON-NLS-1$
     
     @Override
     public String getName() {

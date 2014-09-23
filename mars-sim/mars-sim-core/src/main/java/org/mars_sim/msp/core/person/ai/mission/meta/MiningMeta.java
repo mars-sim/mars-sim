@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * MiningMeta.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.equipment.Bag;
 import org.mars_sim.msp.core.mars.ExploredLocation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -27,8 +28,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class MiningMeta implements MetaMission {
 
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Mining";
+    /** Mission name */
+    private static final String NAME = Msg.getString(
+            "Mission.description.mining"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(MiningMeta.class.getName());

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TabPanelActivity.java
- * @version 3.07 2014-08-20
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 
@@ -32,6 +32,7 @@ import org.mars_sim.msp.core.person.ai.job.Job;
 import org.mars_sim.msp.core.person.ai.job.JobManager;
 import org.mars_sim.msp.core.person.ai.mission.Mission;
 import org.mars_sim.msp.core.person.ai.task.TaskManager;
+import org.mars_sim.msp.core.person.ai.task.TaskPhase;
 import org.mars_sim.msp.core.person.medical.DeathInfo;
 import org.mars_sim.msp.ui.swing.ImageLoader;
 import org.mars_sim.msp.ui.swing.JComboBoxMW;
@@ -155,8 +156,18 @@ implements ActionListener {
 		taskPhasePanel.add(taskPhaseLabel, BorderLayout.NORTH);
 
 		// Prepare task phase text area
-		if (dead) taskPhaseCache = deathInfo.getTaskPhase();
-		else taskPhaseCache = mind.getTaskManager().getPhase();
+		if (dead) {
+		    taskPhaseCache = deathInfo.getTaskPhase();
+		}
+		else {
+		    TaskPhase phase = mind.getTaskManager().getPhase();
+		    if (phase != null) {
+		        taskPhaseCache = phase.getName();
+		    }
+		    else {
+		        taskPhaseCache = "";
+		    }
+		}
 		taskPhaseTextArea = new JTextArea(2, 20);
 		if (taskPhaseCache != null) taskPhaseTextArea.setText(taskPhaseCache);
 		taskPhaseTextArea.setLineWrap(true);
@@ -262,8 +273,18 @@ implements ActionListener {
 			taskTextArea.setText(taskCache);
 
 		// Update task phase text area if necessary.
-		if (dead) taskPhaseCache = deathInfo.getTaskPhase();
-		else taskPhaseCache = taskManager.getPhase();
+		if (dead) {
+		    taskPhaseCache = deathInfo.getTaskPhase();
+		}
+		else {
+		    TaskPhase phase = taskManager.getPhase();
+		    if (phase != null) {
+		        taskPhaseCache = phase.getName();
+		    }
+		    else {
+		        taskPhaseCache = "";
+		    }
+		}
 		if (!taskPhaseCache.equals(taskPhaseTextArea.getText())) 
 			taskPhaseTextArea.setText(taskPhaseCache);
 

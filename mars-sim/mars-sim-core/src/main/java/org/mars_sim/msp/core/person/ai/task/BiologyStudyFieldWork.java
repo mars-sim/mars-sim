@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * BiologyFieldWork.java
- * @version 3.06 2014-03-04
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.mars.SurfaceFeatures;
@@ -34,8 +35,13 @@ implements Serializable {
     /** default serial id.*/
     private static final long serialVersionUID = 1L;
 
-    // TODO Task phases should be enums
-    private static final String FIELD_WORK = "Performing Field Work";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.biologyFieldWork"); //$NON-NLS-1$
+    
+    /** Task phases. */
+    private static final TaskPhase FIELD_WORK = new TaskPhase(Msg.getString(
+            "Task.phase.fieldWork")); //$NON-NLS-1$
 
     // Data members
     private Person leadResearcher;
@@ -53,7 +59,7 @@ implements Serializable {
             Rover rover) {
 
         // Use EVAOperation parent constructor.
-        super("Biology Study Field Work", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
         // Initialize data members.
         this.leadResearcher = leadResearcher;
@@ -120,7 +126,7 @@ implements Serializable {
     }
 
     @Override
-    protected String getOutsideSitePhase() {
+    protected TaskPhase getOutsideSitePhase() {
         return FIELD_WORK;
     }
     

@@ -1,13 +1,14 @@
 /**
  * Mars Simulation Project
  * RespondToStudyInvitationMeta.java
- * @version 3.07 2014-08-07
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
 import java.util.List;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -22,9 +23,10 @@ import org.mars_sim.msp.core.structure.building.Building;
  * Meta task for the RespondToStudyInvitation task.
  */
 public class RespondToStudyInvitationMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Responding to a Study Invitation";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.respondToStudyInvitation"); //$NON-NLS-1$
     
     @Override
     public String getName() {

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TradeMeta.java
- * @version 3.07 2014-08-13
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.mission.meta;
@@ -9,6 +9,7 @@ package org.mars_sim.msp.core.person.ai.mission.meta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -29,8 +30,9 @@ import org.mars_sim.msp.core.vehicle.Rover;
  */
 public class TradeMeta implements MetaMission {
 
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Trade with Settlement";
+    /** Mission name */
+    private static final String NAME = Msg.getString(
+            "Mission.description.trade"); //$NON-NLS-1$
     
     /** default logger. */
     private static Logger logger = Logger.getLogger(TradeMeta.class.getName());

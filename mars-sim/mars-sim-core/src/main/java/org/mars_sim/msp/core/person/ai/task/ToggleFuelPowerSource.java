@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ToggleFuelPowerSource.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.person.NaturalAttribute;
 import org.mars_sim.msp.core.person.NaturalAttributeManager;
@@ -39,422 +40,429 @@ public class ToggleFuelPowerSource
 extends EVAOperation
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(ToggleFuelPowerSource.class.getName());
 
-	// TODO Task phase should be an enum.
-	private static final String TOGGLE_POWER_SOURCE = "Toggle Power Source";
+    /** Task name */
+    private static final String NAME_ON = Msg.getString(
+            "Task.description.toggleFuelPowerSource.on"); //$NON-NLS-1$
+    private static final String NAME_OFF = Msg.getString(
+            "Task.description.toggleFuelPowerSource.off"); //$NON-NLS-1$
 
-	// Data members
-	/** True if toggling process is EVA operation. */
-	private boolean isEVA;
-	/** The fuel power source to toggle. */
-	private FuelPowerSource powerSource;
-	/** The building the resource process is in. */
-	private Building building;
-	/** True if power source is to be turned on, false if turned off. */
-	private boolean toggleOn;
+    /** Task phases. */
+    private static final TaskPhase TOGGLE_POWER_SOURCE = new TaskPhase(Msg.getString(
+            "Task.phase.togglePowerSource")); //$NON-NLS-1$
 
-	/**
-	 * Constructor
-	 * @param person the person performing the task.
-	 * @throws Exception if error constructing the task.
-	 */
-	public ToggleFuelPowerSource(Person person) {
-		super("Turning on fuel power source", person, false, 0D);
+    // Data members
+    /** True if toggling process is EVA operation. */
+    private boolean isEVA;
+    /** The fuel power source to toggle. */
+    private FuelPowerSource powerSource;
+    /** The building the resource process is in. */
+    private Building building;
+    /** True if power source is to be turned on, false if turned off. */
+    private boolean toggleOn;
 
-		building = getFuelPowerSourceBuilding(person);
-		if (building != null) {
-			powerSource = getFuelPowerSource(building);
-			toggleOn = !powerSource.isToggleON();
-			if (!toggleOn) {
-				setName("Turning off fuel power source");
-				setDescription("Turning off fuel power source");
-			}
-			isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
+    /**
+     * Constructor
+     * @param person the person performing the task.
+     * @throws Exception if error constructing the task.
+     */
+    public ToggleFuelPowerSource(Person person) {
+        super(NAME_ON, person, false, 0D);
 
-			// If habitable building, add person to building.
-			if (!isEVA) {
-				// Walk to power source building.
-				walkToPowerSourceBuilding(building);
-			}
-			else {
-				// Determine location for toggling power source.
-				Point2D toggleLoc = determineToggleLocation();
-				setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
-			}
-		}
-		else {
-			endTask();
-		}
+        building = getFuelPowerSourceBuilding(person);
+        if (building != null) {
+            powerSource = getFuelPowerSource(building);
+            toggleOn = !powerSource.isToggleON();
+            if (!toggleOn) {
+                setName(NAME_OFF);
+                setDescription(NAME_OFF);
+            }
+            isEVA = !building.hasFunction(BuildingFunction.LIFE_SUPPORT);
 
-		addPhase(TOGGLE_POWER_SOURCE);
+            // If habitable building, add person to building.
+            if (!isEVA) {
+                // Walk to power source building.
+                walkToPowerSourceBuilding(building);
+            }
+            else {
+                // Determine location for toggling power source.
+                Point2D toggleLoc = determineToggleLocation();
+                setOutsideSiteLocation(toggleLoc.getX(), toggleLoc.getY());
+            }
+        }
+        else {
+            endTask();
+        }
 
-		if (!isEVA) {
-			setPhase(TOGGLE_POWER_SOURCE);
-		}
-	}
+        addPhase(TOGGLE_POWER_SOURCE);
 
-	/**
-	 * Determine location to toggle power source.
-	 * @return location.
-	 */
-	private Point2D determineToggleLocation() {
+        if (!isEVA) {
+            setPhase(TOGGLE_POWER_SOURCE);
+        }
+    }
 
-		Point2D.Double newLocation = new Point2D.Double(0D, 0D);
+    /**
+     * Determine location to toggle power source.
+     * @return location.
+     */
+    private Point2D determineToggleLocation() {
 
-		boolean goodLocation = false;
-		for (int x = 0; (x < 50) && !goodLocation; x++) {
-			Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
-			newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
-					boundedLocalPoint.getY(), building);
-			goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
-					person.getCoordinates());
-		}
+        Point2D.Double newLocation = new Point2D.Double(0D, 0D);
 
-		return newLocation;
-	}
+        boolean goodLocation = false;
+        for (int x = 0; (x < 50) && !goodLocation; x++) {
+            Point2D.Double boundedLocalPoint = LocalAreaUtil.getRandomExteriorLocation(building, 1D);
+            newLocation = LocalAreaUtil.getLocalRelativeLocation(boundedLocalPoint.getX(), 
+                    boundedLocalPoint.getY(), building);
+            goodLocation = LocalAreaUtil.checkLocationCollision(newLocation.getX(), newLocation.getY(), 
+                    person.getCoordinates());
+        }
 
-	/**
-	 * Walk to power source building.
-	 * @param powerBuilding the power source building.
-	 */
-	private void walkToPowerSourceBuilding(Building powerBuilding) {
+        return newLocation;
+    }
 
-		// Determine location within power source building.
-		// TODO: Use action point rather than random internal location.
-		Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
-		Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
-				buildingLoc.getY(), powerBuilding);
+    /**
+     * Walk to power source building.
+     * @param powerBuilding the power source building.
+     */
+    private void walkToPowerSourceBuilding(Building powerBuilding) {
 
-		if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
-				powerBuilding)) {
+        // Determine location within power source building.
+        // TODO: Use action point rather than random internal location.
+        Point2D.Double buildingLoc = LocalAreaUtil.getRandomInteriorLocation(powerBuilding);
+        Point2D.Double settlementLoc = LocalAreaUtil.getLocalRelativeLocation(buildingLoc.getX(), 
+                buildingLoc.getY(), powerBuilding);
 
-			// Add subtask for walking to power building.
-			addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
-					powerBuilding));
-		}
-		else {
-			logger.fine(person.getName() + " unable to walk to power building " + 
-					powerBuilding.getName());
-			endTask();
-		}
-	}
+        if (Walk.canWalkAllSteps(person, settlementLoc.getX(), settlementLoc.getY(), 
+                powerBuilding)) {
 
-	/**
-	 * Gets the building at a person's settlement with the fuel power source that needs toggling.
-	 * @param person the person.
-	 * @return building with fuel power source to toggle, or null if none.
-	 */
-	public static Building getFuelPowerSourceBuilding(Person person) {
-		Building result = null;
+            // Add subtask for walking to power building.
+            addSubTask(new Walk(person, settlementLoc.getX(), settlementLoc.getY(), 
+                    powerBuilding));
+        }
+        else {
+            logger.fine(person.getName() + " unable to walk to power building " + 
+                    powerBuilding.getName());
+            endTask();
+        }
+    }
 
-		Settlement settlement = person.getSettlement();
-		if (settlement != null) {
-			BuildingManager manager = settlement.getBuildingManager();
-			double bestDiff = 0D;
-			Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
-			while (i.hasNext()) {
-				Building building = i.next();
-				FuelPowerSource powerSource = getFuelPowerSource(building);
-				if (powerSource != null) {
-					double diff = getValueDiff(settlement, powerSource);
-					if (diff > bestDiff) {
-						bestDiff = diff;
-						result = building;
-					}
-				}
-			}
-		}
+    /**
+     * Gets the building at a person's settlement with the fuel power source that needs toggling.
+     * @param person the person.
+     * @return building with fuel power source to toggle, or null if none.
+     */
+    public static Building getFuelPowerSourceBuilding(Person person) {
+        Building result = null;
 
-		return result;
-	}
+        Settlement settlement = person.getSettlement();
+        if (settlement != null) {
+            BuildingManager manager = settlement.getBuildingManager();
+            double bestDiff = 0D;
+            Iterator<Building> i = manager.getBuildings(BuildingFunction.POWER_GENERATION).iterator();
+            while (i.hasNext()) {
+                Building building = i.next();
+                FuelPowerSource powerSource = getFuelPowerSource(building);
+                if (powerSource != null) {
+                    double diff = getValueDiff(settlement, powerSource);
+                    if (diff > bestDiff) {
+                        bestDiff = diff;
+                        result = building;
+                    }
+                }
+            }
+        }
 
-	/**
-	 * Gets the fuel power source to toggle at a building.
-	 * @param building the building
-	 * @return the fuel power source to toggle or null if none.
-	 */
-	public static FuelPowerSource getFuelPowerSource(Building building) {
-		FuelPowerSource result = null;
+        return result;
+    }
 
-		Settlement settlement = building.getBuildingManager().getSettlement();
-		if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
-			double bestDiff = 0D;
-			PowerGeneration powerGeneration = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
-			Iterator<PowerSource> i = powerGeneration.getPowerSources().iterator();
-			while (i.hasNext()) {
-				PowerSource powerSource = i.next();
-				if (powerSource instanceof FuelPowerSource) {
-					FuelPowerSource fuelSource = (FuelPowerSource) powerSource;
-					double diff = getValueDiff(settlement, fuelSource);
-					if (diff > bestDiff) {
-						bestDiff = diff;
-						result = fuelSource;
-					}
-				}
-			}
-		}
+    /**
+     * Gets the fuel power source to toggle at a building.
+     * @param building the building
+     * @return the fuel power source to toggle or null if none.
+     */
+    public static FuelPowerSource getFuelPowerSource(Building building) {
+        FuelPowerSource result = null;
 
-		return result;
-	}
+        Settlement settlement = building.getBuildingManager().getSettlement();
+        if (building.hasFunction(BuildingFunction.POWER_GENERATION)) {
+            double bestDiff = 0D;
+            PowerGeneration powerGeneration = (PowerGeneration) building.getFunction(BuildingFunction.POWER_GENERATION);
+            Iterator<PowerSource> i = powerGeneration.getPowerSources().iterator();
+            while (i.hasNext()) {
+                PowerSource powerSource = i.next();
+                if (powerSource instanceof FuelPowerSource) {
+                    FuelPowerSource fuelSource = (FuelPowerSource) powerSource;
+                    double diff = getValueDiff(settlement, fuelSource);
+                    if (diff > bestDiff) {
+                        bestDiff = diff;
+                        result = fuelSource;
+                    }
+                }
+            }
+        }
 
-	/**
-	 * Gets the value diff between inputs and outputs for a fuel power source.
-	 * @param settlement the settlement the resource process is at.
-	 * @param fuelSource the fuel power source.
-	 * @return the value diff (value points)
-	 */
-	public static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) {
+        return result;
+    }
 
-		double inputValue = getInputResourcesValue(settlement, fuelSource);
-		double outputValue = getPowerOutputValue(settlement, fuelSource);
-		double diff = outputValue - inputValue;
-		if (fuelSource.isToggleON()) {
-			diff *= -1D;
-		}
+    /**
+     * Gets the value diff between inputs and outputs for a fuel power source.
+     * @param settlement the settlement the resource process is at.
+     * @param fuelSource the fuel power source.
+     * @return the value diff (value points)
+     */
+    public static double getValueDiff(Settlement settlement, FuelPowerSource fuelSource) {
 
-		// Check if settlement doesn't have one or more of the input resources.
-		if (isEmptyInputResource(settlement, fuelSource)) {
-			if (fuelSource.isToggleON()) {
-				diff = 1D;
-			}
-			else {
-				diff = 0D;
-			}
-		}
-		return diff;
-	}
+        double inputValue = getInputResourcesValue(settlement, fuelSource);
+        double outputValue = getPowerOutputValue(settlement, fuelSource);
+        double diff = outputValue - inputValue;
+        if (fuelSource.isToggleON()) {
+            diff *= -1D;
+        }
 
-	/**
-	 * Gets the total value of a fuel power sources input resources.
-	 * @param settlement the settlement.
-	 * @param fuel source the fuel power source.
-	 * @return the total value for the input resources per Sol.
-	 */
-	private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
+        // Check if settlement doesn't have one or more of the input resources.
+        if (isEmptyInputResource(settlement, fuelSource)) {
+            if (fuelSource.isToggleON()) {
+                diff = 1D;
+            }
+            else {
+                diff = 0D;
+            }
+        }
+        return diff;
+    }
 
-		AmountResource resource = fuelSource.getFuelResource();
-		double massPerSol = fuelSource.getFuelConsumptionRate();
-		double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
+    /**
+     * Gets the total value of a fuel power sources input resources.
+     * @param settlement the settlement.
+     * @param fuel source the fuel power source.
+     * @return the total value for the input resources per Sol.
+     */
+    private static double getInputResourcesValue(Settlement settlement, FuelPowerSource fuelSource) {
 
-		return value * massPerSol;
-	}
+        AmountResource resource = fuelSource.getFuelResource();
+        double massPerSol = fuelSource.getFuelConsumptionRate();
+        double value = settlement.getGoodsManager().getGoodValuePerItem(GoodsUtil.getResourceGood(resource));
 
-	/**
-	 * Gets the total value of the power produced by the power source.
-	 * @param settlement the settlement.
-	 * @param fuelSource the fuel power source.
-	 * @return the value of the power generated per Sol.
-	 */
-	private static double getPowerOutputValue(Settlement settlement, FuelPowerSource fuelSource) {
+        return value * massPerSol;
+    }
 
-		// Get settlement value for kW hr produced.
-		double power = fuelSource.getMaxPower();
-		double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
-		double powerPerSol = power * hoursInSol;
-		double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
+    /**
+     * Gets the total value of the power produced by the power source.
+     * @param settlement the settlement.
+     * @param fuelSource the fuel power source.
+     * @return the value of the power generated per Sol.
+     */
+    private static double getPowerOutputValue(Settlement settlement, FuelPowerSource fuelSource) {
 
-		return powerValue;
-	}
+        // Get settlement value for kW hr produced.
+        double power = fuelSource.getMaxPower();
+        double hoursInSol = MarsClock.convertMillisolsToSeconds(1000D) / 60D / 60D;
+        double powerPerSol = power * hoursInSol;
+        double powerValue = powerPerSol * settlement.getPowerGrid().getPowerValue();
 
-	/**
-	 * Checks if a fuel power source has no input resources.
-	 * @param settlement the settlement the resource is at.
-	 * @param fuelSource the fuel power source.
-	 * @return true if any input resources are empty.
-	 */
-	private static boolean isEmptyInputResource(Settlement settlement, 
-			FuelPowerSource fuelSource) {
-		boolean result = false;
+        return powerValue;
+    }
 
-		AmountResource resource = fuelSource.getFuelResource();
-		double stored = settlement.getInventory().getAmountResourceStored(resource, false);
-		if (stored == 0D) {
-			result = true;
-		}
+    /**
+     * Checks if a fuel power source has no input resources.
+     * @param settlement the settlement the resource is at.
+     * @param fuelSource the fuel power source.
+     * @return true if any input resources are empty.
+     */
+    private static boolean isEmptyInputResource(Settlement settlement, 
+            FuelPowerSource fuelSource) {
+        boolean result = false;
 
-		return result;
-	}
+        AmountResource resource = fuelSource.getFuelResource();
+        double stored = settlement.getInventory().getAmountResourceStored(resource, false);
+        if (stored == 0D) {
+            result = true;
+        }
 
-	@Override
-	protected void addExperience(double time) {
+        return result;
+    }
 
-		// Experience points adjusted by person's "Experience Aptitude" attribute.
-		NaturalAttributeManager nManager = person.getNaturalAttributeManager();
-		int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
-		double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
+    @Override
+    protected void addExperience(double time) {
 
-		if (isEVA) {
-			// Add experience to "EVA Operations" skill.
-			// (1 base experience point per 100 millisols of time spent)
-			double evaExperience = time / 100D;
-			evaExperience += evaExperience * experienceAptitudeModifier;
-			evaExperience *= getTeachingExperienceModifier();
-			person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
-		}
+        // Experience points adjusted by person's "Experience Aptitude" attribute.
+        NaturalAttributeManager nManager = person.getNaturalAttributeManager();
+        int experienceAptitude = nManager.getAttribute(NaturalAttribute.EXPERIENCE_APTITUDE);
+        double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
 
-		// If phase is toggle power source, add experience to mechanics skill.
-		if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
-			// 1 base experience point per 100 millisols of time spent.
-			// Experience points adjusted by person's "Experience Aptitude" attribute.
-			double mechanicsExperience = time / 100D;
-			mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
-		}
-	}
+        if (isEVA) {
+            // Add experience to "EVA Operations" skill.
+            // (1 base experience point per 100 millisols of time spent)
+            double evaExperience = time / 100D;
+            evaExperience += evaExperience * experienceAptitudeModifier;
+            evaExperience *= getTeachingExperienceModifier();
+            person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        }
 
-	@Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> result = new ArrayList<SkillType>(2);
-		result.add(SkillType.MECHANICS);
-		if (isEVA) {
-			result.add(SkillType.EVA_OPERATIONS);
-		}
-		return result;
-	}
+        // If phase is toggle power source, add experience to mechanics skill.
+        if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
+            // 1 base experience point per 100 millisols of time spent.
+            // Experience points adjusted by person's "Experience Aptitude" attribute.
+            double mechanicsExperience = time / 100D;
+            mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+        }
+    }
 
-	@Override
-	public int getEffectiveSkillLevel() {
-		SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
-		if (isEVA) {
-			return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
-		}
-		else {
-			return (mechanicsSkill);
-		}
-	}
+    @Override
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> result = new ArrayList<SkillType>(2);
+        result.add(SkillType.MECHANICS);
+        if (isEVA) {
+            result.add(SkillType.EVA_OPERATIONS);
+        }
+        return result;
+    }
 
-	@Override
-	protected String getOutsideSitePhase() {
-		return TOGGLE_POWER_SOURCE;
-	}
+    @Override
+    public int getEffectiveSkillLevel() {
+        SkillManager manager = person.getMind().getSkillManager();
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+        if (isEVA) {
+            return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D);
+        }
+        else {
+            return (mechanicsSkill);
+        }
+    }
 
-	@Override
-	protected double performMappedPhase(double time) {
+    @Override
+    protected TaskPhase getOutsideSitePhase() {
+        return TOGGLE_POWER_SOURCE;
+    }
 
-		time = super.performMappedPhase(time);
+    @Override
+    protected double performMappedPhase(double time) {
 
-		if (getPhase() == null) {
-			throw new IllegalArgumentException("Task phase is null");
-		}
-		else if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
-			return togglePowerSourcePhase(time);
-		}
-		else {
-			return time;
-		}
-	}
+        time = super.performMappedPhase(time);
 
-	/**
-	 * Performs the toggle power source phase.
-	 * @param time the amount of time (millisols) to perform the phase.
-	 * @return the amount of time (millisols) left over after performing the phase.
-	 */
-	private double togglePowerSourcePhase(double time) {
+        if (getPhase() == null) {
+            throw new IllegalArgumentException("Task phase is null");
+        }
+        else if (TOGGLE_POWER_SOURCE.equals(getPhase())) {
+            return togglePowerSourcePhase(time);
+        }
+        else {
+            return time;
+        }
+    }
 
-		// If person is incapacitated, end task.
-		if (person.getPerformanceRating() == 0D) {
-			if (isEVA) {
-				setPhase(WALK_BACK_INSIDE);
-			}
-			else {
-				endTask();
-			}
-		}
+    /**
+     * Performs the toggle power source phase.
+     * @param time the amount of time (millisols) to perform the phase.
+     * @return the amount of time (millisols) left over after performing the phase.
+     */
+    private double togglePowerSourcePhase(double time) {
 
-		// Check if toggle has already been completed.
-		if (powerSource.isToggleON() == toggleOn) {
-			if (isEVA) {
-				setPhase(WALK_BACK_INSIDE);
-			}
-			else {
-				endTask();
-			}
-		}
+        // If person is incapacitated, end task.
+        if (person.getPerformanceRating() == 0D) {
+            if (isEVA) {
+                setPhase(WALK_BACK_INSIDE);
+            }
+            else {
+                endTask();
+            }
+        }
 
-		if (isDone()) {
-			return time;
-		}
+        // Check if toggle has already been completed.
+        if (powerSource.isToggleON() == toggleOn) {
+            if (isEVA) {
+                setPhase(WALK_BACK_INSIDE);
+            }
+            else {
+                endTask();
+            }
+        }
 
-		// Determine effective work time based on "Mechanic" skill.
-		double workTime = time;
-		int mechanicSkill = getEffectiveSkillLevel();
-		if (mechanicSkill == 0) {
-			workTime /= 2;
-		}
-		else if (mechanicSkill > 1) {
-			workTime += workTime * (.2D * mechanicSkill);
-		}
+        if (isDone()) {
+            return time;
+        }
 
-		// Add work to the toggle power source.
-		powerSource.addToggleWorkTime(workTime);
+        // Determine effective work time based on "Mechanic" skill.
+        double workTime = time;
+        int mechanicSkill = getEffectiveSkillLevel();
+        if (mechanicSkill == 0) {
+            workTime /= 2;
+        }
+        else if (mechanicSkill > 1) {
+            workTime += workTime * (.2D * mechanicSkill);
+        }
 
-		// Add experience points
-		addExperience(time);
+        // Add work to the toggle power source.
+        powerSource.addToggleWorkTime(workTime);
 
-		// Check if toggle has already been completed.
-		if (powerSource.isToggleON() == toggleOn) {
-			if (isEVA) {
-				setPhase(WALK_BACK_INSIDE);
-			}
-			else {
-				endTask();
-			}
+        // Add experience points
+        addExperience(time);
 
-			Settlement settlement = building.getBuildingManager().getSettlement();
-			String toggle = "off";
-			if (toggleOn) toggle = "on";
-			logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() + 
-					" at " + settlement.getName() + ": " + building.getName());
-		}
+        // Check if toggle has already been completed.
+        if (powerSource.isToggleON() == toggleOn) {
+            if (isEVA) {
+                setPhase(WALK_BACK_INSIDE);
+            }
+            else {
+                endTask();
+            }
 
-		// Check if an accident happens during toggle power source.
-		checkForAccident(time);
+            Settlement settlement = building.getBuildingManager().getSettlement();
+            String toggle = "off";
+            if (toggleOn) toggle = "on";
+            logger.fine(person.getName() + " turning " + toggle + " " + powerSource.getType() + 
+                    " at " + settlement.getName() + ": " + building.getName());
+        }
 
-		return 0D;
-	}
+        // Check if an accident happens during toggle power source.
+        checkForAccident(time);
 
-	/**
-	 * Check for accident with entity during toggle resource phase.
-	 * @param time the amount of time (in millisols)
-	 */
-	protected void checkForAccident(double time) {
+        return 0D;
+    }
 
-		// Use EVAOperation checkForAccident() method.
-		if (isEVA) {
-			super.checkForAccident(time);
-		}
+    /**
+     * Check for accident with entity during toggle resource phase.
+     * @param time the amount of time (in millisols)
+     */
+    protected void checkForAccident(double time) {
 
-		double chance = .001D;
+        // Use EVAOperation checkForAccident() method.
+        if (isEVA) {
+            super.checkForAccident(time);
+        }
 
-		// Mechanic skill modification.
-		int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
-		if (skill <= 3) {
-			chance *= (4 - skill);
-		}
-		else {
-			chance /= (skill - 2);
-		}
+        double chance = .001D;
 
-		// Modify based on the building's wear condition.
-		chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
+        // Mechanic skill modification.
+        int skill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        if (skill <= 3) {
+            chance *= (4 - skill);
+        }
+        else {
+            chance /= (skill - 2);
+        }
 
-		if (RandomUtil.lessThanRandPercent(chance * time)) {
-			building.getMalfunctionManager().accident();
-		}
-	}
+        // Modify based on the building's wear condition.
+        chance *= building.getMalfunctionManager().getWearConditionAccidentModifier();
 
-	@Override
-	public void destroy() {
-		super.destroy();
+        if (RandomUtil.lessThanRandPercent(chance * time)) {
+            building.getMalfunctionManager().accident();
+        }
+    }
 
-		powerSource = null;
-		building = null;
-	}
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        powerSource = null;
+        building = null;
+    }
 }

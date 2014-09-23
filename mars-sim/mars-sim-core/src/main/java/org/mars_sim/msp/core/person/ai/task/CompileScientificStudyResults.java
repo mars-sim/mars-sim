@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CompileScientificStudyResults.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -41,11 +42,16 @@ implements Serializable {
 	/** default logger. */
 	private static Logger logger = Logger.getLogger(CompileScientificStudyResults.class.getName());
     
+	/** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.compileScientificStudyResults"); //$NON-NLS-1$
+	
     /** The stress modified per millisol. */
     private static final double STRESS_MODIFIER = 0D;
     
-    /** TODO Task phase should be an enum. */
-    private static final String COMPILING_PHASE = "Compiling Study Data";
+    /** Task phases. */
+    private static final TaskPhase COMPILING_PHASE = new TaskPhase(Msg.getString(
+            "Task.phase.compilingPhase")); //$NON-NLS-1$
     
     // Data members
     /** The scientific study to compile. */
@@ -58,13 +64,14 @@ implements Serializable {
      */
     public CompileScientificStudyResults(Person person) {
         // Use task constructor.
-        super("Compiling Scientific Study Data Results", person, true, false, 
+        super(NAME, person, true, false, 
                 STRESS_MODIFIER, true, RandomUtil.getRandomDouble(50D));
         
         // Determine study.
         study = determineStudy();
         if (study != null) {
-            setDescription("Compiling Data Results for " + study.toString());
+            setDescription(Msg.getString("Task.description.compileScientificStudyResults.detail", 
+                    study.toString())); //$NON-NLS-1$
             
             // If person is in a settlement, try to find an administration building.
             boolean adminWalk = false;

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ExitAirlock.java
- * @version 3.06 2014-05-09
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task;
@@ -16,6 +16,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Airlock;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.equipment.EVASuit;
 import org.mars_sim.msp.core.person.LocationSituation;
@@ -35,41 +36,51 @@ public class ExitAirlock
 extends Task
 implements Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(ExitAirlock.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(ExitAirlock.class.getName());
 
-	// Task phase
-	private static final String PROCURING_EVA_SUIT = "Procuring EVA Suit";
-	private static final String WAITING_TO_ENTER_AIRLOCK = "Waiting to Enter Airlock";
-	private static final String ENTERING_AIRLOCK = "Entering Airlock";
-	private static final String WAITING_INSIDE_AIRLOCK = "Waiting inside Airlock";
-	private static final String EXITING_AIRLOCK = "Exiting Airlock";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.exitAirlock"); //$NON-NLS-1$
 
-	// Static members
-	/** The stress modified per millisol. */
-	private static final double STRESS_MODIFIER = .5D;
+    /** Task phases. */
+    private static final TaskPhase PROCURING_EVA_SUIT = new TaskPhase(Msg.getString(
+            "Task.phase.procuringEVASuit")); //$NON-NLS-1$
+    private static final TaskPhase WAITING_TO_ENTER_AIRLOCK = new TaskPhase(Msg.getString(
+            "Task.phase.waitingToEnterAirlock")); //$NON-NLS-1$
+    private static final TaskPhase ENTERING_AIRLOCK = new TaskPhase(Msg.getString(
+            "Task.phase.enteringAirlock")); //$NON-NLS-1$
+    private static final TaskPhase WAITING_INSIDE_AIRLOCK = new TaskPhase(Msg.getString(
+            "Task.phase.waitingInsideAirlock")); //$NON-NLS-1$
+    private static final TaskPhase EXITING_AIRLOCK = new TaskPhase(Msg.getString(
+            "Task.phase.exitingAirlock")); //$NON-NLS-1$
 
-	// Data members
-	/** The airlock to be used. */
-	private Airlock airlock;
-	/** True if person has an EVA suit. */
-	private boolean hasSuit = false;
-	private Point2D insideAirlockPos = null;
-	private Point2D exteriorAirlockPos = null;
+    // Static members
+    /** The stress modified per millisol. */
+    private static final double STRESS_MODIFIER = .5D;
 
-	/** 
-	 * Constructor.
-	 * @param person the person to perform the task
-	 * @param airlock the airlock to use.
-	 */
-	public ExitAirlock(Person person, Airlock airlock) {
-        super("Exiting airlock for EVA", person, false, false, STRESS_MODIFIER, false, 0D);
+    // Data members
+    /** The airlock to be used. */
+    private Airlock airlock;
+    /** True if person has an EVA suit. */
+    private boolean hasSuit = false;
+    private Point2D insideAirlockPos = null;
+    private Point2D exteriorAirlockPos = null;
+
+    /** 
+     * Constructor.
+     * @param person the person to perform the task
+     * @param airlock the airlock to use.
+     */
+    public ExitAirlock(Person person, Airlock airlock) {
+        super(NAME, person, false, false, STRESS_MODIFIER, false, 0D);
 
         // Initialize data members
-        setDescription("Exiting " + airlock.getEntityName() + " for EVA");
+        setDescription(Msg.getString("Task.description.exitAirlock.detail", 
+                airlock.getEntityName())); //$NON-NLS-1$
         this.airlock = airlock;
 
         // Initialize task phase
@@ -78,7 +89,7 @@ implements Serializable {
         addPhase(ENTERING_AIRLOCK);
         addPhase(WAITING_INSIDE_AIRLOCK);
         addPhase(EXITING_AIRLOCK);
-        
+
         setPhase(PROCURING_EVA_SUIT);
 
         logger.fine(person.getName() + " is starting to exit airlock of " + airlock.getEntityName());
@@ -112,23 +123,23 @@ implements Serializable {
             return time;
         }
     }
-    
+
     /**
      * Performs the procuring EVA suit phase of the task.
      * @param time the amount of time to perform the task phase.
      * @return the remaining time after performing the task phase.
      */
     private double procuringEVASuit(double time) {
-        
+
         double remainingTime = time;
-        
+
         logger.finer(person + " procuring EVA suit.");
-        
+
         // Check if person already has EVA suit.
         if (!hasSuit && alreadyHasEVASuit()) {
             hasSuit = true;
         }
-        
+
         // Get an EVA suit from entity inventory.
         if (!hasSuit) {
             Inventory inv = airlock.getEntityInventory();
@@ -155,30 +166,30 @@ implements Serializable {
         else {
             setPhase(WAITING_TO_ENTER_AIRLOCK);
         }
-        
+
         // Add experience
         addExperience(time - remainingTime);
-        
+
         return remainingTime;
     }
-    
+
     /**
      * Performs the waiting to enter airlock phase of the task.
      * @param time the amount of time to perform the task phase.
      * @return the remaining time after performing the task phase.
      */
     private double waitingToEnterAirlockPhase(double time) {
-        
+
         double remainingTime = time;
-        
+
         logger.finer(person + " waiting to enter airlock.");
-        
+
         // If person is already outside, change to exit airlock phase.
         if (LocationSituation.OUTSIDE == person.getLocationSituation()) {
             setPhase(EXITING_AIRLOCK);
             return remainingTime;
         }
-        
+
         // If airlock is pressurized and inner door unlocked, enter airlock.
         if ((Airlock.PRESSURIZED.equals(airlock.getState()) && !airlock.isInnerDoorLocked()) || 
                 airlock.inAirlock(person)) {
@@ -187,12 +198,12 @@ implements Serializable {
         else {
             // Add person to queue awaiting airlock at inner door if not already.
             airlock.addAwaitingAirlockInnerDoor(person); 
-            
+
             // If airlock has not been activated, activate it.
             if (!airlock.isActivated()) {
                 airlock.activateAirlock(person);
             }
-            
+
             // Check if person is the airlock operator.
             if (person.equals(airlock.getOperator())) {
                 // If person is airlock operator, add cycle time to airlock.
@@ -213,30 +224,30 @@ implements Serializable {
                 remainingTime = 0D;
             }
         }
-        
+
         // Add experience
         addExperience(time - remainingTime);
-        
+
         return remainingTime;
     }
-    
+
     /**
      * Performs the entering airlock phase of the task.
      * @param time the amount of time to perform the task phase.
      * @return the remaining time after performing the task phase.
      */
     private double enteringAirlockPhase(double time) {
-        
+
         double remainingTime = time;
-        
+
         logger.finer(person + " entering airlock.");
-        
+
         if (insideAirlockPos == null) {
             insideAirlockPos = airlock.getAvailableAirlockPosition();
         }
-        
+
         Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
-        
+
         if (airlock.inAirlock(person)) {
             logger.finer(person + " is entering airlock, but is already in airlock.");
             setPhase(WAITING_INSIDE_AIRLOCK);
@@ -246,19 +257,19 @@ implements Serializable {
             endTask();
         }
         else if (LocalAreaUtil.areLocationsClose(personLocation,  insideAirlockPos)) {
-            
+
             logger.finer(person + " is at inside airlock location.");
-            
+
             // Enter airlock.
             if (airlock.enterAirlock(person, true)) {
-            
+
                 // If airlock has not been activated, activate it.
                 if (!airlock.isActivated()) {
                     airlock.activateAirlock(person);
                 }
 
                 logger.finer(person + " has entered airlock");
-                
+
                 setPhase(WAITING_INSIDE_AIRLOCK);
             }
             else {
@@ -266,7 +277,7 @@ implements Serializable {
                 if (!airlock.isActivated()) {
                     airlock.activateAirlock(person);
                 }
-                
+
                 // Check if person is the airlock operator.
                 if (person.equals(airlock.getOperator())) {
                     // If person is airlock operator, add cycle time to airlock.
@@ -290,7 +301,7 @@ implements Serializable {
         }
         else {
             if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
-                
+
                 // Walk to inside airlock position.
                 if (airlock.getEntity() instanceof Building) {
                     double distance = Point2D.distance(person.getXLocation(), person.getYLocation(), 
@@ -303,32 +314,32 @@ implements Serializable {
                 else if (airlock.getEntity() instanceof Rover) {
 
                     Rover airlockRover = (Rover) airlock.getEntity();
-                    
+
                     addSubTask(new WalkRoverInterior(person, airlockRover, 
                             insideAirlockPos.getX(), insideAirlockPos.getY()));
                 }
             }
         }
-        
+
         // Add experience
         addExperience(time - remainingTime);
-        
+
         return remainingTime;
     }
-    
+
     /**
      * Performs the waiting inside airlock phase of the task.
      * @param time the amount of time to perform the task phase.
      * @return the remaining time after performing the task phase.
      */
     private double waitingInsideAirlockPhase(double time) {
-        
+
         double remainingTime = time;
-        
+
         logger.finer(person + " waiting inside airlock.");
-        
+
         if (airlock.inAirlock(person)) {
-            
+
             // Check if person is the airlock operator.
             if (person.equals(airlock.getOperator())) {
                 // If person is airlock operator, add cycle time to airlock.
@@ -353,10 +364,10 @@ implements Serializable {
             logger.finer(person + " is already outside during waiting inside airlock phase.");
             setPhase(EXITING_AIRLOCK);
         }
-        
+
         // Add experience
         addExperience(time - remainingTime);
-        
+
         return remainingTime;
     }
 
@@ -368,21 +379,21 @@ implements Serializable {
     private double exitingAirlockPhase(double time) {
 
         double remainingTime = time;
-        
+
         logger.finer(person + " exiting airlock outside.");
-        
+
         if (LocationSituation.OUTSIDE != person.getLocationSituation()) {
             throw new IllegalStateException(person + " has exited airlock of " + airlock.getEntityName() + 
                     " but is not outside.");
         }
-        
+
         if (exteriorAirlockPos == null) {
             exteriorAirlockPos = airlock.getAvailableExteriorPosition();
         }
-        
+
         Point2D personLocation = new Point2D.Double(person.getXLocation(), person.getYLocation());
         if (LocalAreaUtil.areLocationsClose(personLocation, exteriorAirlockPos)) {
-            
+
             logger.finer(person + " has exited airlock outside.");
             endTask();
         }
@@ -426,28 +437,28 @@ implements Serializable {
     public static boolean canExitAirlock(Person person, Airlock airlock) {
 
         boolean result = true;
-        
+
         // Check if person is outside.
         if (person.getLocationSituation().equals(LocationSituation.OUTSIDE)) {
             result = false;
             logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to already being outside.");
         }
-        
+
         // Check if EVA suit is available.
         if (!goodEVASuitAvailable(airlock.getEntityInventory())) {
             result = false;
             logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to not able to find good EVA suit.");
         }
-        
+
         // Check if person is incapacitated.
         if (person.getPerformanceRating() == 0D) {
             result = false;
             logger.fine(person.getName() + " cannot exit airlock from " + airlock.getEntityName() + 
                     " due to performance rating is 0.");
         }
-        
+
         return result;
     }
 
@@ -464,7 +475,7 @@ implements Serializable {
         }
         return result;
     }
-    
+
     /**
      * Checks if a good EVA suit is in entity inventory.
      * @param inv the inventory to check.
@@ -570,7 +581,7 @@ implements Serializable {
     @Override
     public void endTask() {
         super.endTask();
-        
+
         // Clear the person as the airlock operator if task ended prematurely.
         if ((airlock != null) && person.equals(airlock.getOperator())) {
             logger.severe(person + " ending exiting airlock task prematurely, " +
@@ -578,7 +589,7 @@ implements Serializable {
             airlock.clearOperator();
         }
     }
-    
+
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();

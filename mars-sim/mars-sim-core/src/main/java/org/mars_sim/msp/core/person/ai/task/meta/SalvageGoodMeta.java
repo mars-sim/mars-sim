@@ -1,11 +1,12 @@
 /**
  * Mars Simulation Project
  * SalvageGoodMeta.java
- * @version 3.07 2014-08-08
+ * @version 3.07 2014-09-18
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.person.ai.task.meta;
 
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.person.LocationSituation;
 import org.mars_sim.msp.core.person.Person;
@@ -21,9 +22,10 @@ import org.mars_sim.msp.core.time.MarsClock;
  * Meta task for the SalvageGood task.
  */
 public class SalvageGoodMeta implements MetaTask {
-
-    // TODO: Use enum instead of string for name for internationalization.
-    private static final String NAME = "Salvage Good";
+    
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.salvageGood"); //$NON-NLS-1$
     
     @Override
     public String getName() {

@@ -1,10 +1,9 @@
 /**
  * Mars Simulation Project
  * RepairEVAMalfunction.java
- * @version 3.07 2014-08-15
+ * @version 3.07 2014-09-22
  * @author Scott Davis
  */
-
 package org.mars_sim.msp.core.person.ai.task;
 
 import java.awt.geom.Point2D;
@@ -20,6 +19,7 @@ import java.util.logging.Logger;
 import org.mars_sim.msp.core.Inventory;
 import org.mars_sim.msp.core.LocalAreaUtil;
 import org.mars_sim.msp.core.LocalBoundedObject;
+import org.mars_sim.msp.core.Msg;
 import org.mars_sim.msp.core.RandomUtil;
 import org.mars_sim.msp.core.Unit;
 import org.mars_sim.msp.core.malfunction.Malfunction;
@@ -41,30 +41,35 @@ public class RepairEVAMalfunction
 extends EVAOperation
 implements Repair, Serializable {
 
-	/** default serial id. */
-	private static final long serialVersionUID = 1L;
+    /** default serial id. */
+    private static final long serialVersionUID = 1L;
 
-	/** default logger. */
-	private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
+    /** default logger. */
+    private static Logger logger = Logger.getLogger(RepairEVAMalfunction.class.getName());
 
-	// TODO Phase names should be an enum.
-	private static final String REPAIR_MALFUNCTION = "Repair Malfunction";
+    /** Task name */
+    private static final String NAME = Msg.getString(
+            "Task.description.repairEVAMalfunction"); //$NON-NLS-1$
 
-	// Data members
-	/** The malfunctionable entity being repaired. */
-	private Malfunctionable entity;
-	/** The container unit the person started the mission in. */
-	private Unit containerUnit;
+    /** Task phases. */
+    private static final TaskPhase REPAIRING = new TaskPhase(Msg.getString(
+            "Task.phase.repairing")); //$NON-NLS-1$
 
-	/**
-	 * Constructs a RepairEVAMalfunction object.
-	 * @param person the person to perform the task
-	 */
+    // Data members
+    /** The malfunctionable entity being repaired. */
+    private Malfunctionable entity;
+    /** The container unit the person started the mission in. */
+    private Unit containerUnit;
+
+    /**
+     * Constructs a RepairEVAMalfunction object.
+     * @param person the person to perform the task
+     */
     public RepairEVAMalfunction(Person person) {
-        super("Repairing EVA Malfunction", person, true, RandomUtil.getRandomDouble(50D) + 10D);
+        super(NAME, person, true, RandomUtil.getRandomDouble(50D) + 10D);
 
         containerUnit = person.getTopContainerUnit();
-        
+
         // Get the malfunctioning entity.
         entity = getEVAMalfunctionEntity(person, containerUnit);
         if (entity == null) {
@@ -77,7 +82,7 @@ implements Repair, Serializable {
         setOutsideSiteLocation(malfunctionLoc.getX(), malfunctionLoc.getY());
 
         // Initialize phase
-        addPhase(REPAIR_MALFUNCTION);
+        addPhase(REPAIRING);
 
         logger.fine(person.getName() + " has started the RepairEVAMalfunction task.");
     }
@@ -193,8 +198,8 @@ implements Repair, Serializable {
     }
 
     @Override
-    protected String getOutsideSitePhase() {
-        return REPAIR_MALFUNCTION;
+    protected TaskPhase getOutsideSitePhase() {
+        return REPAIRING;
     }
 
     @Override
@@ -205,7 +210,7 @@ implements Repair, Serializable {
         if (getPhase() == null) {
             throw new IllegalArgumentException("Task phase is null");
         }
-        else if (REPAIR_MALFUNCTION.equals(getPhase())) {
+        else if (REPAIRING.equals(getPhase())) {
             return repairMalfunctionPhase(time);
         }
         else {
@@ -226,17 +231,17 @@ implements Repair, Serializable {
         double experienceAptitudeModifier = (((double) experienceAptitude) - 50D) / 100D;
         evaExperience += evaExperience * experienceAptitudeModifier;
         evaExperience *= getTeachingExperienceModifier();
-		person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
+        person.getMind().getSkillManager().addExperience(SkillType.EVA_OPERATIONS, evaExperience);
 
         // If phase is repair malfunction, add experience to mechanics skill.
-        if (REPAIR_MALFUNCTION.equals(getPhase())) {
+        if (REPAIRING.equals(getPhase())) {
             // 1 base experience point per 20 millisols of collection time spent.
             // Experience points adjusted by person's "Experience Aptitude" attribute.
             double mechanicsExperience = time / 20D;
             mechanicsExperience += mechanicsExperience * experienceAptitudeModifier;
-			person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
-		}
-	}
+            person.getMind().getSkillManager().addExperience(SkillType.MECHANICS, mechanicsExperience);
+        }
+    }
 
     /**
      * Perform the repair malfunction phase of the task.
@@ -253,7 +258,7 @@ implements Repair, Serializable {
 
         // Determine effective work time based on "Mechanic" skill.
         double workTime = time;
-		int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
+        int mechanicSkill = person.getMind().getSkillManager().getEffectiveSkillLevel(SkillType.MECHANICS);
         if (mechanicSkill == 0) workTime /= 2;
         if (mechanicSkill > 1) workTime += workTime * (.2D * mechanicSkill);
 
@@ -264,7 +269,8 @@ implements Repair, Serializable {
             Malfunction tempMalfunction = i.next();
             if (hasRepairPartsForMalfunction(person, containerUnit, tempMalfunction)) {
                 malfunction = tempMalfunction;
-                setDescription("Repairing " + malfunction.getName() + " on " + entity.getName());
+                setDescription(Msg.getString("Task.description.repairEVAMalfunction.detail", 
+                        malfunction.getName(), entity.getName())); //$NON-NLS-1$
             }
         }
 
@@ -308,16 +314,16 @@ implements Repair, Serializable {
     @Override
     public int getEffectiveSkillLevel() {
         SkillManager manager = person.getMind().getSkillManager();
-		int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
-		int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
+        int EVAOperationsSkill = manager.getEffectiveSkillLevel(SkillType.EVA_OPERATIONS);
+        int mechanicsSkill = manager.getEffectiveSkillLevel(SkillType.MECHANICS);
         return (int) Math.round((double)(EVAOperationsSkill + mechanicsSkill) / 2D); 
     }
 
     @Override
-	public List<SkillType> getAssociatedSkills() {
-		List<SkillType> results = new ArrayList<SkillType>(2);
-		results.add(SkillType.EVA_OPERATIONS);
-		results.add(SkillType.MECHANICS);
+    public List<SkillType> getAssociatedSkills() {
+        List<SkillType> results = new ArrayList<SkillType>(2);
+        results.add(SkillType.EVA_OPERATIONS);
+        results.add(SkillType.MECHANICS);
         return results;
     }
 
