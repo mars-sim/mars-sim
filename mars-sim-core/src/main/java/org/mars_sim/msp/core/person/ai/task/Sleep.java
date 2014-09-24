@@ -40,7 +40,7 @@ public class Sleep extends Task implements Serializable {
 
     /** Task name */
     private static final String NAME = Msg.getString(
-            "Task.description.performLaboratoryExperiment"); //$NON-NLS-1$
+            "Task.description.sleep"); //$NON-NLS-1$
 
     /** Task phases. */
     private static final TaskPhase SLEEPING = new TaskPhase(Msg.getString(
