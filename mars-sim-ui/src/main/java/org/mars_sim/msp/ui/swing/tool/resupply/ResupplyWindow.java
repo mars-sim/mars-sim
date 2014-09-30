@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ResupplyWindow.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-09-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -83,7 +83,8 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         mainPane.add(buttonPane, BorderLayout.SOUTH);
 
         // Create new button.
-        JButton newButton = new JButton("New");
+		// 9/29/2014 modified by mk: Changed button text from "New"  to "New Mission"
+        JButton newButton = new JButton("New Mission");
         newButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -93,7 +94,8 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         buttonPane.add(newButton);
 
         // Create modify button.
-        modifyButton = new JButton("Modify");
+		// 9/29/2014 modified by mk: Changed button text from "Modify"  to "Modify Mission"
+        modifyButton = new JButton("Modify Mission");
         modifyButton.setEnabled(false);
         modifyButton.addActionListener(new ActionListener() {
             @Override
@@ -104,7 +106,8 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         buttonPane.add(modifyButton);
 
         // Create cancel button.
-        cancelButton = new JButton("Cancel");
+		// 9/29/2014 modified by mk: Changed button text from "Discard"  to "Discard Mission"
+        cancelButton = new JButton("Discard Mission");
         cancelButton.setEnabled(false);
         cancelButton.addActionListener(new ActionListener() {
             @Override
