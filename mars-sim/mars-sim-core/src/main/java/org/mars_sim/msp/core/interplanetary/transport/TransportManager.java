@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * TransportManager.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-09-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.interplanetary.transport;
@@ -13,6 +13,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Logger;
+
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 
 import org.mars_sim.msp.core.Simulation;
 import org.mars_sim.msp.core.events.HistoricalEvent;
@@ -114,11 +117,25 @@ implements Serializable {
 	 * @param transportItem the transport item.
 	 */
 	public void cancelTransportItem(Transportable transportItem) {
-	    transportItem.setTransitState(TransitState.CANCELED);
-	    HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED,
-                "Transport item cancelled");
-	    Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
-	    logger.info("Transport item cancelled: " + transportItem.toString());
+
+		// 2014-09-29 by mkung -- added a pop-up dialog box asking the user to confirm discarding the mission
+         JDialog.setDefaultLookAndFeelDecorated(true);
+            int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to discard the highlighted mission?", "Confirm",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+            if (response == JOptionPane.NO_OPTION) {
+              System.out.println("No button clicked");
+            } else if (response == JOptionPane.YES_OPTION) {
+              System.out.println("Yes button clicked");
+              // go ahead with deleting this mission              
+                transportItem.setTransitState(TransitState.CANCELED);
+                HistoricalEvent cancelEvent = new TransportEvent(transportItem, EventType.TRANSPORT_ITEM_CANCELLED,
+                        "Transport item cancelled");
+                Simulation.instance().getEventManager().registerNewEvent(cancelEvent);
+                logger.info("Transport item cancelled: " + transportItem.toString());    
+                
+            } else if (response == JOptionPane.CLOSED_OPTION) {
+              System.out.println("JOptionPane closed");
+            }	
 	}
 	
 	/**
