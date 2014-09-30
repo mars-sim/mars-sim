@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * ModifyTransportItemDialog.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-09-29
  * @author Scott Davis
  */
 package org.mars_sim.msp.ui.swing.tool.resupply;
@@ -68,7 +68,8 @@ public class ModifyTransportItemDialog extends JDialog {
         getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
         // Create modify button.
-        JButton modifyButton = new JButton("Modify");
+        // 9/29/2014 by mkung: Changed button text from "Modify" to "Commit Changes"
+        JButton modifyButton = new JButton("Commit Changes");
         modifyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent evt) {
                 // Modify transport item and close dialog.
@@ -78,7 +79,8 @@ public class ModifyTransportItemDialog extends JDialog {
         buttonPane.add(modifyButton);
 
         // Create cancel button.
-        JButton cancelButton = new JButton("Cancel");
+		// 9/29/2014 by mkung: Changed button text from "Cancel"  to "Discard Changes"
+        JButton cancelButton = new JButton("Discard Changes");
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 // Close dialog.
