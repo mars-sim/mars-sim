@@ -12,6 +12,9 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+
 import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -94,7 +97,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         buttonPane.add(newButton);
 
         // Create modify button.
-		// 9/29/2014 modified by mk: Changed button text from "Modify"  to "Modify Mission"
+		// 9/29/2014 modified by mkung: Changed button text from "Modify"  to "Modify Mission"
         modifyButton = new JButton("Modify Mission");
         modifyButton.setEnabled(false);
         modifyButton.addActionListener(new ActionListener() {
@@ -106,7 +109,7 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
         buttonPane.add(modifyButton);
 
         // Create cancel button.
-		// 9/29/2014 modified by mk: Changed button text from "Discard"  to "Discard Mission"
+		// 9/29/2014 modified by mkung: Changed button text from "Discard"  to "Discard Mission"
         cancelButton = new JButton("Discard Mission");
         cancelButton.setEnabled(false);
         cancelButton.addActionListener(new ActionListener() {
@@ -166,12 +169,23 @@ public class ResupplyWindow extends ToolWindow implements ListSelectionListener 
     /**
      * Cancels the currently selected transport item.
      */
-    private void cancelTransportItem() {
-        // Cancel the selected transport item.
-        Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
-        if (transportItem != null) {
-            Simulation.instance().getTransportManager().cancelTransportItem(transportItem);
-        }
+    private void cancelTransportItem() {     
+     // 2014-10-04 by mkung -- added a dialog box asking the user to confirm "discarding" the mission
+        JDialog.setDefaultLookAndFeelDecorated(true);
+           int response = JOptionPane.showConfirmDialog(null, "Are you sure you want to discard the highlighted mission?", "Confirm",
+               JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+           if (response == JOptionPane.NO_OPTION) {
+             // "No" button click, do nothing
+           } else if (response == JOptionPane.YES_OPTION) {
+             // "Yes" button clicked and go ahead with discarding this mission 
+        	   Transportable transportItem = (Transportable) incomingListPane.getIncomingList().getSelectedValue();
+               if (transportItem != null) {
+               	// call cancelTransportItem() in TransportManager Class to cancel the selected transport item.
+                   Simulation.instance().getTransportManager().cancelTransportItem(transportItem);
+               }
+           } else if (response == JOptionPane.CLOSED_OPTION) {
+        	   // Close the dialogbox, do nothing
+           }	  
     }
 
     @Override
