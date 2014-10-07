@@ -1,3 +1,0 @@
-#Mon May 13 16:06:03 PDT 2013
-org.mars_sim.msp.config.model.landmark.LandmarkList=org.mars_sim.msp.config.model.landmark.descriptors.LandmarkListDescriptor
-org.mars_sim.msp.config.model.landmark.Landmark=org.mars_sim.msp.config.model.landmark.descriptors.LandmarkDescriptor

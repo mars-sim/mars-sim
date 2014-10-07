@@ -1,9 +1,0 @@
-#Mon May 13 16:06:03 PDT 2013
-org.mars_sim.msp.config.model.types.EffectTypeType=org.mars_sim.msp.config.model.types.descriptors.EffectTypeTypeDescriptor
-org.mars_sim.msp.config.model.types.ResourcePhaseType=org.mars_sim.msp.config.model.types.descriptors.ResourcePhaseTypeDescriptor
-org.mars_sim.msp.config.model.types.RessuplyPhaseType=org.mars_sim.msp.config.model.types.descriptors.RessuplyPhaseTypeDescriptor
-org.mars_sim.msp.config.model.types.PersonGenderType=org.mars_sim.msp.config.model.types.descriptors.PersonGenderTypeDescriptor
-org.mars_sim.msp.config.model.types.PersonNameGenderType=org.mars_sim.msp.config.model.types.descriptors.PersonNameGenderTypeDescriptor
-org.mars_sim.msp.config.model.types.MineralFrequencyType=org.mars_sim.msp.config.model.types.descriptors.MineralFrequencyTypeDescriptor
-org.mars_sim.msp.config.model.types.ProcessDefaultType=org.mars_sim.msp.config.model.types.descriptors.ProcessDefaultTypeDescriptor
-org.mars_sim.msp.config.model.types.LocaleNameType=org.mars_sim.msp.config.model.types.descriptors.LocaleNameTypeDescriptor

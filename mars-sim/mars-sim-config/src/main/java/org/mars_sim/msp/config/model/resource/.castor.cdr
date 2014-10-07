@@ -1,3 +1,0 @@
-#Mon May 13 16:06:03 PDT 2013
-org.mars_sim.msp.config.model.resource.ResourceList=org.mars_sim.msp.config.model.resource.descriptors.ResourceListDescriptor
-org.mars_sim.msp.config.model.resource.Resource=org.mars_sim.msp.config.model.resource.descriptors.ResourceDescriptor
