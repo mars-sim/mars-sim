@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Crop.java
- * @version 3.07 2014-07-30
+ * @version 3.07 2014-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -46,6 +46,7 @@ implements Serializable {
 	// Data members
 	/** The type of crop. */
 	private CropType cropType;
+
 	/** Maximum possible food harvest for crop. (kg) */
 	private double maxHarvest;
 	/** Farm crop being grown in. */
@@ -79,6 +80,7 @@ implements Serializable {
 	 */
 	public Crop(CropType cropType, double maxHarvest, Farming farm, Settlement settlement, boolean newCrop) {
 		this.cropType = cropType;
+				//System.out.println("Crop.java : constructor : new crop is " + cropType.getName());
 		this.maxHarvest = maxHarvest;
 		this.farm = farm;
 		this.settlement = settlement;
@@ -87,15 +89,22 @@ implements Serializable {
 		plantingWorkRequired = maxHarvest;
 		dailyTendingWorkRequired = maxHarvest;
 		harvestingWorkRequired = maxHarvest * 5D;
-
+				//System.out.println("Crop.java : constructor :"
+				//		+ " maxHarvest/dailyTendingWorkRequired/plantingWorkRequired is " + maxHarvest);
+				//System.out.println("Crop.java : constructor :"
+				//		+ " harvestingWorkRequired is " + harvestingWorkRequired);
 		if (newCrop) {
 			phase = PLANTING;
 			actualHarvest = 0D;
-		} 
+		}
 		else {
 			phase = GROWING;
+			// set up a crop's "initial" percentage of growth when the simulation gets started
 			growingTimeCompleted = RandomUtil.getRandomDouble(cropType.getGrowingTime());
+				//	System.out.println("Crop.java : constructor : growingTime is " + cropType.getGrowingTime() );
+				//	System.out.println("Crop.java : constructor : growingTimeCompleted is " + growingTimeCompleted );
 			actualHarvest = maxHarvest * (growingTimeCompleted / cropType.getGrowingTime());
+				//	System.out.println("Crop.java : constructor : actualHarvest is " + actualHarvest );
 		}
 	}
 
@@ -128,7 +137,7 @@ implements Serializable {
 	 */
 	public double getGrowingTimeCompleted() { return growingTimeCompleted; }
 
-	/** 
+	/**
 	 * Checks if crop needs additional work on current sol.
 	 * @return true if more work needed.
 	 */
@@ -170,6 +179,7 @@ implements Serializable {
 	 * @return workTime remaining after working on crop (millisols)
 	 * @throws Exception if error adding work.
 	 */
+	// 2014-10-07 by mkung: see below for changes when calling addHarvest()
 	public double addWork(double workTime) {
 		double remainingWorkTime = workTime;
 
@@ -200,13 +210,21 @@ implements Serializable {
 		if (phase.equals(HARVESTING)) {
 			currentPhaseWorkCompleted += remainingWorkTime;
 			if (currentPhaseWorkCompleted >= harvestingWorkRequired) {
+				// Harvest is over. Close out this phase
+					///System.out.println("Crop.java : addWork() : done harvesting. remainingWorkTime is " + remainingWorkTime);
 				double overWorkTime = currentPhaseWorkCompleted - harvestingWorkRequired;
-				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
+				// 2014-10-07 mkung: modified addHarvest parameter list to include cropType.getCropCategory()
+				farm.addHarvest(actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired, cropType.getCropCategory());
+					//System.out.println("Crop.java : addWork() : last harvest amount is " + actualHarvest * (remainingWorkTime - overWorkTime) / harvestingWorkRequired);
 				remainingWorkTime = overWorkTime;
 				phase = FINISHED;
+
 			}
 			else {
-				farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired);
+				// 2014-10-07 mkung: modified addHarvest parameter list to include cropType.getCropCategory()
+				// Still harvesting
+					//System.out.println("Crop.java : addWork() : still harvesting.... harvest ( = actualHarvest * workTime / harvestingWorkRequired) is " + actualHarvest * workTime / harvestingWorkRequired);
+					farm.addHarvest(actualHarvest * workTime / harvestingWorkRequired, cropType.getCropCategory());
 				remainingWorkTime = 0D;
 			}
 		}
@@ -219,7 +237,7 @@ implements Serializable {
 	 * @param time - amount of time passing (millisols)
 	 */
 	public void timePassing(double time) {
-	    
+
 		if (time > 0D) {
 			if (phase.equals(GROWING)) {
 				growingTimeCompleted += time;
@@ -276,15 +294,15 @@ implements Serializable {
 					if (oxygenAmount > oxygenCapacity) oxygenAmount = oxygenCapacity;
 					inv.retrieveAmountResource(carbonDioxide, carbonDioxideUsed);
 					inv.storeAmountResource(oxygen, oxygenAmount, false);
-					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) * 
-							.5D) + .5D);   
+					harvestModifier = harvestModifier * (((carbonDioxideUsed / carbonDioxideRequired) *
+							.5D) + .5D);
 
 					// Modify harvest amount.
 					actualHarvest += maxPeriodHarvest * harvestModifier;
 
-					// Check if crop is dying if it's at least 25% along on it's growing time and its condition 
+					// Check if crop is dying if it's at least 25% along on it's growing time and its condition
 					// is less than 10% normal.
-					if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) && 
+					if (((growingTimeCompleted / cropType.getGrowingTime()) > .25D) &&
 							(getCondition() < .1D)) {
 						phase = FINISHED;
 						logger.info("Crop " + cropType.getName() + " at " + settlement.getName() + " died.");
@@ -301,7 +319,7 @@ implements Serializable {
 	 */
 	public static CropType getRandomCropType() {
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
-		List<CropType> cropTypes = cropConfig.getCropList();    
+		List<CropType> cropTypes = cropConfig.getCropList();
 		int r = RandomUtil.getRandomInt(cropTypes.size() - 1);
 		return cropTypes.get(r);
 	}
@@ -314,7 +332,7 @@ implements Serializable {
 	public static double getAverageCropGrowingTime() {
 		CropConfig cropConfig = SimulationConfig.instance().getCropConfiguration();
 		double totalGrowingTime = 0D;
-		List<CropType> cropTypes = cropConfig.getCropList();  
+		List<CropType> cropTypes = cropConfig.getCropList();
 		Iterator<CropType> i = cropTypes.iterator();
 		while (i.hasNext()) totalGrowingTime += i.next().getGrowingTime();
 		return totalGrowingTime / cropTypes.size();

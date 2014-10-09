@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Cooking.java
- * @version 3.07 2014-06-19
+ * @version 3.07 2014-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -226,43 +226,99 @@ implements Serializable {
      * Adds cooking work to this facility. 
      * The amount of work is dependent upon the person's cooking skill.
      * @param workTime work time (millisols)
+     * 2014-10-08 mkung: rewrote this function to highlight the while loop. 
+     * 					moved remaining tasks into a new method cookingChoice()
      */
     public void addWork(double workTime) {
         cookingWorkTime += workTime;
+        
         while (cookingWorkTime >= COOKED_MEAL_WORK_REQUIRED) {
-            int mealQuality = getBestCookSkill();
-            MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
+        	
+            cookingChoice();
+            
+        } // end of while
+     } // end of void addWork()
+    
+    
+    /**
+     * Orders of cooking 
+     * @param none
+     * 2014-10-08 mkung: 1st choice: making vegetables soup / make salad bowl 
+     * 					 2nd cooked fry rice / high-fiber wheat bread sandwich
+    // TODO: let the cook choose what kind of meal to cook based on his preference
+     */
+    public void  cookingChoice() {
+    	
+        int mealQuality = getBestCookSkill();
+        MarsClock time = (MarsClock) Simulation.instance().getMasterClock().getMarsClock().clone();
 
-            PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
-            double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
-            AmountResource food = AmountResource.findAmountResource("food");
-            double foodAvailable = getBuilding().getInventory().getAmountResourceStored(food, false);
-            if (foodAmount <= foodAvailable) {
-                getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
+        PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
+        double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
 
-                meals.add(new CookedMeal(mealQuality, time));
-                if (logger.isLoggable(Level.FINEST)) {
-                    logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
-                            " has " + meals.size() + " hot meals, quality=" + mealQuality);
-                }
-            }
-            else {
-                Settlement settlement = getBuilding().getBuildingManager().getSettlement();
-                logger.info("Not enough food to cook meal at " + settlement.getName() + " - food available: " + foodAvailable);
-            }
-
-            cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;
-        }
+            	 AmountResource food = AmountResource.findAmountResource("vegetables");
+                 double foodAvailable = getBuilding().getInventory().getAmountResourceStored(food, false);
+                 if (foodAmount <= foodAvailable) {
+                       getBuilding().getInventory().retrieveAmountResource(food, foodAmount);
+                              //	System.out.println("Cooking.java : addWork() : cooking vegetables using "  
+                            	//		+ foodAmount + ", vegetables remaining is " + (foodAvailable-foodAmount) );
+                     meals.add(new CookedMeal(mealQuality, time));
+                     if (logger.isLoggable(Level.FINEST)) {
+                         logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+                        " has prepared " + meals.size() + " vegetable soup/salad bowl (quality is " + mealQuality + ")");
+                     }
+                 } // end of if
+                 else {
+                	// 2nd choice :  cook grains 
+                	 AmountResource food2 = AmountResource.findAmountResource("grains");
+                     double foodAvailable2 = getBuilding().getInventory().getAmountResourceStored(food2, false);
+                     if (foodAmount <= foodAvailable2) {
+                         getBuilding().getInventory().retrieveAmountResource(food2, foodAmount);
+                     	//System.out.println("Cooking.java : addWork() : cooking grains, using " 
+                    		//	+ foodAmount + ", grains remaining is "+ (foodAvailable2-foodAmount));
+                         meals.add(new CookedMeal(mealQuality, time));
+                         if (logger.isLoggable(Level.FINEST)) {
+                             logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+                             " has prepared " + meals.size() + " fry rice / wheat bread sandwich (quality is " + mealQuality + ")");
+                         }
+                     } // end of if
+                     
+                     else {
+                        // 3rd choice:  Dry/canned food 
+                         AmountResource food3 = AmountResource.findAmountResource("food");
+                         double foodAvailable3 = getBuilding().getInventory().getAmountResourceStored(food3, false);
+                         if (foodAmount <= foodAvailable3) {
+                             getBuilding().getInventory().retrieveAmountResource(food3, foodAmount);
+                          	//System.out.println("Cooking.java : addWork() : cooking food, using "
+                        	//		+ foodAmount + ", food remaining is "  + (foodAvailable3-foodAmount));             	
+                             meals.add(new CookedMeal(mealQuality, time));
+                             if (logger.isLoggable(Level.FINEST)) {
+                                 logger.finest(getBuilding().getBuildingManager().getSettlement().getName() + 
+                                 " has prepared " + meals.size() + " hot meals from canned food (quality is " + mealQuality + ")");
+                             }
+                         } // end of if
+                         else {
+                        	 //System.out.println("Cooking.java : addWork() : not enough food left. remaing is " + foodAvailable3);
+                             Settlement settlement = getBuilding().getBuildingManager().getSettlement();
+                             logger.info("Not enough food to cook meal at " + settlement.getName() + 
+                            		 " - remaining food available: " + foodAvailable3);
+                         } // end of else #3
+                         cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED;     
+                 } // end of else #2
+                     cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
+                 } // end of else #1
+                 cookingWorkTime -= COOKED_MEAL_WORK_REQUIRED; 
     }
 
     /**
      * Time passing for the building.
      * @param time amount of time passing (in millisols)
      * @throws BuildingException if error occurs.
+     * 2014-10-08: mkung - Packed expired meal into food (turned 1 meal unit into 2 food units)
      */
     public void timePassing(double time) {
 
         // Move expired meals back to food again (refrigerate leftovers).
+   
         Iterator<CookedMeal> i = meals.iterator();
         while (i.hasNext()) {
             CookedMeal meal = i.next();
@@ -274,8 +330,11 @@ implements Serializable {
                     double foodAmount = config.getFoodConsumptionRate() * (1D / 3D);
                     double foodCapacity = getBuilding().getInventory().getAmountResourceRemainingCapacity(
                             food, false, false);
-                    if (foodAmount > foodCapacity) foodAmount = foodCapacity;
-                    getBuilding().getInventory().storeAmountResource(food, foodAmount, false);
+                    if (foodAmount > foodCapacity) 
+                    	foodAmount = foodCapacity;
+                			//System.out.println("Cooking.java : timePassing() : packing uneated food into storage, 2 * foodAmount is " + foodAmount*2 );
+                			// Turned 1 cooked meal unit into 2 food units
+                    getBuilding().getInventory().storeAmountResource(food, foodAmount * 2, false);
                     i.remove();
 
                     if(logger.isLoggable(Level.FINEST)) {

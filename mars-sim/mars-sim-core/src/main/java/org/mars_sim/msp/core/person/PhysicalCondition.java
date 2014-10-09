@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * PhysicalCondition.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-08
  * @author Barry Evans
  */
 package org.mars_sim.msp.core.person;
@@ -91,7 +91,7 @@ implements Serializable {
         alive = true;
         medicationList = new ArrayList<Medication>();
     }
-    
+
     /**
      * Gets the medical manager.
      * @return medical manager.
@@ -106,15 +106,15 @@ implements Serializable {
      */
     boolean canTreatProblems(MedicalAid unit) {
         boolean result = false;
-        
+
         Iterator<HealthProblem> iter = problems.values().iterator();
         while(iter.hasNext()) {
             if (unit.canTreatProblem(iter.next())) result = true;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Request treatment at the medical aid for all the person's health
      * problems that can be treated there.
@@ -148,14 +148,14 @@ implements Serializable {
      */
     boolean timePassing(double time, LifeSupport support,
                         PersonConfig config) {
-        
+
     	boolean illnessEvent = false;
-    	
+
         // Check the existing problems
         if (!problems.isEmpty()) {
         	// Throw illness event if any problems already exist.
         	illnessEvent = true;
-        	
+
             List<Complaint> newProblems = new ArrayList<Complaint>();
 
             Iterator<HealthProblem> iter = problems.values().iterator();
@@ -168,11 +168,11 @@ implements Serializable {
                 Complaint next = problem.timePassing(time, this);
 
                 if (problem.getCured() || (next != null)) iter.remove();
-                
+
                 // If a new problem, check it doesn't exist already
                 if (next != null) newProblems.add(next);
             }
-            
+
             // Add the new problems
             Iterator<Complaint> newIter = newProblems.iterator();
             while(newIter.hasNext()) {
@@ -193,7 +193,7 @@ implements Serializable {
 
         // Consume necessary oxygen and water.
         try {
-        	if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D))) 
+        	if (consumeOxygen(support, getOxygenConsumptionRate() * (time / 1000D)))
                 logger.log(Level.SEVERE, person.getName() + " has insufficient oxygen.");
         	if (consumeWater(support, getWaterConsumptionRate() * (time / 1000D)))
                 logger.log(Level.SEVERE, person.getName() + " has insufficient water.");
@@ -209,7 +209,7 @@ implements Serializable {
         // Build up fatigue & hunger for given time passing.
         setFatigue(fatigue + time);
         setHunger(hunger + time);
-        
+
         // Add time to all medications affecting the person.
         Iterator<Medication> i = medicationList.iterator();
         while (i.hasNext()) {
@@ -217,7 +217,7 @@ implements Serializable {
             med.timePassing(time);
             if (!med.isMedicated()) i.remove();
         }
-        
+
         // If person is at maximum stress, check for mental breakdown.
         if (stress == 100.0D) checkForStressBreakdown(config, time);
 
@@ -225,7 +225,7 @@ implements Serializable {
         recalculate();
 
         if (illnessEvent) person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
-        
+
         return (!isDead());
     }
 
@@ -240,32 +240,166 @@ implements Serializable {
 	    }
     }
 
-    /** 
+		/**
+		* Person consumes given amount of Grains
+		* @param amount amount of Graines to consume (in kg).
+		* @param container unit to get Grains from
+		* @param type of food
+		* @throws Exception if error consuming Grains.
+		* 	2014-10-08 mkung : the person decides to eat grains 
+		*  TODO: consolidate all four similar methods into one
+		*/
+		public void consumeGrains(double amount, Unit container, String foodType) {
+
+			AmountResource food = AmountResource.findAmountResource(foodType);
+			double foodEaten = amount;
+			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
+			if (foodAvailable < 0.5D)
+				throw new IllegalStateException("No more " + foodType + " available.");
+
+			// if container has less than enough food, finish up all food in the container
+			if (foodEaten > foodAvailable)
+				foodEaten = foodAvailable;
+
+				// subtract food from container
+			container.getInventory().retrieveAmountResource(food, foodEaten);
+				//System.out.println("PhysicalCondition.java : consumeGrains() : Grains Eaten is " 
+				//	+ foodEaten +  ", Grains remaining is " + (foodAvailable-foodEaten));
+		}
+
+		/**
+		* Person consumes given amount of Vegetables
+		* @param amount amount of Vegetables to consume (in kg).
+		* @param container unit to get Vegetables from
+		* @param type of food
+		* @throws Exception if error consuming Vegetables.
+		* 2014-10-08 mkung : the person decides to eat vegetables 
+		*  TODO: consolidate all four similar methods into one
+		*/
+		public void consumeVegetables(double amount, Unit container, String foodType) {
+
+			AmountResource food = AmountResource.findAmountResource(foodType);
+			double foodEaten = amount;
+			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
+
+			if (foodAvailable < .5D) {
+				consumeGrains(amount, container, "grains");
+				throw new IllegalStateException("No more " + foodType + " available.");
+			}
+
+			// if container has less than enough food, finish up all food in the container
+			if (foodEaten > foodAvailable)
+				foodEaten = foodAvailable;
+
+			// subtract food from container
+			container.getInventory().retrieveAmountResource(food, foodEaten);
+				//System.out.println("PhysicalCondition.java : consumeVegetables() :  Vegetables Eaten is "
+				//	+ foodEaten +  ",  Vegetables remaining is " + (foodAvailable-foodEaten));
+
+		}
+
+		/**
+		* Person consumes given amount of fruits
+		* @param amount amount of fruits to consume (in kg).
+		* @param container unit to get fruits from
+		* @param type of food
+		* @throws Exception if error consuming fruits.
+		*  2014-10-08 mkung : the person decides to eat fruits 
+		*  TODO: consolidate all four similar methods into one
+		*/
+		public void consumeFruits(double amount, Unit container, String foodType) {
+
+			AmountResource food = AmountResource.findAmountResource(foodType);
+			double foodEaten = amount;
+			double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
+
+			if (foodAvailable < .5D) {
+				consumeVegetables(amount, container, "vegetables");
+				throw new IllegalStateException("No more " + foodType + " available.");
+			}
+
+			// if container has less than enough food, finish up all food in the container
+			if (foodEaten > foodAvailable)
+				foodEaten = foodAvailable;
+
+				// subtract food from container
+			container.getInventory().retrieveAmountResource(food, foodEaten);
+				//System.out.println("PhysicalCondition.java : consumeFruits() : fruit Eaten is "
+				//	+ foodEaten +  ", fruit remaining is "  + (foodAvailable-foodEaten));
+
+		}
+
+
+    /**
      * Person consumes given amount of food
      * @param amount amount of food to consume (in kg).
      * @param container unit to get food from
      * @throws Exception if error consuming food.
+     *    2014-10-08 mkung : Toss a dice to decide what food category to eat
+     *    split this method into 4 parts with a switch statement. 
      */
     public void consumeFood(double amount, Unit container) {
     	if (container == null) throw new IllegalArgumentException("container is null");
-    	AmountResource food = AmountResource.findAmountResource("food");
-    	double foodEaten = amount;
-        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
-        if (foodAvailable == 0D) throw new IllegalStateException("No food available.");
-        if (foodEaten > foodAvailable) foodEaten = foodAvailable;
-        container.getInventory().retrieveAmountResource(food, foodEaten);
+
+    	int choice = RandomUtil.getRandomInt(5);
+    	
+    	switch (choice) {
+    	
+    	case 0:    	// 1/6 probability of choosing fruits
+    		//System.out.println("PhysicalCondition.java : consumeFood() : case 0"); 
+			consumeFruits(amount, container, "fruits");
+    		break;
+    		
+    	case 1: 	// 1/6 probability of choosing vegetables
+    		//System.out.println("PhysicalCondition.java : consumeFood() : case 1");
+			consumeVegetables(amount, container, "vegetables");
+    		break;
+    		
+    	case 2:  	// 1/6 probability of choosing grains
+    		//System.out.println("PhysicalCondition.java : consumeFood() : case 2");
+			consumeGrains(amount, container, "grains");	
+    		break;
+    		
+    	case 3:
+    	case 4:
+    	case 5:
+    		// 3/6 (or 50%) probability of choosing packed food
+    		//System.out.println("PhysicalCondition.java : consumeFood() : case 3, 4 & 5");
+	    	AmountResource food = AmountResource.findAmountResource("food");
+	    	double foodEaten = amount;
+	        double foodAvailable = container.getInventory().getAmountResourceStored(food, false);
+	        
+	        if (foodAvailable < 0.5D) {
+				consumeFruits(amount, container, "fruits");
+				throw new IllegalStateException("No more dry food available.");
+	        }
+		
+			// if container has less than enough food, finish up all food in the container
+			if (foodEaten > foodAvailable)
+					foodEaten = foodAvailable;
+	
+			// subtract food from container
+	        container.getInventory().retrieveAmountResource(food, foodEaten);
+				//System.out.println("PhysicalCondition.java : consumeFood() : food Eaten is "
+				//	+ foodEaten +  ", food remaining is " + (foodAvailable-foodEaten));
+    	
+	        break;
+    	}
+    	
+    	
     }
-    
+
     /**
      * Person consumes a given amount of food not taken from local container.
      * @param amount the amount of food to consume (in kg).
      */
     public void consumeFood(double amount) {
-		// if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation())) 
+		//System.out.println("PhysicalCondition.java : just called consumeFood(double amount) : food NOT taken from local container. amount is " + amount);
+		// if (checkResourceConsumption(amount, amount, MIN_VALUE, getMedicalManager().getStarvation()))
 		// 	recalculate();
     }
 
-    /** 
+    /**
      * Person consumes given amount of oxygen
      * @param support Life support system providing oxygen.
      * @param amount amount of oxygen to consume (in kg)
@@ -279,7 +413,7 @@ implements Serializable {
                                         MIN_VALUE, getMedicalManager().getSuffocation());
     }
 
-    /** 
+    /**
      * Person consumes given amount of water
      * @param support Life support system providing water.
      * @param amount amount of water to consume (in kg)
@@ -306,7 +440,7 @@ implements Serializable {
      */
     private boolean checkResourceConsumption(double actual, double required,
             int bounds, Complaint complaint) {
-                
+
         boolean newProblem = false;
         if ((bounds == MIN_VALUE) && (actual < required)) newProblem = true;
         if ((bounds == MAX_VALUE) && (actual > required)) newProblem = true;
@@ -346,7 +480,7 @@ implements Serializable {
      */
     private boolean requireTemperature(LifeSupport support, double minTemperature,
             double maxTemperature) {
-                
+
         boolean freeze = checkResourceConsumption(support.getTemperature(),
                 minTemperature, MIN_VALUE, getMedicalManager().getFreezing());
         boolean hot = checkResourceConsumption(support.getTemperature(),
@@ -376,7 +510,7 @@ implements Serializable {
     public double getPerformanceFactor() {
         return performance;
     }
-    
+
     /**
      * Sets the performance factor.
      * @param newPerformance new performance (between 0 and 1).
@@ -421,7 +555,7 @@ implements Serializable {
     public void setHunger(double newHunger) {
     	if (hunger != newHunger) {
     		hunger = newHunger;
-    		
+
     		PersonConfig personConfig = SimulationConfig.instance().getPersonConfiguration();
     		double starvationTime = 0D;
     		try {
@@ -430,7 +564,7 @@ implements Serializable {
     		catch (Exception e) {
     			e.printStackTrace(System.err);
     		}
-    		
+
     		Complaint starvation = getMedicalManager().getStarvation();
     		if (hunger > starvationTime) {
     			if (!problems.containsKey(starvation)) {
@@ -445,11 +579,11 @@ implements Serializable {
                 	person.fireUnitUpdate(UnitEventType.ILLNESS_EVENT);
                 }
     		}
-    		
+
     		person.fireUnitUpdate(UnitEventType.HUNGER_EVENT);
     	}
     }
-    
+
     /**
      * Gets the person's stress level
      * @return stress (0.0 to 100.0)
@@ -457,8 +591,8 @@ implements Serializable {
     public double getStress() {
     	return stress;
     }
-    
-    /** 
+
+    /**
      * Sets the person's stress level.
      * @param newStress the new stress level (0.0 to 100.0)
      */
@@ -471,7 +605,7 @@ implements Serializable {
     		person.fireUnitUpdate(UnitEventType.STRESS_EVENT);
     	}
     }
-    
+
     /**
      * Checks if person has an anxiety attack due to too much stress.
      * @param config the person configuration.
@@ -480,11 +614,11 @@ implements Serializable {
     private void checkForStressBreakdown(PersonConfig config, double time) {
 		try {
 			if (!problems.containsKey(ANXIETY_ATTACK)) {
-				
+
 				// Determine stress resilience modifier (0D - 2D).
 				int resilience = person.getNaturalAttributeManager().getAttribute(NaturalAttribute.STRESS_RESILIENCE);
 				double resilienceModifier = (double) (100 - resilience) / 50D;
-				
+
 				// If random breakdown, add anxiety attack.
 				if (RandomUtil.lessThanRandPercent(config.getStressBreakdownChance() * time * resilienceModifier)) {
 					Complaint anxietyAttack = getMedicalManager().getComplaintByName(ANXIETY_ATTACK);
@@ -516,15 +650,15 @@ implements Serializable {
         deathDetails = new DeathInfo(person);
 
         logger.severe(person + " dies due to " + illness);
-        
+
 		// Create medical event for death.
 		MedicalEvent event = new MedicalEvent(person, illness, EventType.MEDICAL_DEATH);
 		Simulation.instance().getEventManager().registerNewEvent(event);
-		
+
 		// Throw unit event.
 		person.fireUnitUpdate(UnitEventType.DEATH_EVENT);
     }
-    
+
     /**
      * Checks if the person is dead.
      *
@@ -587,21 +721,21 @@ implements Serializable {
                 serious = problem;
             }
         }
-        
+
         // High fatigue reduces performance.
         if (fatigue > 1000D) tempPerformance -= (fatigue - 1000D) * .0003D;
-        
+
         // High hunger reduces performance.
         if (hunger > 1000D) tempPerformance -= (hunger - 1000D) * .0001D;
-        
+
         // High stress reduces performance.
         if (stress >= 80D) tempPerformance -= (stress - 80D) * .02D;
-        
+
         if (tempPerformance < 0D) tempPerformance = 0D;
-        
+
         setPerformanceFactor(tempPerformance);
     }
-    
+
     /**
      * Checks if the person has any serious medical problems.
      * @return true if serious medical problems
@@ -614,7 +748,7 @@ implements Serializable {
 		}
 		return result;
     }
-    
+
     /**
      * Gets the oxygen consumption rate per Sol.
      * @return oxygen consumed (kg/Sol)
@@ -624,7 +758,7 @@ implements Serializable {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getOxygenConsumptionRate();
     }
-    
+
     /**
      * Gets the water consumption rate per Sol.
      * @return water consumed (kg/Sol)
@@ -634,7 +768,7 @@ implements Serializable {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getWaterConsumptionRate();
     }
-    
+
     /**
      * Gets the food consumption rate per Sol.
      * @return food consumed (kg/Sol)
@@ -644,7 +778,7 @@ implements Serializable {
     	PersonConfig config = SimulationConfig.instance().getPersonConfiguration();
     	return config.getFoodConsumptionRate();
     }
-    
+
     /**
      * Gets a list of medication affecting the person.
      * @return list of medication.
@@ -652,32 +786,32 @@ implements Serializable {
     public List<Medication> getMedicationList() {
         return new ArrayList<Medication>(medicationList);
     }
-    
+
     /**
      * Checks if the person is affected by the given medication.
      * @param medicationName the name of the medication.
      * @return true if person is affected by it.
      */
     public boolean hasMedication(String medicationName) {
-        if (medicationName == null) 
+        if (medicationName == null)
             throw new IllegalArgumentException("medicationName is null");
-        
+
         boolean result = false;
-        
+
         Iterator<Medication> i = medicationList.iterator();
         while (i.hasNext()) {
             if (medicationName.equals(i.next().getName())) result = true;
         }
-        
+
         return result;
     }
-    
+
     /**
      * Adds a medication that affects the person.
      * @param medication the medication to add.
      */
     public void addMedication(Medication medication) {
-        if (medication == null) 
+        if (medication == null)
             throw new IllegalArgumentException("medication is null");
         medicationList.add(medication);
     }

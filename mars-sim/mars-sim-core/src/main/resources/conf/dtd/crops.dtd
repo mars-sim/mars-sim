@@ -2,3 +2,7 @@
 <!ELEMENT crop EMPTY>
 <!ATTLIST crop name CDATA #REQUIRED>
 <!ATTLIST crop growing-time CDATA #REQUIRED>
+<!ATTLIST crop crop-category CDATA #REQUIRED>
+<!ATTLIST crop ppf CDATA #REQUIRED>
+<!ATTLIST crop photoperiod CDATA #REQUIRED>
+<!ATTLIST crop harvest-index CDATA #REQUIRED>

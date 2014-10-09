@@ -2,87 +2,18 @@
 
 <!DOCTYPE crop-list SYSTEM "conf/dtd/crops.dtd">
 
-<!-- To do: Find more accurate growing times for crops in greenhouse. -->
-<!--
-	see http://mdrs.marssociety.org/crew-reports
-	for detailed greenhab reports.
-	
-	crops should work like manufacturing processes:
-	they take inputs (co², water, energy...),
-	produce outputs (food, biomass, fiber for construction, o² for breathing...),
-	need fixed time,
-	need work time (of botanist or biologist),
-	need a building tech level,
-	and botany/biology skill level,
-	and are maybe sensitive to pressure, temperature, radiation, daylength/night, atmospheric composition, ...
-	
-	for example:
-
-		<crop-process	name="algae blooming"
-						growing-time="21.0"
-						work-time="0.5"
-						biology-skill-required="1"
-						botany-skill-required="0"
-						building-tech-level="2">
-			<description>uses a few seeding algae to produce a lot more algae.</description>
-			<input-item-list>
-				<input name="carbon dioxide" amount="19.0"/>
-				<input name="water" amount="120.0"/>
-				<input name="algae" amount="1.0"/>
-			</input-item-list>
-			<output-item-list>
-				<output name="oxygen" amount="20.0"/>
-				<output name="water" amount="20.0"/>
-				<output name="algae" amount="100.0"/>
-			</output-item-list>
-		</crop-process>
-		<crop-process name="algae paste cooking"
-						cooking-skill-required="1"
-						biology-skill-required="1">
-			<input-item-list>
-				<input name="algae" amount="50.0"/>
-			</input-item-list>
-			<output-item-list>
-				<output name="food" amount="20.0"/>
-			</output-item-list>
-		</crop-process>
-		
-		that way, wouldnt need special crop list,
-		just add more resources like algae or fungi
-		and add more manufacturing processes with
-		special required skills and buildings
--->
-
-<!-- List of crops settlers can grow in greenhouses. -->
-<!-- Growing time is number of sols between planting and harvest. -->
-<!-- Note: Growing times for crops are arbitrary - Scott -->
 <crop-list>
-    <crop name="strawberries" growing-time="70.0" />
-    <crop name="lettuce" growing-time="76.0" />
-    <crop name="spinach" growing-time="80.0" />
-    <crop name="tomatoes" growing-time="65.0" />
-    <crop name="potatoes" growing-time="90.0" />
-    <crop name="carrots" growing-time="87.0" />
-    <crop name="turnips" growing-time="87.0" />
-    <crop name="rutabaga" growing-time="80.0" />
-    <crop name="beets" growing-time="79.0" />
-    <crop name="zucchini" growing-time="67.0" />
-    <crop name="wheat" growing-time="80.0" />
-    <crop name="cauliflower" growing-time="90.0" />
-    <crop name="broccoli" growing-time="85.0" />
-    <crop name="peas" growing-time="75.0" />
-    <crop name="green beans" growing-time="75.0" />
-    <crop name="peppers" growing-time="92.0" />
-    <crop name="yellow squash" growing-time="75.0" />
-    <crop name="sunflowers" growing-time="60.0" />
-    <crop name="brussel sprouts" growing-time="88.0" />
-    <crop name="kohlrabi" growing-time="92.0" />
-    <crop name="kale" growing-time="97.0" />
-    <crop name="radish" growing-time="78.0" />
-    <crop name="cabbage" growing-time="80.0" />
-    <crop name="canoli" growing-time="90.0" />
-    <crop name="rice" growing-time="76.0" />
-    <crop name="peanuts" growing-time="84.0" />
-    <crop name="soybeans" growing-time="90.0" />
-    <crop name="bamboo" growing-time="75.0" />
+    <crop name="Strawberry" growing-time="100.0" crop-category="fruits" ppf="400.0" photoperiod="12.0" harvest-index=".33"/>
+    <crop name="Lettuce" growing-time="76.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".90"/>
+    <crop name="Wheat" growing-time="80.0" crop-category="grains" ppf="750.0" photoperiod="24.0" harvest-index=".50"/>
+    <crop name="Soybean" growing-time="80.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Sweet Potato" growing-time="90.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".70"/>
+    <crop name="Peanut" growing-time="80.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Rice" growing-time="76.0" crop-category="grains" ppf="750.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Bean" growing-time="30.0" crop-category="vegetables" ppf="350.0" photoperiod="18.0" harvest-index=".50"/>
+    <crop name="Spinach" growing-time="80.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".80"/>
+    <crop name="Tomato" growing-time="65.0" crop-category="vegetables" ppf="500.0" photoperiod="12.0" harvest-index=".50"/>
+    <crop name="Chard" growing-time="50.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".50"/>
+    <crop name="Radish" growing-time="78.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".50"/>
+    <crop name="Red Beet" growing-time="79.0" crop-category="vegetables" ppf="300.0" photoperiod="16.0" harvest-index=".50"/>
 </crop-list>

@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * Farming.java
- * @version 3.07 2014-07-30
+ * @version 3.07 2014-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -72,7 +72,7 @@ implements Serializable {
         crops = new ArrayList<Crop>();
         Settlement settlement = building.getBuildingManager().getSettlement();
         for (int x=0; x < cropNum; x++) {
-            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum),
                     this, settlement, false);
             crops.add(crop);
             building.getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
@@ -188,18 +188,40 @@ implements Serializable {
     }
 
     /**
-     * Adds harvested food to the farm.
+     * Adds the crop harvest (vegetables/grains/fruits) to the farm.
      * @param harvest harvested food to add (kg.)
-     */
-    public void addHarvest(double harvest) {
-        try {
-            Inventory inv = getBuilding().getInventory();
-            AmountResource food = AmountResource.findAmountResource("food");
-            double remainingCapacity = inv.getAmountResourceRemainingCapacity(food, false, false);
-            if (remainingCapacity < harvest) harvest = remainingCapacity;
-            inv.storeAmountResource(food, harvest, false);
-        }
-        catch (Exception e) {}
+     * @param foodCategory
+     * 2014-10-08 mkung : add String foodCategory to the param list to differentiate 3 type of crop harvest: vegetables/grains/fruits
+     */    
+    public void addHarvest(double harvest, String foodCategory) {
+
+            try {
+                Inventory inv = getBuilding().getInventory();
+                AmountResource food = AmountResource.findAmountResource(foodCategory);
+                double remainingCapacity = inv.getAmountResourceRemainingCapacity(food, false, false);
+                 // System.out.println("Farming.java : addHarvest() : remainingCapacity is " + remainingCapacity);
+                
+                  double amountResourceStored = inv.getAmountResourceStored(food, false);
+                 // System.out.println("Farming.java : addHarvest() : amountResourceStored is " + amountResourceStored);
+                     
+                  double amountResourceCapacityNoContainers = inv.getAmountResourceCapacityNoContainers(food);
+                 // System.out.println("Farming.java : addHarvest() : amountResourceCapacityNoContainers is " + amountResourceCapacityNoContainers);
+                   
+                  double amountResourceCapacity = inv.getAmountResourceCapacity(food, false);
+                 // System.out.println("Farming.java : addHarvest() : amountResourceCapacity is " + amountResourceCapacity);          
+                  
+                  // if the remaining capacity is smaller than the harvested amount, set remaining capacity to full
+                if (remainingCapacity < harvest) {
+                  harvest = remainingCapacity;
+                 // System.out.println("Farming.java : addHarvest() : storage is full. max capacity is " + remainingCapacity);
+
+                }
+                // if the remaining capacity is larger than the harvested amount, add the harvest to the remaining capacity
+                inv.storeAmountResource(food, harvest, false);
+                 // System.out.println("Farming : addHarvest() : just added harvest to storage. harvest was " + harvest);
+
+            }
+            catch (Exception e) {}
     }
 
     /**
@@ -235,14 +257,14 @@ implements Serializable {
         double productionLevel = 0D;
         if (getBuilding().getPowerMode() == PowerMode.FULL_POWER) productionLevel = 1D;
         else if (getBuilding().getPowerMode() ==  PowerMode.POWER_DOWN) productionLevel = .5D;
-        
+
         // Add time to each crop.
         Iterator<Crop> i = crops.iterator();
         int newCrops = 0;
         while (i.hasNext()) {
             Crop crop = i.next();
             crop.timePassing(time * productionLevel);
-            
+
             // Remove old crops.
             if (crop.getPhase().equals(Crop.FINISHED)) {
                 i.remove();
@@ -253,7 +275,7 @@ implements Serializable {
         // Add any new crops.
         Settlement settlement = getBuilding().getBuildingManager().getSettlement();
         for (int x=0; x < newCrops; x++) {
-            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum), 
+            Crop crop = new Crop(Crop.getRandomCropType(), (maxHarvest / (double) cropNum),
                     this, settlement, true);
             crops.add(crop);
             getBuilding().getBuildingManager().getSettlement().fireUnitUpdate(UnitEventType.CROP_EVENT, crop);
