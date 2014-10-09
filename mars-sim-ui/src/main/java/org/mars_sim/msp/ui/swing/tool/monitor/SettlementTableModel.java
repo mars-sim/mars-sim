@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * SettlementTableModel.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-08
  * @author Barry Evans
  */
 package org.mars_sim.msp.ui.swing.tool.monitor;
@@ -45,6 +45,7 @@ extends UnitTableModel {
 
 	// Column indexes
 	/** Person name column. */
+	// 2014-10-08 mkung: added 3 columns: vegetables, grains, and fruits 
 	private final static int NAME = 0;
 	private final static int POPULATION = 1;
 	private final static int PARKED = 2;
@@ -57,12 +58,15 @@ extends UnitTableModel {
 	private final static int CO2 = 9;
 	private final static int METHANE = 10;
 	private final static int FOOD = 11;
-	private final static int WATER = 12;
-	private final static int WASTE_WATER = 13;
-	private final static int ROCK_SAMPLES = 14;
-	private final static int ICE = 15;
+	private final static int FRUITS = 12;
+	private final static int GRAINS = 13;
+	private final static int VEGETABLES = 14;
+	private final static int WATER = 15;
+	private final static int WASTE_WATER = 16;
+	private final static int ROCK_SAMPLES = 17;
+	private final static int ICE = 18;
 	/** The number of Columns. */
-	private final static int COLUMNCOUNT = 16;
+	private final static int COLUMNCOUNT = 19;
 	/** Names of Columns. */
 	private static String columnNames[];
 	/** Types of columns. */
@@ -87,6 +91,12 @@ extends UnitTableModel {
 		columnTypes[MALFUNCTION] = String.class;
 		columnNames[FOOD] = "Food";
 		columnTypes[FOOD] = Integer.class;
+		columnNames[FRUITS] = "Fruits";
+		columnTypes[FRUITS] = Integer.class;
+		columnNames[GRAINS] = "Grains";
+		columnTypes[GRAINS] = Integer.class;
+		columnNames[VEGETABLES] = "Vegetables";
+		columnTypes[VEGETABLES] = Integer.class;
 		columnNames[OXYGEN] = "Oxygen";
 		columnTypes[OXYGEN] = Integer.class;
 		columnNames[WATER] = "Water";
@@ -157,6 +167,21 @@ extends UnitTableModel {
 				case FOOD : {
 					result = resourceMap.get(
 							AmountResource.findAmountResource("food"));
+				} break;
+
+				case FRUITS : {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("fruits"));
+				} break;
+
+				case GRAINS : {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("grains"));
+				} break;
+
+				case VEGETABLES : {
+					result = resourceMap.get(
+							AmountResource.findAmountResource("vegetables"));
 				} break;
 
 				case OXYGEN : {
@@ -286,6 +311,12 @@ extends UnitTableModel {
 					tempColumnNum = METHANE;
 				else if (target.equals(AmountResource.findAmountResource("food"))) 
 					tempColumnNum = FOOD;
+				else if (target.equals(AmountResource.findAmountResource("fruits"))) 
+					tempColumnNum = FRUITS;
+				else if (target.equals(AmountResource.findAmountResource("grains"))) 
+					tempColumnNum = GRAINS;
+				else if (target.equals(AmountResource.findAmountResource("vegetables"))) 
+					tempColumnNum = VEGETABLES;
 				else if (target.equals(AmountResource.findAmountResource("water"))) 
 					tempColumnNum = WATER;
 				else if (target.equals(AmountResource.findAmountResource("waste water"))) 
@@ -333,6 +364,12 @@ extends UnitTableModel {
 				Map<AmountResource, Integer> resourceMap = new HashMap<AmountResource, Integer>(9);
 				AmountResource food = AmountResource.findAmountResource("food");
 				resourceMap.put(food, getResourceStored(newUnit, food));
+				AmountResource fruits = AmountResource.findAmountResource("fruits");
+				resourceMap.put(fruits, getResourceStored(newUnit, fruits));
+				AmountResource grains = AmountResource.findAmountResource("grains");
+				resourceMap.put(grains, getResourceStored(newUnit, grains));
+				AmountResource vegetables = AmountResource.findAmountResource("vegetables");
+				resourceMap.put(vegetables, getResourceStored(newUnit, vegetables));
 				AmountResource oxygen = AmountResource.findAmountResource("oxygen");
 				resourceMap.put(oxygen, getResourceStored(newUnit, oxygen));
 				AmountResource water = AmountResource.findAmountResource("water");

@@ -28,11 +28,11 @@
 	<!-- Number of sols a person can survive without food -->
 	<!-- Default: 21.0 -->
 	<food-deprivation-time value="21.0" />
-	
+
 	<!-- Number of sols a person can go without food before starvation sets in -->
 	<!-- Default: 3.0 -->
 	<starvation-start-time value="3.0" />
-	
+
 	<!-- Minimum air pressure (Pa) a person can withstand without harm -->
 	<!-- Default: 25331.25 -->
 	<min-air-pressure value="25331.25" />
@@ -49,12 +49,12 @@
 	<!-- Maximum temperature (degrees celsius) a person can withstand without harm -->
 	<!-- Default: 48 degrees celsius -->
 	<max-temperature value="48.0" />
-	
+
 	<!-- Number of millisols a person can survive below minimum temperature -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
 	<!-- Default: 160.0 -->
 	<freezing-time value="160.0" />
-	
+
 	<!-- Base percent chance per millisol that a person at maximum stress will have an anxiety attack. -->
 	<!-- See medical complaint: "Anxiety Attack" in medical.xml. -->
 	<!-- Note: 1 millisol = 88.77 seconds -->
@@ -64,7 +64,7 @@
 	<!-- The average percentage of males to total population in the simulation. -->
 	<!-- Default 50 (equal numbers of males and females) -->
 	<gender-male-percentage value="50.0" />
-	
+
 	<!-- The average percentages of the 16 MBTI (Myers-Briggs Type Indicator) personality types among settlers. -->
 	<!-- Myers-Briggs Type Indicator: http://www.wikipedia.org/wiki/MBTI -->
 	<!-- Note: The total percentage for all personality types must equal 100%. -->
@@ -86,11 +86,11 @@
 		<mbti type="ENTP" percentage="4.0" />
 		<mbti type="ENTJ" percentage="3.0" />
 		<mbti type="ENFP" percentage="7.0" />
-		<mbti type="ENFJ" percentage="5.0" />		
+		<mbti type="ENFJ" percentage="5.0" />
 	</personality-types>
 
 	<!-- List of person names -->
-	<person-name-list>		
+	<person-name-list>
 
 		<person-name value="Aaron Wolfe" gender="male" />
 		<person-name value="Adelina Shaneyfelt" gender="female" />
@@ -315,10 +315,10 @@
 		<person-name value="Victor Plantico" gender="male" />
 		<person-name value="William Hickson" gender="male" />
 	</person-name-list>
-	
+
 	<!-- List of configured people -->
-	<person-list>
-	
+	<alpha-team>
+
 		<!-- Configured person -->
 		<!-- name: the person's name (required) -->
 		<!-- gender: the person's gender ("male" or "female") (optional) -->
@@ -326,8 +326,8 @@
 		<!-- settlement: the person's starting settlement. Must be a named settlement -->
 		<!--   configured in settlements.xml.  (optional) -->
 		<!-- job: the person's permanent job. (optional) -->
-		<person name="Karen Andersen" gender="female" personality-type="ISTJ" settlement="Alpha Base" job="Engineer">
-		
+		<person name="Karen Andersen" gender="female" personality-type="ISTJ" job="Botanist">
+
 			<!-- List of configured natural attributes. (optional) -->
 			<natural-attribute-list>
 				<!-- A natural attribute for the person. -->
@@ -344,21 +344,20 @@
 				<natural-attribute name="Leadership" value="25"/>
 				<natural-attribute name="Conversation" value="80"/>
 			</natural-attribute-list>
-			
+
 			<!-- List of configured skills. (optional) -->
 			<skill-list>
 				<!-- A skill for the person. -->
 				<!-- name: the name of the skill. (required). -->
 				<!-- level: the level of the skill ( >= 0 ) (required). -->
-				<skill name="Driving" level="0"/>
 				<skill name="Botany" level="2"/>
-				<skill name="Mechanics" level="3"/>
+				<skill name="Mechanics" level="1"/>
 				<skill name="EVA Operations" level="1"/>
 				<skill name="Areology" level="1"/>
-				<skill name="Medicine" level="2"/>
-				<skill name="Cooking" level="4"/>
+				<skill name="Medicine" level="1"/>
+				<skill name="Cooking" level="1"/>
 			</skill-list>
-			
+
 			<!-- List of configured relationships. (optional) -->
 			<relationship-list>
 				<!-- A relationship with another configured person. -->
@@ -368,30 +367,36 @@
 				<!--   0 (hate) - 100 (close friend) (required) -->
 				<relationship person-name="Rik Declercq" opinion="100"/>
 			</relationship-list>
-			
-		</person>
-		<person name="Rik Declercq" gender="male"/>
 
-        <person name="Leonardo DaVinci" gender="male" settlement="Alpha Base" job="Engineer">
-            <skill-list>
-                <!-- A skill for the person. -->
-                <!-- name: the name of the skill. (required). -->
-                <!-- level: the level of the skill ( >= 0 ) (required). -->
+		</person>
+		<person name="Rik Declercq" gender="male" job="Chef">
+			<skill-list>
                 <skill name="Driving" level="1"/>
                 <skill name="Physics" level="1"/>
                 <skill name="Botany" level="1"/>
                 <skill name="Mechanics" level="1"/>
                 <skill name="EVA Operations" level="1"/>
+                <skill name="Cooking" level="2"/>
+            </skill-list>
+       </person>
+
+        <person name="Leonardo DaVinci" gender="male" job="Engineer">
+            <skill-list>
+                <!-- A skill for the person. -->
+                <!-- name: the name of the skill. (required). -->
+                <!-- level: the level of the skill ( >= 0 ) (required). -->
+                <skill name="Physics" level="1"/>
+                <skill name="Botany" level="1"/>
+                <skill name="Mechanics" level="1"/>
                 <skill name="Areology" level="1"/>
                 <skill name="Medicine" level="1"/>
-                <skill name="Cooking" level="1"/>
-                <skill name="Materials Science" level="4"/>
+                <skill name="Materials Science" level="2"/>
             </skill-list>
             <relationship-list>
                 <relationship person-name="Lena LaGranda" opinion="100"/>
             </relationship-list>
         </person>
-        <person name="Lena LaGranda" gender="female" settlement="Alpha Base" job="Engineer">
+        <person name="Lena LaGranda" gender="female" job="Technician">
             <skill-list>
                 <!-- A skill for the person. -->
                 <!-- name: the name of the skill. (required). -->
@@ -399,17 +404,14 @@
                 <skill name="Driving" level="1"/>
                 <skill name="Physics" level="1"/>
                 <skill name="Botany" level="1"/>
-                <skill name="Mechanics" level="1"/>
+                <skill name="Mechanics" level="2"/>
                 <skill name="EVA Operations" level="1"/>
-                <skill name="Areology" level="1"/>
-                <skill name="Chemistry" level="1"/>
-                <skill name="Materials Science" level="4"/>
+                <skill name="Materials Science" level="1"/>
             </skill-list>
             <relationship-list>
                 <relationship person-name="Leonardo DaVinci" opinion="100"/>
             </relationship-list>
         </person>
-
-	</person-list>
+	</alpha-team>
 
 </people-configuration>

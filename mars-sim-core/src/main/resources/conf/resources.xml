@@ -11,7 +11,7 @@
 	<!--         Possible values: "solid", "liquid" or "gas" -->
 	<!-- life-support - Is the resources used for life support? -->
 	<resource name="water" phase="liquid" life-support="true">potable water</resource>
-	
+
 	<resource name="oxygen" phase="gas" life-support="true" />
 	<resource name="hydrogen" phase="gas" />
 	<resource name="methane" phase="gas" />
@@ -20,28 +20,34 @@
 <!-- <resource name="chlorine" phase="gas"/> -->
 
 	<resource name="food" phase="solid" life-support="true">Represents general freeze dried food.</resource>
+	<resource name="grains" phase="solid" life-support="true">Whole Grain such as wheat, rice, oats, cornmeal, and barley, etc.;
+		Small hard dry seeds, with or without attached hulls or fruit layers</resource>
+	<resource name="fruits" phase="solid" life-support="true">
+		the fleshy seed-associated structures of a plant that are sweet or sour and edible in the raw state</resource>
+	<resource name="vegetables" phase="solid" life-support="true">the leafy or root structure of a plant cultivated for food</resource>
+
 	<resource name="rock samples" phase="solid">Rock samples collected from explored sites.</resource>
 	<resource name="waste water" phase="liquid">Sewage water used as crop fertilizer.</resource>
 	<resource name="ice" phase="solid">Ice-rich permafrost soil</resource>
 	<resource name="regolith" phase="solid">Martian soil</resource>
 
 	<resource name="iron oxide" phase="solid">also known as rust</resource>
-	
+
 	<resource name="carbon" phase="solid">Carbon powder</resource>
 	<resource name="sand" phase="solid">Martian soil with iron oxide removed. Used for making glass.</resource>
-	
+
 	<resource name="iron powder" phase="solid" />
 	<resource name="aluminum oxide" phase="solid" />
 	<resource name="ethylene" phase="gas" />
-	
+
 	<resource name="polyethylene" phase="solid">Polyethylene pellets or flakes.</resource>
-	
+
 	<resource name="gypsum" phase="solid" />
 	<resource name="calcium carbonate" phase="solid" />
 	<resource name="lime" phase="solid" />
 	<resource name="styrene" phase="solid" />
 	<resource name="polyester resin" phase="liquid" />
-	
+
 	<!-- Mineral concentrations. -->
 	<resource name="hematite" phase="solid" />
 	<resource name="magnetite" phase="solid" />
@@ -59,7 +65,7 @@
 	<resource name="magnesium" phase="solid" />
 	<resource name="silicon" phase="solid" />
 	<resource name="copper" phase="solid" />
-	
+
 	<resource name="potash lye" phase="solid">Potassium hydroxide</resource>
 
 	<resource name="cement" phase="solid" />

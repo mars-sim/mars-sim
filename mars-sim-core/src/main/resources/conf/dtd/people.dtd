@@ -1,8 +1,8 @@
-<!ELEMENT people-configuration (oxygen-consumption-rate, water-consumption-rate, 
-food-consumption-rate, oxygen-deprivation-time, water-deprivation-time, 
-food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time, 
-min-temperature, max-temperature, freezing-time, stress-breakdown-chance, 
-gender-male-percentage, personality-types, person-name-list, person-list)>
+<!ELEMENT people-configuration (oxygen-consumption-rate, water-consumption-rate,
+food-consumption-rate, oxygen-deprivation-time, water-deprivation-time,
+food-deprivation-time, starvation-start-time, min-air-pressure, decompression-time,
+min-temperature, max-temperature, freezing-time, stress-breakdown-chance,
+gender-male-percentage, personality-types, person-name-list, alpha-team)>
 <!ELEMENT oxygen-consumption-rate EMPTY>
 <!ATTLIST oxygen-consumption-rate value CDATA #REQUIRED>
 <!ELEMENT water-consumption-rate EMPTY>
@@ -39,7 +39,7 @@ gender-male-percentage, personality-types, person-name-list, person-list)>
 <!ELEMENT person-name EMPTY>
 <!ATTLIST person-name value CDATA #REQUIRED>
 <!ATTLIST person-name gender (male|female) #REQUIRED>
-<!ELEMENT person-list (person*)>
+<!ELEMENT alpha-team (person*)>
 <!ELEMENT person (natural-attribute-list?, skill-list?, relationship-list?)>
 <!ATTLIST person name CDATA #REQUIRED>
 <!ATTLIST person gender (male|female) #IMPLIED>

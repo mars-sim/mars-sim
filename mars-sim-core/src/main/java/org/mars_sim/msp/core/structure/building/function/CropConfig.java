@@ -1,7 +1,7 @@
 /**
  * Mars Simulation Project
  * CropConfig.java
- * @version 3.06 2014-01-29
+ * @version 3.06 2014-10-08
  * @author Scott Davis
  */
 package org.mars_sim.msp.core.structure.building.function;
@@ -16,6 +16,7 @@ import org.jdom.Element;
 /**
  * Provides configuration information about greenhouse crops. Uses a DOM document to get the information.
  */
+//2014-10-05 mkung: added new attributes: harvestIndex, cropCategory, ppf and photoperiod
 public class CropConfig
 implements Serializable {
 
@@ -26,6 +27,10 @@ implements Serializable {
 	private static final String CROP = "crop";
 	private static final String NAME = "name";
 	private static final String GROWING_TIME = "growing-time";
+	private static final String CROP_CATEGORY = "crop-category";
+	private static final String PPF = "ppf";
+	private static final String PHOTOPERIOD = "photoperiod";
+	private static final String HARVEST_INDEX = "harvest-index";
 
 	private Document cropDoc;
 	private List<CropType> cropList;
@@ -62,8 +67,24 @@ implements Serializable {
 				String growingTimeStr = crop.getAttributeValue(GROWING_TIME);
 				double growingTime = Double.parseDouble(growingTimeStr);
 
+				// Get crop category
+				String cropCategory ="";
+				cropCategory = crop.getAttributeValue(CROP_CATEGORY);
+
+				// Get ppf
+				String ppfStr = crop.getAttributeValue(PPF);
+				double ppf = Double.parseDouble(ppfStr);
+
+				// Get photoperiod
+				String photoperiodStr = crop.getAttributeValue(PHOTOPERIOD);
+				double photoperiod = Double.parseDouble(photoperiodStr);
+
+				// Get harvestIndex
+				String harvestIndexStr = crop.getAttributeValue(HARVEST_INDEX);
+				double harvestIndex = Double.parseDouble(harvestIndexStr);
+
 				// Create crop type.
-				CropType cropType = new CropType(name, growingTime * 1000D);
+				CropType cropType = new CropType(name, growingTime * 1000D, cropCategory, ppf * 1D, photoperiod * 1D, harvestIndex);
 
 				cropList.add(cropType);
 			}

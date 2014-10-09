@@ -182,6 +182,9 @@
 				<resource-storage resource="Carbon Monoxide" capacity="50.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Fruits" capacity="500.0" />
+				<resource-storage resource="Vegetables" capacity="500.0" />
+				<resource-storage resource="Grains" capacity="500.0" />
 				<resource-storage resource="Ice" capacity="100.0" />
 				
 				<!-- The initial resources in the building. -->
@@ -190,7 +193,11 @@
 				<!-- amount: the amount (kg) of the resource. -->
 				<resource-initial resource="Water" amount="500.0" />
 				<resource-initial resource="Oxygen" amount="500.0" />
-				<resource-initial resource="Food" amount="500.0" /> 
+				<resource-initial resource="Food" amount="100.0" />
+				<resource-initial resource="Fruits" amount="30.0" />
+				<resource-initial resource="Vegetables" amount="30.0" />
+				<resource-initial resource="Grains" amount="30.0" />
+
 			</storage>
 			
 		</functions>
@@ -239,7 +246,10 @@
 				<resource-storage resource="Water" capacity="500.0" />
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
-				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Fruits" capacity="500.0" />
+				<resource-storage resource="Vegetables" capacity="500.0" />
+				<resource-storage resource="Grains" capacity="500.0" />
+
 			</storage>
 			
 		</functions>
@@ -608,6 +618,9 @@
 				<resource-storage resource="Waste Water" capacity="1000.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="1000.0" />
 				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Fruits" capacity="500.0" />
+				<resource-storage resource="Vegetables" capacity="500.0" />
+				<resource-storage resource="Grains" capacity="500.0" />
 			</storage>				
 		</functions>
 	</building>
@@ -982,6 +995,9 @@
 				<resource-storage resource="Carbon Monoxide" capacity="250.0" />
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Food" capacity="2500.0" />
+				<resource-storage resource="Fruits" capacity="2500.0" />
+				<resource-storage resource="Grains" capacity="2500.0" />
+				<resource-storage resource="Vegetables" capacity="2500.0" />
 				<resource-storage resource="Ice" capacity="500.0" />
 				<resource-storage resource="Methane" capacity="10000.0" />
 			</storage>
@@ -1161,6 +1177,9 @@
 <!-- 			<resource-storage resource="chlorine" capacity="50.0" /> -->
 				<resource-storage resource="Methane" capacity="2000.0" />
 				<resource-storage resource="Food" capacity="2000.0" />
+				<resource-storage resource="Fruits" capacity="2000.0" />
+				<resource-storage resource="Vegetables" capacity="2000.0" />
+				<resource-storage resource="Grains" capacity="2000.0" />
 			</storage>
 		</functions>
 	</building>
@@ -1242,6 +1261,9 @@
 				<resource-storage resource="Waste Water" capacity="500.0" />
 				<resource-storage resource="Carbon Dioxide" capacity="500.0" />
 				<resource-storage resource="Food" capacity="500.0" />
+				<resource-storage resource="Fruits" capacity="500.0" />
+				<resource-storage resource="Vegetables" capacity="500.0" />
+				<resource-storage resource="Grains" capacity="500.0" />
 			</storage>	
 		</functions>
 	</building>
